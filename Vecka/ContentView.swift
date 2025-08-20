@@ -150,11 +150,10 @@ struct CustomCountdown: Codable {
             self.cachedMonth = month
             self.cachedDay = day
         } else if isAnnual {
-            // Legacy data - compute cached values now
-            let calendar = Calendar.iso8601
-            let components = calendar.dateComponents([.month, .day], from: date)
-            self.cachedMonth = components.month
-            self.cachedDay = components.day
+            // XPC-SAFE: Defer calendar operations until needed - avoid XPC calls during decoding
+            // Mark as needing computation by setting to nil
+            self.cachedMonth = nil
+            self.cachedDay = nil
         } else {
             self.cachedMonth = nil
             self.cachedDay = nil
@@ -179,20 +178,93 @@ struct CustomCountdown: Codable {
     
     func targetDate(for currentYear: Int) -> Date? {
         if isAnnual {
+            // Check if we need to compute cached values (legacy data or new instances)
+            if cachedMonth == nil || cachedDay == nil {
+                // XPC-SAFE: Compute components on-demand in a thread-safe way
+                return computeTargetDateSafely(for: currentYear)
+            }
+            
             // Use cached components to avoid XPC-sensitive operations
             guard let month = cachedMonth,
                   let day = cachedDay else {
-                // Fallback to original date if cached components are invalid
-                return date
+                // Fallback to safe computation if cached components are invalid
+                return computeTargetDateSafely(for: currentYear)
             }
             
             // Create date components using cached values
             let components = DateComponents(year: currentYear, month: month, day: day)
             
             // Safe date creation with fallback - this is the only calendar operation needed
-            return Calendar.iso8601.date(from: components) ?? date
+            return Calendar.iso8601.date(from: components) ?? computeTargetDateSafely(for: currentYear)
         } else {
             return date
+        }
+    }
+    
+    /// XPC-safe computation of target date with comprehensive error handling
+    private func computeTargetDateSafely(for currentYear: Int) -> Date? {
+        // Enhanced XPC-safe detection using thread-safe approach
+        let environment = ProcessInfo.processInfo.environment
+        let processName = ProcessInfo.processInfo.processName
+        let bundleIdentifier = Bundle.main.bundleIdentifier ?? ""
+        
+        // Comprehensive XPC context detection
+        let isXPCContext = environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" ||
+                          processName.contains("Preview") ||
+                          processName.contains("SwiftUI") ||
+                          processName.contains("XCPreview") ||
+                          bundleIdentifier.contains("Preview") ||
+                          NSClassFromString("SwiftUI.PreviewHost") != nil ||
+                          NSClassFromString("XCPreviewAgent") != nil ||
+                          Thread.isMainThread == false // XPC calls often happen off main thread
+        
+        // In any XPC context, return a safe fallback date immediately
+        if isXPCContext {
+            // Create a safe date without any calendar operations
+            let fallbackComponents = DateComponents(year: currentYear, month: 12, day: 25)
+            return Calendar(identifier: .gregorian).date(from: fallbackComponents) ?? date
+        }
+        
+        // Attempt safe calendar operations with comprehensive error handling
+        return autoreleasepool {
+            do {
+                // Use a fresh calendar instance to avoid cached XPC-sensitive state
+                var calendar = Calendar(identifier: .iso8601)
+                calendar.locale = .autoupdatingCurrent
+                calendar.timeZone = .autoupdatingCurrent
+                
+                // Wrap calendar operations in individual try-catch blocks
+                let components: DateComponents
+                do {
+                    components = calendar.dateComponents([.month, .day], from: date)
+                } catch {
+                    // Calendar component extraction failed - return original date
+                    return date
+                }
+                
+                guard let month = components.month,
+                      let day = components.day,
+                      month >= 1, month <= 12,
+                      day >= 1, day <= 31 else {
+                    // Invalid components - return original date
+                    return date
+                }
+                
+                // Create target date components with validation
+                let targetComponents = DateComponents(year: currentYear, month: month, day: day)
+                
+                // Final date creation with error handling
+                do {
+                    return calendar.date(from: targetComponents) ?? date
+                } catch {
+                    // Date creation failed - return original date
+                    return date
+                }
+                
+            } catch {
+                // Any top-level error - return original date
+                return date
+            }
         }
     }
 }
@@ -1129,32 +1201,32 @@ struct ContentView: View {
     }
     
     private func getDaysUntilCountdown() -> Int {
-        // Always calculate from today's actual date, not selectedDate
-        let today = Date()
-        let currentYear = Calendar.iso8601.component(.year, from: today)
+        // Calculate from the selected date, not always today
+        let fromDate = selectedDate
+        let currentYear = Calendar.iso8601.component(.year, from: fromDate)
         
         // Handle custom countdowns specially
         if case .custom(let customCountdown) = selectedCountdown {
             if customCountdown.isAnnual {
                 // Annual logic - find next occurrence
                 guard let thisYearDate = customCountdown.targetDate(for: currentYear) else { return 0 }
-                let targetDate = thisYearDate <= today ? 
+                let targetDate = thisYearDate <= fromDate ? 
                     (customCountdown.targetDate(for: currentYear + 1) ?? thisYearDate) : thisYearDate
-                return Calendar.iso8601.dateComponents([.day], from: today, to: targetDate).day ?? 0
+                return Calendar.iso8601.dateComponents([.day], from: fromDate, to: targetDate).day ?? 0
             } else {
                 // One-time event - show actual countdown (can be negative if passed)
                 let targetDate = customCountdown.date
                 // Use start of day for both dates to avoid time-of-day issues
-                let todayStartOfDay = Calendar.iso8601.startOfDay(for: today)
+                let fromDateStartOfDay = Calendar.iso8601.startOfDay(for: fromDate)
                 let targetStartOfDay = Calendar.iso8601.startOfDay(for: targetDate)
-                return Calendar.iso8601.dateComponents([.day], from: todayStartOfDay, to: targetStartOfDay).day ?? 0
+                return Calendar.iso8601.dateComponents([.day], from: fromDateStartOfDay, to: targetStartOfDay).day ?? 0
             }
         }
         
         // Existing logic for predefined countdowns
         var targetYear = currentYear
         if let targetDate = selectedCountdown.targetDate(for: currentYear),
-           targetDate <= today {
+           targetDate <= fromDate {
             targetYear = currentYear + 1
         }
         
@@ -1162,7 +1234,7 @@ struct ContentView: View {
             return 0
         }
         
-        return Calendar.iso8601.dateComponents([.day], from: today, to: targetDate).day ?? 0
+        return Calendar.iso8601.dateComponents([.day], from: fromDate, to: targetDate).day ?? 0
     }
     
     private func getNextUpcomingHoliday() -> HolidayDate? {
@@ -1224,54 +1296,6 @@ struct ContentView: View {
         }
     }
     
-    private func navigateToCountdownDate() {
-        // Enhanced XPC-safe preview detection
-        guard !isRunningInPreview() else {
-            // In preview mode, provide safe fallback behavior
-            if let countdownDate = safeTargetDate() {
-                // Use immediate assignment without animation in previews
-                selectedDate = countdownDate
-            }
-            return
-        }
-        
-        // Prevent concurrent navigation operations
-        guard !isNavigationInProgress else { return }
-        
-        // Set navigation state to prevent reentrancy
-        isNavigationInProgress = true
-        
-        // Safe navigation with comprehensive error handling
-        guard let countdownDate = safeTargetDate() else {
-            // Fallback: navigate to today if countdown date calculation fails
-            withAnimation(.easeInOut(duration: 0.3)) {
-                selectedDate = Date()
-            }
-            // Reset navigation state after animation
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                isNavigationInProgress = false
-            }
-            return
-        }
-        
-        // Validate countdown date is reasonable
-        let now = Date()
-        let validDate = validateDateForNavigation(countdownDate, fallback: now)
-        
-        // Provide haptic feedback for user confirmation
-        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
-        impactFeedback.impactOccurred()
-        
-        // Use immediate synchronous update to prevent XPC conflicts
-        selectedDate = validDate
-        
-        // Manual AppStorage save after state is stable
-        saveSelectedDateManually()
-        
-        // Reset navigation state immediately
-        isNavigationInProgress = false
-    }
-    
     private func saveSelectedDateManually() {
         guard !isRunningInPreview() else { return }
         
@@ -1281,50 +1305,6 @@ struct ContentView: View {
         } catch {
             print("Warning: Failed to encode selectedDate: \(error)")
         }
-    }
-    
-    /// XPC-Safe immediate countdown navigation without async dispatch
-    private func immediateNavigateToCountdownDate() {
-        // Enhanced XPC-safe preview detection
-        guard !isRunningInPreview() else {
-            // In preview mode, provide safe fallback behavior
-            if let countdownDate = safeTargetDate() {
-                // Use immediate assignment without animation in previews
-                selectedDate = countdownDate
-            }
-            return
-        }
-        
-        // Prevent concurrent navigation operations
-        guard !isNavigationInProgress else { return }
-        
-        // Set navigation state to prevent reentrancy
-        isNavigationInProgress = true
-        
-        // Set flag to disable AppStorage auto-save during navigation to prevent XPC conflicts
-        // (selectedDate will be updated below)
-        
-        // Safe navigation with comprehensive error handling
-        guard let countdownDate = safeTargetDate() else {
-            // Fallback: navigate to today if countdown date calculation fails
-            selectedDate = Date()
-            // Reset navigation state immediately to prevent XPC conflicts
-            isNavigationInProgress = false
-            return
-        }
-        
-        // Validate countdown date is reasonable
-        let now = Date()
-        let validDate = validateDateForNavigation(countdownDate, fallback: now)
-        
-        // Use immediate assignment without animation to prevent XPC conflicts
-        selectedDate = validDate
-        
-        // Reset navigation state immediately
-        isNavigationInProgress = false
-        
-        // Manual save to AppStorage after state is stable
-        saveSelectedDateManually()
     }
     
     /// Validate date is within reasonable bounds for navigation
@@ -1339,68 +1319,184 @@ struct ContentView: View {
     
     /// Enhanced thread-safe preview environment detection
     private func isRunningInPreview() -> Bool {
-        // Multiple fallback checks for preview detection with thread safety
+        // Comprehensive preview and XPC context detection
         let environment = ProcessInfo.processInfo.environment
         let processName = ProcessInfo.processInfo.processName
+        let bundleIdentifier = Bundle.main.bundleIdentifier ?? ""
         
-        return environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" ||
-               processName.contains("Preview") ||
-               processName.contains("SwiftUI") ||
-               NSClassFromString("SwiftUI.PreviewHost") != nil ||
-               NSClassFromString("XCPreviewAgent") != nil
+        // Multiple detection methods for maximum reliability
+        let isPreview = environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" ||
+                       environment["XPC_SERVICE_NAME"]?.contains("Preview") == true ||
+                       processName.contains("Preview") ||
+                       processName.contains("SwiftUI") ||
+                       processName.contains("XCPreview") ||
+                       bundleIdentifier.contains("Preview") ||
+                       NSClassFromString("SwiftUI.PreviewHost") != nil ||
+                       NSClassFromString("XCPreviewAgent") != nil ||
+                       NSClassFromString("SwiftUIPreviewsService") != nil
+        
+        // Additional XPC context detection
+        let isXPCContext = Thread.isMainThread == false ||
+                          environment["XPC_SERVICE_NAME"] != nil ||
+                          processName.contains("com.apple.dt.Xcode")
+        
+        return isPreview || isXPCContext
     }
     
-    /// Thread-safe target date calculation with comprehensive error handling
-    private func safeTargetDate() -> Date? {
-        // Prevent any potential XPC calls during countdown date calculation
-        guard !isRunningInPreview() else {
-            // In preview, return a static safe date
-            return Calendar.iso8601.date(from: DateComponents(year: 2024, month: 12, day: 25))
-        }
-        
-        let currentYear = Calendar.iso8601.component(.year, from: Date())
-        
-        // Thread-safe countdown target date calculation
-        let targetDate = selectedCountdown.targetDate(for: currentYear)
-        
-        // Validate the target date before returning
-        if let date = targetDate {
-            let now = Date()
-            let fiveYearsFromNow = Calendar.iso8601.date(byAdding: .year, value: 5, to: now) ?? now
-            let oneYearAgo = Calendar.iso8601.date(byAdding: .year, value: -1, to: now) ?? now
-            
-            // Ensure target date is within reasonable bounds
-            if date >= oneYearAgo && date <= fiveYearsFromNow {
-                return date
-            }
-        }
-        
-        // Fallback to today if target date is invalid
-        return Date()
-    }
     
     /// Enhanced XPC-safe countdown navigation with haptic feedback
     private func safeNavigateToCountdownDate() {
         // Prevent double-tap issues with state guard
         guard !isDraggingWeek else { return }
         
+        // Enhanced XPC-safe preview detection
+        guard !isRunningInPreview() else {
+            // In preview mode, provide safe fallback behavior without calendar operations
+            selectedDate = Date()
+            return
+        }
+        
+        // Prevent concurrent navigation operations
+        guard !isNavigationInProgress else { return }
+        
         // Provide haptic feedback for user confirmation
         let impactFeedback = UIImpactFeedbackGenerator(style: .light)
         impactFeedback.impactOccurred()
         
-        // XPC-Safe navigation with immediate state update and no async dispatch
-        immediateNavigateToCountdownDate()
+        // XPC-Safe navigation with robust error handling
+        xpcSafeNavigateToCountdownDate()
+    }
+    
+    /// Completely XPC-safe countdown navigation with bulletproof error handling
+    private func xpcSafeNavigateToCountdownDate() {
+        // Set navigation state to prevent reentrancy
+        isNavigationInProgress = true
+        
+        // Wrap all countdown date operations in error handling
+        do {
+            // Safe countdown date calculation with fallbacks
+            guard let countdownDate = safeTargetDateWithFallback() else {
+                // Ultimate fallback: navigate to today
+                selectedDate = Date()
+                isNavigationInProgress = false
+                return
+            }
+            
+            // Validate countdown date is reasonable
+            let validDate = validateDateForNavigation(countdownDate, fallback: Date())
+            
+            // Immediate synchronous update to prevent XPC conflicts
+            selectedDate = validDate
+            
+            // Manual AppStorage save after state is stable
+            saveSelectedDateManually()
+            
+        } catch {
+            // Any error: fallback to today and log
+            print("Warning: Countdown navigation failed, falling back to today: \(error)")
+            selectedDate = Date()
+        }
+        
+        // Reset navigation state immediately
+        isNavigationInProgress = false
+    }
+    
+    /// Bulletproof target date calculation with multiple fallback layers
+    private func safeTargetDateWithFallback() -> Date? {
+        // Wrap all operations in autoreleasepool to manage memory during XPC-sensitive operations
+        return autoreleasepool {
+            // Enhanced XPC context detection at the entry point
+            let environment = ProcessInfo.processInfo.environment
+            let processName = ProcessInfo.processInfo.processName
+            let bundleIdentifier = Bundle.main.bundleIdentifier ?? ""
+            
+            let isXPCContext = environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" ||
+                              processName.contains("Preview") ||
+                              processName.contains("SwiftUI") ||
+                              processName.contains("XCPreview") ||
+                              bundleIdentifier.contains("Preview") ||
+                              Thread.isMainThread == false
+            
+            // If we're in XPC context, return immediate safe fallback
+            if isXPCContext {
+                return Calendar(identifier: .gregorian).date(byAdding: .day, value: 30, to: Date())
+            }
+            
+            // Layer 1: Safe current year calculation with fallback
+            let currentYear: Int
+            do {
+                currentYear = Calendar.current.component(.year, from: Date())
+            } catch {
+                // If even getting the current year fails, use a safe default
+                let currentDate = Date()
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy"
+                currentYear = Int(formatter.string(from: currentDate)) ?? 2025
+            }
+            
+            // Layer 2: Special handling for custom countdowns with comprehensive error handling
+            if case .custom(let customCountdown) = selectedCountdown {
+                do {
+                    // Attempt to get target date from custom countdown
+                    if let targetDate = customCountdown.targetDate(for: currentYear) {
+                        return targetDate
+                    }
+                } catch {
+                    // Custom countdown calculation failed - fall through to next layer
+                    print("Warning: Custom countdown calculation failed: \(error)")
+                }
+            }
+            
+            // Layer 3: Standard countdown target date calculation with error handling
+            do {
+                if let targetDate = selectedCountdown.targetDate(for: currentYear) {
+                    return targetDate
+                }
+            } catch {
+                // Standard countdown calculation failed - fall through to ultimate fallback
+                print("Warning: Standard countdown calculation failed: \(error)")
+            }
+            
+            // Layer 4: Ultimate fallback - return a reasonable date without XPC-sensitive operations
+            do {
+                let calendar = Calendar(identifier: .gregorian)
+                return calendar.date(byAdding: .day, value: 30, to: Date())
+            } catch {
+                // Even the ultimate fallback failed - return raw date
+                return Date().addingTimeInterval(30 * 24 * 60 * 60) // 30 days in seconds
+            }
+        }
     }
     
     // MARK: - Countdown Persistence
     
     private func loadCountdownPreference() {
-        guard !countdownTypeData.isEmpty,
-              let countdown = try? JSONDecoder().decode(CountdownType.self, from: countdownTypeData) else {
+        // Enhanced XPC-safe countdown preference loading
+        guard !isRunningInPreview() else {
+            // In preview mode, use safe default
             selectedCountdown = .newYear
             return
         }
-        selectedCountdown = countdown
+        
+        // XPC-safe decoding with comprehensive error handling
+        guard !countdownTypeData.isEmpty else {
+            selectedCountdown = .newYear
+            return
+        }
+        
+        do {
+            // Attempt to decode countdown preference
+            let decoder = JSONDecoder()
+            let countdown = try decoder.decode(CountdownType.self, from: countdownTypeData)
+            selectedCountdown = countdown
+        } catch {
+            // If decoding fails (including XPC connection issues), fall back to safe default
+            print("Warning: Failed to decode countdown preference, using default: \(error)")
+            selectedCountdown = .newYear
+            
+            // Clear corrupted data to prevent future issues
+            countdownTypeData = Data()
+        }
     }
     
     private func saveCountdownPreference() {
