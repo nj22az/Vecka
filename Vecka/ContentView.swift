@@ -535,20 +535,19 @@ struct ContentView: View {
     
     // MARK: - Portrait Layout (iPhone and iPad Portrait)
     private var portraitLayout: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 16) { // 8pt grid: 16pt major section spacing
             Spacer()
             
-            // Week number - hero element
-            VStack(spacing: 8) {
-                HStack(spacing: 4) {
+            // Week number - hero element with enhanced typography
+            VStack(spacing: 12) { // 8pt grid: 12pt spacing between brand and week number
+                HStack(spacing: 6) { // 8pt grid: 6pt icon-text spacing
                     Image(systemName: "calendar")
-                        .font(.caption)
+                        .font(.system(size: 12, weight: .medium))
                         .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
                     Text("VECKA")
-                        .font(.caption)
-                        .fontWeight(.medium)
+                        .font(.system(size: 12, weight: .medium, design: .default))
+                        .tracking(2.4) // Enhanced tracking for brand name
                         .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                        .tracking(2)
                 }
                 
                 Text("\(currentWeekInfo.weekNumber)")
@@ -580,15 +579,13 @@ struct ContentView: View {
                     .accessibilityHint("Swipe anywhere on screen left for next week, swipe right for previous week")
                     .accessibilityAddTraits(.isButton)
                 
-                VStack(spacing: 4) {
+                VStack(spacing: 6) { // 8pt grid: 6pt spacing between month and year
                     Text(monthName(for: selectedDate))
-                        .font(.headline)
-                        .fontWeight(.semibold)
+                        .font(.system(size: 22, weight: .semibold, design: .default))
                         .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
                     
                     Text(String(currentWeekInfo.year))
-                        .font(.title3)
-                        .fontWeight(.medium)
+                        .font(.system(size: 18, weight: .medium, design: .rounded))
                         .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
                 }
             }
@@ -616,25 +613,24 @@ struct ContentView: View {
                 .padding(.bottom, 12)
             }
             
-            // Week dates - minimal strip
-            HStack(spacing: 8) {
+            // Week dates - minimal strip with enhanced typography
+            HStack(spacing: 12) { // 8pt grid: 12pt spacing between date elements
                 ForEach(generateWeekDates(for: selectedDate), id: \.self) { date in
                     let isSelected = Calendar.iso8601.isDate(date, inSameDayAs: selectedDate)
                     let isToday = Calendar.iso8601.isDateInToday(date)
                     let dayColors = getDayColors(for: date)
                     
-                    VStack(spacing: 4) {
+                    VStack(spacing: 6) { // 8pt grid: 6pt spacing between weekday and day number
                         Text(shortWeekday(date))
-                            .font(.caption2)
-                            .fontWeight(.medium)
+                            .font(.system(size: 10, weight: .medium, design: .default))
+                            .tracking(0.4) // Proper tracking for uppercase text
                             .foregroundStyle(dayColors.weekday)
                             .textCase(.uppercase)
                         
                         Text(dayNumber(date))
-                            .font(.title3)
-                            .fontWeight(.semibold)
+                            .font(.system(size: 18, weight: .semibold, design: .rounded))
                             .foregroundStyle(isSelected ? .white : dayColors.day)
-                            .frame(width: 32, height: 32)
+                            .frame(width: 36, height: 36) // Slightly larger for better touch targets
                             .background(
                                 Circle()
                                     .fill(isSelected ? AppColors.accentBlue : .clear)
@@ -650,7 +646,7 @@ struct ContentView: View {
                             .foregroundStyle(AppColors.accentBlue)
                             .opacity(isToday && !isSelected ? 1 : 0)
                     }
-                    .frame(minWidth: 44, minHeight: 44) // Ensure minimum touch target size
+                    .frame(minWidth: 48, minHeight: 48) // Enhanced minimum touch target size
                     .contentShape(Rectangle())
                     .accessibilityLabel("\(shortWeekday(date)), \(dayNumber(date))")
                     .accessibilityHint(isSelected ? "Currently selected" : "Tap to select this date")
@@ -680,151 +676,164 @@ struct ContentView: View {
                     }
                 }
             }
-            .padding(.horizontal, 32)
+            .padding(.horizontal, 24) // 8pt grid: 24pt horizontal padding
             
             Spacer()
             
-            // Intelligent Mini Dashboard
-            VStack(spacing: 16) {
-                // Primary Information Row
-                HStack(spacing: 16) {
-                    // Month Progress
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "chart.bar")
-                                .font(.caption2)
-                                .foregroundStyle(AppColors.accentBlue)
-                            Text("MONTH")
-                                .font(.caption2)
-                                .fontWeight(.medium)
-                                .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                        }
+            // Ultra-Compact Mini Dashboard - Maximally Optimized for Screen Space
+            VStack(spacing: 6) { // DRASTICALLY reduced from 12pt to 6pt between major sections
+                // PRIMARY: Month Progress (Most Important)
+                VStack(spacing: 4) { // DRASTICALLY reduced from 8pt to 4pt internal spacing
+                    HStack(spacing: 6) { // 6pt icon-text spacing
+                        Image(systemName: "chart.pie.fill")
+                            .font(.system(size: 10, weight: .semibold)) // Smaller icon
+                            .foregroundStyle(.blue)
+                        Text("MONTH PROGRESS")
+                            .font(.system(size: 8, weight: .semibold, design: .default)) // DRASTICALLY reduced from 10pt to 8pt
+                            .tracking(0.3) // Reduced tracking for compactness
+                            .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                        Spacer()
+                    }
+                    
+                    HStack {
                         Text("\(Int(getMonthProgress() * 100))% complete")
-                            .font(.caption)
-                            .fontWeight(.semibold)
+                            .font(.system(size: 12, weight: .medium, design: .rounded)) // DRASTICALLY reduced from 14pt to 12pt
                             .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
+                        Spacer()
                     }
-                    
-                    Spacer()
-                    
-                    // Countdown Section (Enhanced XPC-Safe Tappable)
-                    VStack(alignment: .trailing, spacing: 4) {
-                        HStack(spacing: 4) {
-                            Text(selectedCountdown.displayName)
-                                .font(.caption2)
-                                .fontWeight(.medium)
-                                .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                            Image(systemName: selectedCountdown.icon)
-                                .font(.caption2)
-                                .foregroundStyle(AppColors.accentYellow)
-                        }
-                        Text(countdownDaysText())
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
-                    }
-                    .contentShape(Rectangle()) // Ensure full area is tappable
-                    .onTapGesture {
-                        // Safe countdown navigation with haptic feedback
-                        safeNavigateToCountdownDate()
-                    }
-                    .accessibilityLabel("\(selectedCountdown.displayName) countdown")
-                    .accessibilityHint("\(countdownDaysText()). Tap to navigate to countdown date")
-                    .accessibilityAddTraits(.isButton)
                 }
+                .padding(.horizontal, 12) // DRASTICALLY reduced from 16pt to 12pt horizontal padding
+                .padding(.vertical, 8)    // DRASTICALLY reduced from 12pt to 8pt vertical padding
+                .background(
+                    RoundedRectangle(cornerRadius: 8) // Smaller corner radius
+                        .fill(.ultraThinMaterial)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(.blue.opacity(0.2), lineWidth: 0.5)
+                        )
+                )
                 
-                // Next Holiday Information
+                // SECONDARY: Next Event (Actionable Content)
                 if let nextHoliday = getNextUpcomingHoliday() {
                     Button(action: {
                         navigateToDate(nextHoliday.date)
                     }) {
-                        VStack(spacing: 4) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "calendar.badge.clock")
-                                    .font(.caption2)
-                                    .foregroundStyle(AppColors.accentRed)
+                        VStack(spacing: 4) { // DRASTICALLY reduced from 8pt to 4pt internal spacing
+                            HStack(spacing: 6) { // 6pt icon-text spacing
+                                Image(systemName: "clock.badge")
+                                    .font(.system(size: 10, weight: .semibold)) // Smaller icon
+                                    .foregroundStyle(Color.orange)
                                 Text("NEXT EVENT")
-                                    .font(.caption2)
-                                    .fontWeight(.medium)
+                                    .font(.system(size: 8, weight: .semibold, design: .default)) // DRASTICALLY reduced from 10pt to 8pt
+                                    .tracking(0.3) // Reduced tracking for compactness
                                     .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
                                 Spacer()
                                 Text(daysUntilText(for: nextHoliday))
-                                    .font(.caption2)
-                                    .fontWeight(.medium)
+                                    .font(.system(size: 8, weight: .medium, design: .rounded)) // DRASTICALLY reduced from 9pt to 8pt
                                     .foregroundStyle(AppColors.adaptiveTextTertiary(isMonochrome: isMonochromeMode))
                             }
                             
-                            Text(holidayDisplayName(for: nextHoliday))
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(nextHoliday.isOfficial ? AppColors.accentRed : AppColors.accentBlue)
-                                .multilineTextAlignment(.center)
+                            HStack {
+                                Text(holidayDisplayName(for: nextHoliday))
+                                    .font(.system(size: 12, weight: .medium, design: .default)) // DRASTICALLY reduced from 14pt to 12pt
+                                    .lineLimit(1) // Changed from 2 to 1 to save vertical space
+                                    .foregroundStyle(nextHoliday.isOfficial ? .orange : .blue)
+                                    .multilineTextAlignment(.leading)
+                                Spacer()
+                            }
                         }
+                        .padding(.horizontal, 12) // DRASTICALLY reduced from 16pt to 12pt horizontal padding
+                        .padding(.vertical, 8)    // DRASTICALLY reduced from 12pt to 8pt vertical padding
+                        .background(
+                            RoundedRectangle(cornerRadius: 8) // Smaller corner radius
+                                .fill(.ultraThinMaterial)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(.orange.opacity(0.2), lineWidth: 0.5)
+                                )
+                        )
                     }
                     .buttonStyle(PlainButtonStyle())
                     .accessibilityLabel("Next event: \(holidayDisplayName(for: nextHoliday))")
                     .accessibilityHint("\(daysUntilText(for: nextHoliday)). Tap to navigate to this date")
                 }
                 
-                // Selected Date Information (if different from today)
-                if let holidayName = getHolidayName(for: selectedDate) {
-                    VStack(spacing: 4) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "star")
-                                .font(.caption2)
-                                .foregroundStyle(AppColors.accentRed)
-                            let displayText = Calendar.iso8601.isDateInToday(selectedDate) ? "TODAY" : "SELECTED"
-                            Text(displayText)
-                                .font(.caption2)
-                                .fontWeight(.medium)
+                // TERTIARY: Ultra-Compact Contextual Information Row
+                HStack(spacing: 12) { // DRASTICALLY reduced from 16pt to 12pt between countdown and selected date
+                    // Countdown (Positive/Goal Oriented)
+                    VStack(alignment: .leading, spacing: 3) { // DRASTICALLY reduced from 6pt to 3pt internal spacing
+                        HStack(spacing: 3) { // DRASTICALLY reduced from 4pt to 3pt icon-text spacing
+                            Image(systemName: "timer")
+                                .font(.system(size: 9, weight: .semibold)) // Smaller icon
+                                .foregroundStyle(Color.green)
+                            Text(selectedCountdown.displayName)
+                                .font(.system(size: 8, weight: .semibold, design: .default)) // DRASTICALLY reduced from 9pt to 8pt
+                                .tracking(0.2) // Reduced tracking for compactness
                                 .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                            Spacer()
+                                .lineLimit(1)
                         }
-                        
-                        Text(holidayName)
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(AppColors.accentRed)
-                            .multilineTextAlignment(.center)
+                        Text(countdownDaysText())
+                            .font(.system(size: 10, weight: .medium, design: .rounded)) // DRASTICALLY reduced from 12pt to 10pt
+                            .foregroundStyle(Color.green)
                     }
-                } else if !Calendar.iso8601.isDateInToday(selectedDate) {
-                    VStack(spacing: 4) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "calendar")
-                                .font(.caption2)
-                                .foregroundStyle(AppColors.adaptiveTextTertiary(isMonochrome: isMonochromeMode))
-                            Text("SELECTED")
-                                .font(.caption2)
-                                .fontWeight(.medium)
-                                .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                            Spacer()
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        safeNavigateToCountdownDate()
+                    }
+                    .accessibilityLabel("\(selectedCountdown.displayName) countdown")
+                    .accessibilityHint("\(countdownDaysText()). Tap to navigate to countdown date")
+                    .accessibilityAddTraits(.isButton)
+                    
+                    Spacer()
+                    
+                    // Selected Date Context (User Selection) - Ultra Compact
+                    VStack(alignment: .trailing, spacing: 3) { // DRASTICALLY reduced from 6pt to 3pt internal spacing
+                        if let holidayName = getHolidayName(for: selectedDate) {
+                            HStack(spacing: 3) { // DRASTICALLY reduced from 4pt to 3pt icon-text spacing
+                                Text(Calendar.iso8601.isDateInToday(selectedDate) ? "TODAY" : "SELECTED")
+                                    .font(.system(size: 8, weight: .semibold, design: .default)) // DRASTICALLY reduced from 9pt to 8pt
+                                    .tracking(0.2) // Reduced tracking for compactness
+                                    .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                                Image(systemName: "calendar.day.timeline.leading")
+                                    .font(.system(size: 9, weight: .semibold)) // Smaller icon
+                                    .foregroundStyle(Color.purple)
+                            }
+                            Text(holidayName)
+                                .font(.system(size: 10, weight: .medium, design: .default)) // DRASTICALLY reduced from 12pt to 10pt
+                                .lineLimit(1) // Changed from 2 to 1 to save vertical space
+                                .foregroundStyle(.purple)
+                                .multilineTextAlignment(.trailing)
+                        } else if !Calendar.iso8601.isDateInToday(selectedDate) {
+                            HStack(spacing: 3) { // DRASTICALLY reduced from 4pt to 3pt icon-text spacing
+                                Text("SELECTED")
+                                    .font(.system(size: 8, weight: .semibold, design: .default)) // DRASTICALLY reduced from 9pt to 8pt
+                                    .tracking(0.2) // Reduced tracking for compactness
+                                    .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                                Image(systemName: "calendar.day.timeline.leading")
+                                    .font(.system(size: 9, weight: .semibold)) // Smaller icon
+                                    .foregroundStyle(.purple)
+                            }
+                            Text(selectedDateText())
+                                .font(.system(size: 10, weight: .medium, design: .rounded)) // DRASTICALLY reduced from 12pt to 10pt
+                                .foregroundStyle(.purple)
+                                .multilineTextAlignment(.trailing)
                         }
-                        
-                        Text(selectedDateText())
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundStyle(AppColors.adaptiveTextTertiary(isMonochrome: isMonochromeMode))
-                            .multilineTextAlignment(.center)
                     }
                 }
+                .padding(.horizontal, 12) // DRASTICALLY reduced from 16pt to 12pt horizontal padding
+                .padding(.vertical, 6)    // DRASTICALLY reduced from 10pt to 6pt vertical padding
+                .background(
+                    RoundedRectangle(cornerRadius: 8) // Smaller corner radius
+                        .fill(.ultraThinMaterial)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+                        )
+                )
             }
-            .padding(.horizontal, 32)
-            .padding(.vertical, 16)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(safeAdaptiveSurface(isMonochrome: isMonochromeMode))
-                    .overlay(
-                        // Monochrome mode glass effect
-                        isMonochromeMode ? 
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(AppColors.monoGlow, lineWidth: 0.5) : nil
-                    )
-                    .shadow(color: isMonochromeMode ? .black.opacity(0.4) : .black.opacity(0.05), 
-                           radius: isMonochromeMode ? 12 : 8, x: 0, y: 4)
-            )
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 12) // DRASTICALLY reduced from 16pt to 12pt dashboard horizontal padding
             
-            Spacer()
+            Spacer(minLength: 8) // DRASTICALLY reduced from 16pt to 8pt minimum bottom spacing
         }
         .contentShape(Rectangle()) // Enable full-screen touch detection
         .gesture(
@@ -907,17 +916,16 @@ struct ContentView: View {
             VStack(spacing: 20) {
                 Spacer()
                 
-                // Week number - hero element
-                VStack(spacing: 12) {
-                    HStack(spacing: 4) {
+                // Week number - hero element with enhanced typography
+                VStack(spacing: 16) { // 8pt grid: 16pt spacing for iPad
+                    HStack(spacing: 6) { // 8pt grid: 6pt icon-text spacing
                         Image(systemName: "calendar")
-                            .font(.caption)
+                            .font(.system(size: 11, weight: .medium))
                             .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
                         Text("VECKA")
-                            .font(.caption)
-                            .fontWeight(.medium)
+                            .font(.system(size: 11, weight: .medium, design: .default))
+                            .tracking(2.0) // Enhanced tracking for brand name
                             .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                            .tracking(2)
                     }
                     
                     Text("\(currentWeekInfo.weekNumber)")
@@ -934,112 +942,134 @@ struct ContentView: View {
                                 .blur(radius: 8) : nil
                         )
                     
-                    VStack(spacing: 4) {
+                    VStack(spacing: 8) { // 8pt grid: 8pt spacing between month and year
                         Text(monthName(for: selectedDate))
-                            .font(.title2)
-                            .fontWeight(.semibold)
+                            .font(.system(size: 20, weight: .semibold, design: .default))
                             .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
                         
                         Text(String(currentWeekInfo.year))
-                            .font(.headline)
-                            .fontWeight(.medium)
+                            .font(.system(size: 16, weight: .medium, design: .rounded))
                             .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
                     }
                 }
                 
                 Spacer()
                 
-                // Mini Dashboard
-                VStack(spacing: 12) {
-                    // Month Progress & Countdown
-                    HStack(spacing: 12) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            HStack(spacing: 3) {
-                                Image(systemName: "chart.bar")
-                                    .font(.caption2)
-                                    .foregroundStyle(AppColors.accentBlue)
-                                Text("MONTH")
-                                    .font(.caption2)
-                                    .fontWeight(.medium)
-                                    .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                            }
-                            Text("\(Int(getMonthProgress() * 100))%")
-                                .font(.caption)
-                                .fontWeight(.semibold)
+                // Enhanced Mini Dashboard - iPad Layout with Optimized Typography
+                VStack(spacing: 12) { // 8pt grid: 12pt between sections for iPad
+                    // PRIMARY: Month Progress
+                    VStack(spacing: 8) { // 8pt grid: 8pt internal spacing
+                        HStack(spacing: 6) { // 8pt grid: 6pt icon-text spacing
+                            Image(systemName: "chart.pie.fill")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(.blue)
+                            Text("MONTH PROGRESS")
+                                .font(.system(size: 9, weight: .semibold, design: .default))
+                                .tracking(0.5) // Proper tracking for uppercase text
+                                .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                            Spacer()
+                        }
+                        HStack {
+                            Text("\(Int(getMonthProgress() * 100))% complete")
+                                .font(.system(size: 13, weight: .medium, design: .rounded))
                                 .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
+                            Spacer()
                         }
-                        
-                        Spacer()
-                        
-                        // Enhanced XPC-Safe Countdown Button for iPad
-                        VStack(alignment: .trailing, spacing: 2) {
-                            HStack(spacing: 3) {
-                                Text(selectedCountdown.displayName)
-                                    .font(.caption2)
-                                    .fontWeight(.medium)
-                                    .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                                Image(systemName: selectedCountdown.icon)
-                                    .font(.caption2)
-                                    .foregroundStyle(AppColors.accentYellow)
-                            }
-                            Text(countdownDaysText())
-                                .font(.caption)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
-                        }
-                        .contentShape(Rectangle()) // Ensure full area is tappable
-                        .onTapGesture {
-                            // Safe countdown navigation with haptic feedback
-                            safeNavigateToCountdownDate()
-                        }
-                        .accessibilityLabel("\(selectedCountdown.displayName) countdown")
-                        .accessibilityHint("\(countdownDaysText()). Tap to navigate to countdown date")
-                        .accessibilityAddTraits(.isButton)
                     }
+                    .padding(.horizontal, 16) // 8pt grid: 16pt horizontal padding
+                    .padding(.vertical, 12)   // 8pt grid: 12pt vertical padding
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(.ultraThinMaterial)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(.blue.opacity(0.2), lineWidth: 0.5)
+                            )
+                    )
                     
-                    // Next Event
+                    // SECONDARY: Next Event
                     if let nextHoliday = getNextUpcomingHoliday() {
                         Button(action: {
                             navigateToDate(nextHoliday.date)
                         }) {
-                            HStack(spacing: 6) {
-                                Image(systemName: "calendar.badge.clock")
-                                    .font(.caption2)
-                                    .foregroundStyle(AppColors.accentRed)
+                            VStack(spacing: 8) { // 8pt grid: 8pt internal spacing
+                                HStack(spacing: 6) { // 8pt grid: 6pt icon-text spacing
+                                    Image(systemName: "clock.badge")
+                                        .font(.system(size: 11, weight: .semibold))
+                                        .foregroundStyle(.orange)
+                                    Text("NEXT EVENT")
+                                        .font(.system(size: 9, weight: .semibold, design: .default))
+                                        .tracking(0.5) // Proper tracking for uppercase text
+                                        .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                                    Spacer()
+                                    Text(daysUntilText(for: nextHoliday))
+                                        .font(.system(size: 8, weight: .medium, design: .rounded))
+                                        .foregroundStyle(AppColors.adaptiveTextTertiary(isMonochrome: isMonochromeMode))
+                                }
                                 
-                                Text(holidayDisplayName(for: nextHoliday))
-                                    .font(.caption)
-                                    .fontWeight(.semibold)
-                                    .foregroundStyle(nextHoliday.isOfficial ? AppColors.accentRed : AppColors.accentBlue)
-                                    .lineLimit(1)
-                                
-                                Spacer()
-                                
-                                Text(daysUntilText(for: nextHoliday))
-                                    .font(.caption2)
-                                    .fontWeight(.medium)
-                                    .foregroundStyle(AppColors.adaptiveTextTertiary(isMonochrome: isMonochromeMode))
+                                HStack {
+                                    Text(holidayDisplayName(for: nextHoliday))
+                                        .font(.system(size: 13, weight: .medium, design: .default))
+                                        .lineLimit(2) // Allow wrapping for longer names
+                                        .lineSpacing(1) // Proper line spacing for multi-line text
+                                        .foregroundStyle(nextHoliday.isOfficial ? .orange : .blue)
+                                    Spacer()
+                                }
                             }
+                            .padding(.horizontal, 16) // 8pt grid: 16pt horizontal padding
+                            .padding(.vertical, 12)   // 8pt grid: 12pt vertical padding
+                            .background(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .fill(.ultraThinMaterial)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(.orange.opacity(0.2), lineWidth: 0.5)
+                                    )
+                            )
                         }
                         .buttonStyle(PlainButtonStyle())
                         .accessibilityLabel("Next event: \(holidayDisplayName(for: nextHoliday))")
                         .accessibilityHint("\(daysUntilText(for: nextHoliday)). Tap to navigate to this date")
                     }
+                    
+                    // TERTIARY: Countdown
+                    VStack(spacing: 8) { // 8pt grid: 8pt internal spacing
+                        HStack(spacing: 6) { // 8pt grid: 6pt icon-text spacing
+                            Image(systemName: "timer")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundStyle(Color.green)
+                            Text(selectedCountdown.displayName)
+                                .font(.system(size: 9, weight: .semibold, design: .default))
+                                .tracking(0.4) // Proper tracking for uppercase text
+                                .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                                .lineLimit(1)
+                            Spacer()
+                        }
+                        HStack {
+                            Text(countdownDaysText())
+                                .font(.system(size: 13, weight: .medium, design: .rounded))
+                                .foregroundStyle(.green)
+                            Spacer()
+                        }
+                    }
+                    .padding(.horizontal, 16) // 8pt grid: 16pt horizontal padding
+                    .padding(.vertical, 12)   // 8pt grid: 12pt vertical padding
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(.ultraThinMaterial)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
+                            )
+                    )
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        safeNavigateToCountdownDate()
+                    }
+                    .accessibilityLabel("\(selectedCountdown.displayName) countdown")
+                    .accessibilityHint("\(countdownDaysText()). Tap to navigate to countdown date")
+                    .accessibilityAddTraits(.isButton)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 12)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(safeAdaptiveSurface(isMonochrome: isMonochromeMode))
-                        .overlay(
-                            // Monochrome mode glass effect
-                            isMonochromeMode ? 
-                            RoundedRectangle(cornerRadius: 10)
-                                .stroke(AppColors.monoGlow, lineWidth: 0.5) : nil
-                        )
-                        .shadow(color: isMonochromeMode ? .black.opacity(0.4) : .black.opacity(0.05), 
-                               radius: isMonochromeMode ? 10 : 6, x: 0, y: 3)
-                )
                 
                 Spacer()
                 
@@ -1088,18 +1118,17 @@ struct ContentView: View {
                         let isToday = Calendar.iso8601.isDateInToday(date)
                         let dayColors = getDayColors(for: date)
                         
-                        VStack(spacing: 8) {
+                        VStack(spacing: 10) { // 8pt grid: 10pt spacing for iPad calendar
                             Text(shortWeekday(date))
-                                .font(.caption)
-                                .fontWeight(.medium)
+                                .font(.system(size: 11, weight: .medium, design: .default))
+                                .tracking(0.5) // Proper tracking for uppercase text
                                 .foregroundStyle(dayColors.weekday)
                                 .textCase(.uppercase)
                             
                             Text(dayNumber(date))
-                                .font(.title2)
-                                .fontWeight(.semibold)
+                                .font(.system(size: 24, weight: .semibold, design: .rounded))
                                 .foregroundStyle(isSelected ? .white : dayColors.day)
-                                .frame(width: 50, height: 50)
+                                .frame(width: 52, height: 52) // Slightly larger for better proportions
                                 .background(
                                     Circle()
                                         .fill(isSelected ? AppColors.accentBlue : .clear)
