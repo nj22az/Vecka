@@ -2,2152 +2,561 @@
 //  ContentView.swift
 //  Vecka
 //
-//  Created by Nils Johansson on 2025-08-09.
+//  Sophisticated week display with Apple HIG-compliant design
 //
 
 import SwiftUI
-import UIKit
-
-// MARK: - Performance Optimizations
-private enum DateFormatterCache {
-    static let monthName: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM"
-        formatter.locale = .autoupdatingCurrent
-        return formatter
-    }()
-    
-    static let weekdayShort: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEE"
-        formatter.locale = .autoupdatingCurrent
-        return formatter
-    }()
-    
-    static let dayNumber: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "d"
-        formatter.locale = .autoupdatingCurrent
-        return formatter
-    }()
-    
-    static let weekRange: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
-        formatter.locale = .autoupdatingCurrent
-        return formatter
-    }()
-}
-
-// MARK: - Calendar Extension (Shared)
-extension Calendar {
-    static let iso8601: Calendar = {
-        var cal = Calendar(identifier: .iso8601)
-        cal.locale = .autoupdatingCurrent
-        cal.timeZone = .autoupdatingCurrent
-        return cal
-    }()
-}
-
-// MARK: - Week Info (Shared)
-struct WeekInfo {
-    let weekNumber: Int
-    let year: Int
-    let dateRange: String
-    let startDate: Date
-    let endDate: Date
-    
-    init(for date: Date = Date()) {
-        let calendar = Calendar.iso8601
-        let year = calendar.component(.yearForWeekOfYear, from: date)
-        let week = calendar.component(.weekOfYear, from: date)
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
-        
-        var components = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: date)
-        components.weekday = 2 // Monday
-        let startDate = calendar.date(from: components) ?? date
-        let endDate = calendar.date(byAdding: .day, value: 6, to: startDate) ?? date
-        
-        let startString = formatter.string(from: startDate)
-        let endString = formatter.string(from: endDate)
-        
-        self.weekNumber = week
-        self.year = year
-        self.dateRange = "\(startString) – \(endString)"
-        self.startDate = startDate
-        self.endDate = endDate
-    }
-}
-
-// MARK: - Calendar Day Info (Shared)
-struct CalendarDayInfo {
-    let date: Date
-    let dayNumber: Int
-    let isToday: Bool
-    let isSelected: Bool
-    let isCurrentMonth: Bool
-    let weekNumber: Int
-    
-    init(date: Date, dayNumber: Int, isToday: Bool, isSelected: Bool, isCurrentMonth: Bool, weekNumber: Int) {
-        self.date = date
-        self.dayNumber = dayNumber
-        self.isToday = isToday
-        self.isSelected = isSelected
-        self.isCurrentMonth = isCurrentMonth
-        self.weekNumber = weekNumber
-    }
-}
-
-// MARK: - Countdown Models
-struct CustomCountdown: Codable {
-    let name: String
-    let date: Date
-    let isAnnual: Bool
-    
-    // Cache month and day components to avoid XPC-sensitive operations
-    private let cachedMonth: Int?
-    private let cachedDay: Int?
-    
-    // MARK: - Initializers
-    
-    init(name: String, date: Date, isAnnual: Bool) {
-        self.name = name
-        self.date = date
-        self.isAnnual = isAnnual
-        
-        // Pre-compute and cache month/day components during initialization
-        // This avoids XPC-sensitive calendar operations during navigation
-        if isAnnual {
-            let calendar = Calendar.iso8601
-            let components = calendar.dateComponents([.month, .day], from: date)
-            self.cachedMonth = components.month
-            self.cachedDay = components.day
-        } else {
-            self.cachedMonth = nil
-            self.cachedDay = nil
-        }
-    }
-    
-    // MARK: - Codable Support with Backward Compatibility
-    
-    private enum CodingKeys: String, CodingKey {
-        case name, date, isAnnual, cachedMonth, cachedDay
-    }
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        
-        name = try container.decode(String.self, forKey: .name)
-        date = try container.decode(Date.self, forKey: .date)
-        isAnnual = try container.decode(Bool.self, forKey: .isAnnual)
-        
-        // Handle cached components with backward compatibility
-        if let month = try container.decodeIfPresent(Int.self, forKey: .cachedMonth),
-           let day = try container.decodeIfPresent(Int.self, forKey: .cachedDay) {
-            // Use existing cached values
-            self.cachedMonth = month
-            self.cachedDay = day
-        } else if isAnnual {
-            // XPC-SAFE: Defer calendar operations until needed - avoid XPC calls during decoding
-            // Mark as needing computation by setting to nil
-            self.cachedMonth = nil
-            self.cachedDay = nil
-        } else {
-            self.cachedMonth = nil
-            self.cachedDay = nil
-        }
-    }
-    
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        
-        try container.encode(name, forKey: .name)
-        try container.encode(date, forKey: .date)
-        try container.encode(isAnnual, forKey: .isAnnual)
-        try container.encodeIfPresent(cachedMonth, forKey: .cachedMonth)
-        try container.encodeIfPresent(cachedDay, forKey: .cachedDay)
-    }
-    
-    // MARK: - Public Interface
-    
-    func displayName() -> String {
-        return name.uppercased()
-    }
-    
-    func targetDate(for currentYear: Int) -> Date? {
-        if isAnnual {
-            // Check if we need to compute cached values (legacy data or new instances)
-            if cachedMonth == nil || cachedDay == nil {
-                // XPC-SAFE: Compute components on-demand in a thread-safe way
-                return computeTargetDateSafely(for: currentYear)
-            }
-            
-            // Use cached components to avoid XPC-sensitive operations
-            guard let month = cachedMonth,
-                  let day = cachedDay else {
-                // Fallback to safe computation if cached components are invalid
-                return computeTargetDateSafely(for: currentYear)
-            }
-            
-            // Create date components using cached values
-            let components = DateComponents(year: currentYear, month: month, day: day)
-            
-            // Safe date creation with fallback - this is the only calendar operation needed
-            return Calendar.iso8601.date(from: components) ?? computeTargetDateSafely(for: currentYear)
-        } else {
-            return date
-        }
-    }
-    
-    /// XPC-safe computation of target date with comprehensive error handling
-    private func computeTargetDateSafely(for currentYear: Int) -> Date? {
-        // Enhanced XPC-safe detection using thread-safe approach
-        let environment = ProcessInfo.processInfo.environment
-        let processName = ProcessInfo.processInfo.processName
-        let bundleIdentifier = Bundle.main.bundleIdentifier ?? ""
-        
-        // Comprehensive XPC context detection
-        let isXPCContext = environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" ||
-                          processName.contains("Preview") ||
-                          processName.contains("SwiftUI") ||
-                          processName.contains("XCPreview") ||
-                          bundleIdentifier.contains("Preview") ||
-                          NSClassFromString("SwiftUI.PreviewHost") != nil ||
-                          NSClassFromString("XCPreviewAgent") != nil ||
-                          Thread.isMainThread == false // XPC calls often happen off main thread
-        
-        // In any XPC context, return a safe fallback date immediately
-        if isXPCContext {
-            // Create a safe date without any calendar operations
-            let fallbackComponents = DateComponents(year: currentYear, month: 12, day: 25)
-            return Calendar(identifier: .gregorian).date(from: fallbackComponents) ?? date
-        }
-        
-        // Attempt safe calendar operations with comprehensive error handling
-        return autoreleasepool {
-            do {
-                // Use a fresh calendar instance to avoid cached XPC-sensitive state
-                var calendar = Calendar(identifier: .iso8601)
-                calendar.locale = .autoupdatingCurrent
-                calendar.timeZone = .autoupdatingCurrent
-                
-                // Wrap calendar operations in individual try-catch blocks
-                let components: DateComponents
-                do {
-                    components = calendar.dateComponents([.month, .day], from: date)
-                } catch {
-                    // Calendar component extraction failed - return original date
-                    return date
-                }
-                
-                guard let month = components.month,
-                      let day = components.day,
-                      month >= 1, month <= 12,
-                      day >= 1, day <= 31 else {
-                    // Invalid components - return original date
-                    return date
-                }
-                
-                // Create target date components with validation
-                let targetComponents = DateComponents(year: currentYear, month: month, day: day)
-                
-                // Final date creation with error handling
-                do {
-                    return calendar.date(from: targetComponents) ?? date
-                } catch {
-                    // Date creation failed - return original date
-                    return date
-                }
-                
-            } catch {
-                // Any top-level error - return original date
-                return date
-            }
-        }
-    }
-}
-
-enum CountdownType: Codable {
-    case newYear
-    case christmas
-    case summer
-    case valentine
-    case halloween
-    case midsummer
-    case custom(CustomCountdown)
-    
-    var displayName: String {
-        switch self {
-        case .newYear:
-            return "NEW YEAR"
-        case .christmas:
-            return "CHRISTMAS"
-        case .summer:
-            return "SUMMER"
-        case .valentine:
-            return "VALENTINE'S"
-        case .halloween:
-            return "HALLOWEEN"
-        case .midsummer:
-            return "MIDSUMMER"
-        case .custom(let customCountdown):
-            return customCountdown.displayName()
-        }
-    }
-    
-    var icon: String {
-        switch self {
-        case .newYear:
-            return "calendar.badge.plus"
-        case .christmas:
-            return "gift"
-        case .summer:
-            return "sun.max"
-        case .valentine:
-            return "heart"
-        case .halloween:
-            return "moon.stars"
-        case .midsummer:
-            return "leaf"
-        case .custom:
-            return "calendar.badge.clock"
-        }
-    }
-    
-    func targetDate(for year: Int) -> Date? {
-        let calendar = Calendar.iso8601
-        switch self {
-        case .newYear:
-            return calendar.date(from: DateComponents(year: year + 1, month: 1, day: 1))
-        case .christmas:
-            return calendar.date(from: DateComponents(year: year, month: 12, day: 24))
-        case .summer:
-            return calendar.date(from: DateComponents(year: year, month: 6, day: 21))
-        case .valentine:
-            return calendar.date(from: DateComponents(year: year, month: 2, day: 14))
-        case .halloween:
-            return calendar.date(from: DateComponents(year: year, month: 10, day: 31))
-        case .midsummer:
-            return calendar.date(from: DateComponents(year: year, month: 6, day: 20))
-        case .custom(let customCountdown):
-            return customCountdown.targetDate(for: year)
-        }
-    }
-    
-    static var predefinedCases: [CountdownType] {
-        return [.newYear, .christmas, .summer, .valentine, .halloween, .midsummer]
-    }
-}
 
 
-// MARK: - ContentView
 struct ContentView: View {
-    @AppStorage("selectedDate") private var selectedDateData: Data = Data()
-    @AppStorage("countdownType") private var countdownTypeData: Data = Data()
     @State private var selectedDate = Date()
-    @State private var cachedWeekInfo: WeekInfo?
-    @State private var cachedWeekInfoDate: Date?
-    @State private var holidayCalculator: SwedishHolidayCalculator?
-    @State private var selectedCountdown: CountdownType = .newYear
-    @State private var showingSettings = false
-    @State private var isNavigationInProgress = false // Prevent concurrent navigation
+    @State private var currentWeekInfo = WeekInfo(for: Date(), localized: true)
+    @State private var dragOffset = CGSize.zero
+    @State private var isNavigating = false
+    // Notes for per-day icon storage + settings state
+    @StateObject private var notesManager = NotesManager()
+    @ObservedObject private var calendarManager = SystemCalendarManager.shared
     @AppStorage("isMonochromeMode") private var isMonochromeMode: Bool = false
+    @AppStorage("isAutoDarkMode") private var isAutoDarkMode: Bool = true
+    @State private var showSettings = false
+    @State private var selectedCountdown: CountdownType = .newYear
+    @State private var showIconPicker = false
+    @State private var iconPickerDate: Date? = nil
+    @State private var showMonthPicker = false
+    @State private var showWeekPicker = false
+    @State private var showJumpPicker = false
+    @State private var jumpMode: JumpMode = .week
+    private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
+    @StateObject private var languageManager = LanguageManager.shared
+    @Environment(\.colorScheme) private var colorScheme
     
-    // Direct color evaluation for optimal performance
-    
-    // Easter egg for birthday
-    @State private var januaryTapCount = 0
-    @State private var showingBirthdayMessage = false
-    
-    // Performance optimization: cache device type to avoid repeated UIDevice.current calls
-    @State private var isIPadDevice = UIDevice.current.userInterfaceIdiom == .pad
-    
-    // Interactive week number states
-    @State private var weekNumberScale: CGFloat = 1.0
-    @State private var weekNumberOffset: CGFloat = 0.0
-    @State private var isDraggingWeek = false
-    
-    // Optimized computed property for stable week info
-    private var currentWeekInfo: WeekInfo {
-        // Check cache with more efficient comparison
-        if let cached = cachedWeekInfo,
-           let cachedDate = cachedWeekInfoDate,
-           Calendar.iso8601.isDate(cachedDate, equalTo: selectedDate, toGranularity: .weekOfYear) {
-            return cached
-        }
-        
-        // Generate new week info and cache synchronously (no async overhead)
-        let newWeekInfo = WeekInfo(for: selectedDate)
-        cachedWeekInfo = newWeekInfo
-        cachedWeekInfoDate = selectedDate
-        return newWeekInfo
-    }
+    private let calendar = Calendar.iso8601
     
     var body: some View {
-        ZStack {
-            GeometryReader { geometry in
-                let isLandscape = geometry.size.width > geometry.size.height
+        GeometryReader { geometry in
+            let isLandscape = geometry.size.width > geometry.size.height
+            let isCompact = geometry.size.height < 700
+            
+            ZStack {
+                // Background with authentic glass material
+                AppColors.adaptiveBackground(isMonochrome: isMonochromeMode, isAutoDarkMode: isAutoDarkMode)
+                    .ignoresSafeArea()
                 
-                if isIPadDevice && isLandscape {
-                    // iPad Landscape Layout
-                    ipadLandscapeLayout
+                if isLandscape {
+                    landscapeLayout(geometry: geometry, isCompact: isCompact)
                 } else {
-                    // iPhone Portrait or iPad Portrait Layout
-                    portraitLayout
+                    portraitLayout(geometry: geometry, isCompact: isCompact)
                 }
             }
-            .background(safeAdaptiveBackground(isMonochrome: isMonochromeMode).ignoresSafeArea())
-            
-            // Floating Action Buttons - Settings and Today
-            VStack {
-                HStack {
-                    Spacer()
-                    VStack(spacing: 12) {
-                        // Settings Button
-                        Button(action: {
-                            showingSettings = true
-                        }) {
-                            Image(systemName: "gearshape.fill")
-                                .font(.system(size: 20, weight: .medium))
-                                .foregroundStyle(isMonochromeMode ? AppColors.monoTextPrimary : .primary)
-                                .frame(width: 44, height: 44) // Apple HIG minimum touch target
-                                .background(
-                                    Circle()
-                                        .fill(isMonochromeMode ? 
-                                              AppColors.monoSurfaceElevated : 
-                                              safeAdaptiveSurface(isMonochrome: isMonochromeMode))
-                                        .overlay(
-                                            Circle()
-                                                .stroke(isMonochromeMode ? 
-                                                       AppColors.monoGlow : 
-                                                       AppColors.divider, lineWidth: 0.5)
-                                        )
-                                        .shadow(color: isMonochromeMode ? 
-                                               .black.opacity(0.5) : 
-                                               .black.opacity(0.1), 
-                                               radius: isMonochromeMode ? 8 : 4, 
-                                               x: 0, y: 2)
-                                )
-                        }
-                        .accessibilityLabel("Settings")
-                        .accessibilityHint("Open settings to customize app appearance")
-                        
-                        // Today Button - Always visible, shows current date number
-                        Button(action: {
-                            // Safe today navigation
-                            if !isNavigationInProgress {
-                                isNavigationInProgress = true
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    selectedDate = Date()
-                                }
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                                    isNavigationInProgress = false
-                                }
-                            }
-                        }) {
-                            Text(todayDateNumber())
-                                .font(.system(size: 16, weight: .semibold, design: .rounded))
-                                .foregroundStyle(Calendar.iso8601.isDateInToday(selectedDate) ? 
-                                               .white : 
-                                               (isMonochromeMode ? AppColors.monoTextPrimary : AppColors.accentBlue))
-                                .frame(width: 44, height: 44) // Same size as settings button
-                                .background(
-                                    Circle()
-                                        .fill(Calendar.iso8601.isDateInToday(selectedDate) ? 
-                                              AppColors.accentBlue : 
-                                              (isMonochromeMode ? 
-                                               AppColors.monoSurfaceElevated : 
-                                               safeAdaptiveSurface(isMonochrome: isMonochromeMode)))
-                                        .overlay(
-                                            Circle()
-                                                .stroke(isMonochromeMode ? 
-                                                       AppColors.monoGlow : 
-                                                       AppColors.divider, 
-                                                       lineWidth: 0.5)
-                                        )
-                                        .shadow(color: isMonochromeMode ? 
-                                               .black.opacity(0.5) : 
-                                               .black.opacity(0.1), 
-                                               radius: isMonochromeMode ? 8 : 4, 
-                                               x: 0, y: 2)
-                                )
-                        }
-                        .accessibilityLabel("Go to today - \(todayButtonText())")
-                        .accessibilityHint("Returns to the current date")
-                    }
-                    .padding(.trailing, 20)
-                }
-                .padding(.top, 16)
-                Spacer()
-            }
+            .gesture(paperSwipeGesture)
+            .offset(x: dragOffset.width)
         }
+        .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            // Enhanced initialization with error recovery
-            Task {
-                await performSafeInitialization()
-            }
+            updateWeekInfo()
+            languageManager.detectSystemLanguage()
+            print("🌍 App language detected: \(languageManager.getLanguageName()) (\(languageManager.currentLanguage))")
         }
-        .onDisappear {
-            // Clean up any ongoing operations to prevent XPC conflicts
-            isNavigationInProgress = false
-            isDraggingWeek = false
+        .onChange(of: languageManager.currentLanguage) { _, _ in
+            // Refresh UI when language changes
+            updateWeekInfo()
         }
-        .onChange(of: selectedDate) { oldValue, newValue in
-            // XPC-Safe debounced saving with immediate execution for countdown navigation
-            if isNavigationInProgress {
-                // Skip automatic saving during navigation to prevent XPC conflicts
-                // Manual saving will be handled by the navigation function
-                return
-            }
-            
-            // Standard debounced saving for other interactions
-            Task {
-                try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 second debounce
-                if selectedDate == newValue { // Only save if still current
-                    saveSelectedDate()
+        // Top-right controls (Settings with Today underneath), inset into safe area
+        .safeAreaInset(edge: .top) {
+            HStack {
+                Spacer()
+                VStack(spacing: 6) {
+                    Button(action: { showSettings = true }) {
+                        flatIcon(symbol: "gearshape", size: 18, color: AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
+                            .frame(width: 44, height: 44)
+                    }
+                    .accessibilityLabel("Settings")
+                    Button(action: navigateToToday) {
+                        flatIcon(symbol: "target", size: 18, color: AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
+                            .frame(width: 44, height: 44)
+                    }
+                    .accessibilityLabel(Localization.today)
                 }
+                .padding(.trailing, 8)
             }
-        }
-        .sheet(isPresented: $showingSettings) {
-            SettingsView(
-                selectedCountdown: $selectedCountdown, 
-                onCountdownChange: {
-                    // Ensure safe countdown preference saving
-                    Task {
-                        await MainActor.run {
-                            saveCountdownPreference()
+        }.presentationDetents([.medium])
+    }
+    
+    // MARK: - Layout Views
+    @ViewBuilder
+    private func portraitLayout(geometry: GeometryProxy, isCompact: Bool) -> some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: isCompact ? Spacing.medium : Spacing.large) {
+                // Top safe area spacing
+                Spacer(minLength: 20)
+                
+                // Header with contextual navigation
+                VStack(spacing: Spacing.small) {
+                    HStack(alignment: .center, spacing: 24) {
+                        Button(action: navigateToPreviousWeek) {
+                            flatIcon(symbol: "chevron.left", size: 20, color: AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
+                                .frame(width: 44, height: 44)
                         }
+                        .accessibilityLabel(Localization.previousWeek)
+
+                        // Dynamic week number with daily coloring
+                        Button(action: { if isPad { showWeekPicker = true } else { jumpMode = .week; showJumpPicker = true } }) {
+                            HStack(spacing: 6) {
+                                weekNumberDisplay
+                                Image(systemName: "chevron.down")
+                                    .font(.caption2)
+                                    .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                Capsule().fill(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode).opacity(0.06))
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Change week")
+                        .accessibilityHint("Opens week picker")
+                        .popover(isPresented: Binding(get: { isPad && showWeekPicker }, set: { showWeekPicker = $0 })) {
+                            WeekPickerSheet(
+                                initialWeek: currentWeekInfo.weekNumber,
+                                initialYear: currentWeekInfo.year
+                            ) { week, year in
+                                var comps = DateComponents()
+                                comps.weekOfYear = week
+                                comps.yearForWeekOfYear = year
+                                comps.weekday = 2 // Monday
+                                if let date = Calendar.iso8601.date(from: comps) {
+                                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                        selectedDate = date
+                                        updateWeekInfo()
+                                    }
+                                }
+                            }
+                            .frame(minWidth: 360, minHeight: 340)
+                        }
+
+                        Button(action: navigateToNextWeek) {
+                            flatIcon(symbol: "chevron.right", size: 20, color: AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
+                                .frame(width: 44, height: 44)
+                        }
+                        .accessibilityLabel(Localization.nextWeek)
+                    }
+                    // Month + outlined year below
+                    Button(action: { if isPad { showMonthPicker = true } else { jumpMode = .month; showJumpPicker = true } }) {
+                        HStack(spacing: 6) {
+                            monthYearDisplay
+                            Image(systemName: "chevron.down")
+                                .font(.caption2)
+                                .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Capsule().fill(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode).opacity(0.06)))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Change month")
+                    .accessibilityHint("Opens month picker")
+                    .popover(isPresented: Binding(get: { isPad && showMonthPicker }, set: { showMonthPicker = $0 })) {
+                        MonthPickerSheet(
+                            initialMonth: Calendar.iso8601.component(.month, from: selectedDate),
+                            initialYear: Calendar.iso8601.component(.year, from: selectedDate)
+                        ) { month, year in
+                            var comps = DateComponents()
+                            comps.year = year
+                            comps.month = month
+                            comps.day = 1
+                            if let date = Calendar.iso8601.date(from: comps) {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                    selectedDate = date
+                                    updateWeekInfo()
+                                }
+                            }
+                        }
+                        .frame(minWidth: 360, minHeight: 340)
                     }
                 }
+                .padding(.horizontal, Spacing.medium)
+                
+                // Week calendar strip with 7-day navigation
+                WeekCalendarStrip(
+                    selectedDate: $selectedDate,
+                    isMonochrome: isMonochromeMode,
+                    showWeekInfo: false,
+                    hasEvent: { date in
+                        SystemCalendarManager.shared.hasEvents(on: date)
+                    },
+                    iconProvider: { date in
+                        if let userIcon = notesManager.icon(for: date) { return userIcon }
+                        return SeasonalIcons.icon(for: date)
+                    },
+                    onEditIcon: { date in
+                        iconPickerDate = date
+                        showIconPicker = true
+                    },
+                    onClearIcon: { date in
+                        notesManager.setIcon(nil, for: date)
+                    }
+                )
+                .onChange(of: selectedDate) { _, newDate in
+                    updateWeekInfo()
+                }
+                
+                // System Calendar events (squircle card)
+                SystemCalendarEventsView(selectedDate: selectedDate, isMonochrome: isMonochromeMode)
+                    .padding(.horizontal, Spacing.medium)
+
+                // Bottom safe area spacing
+                Spacer(minLength: 20)
+            }
+        }.presentationDetents([.medium])
+        .scrollBounceBehavior(.basedOnSize)
+        .scrollDismissesKeyboard(.interactively)
+        .sheet(isPresented: $showSettings) {
+            SettingsView(selectedCountdown: $selectedCountdown, onCountdownChange: {})
+        }
+        .sheet(isPresented: $showIconPicker) {
+            IconPickerSheet(
+                initialSymbol: iconPickerDate.flatMap { notesManager.icon(for: $0) } ?? "",
+                date: iconPickerDate ?? selectedDate
+            ) { date, symbol in
+                let trimmed = symbol.trimmingCharacters(in: .whitespacesAndNewlines)
+                notesManager.setIcon(trimmed.isEmpty ? nil : trimmed, for: date)
+            }
+        }.presentationDetents([.medium])
+        .sheet(isPresented: Binding(get: { !isPad && showJumpPicker }, set: { showJumpPicker = $0 })) {
+            JumpPickerSheet(
+                initialMode: jumpMode,
+                initialYear: Calendar.iso8601.component(.year, from: selectedDate),
+                initialMonth: Calendar.iso8601.component(.month, from: selectedDate),
+                initialWeek: currentWeekInfo.weekNumber
+            ) { date in
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                    selectedDate = date
+                    updateWeekInfo()
+                }
+            }
+        }.presentationDetents([.medium])
+    }
+    
+    @ViewBuilder
+    private func landscapeLayout(geometry: GeometryProxy, isCompact: Bool) -> some View {
+        HStack(spacing: Spacing.large) {
+            // Left side - Week number and date
+            VStack(spacing: Spacing.medium) {
+                Spacer()
+                
+                HStack(alignment: .center, spacing: 24) {
+                    Button(action: navigateToPreviousWeek) {
+                        flatIcon(symbol: "chevron.left", size: 20, color: AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
+                            .frame(width: 44, height: 44)
+                    }
+                    .accessibilityLabel(Localization.previousWeek)
+                    
+                    Button(action: { showWeekPicker = true }) {
+                        HStack(spacing: 6) {
+                            weekNumberDisplay
+                                .scaleEffect(0.8)
+                            Image(systemName: "chevron.down")
+                                .font(.caption2)
+                                .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Capsule().fill(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode).opacity(0.06)))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Change week")
+                    .accessibilityHint("Opens week picker")
+                    .popover(isPresented: Binding(get: { isPad && showWeekPicker }, set: { showWeekPicker = $0 })) {
+                        WeekPickerSheet(
+                            initialWeek: currentWeekInfo.weekNumber,
+                            initialYear: currentWeekInfo.year
+                        ) { week, year in
+                            var comps = DateComponents()
+                            comps.weekOfYear = week
+                            comps.yearForWeekOfYear = year
+                            comps.weekday = 2 // Monday
+                            if let date = Calendar.iso8601.date(from: comps) {
+                                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                    selectedDate = date
+                                    updateWeekInfo()
+                                }
+                            }
+                        }
+                        .frame(minWidth: 360, minHeight: 340)
+                    }
+                    
+                    Button(action: navigateToNextWeek) {
+                        flatIcon(symbol: "chevron.right", size: 20, color: AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
+                            .frame(width: 44, height: 44)
+                    }
+                    .accessibilityLabel(Localization.nextWeek)
+                }
+                
+                Button(action: { showMonthPicker = true }) {
+                    HStack(spacing: 6) {
+                        monthYearDisplay
+                        Image(systemName: "chevron.down")
+                            .font(.caption2)
+                            .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Capsule().fill(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode).opacity(0.06)))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Change month")
+                .accessibilityHint("Opens month picker")
+                .popover(isPresented: Binding(get: { isPad && showMonthPicker }, set: { showMonthPicker = $0 })) {
+                    MonthPickerSheet(
+                        initialMonth: Calendar.iso8601.component(.month, from: selectedDate),
+                        initialYear: Calendar.iso8601.component(.year, from: selectedDate)
+                    ) { month, year in
+                        var comps = DateComponents()
+                        comps.year = year
+                        comps.month = month
+                        comps.day = 1
+                        if let date = Calendar.iso8601.date(from: comps) {
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                                selectedDate = date
+                                updateWeekInfo()
+                            }
+                        }
+                    }
+                    .frame(minWidth: 360, minHeight: 340)
+                }
+                // Holiday info removed for MVP
+
+                Spacer()
+            }
+            .frame(maxWidth: geometry.size.width * 0.35)
+            .padding(.leading, Spacing.medium)
+            
+            // Right side - Calendar and notes
+            VStack(spacing: Spacing.medium) {
+                Spacer(minLength: 40)
+                
+                // Calendar strip
+                WeekCalendarStrip(
+                    selectedDate: $selectedDate,
+                    isMonochrome: isMonochromeMode,
+                    showWeekInfo: false,
+                    hasEvent: { date in
+                        SystemCalendarManager.shared.hasEvents(on: date)
+                    },
+                    iconProvider: { date in
+                        if let userIcon = notesManager.icon(for: date) { return userIcon }
+                        return SeasonalIcons.icon(for: date)
+                    },
+                    onEditIcon: { date in
+                        iconPickerDate = date
+                        showIconPicker = true
+                    },
+                    onClearIcon: { date in
+                        notesManager.setIcon(nil, for: date)
+                    }
+                )
+                .onChange(of: selectedDate) { _, newDate in
+                    updateWeekInfo()
+                }
+                // System Calendar events card
+                SystemCalendarEventsView(selectedDate: selectedDate, isMonochrome: isMonochromeMode)
+                    .padding(.horizontal, Spacing.medium)
+
+                Spacer()
+                
+                // Editor and notes list removed in landscape
+                
+                Spacer(minLength: 40)
+            }
+            .frame(maxWidth: geometry.size.width * 0.65)
+            .padding(.trailing, Spacing.medium)
+        }
+    }
+    
+    // MARK: - Week Number Display
+    private var weekNumberDisplay: some View {
+        ZStack {
+            // Black outline for illustrated effect
+            Text("\(currentWeekInfo.weekNumber)")
+                .font(.system(size: UIDevice.current.userInterfaceIdiom == .pad ? 80 : 72, weight: .bold, design: .rounded))
+                .foregroundColor(.black)
+                .offset(x: 1, y: 1)
+            Text("\(currentWeekInfo.weekNumber)")
+                .font(.system(size: UIDevice.current.userInterfaceIdiom == .pad ? 80 : 72, weight: .bold, design: .rounded))
+                .foregroundColor(.black)
+                .offset(x: -1, y: -1)
+            Text("\(currentWeekInfo.weekNumber)")
+                .font(.system(size: UIDevice.current.userInterfaceIdiom == .pad ? 80 : 72, weight: .bold, design: .rounded))
+                .foregroundColor(.black)
+                .offset(x: 1, y: -1)
+            Text("\(currentWeekInfo.weekNumber)")
+                .font(.system(size: UIDevice.current.userInterfaceIdiom == .pad ? 80 : 72, weight: .bold, design: .rounded))
+                .foregroundColor(.black)
+                .offset(x: -1, y: 1)
+            
+            // Colored fill
+            Text("\(currentWeekInfo.weekNumber)")
+                .font(.system(size: UIDevice.current.userInterfaceIdiom == .pad ? 80 : 72, weight: .bold, design: .rounded))
+                .foregroundColor(AppColors.colorForDay(selectedDate))
+        }
+        .animation(.easeInOut(duration: 0.3), value: selectedDate)
+    }
+    
+    private var monthYearDisplay: some View {
+        let month = DateFormatterCache.monthName.string(from: selectedDate)
+        let yearString = String(currentWeekInfo.year)
+        let bgColor = (isMonochromeMode
+                       ? AppColors.monoTextPrimary
+                       : AppColors.colorForDay(selectedDate, isMonochrome: false)).opacity(0.2)
+        return HStack(spacing: 8) {
+            Text(month)
+                .font(Typography.bodyMedium)
+                .foregroundColor(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+            outlinedText(
+                yearString,
+                font: .system(size: 18, weight: .semibold, design: .rounded),
+                fill: .white,
+                outline: .black,
+                offset: 1.0
             )
-            .interactiveDismissDisabled(false) // Allow swipe to dismiss
+            .padding(.horizontal, 10)
+            .padding(.vertical, 4)
+            .background(Capsule().fill(bgColor))
         }
-        .alert("Happy Birthday, Nils!", isPresented: $showingBirthdayMessage) {
-            Button("Thank you!") {
-                showingBirthdayMessage = false
-            }
-        } message: {
-            Text("🎂 January 30, 1983 - The birthday of Nils Johansson, the developer of Vecka!\n\n🎉 Thank you for discovering this hidden easter egg by tapping January 30 thirty times!")
+    }
+
+    private func outlinedText(_ text: String, font: Font, fill: Color, outline: Color = .black, offset: CGFloat = 1.0) -> some View {
+        ZStack {
+            Text(text).font(font).monospacedDigit().foregroundColor(outline).offset(x: offset, y: offset)
+            Text(text).font(font).monospacedDigit().foregroundColor(outline).offset(x: -offset, y: -offset)
+            Text(text).font(font).monospacedDigit().foregroundColor(outline).offset(x: offset, y: -offset)
+            Text(text).font(font).monospacedDigit().foregroundColor(outline).offset(x: -offset, y: offset)
+            Text(text).font(font).monospacedDigit().foregroundColor(fill)
         }
     }
     
-    // MARK: - Portrait Layout (iPhone and iPad Portrait)
-    private var portraitLayout: some View {
-        VStack(spacing: 16) { // 8pt grid: 16pt major section spacing
-            Spacer()
-            
-            // Week number - hero element with enhanced typography
-            VStack(spacing: 12) { // 8pt grid: 12pt spacing between brand and week number
-                HStack(spacing: 6) { // 8pt grid: 6pt icon-text spacing
-                    Image(systemName: "calendar")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                    Text("VECKA")
-                        .font(.system(size: 12, weight: .medium, design: .default))
-                        .tracking(2.4) // Enhanced tracking for brand name
-                        .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                }
-                
-                Text("\(currentWeekInfo.weekNumber)")
-                    .font(.system(size: 120, weight: .black, design: .rounded))
-                    .foregroundStyle(safeColorForDay(selectedDate, isMonochrome: isMonochromeMode))
-                    .minimumScaleFactor(0.5)
-                    .lineLimit(1)
-                    .scaleEffect(weekNumberScale)
-                    .offset(x: weekNumberOffset)
-                    .overlay(
-                        // Monochrome glow effect
-                        isMonochromeMode ? 
-                        Text("\(currentWeekInfo.weekNumber)")
-                            .font(.system(size: 120, weight: .black, design: .rounded))
-                            .foregroundStyle(AppColors.monoGlow)
-                            .blur(radius: 12)
-                            .scaleEffect(weekNumberScale)
-                            .offset(x: weekNumberOffset) : nil
-                    )
-                    .overlay(
-                        // Subtle interaction indicator
-                        isDraggingWeek ?
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(safeColorForDay(selectedDate, isMonochrome: isMonochromeMode).opacity(0.3), lineWidth: 2)
-                            .scaleEffect(weekNumberScale * 1.1)
-                            .animation(.easeOut(duration: 0.1), value: isDraggingWeek) : nil
-                    )
-                    .accessibilityLabel("Week \(currentWeekInfo.weekNumber) of \(currentWeekInfo.year)")
-                    .accessibilityHint("Swipe anywhere on screen left for next week, swipe right for previous week")
-                    .accessibilityAddTraits(.isButton)
-                
-                VStack(spacing: 6) { // 8pt grid: 6pt spacing between month and year
-                    Text(monthName(for: selectedDate))
-                        .font(.system(size: 22, weight: .semibold, design: .default))
-                        .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
-                    
-                    Text(String(currentWeekInfo.year))
-                        .font(.system(size: 18, weight: .medium, design: .rounded))
-                        .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                }
-            }
-            
-            Spacer()
-            
-            // Subtle swipe indicator (only shown briefly)
-            if isDraggingWeek {
-                HStack(spacing: 12) {
-                    Image(systemName: "chevron.left")
-                        .font(.caption2)
-                        .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode).opacity(0.6))
-                    
-                    Text("Swipe to change week")
-                        .font(.caption2)
-                        .fontWeight(.medium)
-                        .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode).opacity(0.6))
-                    
-                    Image(systemName: "chevron.right")
-                        .font(.caption2)
-                        .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode).opacity(0.6))
-                }
-                .transition(.opacity.combined(with: .scale(scale: 0.9)))
-                .animation(.easeInOut(duration: 0.2), value: isDraggingWeek)
-                .padding(.bottom, 12)
-            }
-            
-            // Week dates - minimal strip with enhanced typography
-            HStack(spacing: 12) { // 8pt grid: 12pt spacing between date elements
-                ForEach(generateWeekDates(for: selectedDate), id: \.self) { date in
-                    let isSelected = Calendar.iso8601.isDate(date, inSameDayAs: selectedDate)
-                    let isToday = Calendar.iso8601.isDateInToday(date)
-                    let dayColors = getDayColors(for: date)
-                    
-                    VStack(spacing: 6) { // 8pt grid: 6pt spacing between weekday and day number
-                        Text(shortWeekday(date))
-                            .font(.system(size: 10, weight: .medium, design: .default))
-                            .tracking(0.4) // Proper tracking for uppercase text
-                            .foregroundStyle(dayColors.weekday)
-                            .textCase(.uppercase)
-                        
-                        Text(dayNumber(date))
-                            .font(.system(size: 18, weight: .semibold, design: .rounded))
-                            .foregroundStyle(isSelected ? .white : dayColors.day)
-                            .frame(width: 36, height: 36) // Slightly larger for better touch targets
-                            .background(
-                                Circle()
-                                    .fill(isSelected ? AppColors.accentBlue : .clear)
-                                    .overlay(
-                                        Circle()
-                                            .stroke(AppColors.accentBlue, lineWidth: isSelected ? 0 : (isToday ? 2 : 0))
-                                    )
-                            )
-                        
-                        // Today indicator (small dot below)
-                        Circle()
-                            .frame(width: 4, height: 4)
-                            .foregroundStyle(AppColors.accentBlue)
-                            .opacity(isToday && !isSelected ? 1 : 0)
-                    }
-                    .frame(minWidth: 48, minHeight: 48) // Enhanced minimum touch target size
-                    .contentShape(Rectangle())
-                    .accessibilityLabel("\(shortWeekday(date)), \(dayNumber(date))")
-                    .accessibilityHint(isSelected ? "Currently selected" : "Tap to select this date")
-                    .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
-                    .onTapGesture {
-                        // Check for birthday easter egg
-                        let calendar = Calendar.iso8601
-                        let month = calendar.component(.month, from: date)
-                        let day = calendar.component(.day, from: date)
-                        
-                        if month == 1 && day == 30 {
-                            januaryTapCount += 1
-                            if januaryTapCount >= 30 {
-                                showingBirthdayMessage = true
-                                januaryTapCount = 0
-                            }
-                        } else if month != 1 || day != 30 {
-                            // Only reset when tapping dates other than January 30
-                            januaryTapCount = 0
-                        }
-                        
-                        // Safe date selection with validation
-                        let validDate = validateDateForNavigation(date, fallback: Date())
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            selectedDate = validDate
-                        }
+    // MARK: - Flat Icon
+    private func flatIcon(symbol: String, size: CGFloat = 18, color: Color) -> some View {
+        Image(systemName: symbol)
+            .symbolRenderingMode(.monochrome)
+            .font(.system(size: size, weight: .semibold))
+            .foregroundStyle(color)
+    }
+    
+    
+    // Holiday UI removed for MVP
+    
+    // MARK: - Calendar Paper Swipe Navigation
+    private var paperSwipeGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                if !isNavigating {
+                    dragOffset = value.translation
+                    // Light haptic feedback on gesture start
+                    if abs(value.translation.width) > 10 && dragOffset == CGSize.zero {
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                        impactFeedback.impactOccurred()
                     }
                 }
             }
-            .padding(.horizontal, 24) // 8pt grid: 24pt horizontal padding
-            
-            Spacer()
-            
-            // Ultra-Compact Mini Dashboard - Maximally Optimized for Screen Space
-            VStack(spacing: 6) { // DRASTICALLY reduced from 12pt to 6pt between major sections
-                // PRIMARY: Month Progress (Most Important)
-                VStack(spacing: 4) { // DRASTICALLY reduced from 8pt to 4pt internal spacing
-                    HStack(spacing: 6) { // 6pt icon-text spacing
-                        Image(systemName: "chart.pie.fill")
-                            .font(.system(size: 10, weight: .semibold)) // Smaller icon
-                            .foregroundStyle(.blue)
-                        Text("MONTH PROGRESS")
-                            .font(.system(size: 8, weight: .semibold, design: .default)) // DRASTICALLY reduced from 10pt to 8pt
-                            .tracking(0.3) // Reduced tracking for compactness
-                            .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                        Spacer()
-                    }
-                    
-                    HStack {
-                        Text("\(Int(getMonthProgress() * 100))% complete")
-                            .font(.system(size: 12, weight: .medium, design: .rounded)) // DRASTICALLY reduced from 14pt to 12pt
-                            .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
-                        Spacer()
-                    }
-                }
-                .padding(.horizontal, 12) // DRASTICALLY reduced from 16pt to 12pt horizontal padding
-                .padding(.vertical, 8)    // DRASTICALLY reduced from 12pt to 8pt vertical padding
-                .background(
-                    RoundedRectangle(cornerRadius: 8) // Smaller corner radius
-                        .fill(.ultraThinMaterial)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(.blue.opacity(0.2), lineWidth: 0.5)
-                        )
-                )
+            .onEnded { value in
+                let swipeThreshold: CGFloat = 100
                 
-                // SECONDARY: Next Event (Actionable Content)
-                if let nextHoliday = getNextUpcomingHoliday() {
-                    Button(action: {
-                        navigateToDate(nextHoliday.date)
-                    }) {
-                        VStack(spacing: 4) { // DRASTICALLY reduced from 8pt to 4pt internal spacing
-                            HStack(spacing: 6) { // 6pt icon-text spacing
-                                Image(systemName: "clock.badge")
-                                    .font(.system(size: 10, weight: .semibold)) // Smaller icon
-                                    .foregroundStyle(Color.orange)
-                                Text("NEXT EVENT")
-                                    .font(.system(size: 8, weight: .semibold, design: .default)) // DRASTICALLY reduced from 10pt to 8pt
-                                    .tracking(0.3) // Reduced tracking for compactness
-                                    .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                                Spacer()
-                                Text(daysUntilText(for: nextHoliday))
-                                    .font(.system(size: 8, weight: .medium, design: .rounded)) // DRASTICALLY reduced from 9pt to 8pt
-                                    .foregroundStyle(AppColors.adaptiveTextTertiary(isMonochrome: isMonochromeMode))
-                            }
-                            
-                            HStack {
-                                Text(holidayDisplayName(for: nextHoliday))
-                                    .font(.system(size: 12, weight: .medium, design: .default)) // DRASTICALLY reduced from 14pt to 12pt
-                                    .lineLimit(1) // Changed from 2 to 1 to save vertical space
-                                    .foregroundStyle(nextHoliday.isOfficial ? .orange : .blue)
-                                    .multilineTextAlignment(.leading)
-                                Spacer()
-                            }
-                        }
-                        .padding(.horizontal, 12) // DRASTICALLY reduced from 16pt to 12pt horizontal padding
-                        .padding(.vertical, 8)    // DRASTICALLY reduced from 12pt to 8pt vertical padding
-                        .background(
-                            RoundedRectangle(cornerRadius: 8) // Smaller corner radius
-                                .fill(.ultraThinMaterial)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(.orange.opacity(0.2), lineWidth: 0.5)
-                                )
-                        )
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .accessibilityLabel("Next event: \(holidayDisplayName(for: nextHoliday))")
-                    .accessibilityHint("\(daysUntilText(for: nextHoliday)). Tap to navigate to this date")
-                }
-                
-                // TERTIARY: Ultra-Compact Contextual Information Row
-                HStack(spacing: 12) { // DRASTICALLY reduced from 16pt to 12pt between countdown and selected date
-                    // Countdown (Positive/Goal Oriented)
-                    VStack(alignment: .leading, spacing: 3) { // DRASTICALLY reduced from 6pt to 3pt internal spacing
-                        HStack(spacing: 3) { // DRASTICALLY reduced from 4pt to 3pt icon-text spacing
-                            Image(systemName: "timer")
-                                .font(.system(size: 9, weight: .semibold)) // Smaller icon
-                                .foregroundStyle(Color.green)
-                            Text(selectedCountdown.displayName)
-                                .font(.system(size: 8, weight: .semibold, design: .default)) // DRASTICALLY reduced from 9pt to 8pt
-                                .tracking(0.2) // Reduced tracking for compactness
-                                .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                                .lineLimit(1)
-                        }
-                        Text(countdownDaysText())
-                            .font(.system(size: 10, weight: .medium, design: .rounded)) // DRASTICALLY reduced from 12pt to 10pt
-                            .foregroundStyle(Color.green)
-                    }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        safeNavigateToCountdownDate()
-                    }
-                    .accessibilityLabel("\(selectedCountdown.displayName) countdown")
-                    .accessibilityHint("\(countdownDaysText()). Tap to navigate to countdown date")
-                    .accessibilityAddTraits(.isButton)
-                    
-                    Spacer()
-                    
-                    // Selected Date Context (User Selection) - Ultra Compact
-                    VStack(alignment: .trailing, spacing: 3) { // DRASTICALLY reduced from 6pt to 3pt internal spacing
-                        if let holidayName = getHolidayName(for: selectedDate) {
-                            HStack(spacing: 3) { // DRASTICALLY reduced from 4pt to 3pt icon-text spacing
-                                Text(Calendar.iso8601.isDateInToday(selectedDate) ? "TODAY" : "SELECTED")
-                                    .font(.system(size: 8, weight: .semibold, design: .default)) // DRASTICALLY reduced from 9pt to 8pt
-                                    .tracking(0.2) // Reduced tracking for compactness
-                                    .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                                Image(systemName: "calendar.day.timeline.leading")
-                                    .font(.system(size: 9, weight: .semibold)) // Smaller icon
-                                    .foregroundStyle(Color.purple)
-                            }
-                            Text(holidayName)
-                                .font(.system(size: 10, weight: .medium, design: .default)) // DRASTICALLY reduced from 12pt to 10pt
-                                .lineLimit(1) // Changed from 2 to 1 to save vertical space
-                                .foregroundStyle(.purple)
-                                .multilineTextAlignment(.trailing)
-                        } else if !Calendar.iso8601.isDateInToday(selectedDate) {
-                            HStack(spacing: 3) { // DRASTICALLY reduced from 4pt to 3pt icon-text spacing
-                                Text("SELECTED")
-                                    .font(.system(size: 8, weight: .semibold, design: .default)) // DRASTICALLY reduced from 9pt to 8pt
-                                    .tracking(0.2) // Reduced tracking for compactness
-                                    .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                                Image(systemName: "calendar.day.timeline.leading")
-                                    .font(.system(size: 9, weight: .semibold)) // Smaller icon
-                                    .foregroundStyle(.purple)
-                            }
-                            Text(selectedDateText())
-                                .font(.system(size: 10, weight: .medium, design: .rounded)) // DRASTICALLY reduced from 12pt to 10pt
-                                .foregroundStyle(.purple)
-                                .multilineTextAlignment(.trailing)
-                        }
+                if value.translation.width > swipeThreshold {
+                    // Right swipe = previous week (put back calendar page)
+                    navigateToPreviousWeek()
+                } else if value.translation.width < -swipeThreshold {
+                    // Left swipe = next week (throw away calendar page)
+                    navigateToNextWeek()
+                } else {
+                    // Snap back
+                    withAnimation(.spring(response: 0.3)) {
+                        dragOffset = CGSize.zero
                     }
                 }
-                .padding(.horizontal, 12) // DRASTICALLY reduced from 16pt to 12pt horizontal padding
-                .padding(.vertical, 6)    // DRASTICALLY reduced from 10pt to 6pt vertical padding
-                .background(
-                    RoundedRectangle(cornerRadius: 8) // Smaller corner radius
-                        .fill(.ultraThinMaterial)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-                        )
-                )
             }
-            .padding(.horizontal, 12) // DRASTICALLY reduced from 16pt to 12pt dashboard horizontal padding
-            
-            Spacer(minLength: 8) // DRASTICALLY reduced from 16pt to 8pt minimum bottom spacing
-        }
-        .contentShape(Rectangle()) // Enable full-screen touch detection
-        .gesture(
-            DragGesture(minimumDistance: 30)
-                .onChanged { value in
-                    // Only respond to horizontal swipes (avoid conflicts with vertical scrolling)
-                    let horizontalMovement = abs(value.translation.width)
-                    let verticalMovement = abs(value.translation.height)
-                    
-                    // Require horizontal movement to be significantly more than vertical
-                    guard horizontalMovement > verticalMovement * 1.5 else { return }
-                    
-                    // Subtle haptic feedback on start
-                    if !isDraggingWeek {
-                        let impact = UIImpactFeedbackGenerator(style: .light)
-                        impact.impactOccurred()
-                        isDraggingWeek = true
-                    }
-                    
-                    // Tinder-like visual feedback on week number
-                    let dragAmount = value.translation.width
-                    weekNumberOffset = dragAmount * 0.2 // Subtle movement
-                    
-                    // Subtle scale effect based on drag distance
-                    let scaleAmount = 1.0 + (abs(dragAmount) / 2000) // Very subtle growth
-                    weekNumberScale = min(1.03, scaleAmount)
-                }
-                .onEnded { value in
-                    let dragDistance = value.translation.width
-                    let velocity = value.predictedEndTranslation.width
-                    
-                    // Tinder-style thresholds for swipe detection
-                    let distanceThreshold: CGFloat = 100
-                    let velocityThreshold: CGFloat = 400
-                    
-                    var shouldChangeWeek = false
-                    var direction = 0
-                    
-                    if dragDistance > distanceThreshold || velocity > velocityThreshold {
-                        // Swipe right - previous week (Tinder-style: throwing current away)
-                        shouldChangeWeek = true
-                        direction = -1
-                    } else if dragDistance < -distanceThreshold || velocity < -velocityThreshold {
-                        // Swipe left - next week (Tinder-style: throwing current away)
-                        shouldChangeWeek = true
-                        direction = 1
-                    }
-                    
-                    if shouldChangeWeek {
-                        // Success haptic
-                        let impact = UIImpactFeedbackGenerator(style: .medium)
-                        impact.impactOccurred()
-                        
-                        // Safe week change with reduced animation complexity
-                        if !isNavigationInProgress {
-                            isNavigationInProgress = true
-                            withAnimation(.easeInOut(duration: 0.4)) {
-                                changeWeek(direction)
-                            }
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                isNavigationInProgress = false
-                            }
-                        }
-                    }
-                    
-                    // Reset visual state with safer animation
-                    withAnimation(.easeOut(duration: 0.3)) {
-                        weekNumberOffset = 0
-                        weekNumberScale = 1.0
-                        isDraggingWeek = false
-                    }
-                }
-        )
     }
     
-    // MARK: - iPad Landscape Layout
-    private var ipadLandscapeLayout: some View {
-        HStack(spacing: 0) {
-            // Left Side - Week Information (1/3 of screen)
-            VStack(spacing: 20) {
-                Spacer()
-                
-                // Week number - hero element with enhanced typography
-                VStack(spacing: 16) { // 8pt grid: 16pt spacing for iPad
-                    HStack(spacing: 6) { // 8pt grid: 6pt icon-text spacing
-                        Image(systemName: "calendar")
-                            .font(.system(size: 11, weight: .medium))
-                            .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                        Text("VECKA")
-                            .font(.system(size: 11, weight: .medium, design: .default))
-                            .tracking(2.0) // Enhanced tracking for brand name
-                            .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                    }
-                    
-                    Text("\(currentWeekInfo.weekNumber)")
-                        .font(.system(size: 80, weight: .black, design: .rounded))
-                        .foregroundStyle(safeColorForDay(selectedDate, isMonochrome: isMonochromeMode))
-                        .minimumScaleFactor(0.5)
-                        .lineLimit(1)
-                        .overlay(
-                            // Monochrome glow effect
-                            isMonochromeMode ? 
-                            Text("\(currentWeekInfo.weekNumber)")
-                                .font(.system(size: 80, weight: .black, design: .rounded))
-                                .foregroundStyle(AppColors.monoGlow)
-                                .blur(radius: 8) : nil
-                        )
-                    
-                    VStack(spacing: 8) { // 8pt grid: 8pt spacing between month and year
-                        Text(monthName(for: selectedDate))
-                            .font(.system(size: 20, weight: .semibold, design: .default))
-                            .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
-                        
-                        Text(String(currentWeekInfo.year))
-                            .font(.system(size: 16, weight: .medium, design: .rounded))
-                            .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                    }
-                }
-                
-                Spacer()
-                
-                // Enhanced Mini Dashboard - iPad Layout with Optimized Typography
-                VStack(spacing: 12) { // 8pt grid: 12pt between sections for iPad
-                    // PRIMARY: Month Progress
-                    VStack(spacing: 8) { // 8pt grid: 8pt internal spacing
-                        HStack(spacing: 6) { // 8pt grid: 6pt icon-text spacing
-                            Image(systemName: "chart.pie.fill")
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundStyle(.blue)
-                            Text("MONTH PROGRESS")
-                                .font(.system(size: 9, weight: .semibold, design: .default))
-                                .tracking(0.5) // Proper tracking for uppercase text
-                                .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                            Spacer()
-                        }
-                        HStack {
-                            Text("\(Int(getMonthProgress() * 100))% complete")
-                                .font(.system(size: 13, weight: .medium, design: .rounded))
-                                .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
-                            Spacer()
-                        }
-                    }
-                    .padding(.horizontal, 16) // 8pt grid: 16pt horizontal padding
-                    .padding(.vertical, 12)   // 8pt grid: 12pt vertical padding
-                    .background(
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(.ultraThinMaterial)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(.blue.opacity(0.2), lineWidth: 0.5)
-                            )
-                    )
-                    
-                    // SECONDARY: Next Event
-                    if let nextHoliday = getNextUpcomingHoliday() {
-                        Button(action: {
-                            navigateToDate(nextHoliday.date)
-                        }) {
-                            VStack(spacing: 8) { // 8pt grid: 8pt internal spacing
-                                HStack(spacing: 6) { // 8pt grid: 6pt icon-text spacing
-                                    Image(systemName: "clock.badge")
-                                        .font(.system(size: 11, weight: .semibold))
-                                        .foregroundStyle(.orange)
-                                    Text("NEXT EVENT")
-                                        .font(.system(size: 9, weight: .semibold, design: .default))
-                                        .tracking(0.5) // Proper tracking for uppercase text
-                                        .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                                    Spacer()
-                                    Text(daysUntilText(for: nextHoliday))
-                                        .font(.system(size: 8, weight: .medium, design: .rounded))
-                                        .foregroundStyle(AppColors.adaptiveTextTertiary(isMonochrome: isMonochromeMode))
-                                }
-                                
-                                HStack {
-                                    Text(holidayDisplayName(for: nextHoliday))
-                                        .font(.system(size: 13, weight: .medium, design: .default))
-                                        .lineLimit(2) // Allow wrapping for longer names
-                                        .lineSpacing(1) // Proper line spacing for multi-line text
-                                        .foregroundStyle(nextHoliday.isOfficial ? .orange : .blue)
-                                    Spacer()
-                                }
-                            }
-                            .padding(.horizontal, 16) // 8pt grid: 16pt horizontal padding
-                            .padding(.vertical, 12)   // 8pt grid: 12pt vertical padding
-                            .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(.ultraThinMaterial)
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 10)
-                                            .stroke(.orange.opacity(0.2), lineWidth: 0.5)
-                                    )
-                            )
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                        .accessibilityLabel("Next event: \(holidayDisplayName(for: nextHoliday))")
-                        .accessibilityHint("\(daysUntilText(for: nextHoliday)). Tap to navigate to this date")
-                    }
-                    
-                    // TERTIARY: Countdown
-                    VStack(spacing: 8) { // 8pt grid: 8pt internal spacing
-                        HStack(spacing: 6) { // 8pt grid: 6pt icon-text spacing
-                            Image(systemName: "timer")
-                                .font(.system(size: 10, weight: .semibold))
-                                .foregroundStyle(Color.green)
-                            Text(selectedCountdown.displayName)
-                                .font(.system(size: 9, weight: .semibold, design: .default))
-                                .tracking(0.4) // Proper tracking for uppercase text
-                                .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                                .lineLimit(1)
-                            Spacer()
-                        }
-                        HStack {
-                            Text(countdownDaysText())
-                                .font(.system(size: 13, weight: .medium, design: .rounded))
-                                .foregroundStyle(.green)
-                            Spacer()
-                        }
-                    }
-                    .padding(.horizontal, 16) // 8pt grid: 16pt horizontal padding
-                    .padding(.vertical, 12)   // 8pt grid: 12pt vertical padding
-                    .background(
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(.ultraThinMaterial)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-                            )
-                    )
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        safeNavigateToCountdownDate()
-                    }
-                    .accessibilityLabel("\(selectedCountdown.displayName) countdown")
-                    .accessibilityHint("\(countdownDaysText()). Tap to navigate to countdown date")
-                    .accessibilityAddTraits(.isButton)
-                }
-                
-                Spacer()
-                
-                // Navigation
-                HStack(spacing: 16) {
-                    Button("◀") {
-                        changeWeek(-1)
-                    }
-                    .font(.title3)
-                    .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                    .accessibilityLabel("Previous week")
-                    .accessibilityHint("Go to the previous week")
-                    
-                    Text(currentWeekInfo.dateRange)
-                        .font(.caption)
-                        .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                        .monospacedDigit()
-                    
-                    Button("▶") {
-                        changeWeek(1)
-                    }
-                    .font(.title3)
-                    .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                    .accessibilityLabel("Next week")
-                    .accessibilityHint("Go to the next week")
-                }
-                .padding(.bottom, 20)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, 20)
-            
-            // Divider
-            Rectangle()
-                .fill(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode).opacity(0.2))
-                .frame(width: 1)
-                .padding(.vertical, 40)
-            
-            // Right Side - Week Calendar (2/3 of screen)
-            VStack(spacing: 16) {
-                Spacer()
-                
-                // Week dates grid for iPad landscape
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12), count: 7), spacing: 16) {
-                    ForEach(generateWeekDates(for: selectedDate), id: \.self) { date in
-                        let isSelected = Calendar.iso8601.isDate(date, inSameDayAs: selectedDate)
-                        let isToday = Calendar.iso8601.isDateInToday(date)
-                        let dayColors = getDayColors(for: date)
-                        
-                        VStack(spacing: 10) { // 8pt grid: 10pt spacing for iPad calendar
-                            Text(shortWeekday(date))
-                                .font(.system(size: 11, weight: .medium, design: .default))
-                                .tracking(0.5) // Proper tracking for uppercase text
-                                .foregroundStyle(dayColors.weekday)
-                                .textCase(.uppercase)
-                            
-                            Text(dayNumber(date))
-                                .font(.system(size: 24, weight: .semibold, design: .rounded))
-                                .foregroundStyle(isSelected ? .white : dayColors.day)
-                                .frame(width: 52, height: 52) // Slightly larger for better proportions
-                                .background(
-                                    Circle()
-                                        .fill(isSelected ? AppColors.accentBlue : .clear)
-                                        .overlay(
-                                            Circle()
-                                                .stroke(AppColors.accentBlue, lineWidth: isSelected ? 0 : (isToday ? 2 : 0))
-                                        )
-                                )
-                            
-                            // Today indicator
-                            Circle()
-                                .frame(width: 6, height: 6)
-                                .foregroundStyle(AppColors.accentBlue)
-                                .opacity(isToday && !isSelected ? 1 : 0)
-                        }
-                        .frame(minWidth: 44, minHeight: 44) // Ensure minimum touch target size
-                        .contentShape(Rectangle())
-                        .accessibilityLabel("\(shortWeekday(date)), \(dayNumber(date))")
-                        .accessibilityHint(isSelected ? "Currently selected" : "Tap to select this date")
-                        .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
-                        .onTapGesture {
-                            // Birthday easter egg logic
-                            let calendar = Calendar.iso8601
-                            let month = calendar.component(.month, from: date)
-                            let day = calendar.component(.day, from: date)
-                            
-                            if month == 1 && day == 30 {
-                                januaryTapCount += 1
-                                if januaryTapCount >= 30 {
-                                    showingBirthdayMessage = true
-                                    januaryTapCount = 0
-                                }
-                            } else if month != 1 || day != 30 {
-                                januaryTapCount = 0
-                            }
-                            
-                            // Safe date selection with validation for iPad
-                            let validDate = validateDateForNavigation(date, fallback: Date())
-                            withAnimation(.easeInOut(duration: 0.25)) {
-                                selectedDate = validDate
-                            }
-                        }
-                    }
-                }
-                .padding(.horizontal, 32)
-                
-                Spacer()
-            }
-            .frame(maxWidth: .infinity)
-        }
+    // MARK: - Actions
+    private func updateWeekInfo() {
+        currentWeekInfo = WeekInfo(for: selectedDate, localized: true)
     }
     
-    // MARK: - Simplified Helper Functions
-    
-    private func shortWeekday(_ date: Date) -> String {
-        date.formatted(.dateTime.weekday(.abbreviated)).uppercased()
-    }
-    
-    private func dayNumber(_ date: Date) -> String {
-        date.formatted(.dateTime.day())
-    }
-    
-    private func monthName(for date: Date) -> String {
-        date.formatted(.dateTime.month(.wide))
-    }
-    
-    private func getHolidayName(for date: Date) -> String? {
-        guard let calculator = holidayCalculator else { return nil }
-        let year = Calendar.iso8601.component(.year, from: date)
-        do {
-            let holidays = try calculator.holidays(for: year)
-            if let holiday = holidays.first(where: { Calendar.iso8601.isDate($0.date, inSameDayAs: date) }) {
-                return holidayDisplayName(for: holiday)
-            }
-            return nil
-        } catch {
-            return nil
-        }
-    }
-    
-    private func selectedDateText() -> String {
-        selectedDate.formatted(date: .abbreviated, time: .omitted)
-    }
-    
-    private func todayButtonText() -> String {
-        let today = Date()
-        return today.formatted(.dateTime.month(.abbreviated).day())
-    }
-    
-    private func todayDateNumber() -> String {
-        let today = Date()
-        return today.formatted(.dateTime.day())
-    }
-    
-    // MARK: - Dashboard Helper Functions
-    
-    private func getMonthProgress() -> Double {
-        return holidayCalculator?.monthProgress(for: selectedDate) ?? 0.0
-    }
-    
-    private func getDaysUntilCountdown() -> Int {
-        // Calculate from the selected date, not always today
-        let fromDate = selectedDate
-        let currentYear = Calendar.iso8601.component(.year, from: fromDate)
+    private func navigateToPreviousWeek() {
+        guard !isNavigating else { return }
+        isNavigating = true
         
-        // Handle custom countdowns specially
-        if case .custom(let customCountdown) = selectedCountdown {
-            if customCountdown.isAnnual {
-                // Annual logic - find next occurrence
-                guard let thisYearDate = customCountdown.targetDate(for: currentYear) else { return 0 }
-                let targetDate = thisYearDate <= fromDate ? 
-                    (customCountdown.targetDate(for: currentYear + 1) ?? thisYearDate) : thisYearDate
-                return Calendar.iso8601.dateComponents([.day], from: fromDate, to: targetDate).day ?? 0
-            } else {
-                // One-time event - show actual countdown (can be negative if passed)
-                let targetDate = customCountdown.date
-                // Use start of day for both dates to avoid time-of-day issues
-                let fromDateStartOfDay = Calendar.iso8601.startOfDay(for: fromDate)
-                let targetStartOfDay = Calendar.iso8601.startOfDay(for: targetDate)
-                return Calendar.iso8601.dateComponents([.day], from: fromDateStartOfDay, to: targetStartOfDay).day ?? 0
-            }
-        }
-        
-        // Existing logic for predefined countdowns
-        var targetYear = currentYear
-        if let targetDate = selectedCountdown.targetDate(for: currentYear),
-           targetDate <= fromDate {
-            targetYear = currentYear + 1
-        }
-        
-        guard let targetDate = selectedCountdown.targetDate(for: targetYear) else {
-            return 0
-        }
-        
-        return Calendar.iso8601.dateComponents([.day], from: fromDate, to: targetDate).day ?? 0
-    }
-    
-    private func getNextUpcomingHoliday() -> HolidayDate? {
-        return holidayCalculator?.nextUpcomingHoliday(from: selectedDate)
-    }
-    
-    private func daysUntilText(for holiday: HolidayDate) -> String {
-        let days = Calendar.iso8601.dateComponents([.day], from: selectedDate, to: holiday.date).day ?? 0
-        if days == 0 {
-            return "Today"
-        } else if days == 1 {
-            return "Tomorrow"
-        } else {
-            return "\(days) days"
-        }
-    }
-    
-    private func countdownDaysText() -> String {
-        let days = getDaysUntilCountdown()
-        if days < 0 {
-            return "\(abs(days)) days ago"
-        } else if days == 0 {
-            return "Today!"
-        } else if days == 1 {
-            return "Tomorrow!"
-        } else {
-            return "\(days) days"
-        }
-    }
-    
-    private func holidayDisplayName(for holiday: HolidayDate) -> String {
-        let locale = Locale.current
-        let isSwedish = locale.language.languageCode?.identifier == "sv"
-        return isSwedish ? holiday.nameSV : holiday.nameEN
-    }
-    
-    private func navigateToDate(_ date: Date) {
-        // Enhanced safe navigation with validation
-        guard !isRunningInPreview() else {
-            selectedDate = date
-            return
-        }
-        
-        // Prevent concurrent navigation
-        guard !isNavigationInProgress else { return }
-        
-        isNavigationInProgress = true
-        
-        // Validate and navigate to date
-        let validDate = validateDateForNavigation(date, fallback: Date())
-        
-        withAnimation(.easeInOut(duration: 0.3)) {
-            selectedDate = validDate
-        }
-        
-        // Reset navigation state
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            isNavigationInProgress = false
-        }
-    }
-    
-    private func saveSelectedDateManually() {
-        guard !isRunningInPreview() else { return }
-        
-        do {
-            let encoded = try JSONEncoder().encode(selectedDate.timeIntervalSince1970)
-            selectedDateData = encoded
-        } catch {
-            print("Warning: Failed to encode selectedDate: \(error)")
-        }
-    }
-    
-    /// Validate date is within reasonable bounds for navigation
-    private func validateDateForNavigation(_ date: Date, fallback: Date) -> Date {
-        let now = Date()
-        let fiveYearsAgo = Calendar.iso8601.date(byAdding: .year, value: -5, to: now) ?? now
-        let fiveYearsFromNow = Calendar.iso8601.date(byAdding: .year, value: 5, to: now) ?? now
-        
-        // Return validated date or fallback if out of range
-        return (date >= fiveYearsAgo && date <= fiveYearsFromNow) ? date : fallback
-    }
-    
-    /// Enhanced thread-safe preview environment detection
-    private func isRunningInPreview() -> Bool {
-        // Comprehensive preview and XPC context detection
-        let environment = ProcessInfo.processInfo.environment
-        let processName = ProcessInfo.processInfo.processName
-        let bundleIdentifier = Bundle.main.bundleIdentifier ?? ""
-        
-        // Multiple detection methods for maximum reliability
-        let isPreview = environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" ||
-                       environment["XPC_SERVICE_NAME"]?.contains("Preview") == true ||
-                       processName.contains("Preview") ||
-                       processName.contains("SwiftUI") ||
-                       processName.contains("XCPreview") ||
-                       bundleIdentifier.contains("Preview") ||
-                       NSClassFromString("SwiftUI.PreviewHost") != nil ||
-                       NSClassFromString("XCPreviewAgent") != nil ||
-                       NSClassFromString("SwiftUIPreviewsService") != nil
-        
-        // Additional XPC context detection
-        let isXPCContext = Thread.isMainThread == false ||
-                          environment["XPC_SERVICE_NAME"] != nil ||
-                          processName.contains("com.apple.dt.Xcode")
-        
-        return isPreview || isXPCContext
-    }
-    
-    
-    /// Enhanced XPC-safe countdown navigation with haptic feedback
-    private func safeNavigateToCountdownDate() {
-        // Prevent double-tap issues with state guard
-        guard !isDraggingWeek else { return }
-        
-        // Enhanced XPC-safe preview detection
-        guard !isRunningInPreview() else {
-            // In preview mode, provide safe fallback behavior without calendar operations
-            selectedDate = Date()
-            return
-        }
-        
-        // Prevent concurrent navigation operations
-        guard !isNavigationInProgress else { return }
-        
-        // Provide haptic feedback for user confirmation
-        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+        // Medium haptic feedback on completion
+        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
         impactFeedback.impactOccurred()
         
-        // XPC-Safe navigation with robust error handling
-        xpcSafeNavigateToCountdownDate()
-    }
-    
-    /// Completely XPC-safe countdown navigation with bulletproof error handling
-    private func xpcSafeNavigateToCountdownDate() {
-        // Set navigation state to prevent reentrancy
-        isNavigationInProgress = true
+        // Slide out animation
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+            dragOffset = CGSize(width: UIScreen.main.bounds.width, height: 0)
+        }
         
-        // Wrap all countdown date operations in error handling
-        do {
-            // Safe countdown date calculation with fallbacks
-            guard let countdownDate = safeTargetDateWithFallback() else {
-                // Ultimate fallback: navigate to today
-                selectedDate = Date()
-                isNavigationInProgress = false
-                return
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            if let newDate = calendar.date(byAdding: .weekOfYear, value: -1, to: selectedDate) {
+                selectedDate = newDate
+                updateWeekInfo()
             }
             
-            // Validate countdown date is reasonable
-            let validDate = validateDateForNavigation(countdownDate, fallback: Date())
+            dragOffset = CGSize(width: -UIScreen.main.bounds.width, height: 0)
             
-            // Immediate synchronous update to prevent XPC conflicts
-            selectedDate = validDate
-            
-            // Manual AppStorage save after state is stable
-            saveSelectedDateManually()
-            
-        } catch {
-            // Any error: fallback to today and log
-            print("Warning: Countdown navigation failed, falling back to today: \(error)")
-            selectedDate = Date()
-        }
-        
-        // Reset navigation state immediately
-        isNavigationInProgress = false
-    }
-    
-    /// Bulletproof target date calculation with multiple fallback layers
-    private func safeTargetDateWithFallback() -> Date? {
-        // Wrap all operations in autoreleasepool to manage memory during XPC-sensitive operations
-        return autoreleasepool {
-            // Enhanced XPC context detection at the entry point
-            let environment = ProcessInfo.processInfo.environment
-            let processName = ProcessInfo.processInfo.processName
-            let bundleIdentifier = Bundle.main.bundleIdentifier ?? ""
-            
-            let isXPCContext = environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" ||
-                              processName.contains("Preview") ||
-                              processName.contains("SwiftUI") ||
-                              processName.contains("XCPreview") ||
-                              bundleIdentifier.contains("Preview") ||
-                              Thread.isMainThread == false
-            
-            // If we're in XPC context, return immediate safe fallback
-            if isXPCContext {
-                return Calendar(identifier: .gregorian).date(byAdding: .day, value: 30, to: Date())
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                dragOffset = CGSize.zero
             }
             
-            // Layer 1: Safe current year calculation with fallback
-            let currentYear: Int
-            do {
-                currentYear = Calendar.current.component(.year, from: Date())
-            } catch {
-                // If even getting the current year fails, use a safe default
-                let currentDate = Date()
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy"
-                currentYear = Int(formatter.string(from: currentDate)) ?? 2025
+            isNavigating = false
+        }
+    }
+    
+    private func navigateToNextWeek() {
+        guard !isNavigating else { return }
+        isNavigating = true
+        
+        // Medium haptic feedback on completion
+        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+        impactFeedback.impactOccurred()
+        
+        // Slide out animation
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+            dragOffset = CGSize(width: -UIScreen.main.bounds.width, height: 0)
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            if let newDate = calendar.date(byAdding: .weekOfYear, value: 1, to: selectedDate) {
+                selectedDate = newDate
+                updateWeekInfo()
             }
             
-            // Layer 2: Special handling for custom countdowns with comprehensive error handling
-            if case .custom(let customCountdown) = selectedCountdown {
-                do {
-                    // Attempt to get target date from custom countdown
-                    if let targetDate = customCountdown.targetDate(for: currentYear) {
-                        return targetDate
-                    }
-                } catch {
-                    // Custom countdown calculation failed - fall through to next layer
-                    print("Warning: Custom countdown calculation failed: \(error)")
-                }
+            dragOffset = CGSize(width: UIScreen.main.bounds.width, height: 0)
+            
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                dragOffset = CGSize.zero
             }
             
-            // Layer 3: Standard countdown target date calculation with error handling
-            do {
-                if let targetDate = selectedCountdown.targetDate(for: currentYear) {
-                    return targetDate
-                }
-            } catch {
-                // Standard countdown calculation failed - fall through to ultimate fallback
-                print("Warning: Standard countdown calculation failed: \(error)")
-            }
-            
-            // Layer 4: Ultimate fallback - return a reasonable date without XPC-sensitive operations
-            do {
-                let calendar = Calendar(identifier: .gregorian)
-                return calendar.date(byAdding: .day, value: 30, to: Date())
-            } catch {
-                // Even the ultimate fallback failed - return raw date
-                return Date().addingTimeInterval(30 * 24 * 60 * 60) // 30 days in seconds
-            }
+            isNavigating = false
         }
     }
     
-    // MARK: - Countdown Persistence
-    
-    private func loadCountdownPreference() {
-        // Enhanced XPC-safe countdown preference loading
-        guard !isRunningInPreview() else {
-            // In preview mode, use safe default
-            selectedCountdown = .newYear
-            return
-        }
-        
-        // XPC-safe decoding with comprehensive error handling
-        guard !countdownTypeData.isEmpty else {
-            selectedCountdown = .newYear
-            return
-        }
-        
-        do {
-            // Attempt to decode countdown preference
-            let decoder = JSONDecoder()
-            let countdown = try decoder.decode(CountdownType.self, from: countdownTypeData)
-            selectedCountdown = countdown
-        } catch {
-            // If decoding fails (including XPC connection issues), fall back to safe default
-            print("Warning: Failed to decode countdown preference, using default: \(error)")
-            selectedCountdown = .newYear
-            
-            // Clear corrupted data to prevent future issues
-            countdownTypeData = Data()
-        }
+    private func navigateToToday() {
+        selectedDate = Date()
+        updateWeekInfo()
     }
     
-    private func saveCountdownPreference() {
-        // Enhanced XPC-safe countdown preference saving
-        guard !isRunningInPreview() else { return }
-        
-        // Prevent saving during navigation to avoid XPC conflicts
-        guard !isNavigationInProgress else {
-            // Defer save until navigation completes
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.saveCountdownPreference()
-            }
-            return
-        }
-        
-        // Simple synchronous approach to prevent XPC issues
-        guard let encoded = try? JSONEncoder().encode(selectedCountdown) else {
-            print("Warning: Failed to encode countdown preference")
-            return
-        }
-        countdownTypeData = encoded
-    }
-    
-    private struct DayColors {
-        let weekday: Color
-        let day: Color
-    }
-    
-    private func getDayColors(for date: Date) -> DayColors {
-        let weekday = Calendar.iso8601.component(.weekday, from: date)
-        
-        // Check if it's a holiday first
-        if let calculator = holidayCalculator, calculator.isHoliday(date) {
-            return DayColors(weekday: AppColors.accentRed, day: AppColors.accentRed)
-        }
-        
-        switch weekday {
-        case 7: // Saturday
-            return DayColors(weekday: AppColors.accentBlue, day: AppColors.accentBlue)
-        case 1: // Sunday
-            return DayColors(weekday: AppColors.accentRed, day: AppColors.accentRed)
-        default:
-            return DayColors(
-                weekday: AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode), 
-                day: AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode)
-            )
-        }
-    }
-    
-    // Keep these for backward compatibility if needed elsewhere
-    private func weekdayColor(for date: Date) -> Color {
-        return getDayColors(for: date).weekday
-    }
-    
-    private func weekendDayColor(for date: Date) -> Color {
-        return getDayColors(for: date).day
-    }
-    
-    
-    // MARK: - Helper Functions
-    
-    private func generateWeekDates(for date: Date) -> [Date] {
-        let calendar = Calendar.iso8601
-        let weekInfo = WeekInfo(for: date)
-        var dates: [Date] = []
-        
-        for i in 0..<7 {
-            if let weekDate = calendar.date(byAdding: .day, value: i, to: weekInfo.startDate) {
-                dates.append(weekDate)
-            }
-        }
-        
-        return dates
-    }
-    
-    // MARK: - Navigation Helper Functions
-    
-    private func changeWeek(_ direction: Int) {
-        // Safe week navigation with validation
-        guard let newDate = Calendar.iso8601.date(byAdding: .weekOfYear, value: direction, to: selectedDate) else {
-            // Fallback to today if calculation fails
-            selectedDate = Date()
-            cachedWeekInfo = nil
-            return
-        }
-        
-        // Validate new date is within reasonable bounds
-        let validatedDate = validateDateForNavigation(newDate, fallback: selectedDate)
-        selectedDate = validatedDate
-        
-        // Safely invalidate cache
-        cachedWeekInfo = nil
-        cachedWeekInfoDate = nil
-    }
-    
-    private func saveSelectedDate() {
-        // Enhanced XPC-safe preview detection
-        guard !isRunningInPreview() else {
-            return
-        }
-        
-        // Prevent saving during navigation to avoid XPC conflicts
-        guard !isNavigationInProgress else {
-            return
-        }
-        
-        // Simple synchronous approach to prevent XPC issues
-        guard let encoded = try? JSONEncoder().encode(selectedDate.timeIntervalSince1970) else {
-            print("Warning: Failed to encode selectedDate")
-            return
-        }
-        selectedDateData = encoded
-    }
-    
-    /// Manual AppStorage save that bypasses navigation state checks
-    
-    
-    private func loadSelectedDate() {
-        // Enhanced XPC-safe preview detection
-        guard !isRunningInPreview() else {
-            selectedDate = Date()
-            return
-        }
-        
-        // Simple synchronous approach to prevent XPC issues
-        guard !selectedDateData.isEmpty,
-              let timeInterval = try? JSONDecoder().decode(TimeInterval.self, from: selectedDateData) else {
-            selectedDate = Date()
-            return
-        }
-        
-        let decodedDate = Date(timeIntervalSince1970: timeInterval)
-        
-        // Validate date is reasonable (within 10 years of now)
-        let now = Date()
-        let tenYearsAgo = Calendar.iso8601.date(byAdding: .year, value: -10, to: now) ?? now
-        let tenYearsFromNow = Calendar.iso8601.date(byAdding: .year, value: 10, to: now) ?? now
-        
-        selectedDate = (decodedDate >= tenYearsAgo && decodedDate <= tenYearsFromNow) ? decodedDate : now
-    }
-    
-    private func initializeHolidayCalculator() {
-        do {
-            holidayCalculator = try SwedishHolidayCalculator()
-        } catch {
-            print("Failed to initialize holiday calculator: \(error.localizedDescription)")
-            // Continue without holiday calculator rather than crashing
-            holidayCalculator = nil
-        }
-    }
-    
-    /// Enhanced safe initialization with comprehensive error recovery
-    @MainActor
-    private func performSafeInitialization() async {
-        // Initialize components in safe order with individual error handling
-        // Load saved date first
-        loadSelectedDate()
-        
-        // Initialize holiday calculator
-        initializeHolidayCalculator()
-        
-        // Load countdown preference
-        loadCountdownPreference()
-        
-        // Validate current state
-        if !isRunningInPreview() {
-            selectedDate = validateDateForNavigation(selectedDate, fallback: Date())
-        }
-    }
-    
-    // MARK: - Direct Color Helper Functions
-    
-    /// Direct color evaluation for day colors
-    private func safeColorForDay(_ date: Date, isMonochrome: Bool) -> Color {
-        return AppColors.colorForDay(date, isMonochrome: isMonochrome)
-    }
-    
-    /// Direct adaptive background color
-    private func safeAdaptiveBackground(isMonochrome: Bool) -> Color {
-        return AppColors.adaptiveBackground(isMonochrome: isMonochrome)
-    }
-    
-    /// Direct adaptive surface color
-    private func safeAdaptiveSurface(isMonochrome: Bool) -> Color {
-        return AppColors.adaptiveSurface(isMonochrome: isMonochrome)
-    }
-}
-
-// MARK: - Countdown Picker Sheets
-
-struct CountdownCard: View {
-    let countdown: CountdownType
-    let isSelected: Bool
-    let onTap: () -> Void
-    @AppStorage("isMonochromeMode") private var isMonochromeMode: Bool = false
-    
-    var body: some View {
-        Button(action: onTap) {
-            VStack(spacing: 12) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(AppColors.accentYellow.gradient)
-                        .frame(width: 50, height: 50)
-                    
-                    Image(systemName: countdown.icon)
-                        .font(.title2)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.white)
-                }
-                
-                Text(countdown.displayName)
-                    .font(.caption)
-                    .fontWeight(.bold)
-                    .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-            }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(AppColors.adaptiveSurface(isMonochrome: isMonochromeMode))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(isSelected ? AppColors.accentBlue : Color.clear, lineWidth: 2)
-                    )
-            )
-        }
-        .buttonStyle(PlainButtonStyle())
-    }
 }
 
 
-struct CountdownPickerSheet: View {
-    @Binding var selectedCountdown: CountdownType
-    let onSave: () -> Void
-    @Environment(\.dismiss) private var dismiss
-    @AppStorage("isMonochromeMode") private var isMonochromeMode: Bool = false
-    
-    // Performance optimization: cache device type to avoid repeated UIDevice.current calls
-    @State private var isIPadDevice = UIDevice.current.userInterfaceIdiom == .pad
-    
-    // Direct color evaluation for optimal performance
-    
-    var body: some View {
-        NavigationView {
-            GeometryReader { geometry in
-                let isIPad = isIPadDevice
-                let columns = isIPad ? 4 : 2
-                
-                ScrollView {
-                    VStack(spacing: 32) {
-                        // Header Section
-                        VStack(spacing: 8) {
-                            Text("Choose Countdown")
-                                .font(.largeTitle)
-                                .fontWeight(.bold)
-                                .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
-                            
-                            Text("Select an event to countdown to")
-                                .font(.subheadline)
-                                .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                        }
-                        .padding(.top, 24)
-                        
-                        // Cards Grid
-                        LazyVGrid(
-                            columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: columns),
-                            spacing: 16
-                        ) {
-                            ForEach(CountdownType.predefinedCases, id: \.displayName) { countdown in
-                                CountdownOptionCard(
-                                    countdown: countdown,
-                                    isSelected: selectedCountdown.displayName == countdown.displayName,
-                                    onTap: {
-                                        selectedCountdown = countdown
-                                        onSave()
-                                        dismiss()
-                                    }
-                                )
-                            }
-                            
-                    }
-                    .padding(.horizontal, 20)
-                    
-                        Spacer(minLength: 40)
-                    }
-                }
-                .scrollIndicators(.hidden)
-            }
-            .background(safeAdaptiveBackground(isMonochrome: isMonochromeMode).ignoresSafeArea())
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                    .font(.body)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(AppColors.accentBlue)
-                    .accessibilityLabel("Done")
-                    .accessibilityHint("Close countdown picker")
-                }
-            }
-        }
-        .presentationDetents([.large])
-        .presentationDragIndicator(.visible)
-    }
-    
-    // MARK: - Direct Color Helper Functions
-    
-    /// Direct adaptive background color
-    private func safeAdaptiveBackground(isMonochrome: Bool) -> Color {
-        return AppColors.adaptiveBackground(isMonochrome: isMonochrome)
-    }
-    
-    /// Direct adaptive surface color
-    private func safeAdaptiveSurface(isMonochrome: Bool) -> Color {
-        return AppColors.adaptiveSurface(isMonochrome: isMonochrome)
-    }
-}
-
-struct CountdownOptionCard: View {
-    let countdown: CountdownType
-    let isSelected: Bool
-    let onTap: () -> Void
-    @AppStorage("isMonochromeMode") private var isMonochromeMode: Bool = false
-    
-    // Direct color evaluation for optimal performance
-    
-    var body: some View {
-        Button(action: onTap) {
-            VStack(spacing: 12) {
-                // Icon with glassmorphism background
-                ZStack {
-                    Circle()
-                        .fill(isSelected ? .white.opacity(0.2) : AppColors.accentBlue.opacity(0.1))
-                        .frame(width: 44, height: 44)
-                    
-                    Image(systemName: countdown.icon)
-                        .font(.title2)
-                        .fontWeight(.medium)
-                        .foregroundStyle(isSelected ? .white : AppColors.accentBlue)
-                }
-                
-                // Text content
-                VStack(spacing: 2) {
-                    Text(countdown.displayName)
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(isSelected ? .white : AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
-                        .multilineTextAlignment(.center)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.8)
-                    
-                    if let daysText = getDaysUntilText(for: countdown) {
-                        Text(daysText)
-                            .font(.caption2)
-                            .fontWeight(.medium)
-                            .foregroundStyle(isSelected ? .white.opacity(0.8) : AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                            .lineLimit(1)
-                    }
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 100)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 12)
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(
-                        isSelected ? 
-                        AppColors.accentBlue :
-                        safeAdaptiveSurface(isMonochrome: isMonochromeMode)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(
-                                isSelected ? 
-                                AppColors.accentBlue.opacity(0.3) : 
-                                Color.clear,
-                                lineWidth: isSelected ? 2 : 0
-                            )
-                    )
-                    .shadow(
-                        color: isSelected ? 
-                        AppColors.accentBlue.opacity(0.3) : 
-                        .black.opacity(0.06),
-                        radius: isSelected ? 8 : 6,
-                        x: 0,
-                        y: isSelected ? 4 : 3
-                    )
-            )
-        }
-        .buttonStyle(PlainButtonStyle())
-        .scaleEffect(isSelected ? 1.02 : 1.0)
-        .animation(.easeInOut(duration: 0.2), value: isSelected)
-        .accessibilityLabel("\(countdown.displayName) countdown")
-        .accessibilityHint(isSelected ? "Currently selected" : "Tap to select this countdown")
-        .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
-    }
-    
-    private func getDaysUntilText(for countdown: CountdownType) -> String? {
-        let today = Date()
-        let currentYear = Calendar.iso8601.component(.year, from: today)
-        
-        // Handle custom countdowns specially
-        if case .custom(let customCountdown) = countdown {
-            if customCountdown.isAnnual {
-                // Annual logic - find next occurrence
-                guard let thisYearDate = customCountdown.targetDate(for: currentYear) else { return nil }
-                let targetDate = thisYearDate <= today ? 
-                    (customCountdown.targetDate(for: currentYear + 1) ?? thisYearDate) : thisYearDate
-                let days = Calendar.iso8601.dateComponents([.day], from: today, to: targetDate).day ?? 0
-                return days == 0 ? "Today" : days == 1 ? "Tomorrow" : "\(days) days"
-            } else {
-                // One-time event
-                let targetDate = customCountdown.date
-                let todayStartOfDay = Calendar.iso8601.startOfDay(for: today)
-                let targetStartOfDay = Calendar.iso8601.startOfDay(for: targetDate)
-                let days = Calendar.iso8601.dateComponents([.day], from: todayStartOfDay, to: targetStartOfDay).day ?? 0
-                
-                if days < 0 {
-                    return "\(abs(days)) days ago"
-                } else if days == 0 {
-                    return "Today"
-                } else if days == 1 {
-                    return "Tomorrow"
-                } else {
-                    return "\(days) days"
-                }
-            }
-        }
-        
-        // Existing logic for predefined countdowns
-        var targetYear = currentYear
-        if let targetDate = countdown.targetDate(for: currentYear),
-           targetDate <= today {
-            targetYear = currentYear + 1
-        }
-        
-        guard let targetDate = countdown.targetDate(for: targetYear) else {
-            return nil
-        }
-        
-        let days = Calendar.iso8601.dateComponents([.day], from: today, to: targetDate).day ?? 0
-        return days == 0 ? "Today" : days == 1 ? "Tomorrow" : "\(days) days"
-    }
-    
-    // MARK: - Direct Color Helper Functions
-    
-    /// Direct adaptive surface color
-    private func safeAdaptiveSurface(isMonochrome: Bool) -> Color {
-        return AppColors.adaptiveSurface(isMonochrome: isMonochrome)
-    }
-}
-
-struct CustomCountdownDialog: View {
-    @Binding var name: String
-    @Binding var date: Date
-    @Binding var isAnnual: Bool
-    @Binding var selectedCountdown: CountdownType
-    let onSave: () -> Void
-    @Environment(\.dismiss) private var dismiss
-    @AppStorage("isMonochromeMode") private var isMonochromeMode: Bool = false
-    
-    private var isValidInput: Bool {
-        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        return !trimmedName.isEmpty && 
-               trimmedName.count <= 30 && 
-               trimmedName.allSatisfy { $0.isLetter || $0.isNumber || $0.isWhitespace || ".-_".contains($0) } &&
-               !containsProfanity(trimmedName)
-    }
-    
-    private func containsProfanity(_ text: String) -> Bool {
-        let lowercaseText = text.lowercased()
-        let profanityList = [
-            "damn", "hell", "shit", "fuck", "ass", "bitch", "bastard", "piss", "crap",
-            "suck", "stupid", "idiot", "moron", "retard", "gay", "fag", "whore", "slut"
-        ]
-        
-        return profanityList.contains { profanity in
-            lowercaseText.contains(profanity)
-        }
-    }
-    
-    private func getValidationMessage() -> String {
-        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        if trimmedName.isEmpty {
-            return "Name cannot be empty"
-        } else if trimmedName.count > 30 {
-            return "Name must be 30 characters or less"
-        } else if !trimmedName.allSatisfy({ $0.isLetter || $0.isNumber || $0.isWhitespace || ".-_".contains($0) }) {
-            return "Name can only contain letters, numbers, spaces, dots, dashes, and underscores"
-        } else if containsProfanity(trimmedName) {
-            return "Please choose a more appropriate name"
-        } else {
-            return "Invalid name"
-        }
-    }
-    
-    var body: some View {
-        NavigationView {
-            VStack(spacing: 24) {
-                Text("Create Custom Countdown")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .padding(.top)
-                
-                VStack(spacing: 20) {
-                    // Name Input
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Countdown Name")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
-                        
-                        TextField("Enter countdown name", text: $name)
-                            .textFieldStyle(.roundedBorder)
-                            .autocorrectionDisabled()
-                        
-                        if !name.isEmpty && !isValidInput {
-                            Text(getValidationMessage())
-                                .font(.caption)
-                                .foregroundStyle(.red)
-                                .padding(.top, 4)
-                        }
-                    }
-                    
-                    // Date Picker
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Target Date")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
-                        
-                        DatePicker(
-                            "Target Date",
-                            selection: $date,
-                            displayedComponents: [.date]
-                        )
-                        .datePickerStyle(.compact)
-                        .labelsHidden()
-                    }
-                    
-                    // Annual Toggle
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Repeat Type")
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                                    .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
-                                
-                                Text(isAnnual ? "Repeats every year" : "One-time event")
-                                    .font(.caption)
-                                    .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                            }
-                            
-                            Spacer()
-                            
-                            Toggle("", isOn: $isAnnual)
-                                .labelsHidden()
-                        }
-                        
-                        Text(isAnnual ? "Perfect for birthdays, anniversaries, and holidays" : "Great for specific dates like project deadlines")
-                            .font(.caption2)
-                            .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                            .padding(.top, 4)
-                    }
-                }
-                .padding(.horizontal)
-                
-                Spacer()
-            }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                    .accessibilityLabel("Cancel")
-                    .accessibilityHint("Cancel creating custom countdown")
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-                        let customCountdown = CustomCountdown(
-                            name: trimmedName,
-                            date: date,
-                            isAnnual: isAnnual
-                        )
-                        selectedCountdown = .custom(customCountdown)
-                        onSave()
-                        dismiss()
-                    }
-                    .fontWeight(.semibold)
-                    .disabled(!isValidInput)
-                    .accessibilityLabel("Save")
-                    .accessibilityHint("Save custom countdown and close dialog")
-                }
-            }
-        }
-    }
-}
-
-// MARK: - Previews
-#Preview("Current Week") {
+// MARK: - Preview
+#Preview("ContentView - Light Mode") {
     ContentView()
-        .environment(\.locale, Locale(identifier: "en_US"))
         .preferredColorScheme(.light)
 }
 
-#Preview("Dark Mode") {
+#Preview("ContentView - Dark Mode") {
     ContentView()
-        .environment(\.locale, Locale(identifier: "en_US"))
         .preferredColorScheme(.dark)
-}
-
-#Preview("Swedish Locale") {
-    ContentView()
-        .environment(\.locale, Locale(identifier: "sv_SE"))
-        .preferredColorScheme(.light)
 }
