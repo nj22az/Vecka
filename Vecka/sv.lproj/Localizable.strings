@@ -1,0 +1,68 @@
+/* Swedish Localization for Vecka */
+
+/* App */
+"app.name" = "VECKOKOMPIS";
+
+/* Common */
+"common.today" = "Idag";
+"common.cancel" = "Avbryt";
+"common.save" = "Spara";
+
+/* Actions */
+"action.go_to_today" = "GÅ TILL IDAG";
+
+/* Notes */
+"note.create" = "Skapa anteckning";
+"note.add_event" = "LÄGG TILL HÄNDELSE";
+"note.your_event" = "DIN HÄNDELSE";
+"note.new_event" = "Ny händelse";
+"note.event_title" = "Händelsetitel";
+"note.event_details" = "Detaljer (valfritt)";
+"note.event_date" = "Händelsedatum";
+"note.untitled" = "Namnlös";
+
+/* Time */
+"time.days_short" = "d";
+"time.today" = "IDAG";
+
+/* Weekdays */
+"weekday.mon" = "MÅN";
+"weekday.tue" = "TIS";
+"weekday.wed" = "ONS";
+"weekday.thu" = "TOR";
+"weekday.fri" = "FRE";
+"weekday.sat" = "LÖR";
+"weekday.sun" = "SÖN";
+
+/* Navigation */
+"navigation.previous_week" = "Föregående vecka";
+"navigation.next_week" = "Nästa vecka";
+
+/* Accessibility */
+"accessibility.selected" = "vald";
+"accessibility.holiday" = "helgdag";
+
+/* Date */
+"date.range_separator" = " – ";
+
+/* Week */
+"week.display" = "Vecka %d";
+
+/* Countdown */
+"countdown.today" = "IDAG";
+"countdown.tomorrow" = "IMORGON";
+"countdown.passed" = "PASSERAD";
+"countdown.days" = "%d DAGAR";
+
+/* Picker */
+"picker.favorites_count" = "Favoriter %d/4";
+"picker.predefined" = "Fördefinierade";
+"picker.custom_events" = "Egna händelser";
+"picker.create_custom" = "Skapa egen…";
+"picker.favorite" = "Favorit";
+"picker.unfavorite" = "Ta bort favorit";
+"picker.remove" = "Ta bort";
+"picker.manage_events" = "Hantera händelser…";
+"picker.no_customs_hint" = "Inga egna händelser ännu.";
+"picker.add_favorites_hint" = "Lägg till ofta använda händelser som favoriter för snabb åtkomst.";
+"picker.selected" = "Vald";

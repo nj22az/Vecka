@@ -9,16 +9,14 @@ import SwiftUI
 
 struct SettingsView: View {
     @Binding var selectedCountdown: CountdownType
-    @AppStorage("isMonochromeMode") private var isMonochromeMode: Bool = false
-    @AppStorage("isAutoDarkMode") private var isAutoDarkMode: Bool = true
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     
     @State private var showingCountdownPicker = false
-    @State private var showingCustomCountdownDialog = false
-    @State private var customCountdownName = ""
-    @State private var customCountdownDate = Date()
-    @State private var customCountdownIsAnnual = true
+    // Favorites (max 4) shown as quick picks in Settings
+    @State private var favoriteCountdowns: [SavedCountdown] = []
+    // Cache of currently selected custom for quick compare (avoid decoding in views)
+    @State private var selectedCustomLocal: CustomCountdown? = nil
     
     let onCountdownChange: () -> Void
     
@@ -27,148 +25,49 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             List {
-                // Appearance Section
+                // Countdown Favorites Section (max 4)
                 Section {
-                    // Dark Mode Toggle
-                    HStack {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(isMonochromeMode ? AppColors.monoSurfaceElevated : AppColors.accentBlue)
-                                .frame(width: 32, height: 32)
-                            
-                            Image(systemName: isMonochromeMode ? "moon.fill" : "moon.fill")
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundStyle(isMonochromeMode ? AppColors.monoTextPrimary : .white)
-                        }
-                        
-                        Text("Dark Mode")
-                            .font(.body)
-                            .fontWeight(.medium)
-                            .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
-                        
-                        Spacer()
-                        
-                        Toggle("", isOn: $isMonochromeMode)
-                            .tint(isMonochromeMode ? AppColors.monoTextPrimary : AppColors.accentBlue)
-                            .accessibilityLabel("Dark Mode")
-                            .accessibilityHint("Toggles between color and dark mode display")
-                    }
-                    .padding(.vertical, 4)
-                    
-                    // Automatic Mode Toggle
-                    HStack {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(isAutoDarkMode ? AppColors.accentBlue : Color.secondary.opacity(0.2))
-                                .frame(width: 32, height: 32)
-                            
-                            Image(systemName: "gearshape.fill")
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundStyle(isAutoDarkMode ? .white : .secondary)
-                        }
-                        
-                        Text("Automatic")
-                            .font(.body)
-                            .fontWeight(.medium)
-                            .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
-                        
-                        Spacer()
-                        
-                        Toggle("", isOn: $isAutoDarkMode)
-                            .tint(AppColors.accentBlue)
-                            .disabled(isMonochromeMode)
-                            .accessibilityLabel("Automatic Mode")
-                            .accessibilityHint("Automatically follows system light and dark mode settings")
-                    }
-                    .padding(.vertical, 4)
-                    .opacity(isMonochromeMode ? 0.5 : 1.0)
-                    
-                } header: {
-                    Text("Appearance")
-                        .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                }
-                .listRowBackground(AppColors.adaptiveSurface(isMonochrome: isMonochromeMode))
-                
-                // Countdown Configuration Section
-                Section {
-                    Button(action: {
-                        showingCountdownPicker = true
-                    }) {
-                        HStack {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(AppColors.accentYellow)
-                                    .frame(width: 32, height: 32)
-                                
-                                Image(systemName: "calendar.badge.clock")
-                                    .font(.system(size: 16, weight: .medium))
-                                    .foregroundStyle(.white)
+                    if favoriteCountdowns.isEmpty {
+                        Text(Localization.addFavoritesHint)
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textSecondary)
+                            .padding(.vertical, 4)
+                    } else {
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                            ForEach(favoriteCountdowns) { fav in
+                                CountdownCard(
+                                    countdownType: fav.type,
+                                    customCountdown: fav.custom,
+                                    isSelected: {
+                                        if fav.type != .custom { return fav.type == selectedCountdown }
+                                        guard fav.type == selectedCountdown, let favCustom = fav.custom else { return false }
+                                        return selectedCustomLocal == favCustom
+                                    }(),
+                                    action: {
+                                        selectedCountdown = fav.type
+                                        if fav.type == .custom, let custom = fav.custom, let data = try? JSONEncoder().encode(custom) {
+                                            UserDefaults.standard.set(data, forKey: "selectedCustomCountdown")
+                                            selectedCustomLocal = custom
+                                        }
+                                        // Save preference up to caller
+                                        do { try saveCountdownPreference() } catch {}
+                                    }
+                                )
                             }
-                            
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Countdown Event")
-                                    .font(.body)
-                                    .fontWeight(.medium)
-                                    .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
-                                
-                                Text(selectedCountdown.displayName)
-                                    .font(.caption)
-                                    .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                            }
-                            
-                            Spacer()
-                            
-                            Image(systemName: "chevron.right")
-                                .font(.caption)
-                                .foregroundStyle(AppColors.adaptiveTextTertiary(isMonochrome: isMonochromeMode))
                         }
-                        .padding(.vertical, 4)
+                        .padding(.top, 4)
                     }
-                    .buttonStyle(PlainButtonStyle())
-                    .accessibilityLabel("Countdown Event Settings")
-                    .accessibilityHint("Tap to change countdown event")
                     
-                    // Custom Countdown Button
-                    Button(action: {
-                        showingCustomCountdownDialog = true
-                    }) {
-                        HStack {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(AppColors.accentBlue)
-                                    .frame(width: 32, height: 32)
-                                
-                                Image(systemName: "plus.circle")
-                                    .font(.system(size: 16, weight: .medium))
-                                    .foregroundStyle(.white)
-                            }
-                            
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Create Custom Event")
-                                    .font(.body)
-                                    .fontWeight(.medium)
-                                    .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
-                                
-                                Text("Add your own countdown")
-                                    .font(.caption)
-                                    .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
-                            }
-                            
-                            Spacer()
-                            
-                            Image(systemName: "chevron.right")
-                                .font(.caption)
-                                .foregroundStyle(AppColors.adaptiveTextTertiary(isMonochrome: isMonochromeMode))
-                        }
-                        .padding(.vertical, 4)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    
+                    Button(Localization.manageEvents) { showingCountdownPicker = true }
+                        .font(.body)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(AppColors.accentBlue)
+                        .accessibilityLabel(Localization.manageEvents)
+                        .padding(.top, 6)
                 } header: {
                     Text("Events")
-                        .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                        .foregroundStyle(AppColors.textSecondary)
                 }
-                .listRowBackground(AppColors.adaptiveSurface(isMonochrome: isMonochromeMode))
                 
                 // About Section
                 Section {
@@ -188,16 +87,16 @@ struct SettingsView: View {
                             Text("Vecka")
                                 .font(.title2)
                                 .fontWeight(.bold)
-                                .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
+                                .foregroundStyle(AppColors.textPrimary)
                             
                             Text("Professional Week Number Display")
                                 .font(.subheadline)
-                                .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                                .foregroundStyle(AppColors.textSecondary)
                             
                             Text("Version 1.0")
                                 .font(.caption)
                                 .fontWeight(.medium)
-                                .foregroundStyle(AppColors.adaptiveTextTertiary(isMonochrome: isMonochromeMode))
+                                .foregroundStyle(AppColors.textTertiary)
                         }
                         
                         Spacer()
@@ -212,15 +111,15 @@ struct SettingsView: View {
                             Text("© 2025 The Office of Nils Johansson")
                                 .font(.caption)
                                 .fontWeight(.semibold)
-                                .foregroundStyle(AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
+                                .foregroundStyle(AppColors.textPrimary)
                             
                             Text("All Rights Reserved. Proprietary and Confidential.")
                                 .font(.caption2)
-                                .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                                .foregroundStyle(AppColors.textSecondary)
                             
                             Text("Licensed exclusively for authorized use only. Unauthorized reproduction, distribution, or modification is strictly prohibited and may result in severe civil and criminal penalties.")
                                 .font(.caption2)
-                                .foregroundStyle(AppColors.adaptiveTextTertiary(isMonochrome: isMonochromeMode))
+                                .foregroundStyle(AppColors.textTertiary)
                                 .padding(.top, 2)
                         }
                     }
@@ -228,14 +127,12 @@ struct SettingsView: View {
                     
                 } header: {
                     Text("About")
-                        .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                        .foregroundStyle(AppColors.textSecondary)
                 }
-                .listRowBackground(AppColors.adaptiveSurface(isMonochrome: isMonochromeMode))
             }
-            .scrollContentBackground(.hidden)
-            .listStyle(.plain)
-            .listRowBackground(AppColors.adaptiveSurface(isMonochrome: isMonochromeMode))
-            .background(AppColors.adaptiveBackground(isMonochrome: isMonochromeMode, isAutoDarkMode: isAutoDarkMode))
+            .scrollContentBackground(.visible)
+            .listStyle(.insetGrouped)
+            .background(AppColors.background)
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -244,14 +141,11 @@ struct SettingsView: View {
                         dismiss()
                     }
                     .fontWeight(.semibold)
-                    .foregroundStyle(isMonochromeMode ? AppColors.monoTextPrimary : AppColors.accentBlue)
+                    .foregroundStyle(AppColors.accentBlue)
                 }
             }
         }
-        // Force a refresh of the navigation/list chrome when scheme changes
-        .id(schemeRefreshKey)
-        // Ensure the sheet's own background updates with scheme changes immediately
-        .presentationBackground(AppColors.adaptiveBackground(isMonochrome: isMonochromeMode, isAutoDarkMode: isAutoDarkMode))
+        .presentationBackground(AppColors.background)
         .sheet(isPresented: $showingCountdownPicker) {
             CountdownPickerSheet(
                 selectedCountdown: $selectedCountdown,
@@ -262,25 +156,13 @@ struct SettingsView: View {
                     } catch {
                         print("Warning: Failed to save countdown preference: \(error.localizedDescription)")
                     }
+                    loadFavorites()
+                    loadSelectedCustom()
                 }
             )
         }
-        .sheet(isPresented: $showingCustomCountdownDialog) {
-            CustomCountdownDialog(
-                name: $customCountdownName,
-                date: $customCountdownDate,
-                isAnnual: $customCountdownIsAnnual,
-                selectedCountdown: $selectedCountdown,
-                onSave: {
-                    // Safe countdown preference saving with error handling
-                    do {
-                        try saveCountdownPreference()
-                    } catch {
-                        print("Warning: Failed to save countdown preference: \(error.localizedDescription)")
-                    }
-                }
-            )
-        }
+        .onAppear { loadFavorites(); loadSelectedCustom() }
+        // Custom creation is now inside the countdown picker grid
     }
     
     // MARK: - Helper Functions
@@ -289,12 +171,23 @@ struct SettingsView: View {
         // Delegate saving to ContentView via callback to avoid duplicate AppStorage
         onCountdownChange()
     }
-
-    // MARK: - Scheme Refresh Key
-    private var schemeRefreshKey: String {
-        if isMonochromeMode { return "mono-dark" }
-        return isAutoDarkMode ? "auto" : "light"
+    
+    private func loadFavorites() {
+        if let data = UserDefaults.standard.data(forKey: "favoriteCountdowns"),
+           let favs = try? JSONDecoder().decode([SavedCountdown].self, from: data) {
+            favoriteCountdowns = Array(favs.prefix(4))
+        }
     }
+    
+    private func loadSelectedCustom() {
+        if let data = UserDefaults.standard.data(forKey: "selectedCustomCountdown"),
+           let custom = try? JSONDecoder().decode(CustomCountdown.self, from: data) {
+            selectedCustomLocal = custom
+        } else {
+            selectedCustomLocal = nil
+        }
+    }
+
 }
 
 #Preview("Light Mode") {

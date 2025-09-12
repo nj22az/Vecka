@@ -1,0 +1,55 @@
+/* Korean Localization for Vecka */
+
+/* App */
+"app.name" = "주간 친구";
+
+/* Common */
+"common.today" = "오늘";
+"common.cancel" = "취소";
+"common.save" = "저장";
+
+/* Actions */
+"action.go_to_today" = "오늘로 이동";
+
+/* Notes */
+"note.create" = "메모 만들기";
+"note.add_event" = "이벤트 추가";
+"note.your_event" = "귀하의 이벤트";
+"note.new_event" = "새 이벤트";
+"note.event_title" = "이벤트 제목";
+"note.event_details" = "세부사항 (선택사항)";
+"note.event_date" = "이벤트 날짜";
+"note.untitled" = "제목 없음";
+
+/* Time */
+"time.days_short" = "일";
+"time.today" = "오늘";
+
+/* Weekdays */
+"weekday.mon" = "월";
+"weekday.tue" = "화";
+"weekday.wed" = "수";
+"weekday.thu" = "목";
+"weekday.fri" = "금";
+"weekday.sat" = "토";
+"weekday.sun" = "일";
+
+/* Navigation */
+"navigation.previous_week" = "이전 주";
+"navigation.next_week" = "다음 주";
+
+/* Accessibility */
+"accessibility.selected" = "선택됨";
+"accessibility.holiday" = "휴일";
+
+/* Date */
+"date.range_separator" = " – ";
+
+/* Week */
+"week.display" = "제%d주";
+
+/* Countdown */
+"countdown.today" = "오늘";
+"countdown.tomorrow" = "내일";
+"countdown.passed" = "지남";
+"countdown.days" = "%d일";

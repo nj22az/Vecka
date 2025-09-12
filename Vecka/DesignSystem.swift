@@ -9,21 +9,23 @@ import SwiftUI
 
 // MARK: - App Colors
 struct AppColors {
-    // Enhanced semantic colors with improved contrast
-    static let backgroundLight = Color(hex: "F8F9FB")
-    static let surfaceLight = Color.white
-    static let accentBlue = Color(hex: "007AFF") // Apple's standard blue
-    static let accentTeal = Color(hex: "30D158") // Apple's standard teal
-    static let textPrimaryLight = Color(UIColor.label)
-    static let textSecondaryLight = Color(UIColor.secondaryLabel)
-    static let dividerLight = Color.black.opacity(0.06)
+    // MARK: - System Semantic Colors (Auto-adapting to Light/Dark Mode)
+    static let background = Color(.systemBackground)
+    static let surface = Color(.secondarySystemBackground)
+    static let surfaceElevated = Color(.tertiarySystemBackground)
+    static let textPrimary = Color(.label)
+    static let textSecondary = Color(.secondaryLabel)
+    static let textTertiary = Color(.tertiaryLabel)
+    static let divider = Color(.separator)
     
-    // Semantic accent colors following Apple HIG
-    static let accentYellow = Color(hex: "FF9F0A") // Apple's standard orange/yellow
-    static let accentRed = Color(hex: "FF3B30") // Apple's standard red
-    static let accentPurple = Color(hex: "AF52DE") // Apple's standard purple
+    // MARK: - Apple Standard Accent Colors
+    static let accentBlue = Color(.systemBlue)
+    static let accentTeal = Color(.systemTeal)
+    static let accentYellow = Color(.systemOrange)
+    static let accentRed = Color(.systemRed)
+    static let accentPurple = Color(.systemPurple)
     
-    // Daily color associations
+    // MARK: - Daily Color Associations (Planetary Colors)
     static let mondayMoon = Color(hex: "C0C0C0")      // Pale silver for moon
     static let tuesdayFire = Color(hex: "E53E3E")     // Red for fire
     static let wednesdayWater = Color(hex: "1B6DEF")  // Blue for water
@@ -32,153 +34,22 @@ struct AppColors {
     static let saturdayEarth = Color(hex: "8B4513")   // Brown for earth
     static let sundaySun = Color(hex: "FFD700")       // Bright golden for sun
     
-    
-    
-    // Monochrome dark mode colors (WCAG AA compliant) - used by Settings
-    static let monoBackgroundDark = Color(hex: "000000")
-    static let monoSurfaceDark = Color(hex: "0D0D0D")
-    static let monoSurfaceElevated = Color(hex: "1A1A1A")
-    static let monoTextPrimary = Color(hex: "FFFFFF")
-    static let monoTextSecondary = Color(hex: "B3B3B3")
-    static let monoTextTertiary = Color(hex: "808080")
-    
-    // MARK: - Safe Adaptive Colors (Crash-resistant)
-    // These properties use direct SwiftUI system colors to prevent UIColor recursion crashes
-    static var background: Color {
-        return Color(.systemBackground)
-    }
-    
-    static var surface: Color {
-        return Color(.secondarySystemBackground)
-    }
-    
-    static var textPrimary: Color {
-        return Color(.label)
-    }
-    
-    static var textSecondary: Color {
-        return Color(.secondaryLabel)
-    }
-    
-    static var divider: Color {
-        return Color(.separator)
-    }
-    
-    // Dynamic color function that respects monochrome mode
-    static func colorForDay(_ date: Date, isMonochrome: Bool = false) -> Color {
-        // In monochrome mode, always return white
-        if isMonochrome {
-            return monoTextPrimary
-        }
-        
-        // Standard colored mode with dark mode awareness
-        let weekday = Calendar.current.component(.weekday, from: date)
-        let baseColor: Color
+    // Dynamic color function for daily color scheme
+    static func colorForDay(_ date: Date) -> Color {
+        let weekday = Calendar.iso8601.component(.weekday, from: date)
         
         switch weekday {
-        case 1: baseColor = sundaySun      // Sunday - Sun
-        case 2: baseColor = mondayMoon     // Monday - Moon
-        case 3: baseColor = tuesdayFire    // Tuesday - Fire (Mars)
-        case 4: baseColor = wednesdayWater // Wednesday - Water (Mercury)
-        case 5: baseColor = thursdayWood   // Thursday - Wood (Jupiter)
-        case 6: baseColor = fridayMetal    // Friday - Metal (Venus)
-        case 7: baseColor = saturdayEarth  // Saturday - Earth (Saturn)
-        default: baseColor = accentBlue
+        case 1: return sundaySun      // Sunday - Sun
+        case 2: return mondayMoon     // Monday - Moon
+        case 3: return tuesdayFire    // Tuesday - Fire (Mars)
+        case 4: return wednesdayWater // Wednesday - Water (Mercury)
+        case 5: return thursdayWood   // Thursday - Wood (Jupiter)
+        case 6: return fridayMetal    // Friday - Metal (Venus)
+        case 7: return saturdayEarth  // Saturday - Earth (Saturn)
+        default: return accentBlue
         }
-        
-        // In dark mode, apply color inversion for better contrast
-        return isDarkMode ? invertColorForDarkMode(baseColor, weekday: weekday) : baseColor
-    }
-    
-    // Color inversion for dark mode
-    private static func invertColorForDarkMode(_ baseColor: Color, weekday: Int) -> Color {
-        switch weekday {
-        case 1: return Color(hex: "FFE55C")  // Sunday - Brighter yellow for dark mode
-        case 2: return Color(hex: "E8E8E8")  // Monday - Brighter silver for dark mode
-        case 3: return Color(hex: "FF6B6B")  // Tuesday - Brighter red for dark mode
-        case 4: return Color(hex: "4DABF7")  // Wednesday - Brighter blue for dark mode
-        case 5: return Color(hex: "51CF66")  // Thursday - Brighter green for dark mode
-        case 6: return Color(hex: "FFD43B")  // Friday - Brighter gold for dark mode
-        case 7: return Color(hex: "D2691E")  // Saturday - Brighter brown for dark mode
-        default: return Color(hex: "339AF0")  // Brighter blue for dark mode
-        }
-    }
-    
-    // Helper to detect dark mode
-    private static var isDarkMode: Bool {
-        if #available(iOS 13.0, *) {
-            return UITraitCollection.current.userInterfaceStyle == .dark
-        }
-        return false
-    }
-    
-    // MARK: - Crash-Safe Adaptive Functions
-    // These functions use thread-safe color resolution with proper fallbacks
-    
-    static func adaptiveBackground(isMonochrome: Bool = false, isAutoDarkMode: Bool = true) -> Color {
-        // Failsafe: Return safe color if evaluation fails
-        guard !ProcessInfo.processInfo.environment.keys.contains("XCODE_RUNNING_FOR_PREVIEWS") else {
-            return isMonochrome ? monoBackgroundDark : Color(.systemBackground)
-        }
-        
-        if isMonochrome {
-            return monoBackgroundDark
-        }
-        
-        // When auto dark mode is disabled, force light background
-        if !isAutoDarkMode {
-            return Color(.systemGroupedBackground)  // Use systemGroupedBackground which is white in light mode
-        }
-        
-        // Use system background which respects the app's color scheme preference set in VeckaApp
-        return Color(.systemBackground)
-    }
-    
-    static func adaptiveSurface(isMonochrome: Bool = false) -> Color {
-        guard !ProcessInfo.processInfo.environment.keys.contains("XCODE_RUNNING_FOR_PREVIEWS") else {
-            return isMonochrome ? monoSurfaceDark : Color(.secondarySystemBackground)
-        }
-        
-        if isMonochrome {
-            return monoSurfaceDark
-        }
-        return Color(.secondarySystemBackground)
-    }
-    
-    static func adaptiveTextPrimary(isMonochrome: Bool = false) -> Color {
-        guard !ProcessInfo.processInfo.environment.keys.contains("XCODE_RUNNING_FOR_PREVIEWS") else {
-            return isMonochrome ? monoTextPrimary : Color(.label)
-        }
-        
-        if isMonochrome {
-            return monoTextPrimary
-        }
-        return Color(.label)
-    }
-    
-    static func adaptiveTextSecondary(isMonochrome: Bool = false) -> Color {
-        guard !ProcessInfo.processInfo.environment.keys.contains("XCODE_RUNNING_FOR_PREVIEWS") else {
-            return isMonochrome ? monoTextSecondary : Color(.secondaryLabel)
-        }
-        
-        if isMonochrome {
-            return monoTextSecondary
-        }
-        return Color(.secondaryLabel)
-    }
-    
-    static func adaptiveTextTertiary(isMonochrome: Bool = false) -> Color {
-        guard !ProcessInfo.processInfo.environment.keys.contains("XCODE_RUNNING_FOR_PREVIEWS") else {
-            return isMonochrome ? monoTextTertiary : Color(.tertiaryLabel)
-        }
-        
-        if isMonochrome {
-            return monoTextTertiary
-        }
-        return Color(.tertiaryLabel)
     }
 }
-
 
 // MARK: - Thread-Safe Helper Extensions
 extension Color {
@@ -372,6 +243,11 @@ struct GlassDesign {
     static func glassBackground(elevation: GlassElevation = .low) -> some ViewModifier {
         GlassBackgroundModifier(elevation: elevation)
     }
+    
+    /// Creates tinted glass morphism with subtle color overlay respecting appearance mode
+    static func tintedGlass(elevation: GlassElevation = .medium, tint: Color = .clear) -> some ViewModifier {
+        TintedGlassModifier(elevation: elevation, tint: tint)
+    }
 }
 
 // MARK: - Glass View Modifiers
@@ -409,78 +285,32 @@ private struct GlassBackgroundModifier: ViewModifier {
     }
 }
 
-// MARK: - Professional Dashboard Components
-/// Enhanced dashboard cell design with better visual hierarchy
-struct DashboardCard: View {
-    let icon: String
-    let title: String
-    let subtitle: String
-    let value: String
-    let accent: Color
-    let action: (() -> Void)?
+private struct TintedGlassModifier: ViewModifier {
+    let elevation: GlassDesign.GlassElevation
+    let tint: Color
+    @Environment(\.colorScheme) private var colorScheme
     
-    init(
-        icon: String,
-        title: String,
-        subtitle: String = "",
-        value: String,
-        accent: Color = AppColors.accentBlue,
-        action: (() -> Void)? = nil
-    ) {
-        self.icon = icon
-        self.title = title
-        self.subtitle = subtitle
-        self.value = value
-        self.accent = accent
-        self.action = action
-    }
-    
-    var body: some View {
-        Button(action: action ?? {}) {
-            VStack(alignment: .leading, spacing: Spacing.small) {
-                HStack {
-                    Image(systemName: icon)
-                        .font(Typography.titleSmall)
-                        .foregroundColor(accent)
-                        .symbolRenderingMode(.hierarchical)
+    func body(content: Content) -> some View {
+        content
+            .background(
+                ZStack {
+                    RoundedRectangle(cornerRadius: elevation.cornerRadius, style: .continuous)
+                        .fill(elevation.material)
                     
-                    Spacer()
-                }
-                
-                VStack(alignment: .leading, spacing: Spacing.elementSpacing) {
-                    Text(value)
-                        .font(Typography.titleMedium)
-                        .fontWeight(.semibold)
-                        .foregroundColor(AppColors.textPrimary)
-                        .tracking(Typography.tightTracking)
-                    
-                    Text(title)
-                        .font(Typography.labelSmall)
-                        .foregroundColor(AppColors.textSecondary)
-                        .textCase(.uppercase)
-                        .tracking(Typography.extraWideTracking)
-                    
-                    if !subtitle.isEmpty {
-                        Text(subtitle)
-                            .font(Typography.captionMedium)
-                            .foregroundColor(AppColors.textSecondary)
+                    if tint != .clear {
+                        RoundedRectangle(cornerRadius: elevation.cornerRadius, style: .continuous)
+                            .fill(tint.opacity(colorScheme == .dark ? 0.15 : 0.08))
+                            .blendMode(.overlay)
                     }
                 }
-                
-                Spacer(minLength: 0)
-            }
-            .frame(minHeight: 100)
-            .padding(Spacing.cardPadding)
-        }
-        .buttonStyle(PlainButtonStyle())
-        .modifier(GlassDesign.glassCard(elevation: .medium))
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(title): \(value)")
+                .shadow(
+                    color: Color.black.opacity(elevation.shadowOpacity),
+                    radius: elevation.shadowRadius,
+                    x: 0,
+                    y: elevation.shadowRadius / 2
+                )
+            )
     }
 }
 
-
-// MARK: - Simplified Color System
-// Removed complex ColorSystemManager to prevent startup deadlocks
-// Using direct color evaluation for optimal performance
-
+// (DashboardCard removed; unused after dashboard components cleanup)

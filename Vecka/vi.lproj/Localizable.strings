@@ -1,0 +1,68 @@
+/* Vietnamese Localization for Vecka */
+
+/* App */
+"app.name" = "BẠN TUẦN";
+
+/* Common */
+"common.today" = "Hôm nay";
+"common.cancel" = "Hủy";
+"common.save" = "Lưu";
+
+/* Actions */
+"action.go_to_today" = "ĐI ĐẾN HÔM NAY";
+
+/* Notes */
+"note.create" = "Tạo ghi chú";
+"note.add_event" = "THÊM SỰ KIỆN";
+"note.your_event" = "SỰ KIỆN CỦA BẠN";
+"note.new_event" = "Sự kiện mới";
+"note.event_title" = "Tiêu đề sự kiện";
+"note.event_details" = "Chi tiết (tùy chọn)";
+"note.event_date" = "Ngày sự kiện";
+"note.untitled" = "Không có tiêu đề";
+
+/* Time */
+"time.days_short" = "n";
+"time.today" = "HÔM NAY";
+
+/* Weekdays */
+"weekday.mon" = "T2";
+"weekday.tue" = "T3";
+"weekday.wed" = "T4";
+"weekday.thu" = "T5";
+"weekday.fri" = "T6";
+"weekday.sat" = "T7";
+"weekday.sun" = "CN";
+
+/* Navigation */
+"navigation.previous_week" = "Tuần trước";
+"navigation.next_week" = "Tuần sau";
+
+/* Accessibility */
+"accessibility.selected" = "đã chọn";
+"accessibility.holiday" = "ngày lễ";
+
+/* Date */
+"date.range_separator" = " – ";
+
+/* Week */
+"week.display" = "Tuần %d";
+
+/* Countdown */
+"countdown.today" = "HÔM NAY";
+"countdown.tomorrow" = "NGÀY MAI";
+"countdown.passed" = "ĐÃ QUA";
+"countdown.days" = "%d NGÀY";
+
+/* Picker */
+"picker.favorites_count" = "Yêu thích %d/4";
+"picker.predefined" = "Có sẵn";
+"picker.custom_events" = "Sự kiện tùy chỉnh";
+"picker.create_custom" = "Tạo mới…";
+"picker.favorite" = "Yêu thích";
+"picker.unfavorite" = "Bỏ yêu thích";
+"picker.remove" = "Xóa";
+"picker.manage_events" = "Quản lý sự kiện…";
+"picker.no_customs_hint" = "Chưa có sự kiện tùy chỉnh.";
+"picker.add_favorites_hint" = "Thêm sự kiện thường dùng vào Yêu thích để truy cập nhanh.";
+"picker.selected" = "Đã chọn";

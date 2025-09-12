@@ -1,0 +1,68 @@
+/* English Localization for Vecka */
+
+/* App */
+"app.name" = "WEEK BUDDY";
+
+/* Common */
+"common.today" = "Today";
+"common.cancel" = "Cancel";
+"common.save" = "Save";
+
+/* Actions */
+"action.go_to_today" = "GO TO TODAY";
+
+/* Notes */
+"note.create" = "Create Note";
+"note.add_event" = "ADD EVENT";
+"note.your_event" = "YOUR EVENT";
+"note.new_event" = "New Event";
+"note.event_title" = "Event Title";
+"note.event_details" = "Details (optional)";
+"note.event_date" = "Event Date";
+"note.untitled" = "Untitled";
+
+/* Time */
+"time.days_short" = "d";
+"time.today" = "TODAY";
+
+/* Weekdays */
+"weekday.mon" = "MON";
+"weekday.tue" = "TUE";
+"weekday.wed" = "WED";
+"weekday.thu" = "THU";
+"weekday.fri" = "FRI";
+"weekday.sat" = "SAT";
+"weekday.sun" = "SUN";
+
+/* Navigation */
+"navigation.previous_week" = "Previous week";
+"navigation.next_week" = "Next week";
+
+/* Accessibility */
+"accessibility.selected" = "selected";
+"accessibility.holiday" = "holiday";
+
+/* Date */
+"date.range_separator" = " – ";
+
+/* Week */
+"week.display" = "Week %d";
+
+/* Countdown */
+"countdown.today" = "TODAY";
+"countdown.tomorrow" = "TOMORROW";
+"countdown.passed" = "PASSED";
+"countdown.days" = "%d DAYS";
+
+/* Picker */
+"picker.favorites_count" = "Favorites %d/4";
+"picker.predefined" = "Predefined";
+"picker.custom_events" = "Custom Events";
+"picker.create_custom" = "Create Custom…";
+"picker.favorite" = "Favorite";
+"picker.unfavorite" = "Unfavorite";
+"picker.remove" = "Remove";
+"picker.manage_events" = "Manage Events…";
+"picker.no_customs_hint" = "No custom events yet.";
+"picker.add_favorites_hint" = "Add your frequently used events to Favorites for quick access.";
+"picker.selected" = "Selected";

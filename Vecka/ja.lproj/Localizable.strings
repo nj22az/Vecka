@@ -1,0 +1,68 @@
+/* Japanese Localization for Vecka */
+
+/* App */
+"app.name" = "週間バディ";
+
+/* Common */
+"common.today" = "今日";
+"common.cancel" = "キャンセル";
+"common.save" = "保存";
+
+/* Actions */
+"action.go_to_today" = "今日へ移動";
+
+/* Notes */
+"note.create" = "メモを作成";
+"note.add_event" = "イベントを追加";
+"note.your_event" = "あなたのイベント";
+"note.new_event" = "新しいイベント";
+"note.event_title" = "イベントのタイトル";
+"note.event_details" = "詳細（任意）";
+"note.event_date" = "イベントの日付";
+"note.untitled" = "無題";
+
+/* Time */
+"time.days_short" = "日";
+"time.today" = "今日";
+
+/* Weekdays */
+"weekday.mon" = "月";
+"weekday.tue" = "火";
+"weekday.wed" = "水";
+"weekday.thu" = "木";
+"weekday.fri" = "金";
+"weekday.sat" = "土";
+"weekday.sun" = "日";
+
+/* Navigation */
+"navigation.previous_week" = "前の週";
+"navigation.next_week" = "次の週";
+
+/* Accessibility */
+"accessibility.selected" = "選択済み";
+"accessibility.holiday" = "祝日";
+
+/* Date */
+"date.range_separator" = " – ";
+
+/* Week */
+"week.display" = "第%d週";
+
+/* Countdown */
+"countdown.today" = "今日";
+"countdown.tomorrow" = "明日";
+"countdown.passed" = "経過";
+"countdown.days" = "%d日";
+
+/* Picker */
+"picker.favorites_count" = "Favorites %d/4";
+"picker.predefined" = "Predefined";
+"picker.custom_events" = "Custom Events";
+"picker.create_custom" = "Create Custom…";
+"picker.favorite" = "Favorite";
+"picker.unfavorite" = "Unfavorite";
+"picker.remove" = "Remove";
+"picker.manage_events" = "Manage Events…";
+"picker.no_customs_hint" = "No custom events yet.";
+"picker.add_favorites_hint" = "Add your frequently used events to Favorites for quick access.";
+"picker.selected" = "Selected";

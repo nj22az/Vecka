@@ -1,0 +1,68 @@
+/* Thai Localization for Vecka */
+
+/* App */
+"app.name" = "เพื่อนสัปดาห์";
+
+/* Common */
+"common.today" = "วันนี้";
+"common.cancel" = "ยกเลิก";
+"common.save" = "บันทึก";
+
+/* Actions */
+"action.go_to_today" = "ไปยังวันนี้";
+
+/* Notes */
+"note.create" = "สร้างโน้ต";
+"note.add_event" = "เพิ่มกิจกรรม";
+"note.your_event" = "กิจกรรมของคุณ";
+"note.new_event" = "กิจกรรมใหม่";
+"note.event_title" = "ชื่อกิจกรรม";
+"note.event_details" = "รายละเอียด (ไม่บังคับ)";
+"note.event_date" = "วันที่กิจกรรม";
+"note.untitled" = "ไม่มีชื่อ";
+
+/* Time */
+"time.days_short" = "ว";
+"time.today" = "วันนี้";
+
+/* Weekdays */
+"weekday.mon" = "จ";
+"weekday.tue" = "อ";
+"weekday.wed" = "พ";
+"weekday.thu" = "พฤ";
+"weekday.fri" = "ศ";
+"weekday.sat" = "ส";
+"weekday.sun" = "อา";
+
+/* Navigation */
+"navigation.previous_week" = "สัปดาห์ก่อน";
+"navigation.next_week" = "สัปดาห์หน้า";
+
+/* Accessibility */
+"accessibility.selected" = "เลือกแล้ว";
+"accessibility.holiday" = "วันหยุด";
+
+/* Date */
+"date.range_separator" = " – ";
+
+/* Week */
+"week.display" = "สัปดาห์ที่ %d";
+
+/* Countdown */
+"countdown.today" = "วันนี้";
+"countdown.tomorrow" = "พรุ่งนี้";
+"countdown.passed" = "ผ่านไปแล้ว";
+"countdown.days" = "%d วัน";
+
+/* Picker */
+"picker.favorites_count" = "รายการโปรด %d/4";
+"picker.predefined" = "สำเร็จรูป";
+"picker.custom_events" = "กิจกรรมที่กำหนดเอง";
+"picker.create_custom" = "สร้างกิจกรรม…";
+"picker.favorite" = "รายการโปรด";
+"picker.unfavorite" = "ลบจากรายการโปรด";
+"picker.remove" = "ลบ";
+"picker.manage_events" = "จัดการกิจกรรม…";
+"picker.no_customs_hint" = "ยังไม่มีกิจกรรมที่กำหนดเอง";
+"picker.add_favorites_hint" = "เพิ่มกิจกรรมที่ใช้บ่อยเป็นรายการโปรดเพื่อเข้าถึงเร็วขึ้น";
+"picker.selected" = "ที่เลือก";

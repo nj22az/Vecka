@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 
 struct ContentView: View {
@@ -13,15 +14,11 @@ struct ContentView: View {
     @State private var currentWeekInfo = WeekInfo(for: Date(), localized: true)
     @State private var dragOffset = CGSize.zero
     @State private var isNavigating = false
-    // Notes for per-day icon storage + settings state
-    @StateObject private var notesManager = NotesManager()
-    @ObservedObject private var calendarManager = SystemCalendarManager.shared
-    @AppStorage("isMonochromeMode") private var isMonochromeMode: Bool = false
-    @AppStorage("isAutoDarkMode") private var isAutoDarkMode: Bool = true
+    // Settings state (notes and events features removed)
     @State private var showSettings = false
     @State private var selectedCountdown: CountdownType = .newYear
-    @State private var showIconPicker = false
-    @State private var iconPickerDate: Date? = nil
+    @State private var selectedCustomCountdown: CustomCountdown? = nil
+    // Icon picker removed
     @State private var showMonthPicker = false
     @State private var showWeekPicker = false
     @State private var showJumpPicker = false
@@ -29,6 +26,7 @@ struct ContentView: View {
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
     @StateObject private var languageManager = LanguageManager.shared
     @Environment(\.colorScheme) private var colorScheme
+    @State private var midnightRefresh: DispatchWorkItem? = nil
     
     private let calendar = Calendar.iso8601
     
@@ -39,7 +37,7 @@ struct ContentView: View {
             
             ZStack {
                 // Background with authentic glass material
-                AppColors.adaptiveBackground(isMonochrome: isMonochromeMode, isAutoDarkMode: isAutoDarkMode)
+                AppColors.background
                     .ignoresSafeArea()
                 
                 if isLandscape {
@@ -57,6 +55,8 @@ struct ContentView: View {
             updateWeekInfo()
             languageManager.detectSystemLanguage()
             print("🌍 App language detected: \(languageManager.getLanguageName()) (\(languageManager.currentLanguage))")
+            loadCountdownPreference()
+            scheduleMidnightRefresh()
         }
         .onChange(of: languageManager.currentLanguage) { _, _ in
             // Refresh UI when language changes
@@ -68,12 +68,12 @@ struct ContentView: View {
                 Spacer()
                 VStack(spacing: 6) {
                     Button(action: { showSettings = true }) {
-                        flatIcon(symbol: "gearshape", size: 18, color: AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
+                        flatIcon(symbol: "gearshape", size: 18, color: AppColors.textPrimary)
                             .frame(width: 44, height: 44)
                     }
                     .accessibilityLabel("Settings")
                     Button(action: navigateToToday) {
-                        flatIcon(symbol: "target", size: 18, color: AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
+                        flatIcon(symbol: "target", size: 18, color: AppColors.textPrimary)
                             .frame(width: 44, height: 44)
                     }
                     .accessibilityLabel(Localization.today)
@@ -81,6 +81,7 @@ struct ContentView: View {
                 .padding(.trailing, 8)
             }
         }.presentationDetents([.medium])
+        .onDisappear { cancelMidnightRefresh() }
     }
     
     // MARK: - Layout Views
@@ -95,7 +96,7 @@ struct ContentView: View {
                 VStack(spacing: Spacing.small) {
                     HStack(alignment: .center, spacing: 24) {
                         Button(action: navigateToPreviousWeek) {
-                            flatIcon(symbol: "chevron.left", size: 20, color: AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
+                            flatIcon(symbol: "chevron.left", size: 20, color: AppColors.textPrimary)
                                 .frame(width: 44, height: 44)
                         }
                         .accessibilityLabel(Localization.previousWeek)
@@ -106,12 +107,12 @@ struct ContentView: View {
                                 weekNumberDisplay
                                 Image(systemName: "chevron.down")
                                     .font(.caption2)
-                                    .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                                    .foregroundStyle(AppColors.textSecondary)
                             }
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
                             .background(
-                                Capsule().fill(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode).opacity(0.06))
+                                Capsule().fill(AppColors.textSecondary.opacity(0.06))
                             )
                         }
                         .buttonStyle(.plain)
@@ -137,7 +138,7 @@ struct ContentView: View {
                         }
 
                         Button(action: navigateToNextWeek) {
-                            flatIcon(symbol: "chevron.right", size: 20, color: AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
+                            flatIcon(symbol: "chevron.right", size: 20, color: AppColors.textPrimary)
                                 .frame(width: 44, height: 44)
                         }
                         .accessibilityLabel(Localization.nextWeek)
@@ -148,11 +149,11 @@ struct ContentView: View {
                             monthYearDisplay
                             Image(systemName: "chevron.down")
                                 .font(.caption2)
-                                .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                                .foregroundStyle(AppColors.textSecondary)
                         }
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(Capsule().fill(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode).opacity(0.06)))
+                        .background(Capsule().fill(AppColors.textSecondary.opacity(0.06)))
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Change month")
@@ -178,33 +179,20 @@ struct ContentView: View {
                 }
                 .padding(.horizontal, Spacing.medium)
                 
+                // Countdown banner
+                countdownBanner
+                    .padding(.horizontal, Spacing.medium)
+
                 // Week calendar strip with 7-day navigation
                 WeekCalendarStrip(
                     selectedDate: $selectedDate,
-                    isMonochrome: isMonochromeMode,
-                    showWeekInfo: false,
-                    hasEvent: { date in
-                        SystemCalendarManager.shared.hasEvents(on: date)
-                    },
-                    iconProvider: { date in
-                        if let userIcon = notesManager.icon(for: date) { return userIcon }
-                        return SeasonalIcons.icon(for: date)
-                    },
-                    onEditIcon: { date in
-                        iconPickerDate = date
-                        showIconPicker = true
-                    },
-                    onClearIcon: { date in
-                        notesManager.setIcon(nil, for: date)
-                    }
+                    showWeekInfo: false
                 )
                 .onChange(of: selectedDate) { _, newDate in
                     updateWeekInfo()
                 }
                 
-                // System Calendar events (squircle card)
-                SystemCalendarEventsView(selectedDate: selectedDate, isMonochrome: isMonochromeMode)
-                    .padding(.horizontal, Spacing.medium)
+                // Events view removed for a leaner app
 
                 // Bottom safe area spacing
                 Spacer(minLength: 20)
@@ -213,17 +201,16 @@ struct ContentView: View {
         .scrollBounceBehavior(.basedOnSize)
         .scrollDismissesKeyboard(.interactively)
         .sheet(isPresented: $showSettings) {
-            SettingsView(selectedCountdown: $selectedCountdown, onCountdownChange: {})
-        }
-        .sheet(isPresented: $showIconPicker) {
-            IconPickerSheet(
-                initialSymbol: iconPickerDate.flatMap { notesManager.icon(for: $0) } ?? "",
-                date: iconPickerDate ?? selectedDate
-            ) { date, symbol in
-                let trimmed = symbol.trimmingCharacters(in: .whitespacesAndNewlines)
-                notesManager.setIcon(trimmed.isEmpty ? nil : trimmed, for: date)
+            SettingsView(selectedCountdown: $selectedCountdown) {
+                // Persist chosen countdown and refresh selected custom (if any)
+                if let data = UserDefaults.standard.data(forKey: "selectedCustomCountdown"),
+                   let custom = try? JSONDecoder().decode(CustomCountdown.self, from: data) {
+                    selectedCustomCountdown = custom
+                }
+                saveCountdownPreference()
             }
-        }.presentationDetents([.medium])
+        }
+        // Icon picker removed
         .sheet(isPresented: Binding(get: { !isPad && showJumpPicker }, set: { showJumpPicker = $0 })) {
             JumpPickerSheet(
                 initialMode: jumpMode,
@@ -248,7 +235,7 @@ struct ContentView: View {
                 
                 HStack(alignment: .center, spacing: 24) {
                     Button(action: navigateToPreviousWeek) {
-                        flatIcon(symbol: "chevron.left", size: 20, color: AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
+                        flatIcon(symbol: "chevron.left", size: 20, color: AppColors.textPrimary)
                             .frame(width: 44, height: 44)
                     }
                     .accessibilityLabel(Localization.previousWeek)
@@ -259,11 +246,11 @@ struct ContentView: View {
                                 .scaleEffect(0.8)
                             Image(systemName: "chevron.down")
                                 .font(.caption2)
-                                .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                                .foregroundStyle(AppColors.textSecondary)
                         }
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(Capsule().fill(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode).opacity(0.06)))
+                        .background(Capsule().fill(AppColors.textSecondary.opacity(0.06)))
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("Change week")
@@ -288,7 +275,7 @@ struct ContentView: View {
                     }
                     
                     Button(action: navigateToNextWeek) {
-                        flatIcon(symbol: "chevron.right", size: 20, color: AppColors.adaptiveTextPrimary(isMonochrome: isMonochromeMode))
+                        flatIcon(symbol: "chevron.right", size: 20, color: AppColors.textPrimary)
                             .frame(width: 44, height: 44)
                     }
                     .accessibilityLabel(Localization.nextWeek)
@@ -299,11 +286,11 @@ struct ContentView: View {
                         monthYearDisplay
                         Image(systemName: "chevron.down")
                             .font(.caption2)
-                            .foregroundStyle(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                            .foregroundStyle(AppColors.textSecondary)
                     }
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(Capsule().fill(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode).opacity(0.06)))
+                    .background(Capsule().fill(AppColors.textSecondary.opacity(0.06)))
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Change month")
@@ -337,32 +324,18 @@ struct ContentView: View {
             VStack(spacing: Spacing.medium) {
                 Spacer(minLength: 40)
                 
+                // Countdown banner
+                countdownBanner
+
                 // Calendar strip
                 WeekCalendarStrip(
                     selectedDate: $selectedDate,
-                    isMonochrome: isMonochromeMode,
-                    showWeekInfo: false,
-                    hasEvent: { date in
-                        SystemCalendarManager.shared.hasEvents(on: date)
-                    },
-                    iconProvider: { date in
-                        if let userIcon = notesManager.icon(for: date) { return userIcon }
-                        return SeasonalIcons.icon(for: date)
-                    },
-                    onEditIcon: { date in
-                        iconPickerDate = date
-                        showIconPicker = true
-                    },
-                    onClearIcon: { date in
-                        notesManager.setIcon(nil, for: date)
-                    }
+                    showWeekInfo: false
                 )
                 .onChange(of: selectedDate) { _, newDate in
                     updateWeekInfo()
                 }
-                // System Calendar events card
-                SystemCalendarEventsView(selectedDate: selectedDate, isMonochrome: isMonochromeMode)
-                    .padding(.horizontal, Spacing.medium)
+                // Events view removed
 
                 Spacer()
                 
@@ -407,13 +380,11 @@ struct ContentView: View {
     private var monthYearDisplay: some View {
         let month = DateFormatterCache.monthName.string(from: selectedDate)
         let yearString = String(currentWeekInfo.year)
-        let bgColor = (isMonochromeMode
-                       ? AppColors.monoTextPrimary
-                       : AppColors.colorForDay(selectedDate, isMonochrome: false)).opacity(0.2)
+        let bgColor = AppColors.colorForDay(selectedDate).opacity(0.2)
         return HStack(spacing: 8) {
             Text(month)
                 .font(Typography.bodyMedium)
-                .foregroundColor(AppColors.adaptiveTextSecondary(isMonochrome: isMonochromeMode))
+                .foregroundColor(AppColors.textSecondary)
             outlinedText(
                 yearString,
                 font: .system(size: 18, weight: .semibold, design: .rounded),
@@ -443,6 +414,146 @@ struct ContentView: View {
             .symbolRenderingMode(.monochrome)
             .font(.system(size: size, weight: .semibold))
             .foregroundStyle(color)
+    }
+    
+    // MARK: - Countdown Banner
+    private var countdownBanner: some View {
+        Group {
+            if let info = currentCountdownInfo() {
+                HStack(spacing: 12) {
+                    ZStack {
+                        Circle().fill(info.color.opacity(0.18))
+                        Image(systemName: info.icon)
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(info.color)
+                    }
+                    .frame(width: 36, height: 36)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(info.title)
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(AppColors.textPrimary)
+                            .lineLimit(1)
+                        Text(info.subtitle)
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(AppColors.textSecondary)
+                            .lineLimit(1)
+                    }
+
+                    Spacer()
+
+                    // Days remaining in outlined style
+                    VStack(spacing: 0) {
+                        ZStack {
+                            Text("\(info.days)")
+                                .font(.system(size: 22, weight: .bold, design: .rounded))
+                                .foregroundStyle(.black).offset(x: 1, y: 1)
+                            Text("\(info.days)")
+                                .font(.system(size: 22, weight: .bold, design: .rounded))
+                                .foregroundStyle(.white)
+                        }
+                        Text(info.daysLabel)
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(AppColors.textSecondary)
+                            .textCase(.uppercase)
+                    }
+                }
+                .padding(12)
+                .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(.thinMaterial))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .stroke(AppColors.textSecondary.opacity(0.15), lineWidth: 0.5)
+                )
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("\(info.title), \(info.accessibility)")
+            }
+        }
+    }
+
+    private struct CountdownInfo {
+        let title: String
+        let subtitle: String
+        let days: Int
+        let daysLabel: String
+        let icon: String
+        let color: Color
+        let accessibility: String
+    }
+
+    private func currentCountdownInfo() -> CountdownInfo? {
+        // Resolve target date and title for the currently selected date/week
+        let baseDate = selectedDate
+        let calendar = Calendar.iso8601
+        var title = ""
+        var icon = "calendar.badge.clock"
+        var targetDate: Date
+
+        switch selectedCountdown {
+        case .custom:
+            guard let custom = selectedCustomCountdown else { return nil }
+            title = custom.name
+            icon = custom.iconName ?? CountdownType.custom.icon
+            let year = calendar.component(.year, from: baseDate)
+            targetDate = custom.computeTargetDate(for: year) ?? custom.date
+        default:
+            title = selectedCountdown.displayName
+            icon = selectedCountdown.icon
+            targetDate = selectedCountdown.targetDate(from: baseDate)
+        }
+
+        let rawDays = calendar.dateComponents([.day], from: calendar.startOfDay(for: baseDate), to: calendar.startOfDay(for: targetDate)).day ?? 0
+        let daysAbs = abs(rawDays)
+        let daysLabel = daysAbs == 1 ? "DAY" : "DAYS"
+        let subtitle = Localization.daysUntilText(rawDays)
+        let color = AppColors.accentBlue
+        let accessibility: String = {
+            if rawDays == 0 { return "today" }
+            if rawDays == 1 { return "tomorrow" }
+            if rawDays < 0 { return "passed \(daysAbs) days ago" }
+            return "in \(rawDays) days"
+        }()
+
+        return CountdownInfo(title: title, subtitle: subtitle, days: daysAbs, daysLabel: daysLabel, icon: icon, color: color, accessibility: accessibility)
+    }
+
+    // MARK: - Countdown Persistence
+    private func loadCountdownPreference() {
+        let defaults = UserDefaults.standard
+        if let raw = defaults.string(forKey: "selectedCountdownType"), let type = CountdownType(rawValue: raw) {
+            selectedCountdown = type
+        }
+        if let data = defaults.data(forKey: "selectedCustomCountdown"),
+           let custom = try? JSONDecoder().decode(CustomCountdown.self, from: data) {
+            selectedCustomCountdown = custom
+        }
+    }
+    
+    private func saveCountdownPreference() {
+        let defaults = UserDefaults.standard
+        defaults.set(selectedCountdown.rawValue, forKey: "selectedCountdownType")
+        if selectedCountdown == .custom, let custom = selectedCustomCountdown, let data = try? JSONEncoder().encode(custom) {
+            defaults.set(data, forKey: "selectedCustomCountdown")
+        }
+    }
+    
+    private func scheduleMidnightRefresh() {
+        cancelMidnightRefresh()
+        let cal = Calendar.iso8601
+        let now = Date()
+        guard let nextMidnight = cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: now)) else { return }
+        let interval = nextMidnight.timeIntervalSince(now)
+        let work = DispatchWorkItem {
+            updateWeekInfo()
+            // chain schedule
+            scheduleMidnightRefresh()
+        }
+        midnightRefresh = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + interval, execute: work)
+    }
+    
+    private func cancelMidnightRefresh() {
+        midnightRefresh?.cancel()
+        midnightRefresh = nil
     }
     
     

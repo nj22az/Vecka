@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B4310B122E476B6E00C32DDD /* VeckaWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B4310B0A2E476B6D00C32DDD /* VeckaWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		B4310AED2E476B6C00C32DDD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -21,12 +25,34 @@
 			remoteGlobalIDString = B4310ADA2E476B6A00C32DDD;
 			remoteInfo = Vecka;
 		};
+		B4310B0F2E476B6E00C32DDD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B4310AD32E476B6A00C32DDD /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B4310B082E476B6D00C32DDD;
+			remoteInfo = VeckaWidgetExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B4310B112E476B6E00C32DDD /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				B4310B122E476B6E00C32DDD /* VeckaWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		B4310ADB2E476B6A00C32DDD /* Vecka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vecka.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4310AEC2E476B6C00C32DDD /* VeckaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VeckaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4310AF62E476B6C00C32DDD /* VeckaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VeckaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B4310B0A2E476B6D00C32DDD /* VeckaWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = VeckaWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -36,6 +62,13 @@
 				Info.plist,
 			);
 			target = B4310ADA2E476B6A00C32DDD /* Vecka */;
+		};
+		B4310B142E476B6E00C32DDF /* Exceptions for "VeckaWidget" folder in "VeckaWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				WidgetInfo.plist,
+			);
+			target = B4310B082E476B6D00C32DDD /* VeckaWidgetExtension */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -56,6 +89,14 @@
 		B4310AF92E476B6C00C32DDD /* VeckaUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = VeckaUITests;
+			sourceTree = "<group>";
+		};
+		B4310B0C2E476B6D00C32DDD /* VeckaWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				B4310B142E476B6E00C32DDF /* Exceptions for "VeckaWidget" folder in "VeckaWidgetExtension" target */,
+			);
+			path = VeckaWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -82,6 +123,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B4310B072E476B6D00C32DDD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -89,6 +137,7 @@
 			isa = PBXGroup;
 			children = (
 				B4310ADD2E476B6A00C32DDD /* Vecka */,
+				B4310B0C2E476B6D00C32DDD /* VeckaWidget */,
 				B4310AEF2E476B6C00C32DDD /* VeckaTests */,
 				B4310AF92E476B6C00C32DDD /* VeckaUITests */,
 				B4310ADC2E476B6A00C32DDD /* Products */,
@@ -101,6 +150,7 @@
 				B4310ADB2E476B6A00C32DDD /* Vecka.app */,
 				B4310AEC2E476B6C00C32DDD /* VeckaTests.xctest */,
 				B4310AF62E476B6C00C32DDD /* VeckaUITests.xctest */,
+				B4310B0A2E476B6D00C32DDD /* VeckaWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -115,10 +165,12 @@
 				B4310AD72E476B6A00C32DDD /* Sources */,
 				B4310AD82E476B6A00C32DDD /* Frameworks */,
 				B4310AD92E476B6A00C32DDD /* Resources */,
+				B4310B112E476B6E00C32DDD /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				B4310B132E476B6E00C32DDE /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				B4310ADD2E476B6A00C32DDD /* Vecka */,
@@ -176,6 +228,28 @@
 			productReference = B4310AF62E476B6C00C32DDD /* VeckaUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		B4310B082E476B6D00C32DDD /* VeckaWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B4310B102E476B6D00C32DDD /* Build configuration list for PBXNativeTarget "VeckaWidgetExtension" */;
+			buildPhases = (
+				B4310B052E476B6D00C32DDD /* Sources */,
+				B4310B072E476B6D00C32DDD /* Frameworks */,
+				B4310B062E476B6D00C32DDD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				B4310B0C2E476B6D00C32DDD /* VeckaWidget */,
+			);
+			name = VeckaWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = VeckaWidgetExtension;
+			productReference = B4310B0A2E476B6D00C32DDD /* VeckaWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -197,6 +271,9 @@
 						CreatedOnToolsVersion = 16.4;
 						TestTargetID = B4310ADA2E476B6A00C32DDD;
 					};
+					B4310B082E476B6D00C32DDD = {
+						CreatedOnToolsVersion = 16.4;
+					};
 				};
 			};
 			buildConfigurationList = B4310AD62E476B6A00C32DDD /* Build configuration list for PBXProject "Vecka" */;
@@ -205,6 +282,20 @@
 			knownRegions = (
 				en,
 				Base,
+				sv,
+				ja,
+				ko,
+				de,
+				vi,
+				th,
+				en,
+				Base,
+				sv,
+				ja,
+				ko,
+				de,
+				vi,
+				th,
 			);
 			mainGroup = B4310AD22E476B6A00C32DDD;
 			minimizedProjectReferenceProxies = 1;
@@ -214,6 +305,7 @@
 			projectRoot = "";
 			targets = (
 				B4310ADA2E476B6A00C32DDD /* Vecka */,
+				B4310B082E476B6D00C32DDD /* VeckaWidgetExtension */,
 				B4310AEB2E476B6C00C32DDD /* VeckaTests */,
 				B4310AF52E476B6C00C32DDD /* VeckaUITests */,
 			);
@@ -236,6 +328,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		B4310AF42E476B6C00C32DDD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B4310B062E476B6D00C32DDD /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -266,6 +365,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		B4310B052E476B6D00C32DDD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -278,6 +384,11 @@
 			isa = PBXTargetDependency;
 			target = B4310ADA2E476B6A00C32DDD /* Vecka */;
 			targetProxy = B4310AF72E476B6C00C32DDD /* PBXContainerItemProxy */;
+		};
+		B4310B132E476B6E00C32DDE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B4310B082E476B6D00C32DDD /* VeckaWidgetExtension */;
+			targetProxy = B4310B0F2E476B6E00C32DDD /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -395,7 +506,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -453,7 +564,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -471,7 +582,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = P4LGU6F45C;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = Johansson.VeckaTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -490,7 +601,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = P4LGU6F45C;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = Johansson.VeckaTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -535,6 +646,56 @@
 			};
 			name = Release;
 		};
+		B4310B0D2E476B6D00C32DDD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P4LGU6F45C;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = VeckaWidget/WidgetInfo.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Vecka Widget";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Johansson.Vecka.VeckaWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B4310B0E2E476B6D00C32DDD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P4LGU6F45C;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = VeckaWidget/WidgetInfo.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Vecka Widget";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Johansson.Vecka.VeckaWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -570,6 +731,15 @@
 			buildConfigurations = (
 				B4310B082E476B6C00C32DDD /* Debug */,
 				B4310B092E476B6C00C32DDD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B4310B102E476B6D00C32DDD /* Build configuration list for PBXNativeTarget "VeckaWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B4310B0D2E476B6D00C32DDD /* Debug */,
+				B4310B0E2E476B6D00C32DDD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
