@@ -17,6 +17,7 @@ struct SettingsView: View {
     @State private var favoriteCountdowns: [SavedCountdown] = []
     // Cache of currently selected custom for quick compare (avoid decoding in views)
     @State private var selectedCustomLocal: CustomCountdown? = nil
+    @State private var showFavoritesEditor = false
     
     let onCountdownChange: () -> Void
     
@@ -64,6 +65,11 @@ struct SettingsView: View {
                         .foregroundStyle(AppColors.accentBlue)
                         .accessibilityLabel(Localization.manageEvents)
                         .padding(.top, 6)
+
+                    Button(Localization.reorderFavorites) { showFavoritesEditor = true }
+                        .font(.callout)
+                        .foregroundStyle(AppColors.accentBlue)
+                        .padding(.vertical, 2)
                 } header: {
                     Text("Events")
                         .foregroundStyle(AppColors.textSecondary)
@@ -162,6 +168,11 @@ struct SettingsView: View {
             )
         }
         .onAppear { loadFavorites(); loadSelectedCustom() }
+        .sheet(isPresented: $showFavoritesEditor) {
+            FavoritesEditorView(items: $favoriteCountdowns) {
+                saveFavorites()
+            }
+        }
         // Custom creation is now inside the countdown picker grid
     }
     
@@ -187,7 +198,54 @@ struct SettingsView: View {
             selectedCustomLocal = nil
         }
     }
+    
+    private func saveFavorites() {
+        let trimmed = Array(favoriteCountdowns.prefix(4))
+        if let data = try? JSONEncoder().encode(trimmed) {
+            UserDefaults.standard.set(data, forKey: "favoriteCountdowns")
+        }
+    }
 
+}
+
+// MARK: - Inline Favorites Editor Sheet
+struct FavoritesEditorView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Binding var items: [SavedCountdown]
+    var onChanged: () -> Void
+    @State private var editMode: EditMode = .active
+    
+    var body: some View {
+        NavigationView {
+            List {
+                Section(footer: Text(String(format: Localization.favoritesCountFormat, items.count)).font(.caption).foregroundStyle(.secondary)) {
+                    ForEach(items) { fav in
+                        HStack {
+                            Image(systemName: fav.icon).foregroundStyle(AppColors.textSecondary)
+                            Text(fav.displayName)
+                                .foregroundStyle(AppColors.textPrimary)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
+                        }
+                    }
+                    .onMove { source, dest in
+                        items.move(fromOffsets: source, toOffset: dest)
+                        items = Array(items.prefix(4))
+                    }
+                    .onDelete { offsets in
+                        items.remove(atOffsets: offsets)
+                    }
+                }
+            }
+            .navigationTitle(Localization.reorderFavorites.replacingOccurrences(of: "…", with: ""))
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) { Button(Localization.cancel) { dismiss() } }
+                ToolbarItem(placement: .navigationBarTrailing) { Button(Localization.save) { onChanged(); dismiss() }.fontWeight(.semibold) }
+                ToolbarItem(placement: .navigationBarTrailing) { EditButton() }
+            }
+        }
+        .environment(\.editMode, $editMode)
+    }
 }
 
 #Preview("Light Mode") {

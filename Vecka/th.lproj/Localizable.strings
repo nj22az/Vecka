@@ -63,6 +63,7 @@
 "picker.unfavorite" = "ลบจากรายการโปรด";
 "picker.remove" = "ลบ";
 "picker.manage_events" = "จัดการกิจกรรม…";
+"picker.reorder_favorites" = "จัดเรียงรายการโปรด…";
 "picker.no_customs_hint" = "ยังไม่มีกิจกรรมที่กำหนดเอง";
 "picker.add_favorites_hint" = "เพิ่มกิจกรรมที่ใช้บ่อยเป็นรายการโปรดเพื่อเข้าถึงเร็วขึ้น";
 "picker.selected" = "ที่เลือก";

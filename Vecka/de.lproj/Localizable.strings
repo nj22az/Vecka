@@ -63,6 +63,7 @@
 "picker.unfavorite" = "Favorit entfernen";
 "picker.remove" = "Entfernen";
 "picker.manage_events" = "Ereignisse verwalten…";
+"picker.reorder_favorites" = "Favoriten anordnen…";
 "picker.no_customs_hint" = "Noch keine eigenen Ereignisse.";
 "picker.add_favorites_hint" = "Fügen Sie häufig verwendete Ereignisse als Favoriten hinzu.";
 "picker.selected" = "Ausgewählt";

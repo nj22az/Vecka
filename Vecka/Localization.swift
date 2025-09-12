@@ -89,6 +89,7 @@ struct Localization {
     static let unfavorite = NSLocalizedString("picker.unfavorite", value: "Unfavorite", comment: "Unfavorite action")
     static let remove = NSLocalizedString("picker.remove", value: "Remove", comment: "Remove action")
     static let manageEvents = NSLocalizedString("picker.manage_events", value: "Manage Events…", comment: "Manage events button")
+    static let reorderFavorites = NSLocalizedString("picker.reorder_favorites", value: "Reorder Favorites…", comment: "Reorder favorites button")
     static let noCustomsHint = NSLocalizedString("picker.no_customs_hint", value: "No custom events yet.", comment: "Empty custom events hint")
     static let addFavoritesHint = NSLocalizedString("picker.add_favorites_hint", value: "Add your frequently used events to Favorites for quick access.", comment: "Favorites empty hint")
     static let selectedHeader = NSLocalizedString("picker.selected", value: "Selected", comment: "Selected section header")

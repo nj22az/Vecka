@@ -63,6 +63,7 @@
 "picker.unfavorite" = "Ta bort favorit";
 "picker.remove" = "Ta bort";
 "picker.manage_events" = "Hantera händelser…";
+"picker.reorder_favorites" = "Ordna favoriter…";
 "picker.no_customs_hint" = "Inga egna händelser ännu.";
 "picker.add_favorites_hint" = "Lägg till ofta använda händelser som favoriter för snabb åtkomst.";
 "picker.selected" = "Vald";

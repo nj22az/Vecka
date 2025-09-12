@@ -63,6 +63,7 @@
 "picker.unfavorite" = "Unfavorite";
 "picker.remove" = "Remove";
 "picker.manage_events" = "Manage Events…";
+"picker.reorder_favorites" = "Reorder Favorites…";
 "picker.no_customs_hint" = "No custom events yet.";
 "picker.add_favorites_hint" = "Add your frequently used events to Favorites for quick access.";
 "picker.selected" = "Selected";

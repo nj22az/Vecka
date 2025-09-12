@@ -475,11 +475,11 @@ struct CountdownPickerSheet: View {
             .navigationTitle("Choose Countdown")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .navigationBarLeading) { Button(Localization.cancel) { dismiss() } }
+                ToolbarItem(placement: .navigationBarLeading) { EditButton() }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") { onSave(); dismiss() }.fontWeight(.semibold)
+                    Button(Localization.save) { onSave(); dismiss() }.fontWeight(.semibold)
                 }
-                ToolbarItem(placement: .navigationBarTrailing) { EditButton() }
             }
             .environment(\.editMode, $editMode)
         }

@@ -63,6 +63,7 @@
 "picker.unfavorite" = "즐겨찾기 해제";
 "picker.remove" = "제거";
 "picker.manage_events" = "이벤트 관리…";
+"picker.reorder_favorites" = "즐겨찾기 정렬…";
 "picker.no_customs_hint" = "아직 사용자 지정 이벤트가 없습니다.";
 "picker.add_favorites_hint" = "자주 사용하는 이벤트를 즐겨찾기에 추가하여 빠르게 접근하세요.";
 "picker.selected" = "선택됨";

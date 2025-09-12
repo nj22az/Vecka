@@ -63,6 +63,7 @@
 "picker.unfavorite" = "Bỏ yêu thích";
 "picker.remove" = "Xóa";
 "picker.manage_events" = "Quản lý sự kiện…";
+"picker.reorder_favorites" = "Sắp xếp Yêu thích…";
 "picker.no_customs_hint" = "Chưa có sự kiện tùy chỉnh.";
 "picker.add_favorites_hint" = "Thêm sự kiện thường dùng vào Yêu thích để truy cập nhanh.";
 "picker.selected" = "Đã chọn";
