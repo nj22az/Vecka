@@ -29,8 +29,8 @@ struct VeckaWidgetProvider: TimelineProvider {
     // Calendar instance for ISO week calculations
     private static let isoCalendar: Calendar = {
         var calendar = Calendar(identifier: .iso8601)
-        calendar.timeZone = TimeZone(identifier: "Europe/Stockholm") ?? TimeZone.current
-        calendar.locale = Locale(identifier: "sv_SE")
+        calendar.timeZone = .autoupdatingCurrent
+        calendar.locale = .autoupdatingCurrent
         return calendar
     }()
     
@@ -189,24 +189,24 @@ struct VeckaWidgetEntry: TimelineEntry {
     // Static instances for performance
     private static let isoCalendar: Calendar = {
         var calendar = Calendar(identifier: .iso8601)
-        calendar.timeZone = TimeZone(identifier: "Europe/Stockholm") ?? TimeZone.current
-        calendar.locale = Locale(identifier: "sv_SE")
+        calendar.timeZone = .autoupdatingCurrent
+        calendar.locale = .autoupdatingCurrent
         return calendar
     }()
     
     private static let weekDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM d"
-        formatter.locale = Locale(identifier: "sv_SE")
-        formatter.timeZone = TimeZone(identifier: "Europe/Stockholm")
+        formatter.locale = .autoupdatingCurrent
+        formatter.timeZone = .autoupdatingCurrent
         return formatter
     }()
     
     private static let currentDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "EEEE, MMM d"
-        formatter.locale = Locale(identifier: "sv_SE")
-        formatter.timeZone = TimeZone(identifier: "Europe/Stockholm")
+        formatter.locale = .autoupdatingCurrent
+        formatter.timeZone = .autoupdatingCurrent
         return formatter
     }()
     
@@ -214,8 +214,8 @@ struct VeckaWidgetEntry: TimelineEntry {
         let formatter = DateFormatter()
         formatter.timeStyle = .short
         formatter.dateStyle = .none
-        formatter.locale = Locale(identifier: "sv_SE")
-        formatter.timeZone = TimeZone(identifier: "Europe/Stockholm")
+        formatter.locale = .autoupdatingCurrent
+        formatter.timeZone = .autoupdatingCurrent
         return formatter
     }()
     
@@ -223,15 +223,15 @@ struct VeckaWidgetEntry: TimelineEntry {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .short
-        formatter.locale = Locale(identifier: "sv_SE")
-        formatter.timeZone = TimeZone(identifier: "Europe/Stockholm")
+        formatter.locale = .autoupdatingCurrent
+        formatter.timeZone = .autoupdatingCurrent
         formatter.doesRelativeDateFormatting = true
         return formatter
     }()
     
     // MARK: - Color System (Simplified for Widget)
     static func colorForDay(_ date: Date) -> Color {
-        let weekday = Calendar.current.component(.weekday, from: date)
+        let weekday = isoCalendar.component(.weekday, from: date)
         
         switch weekday {
         case 1: return Color(red: 1.0, green: 0.843, blue: 0.0)      // Sunday - Sun (Gold)

@@ -54,7 +54,9 @@ struct ContentView: View {
         .onAppear {
             updateWeekInfo()
             languageManager.detectSystemLanguage()
+#if DEBUG
             print("🌍 App language detected: \(languageManager.getLanguageName()) (\(languageManager.currentLanguage))")
+#endif
             loadCountdownPreference()
             scheduleMidnightRefresh()
         }

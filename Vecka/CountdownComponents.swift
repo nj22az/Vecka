@@ -358,8 +358,9 @@ struct CountdownCard: View {
     // MARK: - Helper Properties
     
     private var daysUntilCountdown: Int {
-        let targetDate = countdownType == .custom ? customCountdown?.date ?? Date() : countdownType.targetDate
-        return Calendar.current.dateComponents([.day], from: Date(), to: targetDate).day ?? 0
+        let targetDate = countdownType == .custom ? (customCountdown?.date ?? Date()) : countdownType.targetDate
+        let cal = Calendar.iso8601
+        return cal.dateComponents([.day], from: cal.startOfDay(for: Date()), to: cal.startOfDay(for: targetDate)).day ?? 0
     }
     
     private var accessibilityLabel: String {

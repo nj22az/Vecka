@@ -40,6 +40,50 @@ This document summarizes a TestFlight-style audit of the Vecka app and widget, t
 
 ---
 
+## Second Audit Pass (Consistency + Widget)
+
+Applied in this pass:
+
+- iPhone orientation consistency
+  - Info.plist now lists only Portrait for iPhone; iPad keeps all orientations. Avoids splash/launch-time rotation inconsistencies.
+  - File: `Vecka/Info.plist`
+
+- Removed unused background mode
+  - `UIBackgroundModes` (remote-notification) removed to avoid review flags since the app does not use push.
+  - File: `Vecka/Info.plist`
+
+- ISO calendar standardization extended
+  - Picker `CountdownCard.daysUntilCountdown` uses ISO start-of-day for stable day deltas.
+  - Widget calendars/formatters use autoupdating locale/timezone with ISO-8601; no hardcoded `sv_SE`/Stockholm.
+  - Files: `Vecka/CountdownComponents.swift`, `VeckaWidget/VeckaWidget.swift`
+
+- Debug logging
+  - Language detection print wrapped in `#if DEBUG`.
+  - File: `Vecka/ContentView.swift`
+
+- Accessibility polish
+  - Star toggle announces Favorite/Unfavorite; Remove/Delete announce accordingly. (From prior pass.)
+
+Open items after pass 2:
+
+1) Localization coverage
+- Verify new keys are present in all locales you ship. We added EN/SV/JA/DE/KO/VI/TH in these passes. If any locale is not intended, you can drop its `.lproj` folder or complete translations.
+
+2) Performance micro-optimizations
+- Widget’s event fetch is acceptable for the current scope. Consider caching between calls if timelines get denser.
+
+3) QA checklist (Widget)
+- Compare week number and range with the app on boundary weeks (Dec/Jan) across several locales/time zones.
+- Verify that when calendars permissions are off, widgets still render and show no events without errors.
+
+4) Accessibility extras
+- Add `accessibilityValue` for the selected row in the picker and banner (e.g., “selected”). Not strictly necessary but nice to have.
+
+5) Dynamic Type
+- Large sizes: Spot-check favorites grid tiles and countdown banner. We added scaling on key labels; adjust spacing if truncation observed.
+
+---
+
 ## Issues Discovered (Beta-Test View) and Status
 
 1) Countdown number vs label mismatch (PASSED vs 0)
@@ -123,4 +167,3 @@ This document summarizes a TestFlight-style audit of the Vecka app and widget, t
 
 ## Appendices
 - Lucid icon set for customs uses SF Symbols: `sparkles`, `tree.fill`, `sun.max.fill`, `heart.fill`, `moon.stars.fill`, `leaf.fill`, `gift.fill`, `calendar`, `party.popper`, `star.fill`.
-
