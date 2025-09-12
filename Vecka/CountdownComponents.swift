@@ -413,6 +413,7 @@ struct CountdownPickerSheet: View {
     // Disclosure state to reduce clutter
     @State private var showPredefined: Bool = false
     @State private var showCustomEvents: Bool = true
+    @State private var editMode: EditMode = .inactive
     
     var body: some View {
         NavigationView {
@@ -429,6 +430,7 @@ struct CountdownPickerSheet: View {
                             favoriteRow(fav)
                         }
                         .onDelete(perform: removeFavorites)
+                        .onMove(perform: moveFavorites)
                     }
                 }
 
@@ -477,7 +479,9 @@ struct CountdownPickerSheet: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") { onSave(); dismiss() }.fontWeight(.semibold)
                 }
+                ToolbarItem(placement: .navigationBarTrailing) { EditButton() }
             }
+            .environment(\.editMode, $editMode)
         }
         .onAppear { loadCustomCountdowns(); loadFavorites() }
         .sheet(isPresented: $showingCustomDialog) {
@@ -529,6 +533,11 @@ struct CountdownPickerSheet: View {
         saveFavorites()
     }
     
+    private func moveFavorites(from source: IndexSet, to destination: Int) {
+        favorites.move(fromOffsets: source, toOffset: destination)
+        saveFavorites()
+    }
+    
     @ViewBuilder
     private func eventRow(type: CountdownType, custom: CustomCountdown?) -> some View {
         let isSelectedRow = (type == selectedCountdown)
@@ -536,7 +545,10 @@ struct CountdownPickerSheet: View {
         let title = (type == .custom ? (custom?.name ?? "Custom") : type.displayName)
         HStack {
             Image(systemName: icon).foregroundStyle(AppColors.textSecondary)
-            Text(title).foregroundStyle(AppColors.textPrimary)
+            Text(title)
+                .foregroundStyle(AppColors.textPrimary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
             Spacer()
             Button(action: {
                 let wasFavorite = favorites.contains(SavedCountdown(type: type, custom: custom))
@@ -624,7 +636,10 @@ struct CountdownPickerSheet: View {
     private func favoriteRow(_ fav: SavedCountdown) -> some View {
         HStack {
             Image(systemName: fav.icon).foregroundStyle(AppColors.textSecondary)
-            Text(fav.displayName).foregroundStyle(AppColors.textPrimary)
+            Text(fav.displayName)
+                .foregroundStyle(AppColors.textPrimary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
             Spacer()
             if (fav.type == selectedCountdown) { Image(systemName: "checkmark.circle.fill").foregroundStyle(AppColors.accentBlue) }
         }
@@ -657,7 +672,10 @@ struct CountdownPickerSheet: View {
         }()
         return HStack {
             Image(systemName: current.icon).foregroundStyle(AppColors.textSecondary)
-            Text(current.displayName).foregroundStyle(AppColors.textPrimary)
+            Text(current.displayName)
+                .foregroundStyle(AppColors.textPrimary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
             Spacer()
             Image(systemName: "checkmark.circle.fill").foregroundStyle(AppColors.accentBlue)
         }
