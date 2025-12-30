@@ -1,7 +1,7 @@
 /* Thai Localization for Vecka */
 
 /* App */
-"app.name" = "เพื่อนสัปดาห์";
+"app.name" = "WEEKGRID";
 
 /* Common */
 "common.today" = "วันนี้";
@@ -13,6 +13,8 @@
 
 /* Notes */
 "note.create" = "สร้างโน้ต";
+"note.add" = "เพิ่มโน้ต";
+"note.edit" = "แก้ไข";
 "note.add_event" = "เพิ่มกิจกรรม";
 "note.your_event" = "กิจกรรมของคุณ";
 "note.new_event" = "กิจกรรมใหม่";
@@ -24,6 +26,13 @@
 /* Time */
 "time.days_short" = "ว";
 "time.today" = "วันนี้";
+"time.day_singular" = "วัน";
+"time.day_plural" = "วัน";
+
+/* Countdown */
+"countdown.select" = "เลือกนับถอยหลัง";
+"countdown.ago" = "ที่แล้ว";
+"countdown.left" = "เหลือ";
 
 /* Weekdays */
 "weekday.mon" = "จ";
@@ -67,3 +76,112 @@
 "picker.no_customs_hint" = "ยังไม่มีกิจกรรมที่กำหนดเอง";
 "picker.add_favorites_hint" = "เพิ่มกิจกรรมที่ใช้บ่อยเป็นรายการโปรดเพื่อเข้าถึงเร็วขึ้น";
 "picker.selected" = "ที่เลือก";
+
+/* Weather - UI Labels */
+"weather.high" = "สูงสุด";
+"weather.low" = "ต่ำสุด";
+"weather.precipitation" = "ฝน";
+"weather.uv_index" = "ดัชนี UV";
+"weather.wind" = "ลม";
+
+/* Weather - Loading & Errors */
+"weather.loading" = "กำลังโหลดสภาพอากาศ...";
+"weather.tap_to_retry" = "แตะเพื่อลองอีกครั้ง";
+"weather.error.no_location" = "ไม่มีข้อมูลตำแหน่ง";
+"weather.error.permission_denied" = "ต้องการสิทธิ์ตำแหน่ง";
+"weather.error.fetch_failed" = "ไม่สามารถโหลดสภาพอากาศได้";
+
+/* Weather - Permissions */
+"weather.enable_location" = "เปิดใช้งานตำแหน่ง";
+"weather.location_required" = "สภาพอากาศต้องการการเข้าถึงตำแหน่งเพื่อแสดงพยากรณ์อากาศสำหรับพื้นที่ของคุณ";
+"weather.open_settings" = "เปิดการตั้งค่า";
+
+/* Weather - Conditions */
+"weather.condition.clear" = "แจ่มใส";
+"weather.condition.mostly_clear" = "แจ่มใสเป็นส่วนใหญ่";
+"weather.condition.partly_cloudy" = "มีเมฆบางส่วน";
+"weather.condition.mostly_cloudy" = "มีเมฆเป็นส่วนใหญ่";
+"weather.condition.cloudy" = "มีเมฆมาก";
+"weather.condition.drizzle" = "ฝนละออง";
+"weather.condition.rain" = "ฝน";
+"weather.condition.heavy_rain" = "ฝนหนัก";
+"weather.condition.snow" = "หิมะ";
+"weather.condition.heavy_snow" = "หิมะหนัก";
+"weather.condition.flurries" = "หิมะฟุ้ง";
+"weather.condition.blizzard" = "พายุหิมะ";
+"weather.condition.sleet" = "ลูกเห็บ";
+"weather.condition.freezing_rain" = "ฝนเย็นจัด";
+"weather.condition.freezing_drizzle" = "ฝนละอองเย็นจัด";
+"weather.condition.wintry_mix" = "สภาพอากาศหนาว";
+"weather.condition.blowing_snow" = "หิมะปลิว";
+"weather.condition.isolated_thunderstorms" = "พายุฟ้าคะนองเฉพาะที่";
+"weather.condition.scattered_thunderstorms" = "พายุฟ้าคะนองกระจาย";
+"weather.condition.thunderstorms" = "พายุฟ้าคะนอง";
+"weather.condition.strong_storms" = "พายุรุนแรง";
+"weather.condition.tropical_storm" = "พายุโซนร้อน";
+"weather.condition.hurricane" = "เฮอริเคน";
+"weather.condition.foggy" = "มีหมอก";
+"weather.condition.haze" = "มีหมอกควัน";
+"weather.condition.smoky" = "มีควัน";
+"weather.condition.windy" = "ลมแรง";
+"weather.condition.breezy" = "ลมโชย";
+"weather.condition.hot" = "ร้อน";
+"weather.condition.frigid" = "หนาวมาก";
+"weather.condition.hail" = "ลูกเห็บขนาดใหญ่";
+"weather.condition.sun_flurries" = "แดดและหิมะ";
+"weather.condition.sun_showers" = "แดดและฝน";
+"weather.condition.blowing_dust" = "ฝุ่นพัด";
+"weather.condition.unknown" = "สภาพอากาศแปรปรวน";
+
+/* Expenses & Trips */
+"expenses.title" = "ค่าใช้จ่าย";
+"trips.title" = "การเดินทาง";
+"expenses.amount" = "จำนวนเงิน";
+"expenses.category" = "หมวดหมู่";
+"expenses.details" = "รายละเอียด";
+"expenses.receipt" = "ใบเสร็จ";
+"expenses.exchange_rate" = "อัตราแลกเปลี่ยน";
+"expenses.converted_amount" = "จำนวนเงินที่แปลงแล้ว";
+"expenses.currency_conversion" = "การแปลงสกุลเงิน";
+"expenses.notes" = "หมายเหตุ (ไม่บังคับ)";
+"expenses.trip" = "การเดินทาง";
+"expenses.rate_for" = "อัตราสำหรับ";
+
+/* Location & Weather */
+"location.searching" = "กำลังค้นหา...";
+"location.no_locations_found" = "ไม่พบสถานที่";
+"location.search_results" = "ผลการค้นหา";
+"location.quick_add" = "เพิ่มด่วน";
+"location.manual_entry" = "ป้อนด้วยตนเอง";
+"location.manual_entry_hint" = "ป้อนพิกัดในรูปแบบทศนิยม (เช่น 59.3293, 18.0686)";
+"location.auto_detect" = "ตรวจหาอัตโนมัติ";
+"location.auto_detect_hint" = "ใช้ตำแหน่งปัจจุบันของอุปกรณ์สำหรับพยากรณ์อากาศ";
+"location.saved_locations" = "สถานที่ที่บันทึกไว้";
+"weather.loading_forecast" = "กำลังโหลดพยากรณ์อากาศ...";
+"weather.no_weather_data" = "ไม่มีข้อมูลสภาพอากาศ";
+
+/* Holidays & Observances */
+"holidays.title" = "วันหยุด";
+"holidays.turn_on_hint" = "เปิดวันหยุดในหน้าวันหยุดเพื่อดูวันสำคัญ";
+"holidays.turn_on_above" = "เปิดวันหยุดด้านบนเพื่อดูวันหยุด";
+"holidays.add_observances" = "เพิ่มวันสำคัญเช่นวันเกิดหรือเหตุการณ์สำคัญ";
+"holidays.add_custom" = "เพิ่มวันหยุดที่กำหนดเองด้วย + หรือปรับภูมิภาค";
+
+/* PDF Export */
+"pdf.export_type" = "ประเภทการส่งออก";
+"pdf.date_selection" = "การเลือกวันที่";
+"pdf.export_options" = "ตัวเลือกการส่งออก";
+"pdf.export_includes" = "การส่งออกรวมข้อมูลที่เลือกสำหรับช่วงวันที่ที่เลือก";
+"pdf.loading_preview" = "กำลังโหลดตัวอย่าง...";
+"pdf.activity_preview" = "ตัวอย่างกิจกรรม";
+"pdf.select_options_hint" = "เลือกตัวเลือกเพื่อดูตัวอย่างเนื้อหารายงาน";
+"pdf.preview" = "ตัวอย่าง";
+"pdf.preview_updates" = "ตัวอย่างจะอัปเดตเมื่อคุณเปลี่ยนตัวเลือก";
+"pdf.preview_unavailable" = "ตัวอย่างไม่พร้อมใช้งาน";
+
+/* Common UI */
+"common.week" = "สัปดาห์";
+"common.edit" = "แก้ไข";
+
+/* Dashboard */
+"dashboard.pinned" = "ปักหมุด";

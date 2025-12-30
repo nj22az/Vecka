@@ -1,0 +1,139 @@
+/* Simplified Chinese Localization for Vecka */
+
+/* App */
+"app.name" = "WEEKGRID";
+
+/* Common */
+"common.today" = "今天";
+"common.cancel" = "取消";
+"common.save" = "保存";
+
+/* Actions */
+"action.go_to_today" = "回到今天";
+
+/* Notes */
+"note.create" = "创建笔记";
+"note.add" = "添加笔记";
+"note.edit" = "编辑";
+"note.add_event" = "添加事件";
+"note.your_event" = "您的事件";
+"note.new_event" = "新事件";
+"note.event_title" = "事件标题";
+"note.event_details" = "详情（可选）";
+"note.event_date" = "事件日期";
+"note.untitled" = "无标题";
+
+/* Time */
+"time.days_short" = "天";
+"time.today" = "今天";
+"time.day_singular" = "天";
+"time.day_plural" = "天";
+
+/* Weather - UI Labels */
+"weather.high" = "最高";
+"weather.low" = "最低";
+"weather.precipitation" = "降水";
+"weather.uv_index" = "紫外线指数";
+"weather.wind" = "风";
+
+/* Weather - Loading & Errors */
+"weather.loading" = "正在加载天气...";
+"weather.tap_to_retry" = "点击重试";
+"weather.error.no_location" = "位置不可用";
+"weather.error.permission_denied" = "需要位置权限";
+"weather.error.fetch_failed" = "无法获取天气";
+
+/* Weather - Permissions */
+"weather.enable_location" = "启用位置";
+"weather.location_required" = "天气功能需要访问位置以显示您所在地区的预报。";
+"weather.open_settings" = "打开设置";
+
+/* Weather - Conditions */
+"weather.condition.clear" = "晴朗";
+"weather.condition.mostly_clear" = "大部分晴朗";
+"weather.condition.partly_cloudy" = "局部多云";
+"weather.condition.mostly_cloudy" = "大部分多云";
+"weather.condition.cloudy" = "多云";
+"weather.condition.drizzle" = "毛毛雨";
+"weather.condition.rain" = "雨";
+"weather.condition.heavy_rain" = "大雨";
+"weather.condition.snow" = "雪";
+"weather.condition.heavy_snow" = "大雪";
+"weather.condition.flurries" = "阵雪";
+"weather.condition.blizzard" = "暴风雪";
+"weather.condition.sleet" = "雨夹雪";
+"weather.condition.freezing_rain" = "冻雨";
+"weather.condition.freezing_drizzle" = "冻毛毛雨";
+"weather.condition.wintry_mix" = "冬季混合天气";
+"weather.condition.blowing_snow" = "吹雪";
+"weather.condition.isolated_thunderstorms" = "局部雷暴";
+"weather.condition.scattered_thunderstorms" = "零星雷暴";
+"weather.condition.thunderstorms" = "雷暴";
+"weather.condition.strong_storms" = "强风暴";
+"weather.condition.tropical_storm" = "热带风暴";
+"weather.condition.hurricane" = "飓风";
+"weather.condition.foggy" = "有雾";
+"weather.condition.haze" = "雾霾";
+"weather.condition.smoky" = "烟雾";
+"weather.condition.windy" = "有风";
+"weather.condition.breezy" = "微风";
+"weather.condition.hot" = "炎热";
+"weather.condition.frigid" = "严寒";
+"weather.condition.hail" = "冰雹";
+"weather.condition.sun_flurries" = "晴间阵雪";
+"weather.condition.sun_showers" = "晴间阵雨";
+"weather.condition.blowing_dust" = "扬尘";
+"weather.condition.unknown" = "天气多变";
+
+/* Expenses & Trips */
+"expenses.title" = "费用";
+"trips.title" = "行程";
+"expenses.amount" = "金额";
+"expenses.category" = "类别";
+"expenses.details" = "详情";
+"expenses.receipt" = "收据";
+"expenses.exchange_rate" = "汇率";
+"expenses.converted_amount" = "换算金额";
+"expenses.currency_conversion" = "货币转换";
+"expenses.notes" = "备注（可选）";
+"expenses.trip" = "行程";
+"expenses.rate_for" = "汇率为";
+
+/* Location & Weather */
+"location.searching" = "搜索中...";
+"location.no_locations_found" = "未找到位置";
+"location.search_results" = "搜索结果";
+"location.quick_add" = "快速添加";
+"location.manual_entry" = "手动输入";
+"location.manual_entry_hint" = "以十进制度数输入坐标（例如：59.3293, 18.0686）";
+"location.auto_detect" = "自动检测";
+"location.auto_detect_hint" = "使用设备当前位置获取天气预报";
+"location.saved_locations" = "已保存的位置";
+"weather.loading_forecast" = "正在加载预报...";
+"weather.no_weather_data" = "无天气数据";
+
+/* Holidays & Observances */
+"holidays.title" = "节假日";
+"holidays.turn_on_hint" = "在节假日屏幕中打开节假日以查看纪念日。";
+"holidays.turn_on_above" = "在上方打开节假日以查看节假日。";
+"holidays.add_observances" = "添加如生日或里程碑等纪念日。";
+"holidays.add_custom" = "使用 + 添加自定义节假日，或调整您的地区。";
+
+/* PDF Export */
+"pdf.export_type" = "导出类型";
+"pdf.date_selection" = "日期选择";
+"pdf.export_options" = "导出选项";
+"pdf.export_includes" = "导出包含所选日期范围的选定数据";
+"pdf.loading_preview" = "正在加载预览...";
+"pdf.activity_preview" = "活动预览";
+"pdf.select_options_hint" = "选择选项以预览报告内容";
+"pdf.preview" = "预览";
+"pdf.preview_updates" = "更改选项时预览会更新";
+"pdf.preview_unavailable" = "预览不可用";
+
+/* Common UI */
+"common.week" = "周";
+"common.edit" = "编辑";
+
+/* Dashboard */
+"dashboard.pinned" = "已固定";

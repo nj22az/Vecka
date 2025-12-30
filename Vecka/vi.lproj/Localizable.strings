@@ -1,7 +1,7 @@
 /* Vietnamese Localization for Vecka */
 
 /* App */
-"app.name" = "BẠN TUẦN";
+"app.name" = "WEEKGRID";
 
 /* Common */
 "common.today" = "Hôm nay";
@@ -13,6 +13,8 @@
 
 /* Notes */
 "note.create" = "Tạo ghi chú";
+"note.add" = "Thêm ghi chú";
+"note.edit" = "Chỉnh sửa";
 "note.add_event" = "THÊM SỰ KIỆN";
 "note.your_event" = "SỰ KIỆN CỦA BẠN";
 "note.new_event" = "Sự kiện mới";
@@ -24,6 +26,13 @@
 /* Time */
 "time.days_short" = "n";
 "time.today" = "HÔM NAY";
+"time.day_singular" = "NGÀY";
+"time.day_plural" = "NGÀY";
+
+/* Countdown */
+"countdown.select" = "Chọn đếm ngược";
+"countdown.ago" = "TRƯỚC";
+"countdown.left" = "CÒN LẠI";
 
 /* Weekdays */
 "weekday.mon" = "T2";
@@ -67,3 +76,112 @@
 "picker.no_customs_hint" = "Chưa có sự kiện tùy chỉnh.";
 "picker.add_favorites_hint" = "Thêm sự kiện thường dùng vào Yêu thích để truy cập nhanh.";
 "picker.selected" = "Đã chọn";
+
+/* Weather - UI Labels */
+"weather.high" = "Cao";
+"weather.low" = "Thấp";
+"weather.precipitation" = "Lượng mưa";
+"weather.uv_index" = "Chỉ số UV";
+"weather.wind" = "Gió";
+
+/* Weather - Loading & Errors */
+"weather.loading" = "Đang tải thời tiết...";
+"weather.tap_to_retry" = "Chạm để thử lại";
+"weather.error.no_location" = "Vị trí không khả dụng";
+"weather.error.permission_denied" = "Cần quyền vị trí";
+"weather.error.fetch_failed" = "Không thể tải thời tiết";
+
+/* Weather - Permissions */
+"weather.enable_location" = "Bật Vị trí";
+"weather.location_required" = "Thời tiết cần truy cập vị trí để hiển thị dự báo cho khu vực của bạn.";
+"weather.open_settings" = "Mở Cài đặt";
+
+/* Weather - Conditions */
+"weather.condition.clear" = "Quang đãng";
+"weather.condition.mostly_clear" = "Chủ yếu quang đãng";
+"weather.condition.partly_cloudy" = "Một phần có mây";
+"weather.condition.mostly_cloudy" = "Chủ yếu có mây";
+"weather.condition.cloudy" = "Nhiều mây";
+"weather.condition.drizzle" = "Mưa phùn";
+"weather.condition.rain" = "Mưa";
+"weather.condition.heavy_rain" = "Mưa to";
+"weather.condition.snow" = "Tuyết";
+"weather.condition.heavy_snow" = "Tuyết dày";
+"weather.condition.flurries" = "Tuyết rơi nhẹ";
+"weather.condition.blizzard" = "Bão tuyết";
+"weather.condition.sleet" = "Mưa tuyết";
+"weather.condition.freezing_rain" = "Mưa đóng băng";
+"weather.condition.freezing_drizzle" = "Mưa phùn đóng băng";
+"weather.condition.wintry_mix" = "Thời tiết đông";
+"weather.condition.blowing_snow" = "Tuyết bay";
+"weather.condition.isolated_thunderstorms" = "Dông cục bộ";
+"weather.condition.scattered_thunderstorms" = "Dông rải rác";
+"weather.condition.thunderstorms" = "Dông";
+"weather.condition.strong_storms" = "Bão mạnh";
+"weather.condition.tropical_storm" = "Bão nhiệt đới";
+"weather.condition.hurricane" = "Bão";
+"weather.condition.foggy" = "Sương mù";
+"weather.condition.haze" = "Sương mù nhẹ";
+"weather.condition.smoky" = "Khói";
+"weather.condition.windy" = "Gió mạnh";
+"weather.condition.breezy" = "Gió nhẹ";
+"weather.condition.hot" = "Nóng";
+"weather.condition.frigid" = "Rất lạnh";
+"weather.condition.hail" = "Mưa đá";
+"weather.condition.sun_flurries" = "Nắng và tuyết nhẹ";
+"weather.condition.sun_showers" = "Nắng và mưa";
+"weather.condition.blowing_dust" = "Bụi bay";
+"weather.condition.unknown" = "Thời tiết khác nhau";
+
+/* Expenses & Trips */
+"expenses.title" = "Chi phí";
+"trips.title" = "Chuyến đi";
+"expenses.amount" = "Số tiền";
+"expenses.category" = "Danh mục";
+"expenses.details" = "Chi tiết";
+"expenses.receipt" = "Biên lai";
+"expenses.exchange_rate" = "Tỷ giá hối đoái";
+"expenses.converted_amount" = "Số tiền quy đổi";
+"expenses.currency_conversion" = "Chuyển đổi tiền tệ";
+"expenses.notes" = "Ghi chú (Tùy chọn)";
+"expenses.trip" = "Chuyến đi";
+"expenses.rate_for" = "Tỷ giá cho";
+
+/* Location & Weather */
+"location.searching" = "Đang tìm kiếm...";
+"location.no_locations_found" = "Không tìm thấy địa điểm";
+"location.search_results" = "Kết quả tìm kiếm";
+"location.quick_add" = "Thêm nhanh";
+"location.manual_entry" = "Nhập thủ công";
+"location.manual_entry_hint" = "Nhập tọa độ theo độ thập phân (ví dụ: 59.3293, 18.0686)";
+"location.auto_detect" = "Tự động phát hiện";
+"location.auto_detect_hint" = "Sử dụng vị trí hiện tại của thiết bị để dự báo thời tiết";
+"location.saved_locations" = "Địa điểm đã lưu";
+"weather.loading_forecast" = "Đang tải dự báo...";
+"weather.no_weather_data" = "Không có dữ liệu thời tiết";
+
+/* Holidays & Observances */
+"holidays.title" = "Ngày lễ";
+"holidays.turn_on_hint" = "Bật Ngày lễ trong màn hình Ngày lễ để xem các ngày kỷ niệm.";
+"holidays.turn_on_above" = "Bật Ngày lễ ở trên để xem ngày lễ.";
+"holidays.add_observances" = "Thêm các ngày kỷ niệm như sinh nhật hoặc cột mốc quan trọng.";
+"holidays.add_custom" = "Thêm ngày lễ tùy chỉnh bằng +, hoặc điều chỉnh khu vực của bạn.";
+
+/* PDF Export */
+"pdf.export_type" = "Loại xuất";
+"pdf.date_selection" = "Chọn ngày";
+"pdf.export_options" = "Tùy chọn xuất";
+"pdf.export_includes" = "Xuất bao gồm dữ liệu đã chọn cho khoảng thời gian đã chọn";
+"pdf.loading_preview" = "Đang tải xem trước...";
+"pdf.activity_preview" = "Xem trước hoạt động";
+"pdf.select_options_hint" = "Chọn tùy chọn để xem trước nội dung báo cáo";
+"pdf.preview" = "Xem trước";
+"pdf.preview_updates" = "Xem trước cập nhật khi bạn thay đổi tùy chọn";
+"pdf.preview_unavailable" = "Không có xem trước";
+
+/* Common UI */
+"common.week" = "Tuần";
+"common.edit" = "Chỉnh sửa";
+
+/* Dashboard */
+"dashboard.pinned" = "Đã ghim";

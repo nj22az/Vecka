@@ -1,7 +1,7 @@
 /* German Localization for Vecka */
 
 /* App */
-"app.name" = "WOCHEN-BUDDY";
+"app.name" = "WEEKGRID";
 
 /* Common */
 "common.today" = "Heute";
@@ -13,6 +13,8 @@
 
 /* Notes */
 "note.create" = "Notiz erstellen";
+"note.add" = "Notiz hinzufügen";
+"note.edit" = "Bearbeiten";
 "note.add_event" = "EREIGNIS HINZUFÜGEN";
 "note.your_event" = "IHR EREIGNIS";
 "note.new_event" = "Neues Ereignis";
@@ -24,6 +26,13 @@
 /* Time */
 "time.days_short" = "T";
 "time.today" = "HEUTE";
+"time.day_singular" = "TAG";
+"time.day_plural" = "TAGE";
+
+/* Countdown */
+"countdown.select" = "Countdown auswählen";
+"countdown.ago" = "VOR";
+"countdown.left" = "ÜBRIG";
 
 /* Weekdays */
 "weekday.mon" = "MO";
@@ -67,3 +76,112 @@
 "picker.no_customs_hint" = "Noch keine eigenen Ereignisse.";
 "picker.add_favorites_hint" = "Fügen Sie häufig verwendete Ereignisse als Favoriten hinzu.";
 "picker.selected" = "Ausgewählt";
+
+/* Weather - UI Labels */
+"weather.high" = "Höchstwert";
+"weather.low" = "Tiefstwert";
+"weather.precipitation" = "Niederschlag";
+"weather.uv_index" = "UV-Index";
+"weather.wind" = "Wind";
+
+/* Weather - Loading & Errors */
+"weather.loading" = "Wetter wird geladen...";
+"weather.tap_to_retry" = "Tippen zum Wiederholen";
+"weather.error.no_location" = "Standort nicht verfügbar";
+"weather.error.permission_denied" = "Standortberechtigung erforderlich";
+"weather.error.fetch_failed" = "Wetter konnte nicht abgerufen werden";
+
+/* Weather - Permissions */
+"weather.enable_location" = "Standort aktivieren";
+"weather.location_required" = "Wetter benötigt Standortzugriff, um Vorhersagen für Ihre Region anzuzeigen.";
+"weather.open_settings" = "Einstellungen öffnen";
+
+/* Weather - Conditions */
+"weather.condition.clear" = "Klar";
+"weather.condition.mostly_clear" = "Überwiegend klar";
+"weather.condition.partly_cloudy" = "Teilweise bewölkt";
+"weather.condition.mostly_cloudy" = "Überwiegend bewölkt";
+"weather.condition.cloudy" = "Bewölkt";
+"weather.condition.drizzle" = "Nieselregen";
+"weather.condition.rain" = "Regen";
+"weather.condition.heavy_rain" = "Starkregen";
+"weather.condition.snow" = "Schnee";
+"weather.condition.heavy_snow" = "Starker Schneefall";
+"weather.condition.flurries" = "Schneeschauer";
+"weather.condition.blizzard" = "Schneesturm";
+"weather.condition.sleet" = "Graupel";
+"weather.condition.freezing_rain" = "Gefrierender Regen";
+"weather.condition.freezing_drizzle" = "Gefrierender Nieselregen";
+"weather.condition.wintry_mix" = "Wintermischung";
+"weather.condition.blowing_snow" = "Schneetreiben";
+"weather.condition.isolated_thunderstorms" = "Vereinzelte Gewitter";
+"weather.condition.scattered_thunderstorms" = "Verstreute Gewitter";
+"weather.condition.thunderstorms" = "Gewitter";
+"weather.condition.strong_storms" = "Starke Stürme";
+"weather.condition.tropical_storm" = "Tropischer Sturm";
+"weather.condition.hurricane" = "Hurrikan";
+"weather.condition.foggy" = "Neblig";
+"weather.condition.haze" = "Dunst";
+"weather.condition.smoky" = "Rauchig";
+"weather.condition.windy" = "Windig";
+"weather.condition.breezy" = "Luftig";
+"weather.condition.hot" = "Heiß";
+"weather.condition.frigid" = "Eisig kalt";
+"weather.condition.hail" = "Hagel";
+"weather.condition.sun_flurries" = "Sonne und Schneeschauer";
+"weather.condition.sun_showers" = "Sonne und Schauer";
+"weather.condition.blowing_dust" = "Staubsturm";
+"weather.condition.unknown" = "Wechselhaft";
+
+/* Expenses & Trips */
+"expenses.title" = "Ausgaben";
+"trips.title" = "Reisen";
+"expenses.amount" = "Betrag";
+"expenses.category" = "Kategorie";
+"expenses.details" = "Details";
+"expenses.receipt" = "Quittung";
+"expenses.exchange_rate" = "Wechselkurs";
+"expenses.converted_amount" = "Umgerechneter Betrag";
+"expenses.currency_conversion" = "Währungsumrechnung";
+"expenses.notes" = "Notizen (optional)";
+"expenses.trip" = "Reise";
+"expenses.rate_for" = "Kurs für";
+
+/* Location & Weather */
+"location.searching" = "Suchen...";
+"location.no_locations_found" = "Keine Orte gefunden";
+"location.search_results" = "Suchergebnisse";
+"location.quick_add" = "Schnell hinzufügen";
+"location.manual_entry" = "Manuelle Eingabe";
+"location.manual_entry_hint" = "Koordinaten in Dezimalgrad eingeben (z.B. 59,3293, 18,0686)";
+"location.auto_detect" = "Automatisch erkennen";
+"location.auto_detect_hint" = "Aktuellen Standort für Wettervorhersagen verwenden";
+"location.saved_locations" = "Gespeicherte Orte";
+"weather.loading_forecast" = "Vorhersage wird geladen...";
+"weather.no_weather_data" = "Keine Wetterdaten";
+
+/* Holidays & Observances */
+"holidays.title" = "Feiertage";
+"holidays.turn_on_hint" = "Aktivieren Sie Feiertage im Feiertagsbildschirm, um Feierlichkeiten anzuzeigen.";
+"holidays.turn_on_above" = "Aktivieren Sie oben Feiertage, um Feiertage anzuzeigen.";
+"holidays.add_observances" = "Fügen Sie Feierlichkeiten wie Geburtstage oder Meilensteine hinzu.";
+"holidays.add_custom" = "Fügen Sie benutzerdefinierte Feiertage mit + hinzu oder passen Sie Ihre Region an.";
+
+/* PDF Export */
+"pdf.export_type" = "Exporttyp";
+"pdf.date_selection" = "Datumsauswahl";
+"pdf.export_options" = "Exportoptionen";
+"pdf.export_includes" = "Export enthält ausgewählte Daten für den gewählten Datumsbereich";
+"pdf.loading_preview" = "Vorschau wird geladen...";
+"pdf.activity_preview" = "Aktivitätsvorschau";
+"pdf.select_options_hint" = "Wählen Sie Optionen zur Vorschau des Berichtsinhalts";
+"pdf.preview" = "Vorschau";
+"pdf.preview_updates" = "Vorschau wird bei Änderung der Optionen aktualisiert";
+"pdf.preview_unavailable" = "Vorschau nicht verfügbar";
+
+/* Common UI */
+"common.week" = "Woche";
+"common.edit" = "Bearbeiten";
+
+/* Dashboard */
+"dashboard.pinned" = "Angepinnt";

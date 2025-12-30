@@ -1,0 +1,19 @@
+/* Widget Localization - English */
+
+/* Week label */
+"week_label" = "Week";
+
+/* Week column abbreviation */
+"week_column" = "W";
+
+/* No events message */
+"no_events_today" = "No Events Today";
+
+/* Upcoming header */
+"upcoming" = "Upcoming";
+
+/* Today header */
+"today" = "TODAY";
+
+/* Tomorrow */
+"tomorrow" = "Tomorrow";

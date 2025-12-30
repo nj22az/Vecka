@@ -3,25 +3,28 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>Week Buddy</string>
+	<string>WeekGrid</string>
 	<key>CFBundleName</key>
-	<string>Week Buddy</string>
+	<string>WeekGrid</string>
     <key>UISupportedInterfaceOrientations</key>
     <array>
         <string>UIInterfaceOrientationPortrait</string>
     </array>
-    <key>UISupportedInterfaceOrientations~ipad</key>
-    <array>
-        <string>UIInterfaceOrientationPortrait</string>
-        <string>UIInterfaceOrientationLandscapeLeft</string>
-        <string>UIInterfaceOrientationLandscapeRight</string>
-        <string>UIInterfaceOrientationPortraitUpsideDown</string>
-    </array>
-    <key>NSCalendarsUsageDescription</key>
-    <string>Allow Vecka to add and manage your events.</string>
-    <key>NSCalendarsWriteOnlyAccessUsageDescription</key>
-    <string>Allow Vecka to add and delete events it creates.</string>
-    <key>NSCalendarsFullAccessUsageDescription</key>
-    <string>Allow Vecka full access to your calendars to manage your events.</string>
-</dict>
+	    <key>UISupportedInterfaceOrientations~ipad</key>
+	    <array>
+	        <string>UIInterfaceOrientationPortrait</string>
+	        <string>UIInterfaceOrientationLandscapeLeft</string>
+	        <string>UIInterfaceOrientationLandscapeRight</string>
+	    </array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>WeekGrid uses your location to show weather forecasts alongside your calendar events, helping you plan your week better.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>WeekGrid can show weather forecasts for your calendar days to help you plan activities.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>WeekGrid needs access to your contacts to import and sync contact information for easy management within the app.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>WeekGrid uses the camera to scan QR codes for quickly importing contact information.</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>WeekGrid shows your calendar events alongside the weekly view, helping you see your schedule at a glance.</string>
+	</dict>
 </plist>

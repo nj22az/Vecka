@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 enum JumpMode: String, CaseIterable, Identifiable {
     case week, month
@@ -8,6 +9,7 @@ enum JumpMode: String, CaseIterable, Identifiable {
 
 struct JumpPickerSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     @State private var mode: JumpMode
     @State private var year: Int
     @State private var month: Int
@@ -24,17 +26,18 @@ struct JumpPickerSheet: View {
 
     private var years: [Int] {
         let current = Calendar.iso8601.component(.year, from: Date())
-        return Array((current - 20)...(current + 20))
+        let range = ConfigurationManager.shared.getInt("year_picker_range", context: modelContext, default: 20)
+        return Array((current - range)...(current + range))
     }
 
     private var computedWeeks: [Int] {
-        let w = JumpPickerSheet.weeksInYear(year)
+        let w = ViewUtilities.weeksInYear(year)
         return Array(1...w)
     }
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 10) {
+            VStack(spacing: 20) {
                 Picker("Mode", selection: $mode) {
                     ForEach(JumpMode.allCases) { m in
                         Text(m.title).tag(m)
@@ -42,43 +45,87 @@ struct JumpPickerSheet: View {
                 }
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
+                .padding(.top, 20)
 
-                Form {
-                    Section("Year") {
+                VStack(spacing: 0) {
+                    // Year Picker
+                    VStack(spacing: 8) {
+                        Text("Year")
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+
                         Picker("Year", selection: $year) {
-                            ForEach(years, id: \.self) { y in Text(String(y)).tag(y) }
+                            ForEach(years, id: \.self) { y in
+                                Text(String(y))
+                                    .font(.title2)
+                                    .fontWeight(.medium)
+                                    .tag(y)
+                            }
                         }
                         .pickerStyle(.wheel)
+                        .frame(height: 180)
                     }
+                    .padding(.horizontal)
+
+                    Divider()
+                        .padding(.vertical, 16)
+
+                    // Month or Week Picker
                     if mode == .month {
-                        Section("Month") {
+                        VStack(spacing: 8) {
+                            Text("Month")
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+
                             Picker("Month", selection: $month) {
                                 ForEach(1...12, id: \.self) { m in
-                                    Text(DateFormatterCache.monthName.monthSymbols[m-1]).tag(m)
+                                    Text(DateFormatterCache.monthName.monthSymbols[m-1])
+                                        .font(.title2)
+                                        .fontWeight(.medium)
+                                        .tag(m)
                                 }
                             }
                             .pickerStyle(.wheel)
+                            .frame(height: 180)
                         }
+                        .padding(.horizontal)
                     } else {
-                        Section("Week") {
+                        VStack(spacing: 8) {
+                            Text("Week")
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+
                             Picker("Week", selection: $week) {
-                                ForEach(computedWeeks, id: \.self) { w in Text("Week \(w)").tag(w) }
+                                ForEach(computedWeeks, id: \.self) { w in
+                                    Text("Week \(w)")
+                                        .font(.title2)
+                                        .fontWeight(.medium)
+                                        .tag(w)
+                                }
                             }
                             .pickerStyle(.wheel)
+                            .frame(height: 180)
                         }
+                        .padding(.horizontal)
                     }
                 }
+
+                Spacer()
             }
             .navigationTitle("Jump To")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") { dismiss() }
+                        .foregroundStyle(.primary)
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
                         onDone(resolveDate())
                         dismiss()
                     }
                     .fontWeight(.semibold)
+                    .foregroundStyle(.blue)
                 }
             }
         }
@@ -97,14 +144,5 @@ struct JumpPickerSheet: View {
             comps.weekday = 2 // Monday
             return Calendar.iso8601.date(from: comps) ?? Date()
         }
-    }
-
-    static func weeksInYear(_ year: Int) -> Int {
-        var comps = DateComponents()
-        comps.yearForWeekOfYear = year
-        comps.weekOfYear = 53
-        comps.weekday = 4 // Thursday to ensure ISO week validity
-        let cal = Calendar.iso8601
-        return cal.date(from: comps) != nil ? 53 : 52
     }
 }

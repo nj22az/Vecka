@@ -1,7 +1,7 @@
 /* Japanese Localization for Vecka */
 
 /* App */
-"app.name" = "週間バディ";
+"app.name" = "WEEKGRID";
 
 /* Common */
 "common.today" = "今日";
@@ -13,6 +13,8 @@
 
 /* Notes */
 "note.create" = "メモを作成";
+"note.add" = "メモを追加";
+"note.edit" = "編集";
 "note.add_event" = "イベントを追加";
 "note.your_event" = "あなたのイベント";
 "note.new_event" = "新しいイベント";
@@ -24,6 +26,13 @@
 /* Time */
 "time.days_short" = "日";
 "time.today" = "今日";
+"time.day_singular" = "日";
+"time.day_plural" = "日";
+
+/* Countdown */
+"countdown.select" = "カウントダウンを選択";
+"countdown.ago" = "前";
+"countdown.left" = "残り";
 
 /* Weekdays */
 "weekday.mon" = "月";
@@ -67,3 +76,112 @@
 "picker.no_customs_hint" = "No custom events yet.";
 "picker.add_favorites_hint" = "Add your frequently used events to Favorites for quick access.";
 "picker.selected" = "Selected";
+
+/* Weather - UI Labels */
+"weather.high" = "最高気温";
+"weather.low" = "最低気温";
+"weather.precipitation" = "降水確率";
+"weather.uv_index" = "UV指数";
+"weather.wind" = "風";
+
+/* Weather - Loading & Errors */
+"weather.loading" = "天気を読み込み中...";
+"weather.tap_to_retry" = "タップして再試行";
+"weather.error.no_location" = "位置情報が利用できません";
+"weather.error.permission_denied" = "位置情報の許可が必要です";
+"weather.error.fetch_failed" = "天気を取得できません";
+
+/* Weather - Permissions */
+"weather.enable_location" = "位置情報を有効にする";
+"weather.location_required" = "お住まいの地域の天気予報を表示するには、位置情報へのアクセスが必要です。";
+"weather.open_settings" = "設定を開く";
+
+/* Weather - Conditions */
+"weather.condition.clear" = "晴れ";
+"weather.condition.mostly_clear" = "概ね晴れ";
+"weather.condition.partly_cloudy" = "晴れ時々曇り";
+"weather.condition.mostly_cloudy" = "曇り時々晴れ";
+"weather.condition.cloudy" = "曇り";
+"weather.condition.drizzle" = "霧雨";
+"weather.condition.rain" = "雨";
+"weather.condition.heavy_rain" = "大雨";
+"weather.condition.snow" = "雪";
+"weather.condition.heavy_snow" = "大雪";
+"weather.condition.flurries" = "にわか雪";
+"weather.condition.blizzard" = "吹雪";
+"weather.condition.sleet" = "みぞれ";
+"weather.condition.freezing_rain" = "凍雨";
+"weather.condition.freezing_drizzle" = "凍霧雨";
+"weather.condition.wintry_mix" = "雪まじりの雨";
+"weather.condition.blowing_snow" = "地吹雪";
+"weather.condition.isolated_thunderstorms" = "局地的な雷雨";
+"weather.condition.scattered_thunderstorms" = "所により雷雨";
+"weather.condition.thunderstorms" = "雷雨";
+"weather.condition.strong_storms" = "激しい嵐";
+"weather.condition.tropical_storm" = "熱帯低気圧";
+"weather.condition.hurricane" = "ハリケーン";
+"weather.condition.foggy" = "霧";
+"weather.condition.haze" = "もや";
+"weather.condition.smoky" = "煙";
+"weather.condition.windy" = "強風";
+"weather.condition.breezy" = "微風";
+"weather.condition.hot" = "暑い";
+"weather.condition.frigid" = "極寒";
+"weather.condition.hail" = "雹";
+"weather.condition.sun_flurries" = "晴れ時々雪";
+"weather.condition.sun_showers" = "晴れ時々雨";
+"weather.condition.blowing_dust" = "砂嵐";
+"weather.condition.unknown" = "天候不明";
+
+/* Expenses & Trips */
+"expenses.title" = "経費";
+"trips.title" = "旅行";
+"expenses.amount" = "金額";
+"expenses.category" = "カテゴリー";
+"expenses.details" = "詳細";
+"expenses.receipt" = "領収書";
+"expenses.exchange_rate" = "為替レート";
+"expenses.converted_amount" = "換算額";
+"expenses.currency_conversion" = "通貨換算";
+"expenses.notes" = "メモ（任意）";
+"expenses.trip" = "旅行";
+"expenses.rate_for" = "レート";
+
+/* Location & Weather */
+"location.searching" = "検索中...";
+"location.no_locations_found" = "場所が見つかりません";
+"location.search_results" = "検索結果";
+"location.quick_add" = "クイック追加";
+"location.manual_entry" = "手動入力";
+"location.manual_entry_hint" = "座標を10進数で入力してください（例：59.3293, 18.0686）";
+"location.auto_detect" = "自動検出";
+"location.auto_detect_hint" = "デバイスの現在地を使用して天気予報を表示します";
+"location.saved_locations" = "保存された場所";
+"weather.loading_forecast" = "予報を読み込み中...";
+"weather.no_weather_data" = "天気データなし";
+
+/* Holidays & Observances */
+"holidays.title" = "祝日";
+"holidays.turn_on_hint" = "祝日画面で祝日をオンにすると、記念日が表示されます。";
+"holidays.turn_on_above" = "上記で祝日をオンにすると、祝日が表示されます。";
+"holidays.add_observances" = "誕生日やマイルストーンなどの記念日を追加します。";
+"holidays.add_custom" = "+でカスタム祝日を追加するか、地域を調整してください。";
+
+/* PDF Export */
+"pdf.export_type" = "エクスポートタイプ";
+"pdf.date_selection" = "日付選択";
+"pdf.export_options" = "エクスポートオプション";
+"pdf.export_includes" = "選択した日付範囲の選択データが含まれます";
+"pdf.loading_preview" = "プレビューを読み込み中...";
+"pdf.activity_preview" = "アクティビティプレビュー";
+"pdf.select_options_hint" = "レポート内容をプレビューするオプションを選択してください";
+"pdf.preview" = "プレビュー";
+"pdf.preview_updates" = "オプションを変更するとプレビューが更新されます";
+"pdf.preview_unavailable" = "プレビュー利用不可";
+
+/* Common UI */
+"common.week" = "週";
+"common.edit" = "編集";
+
+/* Dashboard */
+"dashboard.pinned" = "ピン留め";

@@ -18,46 +18,73 @@ struct WeekPickerSheet: View {
     }
     
     private var weeks: [Int] {
-        let wc = WeekPickerSheet.weeksInYear(year)
+        let wc = ViewUtilities.weeksInYear(year)
         return Array(1...wc)
     }
     
     var body: some View {
         NavigationStack {
-            Form {
-                Section("Year") {
-                    Picker("Year", selection: $year) {
-                        ForEach(years, id: \.self) { y in Text(String(y)).tag(y) }
+            VStack(spacing: 20) {
+                VStack(spacing: 0) {
+                    // Year Picker
+                    VStack(spacing: 8) {
+                        Text(Localization.yearLabel)
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+
+                        Picker(Localization.yearLabel, selection: $year) {
+                            ForEach(years, id: \.self) { y in
+                                Text(String(y))
+                                    .font(.title2)
+                                    .fontWeight(.medium)
+                                    .tag(y)
+                            }
+                        }
+                        .pickerStyle(.wheel)
+                        .frame(height: 180)
                     }
-                    .pickerStyle(.wheel)
-                }
-                Section("Week") {
-                    Picker("Week", selection: $week) {
-                        ForEach(weeks, id: \.self) { w in Text("Week \(w)").tag(w) }
+                    .padding(.horizontal)
+                    .padding(.top, 20)
+
+                    Divider()
+                        .padding(.vertical, 16)
+
+                    // Week Picker
+                    VStack(spacing: 8) {
+                        Text(Localization.weekLabel)
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+
+                        Picker(Localization.weekLabel, selection: $week) {
+                            ForEach(weeks, id: \.self) { w in
+                                Text(Localization.weekDisplayText(w))
+                                    .font(.title2)
+                                    .fontWeight(.medium)
+                                    .tag(w)
+                            }
+                        }
+                        .pickerStyle(.wheel)
+                        .frame(height: 180)
                     }
-                    .pickerStyle(.wheel)
+                    .padding(.horizontal)
                 }
+
+                Spacer()
             }
-            .navigationTitle("Select Week")
+            .navigationTitle(Localization.selectWeek)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) { Button("Cancel") { dismiss() } }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(Localization.cancel) { dismiss() }
+                        .foregroundStyle(.primary)
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") { onSave(week, year); dismiss() }
+                    Button(Localization.done) { onSave(week, year); dismiss() }
                         .fontWeight(.semibold)
+                        .foregroundStyle(.blue)
                 }
             }
         }
-    }
-    
-    static func weeksInYear(_ year: Int) -> Int {
-        var comps = DateComponents()
-        comps.yearForWeekOfYear = year
-        comps.weekOfYear = 53
-        comps.weekday = 4 // Thursday to ensure ISO week
-        let cal = Calendar.iso8601
-        if cal.date(from: comps) != nil { return 53 }
-        return 52
     }
 }
 

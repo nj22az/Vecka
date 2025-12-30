@@ -1,0 +1,19 @@
+/* Widget Localization - Swedish */
+
+/* Week label */
+"week_label" = "Vecka";
+
+/* Week column abbreviation */
+"week_column" = "V";
+
+/* No events message */
+"no_events_today" = "Inga händelser idag";
+
+/* Upcoming header */
+"upcoming" = "Kommande";
+
+/* Today header */
+"today" = "IDAG";
+
+/* Tomorrow */
+"tomorrow" = "Imorgon";

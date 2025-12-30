@@ -26,86 +26,18 @@ struct WeekCalendarStrip: View {
     @State private var isDragging: Bool = false
     @GestureState private var gestureOffset: CGSize = .zero
     
+
+    @ScaledMetric private var weekdayLabelSize: CGFloat = 11
+    @ScaledMetric private var dayNumberSize: CGFloat = 18
+    
     private let calendar = Calendar.iso8601
     
     var body: some View {
-        VStack(spacing: 8) {
-            if showWeekInfo { header }
-            calendarStrip
-        }
+        // Pure strip, no header
+        calendarStrip
     }
     
-    // MARK: - Week Header
-    
-    private var header: some View {
-        VStack(spacing: 6) {
-            // Week info
-            VStack(alignment: .center, spacing: 2) {
-                weekNumberText
-                weekRangeText
-            }
-            .frame(maxWidth: .infinity)
-            
-            // Navigation row
-            HStack(spacing: 12) {
-                navigationButton(direction: .previous)
-                todayButton
-                navigationButton(direction: .next)
-            }
-        }
-        .padding(.horizontal, LayoutConstants.cardSpacing)
-    }
-    
-    private var weekNumberText: some View {
-        Text("Week \(currentWeekInfo.weekNumber)")
-            .font(.system(size: 18, weight: .bold, design: .rounded))
-            .foregroundStyle(AppColors.textPrimary)
-    }
-    
-    private var weekRangeText: some View {
-        Text(currentWeekInfo.dateRange)
-            .font(.system(size: 14, weight: .medium, design: .default))
-            .foregroundStyle(AppColors.textSecondary)
-    }
-    
-    private var todayButton: some View {
-        Button(action: goToToday) {
-            HStack(spacing: 6) {
-                Image(systemName: "location.fill")
-                    .font(.system(size: 12, weight: .semibold))
-                Text(Localization.todayLabel)
-                    .font(.system(size: 12, weight: .semibold))
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(
-                Capsule().fill(AppColors.accentBlue.opacity(0.12))
-            )
-            .foregroundStyle(AppColors.accentBlue)
-        }
-        .accessibilityLabel(Localization.goToToday)
-    }
-    
-    @ViewBuilder
-    private func navigationButton(direction: NavigationDirection) -> some View {
-        Button(action: {
-            navigateWeek(direction: direction)
-        }) {
-            Image(systemName: direction.iconName)
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(AppColors.textSecondary)
-                .frame(width: 32, height: 32)
-                .background(
-                    Circle()
-                        .fill(AnyShapeStyle(Material.thinMaterial))
-                        .overlay(
-                            Circle()
-                                .stroke(AppColors.textSecondary.opacity(0.2), lineWidth: 0.5)
-                        )
-                )
-        }
-        .accessibilityLabel(direction == .previous ? Localization.previousWeek : Localization.nextWeek)
-    }
+    // MARK: - Header & Nav Buttons REMOVED (Handled by unified header)
     
     // MARK: - Calendar Strip
     
@@ -157,49 +89,32 @@ struct WeekCalendarStrip: View {
     private func weekdayLabel(_ date: Date) -> some View {
         let weekday = Calendar.iso8601.component(.weekday, from: date)
         return Text(Localization.weekdayShort(weekday))
-            .font(.system(size: 11, weight: .medium, design: .default))
+            .font(.system(size: weekdayLabelSize, weight: .medium, design: .default))
             .foregroundStyle(AppColors.textSecondary)
             .textCase(.uppercase)
             .tracking(0.3)
     }
     
     private func dayNumberDisplay(_ dayInfo: CalendarDayInfo, isSelected: Bool, isToday: Bool) -> some View {
-        let outlineColor = outlineColorForDay(dayInfo.date)
-        
-        return ZStack {
-            // Outline for illustrated effect with specific colors for day types
-            Text("\(dayInfo.dayNumber)")
-                .font(.system(size: 18, weight: isSelected ? .bold : .semibold, design: .rounded))
-                .foregroundColor(outlineColor)
-                .offset(x: 1, y: 1)
-            
-            Text("\(dayInfo.dayNumber)")
-                .font(.system(size: 18, weight: isSelected ? .bold : .semibold, design: .rounded))
-                .foregroundColor(outlineColor)
-                .offset(x: -1, y: -1)
-            
-            Text("\(dayInfo.dayNumber)")
-                .font(.system(size: 18, weight: isSelected ? .bold : .semibold, design: .rounded))
-                .foregroundColor(outlineColor)
-                .offset(x: 1, y: -1)
-            
-            Text("\(dayInfo.dayNumber)")
-                .font(.system(size: 18, weight: isSelected ? .bold : .semibold, design: .rounded))
-                .foregroundColor(outlineColor)
-                .offset(x: -1, y: 1)
-            
-            // White fill for all days
-            Text("\(dayInfo.dayNumber)")
-                .font(.system(size: 18, weight: isSelected ? .bold : .semibold, design: .rounded))
-                .foregroundColor(.white)
+        // Clean Apple Design: Solid circle for selected, plain text otherwise
+        let textColor: Color
+        if isSelected {
+            textColor = .white
+        } else if isToday {
+            textColor = AppColors.accentBlue
+        } else {
+            textColor = AppColors.textPrimary
         }
-        .frame(width: 32, height: 32)
-        .background(
-            Circle()
-                .fill(dayNumberBackground(dayInfo.date, isSelected: isSelected, isToday: isToday))
-        )
-        .scaleEffect(isSelected ? 1.1 : 1.0)
-        .animation(AnimationConstants.quickSpring, value: isSelected)
+        
+        return Text("\(dayInfo.dayNumber)")
+            .font(.system(size: dayNumberSize, weight: isSelected ? .bold : .regular, design: .rounded))
+            .foregroundStyle(textColor)
+            .frame(width: 32, height: 32)
+            .background(
+                Circle()
+                    .fill(dayNumberBackground(dayInfo.date, isSelected: isSelected, isToday: isToday))
+            )
+            .scaleEffect(isSelected ? 1.0 : 1.0) // Remove bounce/scale if desired, or keep subtle
     }
     
     // MARK: - Styling
@@ -225,7 +140,10 @@ struct WeekCalendarStrip: View {
     
     private func dayNumberBackground(_ date: Date, isSelected: Bool, isToday: Bool) -> Color {
         if isSelected {
-            let base = Holidays.isHoliday(date) ? Color.red : AppColors.colorForDay(date)
+            // Check if date is a holiday using HolidayManager
+            let normalized = Calendar.current.startOfDay(for: date)
+            let isRedDay = (HolidayManager.shared.holidayCache[normalized] ?? []).contains(where: { $0.isRedDay })
+            let base = isRedDay ? Color.red : AppColors.colorForDay(date)
             return base.opacity(0.2)
         } else if isToday {
             return AppColors.accentBlue.opacity(0.1)
@@ -245,7 +163,9 @@ struct WeekCalendarStrip: View {
     private func outlineColorForDay(_ date: Date) -> Color {
         // Red for holidays and Sundays, blue for Saturdays, else default
         let weekday = Calendar.iso8601.component(.weekday, from: date)
-        if Holidays.isHoliday(date) || weekday == 1 { return .red }
+        let normalized = Calendar.current.startOfDay(for: date)
+        let isRedDay = (HolidayManager.shared.holidayCache[normalized] ?? []).contains(where: { $0.isRedDay })
+        if isRedDay || weekday == 1 { return .red }
         if weekday == 7 { return .blue }
         return AppColors.textPrimary
     }
@@ -312,12 +232,7 @@ struct WeekCalendarStrip: View {
         }
     }
     
-    private func goToToday() {
-        withAnimation(AnimationConstants.standardSpring) {
-            selectedDate = Date()
-        }
-        HapticManager.impact(.light)
-    }
+
     
     private func selectDate(_ date: Date) {
         HapticManager.selection()
