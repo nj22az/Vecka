@@ -188,8 +188,8 @@ struct HolidayListView: View {
                 }
             }
         }
-        .navigationTitle("Holidays")
-        .listStyle(.insetGrouped)
+        .standardListStyle()
+        .standardNavigation(title: "Holidays")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {

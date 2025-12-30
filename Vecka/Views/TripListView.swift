@@ -84,7 +84,8 @@ struct TripListView: View {
                     )
                 }
             }
-            .navigationTitle("Trips")
+            .standardListStyle()
+            .standardNavigation(title: "Trips")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
@@ -317,9 +318,8 @@ struct TripDetailView: View {
                 }
                 .padding()
             }
-            .background(AppColors.background.ignoresSafeArea())
-            .navigationTitle(trip.tripName)
-            .navigationBarTitleDisplayMode(.inline)
+            .slateBackground()
+            .standardNavigation(title: trip.tripName)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") { dismiss() }
@@ -391,8 +391,9 @@ struct AddTripView: View {
                 .pickerStyle(.segmented)
             }
         }
-        .navigationTitle("New Trip")
-        .navigationBarTitleDisplayMode(.inline)
+        .scrollContentBackground(.hidden)
+        .background(SlateColors.deepSlate)
+        .standardNavigation(title: "New Trip")
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") { dismiss() }

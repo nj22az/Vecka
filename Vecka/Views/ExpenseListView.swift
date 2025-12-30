@@ -45,7 +45,8 @@ struct ExpenseListView: View {
             // Expense List
             expenseList
         }
-        .navigationTitle("Expenses")
+        .slateBackground()
+        .standardNavigation(title: "Expenses")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
@@ -224,10 +225,11 @@ struct ExpenseListView: View {
                             }
                         } header: {
                             Text(sectionHeader(for: key))
+                                .foregroundStyle(SlateColors.secondaryText)
                         }
                     }
                 }
-                .listStyle(.insetGrouped)
+                .standardListStyle()
             }
         }
     }
@@ -553,8 +555,8 @@ struct FilterOptionsSheet: View {
                     }
                 }
             }
-            .navigationTitle("Filter Options")
-            .navigationBarTitleDisplayMode(.inline)
+            .standardListStyle()
+            .standardNavigation(title: "Filter Options")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
@@ -566,7 +568,7 @@ struct FilterOptionsSheet: View {
     }
 }
 
-// MARK: - Expense Detail View (Placeholder)
+// MARK: - Expense Detail View
 
 struct ExpenseDetailView: View {
     @Environment(\.dismiss) private var dismiss
@@ -642,8 +644,8 @@ struct ExpenseDetailView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Expense Details")
-            .navigationBarTitleDisplayMode(.inline)
+            .slateBackground()
+            .standardNavigation(title: "Expense Details")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button("Edit") {

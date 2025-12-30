@@ -555,3 +555,65 @@ struct GlassListRow<Leading: View, Trailing: View>: View {
     }
 }
 
+// MARK: - Unified View Styling
+
+/// Standard modifiers for consistent app appearance
+extension View {
+    /// Apply standard dark slate background for library/list views
+    func slateBackground() -> some View {
+        self
+            .background(SlateColors.deepSlate)
+            .scrollContentBackground(.hidden)
+    }
+
+    /// Apply standard list styling with dark theme
+    func standardListStyle() -> some View {
+        self
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            .background(SlateColors.deepSlate)
+    }
+
+    /// Apply standard navigation bar styling
+    func standardNavigation(title: String) -> some View {
+        self
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(SlateColors.mediumSlate, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+    }
+}
+
+// MARK: - Standard Card Styles
+
+/// Semantic card types for consistent styling
+enum CardStyle {
+    case primary    // Main content cards - 16pt radius, regular material
+    case secondary  // Supporting cards - 12pt radius, thin material
+    case compact    // Dense list items - 10pt radius, ultra thin
+
+    var cornerRadius: CGFloat {
+        switch self {
+        case .primary: return 16
+        case .secondary: return 12
+        case .compact: return 10
+        }
+    }
+
+    var material: Material {
+        switch self {
+        case .primary: return .regularMaterial
+        case .secondary: return .thinMaterial
+        case .compact: return .ultraThinMaterial
+        }
+    }
+}
+
+extension View {
+    /// Apply standard card styling
+    func standardCard(_ style: CardStyle = .primary) -> some View {
+        self.glassCard(cornerRadius: style.cornerRadius, material: style.material)
+    }
+}
+

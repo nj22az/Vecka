@@ -74,8 +74,8 @@ struct NotesListView: View {
                 }
             }
         }
-        .navigationTitle("Notes")
-        .listStyle(.insetGrouped)
+        .standardListStyle()
+        .standardNavigation(title: "Notes")
         .searchable(text: $searchText, prompt: Text("Search Notes"))
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {

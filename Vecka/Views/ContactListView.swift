@@ -95,8 +95,9 @@ struct ContactListView: View {
                 }
             }
         }
+        .standardListStyle()
         .searchable(text: $searchText, prompt: "Search contacts")
-        .navigationTitle("Contacts")
+        .standardNavigation(title: "Contacts")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
@@ -235,8 +236,8 @@ struct ContactImportView: View {
                     }
                 }
             }
-            .navigationTitle("Import Contacts")
-            .navigationBarTitleDisplayMode(.inline)
+            .standardListStyle()
+            .standardNavigation(title: "Import Contacts")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
