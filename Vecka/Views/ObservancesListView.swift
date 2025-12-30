@@ -153,8 +153,8 @@ struct ObservancesListView: View {
                 }
             }
         }
-        .navigationTitle("Observances")
-        .listStyle(.insetGrouped)
+        .standardListStyle()
+        .standardNavigation(title: "Observances")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {

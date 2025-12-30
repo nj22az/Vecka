@@ -96,11 +96,8 @@ struct SettingsView: View {
                     .foregroundStyle(AppColors.textSecondary)
             }
         }
-        .listStyle(.insetGrouped)
-        .scrollContentBackground(.hidden)
-        .background(SlateColors.deepSlate)
-        .navigationTitle(Localization.settings)
-        .navigationBarTitleDisplayMode(.inline)
+        .standardListStyle()
+        .standardNavigation(title: Localization.settings)
     }
 }
 
@@ -158,9 +155,8 @@ struct RegionSelectionView: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .navigationTitle(NSLocalizedString("settings.region", comment: "Region"))
-        .navigationBarTitleDisplayMode(.inline)
-        .background(AppColors.background)
+        .standardListStyle()
+        .standardNavigation(title: NSLocalizedString("settings.region", comment: "Region"))
         .alert("Limit Reached", isPresented: $showSelectionLimitAlert) {
             Button("OK", role: .cancel) {}
         } message: {

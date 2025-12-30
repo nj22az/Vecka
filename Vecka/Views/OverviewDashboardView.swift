@@ -97,8 +97,8 @@ struct OverviewDashboardView: View {
             }
             .padding(isPad ? 24 : 16)
         }
-        .navigationTitle("Overview")
-        .background(AppColors.background.ignoresSafeArea())
+        .slateBackground()
+        .standardNavigation(title: "Overview")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {

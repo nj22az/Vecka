@@ -39,9 +39,8 @@ struct WeatherForecastView: View {
             }
             .padding()
         }
-        .background(AppColors.background.ignoresSafeArea())
-        .navigationTitle("Weather Forecast")
-        .navigationBarTitleDisplayMode(.inline)
+        .slateBackground()
+        .standardNavigation(title: "Weather Forecast")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
@@ -281,11 +280,7 @@ struct WeatherForecastRow: View {
         }
         .padding(.horizontal, Spacing.medium)
         .padding(.vertical, Spacing.small)
-        .background(AppColors.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .strokeBorder(.primary.opacity(0.06), lineWidth: 1)
-        )
+        .background(SlateColors.mediumSlate, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 
     private var temperatureBar: some View {

@@ -615,5 +615,169 @@ extension View {
     func standardCard(_ style: CardStyle = .primary) -> some View {
         self.glassCard(cornerRadius: style.cornerRadius, material: style.material)
     }
+
+    /// Apply standard list row background for dark theme
+    func standardListRowBackground() -> some View {
+        self.listRowBackground(SlateColors.mediumSlate)
+    }
 }
+
+// MARK: - Standard UI Components
+
+/// Consistent section header with uppercase styling
+struct SectionHeader: View {
+    let title: String
+
+    init(_ title: String) {
+        self.title = title
+    }
+
+    var body: some View {
+        Text(title.uppercased())
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(SlateColors.secondaryText)
+            .tracking(0.5)
+    }
+}
+
+/// Standard list row with consistent styling
+struct StandardListRow<Leading: View, Trailing: View>: View {
+    let title: String
+    let subtitle: String?
+    let leading: Leading
+    let trailing: Trailing
+    let showChevron: Bool
+
+    init(
+        title: String,
+        subtitle: String? = nil,
+        showChevron: Bool = true,
+        @ViewBuilder leading: () -> Leading = { EmptyView() },
+        @ViewBuilder trailing: () -> Trailing = { EmptyView() }
+    ) {
+        self.title = title
+        self.subtitle = subtitle
+        self.showChevron = showChevron
+        self.leading = leading()
+        self.trailing = trailing()
+    }
+
+    var body: some View {
+        HStack(spacing: Spacing.medium) {
+            leading
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.body)
+                    .foregroundStyle(SlateColors.primaryText)
+
+                if let subtitle = subtitle {
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(SlateColors.secondaryText)
+                }
+            }
+
+            Spacer(minLength: 0)
+
+            trailing
+
+            if showChevron {
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(SlateColors.tertiaryText)
+            }
+        }
+        .padding(.vertical, Spacing.medium)
+        .contentShape(Rectangle())
+    }
+}
+
+/// Empty state view with centered icon, title, and message
+struct EmptyStateView: View {
+    let icon: String
+    let title: String
+    let message: String
+    var action: (() -> Void)?
+    var actionLabel: String?
+
+    init(
+        icon: String,
+        title: String,
+        message: String,
+        actionLabel: String? = nil,
+        action: (() -> Void)? = nil
+    ) {
+        self.icon = icon
+        self.title = title
+        self.message = message
+        self.actionLabel = actionLabel
+        self.action = action
+    }
+
+    var body: some View {
+        VStack(spacing: Spacing.large) {
+            Image(systemName: icon)
+                .font(.system(size: 56))
+                .foregroundStyle(SlateColors.tertiaryText)
+
+            VStack(spacing: Spacing.small) {
+                Text(title)
+                    .font(Typography.title3)
+                    .foregroundStyle(SlateColors.primaryText)
+
+                Text(message)
+                    .font(Typography.subheadline)
+                    .foregroundStyle(SlateColors.secondaryText)
+                    .multilineTextAlignment(.center)
+            }
+
+            if let action = action, let label = actionLabel {
+                Button(action: action) {
+                    Text(label)
+                        .font(Typography.labelMedium)
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, Spacing.large)
+                        .padding(.vertical, Spacing.medium)
+                        .background(AppColors.accentBlue, in: Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(Spacing.extraLarge)
+    }
+}
+
+/// Standard stat card for dashboards
+struct StatCard: View {
+    let title: String
+    let value: String
+    let icon: String
+    let color: Color
+
+    var body: some View {
+        VStack(spacing: Spacing.medium) {
+            Image(systemName: icon)
+                .font(.title)
+                .foregroundStyle(color)
+
+            Text(value)
+                .font(Typography.title2)
+                .foregroundStyle(SlateColors.primaryText)
+
+            Text(title)
+                .font(Typography.caption1)
+                .foregroundStyle(SlateColors.secondaryText)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(Spacing.medium)
+        .background(SlateColors.mediumSlate)
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.radiusMedium, style: .continuous))
+    }
+}
+
+// MARK: - Layout & Animation Constants
+// See ViewUtilities.swift for LayoutConstants and AnimationConstants
+// (Single source of truth to avoid duplication)
 
