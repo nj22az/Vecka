@@ -111,7 +111,7 @@ struct WeatherForecastView: View {
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 60)
+        .padding(.vertical, Spacing.huge)
     }
 
     private var emptyStateView: some View {
@@ -142,7 +142,7 @@ struct WeatherForecastView: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 60)
+        .padding(.vertical, Spacing.huge)
     }
 
     private func errorView(message: String) -> some View {
@@ -174,7 +174,7 @@ struct WeatherForecastView: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 60)
+        .padding(.vertical, Spacing.huge)
     }
 
     // MARK: - Data Fetching

@@ -1,7 +1,7 @@
 /* English Localization for Vecka */
 
 /* App */
-"app.name" = "WEEK BUDDY";
+"app.name" = "WEEKGRID";
 
 /* Common */
 "common.today" = "Today";
@@ -13,6 +13,8 @@
 
 /* Notes */
 "note.create" = "Create Note";
+"note.add" = "Add Note";
+"note.edit" = "Edit";
 "note.add_event" = "ADD EVENT";
 "note.your_event" = "YOUR EVENT";
 "note.new_event" = "New Event";
@@ -24,6 +26,13 @@
 /* Time */
 "time.days_short" = "d";
 "time.today" = "TODAY";
+"time.day_singular" = "DAY";
+"time.day_plural" = "DAYS";
+
+/* Countdown */
+"countdown.select" = "Select Countdown";
+"countdown.ago" = "AGO";
+"countdown.left" = "LEFT";
 
 /* Weekdays */
 "weekday.mon" = "MON";
@@ -67,3 +76,250 @@
 "picker.no_customs_hint" = "No custom events yet.";
 "picker.add_favorites_hint" = "Add your frequently used events to Favorites for quick access.";
 "picker.selected" = "Selected";
+
+/* Holidays */
+"holiday.nyarsdagen" = "New Year's Day";
+"holiday.trettondedag_jul" = "Epiphany";
+"holiday.forsta_maj" = "May 1st";
+"holiday.sveriges_nationaldag" = "National Day of Sweden";
+"holiday.juldagen" = "Christmas Day";
+"holiday.annandag_jul" = "Boxing Day";
+"holiday.nyarsafton" = "New Year's Eve";
+"holiday.julafton" = "Christmas Eve";
+"holiday.alla_hjartans_dag" = "Valentine's Day";
+"holiday.internationella_kvinnodagen" = "International Women's Day";
+"holiday.langfredagen" = "Good Friday";
+"holiday.paskdagen" = "Easter Sunday";
+"holiday.annandag_pask" = "Easter Monday";
+"holiday.kristi_himmelsfardsdag" = "Ascension Day";
+"holiday.pingstdagen" = "Pentecost";
+"holiday.midsommardagen" = "Midsummer Day";
+"holiday.midsommarafton" = "Midsummer Eve";
+"holiday.alla_helgons_dag" = "All Saints' Day";
+"holiday.mors_dag" = "Mother's Day";
+"holiday.fars_dag" = "Father's Day";
+
+/* Countdown */
+"holiday.virdagjamning" = "Spring Equinox";
+"holiday.sommarsolstand" = "Summer Solstice";
+"holiday.hostdagjamning" = "Autumn Equinox";
+"holiday.vintersolstand" = "Winter Solstice";
+
+"countdown.custom_event" = "CUSTOM EVENT";
+"countdown.days_suffix" = "DAYS";
+
+/* Settings - Region */
+"settings.region" = "Region";
+"region.sweden" = "Sweden";
+"region.us" = "United States";
+"region.vietnam" = "Vietnam";
+
+/* Weather - UI Labels */
+"weather.high" = "High";
+"weather.low" = "Low";
+"weather.precipitation" = "Precipitation";
+"weather.uv_index" = "UV Index";
+"weather.wind" = "Wind";
+
+/* Weather - Loading & Errors */
+"weather.loading" = "Loading weather...";
+"weather.tap_to_retry" = "Tap to retry";
+"weather.error.no_location" = "Location not available";
+"weather.error.permission_denied" = "Location permission required";
+"weather.error.fetch_failed" = "Unable to fetch weather";
+
+/* Weather - Permissions */
+"weather.enable_location" = "Enable Location";
+"weather.location_required" = "Weather requires location access to show forecasts for your area.";
+"weather.open_settings" = "Open Settings";
+
+/* Weather - Conditions */
+"weather.condition.clear" = "Clear";
+"weather.condition.mostly_clear" = "Mostly Clear";
+"weather.condition.partly_cloudy" = "Partly Cloudy";
+"weather.condition.mostly_cloudy" = "Mostly Cloudy";
+"weather.condition.cloudy" = "Cloudy";
+"weather.condition.drizzle" = "Drizzle";
+"weather.condition.rain" = "Rain";
+"weather.condition.heavy_rain" = "Heavy Rain";
+"weather.condition.snow" = "Snow";
+"weather.condition.heavy_snow" = "Heavy Snow";
+"weather.condition.flurries" = "Flurries";
+"weather.condition.blizzard" = "Blizzard";
+"weather.condition.sleet" = "Sleet";
+"weather.condition.freezing_rain" = "Freezing Rain";
+"weather.condition.freezing_drizzle" = "Freezing Drizzle";
+"weather.condition.wintry_mix" = "Wintry Mix";
+"weather.condition.blowing_snow" = "Blowing Snow";
+"weather.condition.isolated_thunderstorms" = "Isolated Thunderstorms";
+"weather.condition.scattered_thunderstorms" = "Scattered Thunderstorms";
+"weather.condition.thunderstorms" = "Thunderstorms";
+"weather.condition.strong_storms" = "Strong Storms";
+"weather.condition.tropical_storm" = "Tropical Storm";
+"weather.condition.hurricane" = "Hurricane";
+"weather.condition.foggy" = "Foggy";
+"weather.condition.haze" = "Haze";
+"weather.condition.smoky" = "Smoky";
+"weather.condition.windy" = "Windy";
+"weather.condition.breezy" = "Breezy";
+"weather.condition.hot" = "Hot";
+"weather.condition.frigid" = "Frigid";
+"weather.condition.hail" = "Hail";
+"weather.condition.sun_flurries" = "Sun Flurries";
+"weather.condition.sun_showers" = "Sun Showers";
+"weather.condition.blowing_dust" = "Blowing Dust";
+"weather.condition.unknown" = "Conditions Vary";
+
+/* Expenses & Trips */
+"expenses.title" = "Expenses";
+"trips.title" = "Trips";
+"expenses.amount" = "Amount";
+"expenses.category" = "Category";
+"expenses.details" = "Details";
+"expenses.receipt" = "Receipt";
+"expenses.exchange_rate" = "Exchange Rate";
+"expenses.converted_amount" = "Converted Amount";
+"expenses.currency_conversion" = "Currency Conversion";
+"expenses.notes" = "Notes (Optional)";
+"expenses.trip" = "Trip";
+"expenses.rate_for" = "Rate for";
+
+/* Location & Weather */
+"location.searching" = "Searching...";
+"location.no_locations_found" = "No locations found";
+"location.search_results" = "Search Results";
+"location.quick_add" = "Quick Add";
+"location.manual_entry" = "Manual Entry";
+"location.manual_entry_hint" = "Enter coordinates in decimal degrees (e.g., 59.3293, 18.0686)";
+"location.auto_detect" = "Auto-Detect";
+"location.auto_detect_hint" = "Use your device's current location for weather forecasts";
+"location.saved_locations" = "Saved Locations";
+"weather.loading_forecast" = "Loading forecast...";
+"weather.no_weather_data" = "No Weather Data";
+
+/* Holidays & Observances */
+"holidays.title" = "Holidays";
+"holidays.turn_on_hint" = "Turn on Holidays in the Holidays screen to see observances.";
+"holidays.turn_on_above" = "Turn on Holidays above to see holidays.";
+"holidays.add_observances" = "Add observances like birthdays or milestones.";
+"holidays.add_custom" = "Add custom holidays with +, or adjust your region.";
+
+/* PDF Export */
+"pdf.export_type" = "Export Type";
+"pdf.date_selection" = "Date Selection";
+"pdf.export_options" = "Export Options";
+"pdf.export_includes" = "Export includes selected data for the chosen date range";
+"pdf.loading_preview" = "Loading preview...";
+"pdf.activity_preview" = "Activity Preview";
+"pdf.select_options_hint" = "Select options to preview report content";
+"pdf.preview" = "Preview";
+"pdf.preview_updates" = "Preview updates as you change options";
+"pdf.preview_unavailable" = "Preview unavailable";
+
+/* Common UI */
+"common.week" = "Week";
+"common.edit" = "Edit";
+
+/* Dashboard */
+"dashboard.pinned" = "Pinned";
+
+/* PDF Content */
+"pdf.summary_title" = "Summary";
+"pdf.recent_notes" = "Recent Notes";
+"pdf.recent_expenses" = "Recent Expenses";
+"pdf.active_trips" = "Active Trips";
+"pdf.holidays" = "Holidays";
+"pdf.notes" = "Notes";
+"pdf.expenses" = "Expenses";
+"pdf.week" = "Week";
+"pdf.generated_by" = "Generated by WeekGrid";
+
+/* Common UI - Extended */
+"common.total" = "Total";
+"common.duration" = "Duration";
+"common.category" = "Category";
+"common.no_events" = "No events";
+"common.see_all" = "See All";
+"common.try_again" = "Try Again";
+"common.retry" = "Retry";
+"common.refresh" = "Refresh";
+"common.options" = "Options";
+"common.delete" = "Delete";
+"common.settings" = "Settings";
+"common.done" = "Done";
+"common.none" = "None";
+"common.show_all" = "Show All";
+"common.show_less" = "Show Less";
+"common.more" = "More";
+"common.less" = "Less";
+
+/* Contacts */
+"contacts.no_contacts" = "No Contacts";
+"contacts.import" = "Import from your address book or add contacts manually";
+"contacts.import_from_address_book" = "Import from Address Book";
+"contacts.import_options" = "Import Options";
+"contacts.new_contact" = "New Contact";
+"contacts.import_all" = "Import All Contacts";
+"contacts.select_to_import" = "Select Contacts to Import";
+"contacts.grant_permission" = "Grant Contacts Permission";
+"contacts.export_to_ios" = "Export to iOS Contacts";
+
+/* QR Code */
+"qr.scan_hint" = "Scan this QR code to save contact";
+"qr.point_camera" = "Point camera at QR code";
+"qr.share" = "Share QR Code";
+"qr.share_as_qr" = "Share as QR Code";
+"qr.share_as_vcard" = "Share as vCard";
+
+/* Trips */
+"trips.active" = "Active Trips";
+"trips.upcoming" = "Upcoming Trips";
+"trips.add" = "Add Trip";
+"trips.generate_report" = "Generate Report";
+"trips.mileage" = "Mileage";
+
+/* Weather Extended */
+"weather.no_data_title" = "No Weather Data";
+"weather.enable_location" = "Enable location services to see the forecast";
+"weather.unable_to_load" = "Unable to Load Weather";
+"weather.manage_locations" = "Manage Locations";
+
+/* Location Extended */
+"location.current" = "Current Location";
+"location.add" = "Add Location";
+"location.enter_coordinates" = "Enter Coordinates Manually";
+"location.save" = "Save Location";
+
+/* Expenses Extended */
+"expenses.add" = "Add Expense";
+"expenses.filter_options" = "Filter Options";
+"expenses.all_categories" = "All Categories";
+"expenses.all_trips" = "All Trips";
+"expenses.use_template" = "Use Template";
+"expenses.remove_receipt" = "Remove Receipt";
+"expenses.add_receipt_photo" = "Add Receipt Photo";
+"expenses.recent" = "Recent Expenses";
+
+/* Notes Extended */
+"notes.search" = "Search Notes";
+"notes.unpin" = "Unpin";
+
+/* Dashboard */
+"dashboard.upcoming_events" = "Upcoming Events";
+"dashboard.no_activity" = "No Recent Activity";
+
+/* Navigation Extended */
+"navigation.detail_view" = "Detail View";
+"navigation.calendar" = "Calendar";
+"navigation.library" = "Library";
+"navigation.notes" = "Notes";
+"navigation.holidays" = "Holidays";
+"navigation.observances" = "Observances";
+"navigation.contacts" = "Contacts";
+"navigation.expenses" = "Expenses";
+"navigation.trips" = "Trips";
+"navigation.weather" = "Weather";
+"navigation.select_item" = "Select an item";
+"navigation.menu" = "Menu";
+"navigation.holidays_section" = "Holidays & Events";
+"navigation.features" = "Features";

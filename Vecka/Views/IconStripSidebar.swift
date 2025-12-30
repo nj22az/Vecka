@@ -41,7 +41,7 @@ struct IconStripSidebar: View {
                         iconSize: iconSize,
                         itemHeight: itemHeight
                     ) {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                        withAnimation(AnimationConstants.sidebarSpring) {
                             selection = item
                         }
                     }
@@ -65,7 +65,7 @@ struct IconStripSidebar: View {
                 iconSize: iconSize,
                 itemHeight: itemHeight
             ) {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                withAnimation(AnimationConstants.sidebarSpring) {
                     selection = .settings
                 }
             }
@@ -109,7 +109,7 @@ struct IconStripButton: View {
                 Image(systemName: item.icon)
                     .font(.system(size: iconSize, weight: isSelected ? .semibold : .regular))
                     .foregroundStyle(isSelected ? SlateColors.iconActive : SlateColors.iconDefault)
-                    .frame(width: 32, height: 32)
+                    .frame(width: 40, height: 40)
 
                 Spacer()
 

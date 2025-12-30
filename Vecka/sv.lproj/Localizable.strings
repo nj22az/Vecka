@@ -1,18 +1,21 @@
-/* Swedish Localization for Vecka */
+/* Swedish Localization for WeekGrid */
 
 /* App */
-"app.name" = "VECKOKOMPIS";
+"app.name" = "WEEKGRID";
 
 /* Common */
 "common.today" = "Idag";
 "common.cancel" = "Avbryt";
 "common.save" = "Spara";
+"common.done" = "Klar";
 
 /* Actions */
 "action.go_to_today" = "GÅ TILL IDAG";
 
 /* Notes */
 "note.create" = "Skapa anteckning";
+"note.add" = "Lägg till anteckning";
+"note.edit" = "Redigera";
 "note.add_event" = "LÄGG TILL HÄNDELSE";
 "note.your_event" = "DIN HÄNDELSE";
 "note.new_event" = "Ny händelse";
@@ -24,6 +27,13 @@
 /* Time */
 "time.days_short" = "d";
 "time.today" = "IDAG";
+"time.day_singular" = "DAG";
+"time.day_plural" = "DAGAR";
+
+/* Countdown */
+"countdown.select" = "Välj nedräkning";
+"countdown.ago" = "SEDAN";
+"countdown.left" = "KVAR";
 
 /* Weekdays */
 "weekday.mon" = "MÅN";
@@ -67,3 +77,282 @@
 "picker.no_customs_hint" = "Inga egna händelser ännu.";
 "picker.add_favorites_hint" = "Lägg till ofta använda händelser som favoriter för snabb åtkomst.";
 "picker.selected" = "Vald";
+"picker.year" = "År";
+"picker.month" = "Månad";
+"picker.select_month" = "Välj månad";
+
+/* Holidays */
+"holiday.nyarsdagen" = "Nyårsdagen";
+"holiday.trettondedag_jul" = "Trettondedag jul";
+"holiday.forsta_maj" = "Första maj";
+"holiday.sveriges_nationaldag" = "Sveriges nationaldag";
+"holiday.juldagen" = "Juldagen";
+"holiday.annandag_jul" = "Annandag jul";
+"holiday.nyarsafton" = "Nyårsafton";
+"holiday.julafton" = "Julafton";
+"holiday.alla_hjartans_dag" = "Alla hjärtans dag";
+"holiday.internationella_kvinnodagen" = "Internationella kvinnodagen";
+"holiday.langfredagen" = "Långfredagen";
+"holiday.paskdagen" = "Påskdagen";
+"holiday.annandag_pask" = "Annandag påsk";
+"holiday.kristi_himmelsfardsdag" = "Kristi himmelsfärdsdag";
+"holiday.pingstdagen" = "Pingstdagen";
+"holiday.midsommardagen" = "Midsommardagen";
+"holiday.midsommarafton" = "Midsommarafton";
+"holiday.alla_helgons_dag" = "Alla helgons dag";
+"holiday.mors_dag" = "Mors dag";
+"holiday.fars_dag" = "Fars dag";
+"holiday.virdagjamning" = "Vårdagjämningen";
+"holiday.sommarsolstand" = "Sommarsolståndet";
+"holiday.hostdagjamning" = "Höstdagjämningen";
+"holiday.vintersolstand" = "Vintersolståndet";
+
+/* Countdown */
+"countdown.custom_event" = "EGEN HÄNDELSE";
+"countdown.days_suffix" = "DAGAR";
+
+/* Settings - Region */
+"settings.region" = "Region";
+"region.sweden" = "Sverige";
+"region.us" = "USA";
+"region.vietnam" = "Vietnam";
+
+/* Weather - UI Labels */
+"weather.high" = "Max";
+"weather.low" = "Min";
+"weather.precipitation" = "Nederbörd";
+"weather.uv_index" = "UV-index";
+"weather.wind" = "Vind";
+
+/* Weather - Loading & Errors */
+"weather.loading" = "Laddar väder...";
+"weather.tap_to_retry" = "Tryck för att försöka igen";
+"weather.error.no_location" = "Plats ej tillgänglig";
+"weather.error.permission_denied" = "Platstillstånd krävs";
+"weather.error.fetch_failed" = "Kunde inte hämta väder";
+
+/* Weather - Permissions */
+"weather.enable_location" = "Aktivera plats";
+"weather.location_required" = "Väder kräver platstillgång för att visa prognoser för ditt område.";
+"weather.open_settings" = "Öppna inställningar";
+
+/* Weather - Conditions */
+"weather.condition.clear" = "Klart";
+"weather.condition.mostly_clear" = "Mestadels klart";
+"weather.condition.partly_cloudy" = "Delvis molnigt";
+"weather.condition.mostly_cloudy" = "Mestadels molnigt";
+"weather.condition.cloudy" = "Molnigt";
+"weather.condition.drizzle" = "Duggregn";
+"weather.condition.rain" = "Regn";
+"weather.condition.heavy_rain" = "Kraftigt regn";
+"weather.condition.snow" = "Snö";
+"weather.condition.heavy_snow" = "Kraftigt snöfall";
+"weather.condition.flurries" = "Snöbyar";
+"weather.condition.blizzard" = "Snöstorm";
+"weather.condition.sleet" = "Snöblandat regn";
+"weather.condition.freezing_rain" = "Underkylt regn";
+"weather.condition.freezing_drizzle" = "Underkylt duggregn";
+"weather.condition.wintry_mix" = "Vinterväder";
+"weather.condition.blowing_snow" = "Snödrev";
+"weather.condition.isolated_thunderstorms" = "Enstaka åska";
+"weather.condition.scattered_thunderstorms" = "Spridd åska";
+"weather.condition.thunderstorms" = "Åska";
+"weather.condition.strong_storms" = "Kraftiga stormar";
+"weather.condition.tropical_storm" = "Tropisk storm";
+"weather.condition.hurricane" = "Orkan";
+"weather.condition.foggy" = "Dimmigt";
+"weather.condition.haze" = "Dis";
+"weather.condition.smoky" = "Rökigt";
+"weather.condition.windy" = "Blåsigt";
+"weather.condition.breezy" = "Lätt blåsigt";
+"weather.condition.hot" = "Varmt";
+"weather.condition.frigid" = "Kallt";
+"weather.condition.hail" = "Hagel";
+"weather.condition.sun_flurries" = "Sol och snöbyar";
+"weather.condition.sun_showers" = "Solskurar";
+"weather.condition.blowing_dust" = "Dammstorm";
+"weather.condition.unknown" = "Varierande väder";
+
+/* Expenses & Trips */
+"expenses.title" = "Utgifter";
+"trips.title" = "Resor";
+"expenses.amount" = "Belopp";
+"expenses.category" = "Kategori";
+"expenses.details" = "Detaljer";
+"expenses.receipt" = "Kvitto";
+"expenses.exchange_rate" = "Växelkurs";
+"expenses.converted_amount" = "Konverterat belopp";
+"expenses.currency_conversion" = "Valutakonvertering";
+"expenses.notes" = "Anteckningar (valfritt)";
+"expenses.trip" = "Resa";
+"expenses.rate_for" = "Kurs för";
+
+/* Location & Weather */
+"location.searching" = "Söker...";
+"location.no_locations_found" = "Inga platser hittades";
+"location.search_results" = "Sökresultat";
+"location.quick_add" = "Snabbtillägg";
+"location.manual_entry" = "Manuell inmatning";
+"location.manual_entry_hint" = "Ange koordinater i decimalgrader (t.ex. 59,3293, 18,0686)";
+"location.auto_detect" = "Hitta automatiskt";
+"location.auto_detect_hint" = "Använd din enhets nuvarande plats för väderprognoser";
+"location.saved_locations" = "Sparade platser";
+"weather.loading_forecast" = "Laddar prognos...";
+"weather.no_weather_data" = "Ingen väderdata";
+
+/* Holidays & Observances */
+"holidays.title" = "Helgdagar";
+"holidays.turn_on_hint" = "Aktivera helgdagar i helgdagsskärmen för att se högtider.";
+"holidays.turn_on_above" = "Aktivera helgdagar ovan för att se helgdagar.";
+"holidays.add_observances" = "Lägg till högtider som födelsedagar eller milstolpar.";
+"holidays.add_custom" = "Lägg till anpassade helgdagar med +, eller justera din region.";
+
+/* PDF Export */
+"pdf.export_type" = "Exporttyp";
+"pdf.date_selection" = "Datumval";
+"pdf.export_options" = "Exportalternativ";
+"pdf.export_includes" = "Export inkluderar valda data för valt datumintervall";
+"pdf.loading_preview" = "Laddar förhandsgranskning...";
+"pdf.activity_preview" = "Aktivitetsförhandsgranskning";
+"pdf.select_options_hint" = "Välj alternativ för att förhandsgranska rapportinnehåll";
+"pdf.preview" = "Förhandsgranskning";
+"pdf.preview_updates" = "Förhandsgranskning uppdateras när du ändrar alternativ";
+"pdf.preview_unavailable" = "Förhandsgranskning ej tillgänglig";
+
+/* Common UI */
+"common.week" = "Vecka";
+"common.edit" = "Redigera";
+
+/* Dashboard */
+"dashboard.pinned" = "Fäst";
+
+/* PDF Content */
+"pdf.summary_title" = "Sammanfattning";
+"pdf.recent_notes" = "Senaste anteckningar";
+"pdf.recent_expenses" = "Senaste utgifter";
+"pdf.active_trips" = "Aktiva resor";
+"pdf.holidays" = "Helgdagar";
+"pdf.notes" = "Anteckningar";
+"pdf.expenses" = "Utgifter";
+"pdf.week" = "Vecka";
+"pdf.generated_by" = "Genererad av WeekGrid";
+
+/* Contacts */
+"contacts.title" = "Kontakter";
+"contacts.no_contacts" = "Inga kontakter";
+"contacts.import_hint" = "Importera från din adressbok eller lägg till kontakter manuellt";
+"contacts.import_from_address_book" = "Importera från adressbok";
+"contacts.new_contact" = "Ny kontakt";
+"contacts.edit_contact" = "Redigera kontakt";
+"contacts.import_all" = "Importera alla kontakter";
+"contacts.select_to_import" = "Välj kontakter att importera";
+"contacts.importing" = "Importerar...";
+"contacts.imported_success" = "Importerade %d kontakter";
+"contacts.import_failed" = "Import misslyckades: %@";
+"contacts.grant_permission" = "Ge kontakttillstånd";
+"contacts.permission_required" = "Kontakttillgång krävs för att importera från din adressbok.";
+"contacts.permission_granted" = "Tillstånd beviljat. Du kan nu importera kontakter.";
+"contacts.permission_denied" = "Tillstånd nekat. Aktivera i Inställningar.";
+"contacts.share_qr" = "Dela som QR-kod";
+"contacts.share_vcard" = "Dela som vCard";
+"contacts.export_ios" = "Exportera till iOS Kontakter";
+"contacts.scan_qr" = "Skanna kontakt QR-kod";
+"contacts.qr_title" = "Kontakt QR-kod";
+"contacts.qr_hint" = "Skanna denna QR-kod för att spara kontakt";
+"contacts.scan_instruction" = "Rikta kameran mot QR-koden";
+"contacts.add_photo" = "Lägg till foto";
+"contacts.delete" = "Ta bort";
+"contacts.phone" = "Telefon";
+"contacts.email" = "E-post";
+"contacts.address" = "Adress";
+"contacts.birthday" = "Födelsedag";
+"contacts.notes" = "Anteckningar";
+"contacts.name" = "Namn";
+"contacts.first_name" = "Förnamn";
+"contacts.last_name" = "Efternamn";
+"contacts.company" = "Företag";
+"contacts.label" = "Etikett";
+"contacts.add_phone" = "Lägg till telefon";
+"contacts.add_email" = "Lägg till e-post";
+"contacts.import_options" = "Importalternativ";
+"contacts.import" = "Importera från din adressbok eller lägg till kontakter manuellt";
+"contacts.export_to_ios" = "Exportera till iOS Kontakter";
+
+/* QR Code */
+"qr.scan_hint" = "Skanna denna QR-kod för att spara kontakt";
+"qr.point_camera" = "Rikta kameran mot QR-koden";
+"qr.share" = "Dela QR-kod";
+"qr.share_as_qr" = "Dela som QR-kod";
+"qr.share_as_vcard" = "Dela som vCard";
+
+/* Trips Extended */
+"trips.active" = "Aktiva resor";
+"trips.upcoming" = "Kommande resor";
+"trips.add" = "Lägg till resa";
+"trips.generate_report" = "Generera rapport";
+"trips.mileage" = "Körsträcka";
+
+/* Weather Extended */
+"weather.no_data_title" = "Ingen väderdata";
+"weather.enable_location" = "Aktivera platstjänster för att se prognosen";
+"weather.unable_to_load" = "Kunde inte ladda väder";
+"weather.manage_locations" = "Hantera platser";
+
+/* Location Extended */
+"location.current" = "Nuvarande plats";
+"location.add" = "Lägg till plats";
+"location.enter_coordinates" = "Ange koordinater manuellt";
+"location.save" = "Spara plats";
+
+/* Expenses Extended */
+"expenses.add" = "Lägg till utgift";
+"expenses.filter_options" = "Filteralternativ";
+"expenses.all_categories" = "Alla kategorier";
+"expenses.all_trips" = "Alla resor";
+"expenses.use_template" = "Använd mall";
+"expenses.remove_receipt" = "Ta bort kvitto";
+"expenses.add_receipt_photo" = "Lägg till kvittofoto";
+"expenses.recent" = "Senaste utgifter";
+
+/* Notes Extended */
+"notes.search" = "Sök anteckningar";
+"notes.unpin" = "Ta bort fästning";
+
+/* Dashboard Extended */
+"dashboard.upcoming_events" = "Kommande händelser";
+"dashboard.no_activity" = "Ingen senaste aktivitet";
+
+/* Common UI Extended */
+"common.total" = "Totalt";
+"common.duration" = "Varaktighet";
+"common.category" = "Kategori";
+"common.no_events" = "Inga händelser";
+"common.see_all" = "Visa alla";
+"common.try_again" = "Försök igen";
+"common.retry" = "Försök igen";
+"common.refresh" = "Uppdatera";
+"common.options" = "Alternativ";
+"common.delete" = "Ta bort";
+"common.settings" = "Inställningar";
+"common.done" = "Klar";
+"common.none" = "Ingen";
+"common.show_all" = "Visa alla";
+"common.show_less" = "Visa mindre";
+"common.more" = "Mer";
+"common.less" = "Mindre";
+
+/* Navigation Extended */
+"navigation.detail_view" = "Detaljvy";
+"navigation.calendar" = "Kalender";
+"navigation.library" = "Bibliotek";
+"navigation.notes" = "Anteckningar";
+"navigation.holidays" = "Helgdagar";
+"navigation.observances" = "Högtider";
+"navigation.contacts" = "Kontakter";
+"navigation.expenses" = "Utgifter";
+"navigation.trips" = "Resor";
+"navigation.weather" = "Väder";
+"navigation.select_item" = "Välj ett objekt";
+"navigation.menu" = "Meny";
+"navigation.holidays_section" = "Helgdagar och händelser";
+"navigation.features" = "Funktioner";

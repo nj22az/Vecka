@@ -2,10 +2,12 @@
 //  DesignSystem.swift
 //  Vecka
 //
-//  Japanese web-inspired design system
+//  Apple HIG + Liquid Glass design system
+//  One unified visual language for WeekGrid
 //
 
 import SwiftUI
+import SwiftData
 
 // MARK: - App Colors
 struct AppColors {
@@ -26,18 +28,20 @@ struct AppColors {
     static let accentPurple = Color(.systemPurple)
     
     // MARK: - Daily Color Associations (Planetary Colors)
-    static let mondayMoon = Color(hex: "C0C0C0")      // Pale silver for moon
-    static let tuesdayFire = Color(hex: "E53E3E")     // Red for fire
-    static let wednesdayWater = Color(hex: "1B6DEF")  // Blue for water
-    static let thursdayWood = Color(hex: "38A169")    // Green for wood
-    static let fridayMetal = Color(hex: "B8860B")     // Dark gold/metallic for metal
-    static let saturdayEarth = Color(hex: "8B4513")   // Brown for earth
-    static let sundaySun = Color(hex: "FFD700")       // Bright golden for sun
+    // Delegated to SharedColors for consistency with widget
+    static var mondayMoon: Color { SharedColors.mondayMoon }
+    static var tuesdayFire: Color { SharedColors.tuesdayFire }
+    static var wednesdayWater: Color { SharedColors.wednesdayWater }
+    static var thursdayWood: Color { SharedColors.thursdayWood }
+    static var fridayMetal: Color { SharedColors.fridayMetal }
+    static var saturdayEarth: Color { SharedColors.saturdayEarth }
+    static var sundaySun: Color { SharedColors.sundaySun }
     
     // Dynamic color function for daily color scheme
+    // Note: Use colorForDay(date:context:) for database-driven themes
     static func colorForDay(_ date: Date) -> Color {
         let weekday = Calendar.iso8601.component(.weekday, from: date)
-        
+
         switch weekday {
         case 1: return sundaySun      // Sunday - Sun
         case 2: return mondayMoon     // Monday - Moon
@@ -49,49 +53,99 @@ struct AppColors {
         default: return accentBlue
         }
     }
+
+    // Database-driven theme color for day (uses UITheme from database)
+    static func colorForDay(_ date: Date, context: ModelContext) -> Color {
+        let weekday = Calendar.iso8601.component(.weekday, from: date)
+        return ConfigurationManager.shared.getWeekdayColor(for: weekday, context: context)
+    }
+}
+
+// MARK: - Slate Design Language (Dark Mode Focused)
+/// Design tokens for the elegant dark slate UI from mockups
+struct SlateColors {
+    // MARK: - Backgrounds
+    /// Deep slate background - the canvas everything sits on
+    static let deepSlate = Color(hex: "1A1A2E")
+    /// Medium slate for elevated surfaces like panels
+    static let mediumSlate = Color(hex: "2A2A3E")
+    /// Light slate for subtle elevation
+    static let lightSlate = Color(hex: "3A3A4E")
+
+    // MARK: - Today Indicator
+    /// Subtle slate blue for today's cell highlight
+    static let todayHighlight = Color(hex: "3D4A5C")
+    /// Selected cell highlight (slightly more prominent)
+    static let selectionHighlight = Color(hex: "4D5A6C")
+
+    // MARK: - Text Colors
+    /// Primary text (white)
+    static let primaryText = Color.white
+    /// Secondary text (60% white)
+    static let secondaryText = Color(white: 0.6)
+    /// Tertiary text (40% white)
+    static let tertiaryText = Color(white: 0.4)
+    /// Muted text for out-of-month days
+    static let mutedText = Color(white: 0.25)
+
+    // MARK: - Weekend Colors (Mockup Spec)
+    /// Sunday text color - BLUE (not red) - delegated to SharedColors
+    static var sundayBlue: Color { SharedColors.sundayBlue }
+    /// Saturday text color - same as primary (not special)
+    static let saturdayNormal = Color.white
+
+    // MARK: - Accent Colors
+    /// Sidebar selection bar (bright blue)
+    static let sidebarActiveBar = Color(hex: "3B82F6")
+    /// Default icon color (50% white)
+    static let iconDefault = Color(white: 0.5)
+    /// Active icon color (white)
+    static let iconActive = Color.white
+
+    // MARK: - Borders & Dividers
+    /// Subtle divider line
+    static let divider = Color(white: 0.2)
+    /// Selection border
+    static let selectionBorder = Color(hex: "3B82F6")
+
+    // MARK: - Convenience Functions
+
+    /// Returns the appropriate text color for a weekday
+    /// - Parameters:
+    ///   - isSunday: True if the day is Sunday
+    ///   - isSaturday: True if the day is Saturday (not used - Saturday is normal)
+    ///   - isToday: True if the day is today
+    ///   - isInCurrentMonth: True if the day is in the displayed month
+    /// - Returns: The appropriate text color
+    static func dayTextColor(
+        isSunday: Bool,
+        isSaturday: Bool = false,
+        isToday: Bool = false,
+        isInCurrentMonth: Bool = true
+    ) -> Color {
+        if !isInCurrentMonth {
+            return mutedText
+        }
+        if isSunday {
+            return sundayBlue
+        }
+        // Saturday and all other days use primary text
+        return primaryText
+    }
+
+    /// Returns the weekday header color
+    /// - Parameter index: 0-based index where 0=Monday, 6=Sunday
+    /// - Returns: The appropriate header color
+    static func weekdayHeaderColor(for index: Int) -> Color {
+        if index == 6 { // Sunday
+            return sundayBlue
+        }
+        return secondaryText
+    }
 }
 
 // MARK: - Thread-Safe Helper Extensions
-extension Color {
-    init(hex: String) {
-        // Thread-safe hex parsing with proper error handling
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        
-        // Failsafe: Use default color if hex parsing fails
-        guard Scanner(string: hex).scanHexInt64(&int) else {
-            self.init(.sRGB, red: 0, green: 0, blue: 0, opacity: 1)
-            return
-        }
-        
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3: // RGB (12-bit)
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8: // ARGB (32-bit)
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            // Failsafe: Default to black if invalid hex length
-            (a, r, g, b) = (255, 0, 0, 0)
-        }
-        
-        // Clamp values to prevent invalid color creation
-        let clampedR = min(255, max(0, r))
-        let clampedG = min(255, max(0, g))
-        let clampedB = min(255, max(0, b))
-        let clampedA = min(255, max(0, a))
-        
-        self.init(
-            .sRGB,
-            red: Double(clampedR) / 255.0,
-            green: Double(clampedG) / 255.0,
-            blue: Double(clampedB) / 255.0,
-            opacity: Double(clampedA) / 255.0
-        )
-    }
-}
+// NOTE: Color.init(hex:) is now defined in SharedColors.swift
 
 // MARK: - Typography System
 /// Apple HIG-compliant typography scale following iOS 17 design guidelines
@@ -127,16 +181,16 @@ struct Typography {
     static let footnote = Font.footnote                  // iOS standard footnote
     
     // MARK: - Caption (Smallest Text)
-    static let caption1 = Font.caption                   // iOS standard caption1
-    static let caption2 = Font.caption2                  // iOS standard caption2
-    static let captionLarge = Font.system(size: 12, weight: .medium, design: .default)
-    static let captionMedium = Font.system(size: 11, weight: .regular, design: .default)
-    static let captionSmall = Font.system(size: 10, weight: .medium, design: .default)
+    static let caption1 = Font.caption                   // iOS standard caption1 (12pt)
+    static let caption2 = Font.caption2                  // iOS standard caption2 (11pt)
+    static let captionLarge = Font.caption.weight(.medium)
+    static let captionMedium = Font.caption2             // HIG: 11pt minimum, use system style
+    static let captionSmall = Font.caption2.weight(.medium) // HIG: 11pt minimum, never below
     
     // MARK: - Label Styles (UI Elements)
-    static let labelLarge = Font.system(size: 17, weight: .semibold, design: .default)
-    static let labelMedium = Font.system(size: 15, weight: .medium, design: .default)
-    static let labelSmall = Font.system(size: 13, weight: .medium, design: .default)
+    static let labelLarge = Font.body.weight(.semibold)
+    static let labelMedium = Font.subheadline.weight(.medium)
+    static let labelSmall = Font.footnote.weight(.medium)
     
     // MARK: - Tracking Values (Letter Spacing)
     static let tightTracking: CGFloat = -0.41        // Apple's tight tracking
@@ -313,4 +367,191 @@ private struct TintedGlassModifier: ViewModifier {
     }
 }
 
+// MARK: - Glass Toolbar Button Style
+/// Apple Glass-compliant toolbar button style with capsule background
+struct GlassToolbarButtonStyle: ButtonStyle {
+    var isProminent: Bool = false
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.body.weight(.medium))
+            .foregroundStyle(isProminent ? Color.accentColor : .primary)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(.ultraThinMaterial, in: Capsule())
+            .opacity(configuration.isPressed ? 0.7 : 1.0)
+            .scaleEffect(configuration.isPressed ? 0.96 : 1.0)
+            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
+    }
+}
+
+// MARK: - Glass Card View Modifier
+/// Material-based glass card for content containers (replaces solid color backgrounds)
+struct GlassCardViewModifier: ViewModifier {
+    var cornerRadius: CGFloat = 16
+    var material: Material = .regularMaterial
+    
+    func body(content: Content) -> some View {
+        content
+            .background(material, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .strokeBorder(.primary.opacity(0.08), lineWidth: 0.5)
+            )
+    }
+}
+
+extension View {
+    /// Applies Apple Glass card styling with material background
+    func glassCard(cornerRadius: CGFloat = 16, material: Material = .regularMaterial) -> some View {
+        modifier(GlassCardViewModifier(cornerRadius: cornerRadius, material: material))
+    }
+}
+
 // (DashboardCard removed; unused after dashboard components cleanup)
+
+// MARK: - Unified Design Tokens
+/// Single source of truth for the app's visual identity
+struct DesignTokens {
+    // MARK: - The One Accent Color
+    /// WeekGrid uses a single accent color for all UI chrome.
+    /// Planetary colors are reserved for week number display only.
+    static let accent = Color.accentColor
+
+    // MARK: - Glass Materials (Liquid Glass hierarchy)
+    static let glassBackground = Material.ultraThinMaterial
+    static let glassCard = Material.thinMaterial
+    static let glassElevated = Material.regularMaterial
+    static let glassFloating = Material.thickMaterial
+
+    // MARK: - Corner Radii (Apple HIG continuous corners)
+    static let radiusSmall: CGFloat = 8
+    static let radiusMedium: CGFloat = 12
+    static let radiusLarge: CGFloat = 16
+    static let radiusXL: CGFloat = 20
+
+    // MARK: - Shadows (subtle depth)
+    static func shadow(for elevation: GlassDesign.GlassElevation) -> (color: Color, radius: CGFloat, y: CGFloat) {
+        switch elevation {
+        case .low:
+            return (Color.black.opacity(0.08), 2, 1)
+        case .medium:
+            return (Color.black.opacity(0.12), 4, 2)
+        case .high:
+            return (Color.black.opacity(0.16), 8, 4)
+        case .floating:
+            return (Color.black.opacity(0.20), 12, 6)
+        }
+    }
+}
+
+// MARK: - Glass Card Component (iOS 26 Liquid Glass)
+/// A unified glass card using native iOS 26 .glassEffect()
+struct GlassCard<Content: View>: View {
+    let elevation: GlassDesign.GlassElevation
+    let tint: Color?
+    let content: Content
+
+    init(
+        elevation: GlassDesign.GlassElevation = .medium,
+        tint: Color? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.elevation = elevation
+        self.tint = tint
+        self.content = content()
+    }
+
+    var body: some View {
+        content
+            .glassEffect(glassVariant, in: RoundedRectangle(cornerRadius: elevation.cornerRadius, style: .continuous))
+    }
+
+    private var glassVariant: Glass {
+        if let tint = tint {
+            return .regular.tint(tint)
+        }
+        return .regular
+    }
+}
+
+// MARK: - Glass Section Header
+/// Consistent section header styling
+struct GlassSectionHeader: View {
+    let title: String
+    let icon: String?
+
+    init(_ title: String, icon: String? = nil) {
+        self.title = title
+        self.icon = icon
+    }
+
+    var body: some View {
+        HStack(spacing: 6) {
+            if let icon = icon {
+                Image(systemName: icon)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.secondary)
+            }
+            Text(title)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.secondary)
+            Spacer()
+        }
+        .padding(.horizontal, Spacing.medium)
+        .padding(.vertical, Spacing.small)
+    }
+}
+
+// MARK: - Glass List Row
+/// A standard row for lists with glass styling
+struct GlassListRow<Leading: View, Trailing: View>: View {
+    let title: String
+    let subtitle: String?
+    let leading: Leading
+    let trailing: Trailing
+    let action: () -> Void
+
+    init(
+        title: String,
+        subtitle: String? = nil,
+        @ViewBuilder leading: () -> Leading = { EmptyView() },
+        @ViewBuilder trailing: () -> Trailing = { EmptyView() },
+        action: @escaping () -> Void = {}
+    ) {
+        self.title = title
+        self.subtitle = subtitle
+        self.leading = leading()
+        self.trailing = trailing()
+        self.action = action
+    }
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                leading
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.body)
+                        .foregroundStyle(.primary)
+
+                    if let subtitle = subtitle {
+                        Text(subtitle)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Spacer()
+
+                trailing
+            }
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
