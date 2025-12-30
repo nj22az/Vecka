@@ -11,7 +11,7 @@ import SwiftData
 struct ObservancesListView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.locale) private var locale
-    @ObservedObject private var holidayManager = HolidayManager.shared
+    private var holidayManager = HolidayManager.shared
     @AppStorage("showHolidays") private var showHolidays = true
     @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
 

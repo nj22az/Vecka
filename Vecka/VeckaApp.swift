@@ -7,26 +7,61 @@
 
 import SwiftUI
 import UIKit
+import SwiftData
 
 @main
 struct VeckaApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @StateObject private var navigationManager = NavigationManager()
-    
+    @State private var navigationManager = NavigationManager()
+
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
-                ContentView()
+            ContentView()
+                .environment(navigationManager)
+            .onOpenURL { url in
+                handleWidgetURL(url)
             }
-                .environmentObject(navigationManager)
-                .onAppear {
-                    // Lock to portrait mode only
-                    AppDelegate.orientationLock = UIInterfaceOrientationMask.portrait
-                }
-                .onOpenURL { url in
-                    handleWidgetURL(url)
-                }
+            .onAppear {
+                Log.i("App launched. System language: \(LanguageManager.shared.currentLanguageCode)")
+            }
         }
+        .modelContainer(for: [
+            DailyNote.self,
+            HolidayRule.self,
+            CalendarRule.self,
+            CountdownEvent.self,
+            // Expense system models
+            ExpenseCategory.self,
+            ExpenseTemplate.self,
+            ExpenseItem.self,
+            TravelTrip.self,
+            MileageEntry.self,
+            ExchangeRate.self,
+            // Contact system models
+            Contact.self,
+            ContactPhoneNumber.self,
+            ContactEmailAddress.self,
+            ContactPostalAddress.self,
+            ContactDate.self,
+            ContactSocialProfile.self,
+            ContactURL.self,
+            ContactRelation.self,
+            // Business Rules models
+            ExpensePolicy.self,
+            ApprovalWorkflow.self,
+            ReimbursementRate.self,
+            // Configuration models (database-driven architecture)
+            AppConfiguration.self,
+            ValidationRule.self,
+            AlgorithmParameter.self,
+            UITheme.self,
+            TypographyScale.self,
+            SpacingScale.self,
+            IconCatalogItem.self,
+            WeatherIconMapping.self,
+            // Location
+            SavedLocation.self
+        ])
     }
     
     
@@ -65,9 +100,10 @@ struct VeckaApp: App {
 }
 
 // MARK: - Navigation Manager for Widget Deep Links
-class NavigationManager: ObservableObject {
-    @Published var targetDate = Date()
-    @Published var shouldScrollToWeek = false
+@Observable
+class NavigationManager {
+    var targetDate = Date()
+    var shouldScrollToWeek = false
     
     func navigateToToday() {
         targetDate = Date()
@@ -96,16 +132,43 @@ class NavigationManager: ObservableObject {
     }
 }
 
-// MARK: - AppDelegate for Orientation Lock
+// MARK: - AppDelegate for Orientation Lock and Glass Appearance
 class AppDelegate: NSObject, UIApplicationDelegate {
-    static var orientationLock = UIInterfaceOrientationMask.portrait
+    /// Controls the supported interface orientations.
+    /// iPad: all orientations except upside down
+    /// iPhone: portrait-only
+    static var orientationLock: UIInterfaceOrientationMask {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return .allButUpsideDown
+        } else {
+            return .portrait
+        }
+    }
+
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        configureGlassAppearance()
+        return true
+    }
     
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-        // Allow landscape on iPad for full screen experience, portrait-only on iPhone
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            return [.portrait, .landscapeLeft, .landscapeRight]
-        } else {
-            return AppDelegate.orientationLock
-        }
+        return Self.orientationLock
+    }
+    
+    /// Configures UIKit appearance for Apple Glass design compliance
+    private func configureGlassAppearance() {
+        // Tab Bar: Enable translucent glass effect
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.configureWithDefaultBackground()
+        tabBarAppearance.backgroundEffect = UIBlurEffect(style: .systemMaterial)
+        UITabBar.appearance().standardAppearance = tabBarAppearance
+        UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
+        
+        // Navigation Bar: Enable translucent glass effect
+        let navBarAppearance = UINavigationBarAppearance()
+        navBarAppearance.configureWithDefaultBackground()
+        navBarAppearance.backgroundEffect = UIBlurEffect(style: .systemMaterial)
+        UINavigationBar.appearance().standardAppearance = navBarAppearance
+        UINavigationBar.appearance().scrollEdgeAppearance = navBarAppearance
+        UINavigationBar.appearance().compactAppearance = navBarAppearance
     }
 }

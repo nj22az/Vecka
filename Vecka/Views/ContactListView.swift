@@ -14,7 +14,7 @@ struct ContactListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Contact.familyName) private var contacts: [Contact]
 
-    @StateObject private var contactsManager = ContactsManager.shared
+    private var contactsManager = ContactsManager.shared
 
     @State private var searchText = ""
     @State private var showingAddContact = false
@@ -187,7 +187,7 @@ struct ContactImportView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
 
-    @StateObject private var contactsManager = ContactsManager.shared
+    private var contactsManager = ContactsManager.shared
 
     @State private var isImporting = false
     @State private var importMessage: String?

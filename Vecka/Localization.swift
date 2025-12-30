@@ -9,15 +9,12 @@ import Foundation
 import SwiftUI
 
 // MARK: - Language Detection Manager
-class LanguageManager: ObservableObject {
-    // We now rely on iOS system language settings.
-    // This manager is kept for potential future in-app language switching if needed,
-    // but for now it just reflects the system state.
-    
+/// Simple singleton for language detection. No observation needed as we rely on iOS system settings.
+final class LanguageManager {
     static let shared = LanguageManager()
-    
+
     private init() {}
-    
+
     var currentLanguageCode: String {
         Locale.current.language.languageCode?.identifier ?? "en"
     }

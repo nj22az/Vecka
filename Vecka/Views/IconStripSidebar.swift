@@ -87,13 +87,22 @@ struct IconStripSidebar: View {
 
 // MARK: - Icon Strip Button
 
-struct IconStripButton: View {
+struct IconStripButton: View, Equatable {
     let item: SidebarSelection
     let isSelected: Bool
     let activeBarWidth: CGFloat
     let iconSize: CGFloat
     let itemHeight: CGFloat
     let action: () -> Void
+
+    // Equatable conformance - closures not compared (always redraws on action change)
+    static func == (lhs: IconStripButton, rhs: IconStripButton) -> Bool {
+        lhs.item == rhs.item &&
+        lhs.isSelected == rhs.isSelected &&
+        lhs.activeBarWidth == rhs.activeBarWidth &&
+        lhs.iconSize == rhs.iconSize &&
+        lhs.itemHeight == rhs.itemHeight
+    }
 
     var body: some View {
         Button(action: action) {

@@ -19,7 +19,7 @@ struct WeekDetailPanel: View {
     let holidays: [HolidayCacheItem]
     let onDayTap: (CalendarDay) -> Void
 
-    @StateObject private var eventManager = CalendarEventManager()
+    @State private var eventManager = CalendarEventManager()
 
 
     var body: some View {
@@ -134,7 +134,7 @@ struct WeekDetailSheetContent: View {
     let holidays: [HolidayCacheItem]
     let onDayTap: (CalendarDay) -> Void
 
-    @StateObject private var eventManager = CalendarEventManager()
+    @State private var eventManager = CalendarEventManager()
 
     var body: some View {
         ScrollView {
@@ -318,11 +318,18 @@ struct DayEventRow: View {
 
 // MARK: - Event Item View
 
-struct EventItemView: View {
+struct EventItemView: View, Equatable {
     let time: String?
     let title: String
     let icon: String
     let color: Color
+
+    static func == (lhs: EventItemView, rhs: EventItemView) -> Bool {
+        lhs.time == rhs.time &&
+        lhs.title == rhs.title &&
+        lhs.icon == rhs.icon &&
+        lhs.color == rhs.color
+    }
 
     var body: some View {
         HStack(spacing: 8) {
@@ -349,9 +356,10 @@ struct EventItemView: View {
 // MARK: - Calendar Event Manager
 
 @MainActor
-class CalendarEventManager: ObservableObject {
-    @Published private(set) var eventsByDate: [Date: [EKEvent]] = [:]
-    @Published private(set) var hasCalendarAccess = false
+@Observable
+class CalendarEventManager {
+    private(set) var eventsByDate: [Date: [EKEvent]] = [:]
+    private(set) var hasCalendarAccess = false
 
     private let eventStore = EKEventStore()
     private let calendar = Calendar.iso8601

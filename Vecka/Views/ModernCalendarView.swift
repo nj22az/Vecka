@@ -22,11 +22,11 @@ struct ModernCalendarView: View {
     // Managers
     @Environment(\.modelContext) private var modelContext
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @EnvironmentObject private var navigationManager: NavigationManager
+    @Environment(NavigationManager.self) private var navigationManager
     @Query private var notes: [DailyNote]
     @Query private var expenses: [ExpenseItem]
     @Query private var trips: [TravelTrip]
-    @ObservedObject private var holidayManager = HolidayManager.shared
+    private var holidayManager = HolidayManager.shared
 
     private var noteColors: [Date: String] {
         var dict: [Date: String] = [:]
@@ -767,7 +767,7 @@ struct ModernCalendarView: View {
         ) {
             ModernCalendarView()
                 .modelContainer(container)
-                .environmentObject(NavigationManager())
+                .environment(NavigationManager())
         } else {
             Text("Preview unavailable")
         }
@@ -782,7 +782,7 @@ struct ModernCalendarView: View {
         ) {
             ModernCalendarView()
                 .modelContainer(container)
-                .environmentObject(NavigationManager())
+                .environment(NavigationManager())
         } else {
             Text("Preview unavailable")
         }
