@@ -439,6 +439,16 @@ struct ModernCalendarView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
         .accessibilityLabel(Localization.menu)
+        .sheet(isPresented: $showMonthPicker) {
+            MonthPickerSheet(
+                initialMonth: displayMonth,
+                initialYear: selectedYear
+            ) { newMonth, newYear in
+                displayMonth = newMonth
+                selectedYear = newYear
+            }
+            .presentationDetents([.medium, .large])
+        }
     }
 
     // MARK: - Toolbar
@@ -488,16 +498,6 @@ struct ModernCalendarView: View {
         .buttonStyle(.plain)
         .accessibilityLabel("\(monthTitle) \(currentMonth.year)")
         .accessibilityHint(Localization.tapToChangeMonth)
-        .sheet(isPresented: $showMonthPicker) {
-            MonthPickerSheet(
-                initialMonth: displayMonth,
-                initialYear: selectedYear
-            ) { newMonth, newYear in
-                displayMonth = newMonth
-                selectedYear = newYear
-            }
-            .presentationDetents([.medium, .large])
-        }
     }
 
     private var monthTitle: String {
