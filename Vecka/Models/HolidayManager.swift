@@ -62,8 +62,9 @@ class HolidayManager {
 
     // Thread-safe cache storage using a dedicated actor-safe wrapper
     // Allows widget access from background threads without data races
+    // HolidayCacheStorage is Sendable and uses NSLock internally for thread safety
     @ObservationIgnored
-    private static let cacheStorage = HolidayCacheStorage()
+    nonisolated private static let cacheStorage = HolidayCacheStorage()
 
     /// Thread-safe access to the holiday cache
     nonisolated var holidayCache: [Date: [HolidayCacheItem]] {
