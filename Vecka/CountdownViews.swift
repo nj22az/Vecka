@@ -529,12 +529,21 @@ struct CustomCountdownDialog: View {
     }
 
     // Date components
+    private var selectedYear: Int {
+        Calendar.current.component(.year, from: date)
+    }
+
     private var selectedMonth: Int {
         Calendar.current.component(.month, from: date)
     }
 
     private var selectedDay: Int {
         Calendar.current.component(.day, from: date)
+    }
+
+    private var yearRange: [Int] {
+        let current = Calendar.current.component(.year, from: Date())
+        return Array((current - 10)...(current + 10))
     }
 
     var body: some View {
@@ -645,59 +654,99 @@ struct CustomCountdownDialog: View {
                             )
                     }
 
-                    // Date picker (month/day)
+                    // Date picker (情報デザイン: Year, Month, Day)
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                         JohoPill(text: "DATE", style: .whiteOnBlack, size: .small)
 
-                        HStack(spacing: JohoDimensions.spacingMD) {
-                            // Month picker
-                            Menu {
-                                ForEach(1...12, id: \.self) { month in
-                                    Button {
-                                        updateDate(month: month, day: selectedDay)
-                                    } label: {
-                                        Text(monthName(month))
+                        HStack(spacing: JohoDimensions.spacingSM) {
+                            // Year picker
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("YEAR")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                                Menu {
+                                    ForEach(yearRange, id: \.self) { year in
+                                        Button {
+                                            updateDate(year: year, month: selectedMonth, day: selectedDay)
+                                        } label: {
+                                            Text(String(year))
+                                        }
                                     }
+                                } label: {
+                                    Text(String(selectedYear))
+                                        .font(JohoFont.body)
+                                        .monospacedDigit()
+                                        .foregroundStyle(JohoColors.black)
+                                        .padding(JohoDimensions.spacingSM)
+                                        .frame(width: 70)
+                                        .background(JohoColors.white)
+                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                        .overlay(
+                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                        )
                                 }
-                            } label: {
-                                Text(monthName(selectedMonth))
-                                    .font(JohoFont.body)
-                                    .foregroundStyle(JohoColors.black)
-                                    .padding(JohoDimensions.spacingSM)
-                                    .frame(minWidth: 80)
-                                    .background(JohoColors.white)
-                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                    .overlay(
-                                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                                    )
+                            }
+
+                            // Month picker
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("MONTH")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                                Menu {
+                                    ForEach(1...12, id: \.self) { month in
+                                        Button {
+                                            updateDate(year: selectedYear, month: month, day: selectedDay)
+                                        } label: {
+                                            Text(monthName(month))
+                                        }
+                                    }
+                                } label: {
+                                    Text(monthName(selectedMonth))
+                                        .font(JohoFont.body)
+                                        .foregroundStyle(JohoColors.black)
+                                        .padding(JohoDimensions.spacingSM)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .background(JohoColors.white)
+                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                        .overlay(
+                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                        )
+                                }
                             }
 
                             // Day picker
-                            Menu {
-                                ForEach(1...daysInMonth(selectedMonth), id: \.self) { day in
-                                    Button {
-                                        updateDate(month: selectedMonth, day: day)
-                                    } label: {
-                                        Text("\(day)")
-                                    }
-                                }
-                            } label: {
-                                Text("\(selectedDay)")
-                                    .font(JohoFont.body)
-                                    .monospacedDigit()
-                                    .foregroundStyle(JohoColors.black)
-                                    .padding(JohoDimensions.spacingSM)
-                                    .frame(width: 60)
-                                    .background(JohoColors.white)
-                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                    .overlay(
-                                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                                    )
-                            }
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("DAY")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
 
-                            Spacer()
+                                Menu {
+                                    ForEach(1...daysInMonth(selectedMonth, year: selectedYear), id: \.self) { day in
+                                        Button {
+                                            updateDate(year: selectedYear, month: selectedMonth, day: day)
+                                        } label: {
+                                            Text("\(day)")
+                                        }
+                                    }
+                                } label: {
+                                    Text("\(selectedDay)")
+                                        .font(JohoFont.body)
+                                        .monospacedDigit()
+                                        .foregroundStyle(JohoColors.black)
+                                        .padding(JohoDimensions.spacingSM)
+                                        .frame(width: 50)
+                                        .background(JohoColors.white)
+                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                        .overlay(
+                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                        )
+                                }
+                            }
                         }
                     }
 
@@ -777,9 +826,9 @@ struct CustomCountdownDialog: View {
         return formatter.string(from: tempDate)
     }
 
-    private func daysInMonth(_ month: Int) -> Int {
+    private func daysInMonth(_ month: Int, year: Int) -> Int {
         let calendar = Calendar.current
-        let dateComponents = DateComponents(year: 2024, month: month, day: 1)
+        let dateComponents = DateComponents(year: year, month: month, day: 1)
         guard let tempDate = calendar.date(from: dateComponents),
               let range = calendar.range(of: .day, in: .month, for: tempDate) else {
             return 31
@@ -787,10 +836,9 @@ struct CustomCountdownDialog: View {
         return range.count
     }
 
-    private func updateDate(month: Int, day: Int) {
+    private func updateDate(year: Int, month: Int, day: Int) {
         let calendar = Calendar.current
-        let year = calendar.component(.year, from: date)
-        let maxDay = daysInMonth(month)
+        let maxDay = daysInMonth(month, year: year)
         let validDay = min(day, maxDay)
         if let newDate = calendar.date(from: DateComponents(year: year, month: month, day: validDay)) {
             date = newDate
