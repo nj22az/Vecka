@@ -440,11 +440,12 @@ struct JohoTripEditorSheet: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: JohoDimensions.spacingMD) {  // 12pt gap between header and content
             // 情報デザイン: Standard editor header with back button, icon zone, title
             JohoEditorHeader(
                 icon: SpecialDayType.trip.defaultIcon,
                 accentColor: SpecialDayType.trip.accentColor,
+                lightBackground: SpecialDayType.trip.lightBackground,
                 title: "NEW TRIP",
                 subtitle: "Set destination & dates",
                 canSave: canSave,

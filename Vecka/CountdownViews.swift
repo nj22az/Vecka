@@ -503,29 +503,12 @@ struct CustomCountdownDialog: View {
     @State private var iconName: String = "calendar.badge.clock"
     @State private var showingIconPicker = false
 
-    // Event type color (purple for events)
-    private let eventColor = SpecialDayType.event.accentColor
-
-    // Color palette for icon backgrounds
-    private let iconColorPalette: [(name: String, hex: String)] = [
-        ("Purple", "E9D5FF"),
-        ("Cyan", "A5F3FC"),
-        ("Pink", "FECDD3"),
-        ("Yellow", "FFE566"),
-        ("Green", "BBF7D0"),
-        ("Orange", "FED7AA")
-    ]
-    @State private var selectedIconColor: String? = "E9D5FF"
+    // 情報デザイン: Events ALWAYS use purple color scheme
+    private var eventAccentColor: Color { SpecialDayType.event.accentColor }
+    private var eventLightBackground: Color { SpecialDayType.event.lightBackground }
 
     private var canSave: Bool {
         !name.trimmingCharacters(in: .whitespaces).isEmpty
-    }
-
-    private var iconBackgroundColor: Color {
-        if let hex = selectedIconColor {
-            return Color(hex: hex)
-        }
-        return eventColor.opacity(0.2)
     }
 
     // Date components
@@ -547,11 +530,12 @@ struct CustomCountdownDialog: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: JohoDimensions.spacingMD) {  // 12pt gap between header and content
             // 情報デザイン Editor Header (uses SpecialDayType.event icon)
             JohoEditorHeader(
                 icon: SpecialDayType.event.defaultIcon,
-                accentColor: eventColor,
+                accentColor: SpecialDayType.event.accentColor,
+                lightBackground: SpecialDayType.event.lightBackground,
                 title: "NEW EVENT",
                 subtitle: "Set date & details",
                 canSave: canSave,
@@ -568,38 +552,23 @@ struct CustomCountdownDialog: View {
             ScrollView {
                 // Main content card
                 VStack(spacing: JohoDimensions.spacingLG) {
-                    // Icon & Color row
-                    HStack(spacing: JohoDimensions.spacingMD) {
-                        // Icon selector
-                        Button { showingIconPicker = true } label: {
+                    // Icon selector (情報デザイン: matches header pattern - accent on light bg)
+                    Button { showingIconPicker = true } label: {
+                        HStack(spacing: JohoDimensions.spacingMD) {
                             Image(systemName: iconName)
                                 .font(.system(size: 28, weight: .bold))
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(eventAccentColor)  // Purple icon
                                 .frame(width: 56, height: 56)
-                                .background(iconBackgroundColor)
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                .background(eventLightBackground)   // Light purple bg
+                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                                 .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
                                 )
-                        }
 
-                        // Color picker (compact)
-                        HStack(spacing: 8) {
-                            ForEach(iconColorPalette, id: \.hex) { color in
-                                Button {
-                                    selectedIconColor = color.hex
-                                    HapticManager.selection()
-                                } label: {
-                                    Circle()
-                                        .fill(Color(hex: color.hex))
-                                        .frame(width: 32, height: 32)
-                                        .overlay(
-                                            Circle()
-                                                .stroke(JohoColors.black, lineWidth: selectedIconColor == color.hex ? 3 : 1)
-                                        )
-                                }
-                            }
+                            Text("Tap to change icon")
+                                .font(JohoFont.caption)
+                                .foregroundStyle(JohoColors.black.opacity(0.6))
                         }
                     }
 
@@ -735,7 +704,7 @@ struct CustomCountdownDialog: View {
                             } label: {
                                 ZStack(alignment: isAnnual ? .trailing : .leading) {
                                     Capsule()
-                                        .fill(isAnnual ? eventColor : JohoColors.black.opacity(0.2))
+                                        .fill(isAnnual ? eventAccentColor : JohoColors.black.opacity(0.2))
                                         .frame(width: 50, height: 28)
                                         .overlay(
                                             Capsule()
@@ -776,7 +745,7 @@ struct CustomCountdownDialog: View {
         .johoBackground()
         .navigationBarHidden(true)
         .sheet(isPresented: $showingIconPicker) {
-            JohoIconPickerSheet(selectedSymbol: $iconName)
+            JohoIconPicker(selectedSymbol: $iconName)
         }
     }
 
@@ -818,7 +787,7 @@ struct CustomCountdownDialog: View {
             title: name,
             targetDate: date,
             icon: iconName,
-            colorHex: selectedIconColor.map { "#\($0)" } ?? "#805AD5",
+            colorHex: "#805AD5",  // 情報デザイン: Events ALWAYS use purple
             isSystem: false
         )
         modelContext.insert(event)
@@ -880,15 +849,17 @@ private struct JohoIconPickerGrid: View {
     }
 }
 
-// MARK: - 情報デザイン Icon Picker Sheet
-private struct JohoIconPickerSheet: View {
+// MARK: - 情報デザイン Icon Picker (JohoIconPicker)
+// Selected state: Accent color icon on light background (NOT inverted)
+// Unselected state: Black icon on white background
+private struct JohoIconPicker: View {
     @Binding var selectedSymbol: String
     @Environment(\.dismiss) private var dismiss
 
     private let symbolCategories: [(name: String, symbols: [String])] = [
         ("MARU-BATSU", ["circle", "circle.fill", "xmark", "xmark.circle.fill", "triangle", "triangle.fill", "square", "square.fill", "diamond", "diamond.fill"]),
         ("EVENTS", ["star.fill", "sparkles", "gift.fill", "birthday.cake.fill", "party.popper.fill", "balloon.fill", "heart.fill", "bell.fill", "calendar.badge.clock"]),
-        ("NATURE", ["leaf.fill", "flower.fill", "sun.max.fill", "moon.fill", "snowflake", "cloud.sun.fill", "flame.fill", "drop.fill"]),
+        ("NATURE", ["leaf.fill", "camera.macro", "sun.max.fill", "moon.fill", "snowflake", "cloud.sun.fill", "flame.fill", "drop.fill"]),
         ("PEOPLE", ["person.fill", "person.2.fill", "figure.stand", "heart.circle.fill", "hand.raised.fill"]),
         ("TIME", ["calendar", "clock.fill", "hourglass", "timer", "sunrise.fill", "sunset.fill"]),
     ]
@@ -946,13 +917,14 @@ private struct JohoIconPickerSheet: View {
                                 } label: {
                                     Image(systemName: symbol)
                                         .font(.system(size: 20, weight: .bold))
-                                        .foregroundStyle(selectedSymbol == symbol ? JohoColors.white : JohoColors.black)
+                                        // 情報デザイン: Accent color on light bg (NOT inverted)
+                                        .foregroundStyle(selectedSymbol == symbol ? SpecialDayType.event.accentColor : JohoColors.black)
                                         .frame(width: 52, height: 52)
-                                        .background(selectedSymbol == symbol ? SpecialDayType.event.accentColor : JohoColors.white)
+                                        .background(selectedSymbol == symbol ? SpecialDayType.event.lightBackground : JohoColors.white)
                                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                         .overlay(
                                             Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                                                .stroke(JohoColors.black, lineWidth: selectedSymbol == symbol ? JohoDimensions.borderMedium : JohoDimensions.borderThin)
                                         )
                                 }
                             }

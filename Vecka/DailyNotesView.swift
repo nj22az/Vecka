@@ -459,11 +459,12 @@ struct JohoNoteEditorSheet: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: JohoDimensions.spacingMD) {  // 12pt gap between header and content
             // 情報デザイン: Standard editor header with back button, icon zone, title
             JohoEditorHeader(
                 icon: SpecialDayType.note.defaultIcon,
-                accentColor: accentColor,
+                accentColor: SpecialDayType.note.accentColor,
+                lightBackground: SpecialDayType.note.lightBackground,
                 title: "NEW NOTE",
                 subtitle: "Set date & details",
                 canSave: canSave,

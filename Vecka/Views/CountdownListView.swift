@@ -61,19 +61,30 @@ struct CountdownListView: View {
         }
     }
 
-    // MARK: - Header Section
+    // MARK: - Header Section (情報デザイン: Icon zone like Star Page months)
 
     private var headerSection: some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                JohoPill(text: "EVT", style: .coloredInverted(JohoColors.eventPurple), size: .large)
+        HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
+            // Icon zone (52×52pt) - matches Star Page month detail pattern
+            Image(systemName: SpecialDayType.event.defaultIcon)
+                .font(.system(size: 24, weight: .bold))
+                .foregroundStyle(JohoColors.black)
+                .frame(width: 52, height: 52)
+                .background(SpecialDayType.event.accentColor.opacity(0.3))
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                )
 
-                Text("Events")
-                    .font(JohoFont.displayMedium)
+            // Title area
+            VStack(alignment: .leading, spacing: 2) {
+                Text("EVENTS")
+                    .font(JohoFont.displaySmall)
                     .foregroundStyle(JohoColors.black)
 
                 Text("\(customCountdowns.count) event\(customCountdowns.count == 1 ? "" : "s")")
-                    .font(JohoFont.body)
+                    .font(JohoFont.caption)
                     .foregroundStyle(JohoColors.black.opacity(0.7))
             }
 

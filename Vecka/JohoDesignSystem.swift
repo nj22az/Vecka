@@ -708,6 +708,7 @@ struct JohoPageHeader: View {
 struct JohoEditorHeader: View {
     let icon: String              // SF Symbol from SpecialDayType.defaultIcon
     let accentColor: Color        // From SpecialDayType.accentColor
+    let lightBackground: Color    // From SpecialDayType.lightBackground (explicit light tint)
     let title: String             // e.g., "NEW EVENT" (UPPERCASE)
     let subtitle: String          // e.g., "Set date & details"
     let canSave: Bool             // Validation state for Save button
@@ -730,12 +731,12 @@ struct JohoEditorHeader: View {
                     )
             }
 
-            // Icon zone (52×52pt)
+            // Icon zone (52×52pt) - matches January 2026 pattern
             Image(systemName: icon)
                 .font(.system(size: 24, weight: .bold))
                 .foregroundStyle(accentColor)
                 .frame(width: 52, height: 52)
-                .background(accentColor.opacity(0.2))
+                .background(lightBackground)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusMedium)
@@ -771,9 +772,13 @@ struct JohoEditorHeader: View {
             }
             .disabled(!canSave)
         }
-        .padding(.horizontal, JohoDimensions.spacingLG)
-        .padding(.vertical, JohoDimensions.spacingMD)
-        .background(JohoColors.background)
+        .padding(JohoDimensions.spacingLG)  // 16pt all sides
+        .background(JohoColors.white)  // 情報デザイン: WHITE background
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)  // 3pt border
+        )
     }
 }
 

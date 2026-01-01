@@ -75,6 +75,19 @@ enum SpecialDayType: String, CaseIterable {
         }
     }
 
+    /// 情報デザイン: Light background tints for icon zones (matches MonthTheme pattern)
+    var lightBackground: Color {
+        switch self {
+        case .holiday: return Color(hex: "FDE8E8")    // Light red
+        case .observance: return Color(hex: "FEEBC8") // Light orange
+        case .event: return Color(hex: "E9D8FD")      // Light purple
+        case .birthday: return Color(hex: "FED7E2")   // Light pink
+        case .note: return Color(hex: "FEFCBF")       // Light yellow
+        case .trip: return Color(hex: "BEE3F8")       // Light blue
+        case .expense: return Color(hex: "C6F6D5")    // Light green
+        }
+    }
+
     var isRedDay: Bool {
         self == .holiday
     }
@@ -612,7 +625,7 @@ struct SpecialDaysListView: View {
             .sheet(item: $editingExpense) { expense in expenseEditorSheet(expense) }
             .sheet(item: $editingNote) { note in noteEditorSheet(note) }
             .sheet(item: $editingTrip) { trip in tripEditorSheet(trip) }
-            .sheet(item: $editingEvent) { _ in eventEditorSheet() }
+            .sheet(item: $editingEvent) { event in eventEditorSheet(event) }
             .overlay(alignment: .bottom) { undoToastOverlay }
     }
 
@@ -709,10 +722,17 @@ struct SpecialDaysListView: View {
         .presentationCornerRadius(20)
     }
 
-    private func eventEditorSheet() -> some View {
-        NavigationStack {
-            CountdownListView()
-        }
+    private func eventEditorSheet(_ event: CountdownEvent) -> some View {
+        JohoEventEditorSheet(
+            event: event,
+            onSave: { title, date, icon, colorHex in
+                event.title = title
+                event.targetDate = date
+                event.icon = icon
+                event.colorHex = colorHex
+                try? modelContext.save()
+            }
+        )
         .presentationCornerRadius(20)
     }
 
@@ -2016,7 +2036,7 @@ extension SpecialDaysListView {
     // MARK: - Edit Handler
 
     /// Opens the appropriate editor sheet based on entry type
-    private func openEditor(for row: SpecialDayRow) {
+    private func openEditor(_ row: SpecialDayRow) {
         switch row.type {
         case .holiday, .observance:
             // Use existing editingSpecialDay mechanism
@@ -2268,7 +2288,6 @@ struct JohoSpecialDayEditorSheet: View {
     @State private var selectedMonth: Int = 1
     @State private var selectedDay: Int = 1
     @State private var selectedSymbol: String = "star.fill"
-    @State private var selectedIconColor: String? = nil
     @State private var selectedRegion: String = ""
     @State private var showingIconPicker = false
 
@@ -2289,26 +2308,6 @@ struct JohoSpecialDayEditorSheet: View {
 
     private var headerSubtitle: String {
         isEditing ? "Update details" : "Set date & details"
-    }
-
-    private var iconBackgroundColor: Color {
-        if let hex = selectedIconColor {
-            return Color(hex: hex)
-        }
-        return type.accentColor.opacity(0.3)
-    }
-
-    private var iconColorPalette: [(hex: String, name: String)] {
-        [
-            ("E53E3E", "Red"),
-            ("ED8936", "Orange"),
-            ("ECC94B", "Yellow"),
-            ("38A169", "Green"),
-            ("3182CE", "Blue"),
-            ("805AD5", "Purple"),
-            ("D53F8C", "Pink"),
-            ("718096", "Gray")
-        ]
     }
 
     private var selectedDate: Date {
@@ -2336,26 +2335,26 @@ struct JohoSpecialDayEditorSheet: View {
             _selectedMonth = State(initialValue: calendar.component(.month, from: Date()))
             _selectedDay = State(initialValue: calendar.component(.day, from: Date()))
             _selectedSymbol = State(initialValue: type.defaultIcon)
-            _selectedIconColor = State(initialValue: nil)
             _selectedRegion = State(initialValue: defaultRegion)
-        case .edit(let editName, let editDate, let editSymbol, let editIconColor, let editNotes, let editRegion):
+        case .edit(let editName, let editDate, let editSymbol, _, let editNotes, let editRegion):
+            // Note: editIconColor ignored - 情報デザイン uses type's fixed color
             _name = State(initialValue: editName)
             _notes = State(initialValue: editNotes ?? "")
             _selectedYear = State(initialValue: calendar.component(.year, from: editDate))
             _selectedMonth = State(initialValue: calendar.component(.month, from: editDate))
             _selectedDay = State(initialValue: calendar.component(.day, from: editDate))
             _selectedSymbol = State(initialValue: editSymbol)
-            _selectedIconColor = State(initialValue: editIconColor)
             _selectedRegion = State(initialValue: editRegion)
         }
     }
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: JohoDimensions.spacingMD) {  // 12pt gap between header and content
             // 情報デザイン: Standard editor header with back button, icon zone, title
             JohoEditorHeader(
                 icon: type.defaultIcon,
                 accentColor: type.accentColor,
+                lightBackground: type.lightBackground,
                 title: headerTitle,
                 subtitle: headerSubtitle,
                 canSave: canSave,
@@ -2366,7 +2365,7 @@ struct JohoSpecialDayEditorSheet: View {
                         name.trimmingCharacters(in: .whitespacesAndNewlines),
                         selectedDate,
                         selectedSymbol,
-                        selectedIconColor,
+                        nil,  // 情報デザイン: Use type's fixed color, no custom colors
                         notesValue.isEmpty ? nil : notesValue,
                         selectedRegion
                     )
@@ -2378,40 +2377,35 @@ struct JohoSpecialDayEditorSheet: View {
             ScrollView {
                 // Main content card
                 VStack(spacing: JohoDimensions.spacingLG) {
-                    // Icon & Color row
-                    HStack(spacing: JohoDimensions.spacingMD) {
-                        // Icon selector
-                        Button { showingIconPicker = true } label: {
+                    // Icon selector (情報デザイン: matches header pattern - accent on light bg)
+                    Button {
+                        showingIconPicker = true
+                        HapticManager.selection()
+                    } label: {
+                        HStack(spacing: JohoDimensions.spacingMD) {
                             Image(systemName: selectedSymbol)
                                 .font(.system(size: 28, weight: .bold))
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(type.accentColor)  // Type's accent color
                                 .frame(width: 56, height: 56)
-                                .background(iconBackgroundColor)
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                .background(type.lightBackground)   // Type's light bg
+                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                                 .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
                                 )
-                        }
 
-                        // Color picker (compact)
-                        HStack(spacing: 8) {
-                            ForEach(iconColorPalette.prefix(6), id: \.hex) { color in
-                                Button {
-                                    selectedIconColor = color.hex
-                                    HapticManager.selection()
-                                } label: {
-                                    Circle()
-                                        .fill(Color(hex: color.hex))
-                                        .frame(width: 32, height: 32)
-                                        .overlay(
-                                            Circle()
-                                                .stroke(JohoColors.black, lineWidth: selectedIconColor == color.hex ? 3 : 1)
-                                        )
-                                }
-                            }
+                            Text("Tap to change icon")
+                                .font(JohoFont.caption)
+                                .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                            Spacer()
+
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(JohoColors.black.opacity(0.4))
                         }
                     }
+                    .buttonStyle(.plain)
 
                     // Name field
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
@@ -2588,7 +2582,11 @@ struct JohoSpecialDayEditorSheet: View {
         }
         .johoBackground()
         .sheet(isPresented: $showingIconPicker) {
-            JohoIconPickerSheet(selectedSymbol: $selectedSymbol)
+            JohoIconPickerSheet(
+                selectedSymbol: $selectedSymbol,
+                accentColor: type.accentColor,
+                lightBackground: type.lightBackground
+            )
         }
     }
 
@@ -2620,12 +2618,14 @@ struct JohoSpecialDayEditorSheet: View {
 
 private struct JohoIconPickerSheet: View {
     @Binding var selectedSymbol: String
+    let accentColor: Color
+    let lightBackground: Color
     @Environment(\.dismiss) private var dismiss
 
     private let symbolCategories: [(name: String, symbols: [String])] = [
         ("MARU-BATSU", ["circle", "circle.fill", "xmark", "xmark.circle.fill", "triangle", "triangle.fill", "square", "square.fill", "diamond", "diamond.fill"]),
-        ("EVENTS", ["star.fill", "sparkles", "gift.fill", "birthday.cake.fill", "party.popper.fill", "balloon.fill", "heart.fill", "bell.fill"]),
-        ("NATURE", ["leaf.fill", "flower.fill", "sun.max.fill", "moon.fill", "snowflake", "cloud.sun.fill", "flame.fill", "drop.fill"]),
+        ("EVENTS", ["star.fill", "sparkles", "gift.fill", "birthday.cake.fill", "party.popper.fill", "balloon.fill", "heart.fill", "bell.fill", "calendar.badge.clock"]),
+        ("NATURE", ["leaf.fill", "camera.macro", "sun.max.fill", "moon.fill", "snowflake", "cloud.sun.fill", "flame.fill", "drop.fill"]),
         ("PEOPLE", ["person.fill", "person.2.fill", "figure.stand", "heart.circle.fill", "hand.raised.fill"]),
         ("TIME", ["calendar", "clock.fill", "hourglass", "timer", "sunrise.fill", "sunset.fill"]),
     ]
@@ -2683,13 +2683,14 @@ private struct JohoIconPickerSheet: View {
                                 } label: {
                                     Image(systemName: symbol)
                                         .font(.system(size: 20, weight: .bold))
-                                        .foregroundStyle(selectedSymbol == symbol ? JohoColors.white : JohoColors.black)
+                                        // 情報デザイン: Accent color on light bg (NOT inverted)
+                                        .foregroundStyle(selectedSymbol == symbol ? accentColor : JohoColors.black)
                                         .frame(width: 52, height: 52)
-                                        .background(selectedSymbol == symbol ? JohoColors.black : JohoColors.white)
+                                        .background(selectedSymbol == symbol ? lightBackground : JohoColors.white)
                                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                         .overlay(
                                             Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                                                .stroke(JohoColors.black, lineWidth: selectedSymbol == symbol ? JohoDimensions.borderMedium : JohoDimensions.borderThin)
                                         )
                                 }
                             }
@@ -2868,6 +2869,249 @@ private struct JohoCompactInputRow: View {
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, 10)
         .background(JohoColors.white)
+    }
+}
+
+// MARK: - Event Editor Sheet (情報デザイン)
+
+struct JohoEventEditorSheet: View {
+    let event: CountdownEvent
+    let onSave: (String, Date, String, String) -> Void
+
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var name: String = ""
+    @State private var selectedYear: Int = 2026
+    @State private var selectedMonth: Int = 1
+    @State private var selectedDay: Int = 1
+    @State private var selectedSymbol: String = "calendar.badge.clock"
+    @State private var showingIconPicker = false
+
+    private let calendar = Calendar.current
+
+    // 情報デザイン: Events ALWAYS use purple color scheme
+    private var eventAccentColor: Color { SpecialDayType.event.accentColor }
+    private var eventLightBackground: Color { SpecialDayType.event.lightBackground }
+
+    private var canSave: Bool {
+        !name.trimmingCharacters(in: .whitespaces).isEmpty
+    }
+
+    private var selectedDate: Date {
+        let components = DateComponents(year: selectedYear, month: selectedMonth, day: selectedDay)
+        return calendar.date(from: components) ?? Date()
+    }
+
+    private var yearRange: [Int] {
+        let current = calendar.component(.year, from: Date())
+        return Array((current - 10)...(current + 10))
+    }
+
+    init(event: CountdownEvent, onSave: @escaping (String, Date, String, String) -> Void) {
+        self.event = event
+        self.onSave = onSave
+        let calendar = Calendar.current
+        _name = State(initialValue: event.title)
+        _selectedYear = State(initialValue: calendar.component(.year, from: event.targetDate))
+        _selectedMonth = State(initialValue: calendar.component(.month, from: event.targetDate))
+        _selectedDay = State(initialValue: calendar.component(.day, from: event.targetDate))
+        _selectedSymbol = State(initialValue: event.icon)
+    }
+
+    var body: some View {
+        VStack(spacing: JohoDimensions.spacingMD) {
+            // 情報デザイン: Editor header
+            JohoEditorHeader(
+                icon: SpecialDayType.event.defaultIcon,
+                accentColor: SpecialDayType.event.accentColor,
+                lightBackground: SpecialDayType.event.lightBackground,
+                title: "EDIT EVENT",
+                subtitle: "Update date & details",
+                canSave: canSave,
+                onBack: { dismiss() },
+                onSave: {
+                    onSave(
+                        name.trimmingCharacters(in: .whitespacesAndNewlines),
+                        selectedDate,
+                        selectedSymbol,
+                        "#805AD5"  // 情報デザイン: Events ALWAYS use purple
+                    )
+                    dismiss()
+                }
+            )
+
+            // Scrollable content
+            ScrollView {
+                VStack(spacing: JohoDimensions.spacingLG) {
+                    // Icon selector (情報デザイン: matches header pattern - accent on light bg)
+                    Button {
+                        showingIconPicker = true
+                        HapticManager.selection()
+                    } label: {
+                        HStack(spacing: JohoDimensions.spacingMD) {
+                            Image(systemName: selectedSymbol)
+                                .font(.system(size: 28, weight: .bold))
+                                .foregroundStyle(eventAccentColor)  // Purple icon
+                                .frame(width: 56, height: 56)
+                                .background(eventLightBackground)   // Light purple bg
+                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                                .overlay(
+                                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                )
+
+                            Text("Tap to change icon")
+                                .font(JohoFont.caption)
+                                .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                            Spacer()
+
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundStyle(JohoColors.black.opacity(0.4))
+                        }
+                    }
+                    .buttonStyle(.plain)
+
+                    // Name field
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "NAME", style: .whiteOnBlack, size: .small)
+
+                        TextField("Event name", text: $name)
+                            .font(JohoFont.headline)
+                            .foregroundStyle(JohoColors.black)
+                            .padding(JohoDimensions.spacingMD)
+                            .background(JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            )
+                    }
+
+                    // Date picker
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "DATE", style: .whiteOnBlack, size: .small)
+
+                        HStack(spacing: JohoDimensions.spacingSM) {
+                            // Year
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("YEAR")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                                Menu {
+                                    ForEach(yearRange, id: \.self) { year in
+                                        Button { selectedYear = year } label: { Text(String(year)) }
+                                    }
+                                } label: {
+                                    Text(String(selectedYear))
+                                        .font(JohoFont.body)
+                                        .monospacedDigit()
+                                        .foregroundStyle(JohoColors.black)
+                                        .padding(JohoDimensions.spacingSM)
+                                        .frame(width: 70)
+                                        .background(JohoColors.white)
+                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                        .overlay(
+                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                        )
+                                }
+                            }
+
+                            // Month
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("MONTH")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                                Menu {
+                                    ForEach(1...12, id: \.self) { month in
+                                        Button { selectedMonth = month } label: { Text(monthName(month)) }
+                                    }
+                                } label: {
+                                    Text(monthName(selectedMonth))
+                                        .font(JohoFont.body)
+                                        .foregroundStyle(JohoColors.black)
+                                        .padding(JohoDimensions.spacingSM)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .background(JohoColors.white)
+                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                        .overlay(
+                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                        )
+                                }
+                            }
+
+                            // Day
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("DAY")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                                Menu {
+                                    ForEach(1...daysInMonth(selectedMonth, year: selectedYear), id: \.self) { day in
+                                        Button { selectedDay = day } label: { Text("\(day)") }
+                                    }
+                                } label: {
+                                    Text("\(selectedDay)")
+                                        .font(JohoFont.body)
+                                        .monospacedDigit()
+                                        .foregroundStyle(JohoColors.black)
+                                        .padding(JohoDimensions.spacingSM)
+                                        .frame(width: 50)
+                                        .background(JohoColors.white)
+                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                        .overlay(
+                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                        )
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(JohoDimensions.spacingLG)
+                .background(JohoColors.white)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                )
+
+                Spacer(minLength: JohoDimensions.spacingXL)
+            }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.bottom, JohoDimensions.spacingXL)
+        }
+        .johoBackground()
+        .navigationBarHidden(true)
+        .sheet(isPresented: $showingIconPicker) {
+            JohoIconPickerSheet(
+                selectedSymbol: $selectedSymbol,
+                accentColor: eventAccentColor,
+                lightBackground: eventLightBackground
+            )
+        }
+    }
+
+    private func monthName(_ month: Int) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM"
+        let components = DateComponents(year: 2024, month: month, day: 1)
+        let tempDate = calendar.date(from: components) ?? Date()
+        return formatter.string(from: tempDate)
+    }
+
+    private func daysInMonth(_ month: Int, year: Int) -> Int {
+        let components = DateComponents(year: year, month: month, day: 1)
+        guard let tempDate = calendar.date(from: components),
+              let range = calendar.range(of: .day, in: .month, for: tempDate) else {
+            return 31
+        }
+        return range.count
     }
 }
 

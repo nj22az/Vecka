@@ -79,11 +79,12 @@ struct JohoExpenseEditorSheet: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: JohoDimensions.spacingMD) {  // 12pt gap between header and content
             // 情報デザイン: Standard editor header with back button, icon zone, title
             JohoEditorHeader(
                 icon: SpecialDayType.expense.defaultIcon,
                 accentColor: SpecialDayType.expense.accentColor,
+                lightBackground: SpecialDayType.expense.lightBackground,
                 title: "NEW EXPENSE",
                 subtitle: "Set amount & details",
                 canSave: canSave,

@@ -659,12 +659,12 @@ HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
             .overlay(Squircle(...).stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
     }
 
-    // Icon zone (52×52)
+    // Icon zone (52×52) - uses type.lightBackground for proper contrast
     Image(systemName: type.defaultIcon)
         .font(.system(size: 24, weight: .bold))
         .foregroundStyle(type.accentColor)
         .frame(width: 52, height: 52)
-        .background(type.accentColor.opacity(0.2))
+        .background(type.lightBackground)  // NOT opacity - explicit light tint
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(Squircle(...).stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium))
 
@@ -693,9 +693,10 @@ HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
     }
     .disabled(!canSave)
 }
-.padding(.horizontal, JohoDimensions.spacingLG)
-.padding(.vertical, JohoDimensions.spacingMD)
-.background(JohoColors.background)
+.padding(JohoDimensions.spacingLG)  // 16pt all sides
+.background(JohoColors.white)  // WHITE background
+.clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+.overlay(Squircle(...).stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick))  // 3pt border
 ```
 
 **Editor Content Card:**
@@ -731,12 +732,48 @@ ScrollView {
 
 **Editor Requirements:**
 - Header OUTSIDE scrollable content (fixed at top)
+- VStack spacing: `JohoDimensions.spacingMD` (12pt gap between header and content)
 - Back button: 44×44pt minimum touch target
-- Icon zone: Uses type's `defaultIcon` and `accentColor`
+- Icon zone: Uses type's `defaultIcon`, `accentColor`, and `lightBackground`
 - Save button: Accent color background when valid, white when invalid
 - All form fields: White background + black border + JohoPill label
 - Toggles: Custom 情報デザイン toggle (not iOS default)
 - Year numbers: Use `String(year)` never `"\(year)"` to avoid locale spacing
+
+### JohoIconPicker (情報デザイン Icon Selector)
+
+Standard icon picker for selecting SF Symbols in entry editors. Defined in `CountdownViews.swift`.
+
+**Categories:**
+- MARU-BATSU: マルバツ記号 (circle, xmark, triangle, square, diamond)
+- EVENTS: Celebration icons (star, sparkles, gift, birthday, party, balloon, heart, bell)
+- NATURE: Natural elements (leaf, camera.macro, sun, moon, snowflake, cloud, flame, drop)
+- PEOPLE: Person icons
+- TIME: Calendar and clock icons
+
+**Selected State Styling (matches header icon zone):**
+- Icon: Accent color (`SpecialDayType.event.accentColor`)
+- Background: Light background (`SpecialDayType.event.lightBackground`)
+- Border: Black, 2pt
+
+**Unselected State:**
+- Icon: Black
+- Background: White
+- Border: Black, 1pt
+
+```swift
+// ✅ CORRECT - Selected icon uses accent on light (NOT inverted)
+Image(systemName: symbol)
+    .foregroundStyle(selectedSymbol == symbol ? SpecialDayType.event.accentColor : JohoColors.black)
+    .background(selectedSymbol == symbol ? SpecialDayType.event.lightBackground : JohoColors.white)
+    .overlay(Squircle(...).stroke(JohoColors.black, lineWidth: selected ? 2 : 1))
+
+// ❌ WRONG - Inverted (white on purple)
+.foregroundStyle(selectedSymbol == symbol ? JohoColors.white : JohoColors.black)
+.background(selectedSymbol == symbol ? SpecialDayType.event.accentColor : JohoColors.white)
+```
+
+**Key Principle:** Icon picker selected state MUST match the header icon zone pattern - accent color icon on light background, not inverted.
 
 ### Visual Indicators (Filled vs Outlined)
 
