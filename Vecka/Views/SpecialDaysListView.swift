@@ -1837,6 +1837,7 @@ struct JohoSpecialDayEditorSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var name: String = ""
     @State private var notes: String = ""
+    @State private var selectedYear: Int = Calendar.current.component(.year, from: Date())
     @State private var selectedMonth: Int = 1
     @State private var selectedDay: Int = 1
     @State private var selectedSymbol: String = "star.fill"
@@ -1875,8 +1876,12 @@ struct JohoSpecialDayEditorSheet: View {
 
     private var selectedDate: Date {
         let calendar = Calendar.current
-        let year = calendar.component(.year, from: Date())
-        return calendar.date(from: DateComponents(year: year, month: selectedMonth, day: selectedDay)) ?? Date()
+        return calendar.date(from: DateComponents(year: selectedYear, month: selectedMonth, day: selectedDay)) ?? Date()
+    }
+
+    private var yearRange: [Int] {
+        let current = Calendar.current.component(.year, from: Date())
+        return Array((current - 10)...(current + 10))
     }
 
     init(mode: Mode, type: SpecialDayType, defaultRegion: String, onSave: @escaping (String, Date, String, String?, String?, String) -> Void) {
@@ -1890,6 +1895,7 @@ struct JohoSpecialDayEditorSheet: View {
         case .create:
             _name = State(initialValue: "")
             _notes = State(initialValue: "")
+            _selectedYear = State(initialValue: calendar.component(.year, from: Date()))
             _selectedMonth = State(initialValue: calendar.component(.month, from: Date()))
             _selectedDay = State(initialValue: calendar.component(.day, from: Date()))
             _selectedSymbol = State(initialValue: type.defaultIcon)
@@ -1898,6 +1904,7 @@ struct JohoSpecialDayEditorSheet: View {
         case .edit(let editName, let editDate, let editSymbol, let editIconColor, let editNotes, let editRegion):
             _name = State(initialValue: editName)
             _notes = State(initialValue: editNotes ?? "")
+            _selectedYear = State(initialValue: calendar.component(.year, from: editDate))
             _selectedMonth = State(initialValue: calendar.component(.month, from: editDate))
             _selectedDay = State(initialValue: calendar.component(.day, from: editDate))
             _selectedSymbol = State(initialValue: editSymbol)
@@ -2020,11 +2027,39 @@ struct JohoSpecialDayEditorSheet: View {
                             )
                     }
 
-                    // Date picker (compact)
+                    // Date picker (compact) - 情報デザイン: Year, Month, Day in row
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                         JohoPill(text: "DATE", style: .whiteOnBlack, size: .small)
 
-                        HStack(spacing: JohoDimensions.spacingMD) {
+                        HStack(spacing: JohoDimensions.spacingSM) {
+                            // Year
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("YEAR")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                                Menu {
+                                    ForEach(yearRange, id: \.self) { year in
+                                        Button { selectedYear = year } label: {
+                                            Text(String(year))
+                                        }
+                                    }
+                                } label: {
+                                    Text(String(selectedYear))
+                                        .font(JohoFont.body)
+                                        .monospacedDigit()
+                                        .foregroundStyle(JohoColors.black)
+                                        .padding(JohoDimensions.spacingSM)
+                                        .frame(width: 70)
+                                        .background(JohoColors.white)
+                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                        .overlay(
+                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                        )
+                                }
+                            }
+
                             // Month
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("MONTH")
@@ -2059,7 +2094,7 @@ struct JohoSpecialDayEditorSheet: View {
                                     .foregroundStyle(JohoColors.black.opacity(0.6))
 
                                 Menu {
-                                    ForEach(1...daysInMonth(selectedMonth), id: \.self) { day in
+                                    ForEach(1...daysInMonth(selectedMonth, year: selectedYear), id: \.self) { day in
                                         Button { selectedDay = day } label: {
                                             Text("\(day)")
                                         }
@@ -2070,7 +2105,7 @@ struct JohoSpecialDayEditorSheet: View {
                                         .monospacedDigit()
                                         .foregroundStyle(JohoColors.black)
                                         .padding(JohoDimensions.spacingSM)
-                                        .frame(width: 60)
+                                        .frame(width: 50)
                                         .background(JohoColors.white)
                                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                         .overlay(
@@ -2163,9 +2198,9 @@ struct JohoSpecialDayEditorSheet: View {
         return formatter.string(from: date)
     }
 
-    private func daysInMonth(_ month: Int) -> Int {
+    private func daysInMonth(_ month: Int, year: Int = Calendar.current.component(.year, from: Date())) -> Int {
         let calendar = Calendar.current
-        let date = calendar.date(from: DateComponents(year: 2024, month: month, day: 1)) ?? Date()
+        let date = calendar.date(from: DateComponents(year: year, month: month, day: 1)) ?? Date()
         return calendar.range(of: .day, in: .month, for: date)?.count ?? 31
     }
 

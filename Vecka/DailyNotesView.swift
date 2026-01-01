@@ -384,12 +384,17 @@ private struct JohoNoteEditor: View {
 /// Used when creating notes from the Star page add menu
 /// Features based on 情報デザイン LATCH method: Time, Category, Hierarchy (priority)
 struct JohoNoteEditorSheet: View {
-    let selectedDate: Date
+    let initialDate: Date
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
 
     @State private var text: String = ""
     @FocusState private var isFocused: Bool
+
+    // Date selection (情報デザイン: Year, Month, Day)
+    @State private var selectedYear: Int
+    @State private var selectedMonth: Int
+    @State private var selectedDay: Int
 
     // Time scheduling
     @State private var hasTime: Bool = false
@@ -420,6 +425,37 @@ struct JohoNoteEditorSheet: View {
 
     private var selectedCategoryColor: Color {
         Color(hex: categoryColor)
+    }
+
+    private var selectedDate: Date {
+        let calendar = Calendar.current
+        return calendar.date(from: DateComponents(year: selectedYear, month: selectedMonth, day: selectedDay)) ?? initialDate
+    }
+
+    private var yearRange: [Int] {
+        let current = Calendar.current.component(.year, from: Date())
+        return Array((current - 10)...(current + 10))
+    }
+
+    private func daysInMonth(_ month: Int, year: Int) -> Int {
+        let calendar = Calendar.current
+        let date = calendar.date(from: DateComponents(year: year, month: month, day: 1)) ?? Date()
+        return calendar.range(of: .day, in: .month, for: date)?.count ?? 31
+    }
+
+    private func monthName(_ month: Int) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM"
+        let date = Calendar.current.date(from: DateComponents(year: 2024, month: month, day: 1)) ?? Date()
+        return formatter.string(from: date)
+    }
+
+    init(selectedDate: Date) {
+        self.initialDate = selectedDate
+        let calendar = Calendar.current
+        _selectedYear = State(initialValue: calendar.component(.year, from: selectedDate))
+        _selectedMonth = State(initialValue: calendar.component(.month, from: selectedDate))
+        _selectedDay = State(initialValue: calendar.component(.day, from: selectedDate))
     }
 
     var body: some View {
@@ -517,6 +553,96 @@ struct JohoNoteEditorSheet: View {
                             Squircle(cornerRadius: JohoDimensions.radiusMedium)
                                 .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
                         )
+                    }
+
+                    // Date picker (情報デザイン: Year, Month, Day in row)
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "DATE", style: .whiteOnBlack, size: .small)
+
+                        HStack(spacing: JohoDimensions.spacingSM) {
+                            // Year
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("YEAR")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                                Menu {
+                                    ForEach(yearRange, id: \.self) { year in
+                                        Button { selectedYear = year } label: {
+                                            Text(String(year))
+                                        }
+                                    }
+                                } label: {
+                                    Text(String(selectedYear))
+                                        .font(JohoFont.body)
+                                        .monospacedDigit()
+                                        .foregroundStyle(JohoColors.black)
+                                        .padding(JohoDimensions.spacingSM)
+                                        .frame(width: 70)
+                                        .background(JohoColors.white)
+                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                        .overlay(
+                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                        )
+                                }
+                            }
+
+                            // Month
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("MONTH")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                                Menu {
+                                    ForEach(1...12, id: \.self) { month in
+                                        Button { selectedMonth = month } label: {
+                                            Text(monthName(month))
+                                        }
+                                    }
+                                } label: {
+                                    Text(monthName(selectedMonth))
+                                        .font(JohoFont.body)
+                                        .foregroundStyle(JohoColors.black)
+                                        .padding(JohoDimensions.spacingSM)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .background(JohoColors.white)
+                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                        .overlay(
+                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                        )
+                                }
+                            }
+
+                            // Day
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("DAY")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                                Menu {
+                                    ForEach(1...daysInMonth(selectedMonth, year: selectedYear), id: \.self) { day in
+                                        Button { selectedDay = day } label: {
+                                            Text("\(day)")
+                                        }
+                                    }
+                                } label: {
+                                    Text("\(selectedDay)")
+                                        .font(JohoFont.body)
+                                        .monospacedDigit()
+                                        .foregroundStyle(JohoColors.black)
+                                        .padding(JohoDimensions.spacingSM)
+                                        .frame(width: 50)
+                                        .background(JohoColors.white)
+                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                        .overlay(
+                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                        )
+                                }
+                            }
+                        }
                     }
 
                     // Category color picker (情報デザイン LATCH: Category)
