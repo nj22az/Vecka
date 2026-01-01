@@ -14,7 +14,7 @@ import PhotosUI
 /// Standalone expense editor sheet matching the Event editor pattern
 /// Used when creating expenses from the + menu
 struct JohoExpenseEditorSheet: View {
-    let selectedDate: Date
+    let initialDate: Date
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
 
@@ -24,6 +24,11 @@ struct JohoExpenseEditorSheet: View {
     @State private var merchant: String = ""
     @State private var selectedCategory: ExpenseCategory?
     @FocusState private var isFocused: Bool
+
+    // Date selection (情報デザイン: Year, Month, Day)
+    @State private var selectedYear: Int
+    @State private var selectedMonth: Int
+    @State private var selectedDay: Int
 
     // Categories
     @Query(sort: \ExpenseCategory.sortOrder) private var categories: [ExpenseCategory]
@@ -42,8 +47,35 @@ struct JohoExpenseEditorSheet: View {
         return amountValue > 0 && !description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
+    private var selectedDate: Date {
+        let calendar = Calendar.current
+        return calendar.date(from: DateComponents(year: selectedYear, month: selectedMonth, day: selectedDay)) ?? initialDate
+    }
+
+    private var yearRange: [Int] {
+        let current = Calendar.current.component(.year, from: Date())
+        return Array((current - 10)...(current + 10))
+    }
+
+    private func daysInMonth(_ month: Int, year: Int) -> Int {
+        let calendar = Calendar.current
+        let date = calendar.date(from: DateComponents(year: year, month: month, day: 1)) ?? Date()
+        return calendar.range(of: .day, in: .month, for: date)?.count ?? 31
+    }
+
+    private func monthName(_ month: Int) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM"
+        let date = Calendar.current.date(from: DateComponents(year: 2024, month: month, day: 1)) ?? Date()
+        return formatter.string(from: date)
+    }
+
     init(selectedDate: Date = Date()) {
-        self.selectedDate = selectedDate
+        self.initialDate = selectedDate
+        let calendar = Calendar.current
+        _selectedYear = State(initialValue: calendar.component(.year, from: selectedDate))
+        _selectedMonth = State(initialValue: calendar.component(.month, from: selectedDate))
+        _selectedDay = State(initialValue: calendar.component(.day, from: selectedDate))
     }
 
     var body: some View {
@@ -221,26 +253,94 @@ struct JohoExpenseEditorSheet: View {
                         }
                     }
 
-                    // Date display - 情報デザイン styled
-                    HStack {
+                    // Date picker (情報デザイン: Year, Month, Day)
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                         JohoPill(text: "DATE", style: .whiteOnBlack, size: .small)
-                        Spacer()
-                        HStack(spacing: 6) {
-                            Image(systemName: "calendar")
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundStyle(JohoColors.black)
-                            Text(selectedDate.formatted(date: .abbreviated, time: .omitted))
-                                .font(.system(size: 14, weight: .bold, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
+
+                        HStack(spacing: JohoDimensions.spacingSM) {
+                            // Year
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("YEAR")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                                Menu {
+                                    ForEach(yearRange, id: \.self) { year in
+                                        Button { selectedYear = year } label: {
+                                            Text(String(year))
+                                        }
+                                    }
+                                } label: {
+                                    Text(String(selectedYear))
+                                        .font(JohoFont.body)
+                                        .monospacedDigit()
+                                        .foregroundStyle(JohoColors.black)
+                                        .padding(JohoDimensions.spacingSM)
+                                        .frame(width: 70)
+                                        .background(JohoColors.white)
+                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                        .overlay(
+                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                        )
+                                }
+                            }
+
+                            // Month
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("MONTH")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                                Menu {
+                                    ForEach(1...12, id: \.self) { month in
+                                        Button { selectedMonth = month } label: {
+                                            Text(monthName(month))
+                                        }
+                                    }
+                                } label: {
+                                    Text(monthName(selectedMonth))
+                                        .font(JohoFont.body)
+                                        .foregroundStyle(JohoColors.black)
+                                        .padding(JohoDimensions.spacingSM)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .background(JohoColors.white)
+                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                        .overlay(
+                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                        )
+                                }
+                            }
+
+                            // Day
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("DAY")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                                Menu {
+                                    ForEach(1...daysInMonth(selectedMonth, year: selectedYear), id: \.self) { day in
+                                        Button { selectedDay = day } label: {
+                                            Text("\(day)")
+                                        }
+                                    }
+                                } label: {
+                                    Text("\(selectedDay)")
+                                        .font(JohoFont.body)
+                                        .monospacedDigit()
+                                        .foregroundStyle(JohoColors.black)
+                                        .padding(JohoDimensions.spacingSM)
+                                        .frame(width: 50)
+                                        .background(JohoColors.white)
+                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                        .overlay(
+                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                        )
+                                }
+                            }
                         }
-                        .padding(.horizontal, JohoDimensions.spacingMD)
-                        .padding(.vertical, JohoDimensions.spacingSM)
-                        .background(accentColor.opacity(0.5))
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
-                        )
                     }
                 }
                 .padding(JohoDimensions.spacingLG)
