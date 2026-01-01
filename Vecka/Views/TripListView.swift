@@ -440,46 +440,49 @@ struct JohoTripEditorSheet: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: JohoDimensions.spacingLG) {
-                // Header with Cancel/Save buttons (情報デザイン style)
-                HStack {
-                    Button { dismiss() } label: {
-                        Text("Cancel")
-                            .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black)
-                            .padding(.horizontal, JohoDimensions.spacingMD)
-                            .padding(.vertical, JohoDimensions.spacingMD)
-                            .background(JohoColors.white)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                            )
-                    }
-
-                    Spacer()
-
-                    Button {
-                        saveTrip()
-                        dismiss()
-                    } label: {
-                        Text("Save")
-                            .font(JohoFont.body.bold())
-                            .foregroundStyle(canSave ? JohoColors.black : JohoColors.black.opacity(0.4))
-                            .padding(.horizontal, JohoDimensions.spacingLG)
-                            .padding(.vertical, JohoDimensions.spacingMD)
-                            .background(canSave ? accentColor : JohoColors.white)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                            )
-                    }
-                    .disabled(!canSave)
+        VStack(spacing: 0) {
+            // Floating header with Cancel/Save buttons (情報デザイン)
+            HStack {
+                Button { dismiss() } label: {
+                    Text("Cancel")
+                        .font(JohoFont.body)
+                        .foregroundStyle(JohoColors.black)
+                        .padding(.horizontal, JohoDimensions.spacingMD)
+                        .padding(.vertical, JohoDimensions.spacingMD)
+                        .background(JohoColors.white)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                        )
                 }
-                .padding(.top, JohoDimensions.spacingLG)
 
+                Spacer()
+
+                Button {
+                    saveTrip()
+                    dismiss()
+                } label: {
+                    Text("Save")
+                        .font(JohoFont.body.bold())
+                        .foregroundStyle(canSave ? JohoColors.black : JohoColors.black.opacity(0.4))
+                        .padding(.horizontal, JohoDimensions.spacingLG)
+                        .padding(.vertical, JohoDimensions.spacingMD)
+                        .background(canSave ? accentColor : JohoColors.white)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                        )
+                }
+                .disabled(!canSave)
+            }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.vertical, JohoDimensions.spacingMD)
+            .background(JohoColors.background)
+
+            // Scrollable content
+            ScrollView {
                 // Main content card
                 VStack(spacing: JohoDimensions.spacingLG) {
                     // Title with type indicator (情報デザイン)

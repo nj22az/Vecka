@@ -685,11 +685,15 @@ struct JohoContactEditorSheet: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: JohoDimensions.spacingLG) {
-                // Header with Cancel/Save buttons
-                headerSection
+        VStack(spacing: 0) {
+            // Floating header with Cancel/Save buttons (情報デザイン)
+            headerSection
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.vertical, JohoDimensions.spacingMD)
+                .background(JohoColors.background)
 
+            // Scrollable content
+            ScrollView {
                 // Main content card
                 VStack(spacing: JohoDimensions.spacingLG) {
                     // Title with type indicator
@@ -736,7 +740,7 @@ struct JohoContactEditorSheet: View {
         .johoBackground()
     }
 
-    // MARK: - Header Section
+    // MARK: - Header Section (Floating Cancel/Save)
 
     private var headerSection: some View {
         HStack {
@@ -774,7 +778,6 @@ struct JohoContactEditorSheet: View {
             }
             .disabled(!canSave)
         }
-        .padding(.top, JohoDimensions.spacingLG)
     }
 
     // MARK: - Title Section
