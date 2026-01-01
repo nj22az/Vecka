@@ -100,6 +100,32 @@ HStack(spacing: 4) {
 
 **Why?** Inverted pills obscure the indicator symbol (●, ○, ◆). The symbol's meaning is lost when white-on-color.
 
+### Status Pills (TODAY, HOL, Type Codes)
+
+**Status pills WITHOUT indicator symbols** use the inverted pattern:
+- **Background**: Semantic accent color (yellow for TODAY, red for HOL, etc.)
+- **Text**: White
+- **Border**: Black (1.5pt)
+
+```swift
+// ✅ CORRECT - Status pills use .coloredInverted()
+JohoPill(text: "TODAY", style: .coloredInverted(JohoColors.yellow), size: .small)
+JohoPill(text: "HOL", style: .coloredInverted(item.type.accentColor), size: .small)
+
+// ❌ WRONG - Status pills should NOT use .colored() (hard to read)
+JohoPill(text: "TODAY", style: .colored(JohoColors.yellow), size: .small)
+```
+
+| Pill Type | Style | Background | Text | Border |
+|-----------|-------|------------|------|--------|
+| **TODAY** | `.coloredInverted(JohoColors.yellow)` | Yellow | White | Black |
+| **HOL** | `.coloredInverted(red)` | Red | White | Black |
+| **OBS** | `.coloredInverted(orange)` | Orange | White | Black |
+| **EVT** | `.coloredInverted(purple)` | Purple | White | Black |
+| **BDY** | `.coloredInverted(pink)` | Pink | White | Black |
+
+**Rule:** If the pill has NO indicator symbol (●, ○), use `.coloredInverted()` for high visibility.
+
 ### Country Color Pills (Not Emoji Flags)
 
 Emoji flags are NOT 情報デザイン compliant. Use text-based national color pills instead:

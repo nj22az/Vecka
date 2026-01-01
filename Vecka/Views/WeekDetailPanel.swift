@@ -365,9 +365,9 @@ struct CollapsibleDayCard: View {
 
             // Status indicators
             HStack(spacing: JohoDimensions.spacingXS) {
-                // Today pill
+                // Today pill (情報デザイン: inverted - yellow bg, white text, black border)
                 if day.isToday {
-                    JohoPill(text: "Today", style: .colored(JohoColors.yellow), size: .small)
+                    JohoPill(text: "TODAY", style: .coloredInverted(JohoColors.yellow), size: .small)
                 }
 
                 // Content indicator dots (when collapsed)

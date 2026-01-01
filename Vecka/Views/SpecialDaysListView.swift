@@ -1082,9 +1082,9 @@ struct CollapsibleSpecialDayCard: View {
 
                 // Status indicators
                 HStack(spacing: JohoDimensions.spacingXS) {
-                    // Today pill
+                    // Today pill (情報デザイン: inverted - yellow bg, white text, black border)
                     if isToday {
-                        JohoPill(text: "Today", style: .colored(JohoColors.yellow), size: .small)
+                        JohoPill(text: "TODAY", style: .coloredInverted(JohoColors.yellow), size: .small)
                     }
 
                     // Content indicator dots (when collapsed)
@@ -1304,9 +1304,9 @@ struct CollapsibleSpecialDayCard: View {
                 CountryPill(region: item.region)
             }
 
-            // Type code pill (情報デザイン: 3-letter code from database)
+            // Type code pill (情報デザイン: inverted - colored bg, white text, black border)
             if item.type == .holiday {
-                JohoPill(text: item.type.code, style: .colored(item.type.accentColor), size: .small)
+                JohoPill(text: item.type.code, style: .coloredInverted(item.type.accentColor), size: .small)
             }
         }
     }

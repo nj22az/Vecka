@@ -105,13 +105,11 @@ struct ModernCalendarView: View {
     // Layout
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
 
-    /// Smart add button - show for Tools, Contacts, and Star page (when in month detail)
+    /// Smart add button - show for Tools, Contacts, and Star page (always visible)
     private var shouldShowAddButton: Bool {
         switch sidebarSelection {
-        case .tools, .contacts:
-            return true
-        case .specialDays:
-            return isInSpecialDaysMonthDetail  // Only show when inside a month
+        case .tools, .contacts, .specialDays:
+            return true  // Always show plus button on these pages
         default:
             return false
         }
