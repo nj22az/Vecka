@@ -797,16 +797,31 @@ struct CustomCountdownDialog: View {
         }
     }
 
-    private func saveCustomCountdown() {
-        let countdown = CustomCountdown(name: name, date: date, isAnnual: isAnnual, iconName: iconName)
+    @Environment(\.modelContext) private var modelContext
 
-        // Save to UserDefaults
+    private func saveCustomCountdown() {
+        // Save to SwiftData as CountdownEvent (the source of truth for event display)
+        let event = CountdownEvent(
+            title: name,
+            targetDate: date,
+            icon: iconName,
+            colorHex: selectedIconColor.map { "#\($0)" } ?? "#805AD5",
+            isSystem: false
+        )
+        modelContext.insert(event)
+        do {
+            try modelContext.save()
+        } catch {
+            Log.w("Failed to save event: \(error.localizedDescription)")
+        }
+
+        // Also save to UserDefaults for legacy countdown banner compatibility
+        let countdown = CustomCountdown(name: name, date: date, isAnnual: isAnnual, iconName: iconName)
         var existingCountdowns: [CustomCountdown] = []
         if let data = UserDefaults.standard.data(forKey: "customCountdowns"),
            let countdowns = try? JSONDecoder().decode([CustomCountdown].self, from: data) {
             existingCountdowns = countdowns
         }
-        // Limit to maximum two saved custom events
         if existingCountdowns.count >= 2 { existingCountdowns.removeFirst() }
         existingCountdowns.append(countdown)
 
@@ -814,7 +829,6 @@ struct CustomCountdownDialog: View {
             UserDefaults.standard.set(data, forKey: "customCountdowns")
         }
 
-        // Also persist this just-created countdown as the currently selected custom event
         if let selectedData = try? JSONEncoder().encode(countdown) {
             UserDefaults.standard.set(selectedData, forKey: "selectedCustomCountdown")
         }
