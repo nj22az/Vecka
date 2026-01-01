@@ -547,48 +547,51 @@ struct CustomCountdownDialog: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: JohoDimensions.spacingLG) {
-                // Header with Cancel/Save buttons
-                HStack {
-                    Button { dismiss() } label: {
-                        Text("Cancel")
-                            .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black)
-                            .padding(.horizontal, JohoDimensions.spacingMD)
-                            .padding(.vertical, JohoDimensions.spacingMD)
-                            .background(JohoColors.white)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                            )
-                    }
-
-                    Spacer()
-
-                    Button {
-                        saveCustomCountdown()
-                        selectedCountdown = .custom
-                        onSave()
-                        dismiss()
-                    } label: {
-                        Text("Save")
-                            .font(JohoFont.body.bold())
-                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
-                            .padding(.horizontal, JohoDimensions.spacingLG)
-                            .padding(.vertical, JohoDimensions.spacingMD)
-                            .background(canSave ? eventColor : JohoColors.white)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                            )
-                    }
-                    .disabled(!canSave)
+        VStack(spacing: 0) {
+            // Floating header with Cancel/Save buttons
+            HStack {
+                Button { dismiss() } label: {
+                    Text("Cancel")
+                        .font(JohoFont.body)
+                        .foregroundStyle(JohoColors.black)
+                        .padding(.horizontal, JohoDimensions.spacingMD)
+                        .padding(.vertical, JohoDimensions.spacingMD)
+                        .background(JohoColors.white)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                        )
                 }
-                .padding(.top, JohoDimensions.spacingLG)
 
+                Spacer()
+
+                Button {
+                    saveCustomCountdown()
+                    selectedCountdown = .custom
+                    onSave()
+                    dismiss()
+                } label: {
+                    Text("Save")
+                        .font(JohoFont.body.bold())
+                        .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                        .padding(.horizontal, JohoDimensions.spacingLG)
+                        .padding(.vertical, JohoDimensions.spacingMD)
+                        .background(canSave ? eventColor : JohoColors.white)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                        )
+                }
+                .disabled(!canSave)
+            }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.vertical, JohoDimensions.spacingMD)
+            .background(JohoColors.background)
+
+            // Scrollable content
+            ScrollView {
                 // Main content card
                 VStack(spacing: JohoDimensions.spacingLG) {
                     // Title with type indicator - 情報デザイン: Filled circle with BLACK border

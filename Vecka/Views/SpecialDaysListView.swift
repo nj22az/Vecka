@@ -1914,54 +1914,57 @@ struct JohoSpecialDayEditorSheet: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: JohoDimensions.spacingLG) {
-                // Header
-                HStack {
-                    Button { dismiss() } label: {
-                        Text("Cancel")
-                            .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black)
-                            .padding(.horizontal, JohoDimensions.spacingMD)
-                            .padding(.vertical, JohoDimensions.spacingMD)
-                            .background(JohoColors.white)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                            )
-                    }
-
-                    Spacer()
-
-                    Button {
-                        let notesValue = notes.trimmingCharacters(in: .whitespacesAndNewlines)
-                        onSave(
-                            name.trimmingCharacters(in: .whitespacesAndNewlines),
-                            selectedDate,
-                            selectedSymbol,
-                            selectedIconColor,
-                            notesValue.isEmpty ? nil : notesValue,
-                            selectedRegion
+        VStack(spacing: 0) {
+            // Floating header with Cancel/Save buttons
+            HStack {
+                Button { dismiss() } label: {
+                    Text("Cancel")
+                        .font(JohoFont.body)
+                        .foregroundStyle(JohoColors.black)
+                        .padding(.horizontal, JohoDimensions.spacingMD)
+                        .padding(.vertical, JohoDimensions.spacingMD)
+                        .background(JohoColors.white)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
                         )
-                        dismiss()
-                    } label: {
-                        Text("Save")
-                            .font(JohoFont.body.bold())
-                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
-                            .padding(.horizontal, JohoDimensions.spacingLG)
-                            .padding(.vertical, JohoDimensions.spacingMD)
-                            .background(canSave ? type.accentColor : JohoColors.white)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                            )
-                    }
-                    .disabled(!canSave)
                 }
-                .padding(.top, JohoDimensions.spacingLG)
 
+                Spacer()
+
+                Button {
+                    let notesValue = notes.trimmingCharacters(in: .whitespacesAndNewlines)
+                    onSave(
+                        name.trimmingCharacters(in: .whitespacesAndNewlines),
+                        selectedDate,
+                        selectedSymbol,
+                        selectedIconColor,
+                        notesValue.isEmpty ? nil : notesValue,
+                        selectedRegion
+                    )
+                    dismiss()
+                } label: {
+                    Text("Save")
+                        .font(JohoFont.body.bold())
+                        .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                        .padding(.horizontal, JohoDimensions.spacingLG)
+                        .padding(.vertical, JohoDimensions.spacingMD)
+                        .background(canSave ? type.accentColor : JohoColors.white)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                        )
+                }
+                .disabled(!canSave)
+            }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.vertical, JohoDimensions.spacingMD)
+            .background(JohoColors.background)
+
+            // Scrollable content
+            ScrollView {
                 // Main content card
                 VStack(spacing: JohoDimensions.spacingLG) {
                     // Title with type indicator - 情報デザイン: Filled circle with BLACK border
