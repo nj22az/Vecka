@@ -222,189 +222,76 @@ struct Spacing {
     static let elementSpacing: CGFloat = extraSmall
 }
 
-// MARK: - Glass Design System
-/// Professional liquid glass design system with authentic Apple materials
-struct GlassDesign {
-    
-    // MARK: - Glass Materials
-    /// Elevation levels for different glass surfaces
-    enum GlassElevation {
-        case low        // Background cards, minimal depth
-        case medium     // Interactive elements, moderate depth
-        case high       // Important UI, strong emphasis
-        case floating   // Popover content, maximum depth
-        
-        var material: Material {
-            switch self {
-            case .low:
-                return .ultraThinMaterial
-            case .medium:
-                return .thinMaterial
-            case .high:
-                return .regularMaterial
-            case .floating:
-                return .thickMaterial
-            }
-        }
-        
+// MARK: - 情報デザイン Elevation System
+// Replaces glass materials with solid colors + black borders per CLAUDE.md
+struct JohoElevation {
+    /// Elevation levels for card surfaces (情報デザイン uses solid white + black borders)
+    enum Level {
+        case low        // Background cards
+        case medium     // Interactive elements
+        case high       // Important UI
+        case floating   // Popover content
+
         var cornerRadius: CGFloat {
             switch self {
-            case .low:
-                return 12
-            case .medium:
-                return 16
-            case .high:
-                return 20
-            case .floating:
-                return 24
+            case .low: return 12
+            case .medium: return 16
+            case .high: return 20
+            case .floating: return 24
             }
         }
-        
-        var shadowRadius: CGFloat {
+
+        var borderWidth: CGFloat {
             switch self {
-            case .low:
-                return 2
-            case .medium:
-                return 4
-            case .high:
-                return 8
-            case .floating:
-                return 12
-            }
-        }
-        
-        var shadowOpacity: Double {
-            switch self {
-            case .low:
-                return 0.1
-            case .medium:
-                return 0.15
-            case .high:
-                return 0.25
-            case .floating:
-                return 0.35
+            case .low: return 1.5
+            case .medium: return 2.0
+            case .high: return 2.5
+            case .floating: return 3.0
             }
         }
     }
-    
-    // MARK: - Glass Modifiers
-    /// Creates a professional glass surface with proper depth and materials
-    static func glassCard(elevation: GlassElevation = .medium) -> some ViewModifier {
-        GlassCardModifier(elevation: elevation)
-    }
-    
-    /// Creates a subtle glass background for content areas
-    static func glassBackground(elevation: GlassElevation = .low) -> some ViewModifier {
-        GlassBackgroundModifier(elevation: elevation)
-    }
-    
-    /// Creates tinted glass morphism with subtle color overlay respecting appearance mode
-    static func tintedGlass(elevation: GlassElevation = .medium, tint: Color = .clear) -> some ViewModifier {
-        TintedGlassModifier(elevation: elevation, tint: tint)
-    }
 }
 
-// MARK: - Glass View Modifiers
-private struct GlassCardModifier: ViewModifier {
-    let elevation: GlassDesign.GlassElevation
-    
-    func body(content: Content) -> some View {
-        content
-            .background(elevation.material)
-            .clipShape(RoundedRectangle(cornerRadius: elevation.cornerRadius, style: .continuous))
-            .shadow(
-                color: Color.black.opacity(elevation.shadowOpacity),
-                radius: elevation.shadowRadius,
-                x: 0,
-                y: elevation.shadowRadius / 2
-            )
-    }
-}
-
-private struct GlassBackgroundModifier: ViewModifier {
-    let elevation: GlassDesign.GlassElevation
-    
-    func body(content: Content) -> some View {
-        content
-            .background(
-                RoundedRectangle(cornerRadius: elevation.cornerRadius, style: .continuous)
-                    .fill(elevation.material)
-                    .shadow(
-                        color: Color.black.opacity(elevation.shadowOpacity),
-                        radius: elevation.shadowRadius,
-                        x: 0,
-                        y: elevation.shadowRadius / 2
-                    )
-            )
-    }
-}
-
-private struct TintedGlassModifier: ViewModifier {
-    let elevation: GlassDesign.GlassElevation
-    let tint: Color
-    @Environment(\.colorScheme) private var colorScheme
-    
-    func body(content: Content) -> some View {
-        content
-            .background(
-                ZStack {
-                    RoundedRectangle(cornerRadius: elevation.cornerRadius, style: .continuous)
-                        .fill(elevation.material)
-                    
-                    if tint != .clear {
-                        RoundedRectangle(cornerRadius: elevation.cornerRadius, style: .continuous)
-                            .fill(tint.opacity(colorScheme == .dark ? 0.15 : 0.08))
-                            .blendMode(.overlay)
-                    }
-                }
-                .shadow(
-                    color: Color.black.opacity(elevation.shadowOpacity),
-                    radius: elevation.shadowRadius,
-                    x: 0,
-                    y: elevation.shadowRadius / 2
-                )
-            )
-    }
-}
-
-// MARK: - Glass Toolbar Button Style
-/// Apple Glass-compliant toolbar button style with capsule background
-struct GlassToolbarButtonStyle: ButtonStyle {
+// MARK: - 情報デザイン Toolbar Button Style
+/// Solid white button with black border (no glass materials)
+struct JohoToolbarButtonStyle: ButtonStyle {
     var isProminent: Bool = false
-    
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.body.weight(.medium))
-            .foregroundStyle(isProminent ? Color.accentColor : .primary)
+            .font(.system(size: 16, weight: .medium, design: .rounded))
+            .foregroundStyle(isProminent ? JohoColors.white : JohoColors.black)
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
-            .background(.ultraThinMaterial, in: Capsule())
+            .background(isProminent ? JohoColors.black : JohoColors.white)
+            .clipShape(Capsule())
+            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1.5))
             .opacity(configuration.isPressed ? 0.7 : 1.0)
-            .scaleEffect(configuration.isPressed ? 0.96 : 1.0)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
             .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 
-// MARK: - Glass Card View Modifier
-/// Material-based glass card for content containers (replaces solid color backgrounds)
-struct GlassCardViewModifier: ViewModifier {
+// MARK: - 情報デザイン Card View Modifier
+/// Solid white card with black border (replaces glass materials)
+struct JohoCardViewModifier: ViewModifier {
     var cornerRadius: CGFloat = 16
-    var material: Material = .regularMaterial
-    
+    var borderWidth: CGFloat = 2.0
+
     func body(content: Content) -> some View {
         content
-            .background(material, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            .background(JohoColors.white, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(.primary.opacity(0.08), lineWidth: 0.5)
+                    .stroke(JohoColors.black, lineWidth: borderWidth)
             )
     }
 }
 
 extension View {
-    /// Applies Apple Glass card styling with material background
-    func glassCard(cornerRadius: CGFloat = 16, material: Material = .regularMaterial) -> some View {
-        modifier(GlassCardViewModifier(cornerRadius: cornerRadius, material: material))
+    /// Applies 情報デザイン card styling with white background and black border
+    func johoCard(cornerRadius: CGFloat = 16, borderWidth: CGFloat = 2.0) -> some View {
+        modifier(JohoCardViewModifier(cornerRadius: cornerRadius, borderWidth: borderWidth))
     }
 }
 
@@ -418,11 +305,10 @@ struct DesignTokens {
     /// Planetary colors are reserved for week number display only.
     static let accent = Color.accentColor
 
-    // MARK: - Glass Materials (Liquid Glass hierarchy)
-    static let glassBackground = Material.ultraThinMaterial
-    static let glassCard = Material.thinMaterial
-    static let glassElevated = Material.regularMaterial
-    static let glassFloating = Material.thickMaterial
+    // MARK: - 情報デザイン Colors (solid, no glass materials)
+    static let background = JohoColors.background
+    static let cardBackground = JohoColors.white
+    static let borderColor = JohoColors.black
 
     // MARK: - Corner Radii (Apple HIG continuous corners)
     static let radiusSmall: CGFloat = 8
@@ -430,50 +316,13 @@ struct DesignTokens {
     static let radiusLarge: CGFloat = 16
     static let radiusXL: CGFloat = 20
 
-    // MARK: - Shadows (subtle depth)
-    static func shadow(for elevation: GlassDesign.GlassElevation) -> (color: Color, radius: CGFloat, y: CGFloat) {
-        switch elevation {
-        case .low:
-            return (Color.black.opacity(0.08), 2, 1)
-        case .medium:
-            return (Color.black.opacity(0.12), 4, 2)
-        case .high:
-            return (Color.black.opacity(0.16), 8, 4)
-        case .floating:
-            return (Color.black.opacity(0.20), 12, 6)
-        }
-    }
+    // MARK: - Border Widths (情報デザイン spec)
+    static let borderThin: CGFloat = 1.0
+    static let borderMedium: CGFloat = 2.0
+    static let borderThick: CGFloat = 3.0
 }
 
-// MARK: - Glass Card Component (iOS 26 Liquid Glass)
-/// A unified glass card using native iOS 26 .glassEffect()
-struct GlassCard<Content: View>: View {
-    let elevation: GlassDesign.GlassElevation
-    let tint: Color?
-    let content: Content
-
-    init(
-        elevation: GlassDesign.GlassElevation = .medium,
-        tint: Color? = nil,
-        @ViewBuilder content: () -> Content
-    ) {
-        self.elevation = elevation
-        self.tint = tint
-        self.content = content()
-    }
-
-    var body: some View {
-        content
-            .glassEffect(glassVariant, in: RoundedRectangle(cornerRadius: elevation.cornerRadius, style: .continuous))
-    }
-
-    private var glassVariant: Glass {
-        if let tint = tint {
-            return .regular.tint(tint)
-        }
-        return .regular
-    }
-}
+// NOTE: JohoCard is defined in JohoDesignSystem.swift - use that version
 
 // MARK: - Glass Section Header
 /// Consistent section header styling
@@ -587,11 +436,11 @@ extension View {
 
 // MARK: - Standard Card Styles
 
-/// Semantic card types for consistent styling
+/// Semantic card types for consistent 情報デザイン styling
 enum CardStyle {
-    case primary    // Main content cards - 16pt radius, regular material
-    case secondary  // Supporting cards - 12pt radius, thin material
-    case compact    // Dense list items - 10pt radius, ultra thin
+    case primary    // Main content cards - 16pt radius, 3pt border
+    case secondary  // Supporting cards - 12pt radius, 2pt border
+    case compact    // Dense list items - 10pt radius, 1.5pt border
 
     var cornerRadius: CGFloat {
         switch self {
@@ -601,19 +450,19 @@ enum CardStyle {
         }
     }
 
-    var material: Material {
+    var borderWidth: CGFloat {
         switch self {
-        case .primary: return .regularMaterial
-        case .secondary: return .thinMaterial
-        case .compact: return .ultraThinMaterial
+        case .primary: return 3.0
+        case .secondary: return 2.0
+        case .compact: return 1.5
         }
     }
 }
 
 extension View {
-    /// Apply standard card styling
+    /// Apply 情報デザイン card styling (white background + black border)
     func standardCard(_ style: CardStyle = .primary) -> some View {
-        self.glassCard(cornerRadius: style.cornerRadius, material: style.material)
+        self.johoCard(cornerRadius: style.cornerRadius, borderWidth: style.borderWidth)
     }
 
     /// Apply standard list row background for dark theme
@@ -780,4 +629,432 @@ struct StatCard: View {
 // MARK: - Layout & Animation Constants
 // See ViewUtilities.swift for LayoutConstants and AnimationConstants
 // (Single source of truth to avoid duplication)
+
+// MARK: - ═══════════════════════════════════════════════════════════════════
+// MARK: - JŌHŌ DEZAIN (Japanese Information Design System)
+// MARK: - "Friendly Density" - Dense information that remains scannable
+// MARK: - ═══════════════════════════════════════════════════════════════════
+
+// MARK: - App Typography (SF Rounded)
+/// Japanese-inspired typography using SF Rounded for friendly, approachable text
+enum AppTypography {
+    // MARK: - Display (Hero Content)
+    /// Large commanding headlines - 34pt bold rounded
+    static let displayLarge = Font.system(size: 34, weight: .bold, design: .rounded)
+    /// Medium display - 28pt bold rounded
+    static let displayMedium = Font.system(size: 28, weight: .bold, design: .rounded)
+    /// Small display - 22pt bold rounded
+    static let displaySmall = Font.system(size: 22, weight: .bold, design: .rounded)
+
+    // MARK: - Section Headers
+    /// Section header text - 17pt semibold rounded
+    static let sectionHeader = Font.system(size: 17, weight: .semibold, design: .rounded)
+    /// Subsection header - 15pt semibold rounded
+    static let subsectionHeader = Font.system(size: 15, weight: .semibold, design: .rounded)
+
+    // MARK: - Body Text
+    /// Large body - 17pt regular rounded (primary content)
+    static let bodyLarge = Font.system(size: 17, weight: .regular, design: .rounded)
+    /// Medium body - 15pt regular rounded (secondary content)
+    static let bodyMedium = Font.system(size: 15, weight: .regular, design: .rounded)
+    /// Small body - 13pt regular rounded (dense content)
+    static let bodySmall = Font.system(size: 13, weight: .regular, design: .rounded)
+
+    // MARK: - Labels (Badges & Pills)
+    /// Large label - 13pt semibold rounded (primary badges)
+    static let labelLarge = Font.system(size: 13, weight: .semibold, design: .rounded)
+    /// Medium label - 12pt medium rounded (secondary badges)
+    static let labelMedium = Font.system(size: 12, weight: .medium, design: .rounded)
+    /// Small label - 11pt medium rounded (compact badges)
+    static let labelSmall = Font.system(size: 11, weight: .medium, design: .rounded)
+
+    // MARK: - Caption (Fine Print)
+    /// Caption text - 12pt regular rounded
+    static let caption = Font.system(size: 12, weight: .regular, design: .rounded)
+    /// Small caption - 11pt regular rounded (metadata)
+    static let captionSmall = Font.system(size: 11, weight: .regular, design: .rounded)
+
+    // MARK: - Mono (Numbers & Data)
+    /// Monospaced digits for data display
+    static let monoLarge = Font.system(size: 17, weight: .medium, design: .monospaced)
+    static let monoMedium = Font.system(size: 15, weight: .medium, design: .monospaced)
+    static let monoSmall = Font.system(size: 13, weight: .medium, design: .monospaced)
+}
+
+// MARK: - Color Zones
+/// Feature-based color system - each area gets a distinct hue for instant recognition
+enum ColorZone: CaseIterable {
+    case calendar    // Blue - time & dates
+    case notes       // Amber/Yellow - personal thoughts
+    case expenses    // Green - money & finances
+    case trips       // Orange - travel & journeys
+    case holidays    // Red/Pink - celebrations
+    case contacts    // Purple - people & connections
+    case settings    // Gray - configuration
+
+    /// Primary zone color (full saturation)
+    var primary: Color {
+        switch self {
+        case .calendar:  return Color(hex: "3B82F6")  // Vibrant blue
+        case .notes:     return Color(hex: "F59E0B")  // Warm amber
+        case .expenses:  return Color(hex: "10B981")  // Fresh green
+        case .trips:     return Color(hex: "F97316")  // Energetic orange
+        case .holidays:  return Color(hex: "EF4444")  // Festive red
+        case .contacts:  return Color(hex: "8B5CF6")  // Friendly purple
+        case .settings:  return Color(hex: "6B7280")  // Neutral gray
+        }
+    }
+
+    /// Background tint (10% opacity for cards/sections)
+    var background: Color {
+        primary.opacity(0.10)
+    }
+
+    /// Badge background (slightly more visible)
+    var badge: Color {
+        primary.opacity(0.15)
+    }
+
+    /// Subtle border color
+    var border: Color {
+        primary.opacity(0.20)
+    }
+
+    /// Icon for the zone
+    var icon: String {
+        switch self {
+        case .calendar:  return "calendar"
+        case .notes:     return "note.text"
+        case .expenses:  return "creditcard"
+        case .trips:     return "airplane"
+        case .holidays:  return "gift"
+        case .contacts:  return "person.2"
+        case .settings:  return "gearshape"
+        }
+    }
+
+    /// Display name for the zone
+    var displayName: String {
+        switch self {
+        case .calendar:  return "Calendar"
+        case .notes:     return "Notes"
+        case .expenses:  return "Expenses"
+        case .trips:     return "Trips"
+        case .holidays:  return "Holidays"
+        case .contacts:  return "Contacts"
+        case .settings:  return "Settings"
+        }
+    }
+}
+
+// MARK: - Corner Radius System
+/// Japanese-inspired rounded corners - very friendly and approachable
+enum CornerRadius {
+    /// Small elements (badges, small buttons) - 8pt
+    static let small: CGFloat = 8
+    /// Medium elements (cards, boxes) - 12pt
+    static let medium: CGFloat = 12
+    /// Large elements (panels, sheets) - 16pt
+    static let large: CGFloat = 16
+    /// Extra large (modal sheets) - 20pt
+    static let extraLarge: CGFloat = 20
+    /// Pill/capsule shapes - 100pt (effectively full round)
+    static let pill: CGFloat = 100
+}
+
+// MARK: - Category Badge Component
+/// Pill-shaped label like Japanese packaging tags
+struct CategoryBadge: View {
+    let text: String
+    let color: Color
+    var size: BadgeSize = .medium
+
+    enum BadgeSize {
+        case small, medium, large
+
+        var font: Font {
+            switch self {
+            case .small:  return AppTypography.labelSmall
+            case .medium: return AppTypography.labelMedium
+            case .large:  return AppTypography.labelLarge
+            }
+        }
+
+        var horizontalPadding: CGFloat {
+            switch self {
+            case .small:  return 8
+            case .medium: return 10
+            case .large:  return 12
+            }
+        }
+
+        var verticalPadding: CGFloat {
+            switch self {
+            case .small:  return 3
+            case .medium: return 4
+            case .large:  return 5
+            }
+        }
+    }
+
+    var body: some View {
+        Text(text.uppercased())
+            .font(size.font)
+            .fontWeight(.bold)
+            .tracking(0.5)
+            .foregroundStyle(.white)
+            .padding(.horizontal, size.horizontalPadding)
+            .padding(.vertical, size.verticalPadding)
+            .background(color, in: Capsule())
+    }
+}
+
+// MARK: - Zone Badge Component
+/// Badge that automatically uses the zone's color
+struct ZoneBadge: View {
+    let zone: ColorZone
+    var text: String?
+    var size: CategoryBadge.BadgeSize = .medium
+
+    var body: some View {
+        CategoryBadge(
+            text: text ?? zone.displayName,
+            color: zone.primary,
+            size: size
+        )
+    }
+}
+
+// MARK: - Info Box Component
+/// Compartmentalized section like Japanese packaging info boxes
+struct InfoBox<Content: View>: View {
+    let title: String
+    let color: Color
+    let content: Content
+    var showBorder: Bool = true
+
+    init(
+        title: String,
+        color: Color,
+        showBorder: Bool = true,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.title = title
+        self.color = color
+        self.showBorder = showBorder
+        self.content = content()
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title.uppercased())
+                .font(AppTypography.labelLarge)
+                .tracking(0.5)
+                .foregroundStyle(color)
+
+            content
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(color.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: CornerRadius.medium, style: .continuous)
+                .stroke(showBorder ? color.opacity(0.2) : .clear, lineWidth: 1)
+        )
+    }
+}
+
+// MARK: - Zone Info Box
+/// InfoBox that automatically uses the zone's color
+struct ZoneInfoBox<Content: View>: View {
+    let zone: ColorZone
+    var title: String?
+    var showBorder: Bool = true
+    let content: Content
+
+    init(
+        zone: ColorZone,
+        title: String? = nil,
+        showBorder: Bool = true,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.zone = zone
+        self.title = title
+        self.showBorder = showBorder
+        self.content = content()
+    }
+
+    var body: some View {
+        InfoBox(
+            title: title ?? zone.displayName,
+            color: zone.primary,
+            showBorder: showBorder
+        ) {
+            content
+        }
+    }
+}
+
+// MARK: - Zoned Section Header
+/// Section header with colored badge - Japanese-style category marker
+struct ZonedSectionHeader: View {
+    let title: String
+    let zone: ColorZone
+    var showBadge: Bool = true
+    var trailingContent: AnyView?
+
+    init(
+        _ title: String,
+        zone: ColorZone,
+        showBadge: Bool = true,
+        @ViewBuilder trailing: () -> some View = { EmptyView() }
+    ) {
+        self.title = title
+        self.zone = zone
+        self.showBadge = showBadge
+        self.trailingContent = AnyView(trailing())
+    }
+
+    var body: some View {
+        HStack(spacing: 8) {
+            if showBadge {
+                ZoneBadge(zone: zone, size: .small)
+            }
+
+            Text(title)
+                .font(AppTypography.sectionHeader)
+                .foregroundStyle(SlateColors.primaryText)
+
+            Spacer()
+
+            trailingContent
+        }
+    }
+}
+
+// MARK: - Zone Card
+/// Card with zone-colored accent
+struct ZoneCard<Content: View>: View {
+    let zone: ColorZone
+    var showAccent: Bool = true
+    let content: Content
+
+    init(
+        zone: ColorZone,
+        showAccent: Bool = true,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.zone = zone
+        self.showAccent = showAccent
+        self.content = content()
+    }
+
+    var body: some View {
+        HStack(spacing: 0) {
+            if showAccent {
+                Rectangle()
+                    .fill(zone.primary)
+                    .frame(width: 4)
+            }
+
+            content
+                .padding(Spacing.medium)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .background(SlateColors.mediumSlate)
+        .clipShape(RoundedRectangle(cornerRadius: CornerRadius.medium, style: .continuous))
+    }
+}
+
+// MARK: - Metric Display
+/// Compact metric display like Japanese product specifications
+struct MetricDisplay: View {
+    let label: String
+    let value: String
+    var unit: String?
+    var color: Color = SlateColors.primaryText
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(label.uppercased())
+                .font(AppTypography.captionSmall)
+                .tracking(0.5)
+                .foregroundStyle(SlateColors.tertiaryText)
+
+            HStack(alignment: .lastTextBaseline, spacing: 2) {
+                Text(value)
+                    .font(AppTypography.monoLarge)
+                    .foregroundStyle(color)
+
+                if let unit = unit {
+                    Text(unit)
+                        .font(AppTypography.captionSmall)
+                        .foregroundStyle(SlateColors.secondaryText)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Dense Row
+/// Compact row for dense information display
+struct DenseRow: View {
+    let icon: String
+    let title: String
+    var subtitle: String?
+    var trailing: String?
+    var iconColor: Color = SlateColors.secondaryText
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: icon)
+                .font(AppTypography.bodyMedium)
+                .foregroundStyle(iconColor)
+                .frame(width: 24)
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title)
+                    .font(AppTypography.bodyMedium)
+                    .foregroundStyle(SlateColors.primaryText)
+
+                if let subtitle = subtitle {
+                    Text(subtitle)
+                        .font(AppTypography.captionSmall)
+                        .foregroundStyle(SlateColors.tertiaryText)
+                }
+            }
+
+            Spacer()
+
+            if let trailing = trailing {
+                Text(trailing)
+                    .font(AppTypography.monoMedium)
+                    .foregroundStyle(SlateColors.secondaryText)
+            }
+        }
+        .padding(.vertical, 6)
+    }
+}
+
+// MARK: - View Extensions for Zones
+extension View {
+    /// Apply zone-colored background tint
+    func zoneBackground(_ zone: ColorZone) -> some View {
+        self.background(zone.background)
+    }
+
+    /// Apply zone-colored border
+    func zoneBorder(_ zone: ColorZone, width: CGFloat = 1) -> some View {
+        self.overlay(
+            RoundedRectangle(cornerRadius: CornerRadius.medium, style: .continuous)
+                .stroke(zone.border, lineWidth: width)
+        )
+    }
+
+    /// Clip with standard corner radius
+    func roundedCorners(_ radius: CGFloat = CornerRadius.medium) -> some View {
+        self.clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
+    }
+}
 

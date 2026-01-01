@@ -24,8 +24,11 @@ final class DailyNote {
     /// Timestamp of the last edit
     var lastModified: Date
     
-    /// Color category (e.g., "red", "blue", "default")
+    /// Color category hex (e.g., "ECC94B" for yellow)
     var color: String?
+
+    /// Priority level ("high", "normal", "low") - 情報デザイン マルバツ hierarchy
+    var priority: String?
 
     /// Optional SF Symbol name shown for this note.
     var symbolName: String?
@@ -36,22 +39,29 @@ final class DailyNote {
     /// Optional scheduled time for this note (e.g. an appointment time).
     /// The date component should match `day`.
     var scheduledAt: Date?
-    
+
+    /// Duration in seconds for time-tracked notes (e.g., meetings, tasks).
+    var duration: TimeInterval?
+
     init(
         date: Date,
         content: String,
         color: String? = nil,
+        priority: String? = nil,
         symbolName: String? = nil,
         scheduledAt: Date? = nil,
-        pinnedToDashboard: Bool? = nil
+        pinnedToDashboard: Bool? = nil,
+        duration: TimeInterval? = nil
     ) {
         self.date = date
         self.day = Calendar.current.startOfDay(for: date)
         self.content = content
         self.color = color
+        self.priority = priority
         self.symbolName = symbolName
         self.scheduledAt = scheduledAt
         self.pinnedToDashboard = pinnedToDashboard
+        self.duration = duration
         self.lastModified = Date()
     }
 }

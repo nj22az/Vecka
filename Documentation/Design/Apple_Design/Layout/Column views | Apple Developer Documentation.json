@@ -1,0 +1,1526 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Column views | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "column view",
+        "browser",
+        "hierarchy",
+        "navigation",
+        "macOS",
+        "AppKit",
+        "NSBrowser",
+        "Apple Human Interface Guidelines",
+        "HIG"
+      ],
+      "summary": "Apple Developer Documentation page describing column views (also called browsers), a UI component that lets people view and navigate a data hierarchy using a series of vertical columns. The document covers best practices, platform considerations (macOS only), and related resources.",
+      "sourceURL": "https://developer.apple.com/design/human-interface-guidelines/column-views",
+      "copyright": "Copyright © 2025 Apple Inc. All rights reserved."
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": 612,
+          "height": 792,
+          "unit": "points"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF",
+        "layout": {
+          "type": "multi-column",
+          "columns": 3,
+          "margins": {
+            "top": 60,
+            "right": 40,
+            "bottom": 100,
+            "left": 40
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation-primary",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": 612,
+              "height": 44
+            },
+            "zIndex": 100,
+            "content": {
+              "navigationType": "primary-header",
+              "items": [
+                {
+                  "label": "Apple Developer (Apple logo)",
+                  "type": "logo-link",
+                  "target": "https://developer.apple.com"
+                },
+                {
+                  "label": "News",
+                  "type": "link",
+                  "target": "https://developer.apple.com/news/"
+                },
+                {
+                  "label": "Discover",
+                  "type": "link",
+                  "target": "https://developer.apple.com/discover/"
+                },
+                {
+                  "label": "Design",
+                  "type": "link",
+                  "target": "https://developer.apple.com/design/"
+                },
+                {
+                  "label": "Develop",
+                  "type": "link",
+                  "target": "https://developer.apple.com/develop/"
+                },
+                {
+                  "label": "Distribute",
+                  "type": "link",
+                  "target": "https://developer.apple.com/distribute/"
+                },
+                {
+                  "label": "Support",
+                  "type": "link",
+                  "target": "https://developer.apple.com/support/"
+                },
+                {
+                  "label": "Account",
+                  "type": "link",
+                  "target": "https://developer.apple.com/account/"
+                },
+                {
+                  "label": "Search (magnifying glass icon)",
+                  "type": "icon-button",
+                  "target": "search"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-header-navigation-secondary",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 44,
+              "width": 612,
+              "height": 40
+            },
+            "zIndex": 99,
+            "content": {
+              "navigationType": "secondary-header",
+              "sectionTitle": "Design",
+              "items": [
+                {
+                  "label": "Overview",
+                  "type": "link",
+                  "target": "https://developer.apple.com/design/"
+                },
+                {
+                  "label": "What's New",
+                  "type": "link",
+                  "target": "https://developer.apple.com/design/whats-new/"
+                },
+                {
+                  "label": "Get Started",
+                  "type": "link",
+                  "target": "https://developer.apple.com/design/get-started/"
+                },
+                {
+                  "label": "Guidelines",
+                  "type": "link",
+                  "target": "https://developer.apple.com/design/human-interface-guidelines/"
+                },
+                {
+                  "label": "Resources",
+                  "type": "link",
+                  "target": "https://developer.apple.com/design/resources/"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-sidebar-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 40,
+              "y": 100,
+              "width": 180,
+              "height": 400
+            },
+            "zIndex": 50,
+            "content": {
+              "navigationType": "sidebar",
+              "filterInput": {
+                "placeholder": "Filter",
+                "icon": "line.3.horizontal.decrease"
+              },
+              "sections": [
+                {
+                  "title": "Getting started",
+                  "expanded": false,
+                  "items": []
+                },
+                {
+                  "title": "Foundations",
+                  "expanded": false,
+                  "items": []
+                },
+                {
+                  "title": "Patterns",
+                  "expanded": false,
+                  "items": []
+                },
+                {
+                  "title": "Components",
+                  "expanded": true,
+                  "items": [
+                    {
+                      "label": "Content",
+                      "icon": "photo.on.rectangle",
+                      "expanded": false
+                    },
+                    {
+                      "label": "Layout and organization",
+                      "icon": "rectangle.3.group",
+                      "expanded": true,
+                      "subitems": [
+                        {
+                          "label": "Boxes",
+                          "active": false
+                        },
+                        {
+                          "label": "Collections",
+                          "active": false
+                        },
+                        {
+                          "label": "Column views",
+                          "active": true,
+                          "highlighted": true
+                        },
+                        {
+                          "label": "Disclosure controls",
+                          "active": false
+                        },
+                        {
+                          "label": "Labels",
+                          "active": false
+                        },
+                        {
+                          "label": "Lists and tables",
+                          "active": false
+                        },
+                        {
+                          "label": "Lockups",
+                          "active": false
+                        },
+                        {
+                          "label": "Outline views",
+                          "active": false
+                        },
+                        {
+                          "label": "Split views",
+                          "active": false
+                        },
+                        {
+                          "label": "Tab views",
+                          "active": false
+                        }
+                      ]
+                    },
+                    {
+                      "label": "Menus and actions",
+                      "icon": "list.bullet",
+                      "expanded": false
+                    },
+                    {
+                      "label": "Navigation and search",
+                      "icon": "arrow.triangle.turn.up.right.diamond",
+                      "expanded": false
+                    },
+                    {
+                      "label": "Presentation",
+                      "icon": "rectangle.on.rectangle",
+                      "expanded": false
+                    },
+                    {
+                      "label": "Selection and input",
+                      "icon": "hand.tap",
+                      "expanded": false
+                    },
+                    {
+                      "label": "Status",
+                      "icon": "sparkles",
+                      "expanded": false
+                    },
+                    {
+                      "label": "System experiences",
+                      "icon": "display",
+                      "expanded": false
+                    }
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-heading-main",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 240,
+              "y": 100,
+              "width": 350,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Column views",
+              "level": 1,
+              "fontFamily": "SF Pro Display",
+              "fontSize": 40,
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-description-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 240,
+              "y": 155,
+              "width": 350,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "A column view — also called a browser — lets people view and navigate a data hierarchy using a series of vertical columns.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 17,
+              "fontWeight": "regular",
+              "color": "#333333",
+              "formatting": {
+                "italicPhrases": ["browser"]
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-diagram-column-view",
+            "elementType": "diagram",
+            "boundingBox": {
+              "x": 240,
+              "y": 220,
+              "width": 400,
+              "height": 180
+            },
+            "zIndex": 10,
+            "content": {
+              "diagramType": "architecture",
+              "title": "Column View Interface Example",
+              "description": "A visual representation of a macOS Finder-style column view showing three columns: a folder list column, a nested content column with images, and a preview/info panel. The diagram demonstrates hierarchical navigation where selecting an item in one column reveals its contents in the next column.",
+              "nodes": [
+                {
+                  "nodeId": "column1",
+                  "label": "First Column (Folders)",
+                  "shape": "rectangle",
+                  "style": {
+                    "fillColor": "#FFEAEA",
+                    "borderColor": "#FF6B6B",
+                    "textColor": "#000000"
+                  },
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  },
+                  "semanticRole": "Root-level navigation column showing parent folders",
+                  "contents": [
+                    {
+                      "icon": "folder.fill",
+                      "iconColor": "#007AFF",
+                      "label": "Folder A",
+                      "hasDisclosureIndicator": true,
+                      "selected": false
+                    },
+                    {
+                      "icon": "folder.fill",
+                      "iconColor": "#007AFF",
+                      "label": "Folder B",
+                      "hasDisclosureIndicator": true,
+                      "selected": true,
+                      "highlighted": true,
+                      "highlightColor": "#FF6B6B"
+                    },
+                    {
+                      "icon": "folder.fill",
+                      "iconColor": "#007AFF",
+                      "label": "Folder C",
+                      "hasDisclosureIndicator": true,
+                      "selected": false
+                    }
+                  ]
+                },
+                {
+                  "nodeId": "column2",
+                  "label": "Second Column (Images)",
+                  "shape": "rectangle",
+                  "style": {
+                    "fillColor": "#FFFFFF",
+                    "borderColor": "#E0E0E0",
+                    "textColor": "#000000"
+                  },
+                  "position": {
+                    "x": 140,
+                    "y": 0
+                  },
+                  "semanticRole": "Child content column showing contents of selected Folder B",
+                  "contents": [
+                    {
+                      "icon": "photo",
+                      "iconColor": "#34C759",
+                      "label": "Image A",
+                      "hasDisclosureIndicator": false,
+                      "selected": false
+                    },
+                    {
+                      "icon": "photo",
+                      "iconColor": "#FF6B6B",
+                      "label": "Image B",
+                      "hasDisclosureIndicator": false,
+                      "selected": true,
+                      "highlighted": true,
+                      "highlightColor": "#FF6B6B"
+                    },
+                    {
+                      "icon": "photo",
+                      "iconColor": "#34C759",
+                      "label": "Image C",
+                      "hasDisclosureIndicator": false,
+                      "selected": false
+                    },
+                    {
+                      "icon": "photo",
+                      "iconColor": "#34C759",
+                      "label": "Image D",
+                      "hasDisclosureIndicator": false,
+                      "selected": false
+                    },
+                    {
+                      "icon": "photo",
+                      "iconColor": "#34C759",
+                      "label": "Image E",
+                      "hasDisclosureIndicator": false,
+                      "selected": false
+                    }
+                  ]
+                },
+                {
+                  "nodeId": "column3-preview",
+                  "label": "Preview Panel",
+                  "shape": "rectangle",
+                  "style": {
+                    "fillColor": "#F5F5F5",
+                    "borderColor": "#E0E0E0",
+                    "textColor": "#000000"
+                  },
+                  "position": {
+                    "x": 280,
+                    "y": 0
+                  },
+                  "semanticRole": "Preview and metadata panel showing details of selected Image B",
+                  "contents": [
+                    {
+                      "type": "thumbnail",
+                      "description": "Large thumbnail preview of Image B - shows a stylized image placeholder with rounded corners and a gradient background in pink/coral tones"
+                    },
+                    {
+                      "type": "filename",
+                      "label": "Image B.png",
+                      "fontWeight": "semibold"
+                    },
+                    {
+                      "type": "metadata",
+                      "label": "Format - 42 MB",
+                      "color": "#666666"
+                    },
+                    {
+                      "type": "section-header",
+                      "label": "Information",
+                      "fontWeight": "semibold"
+                    },
+                    {
+                      "type": "metadata-row",
+                      "label": "Created",
+                      "value": "January 24, 1984",
+                      "labelColor": "#999999",
+                      "valueColor": "#666666"
+                    },
+                    {
+                      "type": "metadata-row",
+                      "label": "Modified",
+                      "value": "June 6, 2022",
+                      "labelColor": "#999999",
+                      "valueColor": "#666666"
+                    }
+                  ]
+                }
+              ],
+              "connections": [
+                {
+                  "connectionId": "folder-b-to-images",
+                  "fromNodeId": "column1",
+                  "toNodeId": "column2",
+                  "label": null,
+                  "lineStyle": "solid",
+                  "arrowHead": "arrow",
+                  "semanticMeaning": "Selecting Folder B reveals its image contents in the next column"
+                },
+                {
+                  "connectionId": "image-b-to-preview",
+                  "fromNodeId": "column2",
+                  "toNodeId": "column3-preview",
+                  "label": null,
+                  "lineStyle": "solid",
+                  "arrowHead": "none",
+                  "semanticMeaning": "Selecting Image B shows its preview and metadata in the preview panel"
+                }
+              ],
+              "swimlanes": [],
+              "legend": {
+                "present": false,
+                "entries": []
+              },
+              "narrativeWalkthrough": "The diagram shows a three-column browser view typical of macOS Finder. The leftmost column displays three folders (Folder A, B, C) with blue folder icons and chevron disclosure indicators. Folder B is selected (highlighted in red/coral). The middle column shows the contents of Folder B: five images (Image A through E) with photo icons. Image B is selected (highlighted in red/coral). The rightmost panel shows a preview of the selected Image B, including a large thumbnail, the filename 'Image B.png', file format and size '42 MB', and metadata showing creation date 'January 24, 1984' and modification date 'June 6, 2022'. The color scheme uses coral/red for selections and blue for folder icons."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-paragraph-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 240,
+              "y": 410,
+              "width": 420,
+              "height": 80
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Each column represents one level of the hierarchy and contains horizontal rows of data items. Within a column, any parent item that contains nested child items is marked with a triangle icon. When people select a parent, the next column displays its children. People can continue navigating in this way until they reach an item with no children, and can also navigate back up the hierarchy to explore other branches of data.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 15,
+              "fontWeight": "regular",
+              "color": "#333333"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-note-callout",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 240,
+              "y": 500,
+              "width": 420,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "annotationType": "note",
+              "label": "Note",
+              "text": "If you need to manage the presentation of hierarchical content in your iPadOS or visionOS app, consider using a split view.",
+              "backgroundColor": "#F5F5F7",
+              "borderRadius": 8,
+              "links": [
+                {
+                  "text": "split view",
+                  "target": "https://developer.apple.com/design/human-interface-guidelines/split-views"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-heading-best-practices",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 240,
+              "y": 570,
+              "width": 200,
+              "height": 35
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Best practices",
+              "level": 2,
+              "fontFamily": "SF Pro Display",
+              "fontSize": 28,
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-paragraph-bp1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 240,
+              "y": 610,
+              "width": 420,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Consider using a column view when you have a deep data hierarchy in which people tend to navigate back and forth frequently between levels, and you don't need the sorting capabilities that a list or table provides. For example, Finder offers a column view (in addition to icon, list, and gallery views) for navigating directory structures.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 15,
+              "fontWeight": "regular",
+              "color": "#333333",
+              "leadingPhrase": {
+                "text": "Consider using a column view when you have a deep data hierarchy in which people tend to navigate back and forth frequently between levels, and you don't need the sorting capabilities that a",
+                "continues": true
+              },
+              "links": [
+                {
+                  "text": "list or table",
+                  "target": "https://developer.apple.com/design/human-interface-guidelines/lists-and-tables"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-paragraph-bp2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 240,
+              "y": 680,
+              "width": 420,
+              "height": 40
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Show the root level of your data hierarchy in the first column. People know they can quickly scroll back to the first column to begin navigating the hierarchy from the top again.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 15,
+              "fontWeight": "regular",
+              "color": "#333333",
+              "leadingPhrase": {
+                "text": "Show the root level of your data hierarchy in the first column.",
+                "style": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-paragraph-bp3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 240,
+              "y": 730,
+              "width": 420,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Consider showing information about the selected item when there are no nested items to display. The Finder, for example, shows a preview of the selected item and information like the creation date, modification date, file type, and size.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 15,
+              "fontWeight": "regular",
+              "color": "#333333",
+              "leadingPhrase": {
+                "text": "Consider showing information about the selected item when there are no nested items to display.",
+                "style": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-paragraph-bp4",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 240,
+              "y": 790,
+              "width": 420,
+              "height": 40
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Let people resize columns. This is especially important if the names of some data items are too long to fit within the default column width.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 15,
+              "fontWeight": "regular",
+              "color": "#333333",
+              "leadingPhrase": {
+                "text": "Let people resize columns.",
+                "style": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-heading-platform",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 240,
+              "y": 840,
+              "width": 280,
+              "height": 35
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Platform considerations",
+              "level": 2,
+              "fontFamily": "SF Pro Display",
+              "fontSize": 28,
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-paragraph-platform",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 240,
+              "y": 880,
+              "width": 420,
+              "height": 25
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Not supported in iOS, iPadOS, tvOS, visionOS, or watchOS.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 15,
+              "fontWeight": "regular",
+              "fontStyle": "italic",
+              "color": "#666666"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-heading-resources",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 240,
+              "y": 920,
+              "width": 150,
+              "height": 35
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Resources",
+              "level": 2,
+              "fontFamily": "SF Pro Display",
+              "fontSize": 28,
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-heading-related",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 240,
+              "y": 960,
+              "width": 100,
+              "height": 25
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Related",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": 20,
+              "fontWeight": "semibold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-links-related",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 240,
+              "y": 990,
+              "width": 200,
+              "height": 70
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Lists and tables",
+                  "link": "https://developer.apple.com/design/human-interface-guidelines/lists-and-tables",
+                  "linkColor": "#007AFF"
+                },
+                {
+                  "text": "Outline views",
+                  "link": "https://developer.apple.com/design/human-interface-guidelines/outline-views",
+                  "linkColor": "#007AFF"
+                },
+                {
+                  "text": "Split views",
+                  "link": "https://developer.apple.com/design/human-interface-guidelines/split-views",
+                  "linkColor": "#007AFF"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-heading-developer-docs",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 240,
+              "y": 1070,
+              "width": 250,
+              "height": 25
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Developer documentation",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": 20,
+              "fontWeight": "semibold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-links-developer",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 240,
+              "y": 1100,
+              "width": 200,
+              "height": 25
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "NSBrowser",
+                  "link": "https://developer.apple.com/documentation/appkit/nsbrowser",
+                  "linkColor": "#007AFF",
+                  "suffix": " — AppKit"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-sidebar-right",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 540,
+              "y": 100,
+              "width": 130,
+              "height": 200
+            },
+            "zIndex": 50,
+            "content": {
+              "navigationType": "page-toc",
+              "heading": "Supported platforms",
+              "platformIcons": [
+                {
+                  "platform": "iOS",
+                  "icon": "iphone",
+                  "supported": false,
+                  "grayed": true
+                },
+                {
+                  "platform": "iPadOS",
+                  "icon": "ipad",
+                  "supported": false,
+                  "grayed": true
+                },
+                {
+                  "platform": "macOS",
+                  "icon": "desktopcomputer",
+                  "supported": true,
+                  "grayed": false
+                },
+                {
+                  "platform": "tvOS",
+                  "icon": "appletv",
+                  "supported": false,
+                  "grayed": true
+                },
+                {
+                  "platform": "visionOS",
+                  "icon": "visionpro",
+                  "supported": false,
+                  "grayed": true
+                },
+                {
+                  "platform": "watchOS",
+                  "icon": "applewatch",
+                  "supported": false,
+                  "grayed": true
+                }
+              ],
+              "tocItems": [
+                {
+                  "label": "Column views",
+                  "level": 1,
+                  "active": true
+                },
+                {
+                  "label": "Best practices",
+                  "level": 2,
+                  "active": false
+                },
+                {
+                  "label": "Platform considerations",
+                  "level": 2,
+                  "active": false
+                },
+                {
+                  "label": "Resources",
+                  "level": 2,
+                  "active": false
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-breadcrumb",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 40,
+              "y": 1150,
+              "width": 300,
+              "height": 25
+            },
+            "zIndex": 10,
+            "content": {
+              "navigationType": "breadcrumb",
+              "items": [
+                {
+                  "label": "Apple (logo)",
+                  "type": "icon",
+                  "target": "https://www.apple.com"
+                },
+                {
+                  "label": "Developer",
+                  "type": "link",
+                  "target": "https://developer.apple.com"
+                },
+                {
+                  "label": "Documentation",
+                  "type": "link",
+                  "target": "https://developer.apple.com/documentation/"
+                }
+              ],
+              "separator": ">"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-links-mega",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 40,
+              "y": 1180,
+              "width": 532,
+              "height": 300
+            },
+            "zIndex": 10,
+            "content": {
+              "navigationType": "footer-mega-menu",
+              "columns": [
+                {
+                  "heading": "Platforms",
+                  "items": [
+                    "iOS",
+                    "iPadOS",
+                    "macOS",
+                    "tvOS",
+                    "visionOS",
+                    "watchOS"
+                  ]
+                },
+                {
+                  "heading": "Tools",
+                  "items": [
+                    "Swift",
+                    "SwiftUI",
+                    "Swift Playground",
+                    "TestFlight",
+                    "Xcode",
+                    "Xcode Cloud",
+                    "SF Symbols"
+                  ]
+                },
+                {
+                  "heading": "Topics & Technologies",
+                  "items": [
+                    "Accessibility",
+                    "Accessories",
+                    "App Extension",
+                    "App Store",
+                    "Audio & Video",
+                    "Augmented Reality",
+                    "Design",
+                    "Distribution",
+                    "Education",
+                    "Fonts",
+                    "Games",
+                    "Health & Fitness",
+                    "In-App Purchase",
+                    "Localization",
+                    "Maps & Location",
+                    "Machine Learning & AI",
+                    "Open Source",
+                    "Security",
+                    "Safari & Web"
+                  ]
+                },
+                {
+                  "heading": "Resources",
+                  "items": [
+                    "Documentation",
+                    "Tutorials",
+                    "Downloads",
+                    "Forums",
+                    "Videos"
+                  ]
+                },
+                {
+                  "heading": "Support",
+                  "items": [
+                    "Support Articles",
+                    "Contact Us",
+                    "Bug Reporting",
+                    "System Status"
+                  ]
+                },
+                {
+                  "heading": "Account",
+                  "items": [
+                    "Apple Developer",
+                    "App Store Connect",
+                    "Certificates, IDs, & Profiles",
+                    "Feedback Assistant"
+                  ]
+                },
+                {
+                  "heading": "Programs",
+                  "items": [
+                    "Apple Developer Program",
+                    "Apple Developer Enterprise Program",
+                    "App Store Small Business Program",
+                    "MFi Program",
+                    "News Partner Program",
+                    "Video Partner Program",
+                    "Security Bounty Program",
+                    "Security Research Device Program"
+                  ]
+                },
+                {
+                  "heading": "Events",
+                  "items": [
+                    "Meet with Apple",
+                    "Apple Developer Centers",
+                    "App Store Awards",
+                    "Apple Design Awards",
+                    "Apple Developer Academies",
+                    "WWDC"
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-feedback",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 40,
+              "y": 1500,
+              "width": 400,
+              "height": 20
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "To submit feedback on documentation, visit Feedback Assistant.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 12,
+              "fontWeight": "regular",
+              "color": "#666666",
+              "links": [
+                {
+                  "text": "Feedback Assistant",
+                  "target": "https://feedbackassistant.apple.com"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-theme-toggle",
+            "elementType": "other",
+            "boundingBox": {
+              "x": 480,
+              "y": 1500,
+              "width": 100,
+              "height": 25
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "segmented-control",
+              "label": "Theme",
+              "options": [
+                {
+                  "label": "Light",
+                  "selected": false
+                },
+                {
+                  "label": "Dark",
+                  "selected": false
+                },
+                {
+                  "label": "Auto",
+                  "selected": true,
+                  "highlighted": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-copyright",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 40,
+              "y": 1530,
+              "width": 300,
+              "height": 20
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Copyright © 2025 Apple Inc. All rights reserved.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 12,
+              "fontWeight": "regular",
+              "color": "#666666"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-legal-links",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 40,
+              "y": 1550,
+              "width": 300,
+              "height": 20
+            },
+            "zIndex": 10,
+            "content": {
+              "navigationType": "inline-links",
+              "items": [
+                {
+                  "label": "Terms of Use",
+                  "target": "https://www.apple.com/legal/internet-services/terms/site.html"
+                },
+                {
+                  "label": "Privacy Policy",
+                  "target": "https://www.apple.com/privacy/privacy-policy/"
+                },
+                {
+                  "label": "Agreements and Guidelines",
+                  "target": "https://developer.apple.com/support/terms/"
+                }
+              ],
+              "separator": "|"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-language",
+            "elementType": "other",
+            "boundingBox": {
+              "x": 520,
+              "y": 1550,
+              "width": 80,
+              "height": 20
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "dropdown",
+              "label": "Language",
+              "currentValue": "English",
+              "icon": "chevron.down"
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation-primary",
+          "page1-header-navigation-secondary",
+          "page1-heading-main",
+          "page1-description-intro",
+          "page1-diagram-column-view",
+          "page1-paragraph-description",
+          "page1-note-callout",
+          "page1-heading-best-practices",
+          "page1-paragraph-bp1",
+          "page1-paragraph-bp2",
+          "page1-paragraph-bp3",
+          "page1-paragraph-bp4",
+          "page1-heading-platform",
+          "page1-paragraph-platform",
+          "page1-heading-resources",
+          "page1-heading-related",
+          "page1-links-related",
+          "page1-heading-developer-docs",
+          "page1-links-developer",
+          "page1-footer-breadcrumb",
+          "page1-footer-links-mega",
+          "page1-footer-feedback",
+          "page1-footer-copyright",
+          "page1-footer-legal-links"
+        ],
+        "pageSummary": "This is a single-page Apple Developer Documentation article about Column Views, a macOS-specific UI component for hierarchical data navigation. The page includes a visual diagram showing a Finder-style column browser with folder/image navigation and preview panel, followed by best practices for implementation, platform support information (macOS only), and related resources including links to Lists and Tables, Outline Views, Split Views, and NSBrowser developer documentation."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": true,
+        "entries": [
+          {
+            "title": "Column views",
+            "page": 1,
+            "level": 1
+          },
+          {
+            "title": "Best practices",
+            "page": 1,
+            "level": 2
+          },
+          {
+            "title": "Platform considerations",
+            "page": 1,
+            "level": 2
+          },
+          {
+            "title": "Resources",
+            "page": 1,
+            "level": 2
+          }
+        ]
+      },
+      "runningHeaders": "Apple Developer - Design",
+      "runningFooters": "Copyright © 2025 Apple Inc. All rights reserved.",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "intro",
+          "title": "Column views",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Introduction defining column views as a browser component for viewing and navigating hierarchical data using vertical columns. Includes a visual diagram showing a Finder-like column view interface."
+        },
+        {
+          "sectionId": "best-practices",
+          "title": "Best practices",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Four key recommendations: (1) Use column views for deep hierarchies with frequent back-and-forth navigation; (2) Show root level in first column; (3) Display preview/info when no nested items exist; (4) Allow column resizing."
+        },
+        {
+          "sectionId": "platform-considerations",
+          "title": "Platform considerations",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Column views are only supported on macOS. Not available on iOS, iPadOS, tvOS, visionOS, or watchOS."
+        },
+        {
+          "sectionId": "resources",
+          "title": "Resources",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "related",
+              "title": "Related",
+              "summary": "Links to related HIG articles: Lists and tables, Outline views, Split views"
+            },
+            {
+              "sectionId": "developer-documentation",
+              "title": "Developer documentation",
+              "summary": "Link to NSBrowser AppKit class documentation"
+            }
+          ],
+          "summary": "Related HIG resources and developer documentation for implementing column views."
+        }
+      ],
+      "documentFlow": "The document follows Apple's standard HIG documentation structure: a main heading with introductory description, a visual example diagram, detailed explanatory text, a callout note, best practices section with bold lead-in sentences, platform considerations noting macOS-only support, and finally resources with related links and developer documentation."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "column view",
+          "definition": "A UI component (also called a browser) that lets people view and navigate a data hierarchy using a series of vertical columns",
+          "occurrences": 5
+        },
+        {
+          "term": "browser",
+          "definition": "Alternative name for column view",
+          "occurrences": 2
+        },
+        {
+          "term": "NSBrowser",
+          "definition": "The AppKit class that implements column views on macOS",
+          "occurrences": 1
+        },
+        {
+          "term": "hierarchy",
+          "definition": "A nested data structure where items can contain child items",
+          "occurrences": 4
+        },
+        {
+          "term": "split view",
+          "definition": "Recommended alternative for hierarchical content on iPadOS and visionOS",
+          "occurrences": 2
+        }
+      ],
+      "keyFindings": [
+        "Column views are only supported on macOS, not on iOS, iPadOS, tvOS, visionOS, or watchOS",
+        "Each column represents one level of the hierarchy with horizontal rows of data items",
+        "Parent items containing nested children are marked with a triangle icon (disclosure indicator)",
+        "Best used when users need to navigate back and forth frequently between hierarchy levels",
+        "Unlike lists/tables, column views do not provide sorting capabilities",
+        "When a leaf item (no children) is selected, show preview and metadata information",
+        "Columns should be user-resizable to accommodate long item names",
+        "Alternative for iPadOS/visionOS hierarchical content: use split views"
+      ],
+      "technicalSpecifications": {
+        "supportedPlatforms": ["macOS"],
+        "unsupportedPlatforms": ["iOS", "iPadOS", "tvOS", "visionOS", "watchOS"],
+        "implementation": {
+          "framework": "AppKit",
+          "class": "NSBrowser",
+          "documentationURL": "https://developer.apple.com/documentation/appkit/nsbrowser"
+        }
+      },
+      "designDecisions": [
+        {
+          "decision": "Use column view for deep hierarchies",
+          "rationale": "Enables frequent back-and-forth navigation between levels without losing context of the full path"
+        },
+        {
+          "decision": "Show root level in first column",
+          "rationale": "Allows users to quickly scroll back to start navigating from the top again"
+        },
+        {
+          "decision": "Display preview for leaf items",
+          "rationale": "Utilizes the space that would otherwise show empty children column; provides useful context (example: Finder shows creation date, modification date, file type, size)"
+        },
+        {
+          "decision": "Allow column resizing",
+          "rationale": "Accommodates data items with long names that don't fit default column width"
+        }
+      ]
+    },
+    "verbatimTextExtraction": {
+      "mainHeading": "Column views",
+      "introductionParagraph": "A column view — also called a browser — lets people view and navigate a data hierarchy using a series of vertical columns.",
+      "descriptionParagraph": "Each column represents one level of the hierarchy and contains horizontal rows of data items. Within a column, any parent item that contains nested child items is marked with a triangle icon. When people select a parent, the next column displays its children. People can continue navigating in this way until they reach an item with no children, and can also navigate back up the hierarchy to explore other branches of data.",
+      "noteCallout": "Note\nIf you need to manage the presentation of hierarchical content in your iPadOS or visionOS app, consider using a split view.",
+      "bestPracticesHeading": "Best practices",
+      "bestPractice1": "Consider using a column view when you have a deep data hierarchy in which people tend to navigate back and forth frequently between levels, and you don't need the sorting capabilities that a list or table provides. For example, Finder offers a column view (in addition to icon, list, and gallery views) for navigating directory structures.",
+      "bestPractice2": "Show the root level of your data hierarchy in the first column. People know they can quickly scroll back to the first column to begin navigating the hierarchy from the top again.",
+      "bestPractice3": "Consider showing information about the selected item when there are no nested items to display. The Finder, for example, shows a preview of the selected item and information like the creation date, modification date, file type, and size.",
+      "bestPractice4": "Let people resize columns. This is especially important if the names of some data items are too long to fit within the default column width.",
+      "platformConsiderationsHeading": "Platform considerations",
+      "platformConsiderationsText": "Not supported in iOS, iPadOS, tvOS, visionOS, or watchOS.",
+      "resourcesHeading": "Resources",
+      "relatedHeading": "Related",
+      "relatedLinks": [
+        "Lists and tables",
+        "Outline views",
+        "Split views"
+      ],
+      "developerDocumentationHeading": "Developer documentation",
+      "developerDocumentationLink": "NSBrowser — AppKit",
+      "feedbackText": "To submit feedback on documentation, visit Feedback Assistant.",
+      "copyrightText": "Copyright © 2025 Apple Inc. All rights reserved.",
+      "legalLinks": [
+        "Terms of Use",
+        "Privacy Policy",
+        "Agreements and Guidelines"
+      ]
+    },
+    "allLinks": [
+      {
+        "text": "split view",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/split-views",
+        "context": "Note callout suggesting alternative for iPadOS/visionOS"
+      },
+      {
+        "text": "list or table",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/lists-and-tables",
+        "context": "Best practice comparing sorting capabilities"
+      },
+      {
+        "text": "Lists and tables",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/lists-and-tables",
+        "context": "Related resources"
+      },
+      {
+        "text": "Outline views",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/outline-views",
+        "context": "Related resources"
+      },
+      {
+        "text": "Split views",
+        "url": "https://developer.apple.com/design/human-interface-guidelines/split-views",
+        "context": "Related resources"
+      },
+      {
+        "text": "NSBrowser",
+        "url": "https://developer.apple.com/documentation/appkit/nsbrowser",
+        "context": "Developer documentation"
+      },
+      {
+        "text": "Feedback Assistant",
+        "url": "https://feedbackassistant.apple.com",
+        "context": "Footer feedback link"
+      }
+    ],
+    "diagramDetailedAnalysis": {
+      "title": "Column View Interface Diagram",
+      "visualDescription": "A high-fidelity mockup of a macOS Finder-style column browser interface rendered with Apple's design aesthetic. The diagram has a clean white background with subtle borders separating three distinct columns.",
+      "column1Analysis": {
+        "title": "Folder Navigation Column",
+        "background": "Light pink/coral gradient (#FFEAEA to white)",
+        "items": [
+          {
+            "icon": "Blue folder icon (SF Symbol: folder.fill)",
+            "label": "Folder A",
+            "trailingIcon": "Chevron right (disclosure indicator)",
+            "state": "unselected"
+          },
+          {
+            "icon": "Blue folder icon (SF Symbol: folder.fill)",
+            "label": "Folder B",
+            "trailingIcon": "Chevron right (disclosure indicator)",
+            "state": "selected",
+            "selectionStyle": "Coral/red background highlight (#FF6B6B)"
+          },
+          {
+            "icon": "Blue folder icon (SF Symbol: folder.fill)",
+            "label": "Folder C",
+            "trailingIcon": "Chevron right (disclosure indicator)",
+            "state": "unselected"
+          }
+        ]
+      },
+      "column2Analysis": {
+        "title": "Image Contents Column",
+        "background": "White (#FFFFFF)",
+        "items": [
+          {
+            "icon": "Green photo icon",
+            "label": "Image A",
+            "state": "unselected"
+          },
+          {
+            "icon": "Red/coral photo icon",
+            "label": "Image B",
+            "state": "selected",
+            "selectionStyle": "Coral/red background highlight (#FF6B6B)"
+          },
+          {
+            "icon": "Green photo icon",
+            "label": "Image C",
+            "state": "unselected"
+          },
+          {
+            "icon": "Green photo icon",
+            "label": "Image D",
+            "state": "unselected"
+          },
+          {
+            "icon": "Green photo icon",
+            "label": "Image E",
+            "state": "unselected"
+          }
+        ]
+      },
+      "previewPanelAnalysis": {
+        "title": "Preview/Info Panel",
+        "background": "Light gray (#F5F5F5)",
+        "components": [
+          {
+            "type": "thumbnail",
+            "description": "Large rectangular thumbnail with rounded corners showing a stylized preview of Image B with pink/coral gradient tones matching the selection color"
+          },
+          {
+            "type": "filename",
+            "text": "Image B.png",
+            "style": "Bold, dark text"
+          },
+          {
+            "type": "fileInfo",
+            "text": "Format - 42 MB",
+            "style": "Regular, gray text"
+          },
+          {
+            "type": "sectionDivider",
+            "text": "Information",
+            "style": "Section header, semibold"
+          },
+          {
+            "type": "metadataRow",
+            "label": "Created",
+            "value": "January 24, 1984",
+            "note": "This date (Jan 24, 1984) is historically significant as the date the original Macintosh was unveiled"
+          },
+          {
+            "type": "metadataRow",
+            "label": "Modified",
+            "value": "June 6, 2022",
+            "note": "June 6, 2022 was during WWDC 2022"
+          }
+        ]
+      },
+      "interactionFlow": "The diagram demonstrates the complete interaction pattern: (1) User views folders in column 1, (2) Selects Folder B which highlights it in coral, (3) Column 2 populates with Folder B's contents (5 images), (4) User selects Image B which highlights it in coral, (5) Preview panel shows Image B's thumbnail and metadata since Image B has no children.",
+      "colorSemantics": {
+        "selectionColor": "#FF6B6B (coral/red)",
+        "folderIconColor": "#007AFF (Apple blue)",
+        "selectedImageIcon": "#FF6B6B (matches selection)",
+        "unselectedImageIcon": "#34C759 (Apple green)",
+        "metadataLabelColor": "#999999 (light gray)",
+        "metadataValueColor": "#666666 (medium gray)"
+      }
+    }
+  }
+}

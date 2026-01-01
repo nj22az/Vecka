@@ -1,0 +1,2504 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Windows | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "sourceUrl": "https://developer.apple.com/design/human-interface-guidelines/windows",
+      "creationDate": null,
+      "modificationDate": "2025-06-09",
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "windows",
+        "iPadOS",
+        "macOS",
+        "visionOS",
+        "multitasking",
+        "UI design",
+        "human interface guidelines",
+        "HIG",
+        "Apple Design",
+        "SwiftUI",
+        "UIKit",
+        "AppKit"
+      ],
+      "summary": "This Apple Human Interface Guidelines document provides comprehensive guidance on designing and implementing windows across iPadOS, macOS, and visionOS platforms. It covers best practices for window management, platform-specific considerations including windowed and full-screen modes, window anatomy, window states, and visionOS-specific window types including default windows and volumetric windows (volumes).",
+      "copyright": "Copyright 2025 Apple Inc. All rights reserved."
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": "variable",
+          "height": "variable",
+          "unit": "responsive web layout"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF (light mode) / dark mode supported",
+        "layout": {
+          "type": "multi-column",
+          "columns": 2,
+          "margins": {
+            "top": "standard",
+            "right": "standard",
+            "bottom": "standard",
+            "left": "standard"
+          },
+          "headerPresent": true,
+          "footerPresent": true,
+          "sidebarPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": "100%",
+              "height": "auto"
+            },
+            "zIndex": 100,
+            "content": {
+              "navigationItems": [
+                {
+                  "text": "News",
+                  "type": "link"
+                },
+                {
+                  "text": "Discover",
+                  "type": "link"
+                },
+                {
+                  "text": "Design",
+                  "type": "link"
+                },
+                {
+                  "text": "Develop",
+                  "type": "link"
+                },
+                {
+                  "text": "Distribute",
+                  "type": "link"
+                },
+                {
+                  "text": "Support",
+                  "type": "link"
+                },
+                {
+                  "text": "Account",
+                  "type": "link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-secondary-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": "below header",
+              "width": "100%",
+              "height": "auto"
+            },
+            "zIndex": 99,
+            "content": {
+              "navigationItems": [
+                {
+                  "text": "Design",
+                  "type": "breadcrumb-root"
+                },
+                {
+                  "text": "Overview",
+                  "type": "tab"
+                },
+                {
+                  "text": "What's New",
+                  "type": "tab"
+                },
+                {
+                  "text": "Get Started",
+                  "type": "tab"
+                },
+                {
+                  "text": "Guidelines",
+                  "type": "tab",
+                  "state": "active"
+                },
+                {
+                  "text": "Resources",
+                  "type": "tab"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-left-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": "below secondary nav",
+              "width": "approximately 250px",
+              "height": "full content height"
+            },
+            "zIndex": 50,
+            "content": {
+              "sidebarTitle": "Human Interface Guidelines Navigation",
+              "sections": [
+                {
+                  "title": "Getting started",
+                  "items": [],
+                  "expandable": true
+                },
+                {
+                  "title": "Foundations",
+                  "items": [],
+                  "expandable": true
+                },
+                {
+                  "title": "Patterns",
+                  "items": [],
+                  "expandable": true
+                },
+                {
+                  "title": "Components",
+                  "items": [],
+                  "expandable": true
+                },
+                {
+                  "title": "Content",
+                  "items": [],
+                  "expandable": true
+                },
+                {
+                  "title": "Layout and organization",
+                  "items": [],
+                  "expandable": true
+                },
+                {
+                  "title": "Menus and actions",
+                  "items": [],
+                  "expandable": true
+                },
+                {
+                  "title": "Navigation and search",
+                  "items": [],
+                  "expandable": true
+                },
+                {
+                  "title": "Presentation",
+                  "items": [
+                    "Action sheets",
+                    "Alerts",
+                    "Page controls",
+                    "Panels",
+                    "Popovers",
+                    "Scroll views",
+                    "Sheets",
+                    "Windows"
+                  ],
+                  "expandable": true,
+                  "expanded": true,
+                  "currentItem": "Windows"
+                },
+                {
+                  "title": "Selection and input",
+                  "items": [],
+                  "expandable": true
+                },
+                {
+                  "title": "Status",
+                  "items": [],
+                  "expandable": true
+                },
+                {
+                  "title": "System experiences",
+                  "items": [],
+                  "expandable": true
+                },
+                {
+                  "title": "Inputs",
+                  "items": [],
+                  "expandable": true
+                },
+                {
+                  "title": "Technologies",
+                  "items": [],
+                  "expandable": true
+                }
+              ],
+              "filterControl": {
+                "text": "Filter",
+                "type": "search/filter input"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-title",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "top of content",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 1,
+              "text": "Windows",
+              "styling": {
+                "fontSize": "large",
+                "fontWeight": "bold",
+                "fontFamily": "SF Pro Display"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-subtitle",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below title",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "A window presents UI views and components in your app or game.",
+              "styling": {
+                "fontSize": "medium",
+                "fontWeight": "normal",
+                "color": "secondary text color"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-hero-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "main content area, right aligned or full width",
+              "y": "near top",
+              "width": "large",
+              "height": "proportional"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "A stylized illustration showing the concept of windows in app design. The image features a coral/salmon pink background with abstract white/cream colored shapes representing window frames or UI containers. There appears to be a stylized leaf or plant-like shape in a lighter coral/peach color overlapping with the window frames, suggesting organic integration of content within windows. The overall aesthetic is modern, minimalist, and uses Apple's contemporary design language with soft gradients and rounded shapes.",
+              "subjects": [
+                "Abstract window frame representations",
+                "Stylized leaf/organic shape",
+                "Layered UI elements"
+              ],
+              "composition": "Overlapping geometric and organic shapes on a warm coral background, suggesting depth and layering of windows",
+              "colorPalette": [
+                "Coral pink (#FF6B6B approximate)",
+                "Cream/off-white",
+                "Peach",
+                "Light coral"
+              ],
+              "mood": "Modern, warm, approachable",
+              "technicalDetails": "Hero illustration for the Windows HIG page",
+              "textInImage": [],
+              "contextualRelevance": "This hero image visually represents the concept of windows as containers for app content, using abstract shapes to suggest layering and organization"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-intro-paragraph-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below hero image",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "In iPadOS, macOS, and visionOS, windows help define the visual boundaries of app content and separate it from other areas of the system, and enable multitasking workflows both within and between apps. Windows include system-provided interface elements such as frames and window controls that let people open, close, resize, and relocate them."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-intro-paragraph-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below intro-paragraph-1",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Conceptually, apps use two types of windows to display content:"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-window-types-list",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below intro-paragraph-2",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "title": "A primary window",
+                  "description": "presents the main navigation and content of an app, and actions associated with them."
+                },
+                {
+                  "title": "An auxiliary window",
+                  "description": "presents a specific task or area in an app. Dedicated to one experience, an auxiliary window doesn't allow navigation to other app areas, and it typically includes a button people use to close it after completing the task."
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-cross-references",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below window-types-list",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "For guidance laying out content within a window on any platform, see Layout; for guidance laying out content in Apple Vision Pro space, see Spatial layout. For developer guidance, see Windows.",
+              "links": [
+                {
+                  "text": "Layout",
+                  "target": "Layout HIG page"
+                },
+                {
+                  "text": "Spatial layout",
+                  "target": "Spatial layout HIG page"
+                },
+                {
+                  "text": "Windows",
+                  "target": "Windows developer documentation"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practices-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below cross-references",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "Best practices",
+              "styling": {
+                "fontSize": "large",
+                "fontWeight": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below best-practices-heading",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Make sure that your windows adapt fluidly to different sizes to support multitasking and multiwindow workflows.",
+              "text": "Make sure that your windows adapt fluidly to different sizes to support multitasking and multiwindow workflows. For guidance, see Layout and Multitasking.",
+              "links": [
+                {
+                  "text": "Layout",
+                  "target": "Layout HIG page"
+                },
+                {
+                  "text": "Multitasking",
+                  "target": "Multitasking HIG page"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below best-practice-1",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Choose the right moment to open a new window.",
+              "text": "Choose the right moment to open a new window. Opening content in a separate window is great for helping people multitask or preserve context. For example, Mail opens a new window whenever someone selects the Compose action, so both the new message and the existing email are visible at the same time. However, opening new windows excessively creates clutter and can make navigating your app more confusing. Avoid opening new windows as default behavior unless it makes sense for your app."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below best-practice-2",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Consider providing the option to view content in a new window.",
+              "text": "Consider providing the option to view content in a new window. While it's best to avoid opening new windows as default behavior unless it benefits your user experience, it's also great to give people the flexibility of viewing content in multiple ways. Consider letting people view content in a new window using a command in a context menu or in the File menu. For developer guidance, see OpenWindow Action.",
+              "links": [
+                {
+                  "text": "OpenWindow Action",
+                  "target": "OpenWindowAction developer documentation"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-4",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below best-practice-3",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Avoid creating custom window UI.",
+              "text": "Avoid creating custom window UI. System-provided windows look and behave in a way that people understand and recognize. Avoid making custom window frames or controls, and don't try to replicate the system-provided appearance. Doing so without perfectly matching the system's look and behavior can make your app feel broken."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-5",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below best-practice-4",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Use the term window in user-facing content.",
+              "text": "Use the term window in user-facing content. The system refers to app windows as windows regardless of type. Using different terms — including scene, which refers to window implementation — is likely to confuse people."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-considerations-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below best-practice-5",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "Platform considerations",
+              "styling": {
+                "fontSize": "large",
+                "fontWeight": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-not-supported-notice",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below platform-considerations-heading",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Not supported in iOS, tvOS, or watchOS.",
+              "styling": {
+                "fontStyle": "italic or secondary styling"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ipados-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below not-supported-notice",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "iPadOS",
+              "styling": {
+                "fontSize": "medium-large",
+                "fontWeight": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ipados-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below ipados-heading",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Windows present in one of two ways depending on a person's choice in Multitasking & Gestures settings."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ipados-fullscreen-subheading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below ipados-intro",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 4,
+              "text": "Full screen",
+              "styling": {
+                "fontSize": "medium",
+                "fontWeight": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ipados-fullscreen-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below ipados-fullscreen-subheading",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Full screen. App windows fill the entire screen, and people switch between them — or between multiple windows of the same app — using the app switcher."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ipados-windowed-subheading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below ipados-fullscreen-description",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 4,
+              "text": "Windowed",
+              "styling": {
+                "fontSize": "medium",
+                "fontWeight": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ipados-windowed-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below ipados-windowed-subheading",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Windowed. People can freely resize app windows. Multiple windows can be onscreen at once, and people can reposition them and bring them to the front. The system remembers window size and placement even when an app is closed."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ipados-image-windowed",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "near iPadOS windowed section",
+              "width": "large",
+              "height": "proportional"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "screenshot",
+              "description": "A screenshot showing iPadOS in windowed multitasking mode. The image displays multiple overlapping app windows on an iPad screen. In the foreground, there's a prominent window showing what appears to be a drawing or illustration app (possibly Freeform or a similar creative app) with a vibrant artwork featuring pink and coral colored organic shapes - appearing to be a botanical illustration with flower petals and leaves. Behind this window, there are other partially visible windows including what appears to be a data/spreadsheet application showing charts and numerical data, and another window with different content. The windows have visible title bars and window controls (close, minimize, maximize buttons) at the top corners. The overall composition demonstrates how iPadOS allows users to arrange multiple windows freely on screen, similar to a desktop operating system.",
+              "subjects": [
+                "Multiple overlapping app windows",
+                "Drawing/illustration app window in foreground",
+                "Botanical/floral artwork (pink petals, leaves)",
+                "Data/spreadsheet app window in background",
+                "iPadOS desktop/home screen wallpaper visible behind windows"
+              ],
+              "composition": "Multiple windows arranged in an overlapping cascade, demonstrating windowed multitasking",
+              "colorPalette": [
+                "Pink/coral (artwork)",
+                "Green (leaves in artwork)",
+                "White (window backgrounds)",
+                "Gray (window chrome)",
+                "Various data visualization colors in background window"
+              ],
+              "mood": "Productive, organized, flexible",
+              "technicalDetails": "iPadOS windowed mode screenshot showing multiple resizable windows with standard window controls",
+              "textInImage": [
+                "Window title bars",
+                "Data values in spreadsheet window"
+              ],
+              "contextualRelevance": "This image demonstrates the windowed multitasking feature in iPadOS where users can freely position and resize multiple app windows on screen simultaneously"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-ipados-windowed-description",
+                "relationshipType": "illustrates"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-ipados-toolbar-guidance",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below ipados-windowed-description",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Make sure window controls don't overlap toolbar items.",
+              "text": "Make sure window controls don't overlap toolbar items. When windowed, app windows include window controls at the leading edge of the toolbar. If your app has toolbar buttons at the leading edge, they might be hidden by window controls when they appear. To prevent this, instead of placing buttons directly on the leading edge, move them inward when the window controls appear."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ipados-gesture-guidance",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below ipados-toolbar-guidance",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Consider letting people use a gesture to open content in a new window.",
+              "text": "Consider letting people use a gesture to open content in a new window. For example, people can use the pinch gesture to expand a Notes item into a new window. For developer guidance, see collectionView(_:sceneActivationConfigurationForItemAt:point:) (to transition from a collection view item), or UIWindowScene.ActivationInteraction (to transition from an item in any other view).",
+              "links": [
+                {
+                  "text": "collectionView(_:sceneActivationConfigurationForItemAt:point:)",
+                  "target": "UICollectionViewDelegate method documentation"
+                },
+                {
+                  "text": "UIWindowScene.ActivationInteraction",
+                  "target": "UIWindowScene.ActivationInteraction documentation"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ipados-tip",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below ipados-gesture-guidance",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "tip",
+              "title": "Tip",
+              "text": "If you only need to let people view one file, you can present it without creating your own window, but you must support multiple windows in your app. For developer guidance, see QLPreviewSceneActivationConfiguration.",
+              "links": [
+                {
+                  "text": "QLPreviewSceneActivationConfiguration",
+                  "target": "QLPreviewSceneActivationConfiguration documentation"
+                }
+              ],
+              "styling": {
+                "backgroundColor": "light blue or gray highlight",
+                "borderLeft": "accent color"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below ipados-tip",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "macOS",
+              "styling": {
+                "fontSize": "medium-large",
+                "fontWeight": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below macos-heading",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "In macOS, people typically run several apps at the same time, often viewing windows from multiple apps on one desktop and switching frequently between different windows — moving, resizing, minimizing, and revealing the windows to suit their work style."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-game-reference",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below macos-intro",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "To learn about setting up a window to display your game in macOS, see Managing your game window for Metal in macOS.",
+              "links": [
+                {
+                  "text": "Managing your game window for Metal in macOS",
+                  "target": "Metal game window documentation"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-anatomy-subheading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below macos-game-reference",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 4,
+              "text": "macOS window anatomy",
+              "styling": {
+                "fontSize": "medium",
+                "fontWeight": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-anatomy-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below macos-anatomy-subheading",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "A macOS window consists of a frame and a body area. People can move a window by dragging the frame and can often resize the window by dragging its edges."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-frame-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below macos-anatomy-description",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "The frame of a window appears above the body area and can include window controls and a toolbar. In rare cases, a window can also display a bottom bar, which is a part of the frame that appears below body content."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-states-subheading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below macos-frame-description",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 4,
+              "text": "macOS window states",
+              "styling": {
+                "fontSize": "medium",
+                "fontWeight": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-states-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below macos-states-subheading",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "A macOS window can have one of three states:"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-states-list",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below macos-states-intro",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "title": "Main",
+                  "description": "The frontmost window that people view is an app's main window. There can be only one main window per app."
+                },
+                {
+                  "title": "Key",
+                  "description": "Also called the active window, the key window accepts people's input. There can be only one key window onscreen at a time. Although the front app's main window is usually the key window, another window — such as a panel floating above the main window — might be key instead. People typically click a window to make it key; when people click an app's Dock icon to bring all of that app's windows forward, only the most recently accessed window becomes key."
+                },
+                {
+                  "title": "Inactive",
+                  "description": "A window that's not in the foreground is an inactive window."
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-window-states-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "near macOS window states section",
+              "width": "large",
+              "height": "proportional"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "An illustration showing three macOS windows in different states to demonstrate main, key, and inactive window appearances. The image shows overlapping windows with different visual treatments. One window appears to be the Colors panel (a system utility panel with a color wheel and color picker interface), another appears to be a document or content window, and a third shows different content. The windows demonstrate the visual differences between active/key windows (with colored traffic light buttons - red, yellow, green) and inactive windows (with grayed-out traffic light buttons). The illustration uses a clean, diagrammatic style typical of Apple's design documentation, clearly showing how the system visually distinguishes between window states through color and opacity differences.",
+              "subjects": [
+                "macOS Colors panel window",
+                "Main content window",
+                "Window traffic light controls (close, minimize, zoom)",
+                "Multiple overlapping windows demonstrating states"
+              ],
+              "composition": "Three windows arranged in an overlapping configuration to show the visual hierarchy and state differences",
+              "colorPalette": [
+                "Red, yellow, green (active traffic light buttons)",
+                "Gray (inactive traffic light buttons)",
+                "White/light gray (window backgrounds)",
+                "Color wheel colors in Colors panel"
+              ],
+              "mood": "Educational, clear, demonstrative",
+              "technicalDetails": "Diagram illustrating macOS window states - main, key, and inactive",
+              "textInImage": [
+                "Colors panel title",
+                "Color picker labels"
+              ],
+              "contextualRelevance": "This image demonstrates the visual differences between macOS window states (main, key, inactive) showing how the system uses color in window controls to communicate state"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-macos-states-list",
+                "relationshipType": "illustrates"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-macos-appearance-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below macos-states-list",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "The system gives main, key, and inactive windows different appearances to help people visually identify them. For example, the key window uses color in the title bar options for closing, minimizing, and zooming; inactive windows and main windows that aren't key use gray in these options. Also, inactive windows don't use vibrancy (an effect that can pull color into a window from the content underneath it), which makes them appear subdued and seem visually farther away than the main and key windows."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-note",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below macos-appearance-description",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "note",
+              "title": "Note",
+              "text": "Some windows — typically, panels like Colors or Fonts — become the key window only when people click the window's title bar or a component that requires keyboard input, such as a text field.",
+              "styling": {
+                "backgroundColor": "light gray or note styling",
+                "borderLeft": "gray accent"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-custom-windows-guidance",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below macos-note",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Make sure custom windows use the system-defined appearances.",
+              "text": "Make sure custom windows use the system-defined appearances. People rely on the visual differences between windows to help them identify the foreground window and know which window will accept their input. When you use system-provided components, a window's background and button appearances update automatically when the window changes state; if you use custom implementations, you need to do this work yourself."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-bottom-bar-guidance",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below macos-custom-windows-guidance",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Avoid putting critical information or actions in a bottom bar,",
+              "text": "Avoid putting critical information or actions in a bottom bar, because people often relocate a window in a way that hides its bottom edge. If you must include one, use it only to display a small amount of information directly related to a window's contents or to a selected item within it. For example, Finder uses a bottom bar (called the status bar) to display the total number of items in a window, the number of selected items, and how much space is available on the disk. A bottom bar is small, so if you have more information to display, consider using an inspector, which typically presents information on the trailing side of a split view."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below macos-bottom-bar-guidance",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "visionOS",
+              "styling": {
+                "fontSize": "medium-large",
+                "fontWeight": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-heading",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "visionOS defines two main window styles: default and volumetric. Both a default window (called a window) and a volumetric window (called a volume) can display 2D and 3D content, and people can view multiple windows and volumes at the same time in both the Shared Space and a Full Space."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-comparison-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "near visionOS intro",
+              "width": "large",
+              "height": "proportional"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "A side-by-side comparison illustration showing the two main visionOS window styles. On the left is 'A window' - a flat, rectangular panel with the characteristic visionOS glass material background, displaying 2D content. The window appears to float in space with subtle depth and the signature frosted glass appearance. On the right is 'A volume' - a three-dimensional bounded space represented as a cube or rectangular prism, showing that it can contain 3D content that users can view from different angles. Both elements are rendered in visionOS's distinctive spatial computing aesthetic with soft lighting and the glass material effect.",
+              "subjects": [
+                "visionOS default window (flat glass panel)",
+                "visionOS volumetric window (3D bounded space)",
+                "Glass material background",
+                "Spatial UI elements"
+              ],
+              "composition": "Two elements shown side by side - flat window on left, volumetric cube/space on right",
+              "colorPalette": [
+                "Frosted glass/translucent white",
+                "Subtle blue/purple tints",
+                "Soft shadows"
+              ],
+              "mood": "Futuristic, spatial, clean",
+              "technicalDetails": "Diagram comparing visionOS window types - default window vs volumetric window (volume)",
+              "textInImage": [
+                "A window (label)",
+                "A volume (label)"
+              ],
+              "contextualRelevance": "This comparison image helps readers understand the fundamental difference between the two visionOS window types - flat windows for 2D UI and volumes for 3D content"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-visionos-intro",
+                "relationshipType": "illustrates"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-visionos-plain-note",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-comparison-image",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "note",
+              "title": "Note",
+              "text": "visionOS also defines the plain window style, which is similar to the default style, except that the upright plane doesn't use the glass background. For developer guidance, see PlainWindowStyle.",
+              "links": [
+                {
+                  "text": "PlainWindowStyle",
+                  "target": "PlainWindowStyle documentation"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-positioning",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-plain-note",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "The system defines the initial position of the first window or volume people open in your app or game. In both the Shared Space and a Full Space, people can move windows and volumes to new locations."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-windows-subheading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-positioning",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 4,
+              "text": "visionOS windows",
+              "styling": {
+                "fontSize": "medium",
+                "fontWeight": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-windows-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-windows-subheading",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "The default window style consists of an upright plane that uses an unmodifiable background material called glass and includes a close button, window bar, and resize controls that let people close, move, and resize the window. A window can also include a Share button, tab bar, toolbar, and one or more ornaments. By default, visionOS uses dynamic scale to help a window's size appear to remain consistent regardless of its proximity to the viewer. For developer guidance, see DefaultWindowStyle.",
+              "links": [
+                {
+                  "text": "DefaultWindowStyle",
+                  "target": "DefaultWindowStyle documentation"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-window-example-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "near visionOS windows section",
+              "width": "large",
+              "height": "proportional"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "photograph/render",
+              "description": "A photograph or high-fidelity render showing a visionOS window floating in a real-world living room environment as seen through Apple Vision Pro. The window displays what appears to be a photo browsing or media application with a grid of thumbnail images. The window features the characteristic visionOS glass material - a frosted, translucent appearance that allows the room behind it to be visible but blurred. The window has a close button (X) in the top-left corner and a window bar at the bottom for repositioning. The surrounding environment shows a modern living room with a couch, plants, and natural lighting coming through windows, demonstrating how visionOS windows blend with and exist within the user's physical space. A label 'A window' appears below the window.",
+              "subjects": [
+                "visionOS window with glass material",
+                "Photo grid/media browser app content",
+                "Living room environment",
+                "Window controls (close button, window bar)",
+                "Couch, plants, natural lighting"
+              ],
+              "composition": "visionOS window floating in center-frame with living room environment visible behind and around it",
+              "colorPalette": [
+                "Frosted glass translucent white",
+                "Warm natural lighting",
+                "Green (plants)",
+                "Beige/cream (couch, room)",
+                "Various colors in photo thumbnails"
+              ],
+              "mood": "Immersive, natural, seamless integration",
+              "technicalDetails": "visionOS window rendering in spatial environment showing glass material and window controls",
+              "textInImage": [
+                "A window (caption label)"
+              ],
+              "contextualRelevance": "This image demonstrates how visionOS windows appear in mixed reality, showing the glass material effect and how windows integrate with the user's physical environment"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-visionos-windows-description",
+                "relationshipType": "illustrates"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-visionos-window-guidance-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-window-example-image",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Prefer using a window to present a familiar interface and to support familiar tasks.",
+              "text": "Prefer using a window to present a familiar interface and to support familiar tasks. Help people feel at home in your app by displaying an interface they're already comfortable with, reserving more immersive experiences for the meaningful content and activities you offer. If you want to showcase bounded 3D content like a game board, consider using a volume."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-window-guidance-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-window-guidance-1",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Retain the window's glass background.",
+              "text": "Retain the window's glass background. The default glass background helps your content feel like part of people's surroundings while adapting dynamically to lighting and using specular reflections and shadows to communicate the window's scale and position. Removing the glass material tends to cause UI elements and text to become less legible and to no longer appear related to each other; using an opaque background obscures people's surroundings and can make a window feel constricting and heavy."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-window-guidance-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-window-guidance-2",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Choose an initial window size that minimizes empty areas within it.",
+              "text": "Choose an initial window size that minimizes empty areas within it. By default, a window measures 1280x720 pt. When a window first opens, the system places it about two meters in front of the wearer, giving it an apparent width of about three meters. Too much empty space inside a window can make it look unnecessarily large while also obscuring other content in people's space."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-window-guidance-4",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-window-guidance-3",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Aim for an initial shape that suits a window's content.",
+              "text": "Aim for an initial shape that suits a window's content. For example, a default Keynote window is wide because slides are wide, whereas a default Safari window is tall because most webpages are much longer than they are wide. For games, a tower-building game is likely to open in a taller window than a driving game."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-window-guidance-5",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-window-guidance-4",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Choose a minimum and maximum size for each window to help keep your content looking great.",
+              "text": "Choose a minimum and maximum size for each window to help keep your content looking great. People appreciate being able to resize windows as they customize their space, but you need to make sure your layout adjusts well across all sizes. If you don't set a minimum and maximum size for a window, people could make it so small that UI elements overlap or so large that your app or game becomes unusable. For developer guidance, see Positioning and sizing windows.",
+              "links": [
+                {
+                  "text": "Positioning and sizing windows",
+                  "target": "Positioning and sizing windows documentation"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-3d-content-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "near 3D content guidance",
+              "width": "large",
+              "height": "proportional"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "photograph/render",
+              "description": "A photograph or render showing a visionOS window displaying 3D content in a real-world environment. The window shows what appears to be a 3D globe or Earth model that extends slightly beyond the flat window plane, demonstrating how 3D content can have some depth within a window. The window floats in what appears to be the same living room environment, with the globe/Earth showing geographic features and appearing to have dimensional depth while still being bounded by the window frame. A label 'A window containing 3D content' appears below. This demonstrates the capability of visionOS windows to display 3D objects while noting that excessive depth will be clipped by the system.",
+              "subjects": [
+                "visionOS window with 3D globe/Earth content",
+                "3D content extending from window plane",
+                "Living room environment",
+                "Glass material window background"
+              ],
+              "composition": "Window centered in frame showing 3D Earth/globe model with environmental context",
+              "colorPalette": [
+                "Frosted glass translucent white",
+                "Blue/green (Earth)",
+                "Warm room lighting"
+              ],
+              "mood": "Dimensional, immersive, educational",
+              "technicalDetails": "visionOS window displaying 3D content with depth, demonstrating content depth capabilities",
+              "textInImage": [
+                "A window containing 3D content (caption label)"
+              ],
+              "contextualRelevance": "This image shows that visionOS windows can contain 3D content with some depth, though excessive depth will be clipped, encouraging use of volumes for deeper 3D content"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-3d-guidance",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-3d-content-image",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Minimize the depth of 3D content you display in a window.",
+              "text": "Minimize the depth of 3D content you display in a window. The system adds highlights and shadows to the views and controls within a window, giving them the appearance of depth and helping them feel more substantial, especially when people view the window from an angle. Although you can display 3D content in a window, the system clips it if the content extends too far from the window's surface. To display 3D content that has greater depth, use a volume."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-volumes-subheading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-3d-guidance",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 4,
+              "text": "visionOS volumes",
+              "styling": {
+                "fontSize": "medium",
+                "fontWeight": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-volumes-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-volumes-subheading",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "You can use a volume to display 2D or 3D content that people can view from any angle. A volume includes window-management controls just like a window, but unlike in a window, a volume's close button and window bar shift position to face the viewer as they move around the volume. For developer guidance, see VolumetricWindowStyle.",
+              "links": [
+                {
+                  "text": "VolumetricWindowStyle",
+                  "target": "VolumetricWindowStyle documentation"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-volume-example-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "near visionOS volumes section",
+              "width": "large",
+              "height": "proportional"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "photograph/render",
+              "description": "A photograph or render showing a visionOS volume in a real-world living room environment. The volume contains a 3D model of the Earth/globe that appears to float in bounded 3D space, demonstrating how volumes can contain fully three-dimensional content that users can view from any angle. The volume shows the characteristic baseplate glow at its bottom edges (visible in visionOS 2+) and window controls that face the viewer. The 3D Earth model is fully rendered with geographic details, cloud patterns, and appears substantial in the space. The surrounding living room environment is visible, showing how volumes coexist with the user's physical surroundings. A label 'A volume' appears below the image.",
+              "subjects": [
+                "visionOS volume (3D bounded space)",
+                "3D Earth/globe model",
+                "Baseplate glow at volume edges",
+                "Volume window controls",
+                "Living room environment"
+              ],
+              "composition": "Volume with 3D Earth centered in frame, floating in living room space",
+              "colorPalette": [
+                "Blue/green/white (Earth with clouds)",
+                "Soft glow at baseplate",
+                "Warm room lighting"
+              ],
+              "mood": "Immersive, dimensional, spatial",
+              "technicalDetails": "visionOS volume containing 3D Earth model, demonstrating volumetric content display",
+              "textInImage": [
+                "A volume (caption label)"
+              ],
+              "contextualRelevance": "This image demonstrates visionOS volumes as the appropriate container for rich 3D content that users can view from multiple angles"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-visionos-volumes-description",
+                "relationshipType": "illustrates"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-visionos-volume-guidance-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-volume-example-image",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Prefer using a volume to display rich, 3D content.",
+              "text": "Prefer using a volume to display rich, 3D content. In contrast, if you want to present a familiar, UI-centric interface, it generally works best to use a window."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-volume-guidance-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-volume-guidance-1",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Place 2D content so it looks good from multiple angles.",
+              "text": "Place 2D content so it looks good from multiple angles. Because a person's perspective changes as they move around a volume, the location of 2D content within it might appear to change in ways that don't make sense. To pin 2D content to specific areas of 3D content inside a volume, you can use an attachment."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-volume-guidance-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-volume-guidance-2",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "In general, use dynamic scaling.",
+              "text": "In general, use dynamic scaling. Dynamic scaling helps a volume's content remain comfortably legible and easy to interact with, even when it's far away from the viewer. On the other hand, if you want a volume's content to represent a real-world object, like a product in a retail app, you can use fixed scaling (this is the default)."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-volume-guidance-4",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-volume-guidance-3",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Take advantage of the default baseplate appearance to help people discern the edges of a volume.",
+              "text": "Take advantage of the default baseplate appearance to help people discern the edges of a volume. In visionOS 2 and later, the system automatically makes a volume's horizontal \"floor,\" or baseplate, visible by displaying a gentle glow around its border when people look at it. If your content doesn't fill the volume, the system-provided glow can help people become aware of the volume's edges, which can be particularly useful in keeping the resize control easy to find. On the other hand, if your content is full bleed or fills the volume's bounds — or if you display a custom baseplate appearance — you may not want the default glow."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-volume-guidance-5",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-volume-guidance-4",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Consider offering high-value content in an ornament.",
+              "text": "Consider offering high-value content in an ornament. In visionOS 2 and later, a volume can include an ornament in addition to a toolbar and tab bar. You can use an ornament to reduce clutter in a volume and elevate important views or controls. When you use an attachment anchor to specify the ornament's location, such as topBack or bottomFront, the ornament remains in the same position, relative to the viewer's perspective, as they move around the volume. Be sure to avoid placing an ornament on the same edge as a toolbar or tab bar, and prefer creating only one additional ornament to avoid overshadowing the important content in your volume. For developer guidance, see ornament(visibility:attachmentAnchor:contentAlignment:ornament:).",
+              "links": [
+                {
+                  "text": "ornament(visibility:attachmentAnchor:contentAlignment:ornament:)",
+                  "target": "ornament modifier documentation"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-volume-guidance-6",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-volume-guidance-5",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "boldLeadIn": "Choose an alignment that supports the way people interact with your volume.",
+              "text": "Choose an alignment that supports the way people interact with your volume. As people move a volume, the baseplate can remain parallel to the floor of a person's surroundings, or it can tilt to match the angle at which a person is looking. In general, a volume that remains parallel to the floor works well for content that people don't interact with much, whereas a volume that tilts to match where a person is looking can keep content comfortably usable, even when the viewer is reclining."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below visionos-volume-guidance-6",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "Resources",
+              "styling": {
+                "fontSize": "large",
+                "fontWeight": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-related-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below resources-heading",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Related",
+              "styling": {
+                "fontSize": "medium",
+                "fontWeight": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-related-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below resources-related-heading",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Layout",
+                  "type": "link",
+                  "target": "Layout HIG page"
+                },
+                {
+                  "text": "Split views",
+                  "type": "link",
+                  "target": "Split views HIG page"
+                },
+                {
+                  "text": "Multitasking",
+                  "type": "link",
+                  "target": "Multitasking HIG page"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-developer-docs-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below related-links",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Developer documentation",
+              "styling": {
+                "fontSize": "medium",
+                "fontWeight": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-developer-docs-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below developer-docs-heading",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Windows — SwiftUI",
+                  "type": "link",
+                  "target": "SwiftUI Windows documentation"
+                },
+                {
+                  "text": "WindowGroup — SwiftUI",
+                  "type": "link",
+                  "target": "SwiftUI WindowGroup documentation"
+                },
+                {
+                  "text": "UIWindow — UIKit",
+                  "type": "link",
+                  "target": "UIKit UIWindow documentation"
+                },
+                {
+                  "text": "NSWindow — AppKit",
+                  "type": "link",
+                  "target": "AppKit NSWindow documentation"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-videos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below developer-docs-links",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Videos",
+              "styling": {
+                "fontSize": "medium",
+                "fontWeight": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-videos-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below videos-heading",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Elevate the design of your iPad app",
+                  "type": "link",
+                  "target": "WWDC video - Elevate the design of your iPad app"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-changelog-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below videos-links",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "Change log",
+              "styling": {
+                "fontSize": "large",
+                "fontWeight": "bold"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-changelog-table",
+            "elementType": "table",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "below changelog-heading",
+              "width": "content width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "tableTitle": "Date Changes",
+              "columnCount": 2,
+              "rowCount": 3,
+              "headers": [
+                "Date",
+                "Changes"
+              ],
+              "rows": [
+                {
+                  "rowIndex": 1,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "June 9, 2025",
+                      "formatting": {
+                        "bold": false
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Added best practices, and updated with guidance for resizable windows in iPadOS.",
+                      "formatting": {
+                        "bold": false
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 2,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "June 10, 2024",
+                      "formatting": {
+                        "bold": false
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Updated to include guidance for using volumes in visionOS 2 and added game-specific examples.",
+                      "formatting": {
+                        "bold": false
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 3,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "June 21, 2023",
+                      "formatting": {
+                        "bold": false
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Updated to include guidance for visionOS.",
+                      "formatting": {
+                        "bold": false
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tableSummary": "This table tracks the revision history of the Windows HIG documentation, showing when major updates were made including iPadOS resizable windows guidance, visionOS 2 volumes, and initial visionOS support."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-right-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": "right side of page",
+              "y": "aligned with main content",
+              "width": "approximately 200px",
+              "height": "auto"
+            },
+            "zIndex": 50,
+            "content": {
+              "sidebarTitle": "On This Page",
+              "sections": [
+                {
+                  "title": "Windows",
+                  "type": "page-anchor"
+                },
+                {
+                  "title": "Best practices",
+                  "type": "page-anchor"
+                },
+                {
+                  "title": "Platform considerations",
+                  "type": "page-anchor"
+                },
+                {
+                  "title": "Resources",
+                  "type": "page-anchor"
+                },
+                {
+                  "title": "Change log",
+                  "type": "page-anchor"
+                }
+              ],
+              "supportedPlatforms": {
+                "heading": "Supported platforms",
+                "platforms": [
+                  {
+                    "name": "iOS",
+                    "icon": "iOS platform icon",
+                    "supported": false,
+                    "note": "Not supported"
+                  },
+                  {
+                    "name": "iPadOS",
+                    "icon": "iPadOS platform icon",
+                    "supported": true
+                  },
+                  {
+                    "name": "macOS",
+                    "icon": "macOS platform icon",
+                    "supported": true
+                  },
+                  {
+                    "name": "tvOS",
+                    "icon": "tvOS platform icon",
+                    "supported": false,
+                    "note": "Not supported"
+                  },
+                  {
+                    "name": "visionOS",
+                    "icon": "visionOS platform icon",
+                    "supported": true
+                  },
+                  {
+                    "name": "watchOS",
+                    "icon": "watchOS platform icon",
+                    "supported": false,
+                    "note": "Not supported"
+                  }
+                ]
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": "bottom of page",
+              "width": "100%",
+              "height": "auto"
+            },
+            "zIndex": 100,
+            "content": {
+              "sections": [
+                {
+                  "title": "Platforms",
+                  "items": [
+                    "iOS",
+                    "iPadOS",
+                    "macOS",
+                    "tvOS",
+                    "visionOS",
+                    "watchOS"
+                  ]
+                },
+                {
+                  "title": "Tools",
+                  "items": [
+                    "Swift",
+                    "SwiftUI",
+                    "Swift Playground",
+                    "TestFlight",
+                    "Xcode",
+                    "Xcode Cloud",
+                    "SF Symbols"
+                  ]
+                },
+                {
+                  "title": "Topics & Technologies",
+                  "items": [
+                    "Accessibility",
+                    "Accessories",
+                    "App Extension",
+                    "App Store",
+                    "Audio & Video",
+                    "Augmented Reality",
+                    "Design",
+                    "Distribution",
+                    "Education",
+                    "Fonts",
+                    "Games",
+                    "Health & Fitness",
+                    "In-App Purchase",
+                    "Localization",
+                    "Maps & Location",
+                    "Machine Learning & AI",
+                    "Open Source",
+                    "Security",
+                    "Safari & Web"
+                  ]
+                },
+                {
+                  "title": "Resources",
+                  "items": [
+                    "Documentation",
+                    "Tutorials",
+                    "Downloads",
+                    "Forums",
+                    "Videos"
+                  ]
+                },
+                {
+                  "title": "Support",
+                  "items": [
+                    "Support Articles",
+                    "Contact Us",
+                    "Bug Reporting",
+                    "System Status"
+                  ]
+                },
+                {
+                  "title": "Account",
+                  "items": [
+                    "Apple Developer",
+                    "App Store Connect",
+                    "Certificates, IDs, & Profiles",
+                    "Feedback Assistant"
+                  ]
+                },
+                {
+                  "title": "Programs",
+                  "items": [
+                    "Apple Developer Program",
+                    "Apple Developer Enterprise Program",
+                    "App Store Small Business Program",
+                    "MFi Program",
+                    "News Partner Program",
+                    "Video Partner Program",
+                    "Security Bounty Program",
+                    "Security Research Device Program"
+                  ]
+                },
+                {
+                  "title": "Events",
+                  "items": [
+                    "Meet with Apple",
+                    "Apple Developer Centers",
+                    "App Store Awards",
+                    "Apple Design Awards",
+                    "Apple Developer Academies",
+                    "WWDC"
+                  ]
+                }
+              ],
+              "feedbackSection": {
+                "text": "To submit feedback on documentation, visit Feedback Assistant.",
+                "link": {
+                  "text": "Feedback Assistant",
+                  "target": "https://feedbackassistant.apple.com"
+                }
+              },
+              "themeToggle": {
+                "options": [
+                  "Light",
+                  "Dark",
+                  "Auto"
+                ]
+              },
+              "legalLinks": [
+                {
+                  "text": "Terms of Use",
+                  "target": "Apple Terms of Use"
+                },
+                {
+                  "text": "Privacy Policy",
+                  "target": "Apple Privacy Policy"
+                },
+                {
+                  "text": "Agreements and Guidelines",
+                  "target": "Apple Developer Agreements and Guidelines"
+                }
+              ],
+              "copyright": "Copyright 2025 Apple Inc. All rights reserved."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-breadcrumb",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "above main title",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "breadcrumbPath": [
+                {
+                  "text": "Developer Documentation",
+                  "type": "link"
+                },
+                {
+                  "text": "English",
+                  "type": "language selector"
+                }
+              ]
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation",
+          "page1-secondary-navigation",
+          "page1-breadcrumb",
+          "page1-main-title",
+          "page1-subtitle",
+          "page1-hero-image",
+          "page1-intro-paragraph-1",
+          "page1-intro-paragraph-2",
+          "page1-window-types-list",
+          "page1-cross-references",
+          "page1-best-practices-heading",
+          "page1-best-practice-1",
+          "page1-best-practice-2",
+          "page1-best-practice-3",
+          "page1-best-practice-4",
+          "page1-best-practice-5",
+          "page1-platform-considerations-heading",
+          "page1-not-supported-notice",
+          "page1-ipados-heading",
+          "page1-ipados-intro",
+          "page1-ipados-fullscreen-subheading",
+          "page1-ipados-fullscreen-description",
+          "page1-ipados-windowed-subheading",
+          "page1-ipados-windowed-description",
+          "page1-ipados-image-windowed",
+          "page1-ipados-toolbar-guidance",
+          "page1-ipados-gesture-guidance",
+          "page1-ipados-tip",
+          "page1-macos-heading",
+          "page1-macos-intro",
+          "page1-macos-game-reference",
+          "page1-macos-anatomy-subheading",
+          "page1-macos-anatomy-description",
+          "page1-macos-frame-description",
+          "page1-macos-states-subheading",
+          "page1-macos-states-intro",
+          "page1-macos-states-list",
+          "page1-macos-window-states-image",
+          "page1-macos-appearance-description",
+          "page1-macos-note",
+          "page1-macos-custom-windows-guidance",
+          "page1-macos-bottom-bar-guidance",
+          "page1-visionos-heading",
+          "page1-visionos-intro",
+          "page1-visionos-comparison-image",
+          "page1-visionos-plain-note",
+          "page1-visionos-positioning",
+          "page1-visionos-windows-subheading",
+          "page1-visionos-windows-description",
+          "page1-visionos-window-example-image",
+          "page1-visionos-window-guidance-1",
+          "page1-visionos-window-guidance-2",
+          "page1-visionos-window-guidance-3",
+          "page1-visionos-window-guidance-4",
+          "page1-visionos-window-guidance-5",
+          "page1-visionos-3d-content-image",
+          "page1-visionos-3d-guidance",
+          "page1-visionos-volumes-subheading",
+          "page1-visionos-volumes-description",
+          "page1-visionos-volume-example-image",
+          "page1-visionos-volume-guidance-1",
+          "page1-visionos-volume-guidance-2",
+          "page1-visionos-volume-guidance-3",
+          "page1-visionos-volume-guidance-4",
+          "page1-visionos-volume-guidance-5",
+          "page1-visionos-volume-guidance-6",
+          "page1-resources-heading",
+          "page1-resources-related-heading",
+          "page1-related-links",
+          "page1-developer-docs-heading",
+          "page1-developer-docs-links",
+          "page1-videos-heading",
+          "page1-videos-links",
+          "page1-changelog-heading",
+          "page1-changelog-table",
+          "page1-footer"
+        ],
+        "pageSummary": "This single-page document from Apple's Human Interface Guidelines provides comprehensive guidance on designing and implementing windows across iPadOS, macOS, and visionOS. It defines the two conceptual window types (primary and auxiliary), offers best practices for window management, and provides platform-specific guidance including iPadOS full-screen and windowed modes, macOS window anatomy and states (main, key, inactive), and visionOS window styles (default windows with glass material and volumetric windows/volumes for 3D content)."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": true,
+        "entries": [
+          {
+            "title": "Windows",
+            "level": 1
+          },
+          {
+            "title": "Best practices",
+            "level": 2
+          },
+          {
+            "title": "Platform considerations",
+            "level": 2
+          },
+          {
+            "title": "Resources",
+            "level": 2
+          },
+          {
+            "title": "Change log",
+            "level": 2
+          }
+        ],
+        "location": "right sidebar"
+      },
+      "runningHeaders": "Apple Developer Documentation header with main navigation",
+      "runningFooters": "Apple Developer footer with comprehensive site links, legal information, and theme toggle",
+      "pageNumbers": {
+        "present": false,
+        "format": "N/A - web document"
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "intro",
+          "title": "Introduction",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Introduces the concept of windows in iPadOS, macOS, and visionOS, explaining how they define visual boundaries, enable multitasking, and include system-provided interface elements. Describes the two conceptual window types: primary windows for main app navigation/content and auxiliary windows for specific tasks."
+        },
+        {
+          "sectionId": "best-practices",
+          "title": "Best practices",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Provides five key best practices: 1) Ensure windows adapt fluidly to different sizes, 2) Choose the right moment to open new windows, 3) Consider providing options to view content in new windows, 4) Avoid creating custom window UI, 5) Use the term 'window' in user-facing content."
+        },
+        {
+          "sectionId": "platform-considerations",
+          "title": "Platform considerations",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "ipados",
+              "title": "iPadOS",
+              "summary": "Covers iPadOS window presentation modes (full screen and windowed), guidance on window controls and toolbar items, and gesture-based window opening."
+            },
+            {
+              "sectionId": "macos",
+              "title": "macOS",
+              "summary": "Describes macOS window anatomy (frame and body), window states (main, key, inactive), visual differentiation between states, and guidance on custom windows and bottom bars."
+            },
+            {
+              "sectionId": "visionos",
+              "title": "visionOS",
+              "summary": "Explains visionOS window styles including default windows with glass material and volumetric windows (volumes) for 3D content, with detailed guidance on sizing, scaling, ornaments, and alignment."
+            }
+          ],
+          "summary": "Platform-specific guidance noting that windows are not supported in iOS, tvOS, or watchOS, with detailed sections for iPadOS, macOS, and visionOS implementation."
+        },
+        {
+          "sectionId": "resources",
+          "title": "Resources",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Links to related HIG topics (Layout, Split views, Multitasking), developer documentation (SwiftUI Windows, WindowGroup, UIWindow, NSWindow), and videos (Elevate the design of your iPad app)."
+        },
+        {
+          "sectionId": "changelog",
+          "title": "Change log",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Documents revision history with three entries: June 2025 (iPadOS resizable windows and best practices), June 2024 (visionOS 2 volumes and game examples), June 2023 (initial visionOS guidance)."
+        }
+      ],
+      "documentFlow": "The document begins with an introduction defining windows and their two types, then provides universal best practices applicable across platforms. It proceeds to platform-specific guidance organized by operating system (iPadOS, macOS, visionOS), with each platform section containing subsections relevant to that platform's unique window features. The document concludes with resources for further learning and a change log tracking document revisions."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "Primary window",
+          "definition": "A window that presents the main navigation and content of an app, and actions associated with them.",
+          "occurrences": 1
+        },
+        {
+          "term": "Auxiliary window",
+          "definition": "A window that presents a specific task or area in an app, dedicated to one experience, doesn't allow navigation to other app areas, and typically includes a close button.",
+          "occurrences": 1
+        },
+        {
+          "term": "Main window",
+          "definition": "In macOS, the frontmost window that people view; there can be only one main window per app.",
+          "occurrences": 3
+        },
+        {
+          "term": "Key window",
+          "definition": "Also called the active window, the key window accepts people's input; there can be only one key window onscreen at a time.",
+          "occurrences": 5
+        },
+        {
+          "term": "Inactive window",
+          "definition": "A window that's not in the foreground.",
+          "occurrences": 3
+        },
+        {
+          "term": "Glass material",
+          "definition": "An unmodifiable background material used in visionOS windows that helps content feel like part of people's surroundings while adapting dynamically to lighting.",
+          "occurrences": 5
+        },
+        {
+          "term": "Volume (volumetric window)",
+          "definition": "A visionOS window style that displays 2D or 3D content that people can view from any angle, with controls that shift position to face the viewer.",
+          "occurrences": 10
+        },
+        {
+          "term": "Dynamic scale",
+          "definition": "A visionOS feature that helps a window's or volume's size appear to remain consistent regardless of its proximity to the viewer.",
+          "occurrences": 2
+        },
+        {
+          "term": "Baseplate",
+          "definition": "The horizontal 'floor' of a visionOS volume that can display a gentle glow around its border to help users discern the volume's edges.",
+          "occurrences": 3
+        },
+        {
+          "term": "Ornament",
+          "definition": "In visionOS 2+, an additional UI element that can be attached to a volume to display high-value content, remaining in position relative to the viewer's perspective.",
+          "occurrences": 3
+        },
+        {
+          "term": "Window bar",
+          "definition": "A control in visionOS windows and volumes that allows people to move the window; in volumes, it shifts position to face the viewer.",
+          "occurrences": 3
+        },
+        {
+          "term": "Vibrancy",
+          "definition": "A macOS visual effect that can pull color into a window from the content underneath it; inactive windows don't use vibrancy.",
+          "occurrences": 1
+        },
+        {
+          "term": "Bottom bar",
+          "definition": "A part of the macOS window frame that appears below body content, used for displaying small amounts of information related to window contents.",
+          "occurrences": 3
+        },
+        {
+          "term": "Shared Space",
+          "definition": "A visionOS environment where people can view multiple windows and volumes from different apps at the same time.",
+          "occurrences": 2
+        },
+        {
+          "term": "Full Space",
+          "definition": "A visionOS environment dedicated to a single app where windows and volumes can be displayed.",
+          "occurrences": 2
+        },
+        {
+          "term": "Attachment",
+          "definition": "A visionOS feature used to pin 2D content to specific areas of 3D content inside a volume.",
+          "occurrences": 2
+        },
+        {
+          "term": "Fixed scaling",
+          "definition": "The default scaling mode for visionOS volumes where content represents a real-world object at actual size.",
+          "occurrences": 1
+        }
+      ],
+      "keyFindings": [
+        "Windows are only supported in iPadOS, macOS, and visionOS - not in iOS, tvOS, or watchOS",
+        "iPadOS supports two window presentation modes: full screen and windowed (user-configurable in Multitasking & Gestures settings)",
+        "macOS windows have three states: main (frontmost), key (accepts input), and inactive (background)",
+        "The system uses color in macOS window controls to indicate state - key windows show colored close/minimize/zoom buttons, inactive windows show gray",
+        "visionOS windows use a glass background material that should not be removed or replaced",
+        "visionOS volumes are designed for 3D content that users can view from any angle",
+        "Default visionOS window size is 1280x720 pt, placed about 2 meters from the user (appearing about 3 meters wide)",
+        "visionOS 2 introduced baseplate glow for volumes and support for ornaments on volumes",
+        "Avoid creating custom window UI as it can make apps feel broken if they don't perfectly match system behavior",
+        "The term 'window' should be used in user-facing content rather than technical terms like 'scene'"
+      ],
+      "technicalSpecifications": {
+        "defaultVisionOSWindowSize": {
+          "width": 1280,
+          "height": 720,
+          "unit": "pt"
+        },
+        "defaultVisionOSWindowDistance": {
+          "value": 2,
+          "unit": "meters"
+        },
+        "apparentVisionOSWindowWidth": {
+          "value": 3,
+          "unit": "meters"
+        },
+        "supportedPlatforms": {
+          "supported": [
+            "iPadOS",
+            "macOS",
+            "visionOS"
+          ],
+          "notSupported": [
+            "iOS",
+            "tvOS",
+            "watchOS"
+          ]
+        },
+        "macOSWindowStates": [
+          "main",
+          "key",
+          "inactive"
+        ],
+        "visionOSWindowStyles": [
+          "default (window)",
+          "volumetric (volume)",
+          "plain"
+        ],
+        "iPadOSWindowModes": [
+          "full screen",
+          "windowed"
+        ]
+      },
+      "designDecisions": [
+        {
+          "decision": "Use system-provided window UI",
+          "rationale": "Custom window frames or controls that don't perfectly match system behavior make apps feel broken"
+        },
+        {
+          "decision": "Retain visionOS glass background",
+          "rationale": "Removing glass material causes UI elements and text to become less legible; opaque backgrounds obscure surroundings and feel constricting"
+        },
+        {
+          "decision": "Choose appropriate window vs volume in visionOS",
+          "rationale": "Windows for familiar UI-centric interfaces; volumes for rich 3D content viewable from any angle"
+        },
+        {
+          "decision": "Minimize 3D content depth in visionOS windows",
+          "rationale": "System clips 3D content that extends too far from window surface; use volumes for deeper 3D content"
+        },
+        {
+          "decision": "Avoid critical information in macOS bottom bars",
+          "rationale": "People often relocate windows in ways that hide the bottom edge"
+        },
+        {
+          "decision": "Move toolbar buttons inward in iPadOS windowed mode",
+          "rationale": "Window controls appear at the leading edge of the toolbar and can hide leading-edge buttons"
+        },
+        {
+          "decision": "Use dynamic scaling for visionOS volumes by default",
+          "rationale": "Keeps content legible and interactive regardless of distance; use fixed scaling only for real-world object representation"
+        }
+      ],
+      "developerReferences": [
+        {
+          "name": "Windows — SwiftUI",
+          "framework": "SwiftUI",
+          "purpose": "SwiftUI windows documentation"
+        },
+        {
+          "name": "WindowGroup",
+          "framework": "SwiftUI",
+          "purpose": "SwiftUI WindowGroup documentation"
+        },
+        {
+          "name": "UIWindow",
+          "framework": "UIKit",
+          "purpose": "UIKit window class"
+        },
+        {
+          "name": "NSWindow",
+          "framework": "AppKit",
+          "purpose": "AppKit window class"
+        },
+        {
+          "name": "OpenWindowAction",
+          "framework": "SwiftUI",
+          "purpose": "Opening new windows programmatically"
+        },
+        {
+          "name": "DefaultWindowStyle",
+          "framework": "SwiftUI",
+          "purpose": "visionOS default window style"
+        },
+        {
+          "name": "VolumetricWindowStyle",
+          "framework": "SwiftUI",
+          "purpose": "visionOS volumetric window style"
+        },
+        {
+          "name": "PlainWindowStyle",
+          "framework": "SwiftUI",
+          "purpose": "visionOS plain window style (no glass)"
+        },
+        {
+          "name": "collectionView(_:sceneActivationConfigurationForItemAt:point:)",
+          "framework": "UIKit",
+          "purpose": "Gesture-based window opening from collection view"
+        },
+        {
+          "name": "UIWindowScene.ActivationInteraction",
+          "framework": "UIKit",
+          "purpose": "Gesture-based window opening from any view"
+        },
+        {
+          "name": "QLPreviewSceneActivationConfiguration",
+          "framework": "QuickLook",
+          "purpose": "File preview without custom window"
+        },
+        {
+          "name": "ornament(visibility:attachmentAnchor:contentAlignment:ornament:)",
+          "framework": "SwiftUI",
+          "purpose": "Adding ornaments to visionOS volumes"
+        },
+        {
+          "name": "Managing your game window for Metal in macOS",
+          "framework": "Metal",
+          "purpose": "Game window setup documentation"
+        },
+        {
+          "name": "Positioning and sizing windows",
+          "framework": "SwiftUI/visionOS",
+          "purpose": "Window size constraints documentation"
+        }
+      ]
+    }
+  }
+}

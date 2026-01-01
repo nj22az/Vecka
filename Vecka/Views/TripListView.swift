@@ -2,7 +2,7 @@
 //  TripListView.swift
 //  Vecka
 //
-//  List of all travel trips.
+//  List of all travel trips with Japanese Jōhō Dezain styling.
 //
 
 import SwiftUI
@@ -11,104 +11,113 @@ import SwiftData
 struct TripListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \TravelTrip.startDate, order: .reverse) private var allTrips: [TravelTrip]
-    
+
     @State private var showAddTrip = false
     @State private var selectedTrip: TravelTrip?
-    
+
     var body: some View {
-        // Note: This view is embedded in NavigationStack from parent (PhoneLibraryView)
-        // Do NOT add NavigationStack here to avoid nested navigation issues
-        List {
-                if !activeTrips.isEmpty {
-                    Section("Active") {
-                        ForEach(activeTrips) { trip in
-                            TripRow(trip: trip)
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    selectedTrip = trip
-                                }
-                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                    Button(role: .destructive) {
-                                        delete(trip)
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-                                }
-                        }
-                    }
-                }
-                
-                if !upcomingTrips.isEmpty {
-                    Section("Upcoming") {
-                        ForEach(upcomingTrips) { trip in
-                            TripRow(trip: trip)
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    selectedTrip = trip
-                                }
-                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                    Button(role: .destructive) {
-                                        delete(trip)
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-                                }
-                        }
-                    }
-                }
-                
-                if !pastTrips.isEmpty {
-                    Section("Past") {
-                        ForEach(pastTrips) { trip in
-                            TripRow(trip: trip)
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    selectedTrip = trip
-                                }
-                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                    Button(role: .destructive) {
-                                        delete(trip)
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-                                }
-                        }
-                    }
-                }
-                
-                if allTrips.isEmpty {
-                     ContentUnavailableView(
-                        "No Trips",
-                        systemImage: "airplane.departure",
-                        description: Text("Tap + to add your first trip")
+        ScrollView {
+            VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
+                // Page header with inline actions (情報デザイン)
+                HStack(alignment: .top) {
+                    JohoPageHeader(
+                        title: "Travel Trips",
+                        badge: "TRIPS"
                     )
-                }
-            }
-            .standardListStyle()
-            .standardNavigation(title: "Trips")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
+
+                    Spacer()
+
                     Button {
                         showAddTrip = true
                     } label: {
-                        Label("Add Trip", systemImage: "plus")
+                        JohoActionButton(icon: "plus")
                     }
                 }
-            }
-            .sheet(isPresented: $showAddTrip) {
-                // We'll use a simple form for now or a dedicated TripEntryView if it exists
-                // For this implementation, I'm assuming we might need to create a simple AddTripView 
-                // or reusing an existing one. Since one doesn't exist, I'll put a placeholder here
-                // or a simple inline form.
-                NavigationStack {
-                    AddTripView()
+                .padding(.horizontal, JohoDimensions.spacingLG)
+
+                // Active trips section
+                if !activeTrips.isEmpty {
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "ACTIVE", style: .whiteOnBlack, size: .medium)
+                            .padding(.horizontal, JohoDimensions.spacingLG)
+
+                        ForEach(activeTrips, id: \.id) { trip in
+                            TripRow(trip: trip, status: "ACTIVE")
+                                .padding(.horizontal, JohoDimensions.spacingLG)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    selectedTrip = trip
+                                }
+                                .accessibilityLabel("\(trip.tripName), active trip to \(trip.destination)")
+                                .accessibilityAddTraits(.isButton)
+                        }
+                    }
+                }
+
+                // Upcoming trips section
+                if !upcomingTrips.isEmpty {
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "UPCOMING", style: .whiteOnBlack, size: .medium)
+                            .padding(.horizontal, JohoDimensions.spacingLG)
+
+                        ForEach(upcomingTrips, id: \.id) { trip in
+                            TripRow(trip: trip, status: "UPCOMING")
+                                .padding(.horizontal, JohoDimensions.spacingLG)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    selectedTrip = trip
+                                }
+                                .accessibilityLabel("\(trip.tripName), upcoming trip to \(trip.destination)")
+                                .accessibilityAddTraits(.isButton)
+                        }
+                    }
+                }
+
+                // Past trips section
+                if !pastTrips.isEmpty {
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "PAST", style: .whiteOnBlack, size: .medium)
+                            .padding(.horizontal, JohoDimensions.spacingLG)
+
+                        ForEach(pastTrips, id: \.id) { trip in
+                            TripRow(trip: trip, status: "PAST")
+                                .padding(.horizontal, JohoDimensions.spacingLG)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    selectedTrip = trip
+                                }
+                                .accessibilityLabel("\(trip.tripName), past trip to \(trip.destination)")
+                                .accessibilityAddTraits(.isButton)
+                        }
+                    }
+                }
+
+                // Empty state
+                if allTrips.isEmpty {
+                    JohoEmptyState(
+                        title: "No Trips",
+                        message: "Tap + to add your first trip",
+                        icon: "airplane.departure",
+                        zone: .trips
+                    )
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 60)
                 }
             }
-            .sheet(item: $selectedTrip) { trip in
-                NavigationStack {
-                    TripDetailView(trip: trip)
-                }
+            .padding(.vertical, JohoDimensions.spacingLG)
+        }
+        .johoBackground()
+        .toolbar(.hidden, for: .navigationBar)
+        .sheet(isPresented: $showAddTrip) {
+            NavigationStack {
+                AddTripView()
             }
+        }
+        .sheet(item: $selectedTrip) { trip in
+            NavigationStack {
+                TripDetailView(trip: trip)
+            }
+        }
     }
     
     // MARK: - Helpers
@@ -138,23 +147,61 @@ struct TripListView: View {
 
 struct TripRow: View {
     let trip: TravelTrip
-    
+    var status: String = ""
+
+    private var durationText: String {
+        "\(trip.duration)d"
+    }
+
     var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
+        JohoCard {
+            VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                // Top row: Status pill and duration
+                HStack {
+                    if !status.isEmpty {
+                        JohoPill(text: status, style: .colored(SectionZone.trips.background), size: .small)
+                    }
+
+                    Spacer()
+
+                    JohoPill(text: durationText, style: .whiteOnBlack, size: .small)
+                }
+
+                // Trip name
                 Text(trip.tripName)
-                    .font(.headline)
-                Text(trip.destination)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-            Spacer()
-            VStack(alignment: .trailing) {
-                Text(trip.startDate.formatted(date: .abbreviated, time: .omitted))
-                    .font(.caption)
-                Text(trip.endDate.formatted(date: .abbreviated, time: .omitted))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(JohoFont.headline)
+                    .foregroundStyle(JohoColors.black)
+
+                // Destination
+                HStack(spacing: JohoDimensions.spacingXS) {
+                    Image(systemName: "airplane.departure")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                    Text(trip.destination)
+                        .font(JohoFont.body)
+                        .foregroundStyle(JohoColors.black.opacity(0.8))
+                }
+
+                // Date range
+                HStack(spacing: JohoDimensions.spacingXS) {
+                    Text(trip.startDate.formatted(.dateTime.month(.abbreviated).day()))
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                    Text("→")
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                    Text(trip.endDate.formatted(.dateTime.month(.abbreviated).day()))
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                }
+
+                // Trip type if not business
+                if trip.tripType != .business {
+                    JohoPill(text: trip.tripType.rawValue, style: .blackOnWhite, size: .small)
+                }
             }
         }
     }
@@ -181,239 +228,459 @@ struct TripDetailView: View {
     }
 
     var body: some View {
-        // Note: This view is presented in a sheet with NavigationStack from parent
         ScrollView {
-                VStack(spacing: 24) {
-                    // Header Card
-                    VStack(spacing: 12) {
+            VStack(spacing: JohoDimensions.spacingLG) {
+                // Page header
+                JohoPageHeader(
+                    title: trip.tripName,
+                    badge: "TRIP DETAILS"
+                )
+                .padding(.horizontal, JohoDimensions.spacingLG)
+
+                // Trip Info Section
+                JohoSectionBox(title: "Trip Info", zone: .trips, icon: "airplane.departure") {
+                    VStack(spacing: JohoDimensions.spacingSM) {
+                        // Destination
                         HStack {
-                            Image(systemName: "airplane.departure")
-                                .font(.title2)
-                                .foregroundStyle(trip.tripType.color)
-
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(trip.tripName)
-                                    .font(.title2.bold())
-                                    .foregroundStyle(.primary)
-
-                                Text(trip.destination)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                            }
-
+                            Text("Destination")
+                                .font(JohoFont.body)
+                                .foregroundStyle(JohoColors.black)
                             Spacer()
+                            Text(trip.destination)
+                                .font(JohoFont.body)
+                                .foregroundStyle(JohoColors.black)
+                                .bold()
                         }
 
-                        Divider()
+                        JohoDivider()
 
+                        // Duration
                         HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Duration")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-
-                                Text("\(trip.duration) days")
-                                    .font(.body.weight(.medium))
-                            }
-
+                            Text("Duration")
+                                .font(JohoFont.body)
+                                .foregroundStyle(JohoColors.black)
                             Spacer()
+                            Text("\(trip.duration) days")
+                                .font(JohoFont.monoMedium)
+                                .foregroundStyle(JohoColors.black)
+                        }
 
-                            VStack(alignment: .trailing, spacing: 4) {
-                                Text(trip.startDate.formatted(date: .abbreviated, time: .omitted))
-                                    .font(.caption)
-                                Text(trip.endDate.formatted(date: .abbreviated, time: .omitted))
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                        JohoDivider()
+
+                        // Date range
+                        VStack(spacing: JohoDimensions.spacingXS) {
+                            HStack {
+                                Text("Start")
+                                    .font(JohoFont.bodySmall)
+                                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                                Spacer()
+                                Text(trip.startDate.formatted(.dateTime.month(.abbreviated).day().year()))
+                                    .font(JohoFont.monoMedium)
+                                    .foregroundStyle(JohoColors.black)
                             }
+
+                            HStack {
+                                Text("End")
+                                    .font(JohoFont.bodySmall)
+                                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                                Spacer()
+                                Text(trip.endDate.formatted(.dateTime.month(.abbreviated).day().year()))
+                                    .font(JohoFont.monoMedium)
+                                    .foregroundStyle(JohoColors.black)
+                            }
+                        }
+
+                        JohoDivider()
+
+                        // Trip type
+                        HStack {
+                            Text("Type")
+                                .font(JohoFont.body)
+                                .foregroundStyle(JohoColors.black)
+                            Spacer()
+                            JohoPill(text: trip.tripType.rawValue, style: .whiteOnBlack, size: .small)
                         }
                     }
-                    .padding()
-                    .glassCard(cornerRadius: 16, material: .ultraThinMaterial)
+                }
+                .padding(.horizontal, JohoDimensions.spacingLG)
 
-                    // Summary Cards
-                    HStack(spacing: 16) {
-                        // Expenses Card
-                        Button {
-                            showExpenseList = true
-                        } label: {
-                            VStack(spacing: 12) {
-                                Image(systemName: "creditcard.fill")
-                                    .font(.title)
-                                    .foregroundStyle(.green)
-
-                                Text("\(expenseCount)")
-                                    .font(.title.bold())
-                                    .foregroundStyle(.primary)
-
-                                Text("Expenses")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-
-                                if expenseCount > 0 {
-                                    Text(String(format: "%.0f SEK", trip.totalExpenses))
-                                        .font(.caption.weight(.semibold))
-                                        .foregroundStyle(.green)
-                                }
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .glassCard(cornerRadius: 16, material: .ultraThinMaterial)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("Expenses: \(expenseCount) items")
-                        .accessibilityHint("Double tap to view expense list")
-
-                        // Mileage Card
-                        Button {
-                            showMileageList = true
-                        } label: {
-                            VStack(spacing: 12) {
-                                Image(systemName: "car.fill")
-                                    .font(.title)
-                                    .foregroundStyle(AppColors.accentBlue)
-
-                                Text("\(mileageCount)")
-                                    .font(.title.bold())
-                                    .foregroundStyle(.primary)
-
-                                Text("Mileage")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-
-                                if mileageCount > 0 {
-                                    Text(String(format: "%.1f km", totalMileage))
-                                        .font(.caption.weight(.semibold))
-                                        .foregroundStyle(AppColors.accentBlue)
-                                }
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .glassCard(cornerRadius: 16, material: .ultraThinMaterial)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel("Mileage: \(mileageCount) entries")
-                        .accessibilityHint("Double tap to view mileage log")
-                    }
-
-                    // Generate Report Button
+                // Stats Section
+                HStack(spacing: JohoDimensions.spacingMD) {
+                    // Expenses stat
                     Button {
-                        showTripReport = true
+                        showExpenseList = true
                     } label: {
-                        HStack {
-                            Image(systemName: "doc.text.fill")
-                                .font(.body)
-
-                            Text("Generate Report")
-                                .font(.body.weight(.semibold))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(AppColors.accentBlue)
-                        .foregroundStyle(.white)
-                        .cornerRadius(12)
+                        JohoStatBox(
+                            value: "\(expenseCount)",
+                            label: "Expenses",
+                            zone: .expenses
+                        )
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel("Generate trip report")
-                    .accessibilityHint("Double tap to create PDF report with expenses and mileage")
+                    .accessibilityLabel("Expenses: \(expenseCount) items")
+                    .accessibilityHint("Double tap to view expense list")
+
+                    // Mileage stat
+                    Button {
+                        showMileageList = true
+                    } label: {
+                        JohoStatBox(
+                            value: "\(mileageCount)",
+                            label: "Mileage",
+                            zone: .trips
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Mileage: \(mileageCount) entries")
+                    .accessibilityHint("Double tap to view mileage log")
                 }
-                .padding()
-            }
-            .slateBackground()
-            .standardNavigation(title: trip.tripName)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
+                .padding(.horizontal, JohoDimensions.spacingLG)
+
+                // Expense total if any
+                if expenseCount > 0 {
+                    JohoSectionBox(title: "Total Expenses", zone: .expenses, icon: "creditcard.fill") {
+                        Text(String(format: "%.0f SEK", trip.totalExpenses))
+                            .font(JohoFont.displaySmall)
+                            .foregroundStyle(JohoColors.black)
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingLG)
                 }
-            }
-            .sheet(isPresented: $showExpenseList) {
-                NavigationStack {
-                    ExpenseListView()
+
+                // Mileage total if any
+                if mileageCount > 0 {
+                    JohoSectionBox(title: "Total Distance", zone: .trips, icon: "car.fill") {
+                        Text(String(format: "%.1f km", totalMileage))
+                            .font(JohoFont.displaySmall)
+                            .foregroundStyle(JohoColors.black)
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingLG)
                 }
+
+                // Generate Report Button
+                Button {
+                    showTripReport = true
+                } label: {
+                    HStack(spacing: JohoDimensions.spacingSM) {
+                        Image(systemName: "doc.text.fill")
+                            .font(.system(size: 18, weight: .bold))
+
+                        Text("Generate Report")
+                            .font(JohoFont.headline)
+                    }
+                    .foregroundStyle(JohoColors.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(JohoDimensions.spacingMD)
+                    .background(JohoColors.black)
+                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .accessibilityLabel("Generate trip report")
+                .accessibilityHint("Double tap to create PDF report with expenses and mileage")
             }
-            // TODO: Restore MileageListView and TripReportPreviewView for database-driven architecture
-            // .sheet(isPresented: $showMileageList) {
-            //     NavigationStack {
-            //         MileageListView(trip: trip)
-            //     }
-            // }
-            // .sheet(isPresented: $showTripReport) {
-            //     TripReportPreviewView(trip: trip)
-            // }
+            .padding(.vertical, JohoDimensions.spacingLG)
+        }
+        .johoBackground()
+        .toolbar(.hidden, for: .navigationBar)
+        .safeAreaInset(edge: .top) {
+            // Inline close button (情報デザイン)
+            HStack {
+                Button { dismiss() } label: {
+                    JohoActionButton(icon: "xmark")
+                }
+                Spacer()
+            }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.top, JohoDimensions.spacingSM)
+            .background(JohoColors.background)
+        }
+        .sheet(isPresented: $showExpenseList) {
+            NavigationStack {
+                ExpenseListView()
+            }
+        }
+        // TODO: Restore MileageListView and TripReportPreviewView for database-driven architecture
+        // .sheet(isPresented: $showMileageList) {
+        //     NavigationStack {
+        //         MileageListView(trip: trip)
+        //     }
+        // }
+        // .sheet(isPresented: $showTripReport) {
+        //     TripReportPreviewView(trip: trip)
+        // }
     }
 }
 
-struct AddTripView: View {
-    @Environment(\.modelContext) private var modelContext
+// MARK: - 情報デザイン Trip Editor Sheet (Standalone - like Event editor)
+
+/// Standalone trip editor sheet matching the Event editor pattern
+/// Used when creating trips from the + menu
+struct JohoTripEditorSheet: View {
+    let selectedDate: Date
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
 
-    let initialStartDate: Date?
-    let initialEndDate: Date?
-
-    @State private var name = ""
-    @State private var destination = ""
+    @State private var name: String = ""
+    @State private var destination: String = ""
     @State private var startDate: Date
     @State private var endDate: Date
     @State private var tripType: TripType = .business
-    @State private var purpose = ""
 
-    init(initialStartDate: Date? = nil, initialEndDate: Date? = nil) {
-        self.initialStartDate = initialStartDate
-        self.initialEndDate = initialEndDate
+    // Trip accent color - ORANGE from design system
+    private let accentColor = Color(hex: "FED7AA")  // Orange for trips
 
-        // Pre-fill dates with context from calendar, or default to today
-        let start = initialStartDate ?? Date()
-        let end = initialEndDate ?? Calendar.iso8601.date(byAdding: .day, value: 7, to: start) ?? start
+    private var canSave: Bool {
+        !destination.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
 
-        _startDate = State(initialValue: start)
-        _endDate = State(initialValue: end)
+    init(selectedDate: Date = Date()) {
+        self.selectedDate = selectedDate
+        _startDate = State(initialValue: selectedDate)
+        _endDate = State(initialValue: Calendar.iso8601.date(byAdding: .day, value: 7, to: selectedDate) ?? selectedDate)
     }
 
     var body: some View {
-        Form {
-            Section("Trip Info") {
-                TextField("Trip Name", text: $name)
-                TextField("Destination", text: $destination)
-                TextField("Purpose (Optional)", text: $purpose)
-                    .textInputAutocapitalization(.sentences)
-            }
+        ScrollView {
+            VStack(spacing: JohoDimensions.spacingLG) {
+                // Header with Cancel/Save buttons (情報デザイン style)
+                HStack {
+                    Button { dismiss() } label: {
+                        Text("Cancel")
+                            .font(JohoFont.body)
+                            .foregroundStyle(JohoColors.black)
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+                            .padding(.vertical, JohoDimensions.spacingMD)
+                            .background(JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            )
+                    }
 
-            Section("Dates") {
-                DatePicker("Start Date", selection: $startDate, displayedComponents: .date)
-                DatePicker("End Date", selection: $endDate, displayedComponents: .date)
-            }
+                    Spacer()
 
-            Section("Type") {
-                Picker("Trip Type", selection: $tripType) {
-                    ForEach([TripType.business, TripType.personal, TripType.mixed], id: \.self) { type in
-                        Text(type.rawValue).tag(type)
+                    Button {
+                        saveTrip()
+                        dismiss()
+                    } label: {
+                        Text("Save")
+                            .font(JohoFont.body.bold())
+                            .foregroundStyle(canSave ? JohoColors.black : JohoColors.black.opacity(0.4))
+                            .padding(.horizontal, JohoDimensions.spacingLG)
+                            .padding(.vertical, JohoDimensions.spacingMD)
+                            .background(canSave ? accentColor : JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            )
+                    }
+                    .disabled(!canSave)
+                }
+                .padding(.top, JohoDimensions.spacingLG)
+
+                // Main content card
+                VStack(spacing: JohoDimensions.spacingLG) {
+                    // Title with type indicator (情報デザイン)
+                    HStack(spacing: JohoDimensions.spacingSM) {
+                        Circle()
+                            .fill(Color(hex: "ED8936"))  // Solid orange
+                            .frame(width: 20, height: 20)
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+                        Text("New Trip")
+                            .font(JohoFont.displaySmall)
+                            .foregroundStyle(JohoColors.black)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Trip icon - 情報デザイン compartmentalized style
+                    ZStack {
+                        Circle()
+                            .fill(accentColor)
+                            .frame(width: 64, height: 64)
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 2.5))
+
+                        Image(systemName: "airplane.departure")
+                            .font(.system(size: 26, weight: .bold))
+                            .foregroundStyle(JohoColors.black)
+                    }
+
+                    // Destination field
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "DESTINATION", style: .whiteOnBlack, size: .small)
+
+                        TextField("Where are you going?", text: $destination)
+                            .font(JohoFont.body)
+                            .foregroundStyle(JohoColors.black)
+                            .padding(JohoDimensions.spacingMD)
+                            .background(JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            )
+                    }
+
+                    // Trip name field (optional)
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "NAME", style: .whiteOnBlack, size: .small)
+
+                        TextField("Trip name (optional)", text: $name)
+                            .font(JohoFont.body)
+                            .foregroundStyle(JohoColors.black)
+                            .padding(JohoDimensions.spacingMD)
+                            .background(JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            )
+                    }
+
+                    // Date range - 情報デザイン styled date buttons
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "DATES", style: .whiteOnBlack, size: .small)
+
+                        HStack(spacing: JohoDimensions.spacingMD) {
+                            // Start date - 情報デザイン button style
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("FROM")
+                                    .font(.system(size: 10, weight: .black, design: .rounded))
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                                johoDateButton(date: $startDate)
+                            }
+
+                            Image(systemName: "arrow.right")
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundStyle(JohoColors.black)
+
+                            // End date - 情報デザイン button style
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("TO")
+                                    .font(.system(size: 10, weight: .black, design: .rounded))
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                                johoDateButton(date: $endDate, minDate: startDate)
+                            }
+                        }
+                    }
+
+                    // Trip type picker - 情報デザイン segmented style
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "TYPE", style: .whiteOnBlack, size: .small)
+
+                        HStack(spacing: 0) {
+                            ForEach(Array([TripType.business, TripType.personal, TripType.mixed].enumerated()), id: \.element) { index, type in
+                                Button {
+                                    tripType = type
+                                    HapticManager.selection()
+                                } label: {
+                                    Text(type.rawValue.uppercased())
+                                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                                        .foregroundStyle(tripType == type ? JohoColors.black : JohoColors.black.opacity(0.6))
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, JohoDimensions.spacingMD)
+                                        .background(tripType == type ? accentColor : JohoColors.white)
+                                }
+
+                                if index < 2 {
+                                    Rectangle()
+                                        .fill(JohoColors.black)
+                                        .frame(width: JohoDimensions.borderMedium)
+                                }
+                            }
+                        }
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                        )
                     }
                 }
-                .pickerStyle(.segmented)
+                .padding(JohoDimensions.spacingLG)
+                .background(JohoColors.white)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                )
             }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.bottom, JohoDimensions.spacingXL)
         }
-        .scrollContentBackground(.hidden)
-        .background(SlateColors.deepSlate)
-        .standardNavigation(title: "New Trip")
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") { dismiss() }
-            }
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
-                    let trip = TravelTrip(
-                        tripName: name.isEmpty ? "New Trip" : name,
-                        destination: destination,
-                        startDate: startDate,
-                        endDate: endDate,
-                        purpose: purpose.isEmpty ? nil : purpose,
-                        tripType: tripType
-                    )
-                    modelContext.insert(trip)
-                    try? modelContext.save()
-                    dismiss()
-                }
-                .disabled(destination.isEmpty)
-            }
+        .johoBackground()
+    }
+
+    // 情報デザイン date button with black border and high contrast
+    @ViewBuilder
+    private func johoDateButton(date: Binding<Date>, minDate: Date? = nil) -> some View {
+        let dateRange: PartialRangeFrom<Date> = (minDate ?? Date.distantPast)...
+
+        HStack(spacing: 8) {
+            Image(systemName: "calendar")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(JohoColors.black)
+
+            // Display the date as black text on white background for readability
+            Text(date.wrappedValue.formatted(.dateTime.month(.abbreviated).day().year()))
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoColors.black)
+
+            // Hidden date picker that opens on tap
+            DatePicker("", selection: date, in: dateRange, displayedComponents: .date)
+                .labelsHidden()
+                .datePickerStyle(.compact)
+                .scaleEffect(x: 0.01, y: 0.01)
+                .frame(width: 1, height: 1)
+                .clipped()
         }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
+        .background(JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+        )
+        .overlay(
+            // Invisible tap area that triggers the hidden DatePicker
+            DatePicker("", selection: date, in: dateRange, displayedComponents: .date)
+                .labelsHidden()
+                .datePickerStyle(.compact)
+                .colorMultiply(.clear)
+        )
+    }
+
+    private func saveTrip() {
+        let trimmedDestination = destination.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedDestination.isEmpty else { return }
+
+        let trip = TravelTrip(
+            tripName: name.isEmpty ? trimmedDestination : name,
+            destination: trimmedDestination,
+            startDate: startDate,
+            endDate: endDate,
+            purpose: nil,
+            tripType: tripType
+        )
+        modelContext.insert(trip)
+
+        do {
+            try modelContext.save()
+            HapticManager.notification(.success)
+        } catch {
+            Log.w("Failed to save trip: \(error.localizedDescription)")
+        }
+    }
+}
+
+// Legacy AddTripView for backwards compatibility
+struct AddTripView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        JohoTripEditorSheet()
     }
 }

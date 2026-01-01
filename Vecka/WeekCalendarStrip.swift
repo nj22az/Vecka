@@ -68,7 +68,7 @@ struct WeekCalendarStrip: View {
             }
             .frame(width: 44, height: 80)
             .background(dayBackground(isSelected: isSelected, isToday: isToday))
-            .cornerRadius(8)
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
         .buttonStyle(PlainButtonStyle())
         .accessibilityLabel(accessibilityLabel(for: dayInfo))
@@ -90,7 +90,7 @@ struct WeekCalendarStrip: View {
         let weekday = Calendar.iso8601.component(.weekday, from: date)
         return Text(Localization.weekdayShort(weekday))
             .font(.system(size: weekdayLabelSize, weight: .medium, design: .default))
-            .foregroundStyle(AppColors.textSecondary)
+            .foregroundStyle(JohoColors.black.opacity(0.7))
             .textCase(.uppercase)
             .tracking(0.3)
     }
@@ -101,9 +101,9 @@ struct WeekCalendarStrip: View {
         if isSelected {
             textColor = .white
         } else if isToday {
-            textColor = AppColors.accentBlue
+            textColor = JohoColors.cyan
         } else {
-            textColor = AppColors.textPrimary
+            textColor = JohoColors.black
         }
         
         return Text("\(dayInfo.dayNumber)")
@@ -130,7 +130,7 @@ struct WeekCalendarStrip: View {
     
     private func dayBackgroundFill(isSelected: Bool) -> AnyShapeStyle {
         if isSelected {
-            return AnyShapeStyle(Material.thinMaterial)
+            return AnyShapeStyle(JohoColors.cream)
         } else {
             return AnyShapeStyle(Color.clear)
         }
@@ -143,10 +143,10 @@ struct WeekCalendarStrip: View {
             // Check if date is a holiday using HolidayManager
             let normalized = Calendar.current.startOfDay(for: date)
             let isRedDay = (HolidayManager.shared.holidayCache[normalized] ?? []).contains(where: { $0.isRedDay })
-            let base = isRedDay ? Color.red : AppColors.colorForDay(date)
+            let base = isRedDay ? JohoColors.red : JohoColors.cyan
             return base.opacity(0.2)
         } else if isToday {
-            return AppColors.accentBlue.opacity(0.1)
+            return JohoColors.cyan.opacity(0.1)
         } else {
             return Color.clear
         }
@@ -154,7 +154,7 @@ struct WeekCalendarStrip: View {
     
     private func borderColor(isSelected: Bool, isToday: Bool) -> Color {
         if isSelected {
-            return AppColors.textSecondary.opacity(0.3)
+            return JohoColors.black.opacity(0.7).opacity(0.3)
         } else {
             return Color.clear
         }
@@ -167,7 +167,7 @@ struct WeekCalendarStrip: View {
         let isRedDay = (HolidayManager.shared.holidayCache[normalized] ?? []).contains(where: { $0.isRedDay })
         if isRedDay || weekday == 1 { return .red }
         if weekday == 7 { return .blue }
-        return AppColors.textPrimary
+        return JohoColors.black
     }
 
     // MARK: - Event Indicator
@@ -176,7 +176,7 @@ struct WeekCalendarStrip: View {
         // Show a subtle dot only when there is an event; no custom icons below days
         if let hasEvent = hasEvent, hasEvent(date) {
             Circle()
-                .fill(AppColors.accentBlue)
+                .fill(JohoColors.cyan)
                 .frame(width: 5, height: 5)
         } else {
             Spacer().frame(height: 5)

@@ -26,7 +26,70 @@ struct ModernCalendarView: View {
     @Query private var notes: [DailyNote]
     @Query private var expenses: [ExpenseItem]
     @Query private var trips: [TravelTrip]
+    @Query private var contacts: [Contact]  // For birthday indicators
+    @Query private var countdownEvents: [CountdownEvent]  // For event indicators
+    @Query(sort: \WorkspaceWidget.zIndex) private var workspaceWidgets: [WorkspaceWidget]
     private var holidayManager = HolidayManager.shared
+
+    /// Check if widgets need repacking (have gaps that could be collapsed)
+    private var widgetsNeedRepack: Bool {
+        guard workspaceWidgets.count > 1 else { return false }
+
+        // Get effective columns (use reasonable default for iPad)
+        let columns = 4
+
+        // Build occupied grid
+        var occupiedGrid: [[Bool]] = Array(
+            repeating: Array(repeating: false, count: columns),
+            count: 100
+        )
+
+        // Sort widgets like autoPackWidgets does
+        let sortedWidgets = workspaceWidgets.sorted { w1, w2 in
+            if w1.gridY != w2.gridY { return w1.gridY < w2.gridY }
+            return w1.gridX < w2.gridX
+        }
+
+        // Check if any widget would move during repack
+        for widget in sortedWidgets {
+            // Find where this widget WOULD go if repacked
+            var bestX = 0
+            var bestY = 0
+            outer: for y in 0..<100 {
+                for x in 0...(columns - widget.columns) {
+                    var canPlace = true
+                    for row in y..<min(y + widget.rows, 100) {
+                        for col in x..<min(x + widget.columns, columns) {
+                            if occupiedGrid[row][col] {
+                                canPlace = false
+                                break
+                            }
+                        }
+                        if !canPlace { break }
+                    }
+                    if canPlace {
+                        bestX = x
+                        bestY = y
+                        break outer
+                    }
+                }
+            }
+
+            // Would widget move?
+            if bestX != widget.gridX || bestY != widget.gridY {
+                return true
+            }
+
+            // Mark position as occupied for next widget
+            for row in bestY..<min(bestY + widget.rows, 100) {
+                for col in bestX..<min(bestX + widget.columns, columns) {
+                    occupiedGrid[row][col] = true
+                }
+            }
+        }
+
+        return false
+    }
 
     private var noteColors: [Date: String] {
         var dict: [Date: String] = [:]
@@ -41,6 +104,32 @@ struct ModernCalendarView: View {
 
     // Layout
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
+
+    /// Smart add button - show for Tools, Contacts, and Star page (when in month detail)
+    private var shouldShowAddButton: Bool {
+        switch sidebarSelection {
+        case .tools, .contacts:
+            return true
+        case .specialDays:
+            return isInSpecialDaysMonthDetail  // Only show when inside a month
+        default:
+            return false
+        }
+    }
+
+    /// Add button color - matches page accent colors (情報デザイン)
+    private var addButtonColor: Color {
+        switch sidebarSelection {
+        case .tools:
+            return JohoColors.cyan       // Tools = Cyan
+        case .contacts:
+            return JohoColors.pink       // Contacts = Pink
+        case .specialDays:
+            return JohoColors.yellow     // Star page = Yellow
+        default:
+            return JohoColors.cyan
+        }
+    }
 
     // HIG-compliant margins (Ref: Layout | Apple Developer Documentation)
     // iPhone (Compact): 16pt standard
@@ -67,6 +156,24 @@ struct ModernCalendarView: View {
     // Week Detail sheet (iPhone only)
     @State private var showWeekDetailSheet = false
 
+    // Context-aware add sheets (triggered from sidebar +)
+    @State private var showExpenseEditor = false
+    @State private var showTripEditor = false
+    @State private var showContactEditor = false
+    @State private var showObservanceEditor = false
+    @State private var showHolidayEditor = false
+    @State private var showSpecialDayMenu = false
+    @State private var showContactMenu = false
+    @State private var contactEditorMode: JohoContactEditorMode = .birthday
+    @State private var showCountdownEditor = false
+    @State private var countdownEditorName: String = ""
+    @State private var countdownEditorDate: Date = Date()
+    @State private var countdownEditorIsAnnual: Bool = false
+    @State private var countdownEditorType: CountdownType = .custom
+
+    // Star page month detail state (for smart + button)
+    @State private var isInSpecialDaysMonthDetail = false
+
     // NavigationSplitView column visibility
     // .automatic lets the system decide based on device orientation and size
     @State private var columnVisibility: NavigationSplitViewVisibility = .automatic
@@ -92,52 +199,35 @@ struct ModernCalendarView: View {
     private var detailView: some View {
         if let selection = sidebarSelection {
             switch selection {
-            case .summary:
+            case .tools:
                 NavigationStack {
-                    OverviewDashboardView()
-                        .background(SlateColors.deepSlate)
+                    DashboardView()
+                        .navigationBarHidden(true)
+                        .toolbar(.hidden, for: .navigationBar)
                 }
             case .calendar:
                 NavigationStack {
                     calendarDetailView
-                        .navigationTitle("")
-                        .navigationBarTitleDisplayMode(.inline)
-                        .toolbar { toolbarContent }
+                        .navigationBarHidden(true)
+                        .toolbar(.hidden, for: .navigationBar)
                 }
-            case .notes:
+            case .specialDays:
                 NavigationStack {
-                    NotesListView()
-                        .background(SlateColors.deepSlate)
-                }
-            case .holidays:
-                NavigationStack {
-                    HolidayListView()
-                        .background(SlateColors.deepSlate)
-                }
-            case .observances:
-                NavigationStack {
-                    ObservancesListView()
-                        .background(SlateColors.deepSlate)
+                    SpecialDaysListView(isInMonthDetail: $isInSpecialDaysMonthDetail)
+                        .johoBackground()
+                        .johoNavigation()
                 }
             case .contacts:
                 NavigationStack {
                     ContactListView()
-                        .background(SlateColors.deepSlate)
-                }
-            case .expenses:
-                NavigationStack {
-                    ExpenseListView()
-                        .background(SlateColors.deepSlate)
-                }
-            case .trips:
-                NavigationStack {
-                    TripListView()
-                        .background(SlateColors.deepSlate)
+                        .johoBackground()
+                        .johoNavigation()
                 }
             case .settings:
                 NavigationStack {
                     SettingsView()
-                        .background(SlateColors.deepSlate)
+                        .johoBackground()
+                        .johoNavigation()
                 }
             }
         } else {
@@ -145,7 +235,7 @@ struct ModernCalendarView: View {
                 Localization.selectItem,
                 systemImage: "sidebar.left"
             )
-            .background(SlateColors.deepSlate)
+            .johoBackground()
         }
     }
 
@@ -154,33 +244,45 @@ struct ModernCalendarView: View {
             if isPad {
                 // iPad: 3-column layout - Sidebar | Content | Week Detail
                 HStack(spacing: 0) {
-                    IconStripSidebar(selection: $sidebarSelection)
+                    IconStripSidebar(
+                        selection: $sidebarSelection,
+                        onAdd: shouldShowAddButton ? {
+                            // Context-aware add action based on current selection
+                            switch sidebarSelection {
+                            case .tools:
+                                NotificationCenter.default.post(name: .addWidgetRequested, object: nil)
+                            case .contacts:
+                                showContactMenu = true
+                            case .specialDays:
+                                showSpecialDayMenu = true  // Show add menu when in month detail
+                            default:
+                                break
+                            }
+                        } : nil,
+                        addButtonColor: addButtonColor,
+                        showRepackButton: sidebarSelection == .tools && widgetsNeedRepack,
+                        onRepack: {
+                            NotificationCenter.default.post(name: .repackWidgetsRequested, object: nil)
+                        },
+                        onExport: sidebarSelection == .calendar ? {
+                            pdfExportContext = .summary
+                            showPDFExport = true
+                        } : nil
+                    )
 
-                    // Main content area
+                    // Main content area (full width - week details moved to Star page)
                     detailView
                         .frame(maxWidth: .infinity)
-
-                    // Week Detail Panel (shown when week selected and on calendar view)
-                    if sidebarSelection == .calendar, let week = selectedWeek {
-                        WeekDetailPanel(
-                            week: week,
-                            selectedDay: selectedDay,
-                            notes: notesForWeek(week),
-                            holidays: holidaysForWeek(week),
-                            onDayTap: handleDayTap
-                        )
-                    }
                 }
-                .background(SlateColors.deepSlate)
+                .johoBackground()
             } else {
                 // iPhone: Tab bar navigation with full-width calendar
                 TabView(selection: $phoneTab) {
-                    // Calendar Tab
+                    // Calendar Tab - NO navigation bar, content goes to top
                     NavigationStack {
                         calendarDetailView
-                            .navigationTitle("")
-                            .navigationBarTitleDisplayMode(.inline)
-                            .toolbar { toolbarContent }
+                            .navigationBarHidden(true)
+                            .toolbar(.hidden, for: .navigationBar)
                     }
                     .tabItem {
                         Label(Localization.calendar, systemImage: "calendar")
@@ -205,7 +307,7 @@ struct ModernCalendarView: View {
                     }
                     .tag(PhoneTab.settings)
                 }
-                .tint(SlateColors.sidebarActiveBar)
+                .tint(JohoColors.cyan)
             }
         }
         // Week Detail Sheet (iPhone only - slides up when week tapped)
@@ -231,11 +333,12 @@ struct ModernCalendarView: View {
                             }
                         }
                     }
+                    .johoNavigation()
                 }
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(20)
-                .presentationBackground(SlateColors.mediumSlate)
+                .presentationBackground(JohoColors.background)
             }
         }
         .sheet(isPresented: $showDayNotesSheet, onDismiss: {
@@ -254,11 +357,129 @@ struct ModernCalendarView: View {
                 .presentationCornerRadius(20)
         }
         .sheet(isPresented: $showNoteEditor) {
+            JohoNoteEditorSheet(selectedDate: noteEditorDate)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(20)
+        }
+        // Context-aware add sheets (triggered from sidebar +)
+        .sheet(isPresented: $showExpenseEditor) {
+            ExpenseEntryView()
+                .presentationCornerRadius(20)
+        }
+        .sheet(isPresented: $showTripEditor) {
             NavigationStack {
-                DailyNotesView(selectedDate: noteEditorDate, isModal: true, startCreating: true)
+                AddTripView()
             }
-            .presentationDetents([.large])
-            .presentationDragIndicator(.visible)
+            .presentationCornerRadius(20)
+        }
+        .sheet(isPresented: $showContactEditor) {
+            JohoContactEditorSheet(mode: contactEditorMode)
+                .presentationCornerRadius(20)
+        }
+        .sheet(isPresented: $showContactMenu) {
+            JohoAddContactSheet(
+                onSelectContact: {
+                    showContactMenu = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        contactEditorMode = .contact
+                        showContactEditor = true
+                    }
+                },
+                onSelectBirthday: {
+                    showContactMenu = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        contactEditorMode = .birthday
+                        showContactEditor = true
+                    }
+                }
+            )
+        }
+        .sheet(isPresented: $showObservanceEditor) {
+            JohoSpecialDayEditorSheet(
+                mode: .create,
+                type: .observance,
+                defaultRegion: holidayRegions.primaryRegion ?? "SE",
+                onSave: { name, date, symbol, iconColor, notes, region in
+                    createObservance(name: name, date: date, symbol: symbol, iconColor: iconColor, notes: notes, region: region)
+                }
+            )
+            .presentationCornerRadius(20)
+        }
+        .sheet(isPresented: $showHolidayEditor) {
+            JohoSpecialDayEditorSheet(
+                mode: .create,
+                type: .holiday,
+                defaultRegion: holidayRegions.primaryRegion ?? "SE",
+                onSave: { name, date, symbol, iconColor, notes, region in
+                    createHoliday(name: name, date: date, symbol: symbol, iconColor: iconColor, notes: notes, region: region)
+                }
+            )
+            .presentationCornerRadius(20)
+        }
+        .sheet(isPresented: $showSpecialDayMenu) {
+            JohoAddSpecialDaySheet(
+                onSelectHoliday: {
+                    showSpecialDayMenu = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        showHolidayEditor = true
+                    }
+                },
+                onSelectObservance: {
+                    showSpecialDayMenu = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        showObservanceEditor = true
+                    }
+                },
+                onSelectEvent: {
+                    showSpecialDayMenu = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        showCountdownEditor = true
+                    }
+                },
+                onSelectBirthday: {
+                    showSpecialDayMenu = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        showContactEditor = true
+                    }
+                },
+                onSelectNote: {
+                    showSpecialDayMenu = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        showNoteEditor = true
+                    }
+                },
+                onSelectTrip: {
+                    showSpecialDayMenu = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        showTripEditor = true
+                    }
+                },
+                onSelectExpense: {
+                    showSpecialDayMenu = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        showExpenseEditor = true
+                    }
+                }
+            )
+            // Note: Presentation styling is now controlled by the sheet itself
+            // for proper 情報デザイン compliance (squircle, clear background)
+        }
+        .sheet(isPresented: $showCountdownEditor) {
+            NavigationStack {
+                CustomCountdownDialog(
+                    name: $countdownEditorName,
+                    date: $countdownEditorDate,
+                    isAnnual: $countdownEditorIsAnnual,
+                    selectedCountdown: $countdownEditorType,
+                    onSave: {
+                        // Reset for next time
+                        countdownEditorName = ""
+                        countdownEditorDate = Date()
+                        countdownEditorIsAnnual = false
+                    }
+                )
+            }
             .presentationCornerRadius(20)
         }
         .onAppear {
@@ -274,6 +495,14 @@ struct ModernCalendarView: View {
             updateMonthFromDate(from: newDate)
         }
         .onChange(of: notes) { _, _ in
+            updateMonthFromDate()
+        }
+        .onChange(of: contacts) { _, _ in
+            // Force calendar grid to update when contacts change
+            updateMonthFromDate()
+        }
+        .onChange(of: countdownEvents) { _, _ in
+            // Force calendar grid to update when events change
             updateMonthFromDate()
         }
         .onChange(of: displayMonth) { _, newMonth in
@@ -298,20 +527,44 @@ struct ModernCalendarView: View {
 
     private var calendarDetailView: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            VStack(spacing: isPad ? 24 : 16) {
-                // Stacked Date Header with Unified Menu Button
-                dateHeaderWithMenu
-                    .padding(.horizontal, screenMargin)
-
-                // Calendar Grid
-                CalendarGridView(
-                    month: currentMonth,
-                    selectedWeek: selectedWeek,
-                    selectedDay: selectedDay,
-                    onDayTap: handleDayTap,
-                    onWeekTap: handleWeekTap,
-                    hasDataForDay: hasDataForDay
+            VStack(spacing: JohoDimensions.spacingMD) {
+                // TODAY Banner - at the VERY TOP (no dead space)
+                JohoTodayBanner(
+                    date: Date(),
+                    weekNumber: Calendar.iso8601.component(.weekOfYear, from: Date()),
+                    onTapToday: jumpToToday
                 )
+                .padding(.horizontal, screenMargin)
+
+                // Month Selector + Action Menu
+                HStack {
+                    JohoMonthSelector(
+                        monthName: monthTitle,
+                        year: currentMonth.year,
+                        onPrevious: navigateToPreviousMonth,
+                        onNext: navigateToNextMonth,
+                        onTap: { showMonthPicker = true }
+                    )
+
+                    Spacer()
+
+                    // Action menu button
+                    actionMenuButton
+                }
+                .padding(.horizontal, screenMargin)
+
+                // Calendar Grid in WHITE container with thick black border
+                JohoCalendarContainer {
+                    CalendarGridView(
+                        month: currentMonth,
+                        selectedWeek: selectedWeek,
+                        selectedDay: selectedDay,
+                        onDayTap: handleDayTap,
+                        onWeekTap: handleWeekTap,
+                        hasDataForDay: hasDataForDay
+                    )
+                    .id("\(currentMonth.month)-\(currentMonth.year)-\(contacts.count)-\(notes.count)-\(countdownEvents.count)")
+                }
                 .padding(.horizontal, screenMargin)
                 .gesture(
                     DragGesture(minimumDistance: 30)
@@ -343,67 +596,20 @@ struct ModernCalendarView: View {
                     .padding(.horizontal, screenMargin)
                 }
             }
-            .padding(.vertical, Spacing.medium)
+            .padding(.top, JohoDimensions.spacingSM) // Small top padding after safe area
+            .padding(.bottom, JohoDimensions.spacingLG)
+            .safeAreaPadding(.top) // Respect status bar
         }
         .scrollBounceBehavior(.basedOnSize)
-        .background(SlateColors.deepSlate)
+        .johoBackground()
     }
-    
-    // MARK: - Stacked Date Header with Unified Menu
-    
-    private var dateHeaderWithMenu: some View {
-        let displayDate = selectedDay?.date ?? selectedDate
-        let dayNumber = Calendar.iso8601.component(.day, from: displayDate)
 
-        return HStack(alignment: .center, spacing: 12) {
-            // Stacked Date Display (Year, Month, Day)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(String(currentMonth.year))
-                    .font(.caption)
-                    .foregroundStyle(SlateColors.secondaryText)
+    // MARK: - Action Menu Button
 
-                Text(monthTitle)
-                    .font(.headline.weight(.semibold))
-                    .foregroundStyle(SlateColors.primaryText)
-
-                Text(String(dayNumber))
-                    .font(.title2.weight(.bold))
-                    .foregroundStyle(SlateColors.primaryText)
-            }
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel("\(monthTitle) \(dayNumber), \(currentMonth.year)")
-
-            Spacer()
-
-            // Unified circular menu button
-            unifiedMenuButton
-        }
-    }
-    
-    // MARK: - Unified Menu Button
-    
-    private var unifiedMenuButton: some View {
+    private var actionMenuButton: some View {
         Menu {
-            // Quick Actions
-            Section {
-                Button(action: openNotesEditor) {
-                    Label(Localization.addNote, systemImage: "note.text.badge.plus")
-                }
-            }
-
-            // Navigation
-            Section {
-                Button(action: { showMonthPicker = true }) {
-                    Label(Localization.goToMonthYear, systemImage: "calendar")
-                }
-                Button(action: jumpToToday) {
-                    Label(Localization.today, systemImage: "scope")
-                }
-            }
-
-            // Export
-            Section {
-                Menu {
+            // Export options
+            Menu {
                     Button {
                         pdfExportContext = .day(selectedDay?.date ?? selectedDate)
                         showPDFExport = true
@@ -425,18 +631,11 @@ struct ModernCalendarView: View {
                     } label: {
                         Label(Localization.exportMonth, systemImage: "calendar.badge.clock")
                     }
-                } label: {
-                    Label(Localization.export, systemImage: "square.and.arrow.up")
-                }
+            } label: {
+                Label(Localization.export, systemImage: "square.and.arrow.up")
             }
         } label: {
-            // Squircle plus button (continuous corner radius)
-            Image(systemName: "plus")
-                .font(Typography.labelLarge)
-                .foregroundStyle(SlateColors.primaryText)
-                .frame(width: 40, height: 40)
-                .background(SlateColors.lightSlate)
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            JohoActionButton(icon: "square.and.arrow.up")
         }
         .accessibilityLabel(Localization.menu)
         .sheet(isPresented: $showMonthPicker) {
@@ -450,6 +649,7 @@ struct ModernCalendarView: View {
             .presentationDetents([.medium, .large])
         }
     }
+    
 
     // MARK: - Toolbar
 
@@ -478,22 +678,24 @@ struct ModernCalendarView: View {
         Button(action: { showMonthPicker = true }) {
             HStack(spacing: 6) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(String(currentMonth.year))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    Text(verbatim: "\(currentMonth.year)")
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(JohoColors.white.opacity(0.6))
 
                     Text(monthTitle)
-                        .font(.headline.weight(.semibold))
-                        .foregroundStyle(.primary)
+                        .font(JohoFont.headline)
+                        .foregroundStyle(JohoColors.white)
                 }
 
                 Image(systemName: "chevron.down")
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.tertiary)
+                    .font(JohoFont.labelSmall)
+                    .foregroundStyle(JohoColors.white.opacity(0.7))
             }
-            .padding(.horizontal, Spacing.medium)
-            .padding(.vertical, Spacing.small)
-            .background(.ultraThinMaterial, in: Capsule())
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .background(JohoColors.black)
+            .clipShape(Capsule())
+            .overlay(Capsule().stroke(JohoColors.white, lineWidth: 1.5))
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(monthTitle) \(currentMonth.year)")
@@ -536,16 +738,55 @@ struct ModernCalendarView: View {
         }
     }
 
-    private func hasDataForDay(_ date: Date) -> (hasNotes: Bool, hasExpenses: Bool, hasTrips: Bool) {
+    /// 情報デザイン: Check all special day types for calendar indicators
+    private func hasDataForDay(_ date: Date) -> DayDataCheck {
         let day = Calendar.iso8601.startOfDay(for: date)
-        let hasNotes = notes.contains { $0.day == day }
-        let hasExpenses = expenses.contains { Calendar.iso8601.startOfDay(for: $0.date) == day }
-        let hasTrips = trips.contains { trip in
+
+        var check = DayDataCheck()
+
+        // Check holidays and observances from cache
+        if let cachedHolidays = holidayManager.holidayCache[day] {
+            for holiday in cachedHolidays {
+                if holiday.isRedDay {
+                    check.hasHoliday = true
+                } else {
+                    check.hasObservance = true
+                }
+            }
+        }
+
+        // Check notes
+        check.hasNote = notes.contains { $0.day == day }
+
+        // Check expenses
+        check.hasExpense = expenses.contains { Calendar.iso8601.startOfDay(for: $0.date) == day }
+
+        // Check trips (day falls within trip range)
+        check.hasTrip = trips.contains { trip in
             let tripStart = Calendar.iso8601.startOfDay(for: trip.startDate)
             let tripEnd = Calendar.iso8601.startOfDay(for: trip.endDate)
             return day >= tripStart && day <= tripEnd
         }
-        return (hasNotes, hasExpenses, hasTrips)
+
+        // Check birthdays from contacts (match month/day regardless of year)
+        let calendar = Calendar.iso8601
+        let month = calendar.component(.month, from: day)
+        let dayOfMonth = calendar.component(.day, from: day)
+
+        check.hasBirthday = contacts.contains { contact in
+            guard let birthday = contact.birthday else { return false }
+            let bMonth = calendar.component(.month, from: birthday)
+            let bDay = calendar.component(.day, from: birthday)
+            return bMonth == month && bDay == dayOfMonth
+        }
+
+        // Check countdown events (match the event date)
+        check.hasEvent = countdownEvents.contains { event in
+            let eventDay = calendar.startOfDay(for: event.targetDate)
+            return eventDay == day
+        }
+
+        return check
     }
 
     private var pinnedNotesForDashboard: [DailyNote] {
@@ -572,13 +813,13 @@ struct ModernCalendarView: View {
 
     private func color(for colorName: String) -> Color {
         switch colorName {
-        case "red": return .red
-        case "blue": return .blue
-        case "green": return .green
-        case "orange": return .orange
-        case "purple": return .purple
-        case "yellow": return .yellow
-        default: return AppColors.accentBlue
+        case "red": return JohoColors.pink
+        case "blue": return JohoColors.cyan
+        case "green": return JohoColors.green
+        case "orange": return JohoColors.orange
+        case "purple": return JohoColors.pink
+        case "yellow": return JohoColors.yellow
+        default: return JohoColors.cyan
         }
     }
 
@@ -752,6 +993,70 @@ struct ModernCalendarView: View {
         }) {
             selectedWeek = week
             selectedDay = week.days.first(where: { Calendar.iso8601.isDate($0.date, inSameDayAs: dateToUse) })
+        }
+    }
+
+    // MARK: - Observance Creation (sidebar +)
+
+    private func createObservance(name: String, date: Date, symbol: String, iconColor: String?, notes: String?, region: String) {
+        let calendar = Calendar.current
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
+
+        let rule = HolidayRule(
+            name: name,
+            region: region.isEmpty ? (holidayRegions.primaryRegion ?? "SE") : region,
+            isRedDay: false,
+            titleOverride: name,
+            symbolName: symbol,
+            iconColor: iconColor,
+            userModifiedAt: Date(),
+            notes: notes,
+            type: .fixed,
+            month: month,
+            day: day
+        )
+
+        modelContext.insert(rule)
+        do {
+            try modelContext.save()
+            holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: selectedYear)
+            HapticManager.notification(.success)
+        } catch {
+            Log.w("Failed to create observance: \(error.localizedDescription)")
+            HapticManager.notification(.error)
+        }
+    }
+
+    // MARK: - Holiday Creation (sidebar +)
+
+    private func createHoliday(name: String, date: Date, symbol: String, iconColor: String?, notes: String?, region: String) {
+        let calendar = Calendar.current
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
+
+        let rule = HolidayRule(
+            name: name,
+            region: region.isEmpty ? (holidayRegions.primaryRegion ?? "SE") : region,
+            isRedDay: true,  // Red day = holiday
+            titleOverride: name,
+            symbolName: symbol,
+            iconColor: iconColor,
+            userModifiedAt: Date(),
+            notes: notes,
+            type: .fixed,
+            month: month,
+            day: day
+        )
+
+        modelContext.insert(rule)
+        do {
+            try modelContext.save()
+            holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: selectedYear)
+            HapticManager.notification(.success)
+        } catch {
+            Log.w("Failed to create holiday: \(error.localizedDescription)")
+            HapticManager.notification(.error)
         }
     }
 

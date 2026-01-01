@@ -1,0 +1,1713 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Onboarding | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "onboarding",
+        "iOS",
+        "iPadOS",
+        "macOS",
+        "tvOS",
+        "visionOS",
+        "watchOS",
+        "Apple Developer",
+        "Human Interface Guidelines",
+        "app design",
+        "user experience",
+        "launch experience",
+        "tutorial",
+        "TipKit"
+      ],
+      "summary": "Apple Human Interface Guidelines documentation page covering onboarding best practices for apps and games across all Apple platforms. The document provides guidance on creating fast, fun, and optional onboarding experiences that teach through interactivity rather than instruction.",
+      "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+      "legalLinks": [
+        "Terms of Use",
+        "Privacy Policy",
+        "Agreements and Guidelines"
+      ],
+      "feedbackMethod": "To submit feedback on documentation, visit Feedback Assistant."
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": null,
+          "height": null,
+          "unit": "px"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "white (light mode) / dark gray (dark mode)",
+        "layout": {
+          "type": "multi-column",
+          "columns": 3,
+          "margins": {
+            "top": "standard",
+            "right": "standard",
+            "bottom": "standard",
+            "left": "standard"
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation-primary",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": "full",
+              "height": "approximately 50px"
+            },
+            "zIndex": 100,
+            "content": {
+              "navigationType": "primary-header",
+              "items": [
+                {
+                  "text": "Apple Developer (with Apple logo)",
+                  "type": "logo-link",
+                  "position": "left"
+                },
+                {
+                  "text": "News",
+                  "type": "link"
+                },
+                {
+                  "text": "Discover",
+                  "type": "link"
+                },
+                {
+                  "text": "Design",
+                  "type": "link"
+                },
+                {
+                  "text": "Develop",
+                  "type": "link"
+                },
+                {
+                  "text": "Distribute",
+                  "type": "link"
+                },
+                {
+                  "text": "Support",
+                  "type": "link"
+                },
+                {
+                  "text": "Account",
+                  "type": "link"
+                },
+                {
+                  "text": "Search icon",
+                  "type": "icon-button",
+                  "position": "right"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-header-navigation-secondary",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 50,
+              "width": "full",
+              "height": "approximately 40px"
+            },
+            "zIndex": 99,
+            "content": {
+              "navigationType": "secondary-header",
+              "sectionLabel": "Design",
+              "items": [
+                {
+                  "text": "Overview",
+                  "type": "link"
+                },
+                {
+                  "text": "What's New",
+                  "type": "link"
+                },
+                {
+                  "text": "Get Started",
+                  "type": "link"
+                },
+                {
+                  "text": "Guidelines",
+                  "type": "link"
+                },
+                {
+                  "text": "Resources",
+                  "type": "link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-breadcrumb",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": "left-margin",
+              "y": "below-secondary-nav",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 50,
+            "content": {
+              "navigationType": "breadcrumb",
+              "items": [
+                {
+                  "text": "Developer",
+                  "type": "link"
+                },
+                {
+                  "text": "Documentation",
+                  "type": "link"
+                }
+              ],
+              "separator": ">"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-language-selector",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": "right-side",
+              "y": "below-secondary-nav",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 50,
+            "content": {
+              "type": "language-selector",
+              "currentLanguage": "English"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "content-start",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 1,
+              "text": "Onboarding",
+              "fontStyle": "large-bold-title"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-subtitle",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-main-heading",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Onboarding can help people get a quick start using your app or game.",
+              "fontStyle": "subtitle-gray"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-heading",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-hero-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-subtitle",
+              "width": "approximately 400px",
+              "height": "approximately 200px"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "A stylized 3D illustration of an open cardboard box with an orange/amber color scheme. The box appears to be a shipping or moving box with folding flaps open at the top. The box has a warm orange-brown gradient coloring and casts a subtle shadow beneath it. The illustration style is clean, modern, and minimalist with soft shadows and rounded edges characteristic of Apple's design language.",
+              "subjects": [
+                "open cardboard box",
+                "packaging",
+                "unboxing metaphor"
+              ],
+              "composition": "Centered single object against neutral background, box positioned at slight angle for dimensional effect",
+              "colorPalette": [
+                "orange (#FF9500 approximate)",
+                "amber/brown gradient",
+                "neutral gray background",
+                "soft shadow"
+              ],
+              "mood": "Welcoming, fresh start, discovery",
+              "technicalDetails": "3D rendered illustration in Apple's contemporary design style",
+              "textInImage": [],
+              "contextualRelevance": "The open box metaphor represents the 'unboxing' experience of first launching an app or game - the moment of discovery and getting started. It visually reinforces the onboarding concept of introducing users to something new."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-heading",
+                "relationshipType": "illustrates"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-intro-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-hero-image",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Ideally, people can understand your app or game simply by experiencing it, but if onboarding is necessary, design a flow that's fast, fun, and optional. When available, onboarding occurs after launching is complete — it isn't part of the launch experience.",
+              "fontStyle": "body",
+              "internalLinks": [
+                {
+                  "text": "launching",
+                  "target": "Launching",
+                  "context": "Link to the Launching documentation page"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practices-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-intro-paragraph",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Best practices",
+              "fontStyle": "section-heading"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-best-practices-heading",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Teach through interactivity. People tend to grasp and retain information better when they can actually perform the task they're learning about instead of just viewing instructional material. As much as possible, provide an interactive onboarding experience where people can safely test an action, discover a feature, or try out a game mechanic.",
+              "fontStyle": "body",
+              "boldLeadIn": "Teach through interactivity."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-best-practices-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-best-practice-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-best-practice-1",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Consider providing a collection of context-specific tips instead of a single onboarding flow. Integrating contextually relevant tips into your experience can help people learn about their current task while they make progress in your app or game. A context-specific tip can also help people learn better because it lets them concentrate on a single action or task before encountering new information. When you have instructional content that refers to a specific area of the interface, display these instructions near that area. For developer guidance, see TipKit.",
+              "fontStyle": "body",
+              "boldLeadIn": "Consider providing a collection of context-specific tips instead of a single onboarding flow.",
+              "internalLinks": [
+                {
+                  "text": "TipKit",
+                  "target": "TipKit framework documentation",
+                  "context": "Link to Apple's TipKit developer framework"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-best-practices-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-best-practice-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-best-practice-2",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "If you need to present a prerequisite onboarding flow, design a brief, enjoyable experience that doesn't require people to memorize a lot of information. When onboarding is quick and entertaining, people are more likely to complete it. In contrast, if you try to teach too much, people can feel overwhelmed and may be less likely to remember what they learned.",
+              "fontStyle": "body",
+              "boldLeadIn": "If you need to present a prerequisite onboarding flow, design a brief, enjoyable experience that doesn't require people to memorize a lot of information."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-best-practices-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-best-practice-4",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-best-practice-3",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "If it makes sense to offer a separate tutorial, consider making it optional. If you let people skip the tutorial when they first launch your app or game, don't present it again on subsequent launches, but make sure it's easy for people to find if they want to view it later. For example, you could make the tutorial available in a help, account, or settings area within your app or game.",
+              "fontStyle": "body",
+              "boldLeadIn": "If it makes sense to offer a separate tutorial, consider making it optional."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-best-practices-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-best-practice-5",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-best-practice-4",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Keep onboarding content focused on the experience you provide. People enter your onboarding flow to learn about your app or game; they don't need to learn how to use the system or the device.",
+              "fontStyle": "body",
+              "boldLeadIn": "Keep onboarding content focused on the experience you provide."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-best-practices-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-additional-content-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-best-practice-5",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Additional content",
+              "fontStyle": "section-heading"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-additional-content-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-additional-content-heading",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Briefly display a splash screen if necessary. If you need to include a splash screen, design a beautiful graphic that communicates succinctly. Aim to display your splash screen just long enough for people to absorb the information at a glance without feeling that it's delaying their experience.",
+              "fontStyle": "body",
+              "boldLeadIn": "Briefly display a splash screen if necessary."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-additional-content-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-additional-content-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-additional-content-1",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Don't let large downloads hinder onboarding. People want to start using your app or game immediately after first launching it, whether they participate in an onboarding flow or skip it. Consider including enough media and other content in your software package to prevent people from having to wait for downloads to complete before they can start interacting with your app or game. For guidance, see Launching.",
+              "fontStyle": "body",
+              "boldLeadIn": "Don't let large downloads hinder onboarding.",
+              "internalLinks": [
+                {
+                  "text": "Launching",
+                  "target": "Launching",
+                  "context": "Link to the Launching documentation page"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-additional-content-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-additional-content-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-additional-content-2",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Avoid displaying licensing details within your onboarding flow. Let the App Store display agreements and disclaimers so people can read them before downloading your app or game. If you must include these items within the onboarding flow, integrate them in a balanced way that doesn't disrupt the experience.",
+              "fontStyle": "body",
+              "boldLeadIn": "Avoid displaying licensing details within your onboarding flow."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-additional-content-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-additional-requests-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-additional-content-3",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Additional requests",
+              "fontStyle": "section-heading"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-additional-requests-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-additional-requests-heading",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Postpone nonessential setup flows or customization steps. Provide reasonable default settings so most people can immediately start interacting with your app or game without performing additional configuration.",
+              "fontStyle": "body",
+              "boldLeadIn": "Postpone nonessential setup flows or customization steps."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-additional-requests-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-additional-requests-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-additional-requests-1",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "If your app or game needs access to private data or resources before it can function, consider integrating the permission request into your onboarding flow. In this scenario, making the request during your onboarding flow gives you the opportunity to show people why your app or game needs their permission and the benefits of granting it. Otherwise, present a permission request when people first access the specific function that relies on private data or resources. For guidance, see Requesting permission.",
+              "fontStyle": "body",
+              "boldLeadIn": "If your app or game needs access to private data or resources before it can function, consider integrating the permission request into your onboarding flow.",
+              "internalLinks": [
+                {
+                  "text": "Requesting permission",
+                  "target": "Requesting permission",
+                  "context": "Link to the Requesting permission documentation page"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-additional-requests-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-additional-requests-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-additional-requests-2",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Prefer letting people experience your app or game before prompting them for ratings or purchases. People can be more likely to respond positively to such requests when they've had a chance to become engaged with your app or game.",
+              "fontStyle": "body",
+              "boldLeadIn": "Prefer letting people experience your app or game before prompting them for ratings or purchases."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-additional-requests-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-platform-considerations-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-additional-requests-3",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Platform considerations",
+              "fontStyle": "section-heading"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-considerations-content",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-platform-considerations-heading",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "No additional considerations for iOS, iPadOS, macOS, tvOS, visionOS, or watchOS.",
+              "fontStyle": "body-italic-or-muted"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-platform-considerations-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-resources-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-platform-considerations-content",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Resources",
+              "fontStyle": "section-heading"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-related-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-resources-heading",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 3,
+              "text": "Related",
+              "fontStyle": "subsection-heading"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-resources-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-resources-related-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-resources-related-heading",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Launching",
+                  "type": "link",
+                  "target": "Launching documentation page"
+                },
+                {
+                  "text": "Feedback",
+                  "type": "link",
+                  "target": "Feedback documentation page"
+                },
+                {
+                  "text": "Offering help",
+                  "type": "link",
+                  "target": "Offering help documentation page"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-resources-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-resources-videos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-resources-related-links",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 3,
+              "text": "Videos",
+              "fontStyle": "subsection-heading"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-resources-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-video-card-1",
+            "elementType": "other",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-resources-videos-heading",
+              "width": "card-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "video-card",
+              "title": "Discoverable design",
+              "description": "WWDC video about making app features discoverable",
+              "thumbnailDescription": "Video thumbnail card"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-resources-videos-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-video-card-2",
+            "elementType": "other",
+            "boundingBox": {
+              "x": "center-column",
+              "y": "below-resources-videos-heading",
+              "width": "card-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "video-card",
+              "title": "Designing Award Winning Apps and Games",
+              "description": "WWDC video about award-winning design principles",
+              "thumbnailDescription": "Video thumbnail card"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-resources-videos-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-video-card-3",
+            "elementType": "other",
+            "boundingBox": {
+              "x": "right-position",
+              "y": "below-resources-videos-heading",
+              "width": "card-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "video-card",
+              "title": "Love at First Launch",
+              "description": "WWDC video about creating great first-launch experiences",
+              "thumbnailDescription": "Video thumbnail card"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-resources-videos-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-changelog-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-video-cards",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Change log",
+              "fontStyle": "section-heading"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-changelog-table",
+            "elementType": "table",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-changelog-heading",
+              "width": "main-content-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "tableTitle": "Change log",
+              "columnCount": 2,
+              "rowCount": 3,
+              "headers": [
+                "Date",
+                "Changes"
+              ],
+              "rows": [
+                {
+                  "rowIndex": 0,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "Date",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Changes",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 1,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "June 10, 2024",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Clarified different approaches to onboarding and added a guideline on displaying a splash screen.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 2,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "June 21, 2023",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Updated to include guidance for visionOS.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tableSummary": "Document revision history showing two updates: June 2024 added splash screen guidance and clarified onboarding approaches; June 2023 added visionOS platform support."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-changelog-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-right-sidebar-supported-platforms",
+            "elementType": "other",
+            "boundingBox": {
+              "x": "right-sidebar",
+              "y": "content-start",
+              "width": "sidebar-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "sidebar-section",
+              "title": "Supported platforms",
+              "platformIcons": [
+                {
+                  "platform": "iOS",
+                  "icon": "iPhone silhouette"
+                },
+                {
+                  "platform": "iPadOS",
+                  "icon": "iPad silhouette"
+                },
+                {
+                  "platform": "macOS",
+                  "icon": "Mac/laptop silhouette"
+                },
+                {
+                  "platform": "tvOS",
+                  "icon": "Apple TV silhouette"
+                },
+                {
+                  "platform": "visionOS",
+                  "icon": "Vision Pro silhouette"
+                },
+                {
+                  "platform": "watchOS",
+                  "icon": "Apple Watch silhouette"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-right-sidebar-toc",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": "right-sidebar",
+              "y": "below-supported-platforms",
+              "width": "sidebar-width",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "navigationType": "table-of-contents",
+              "items": [
+                {
+                  "text": "Onboarding",
+                  "level": 1,
+                  "target": "#onboarding"
+                },
+                {
+                  "text": "Best practices",
+                  "level": 2,
+                  "target": "#best-practices"
+                },
+                {
+                  "text": "Additional content",
+                  "level": 2,
+                  "target": "#additional-content"
+                },
+                {
+                  "text": "Additional requests",
+                  "level": 2,
+                  "target": "#additional-requests"
+                },
+                {
+                  "text": "Platform considerations",
+                  "level": 2,
+                  "target": "#platform-considerations"
+                },
+                {
+                  "text": "Resources",
+                  "level": 2,
+                  "target": "#resources"
+                },
+                {
+                  "text": "Change log",
+                  "level": 2,
+                  "target": "#change-log"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer",
+            "elementType": "other",
+            "boundingBox": {
+              "x": 0,
+              "y": "page-bottom",
+              "width": "full",
+              "height": "approximately 300px"
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "site-footer",
+              "sections": [
+                {
+                  "heading": "Platforms",
+                  "items": [
+                    "iOS",
+                    "iPadOS",
+                    "macOS",
+                    "tvOS",
+                    "visionOS",
+                    "watchOS",
+                    "Swift",
+                    "SwiftUI",
+                    "Swift Playground",
+                    "TestFlight",
+                    "Xcode",
+                    "Xcode Cloud",
+                    "SF Symbols"
+                  ]
+                },
+                {
+                  "heading": "Topics & Technologies",
+                  "items": [
+                    "Accessibility",
+                    "Accessories",
+                    "App Extension",
+                    "App Store",
+                    "Audio & Video",
+                    "Augmented Reality",
+                    "Design",
+                    "Distribution",
+                    "Education",
+                    "Fonts",
+                    "Games",
+                    "Health & Fitness",
+                    "In-App Purchase",
+                    "Localization",
+                    "Maps & Location",
+                    "Machine Learning & AI",
+                    "Open Source",
+                    "Security",
+                    "Safari & Web"
+                  ]
+                },
+                {
+                  "heading": "Resources",
+                  "items": [
+                    "Documentation",
+                    "Tutorials",
+                    "Downloads",
+                    "Forums",
+                    "Videos"
+                  ]
+                },
+                {
+                  "heading": "Support",
+                  "items": [
+                    "Support Articles",
+                    "Contact Us",
+                    "Bug Reporting",
+                    "System Status"
+                  ]
+                },
+                {
+                  "heading": "Account",
+                  "items": [
+                    "Apple Developer",
+                    "App Store Connect",
+                    "Certificates, IDs, & Profiles",
+                    "Feedback Assistant"
+                  ]
+                },
+                {
+                  "heading": "Programs",
+                  "items": [
+                    "Apple Developer Program",
+                    "Apple Developer Enterprise Program",
+                    "App Store Small Business Program",
+                    "MFi Program",
+                    "News Partner Program",
+                    "Video Partner Program",
+                    "Security Bounty Program",
+                    "Security Research Device Program"
+                  ]
+                },
+                {
+                  "heading": "Events",
+                  "items": [
+                    "Meet with Apple",
+                    "Apple Developer Centers",
+                    "App Store Awards",
+                    "Apple Design Awards",
+                    "Apple Developer Academies",
+                    "WWDC"
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-theme-toggle",
+            "elementType": "other",
+            "boundingBox": {
+              "x": "bottom-right",
+              "y": "page-bottom",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 100,
+            "content": {
+              "type": "theme-toggle",
+              "options": [
+                "Light",
+                "Dark",
+                "Auto"
+              ],
+              "description": "Toggle buttons for switching between light mode, dark mode, and auto (system) theme"
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation-primary",
+          "page1-header-navigation-secondary",
+          "page1-breadcrumb",
+          "page1-main-heading",
+          "page1-subtitle",
+          "page1-hero-image",
+          "page1-intro-paragraph",
+          "page1-best-practices-heading",
+          "page1-best-practice-1",
+          "page1-best-practice-2",
+          "page1-best-practice-3",
+          "page1-best-practice-4",
+          "page1-best-practice-5",
+          "page1-additional-content-heading",
+          "page1-additional-content-1",
+          "page1-additional-content-2",
+          "page1-additional-content-3",
+          "page1-additional-requests-heading",
+          "page1-additional-requests-1",
+          "page1-additional-requests-2",
+          "page1-additional-requests-3",
+          "page1-platform-considerations-heading",
+          "page1-platform-considerations-content",
+          "page1-resources-heading",
+          "page1-resources-related-heading",
+          "page1-resources-related-links",
+          "page1-resources-videos-heading",
+          "page1-video-card-1",
+          "page1-video-card-2",
+          "page1-video-card-3",
+          "page1-changelog-heading",
+          "page1-changelog-table",
+          "page1-footer"
+        ],
+        "pageSummary": "Apple Human Interface Guidelines documentation page for Onboarding. The page provides comprehensive guidance on creating effective onboarding experiences for apps and games across all Apple platforms. Key recommendations include teaching through interactivity, using context-specific tips via TipKit, keeping onboarding brief and optional, avoiding licensing details, postponing non-essential setup, integrating permission requests thoughtfully, and delaying rating/purchase prompts. The page includes links to related WWDC videos and a change log showing updates in June 2024 and June 2023."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": true,
+        "entries": [
+          {
+            "title": "Onboarding",
+            "level": 1
+          },
+          {
+            "title": "Best practices",
+            "level": 2
+          },
+          {
+            "title": "Additional content",
+            "level": 2
+          },
+          {
+            "title": "Additional requests",
+            "level": 2
+          },
+          {
+            "title": "Platform considerations",
+            "level": 2
+          },
+          {
+            "title": "Resources",
+            "level": 2
+          },
+          {
+            "title": "Change log",
+            "level": 2
+          }
+        ]
+      },
+      "runningHeaders": "Apple Developer navigation bar with News, Discover, Design, Develop, Distribute, Support, Account links",
+      "runningFooters": "Comprehensive site footer with Platforms, Topics & Technologies, Resources, Support, Account, Programs, and Events sections",
+      "pageNumbers": {
+        "present": false,
+        "format": "N/A"
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "introduction",
+          "title": "Introduction",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Introduces onboarding as a way to help users quickly start using apps/games, emphasizing that it should be fast, fun, and optional."
+        },
+        {
+          "sectionId": "best-practices",
+          "title": "Best practices",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Five key practices: teach through interactivity, use context-specific tips with TipKit, keep prerequisite flows brief, make tutorials optional, and focus content on the app experience rather than system/device usage."
+        },
+        {
+          "sectionId": "additional-content",
+          "title": "Additional content",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Three guidelines for additional content: use brief splash screens if needed, avoid large downloads blocking onboarding, and keep licensing details out of the onboarding flow."
+        },
+        {
+          "sectionId": "additional-requests",
+          "title": "Additional requests",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Three guidelines for requests during onboarding: postpone non-essential setup, integrate permission requests when functionally required, and delay rating/purchase prompts until users are engaged."
+        },
+        {
+          "sectionId": "platform-considerations",
+          "title": "Platform considerations",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "States that no additional platform-specific considerations exist for iOS, iPadOS, macOS, tvOS, visionOS, or watchOS."
+        },
+        {
+          "sectionId": "resources",
+          "title": "Resources",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "resources-related",
+              "title": "Related",
+              "summary": "Links to Launching, Feedback, and Offering help documentation pages."
+            },
+            {
+              "sectionId": "resources-videos",
+              "title": "Videos",
+              "summary": "Three WWDC video recommendations: Discoverable design, Designing Award Winning Apps and Games, Love at First Launch."
+            }
+          ],
+          "summary": "Provides related documentation links and recommended WWDC videos for further learning."
+        },
+        {
+          "sectionId": "change-log",
+          "title": "Change log",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Document revision history with two entries: June 2024 (splash screen guidance, onboarding clarifications) and June 2023 (visionOS support)."
+        }
+      ],
+      "documentFlow": "The document follows Apple's standard HIG documentation structure: it opens with a title, subtitle, and hero illustration establishing the topic. The introduction provides the core philosophy (onboarding should be fast, fun, optional). Best practices form the primary guidance section with detailed recommendations. Additional content and additional requests sections cover supplementary concerns. Platform considerations confirms universal applicability. Resources provide further learning paths. The change log documents revision history."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "Onboarding",
+          "definition": "A flow that helps people get a quick start using an app or game, occurring after launching is complete",
+          "occurrences": 15
+        },
+        {
+          "term": "TipKit",
+          "definition": "Apple's framework for providing context-specific tips in apps",
+          "occurrences": 1
+        },
+        {
+          "term": "Splash screen",
+          "definition": "A beautiful graphic displayed briefly to communicate information succinctly during app launch or onboarding",
+          "occurrences": 2
+        },
+        {
+          "term": "Context-specific tips",
+          "definition": "Instructional content integrated contextually into the app experience, displayed near the relevant interface area",
+          "occurrences": 2
+        },
+        {
+          "term": "Prerequisite onboarding flow",
+          "definition": "An onboarding sequence that must be completed before users can access the main app functionality",
+          "occurrences": 1
+        },
+        {
+          "term": "Tutorial",
+          "definition": "A separate instructional experience that can be offered optionally and made available later in help/settings areas",
+          "occurrences": 3
+        }
+      ],
+      "keyFindings": [
+        "Onboarding should be fast, fun, and optional - not part of the launch experience",
+        "Interactive onboarding where users perform tasks is more effective than passive instruction",
+        "Context-specific tips via TipKit can replace single onboarding flows for better learning",
+        "Prerequisite onboarding should be brief and not require memorizing lots of information",
+        "Optional tutorials should not re-present on subsequent launches but remain accessible in settings/help",
+        "Onboarding content should focus on the app experience, not system/device usage",
+        "Splash screens should be brief and beautiful, communicating at a glance",
+        "Large downloads should not block users from starting to interact with the app",
+        "Licensing details should be displayed on App Store, not in onboarding flow",
+        "Non-essential setup/customization should be postponed with reasonable defaults provided",
+        "Permission requests can be integrated into onboarding when functionally required, with explanation of benefits",
+        "Rating and purchase prompts should wait until users have engaged with the app",
+        "All guidelines apply equally to iOS, iPadOS, macOS, tvOS, visionOS, and watchOS"
+      ],
+      "technicalSpecifications": {
+        "supportedPlatforms": [
+          "iOS",
+          "iPadOS",
+          "macOS",
+          "tvOS",
+          "visionOS",
+          "watchOS"
+        ],
+        "relatedFrameworks": [
+          "TipKit"
+        ],
+        "relatedDocumentation": [
+          "Launching",
+          "Feedback",
+          "Offering help",
+          "Requesting permission"
+        ],
+        "relatedVideos": [
+          "Discoverable design",
+          "Designing Award Winning Apps and Games",
+          "Love at First Launch"
+        ]
+      },
+      "designDecisions": [
+        {
+          "decision": "Onboarding occurs after launching, not during",
+          "rationale": "Launch experience should be instant; onboarding is a separate, optional flow"
+        },
+        {
+          "decision": "Prefer interactive learning over instructional viewing",
+          "rationale": "People grasp and retain information better when performing tasks"
+        },
+        {
+          "decision": "Use context-specific tips instead of single onboarding flow",
+          "rationale": "Lets users concentrate on one action/task at a time, learn while making progress"
+        },
+        {
+          "decision": "Make tutorials optional and skippable",
+          "rationale": "Respects user choice; avoids re-presenting on subsequent launches"
+        },
+        {
+          "decision": "Keep licensing out of onboarding",
+          "rationale": "App Store already handles agreements/disclaimers before download"
+        },
+        {
+          "decision": "Provide reasonable defaults",
+          "rationale": "Allows immediate app interaction without additional configuration"
+        },
+        {
+          "decision": "Delay rating/purchase prompts",
+          "rationale": "Users respond more positively after becoming engaged with the app"
+        }
+      ]
+    },
+    "allTextVerbatim": {
+      "mainContent": {
+        "title": "Onboarding",
+        "subtitle": "Onboarding can help people get a quick start using your app or game.",
+        "introduction": "Ideally, people can understand your app or game simply by experiencing it, but if onboarding is necessary, design a flow that's fast, fun, and optional. When available, onboarding occurs after launching is complete — it isn't part of the launch experience.",
+        "bestPracticesSection": {
+          "heading": "Best practices",
+          "guidelines": [
+            {
+              "boldLead": "Teach through interactivity.",
+              "fullText": "Teach through interactivity. People tend to grasp and retain information better when they can actually perform the task they're learning about instead of just viewing instructional material. As much as possible, provide an interactive onboarding experience where people can safely test an action, discover a feature, or try out a game mechanic."
+            },
+            {
+              "boldLead": "Consider providing a collection of context-specific tips instead of a single onboarding flow.",
+              "fullText": "Consider providing a collection of context-specific tips instead of a single onboarding flow. Integrating contextually relevant tips into your experience can help people learn about their current task while they make progress in your app or game. A context-specific tip can also help people learn better because it lets them concentrate on a single action or task before encountering new information. When you have instructional content that refers to a specific area of the interface, display these instructions near that area. For developer guidance, see TipKit."
+            },
+            {
+              "boldLead": "If you need to present a prerequisite onboarding flow, design a brief, enjoyable experience that doesn't require people to memorize a lot of information.",
+              "fullText": "If you need to present a prerequisite onboarding flow, design a brief, enjoyable experience that doesn't require people to memorize a lot of information. When onboarding is quick and entertaining, people are more likely to complete it. In contrast, if you try to teach too much, people can feel overwhelmed and may be less likely to remember what they learned."
+            },
+            {
+              "boldLead": "If it makes sense to offer a separate tutorial, consider making it optional.",
+              "fullText": "If it makes sense to offer a separate tutorial, consider making it optional. If you let people skip the tutorial when they first launch your app or game, don't present it again on subsequent launches, but make sure it's easy for people to find if they want to view it later. For example, you could make the tutorial available in a help, account, or settings area within your app or game."
+            },
+            {
+              "boldLead": "Keep onboarding content focused on the experience you provide.",
+              "fullText": "Keep onboarding content focused on the experience you provide. People enter your onboarding flow to learn about your app or game; they don't need to learn how to use the system or the device."
+            }
+          ]
+        },
+        "additionalContentSection": {
+          "heading": "Additional content",
+          "guidelines": [
+            {
+              "boldLead": "Briefly display a splash screen if necessary.",
+              "fullText": "Briefly display a splash screen if necessary. If you need to include a splash screen, design a beautiful graphic that communicates succinctly. Aim to display your splash screen just long enough for people to absorb the information at a glance without feeling that it's delaying their experience."
+            },
+            {
+              "boldLead": "Don't let large downloads hinder onboarding.",
+              "fullText": "Don't let large downloads hinder onboarding. People want to start using your app or game immediately after first launching it, whether they participate in an onboarding flow or skip it. Consider including enough media and other content in your software package to prevent people from having to wait for downloads to complete before they can start interacting with your app or game. For guidance, see Launching."
+            },
+            {
+              "boldLead": "Avoid displaying licensing details within your onboarding flow.",
+              "fullText": "Avoid displaying licensing details within your onboarding flow. Let the App Store display agreements and disclaimers so people can read them before downloading your app or game. If you must include these items within the onboarding flow, integrate them in a balanced way that doesn't disrupt the experience."
+            }
+          ]
+        },
+        "additionalRequestsSection": {
+          "heading": "Additional requests",
+          "guidelines": [
+            {
+              "boldLead": "Postpone nonessential setup flows or customization steps.",
+              "fullText": "Postpone nonessential setup flows or customization steps. Provide reasonable default settings so most people can immediately start interacting with your app or game without performing additional configuration."
+            },
+            {
+              "boldLead": "If your app or game needs access to private data or resources before it can function, consider integrating the permission request into your onboarding flow.",
+              "fullText": "If your app or game needs access to private data or resources before it can function, consider integrating the permission request into your onboarding flow. In this scenario, making the request during your onboarding flow gives you the opportunity to show people why your app or game needs their permission and the benefits of granting it. Otherwise, present a permission request when people first access the specific function that relies on private data or resources. For guidance, see Requesting permission."
+            },
+            {
+              "boldLead": "Prefer letting people experience your app or game before prompting them for ratings or purchases.",
+              "fullText": "Prefer letting people experience your app or game before prompting them for ratings or purchases. People can be more likely to respond positively to such requests when they've had a chance to become engaged with your app or game."
+            }
+          ]
+        },
+        "platformConsiderationsSection": {
+          "heading": "Platform considerations",
+          "content": "No additional considerations for iOS, iPadOS, macOS, tvOS, visionOS, or watchOS."
+        },
+        "resourcesSection": {
+          "heading": "Resources",
+          "relatedSubheading": "Related",
+          "relatedLinks": [
+            "Launching",
+            "Feedback",
+            "Offering help"
+          ],
+          "videosSubheading": "Videos",
+          "videoTitles": [
+            "Discoverable design",
+            "Designing Award Winning Apps and Games",
+            "Love at First Launch"
+          ]
+        },
+        "changeLogSection": {
+          "heading": "Change log",
+          "entries": [
+            {
+              "date": "June 10, 2024",
+              "changes": "Clarified different approaches to onboarding and added a guideline on displaying a splash screen."
+            },
+            {
+              "date": "June 21, 2023",
+              "changes": "Updated to include guidance for visionOS."
+            }
+          ]
+        }
+      },
+      "sidebarContent": {
+        "supportedPlatformsLabel": "Supported platforms",
+        "platforms": [
+          "iOS",
+          "iPadOS",
+          "macOS",
+          "tvOS",
+          "visionOS",
+          "watchOS"
+        ],
+        "tableOfContents": [
+          "Onboarding",
+          "Best practices",
+          "Additional content",
+          "Additional requests",
+          "Platform considerations",
+          "Resources",
+          "Change log"
+        ]
+      },
+      "footerContent": {
+        "platformsColumn": {
+          "heading": "Platforms",
+          "items": [
+            "iOS",
+            "iPadOS",
+            "macOS",
+            "tvOS",
+            "visionOS",
+            "watchOS"
+          ]
+        },
+        "toolsSection": {
+          "items": [
+            "Swift",
+            "SwiftUI",
+            "Swift Playground",
+            "TestFlight",
+            "Xcode",
+            "Xcode Cloud",
+            "SF Symbols"
+          ]
+        },
+        "topicsAndTechnologiesColumn": {
+          "heading": "Topics & Technologies",
+          "items": [
+            "Accessibility",
+            "Accessories",
+            "App Extension",
+            "App Store",
+            "Audio & Video",
+            "Augmented Reality",
+            "Design",
+            "Distribution",
+            "Education",
+            "Fonts",
+            "Games",
+            "Health & Fitness",
+            "In-App Purchase",
+            "Localization",
+            "Maps & Location",
+            "Machine Learning & AI",
+            "Open Source",
+            "Security",
+            "Safari & Web"
+          ]
+        },
+        "resourcesColumn": {
+          "heading": "Resources",
+          "items": [
+            "Documentation",
+            "Tutorials",
+            "Downloads",
+            "Forums",
+            "Videos"
+          ]
+        },
+        "supportColumn": {
+          "heading": "Support",
+          "items": [
+            "Support Articles",
+            "Contact Us",
+            "Bug Reporting",
+            "System Status"
+          ]
+        },
+        "accountColumn": {
+          "heading": "Account",
+          "items": [
+            "Apple Developer",
+            "App Store Connect",
+            "Certificates, IDs, & Profiles",
+            "Feedback Assistant"
+          ]
+        },
+        "programsColumn": {
+          "heading": "Programs",
+          "items": [
+            "Apple Developer Program",
+            "Apple Developer Enterprise Program",
+            "App Store Small Business Program",
+            "MFi Program",
+            "News Partner Program",
+            "Video Partner Program",
+            "Security Bounty Program",
+            "Security Research Device Program"
+          ]
+        },
+        "eventsColumn": {
+          "heading": "Events",
+          "items": [
+            "Meet with Apple",
+            "Apple Developer Centers",
+            "App Store Awards",
+            "Apple Design Awards",
+            "Apple Developer Academies",
+            "WWDC"
+          ]
+        },
+        "legalFooter": {
+          "copyright": "Copyright © 2025 Apple Inc. All rights reserved.",
+          "links": [
+            "Terms of Use",
+            "Privacy Policy",
+            "Agreements and Guidelines"
+          ],
+          "feedbackNote": "To submit feedback on documentation, visit Feedback Assistant."
+        },
+        "themeToggle": {
+          "options": [
+            "Light",
+            "Dark",
+            "Auto"
+          ]
+        }
+      }
+    },
+    "allLinks": {
+      "internalDocumentationLinks": [
+        {
+          "text": "launching",
+          "context": "Introduction paragraph",
+          "target": "Launching HIG documentation page"
+        },
+        {
+          "text": "TipKit",
+          "context": "Best practices - context-specific tips",
+          "target": "TipKit framework documentation"
+        },
+        {
+          "text": "Launching",
+          "context": "Additional content - downloads",
+          "target": "Launching HIG documentation page"
+        },
+        {
+          "text": "Requesting permission",
+          "context": "Additional requests - permission integration",
+          "target": "Requesting permission HIG documentation page"
+        },
+        {
+          "text": "Launching",
+          "context": "Resources - Related section",
+          "target": "Launching HIG documentation page"
+        },
+        {
+          "text": "Feedback",
+          "context": "Resources - Related section",
+          "target": "Feedback HIG documentation page"
+        },
+        {
+          "text": "Offering help",
+          "context": "Resources - Related section",
+          "target": "Offering help HIG documentation page"
+        }
+      ],
+      "navigationLinks": {
+        "primaryNav": [
+          "News",
+          "Discover",
+          "Design",
+          "Develop",
+          "Distribute",
+          "Support",
+          "Account"
+        ],
+        "secondaryNav": [
+          "Overview",
+          "What's New",
+          "Get Started",
+          "Guidelines",
+          "Resources"
+        ],
+        "breadcrumb": [
+          "Developer",
+          "Documentation"
+        ]
+      },
+      "footerLinks": {
+        "allFooterLinksListed": true,
+        "note": "See footerContent section in allTextVerbatim for complete list of all footer links organized by column"
+      }
+    }
+  }
+}

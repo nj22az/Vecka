@@ -2,8 +2,8 @@
 //  IconStripSidebar.swift
 //  Vecka
 //
-//  Slim vertical icon sidebar (56pt) with blue selection bar
-//  Replaces the 3x3 grid sidebar for elegant minimal design
+//  Slim vertical icon sidebar (56pt) with 情報デザイン styling
+//  Black background, cyan accent, thick borders
 //
 
 import SwiftUI
@@ -13,23 +13,47 @@ import SwiftUI
 struct IconStripSidebar: View {
     @Binding var selection: SidebarSelection?
 
+    /// Action for the + button (context-aware based on current selection)
+    var onAdd: (() -> Void)?
+
+    /// Custom accent color for the plus button (defaults to cyan)
+    var addButtonColor: Color = JohoColors.cyan
+
+    /// Smart repack button - only shows when widgets need collapsing
+    var showRepackButton: Bool = false
+    var onRepack: (() -> Void)?
+
+    /// Export button action
+    var onExport: (() -> Void)?
+
+    /// Legend popover state
+    @State private var showLegend = false
+
     // MARK: - Layout Constants
     private let sidebarWidth: CGFloat = 56
     private let iconSize: CGFloat = 22
     private let activeBarWidth: CGFloat = 4
     private let itemHeight: CGFloat = 44
 
-    // Main items (everything except settings)
+    // Main items (everything except settings and calendar - blue icon handles calendar)
     private var mainItems: [SidebarSelection] {
-        SidebarSelection.allCases.filter { $0 != .settings }
+        SidebarSelection.allCases.filter { $0 != .settings && $0 != .calendar }
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            // App logo/icon at top
-            appIconHeader
-                .padding(.top, Spacing.medium)
-                .padding(.bottom, Spacing.large)
+            // App logo/icon at top - TAPPABLE, navigates to calendar dashboard
+            Button {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                    selection = .calendar
+                }
+            } label: {
+                appIconHeader
+            }
+            .buttonStyle(.plain)
+            .padding(.top, JohoDimensions.spacingMD)
+            .padding(.bottom, JohoDimensions.spacingLG)
+            .accessibilityLabel("Calendar")
 
             // Main navigation icons
             VStack(spacing: 4) {
@@ -41,7 +65,7 @@ struct IconStripSidebar: View {
                         iconSize: iconSize,
                         itemHeight: itemHeight
                     ) {
-                        withAnimation(AnimationConstants.sidebarSpring) {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                             selection = item
                         }
                     }
@@ -50,12 +74,82 @@ struct IconStripSidebar: View {
 
             Spacer()
 
-            // Divider before settings
+            // Smart repack button - only shows when widgets need collapsing
+            // 情報デザイン: 44pt touch target, black border
+            if showRepackButton, let repackAction = onRepack {
+                Button(action: repackAction) {
+                    Image(systemName: "arrow.up.left.and.arrow.down.right.circle.fill")
+                        .font(.system(size: iconSize + 4, weight: .medium, design: .rounded))
+                        .foregroundStyle(JohoColors.orange)
+                        .frame(width: 44, height: 44)
+                        .background(JohoColors.black)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(JohoColors.orange, lineWidth: 2))
+                }
+                .buttonStyle(.plain)
+                .padding(.bottom, JohoDimensions.spacingMD)
+                .accessibilityLabel("Repack widgets")
+                .transition(.scale.combined(with: .opacity))
+            }
+
+            // Add button (context-aware action with custom color)
+            // 情報デザイン: 44pt touch target, 2pt black border
+            if let addAction = onAdd {
+                Button(action: addAction) {
+                    Image(systemName: "plus")
+                        .font(.system(size: iconSize, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black)
+                        .frame(width: 44, height: 44)
+                        .background(addButtonColor)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+                }
+                .buttonStyle(.plain)
+                .padding(.bottom, JohoDimensions.spacingLG)
+                .accessibilityLabel("Add")
+                .transition(.scale.combined(with: .opacity))
+            }
+
+            // Export button (above settings)
+            // 情報デザイン: 44pt touch target, 2pt border, 0.7 opacity min
+            if let exportAction = onExport {
+                Button(action: exportAction) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: iconSize, weight: .medium, design: .rounded))
+                        .foregroundStyle(JohoColors.white.opacity(0.7))
+                        .frame(width: 44, height: 44)
+                        .background(JohoColors.black)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(JohoColors.white.opacity(0.3), lineWidth: 2))
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Export")
+                .padding(.bottom, JohoDimensions.spacingSM)
+            }
+
+            // Legend info button - 情報デザイン: Always visible
+            Button { showLegend = true } label: {
+                Image(systemName: "info.circle")
+                    .font(.system(size: iconSize, weight: .medium, design: .rounded))
+                    .foregroundStyle(JohoColors.white.opacity(0.7))
+                    .frame(width: 44, height: 44)
+                    .background(JohoColors.black)
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(JohoColors.white.opacity(0.3), lineWidth: 2))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Legend")
+            .padding(.bottom, JohoDimensions.spacingSM)
+            .popover(isPresented: $showLegend) {
+                SidebarLegendView()
+            }
+
+            // Divider before settings - 情報デザイン: solid black or subtle white
             Rectangle()
-                .fill(SlateColors.divider)
-                .frame(height: 1)
-                .padding(.horizontal, Spacing.small)
-                .padding(.vertical, Spacing.small)
+                .fill(JohoColors.white.opacity(0.3))
+                .frame(height: 1.5)
+                .padding(.horizontal, JohoDimensions.spacingSM)
+                .padding(.vertical, JohoDimensions.spacingSM)
 
             // Settings at bottom
             IconStripButton(
@@ -65,22 +159,22 @@ struct IconStripSidebar: View {
                 iconSize: iconSize,
                 itemHeight: itemHeight
             ) {
-                withAnimation(AnimationConstants.sidebarSpring) {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                     selection = .settings
                 }
             }
-            .padding(.bottom, Spacing.large)
+            .padding(.bottom, JohoDimensions.spacingLG)
         }
         .frame(width: sidebarWidth)
-        .background(SlateColors.deepSlate)
+        .background(JohoColors.black)
     }
 
     // MARK: - App Icon Header
 
     private var appIconHeader: some View {
         Image(systemName: "calendar.badge.clock")
-            .font(.system(size: 24, weight: .medium))
-            .foregroundStyle(SlateColors.sidebarActiveBar)
+            .font(.system(size: 24, weight: .bold, design: .rounded))
+            .foregroundStyle(JohoColors.cyan)
             .frame(width: 40, height: 40)
     }
 }
@@ -107,18 +201,19 @@ struct IconStripButton: View, Equatable {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 0) {
-                // Selection indicator bar (4pt blue when selected)
+                // Selection indicator bar (item's accent color when selected)
                 Capsule()
-                    .fill(isSelected ? SlateColors.sidebarActiveBar : Color.clear)
+                    .fill(isSelected ? item.accentColor : Color.clear)
                     .frame(width: activeBarWidth, height: itemHeight * 0.6)
 
                 Spacer()
 
-                // Icon
+                // Icon (uses item's accent color when selected for visual consistency)
+                // 情報デザイン: min 0.7 opacity for readability
                 Image(systemName: item.icon)
-                    .font(.system(size: iconSize, weight: isSelected ? .semibold : .regular))
-                    .foregroundStyle(isSelected ? SlateColors.iconActive : SlateColors.iconDefault)
-                    .frame(width: 40, height: 40)
+                    .font(.system(size: iconSize, weight: isSelected ? .bold : .medium, design: .rounded))
+                    .foregroundStyle(isSelected ? item.accentColor : JohoColors.white.opacity(0.7))
+                    .frame(width: 44, height: 44)
 
                 Spacer()
 
@@ -142,20 +237,123 @@ struct IconStripButton: View, Equatable {
         IconStripSidebar(selection: .constant(.calendar))
 
         Rectangle()
-            .fill(SlateColors.mediumSlate)
+            .fill(JohoColors.background)
     }
     .frame(width: 400, height: 600)
-    .preferredColorScheme(.dark)
 }
 
 #Preview("Icon Strip - All States") {
     HStack(spacing: 20) {
-        ForEach([SidebarSelection.calendar, .notes, .settings], id: \.self) { selected in
+        ForEach([SidebarSelection.calendar, .tools, .settings], id: \.self) { selected in
             IconStripSidebar(selection: .constant(selected))
                 .frame(height: 500)
         }
     }
     .padding()
-    .background(Color.black)
-    .preferredColorScheme(.dark)
+    .background(JohoColors.background)
+}
+
+// MARK: - Sidebar Legend View
+
+/// 情報デザイン: Compact legend popover showing all entry types
+private struct SidebarLegendView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    private let legendItems: [(code: String, label: String, icon: String, color: Color)] = [
+        ("HOL", "BANK HOLIDAY", "star.fill", Color(hex: "E53E3E")),
+        ("OBS", "OBSERVANCE", "sparkles", Color(hex: "ED8936")),
+        ("EVT", "EVENT", "calendar.badge.clock", Color(hex: "805AD5")),
+        ("BDY", "BIRTHDAY", "birthday.cake.fill", Color(hex: "D53F8C")),
+        ("NTE", "NOTE", "note.text", Color(hex: "ECC94B")),
+        ("TRP", "TRIP", "airplane", Color(hex: "3182CE")),
+        ("EXP", "EXPENSE", "dollarsign.circle.fill", Color(hex: "38A169"))
+    ]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header - 情報デザイン: Black with white text
+            HStack {
+                Text("LEGEND")
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .tracking(1)
+                    .foregroundStyle(JohoColors.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(JohoColors.black)
+                    .clipShape(Capsule())
+
+                Spacer()
+
+                Button { dismiss() } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(JohoColors.black)
+                        .frame(width: 24, height: 24)
+                        .background(JohoColors.black.opacity(0.1))
+                        .clipShape(Circle())
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(height: 1.5)
+
+            // Legend rows
+            VStack(spacing: 0) {
+                ForEach(Array(legendItems.enumerated()), id: \.element.code) { index, item in
+                    HStack(spacing: JohoDimensions.spacingMD) {
+                        // Colored indicator circle with BLACK border
+                        Circle()
+                            .fill(item.color)
+                            .frame(width: 12, height: 12)
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+
+                        // Icon
+                        Image(systemName: item.icon)
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundStyle(item.color)
+                            .frame(width: 20)
+
+                        // Code pill
+                        Text(item.code)
+                            .font(.system(size: 9, weight: .black, design: .rounded))
+                            .foregroundStyle(item.color)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(JohoColors.white)
+                            .clipShape(Capsule())
+                            .overlay(Capsule().stroke(item.color, lineWidth: 1))
+
+                        // Label
+                        Text(item.label)
+                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
+
+                        Spacer()
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+                    .padding(.vertical, 10)
+
+                    if index < legendItems.count - 1 {
+                        Rectangle()
+                            .fill(JohoColors.black.opacity(0.1))
+                            .frame(height: 1)
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+                    }
+                }
+            }
+            .padding(.vertical, JohoDimensions.spacingSM)
+        }
+        .background(JohoColors.white)
+        .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+        )
+        .frame(width: 260)
+        .padding(JohoDimensions.spacingMD)
+    }
 }

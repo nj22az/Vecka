@@ -2,8 +2,8 @@
 //  MediumWidgetView.swift
 //  VeckaWidget
 //
-//  Medium widget: Clean design with Liquid Glass on navigation only
-//  Glass = week badge only. Calendar content = clean and readable.
+//  情報デザイン (Jōhō Dezain) Medium Widget
+//  Clean week strip with bold typography and high contrast
 //
 
 import SwiftUI
@@ -31,123 +31,98 @@ struct VeckaMediumWidgetView: View {
         }
     }
 
-    private var monthName: String {
-        entry.date.formatted(.dateTime.month(.wide).locale(.autoupdatingCurrent)).capitalized
-    }
-
-    private var yearString: String {
-        entry.date.formatted(.dateTime.year().locale(.autoupdatingCurrent))
+    private var monthYear: String {
+        let month = entry.date.formatted(.dateTime.month(.wide).locale(.autoupdatingCurrent)).uppercased()
+        let year = entry.date.formatted(.dateTime.year().locale(.autoupdatingCurrent))
+        return "\(month) \(year)"
     }
 
     private var weekdaySymbols: [String] {
         let symbols = calendar.veryShortWeekdaySymbols
-        return Array(symbols[1...]) + [symbols[0]]
+        return Array(symbols[1...]) + [symbols[0]]  // Monday first
     }
 
     private let holidayEngine = WidgetHolidayEngine()
 
     var body: some View {
-        VStack(spacing: 0) {
-            // HEADER
+        VStack(spacing: JohoDimensions.spacingMD) {
+            // HEADER: Month Year + Week Badge
             HStack(alignment: .center) {
-                // Month + Year - NO GLASS (content)
-                HStack(alignment: .lastTextBaseline, spacing: 5) {
-                    Text(monthName)
-                        .font(.system(size: 17, weight: .bold))
-                        .foregroundStyle(WidgetColors.accent)
-
-                    Text(yearString)
-                        .font(.system(size: 14, weight: .regular))
-                        .foregroundStyle(.secondary)
-                }
+                Text(monthYear)
+                    .font(JohoWidgetFont.headerMedium)
+                    .foregroundStyle(JohoWidgetColors.black)
 
                 Spacer()
 
-                // Week Badge - GLASS (navigation element)
-                Text("\(entry.weekNumber)")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 5)
-                    .glassEffect(.regular, in: .capsule)
+                JohoWeekBadge(weekNumber: entry.weekNumber, size: .medium)
             }
-            .padding(.top, 14)
-            .padding(.horizontal, 16)
-            .padding(.bottom, 10)
+            .padding(.horizontal, JohoDimensions.spacingXL)
+            .padding(.top, JohoDimensions.spacingLG)
 
             Spacer()
 
-            // CALENDAR ROW - NO GLASS (content)
-            VStack(spacing: 6) {
-                // Weekday Headers
+            // WEEK STRIP: Clean calendar row
+            VStack(spacing: JohoDimensions.spacingSM) {
+                // Weekday labels
                 HStack(spacing: 0) {
                     ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { index, symbol in
                         Text(symbol)
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(weekdayHeaderColor(for: index))
+                            .font(JohoWidgetFont.labelSmall)
+                            .foregroundStyle(weekdayColor(for: index))
                             .frame(maxWidth: .infinity)
                     }
                 }
-                .padding(.horizontal, 16)
 
-                // Days Row
+                // Day numbers
                 HStack(spacing: 0) {
                     ForEach(Array(weekDays.enumerated()), id: \.offset) { index, date in
-                        dayCellView(date: date, dayIndex: index)
+                        dayCell(date: date, dayIndex: index)
                     }
                 }
-                .padding(.horizontal, 14)
             }
-            .padding(.bottom, 16)
+            .padding(.horizontal, JohoDimensions.spacingXL)
+            .padding(.bottom, JohoDimensions.spacingXL)
         }
         .widgetURL(URL(string: "vecka://week/\(entry.weekNumber)/\(entry.year)"))
-        .containerBackground(.fill.tertiary, for: .widget)
+        .containerBackground(for: .widget) {
+            // 情報デザイン: WHITE background with BLACK border
+            ZStack {
+                RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous)
+                    .fill(JohoWidgetColors.white)
+                RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous)
+                    .stroke(JohoWidgetColors.black, lineWidth: JohoDimensions.borderBold)
+            }
+        }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(widgetAccessibilityLabel)
+        .accessibilityLabel(accessibilityLabel)
     }
 
-    private var widgetAccessibilityLabel: String {
-        let todayFormatted = entry.date.formatted(date: .complete, time: .omitted)
-        var label = "\(monthName) \(yearString), Week \(entry.weekNumber). Today: \(todayFormatted)"
-        if let holiday = entry.todaysHolidays.first {
-            label += ", \(holiday.displayName)"
-        }
-        return label
-    }
-
-    private func weekdayHeaderColor(for index: Int) -> Color {
-        switch index {
-        case 6: return WidgetColors.sundayBlue  // Sunday = Blue
-        default: return .secondary               // Saturday and weekdays = normal
-        }
+    private func weekdayColor(for index: Int) -> Color {
+        index == 6 ? JohoWidgetColors.sundayBlue : JohoWidgetColors.black.opacity(0.6)
     }
 
     @ViewBuilder
-    private func dayCellView(date: Date, dayIndex: Int) -> some View {
+    private func dayCell(date: Date, dayIndex: Int) -> some View {
         let isToday = calendar.isDate(date, inSameDayAs: entry.date)
         let dayNumber = calendar.component(.day, from: date)
         let holidays = holidayEngine.getHolidays(for: date)
         let isRedDay = holidays.first?.isRedDay ?? false
+        let isSunday = dayIndex == 6
 
-        let textColor: Color = {
-            if isToday { return .white }
-            if isRedDay { return WidgetColors.holiday }
-            if dayIndex == 6 { return WidgetColors.sundayBlue }  // Sunday = Blue
-            return .primary
-        }()
+        JohoDayCell(
+            day: dayNumber,
+            isToday: isToday,
+            isRedDay: isRedDay,
+            isSunday: isSunday,
+            cellSize: 30
+        )
+    }
 
-        ZStack {
-            // Today indicator - squircle (continuous corner radius)
-            if isToday {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(WidgetColors.accent)
-                    .frame(width: 32, height: 32)
-            }
-
-            Text("\(dayNumber)")
-                .font(.system(size: 17, weight: isToday ? .bold : .medium))
-                .foregroundStyle(textColor)
+    private var accessibilityLabel: String {
+        var label = "\(monthYear), Week \(entry.weekNumber)"
+        if let holiday = entry.todaysHolidays.first {
+            label += ", \(holiday.displayName)"
         }
-        .frame(maxWidth: .infinity)
+        return label
     }
 }

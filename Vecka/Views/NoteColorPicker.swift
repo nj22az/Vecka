@@ -51,16 +51,21 @@ struct NoteTagColorPickerView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
                 ForEach(NoteColor.allCases, id: \.rawValue) { noteColor in
+                    // 44pt touch target with 32pt visible circle
                     Circle()
                         .fill(noteColor.color)
                         .frame(width: 32, height: 32)
                         .overlay(
                             Circle()
-                                .strokeBorder(Color.primary.opacity(0.2), lineWidth: selectedColor == noteColor.rawValue ? 3 : 1)
+                                .strokeBorder(JohoColors.black.opacity(0.2), lineWidth: selectedColor == noteColor.rawValue ? 3 : 1)
                         )
+                        .frame(width: 44, height: 44)
+                        .contentShape(Circle())
                         .onTapGesture {
                             selectedColor = noteColor.rawValue
                         }
+                        .accessibilityLabel("\(noteColor.rawValue) color\(selectedColor == noteColor.rawValue ? ", selected" : "")")
+                        .accessibilityAddTraits(.isButton)
                 }
             }
             .padding(.horizontal)

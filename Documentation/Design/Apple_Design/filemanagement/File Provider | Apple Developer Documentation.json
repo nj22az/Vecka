@@ -1,0 +1,2154 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "File Provider | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "File Provider",
+        "iOS",
+        "macOS",
+        "extension",
+        "file management",
+        "cloud storage",
+        "document sync",
+        "NSFileProviderReplicatedExtension",
+        "NSFileProviderExtension",
+        "Apple Developer Documentation"
+      ],
+      "summary": "Apple Developer Documentation page for the File Provider framework, which provides an extension mechanism for other apps to access files and folders managed by your app and synced with remote storage. The document covers both replicated and nonreplicated extension types, extension management APIs, and error handling.",
+      "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+      "legalLinks": [
+        "Terms of Use",
+        "Privacy Policy",
+        "Agreements and Guidelines"
+      ]
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": 1275,
+          "height": 4050,
+          "unit": "pixels"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF (white)",
+        "layout": {
+          "type": "multi-column",
+          "columns": 2,
+          "margins": {
+            "top": 56,
+            "right": 40,
+            "bottom": 80,
+            "left": 40
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1275,
+              "height": 56
+            },
+            "zIndex": 100,
+            "content": {
+              "type": "top-navigation-bar",
+              "backgroundColor": "#000000 (black)",
+              "items": [
+                {
+                  "type": "logo",
+                  "content": "Apple logo (white)",
+                  "position": "left"
+                },
+                {
+                  "type": "nav-link",
+                  "label": "News",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "label": "Discover",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "label": "Design",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "label": "Develop",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "label": "Distribute",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "label": "Support",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "label": "Account",
+                  "position": "right"
+                },
+                {
+                  "type": "icon",
+                  "content": "Search icon (magnifying glass)",
+                  "position": "right"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-breadcrumb",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 40,
+              "y": 70,
+              "width": 300,
+              "height": 24
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "breadcrumb",
+              "items": [
+                {
+                  "label": "Documentation",
+                  "isLink": true,
+                  "icon": "document icon (gray)"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-framework-label",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": 40,
+              "y": 120,
+              "width": 100,
+              "height": 20
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Framework",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "14px",
+              "fontWeight": "regular",
+              "fontColor": "#666666 (gray)"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-main-title",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 40,
+              "y": 145,
+              "width": 400,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "File Provider",
+              "level": 1,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "40px",
+              "fontWeight": "bold",
+              "fontColor": "#000000 (black)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-subtitle",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 40,
+              "y": 200,
+              "width": 700,
+              "height": 48
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "An extension other apps use to access files and folders managed by your app and synced with a remote storage.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "regular",
+              "fontColor": "#333333 (dark gray)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-badges",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 40,
+              "y": 260,
+              "width": 600,
+              "height": 28
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "inline-badges",
+              "items": [
+                {
+                  "text": "iOS 11.0+",
+                  "style": "badge",
+                  "backgroundColor": "#F5F5F7 (light gray)",
+                  "textColor": "#333333"
+                },
+                {
+                  "text": "iPadOS 11.0+",
+                  "style": "badge",
+                  "backgroundColor": "#F5F5F7 (light gray)",
+                  "textColor": "#333333"
+                },
+                {
+                  "text": "Mac Catalyst 11.0+",
+                  "style": "badge",
+                  "backgroundColor": "#F5F5F7 (light gray)",
+                  "textColor": "#333333"
+                },
+                {
+                  "text": "macOS 10.15+",
+                  "style": "badge",
+                  "backgroundColor": "#F5F5F7 (light gray)",
+                  "textColor": "#333333"
+                },
+                {
+                  "text": "visionOS 1.0+",
+                  "style": "badge",
+                  "backgroundColor": "#F5F5F7 (light gray)",
+                  "textColor": "#333333"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-overview-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 40,
+              "y": 320,
+              "width": 150,
+              "height": 32
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Overview",
+              "level": 2,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "28px",
+              "fontWeight": "bold",
+              "fontColor": "#000000 (black)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-overview-paragraph1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 40,
+              "y": 365,
+              "width": 700,
+              "height": 72
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "If your app focuses on providing and syncing user documents from remote storage, you can implement a File Provider extension to give users access to those documents when they're using other apps. If you just need to share local documents, see Share files locally below.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "regular",
+              "fontColor": "#333333 (dark gray)",
+              "links": [
+                {
+                  "text": "Share files locally",
+                  "targetId": "page1-share-files-locally-heading",
+                  "type": "internal-anchor"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-architecture-diagram",
+            "elementType": "diagram",
+            "boundingBox": {
+              "x": 40,
+              "y": 450,
+              "width": 600,
+              "height": 120
+            },
+            "zIndex": 10,
+            "content": {
+              "diagramType": "architecture",
+              "title": "File Provider Extension Architecture",
+              "description": "A horizontal flow diagram showing the relationship between an app, Document Browser, File Provider extension, and remote server. The diagram illustrates how files flow from an app through the File Provider extension to remote storage.",
+              "nodes": [
+                {
+                  "nodeId": "node-app",
+                  "label": "An app",
+                  "shape": "rounded-rectangle",
+                  "style": {
+                    "fillColor": "#FFFFFF (white)",
+                    "borderColor": "#CCCCCC (light gray)",
+                    "textColor": "#333333"
+                  },
+                  "position": {
+                    "x": 40,
+                    "y": 80
+                  },
+                  "semanticRole": "Client application that accesses files",
+                  "icon": "App icon - stylized 'A' character in a rounded rectangle"
+                },
+                {
+                  "nodeId": "node-document-browser",
+                  "label": "Document Browser",
+                  "shape": "rounded-rectangle",
+                  "style": {
+                    "fillColor": "#007AFF (Apple blue)",
+                    "borderColor": "#0056B3",
+                    "textColor": "#FFFFFF (white)"
+                  },
+                  "position": {
+                    "x": 180,
+                    "y": 80
+                  },
+                  "semanticRole": "System document browser interface",
+                  "icon": "Folder icon with document"
+                },
+                {
+                  "nodeId": "node-file-provider",
+                  "label": "File Provider extension",
+                  "shape": "rounded-rectangle",
+                  "style": {
+                    "fillColor": "#007AFF (Apple blue)",
+                    "borderColor": "#0056B3",
+                    "textColor": "#FFFFFF (white)"
+                  },
+                  "position": {
+                    "x": 340,
+                    "y": 80
+                  },
+                  "semanticRole": "The File Provider extension that manages file access and sync",
+                  "icon": "Extension puzzle piece icon"
+                },
+                {
+                  "nodeId": "node-server",
+                  "label": "Your server",
+                  "shape": "rounded-rectangle",
+                  "style": {
+                    "fillColor": "#FFFFFF (white)",
+                    "borderColor": "#CCCCCC (light gray)",
+                    "textColor": "#333333"
+                  },
+                  "position": {
+                    "x": 500,
+                    "y": 80
+                  },
+                  "semanticRole": "Remote storage server",
+                  "icon": "Server/cloud icon"
+                }
+              ],
+              "connections": [
+                {
+                  "connectionId": "conn-app-to-browser",
+                  "fromNodeId": "node-app",
+                  "toNodeId": "node-document-browser",
+                  "label": null,
+                  "lineStyle": "solid",
+                  "arrowHead": "none",
+                  "semanticMeaning": "App uses Document Browser to access files"
+                },
+                {
+                  "connectionId": "conn-browser-to-provider",
+                  "fromNodeId": "node-document-browser",
+                  "toNodeId": "node-file-provider",
+                  "label": null,
+                  "lineStyle": "solid",
+                  "arrowHead": "none",
+                  "semanticMeaning": "Document Browser interfaces with File Provider extension"
+                },
+                {
+                  "connectionId": "conn-provider-to-server",
+                  "fromNodeId": "node-file-provider",
+                  "toNodeId": "node-server",
+                  "label": null,
+                  "lineStyle": "solid",
+                  "arrowHead": "none",
+                  "semanticMeaning": "File Provider extension syncs with remote server"
+                }
+              ],
+              "swimlanes": [],
+              "legend": {
+                "present": false,
+                "entries": []
+              },
+              "narrativeWalkthrough": "The diagram shows a linear flow from left to right: (1) An app icon representing any application that needs file access, (2) A Document Browser component (shown in blue) that provides the system UI for file browsing, (3) A File Provider extension (shown in blue) that manages the connection between local and remote files, and (4) A server icon representing the remote storage location. The components are connected by horizontal lines indicating the data flow path."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-framework-intro-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 40,
+              "y": 590,
+              "width": 700,
+              "height": 24
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "The framework has two different starting points for building your File Provider extension.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "regular",
+              "fontColor": "#333333 (dark gray)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-replicated-extension-definition",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 40,
+              "y": 630,
+              "width": 700,
+              "height": 72
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "NSFileProviderReplicatedExtension",
+              "fontFamily": "SF Mono",
+              "fontSize": "15px",
+              "fontWeight": "semibold",
+              "fontColor": "#007AFF (Apple blue)",
+              "isLink": true,
+              "linkTarget": "NSFileProviderReplicatedExtension documentation page",
+              "followingText": "\nThe system manages the content accessed through the File Provider extension. Available in macOS 11+ and iOS 16+.",
+              "followingTextStyle": {
+                "fontFamily": "SF Pro Text",
+                "fontSize": "15px",
+                "fontWeight": "regular",
+                "fontColor": "#333333"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-nonreplicated-extension-definition",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 40,
+              "y": 720,
+              "width": 700,
+              "height": 72
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "NSFileProviderExtension",
+              "fontFamily": "SF Mono",
+              "fontSize": "15px",
+              "fontWeight": "semibold",
+              "fontColor": "#007AFF (Apple blue)",
+              "isLink": true,
+              "linkTarget": "NSFileProviderExtension documentation page",
+              "followingText": "\nThe extension hosts and manages the files accessed through the File Provider extension. Available in iOS 11+.",
+              "followingTextStyle": {
+                "fontFamily": "SF Pro Text",
+                "fontSize": "15px",
+                "fontWeight": "regular",
+                "fontColor": "#333333"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-replicated-explanation",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 40,
+              "y": 810,
+              "width": 700,
+              "height": 96
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "The replicated extension takes responsibility for monitoring and managing the local copies of your documents. The file provider focuses on syncing data between the local copy and the remote storage—uploading any local changes and downloading any remote changes. For more information, see Replicated File Provider extension.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "regular",
+              "fontColor": "#333333 (dark gray)",
+              "links": [
+                {
+                  "text": "Replicated File Provider extension",
+                  "targetId": "Replicated File Provider extension documentation",
+                  "type": "internal-link",
+                  "color": "#007AFF (Apple blue)"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-nonreplicated-explanation",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 40,
+              "y": 920,
+              "width": 700,
+              "height": 96
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "The nonreplicated extension manages a local copy of the extension's content, including creating and managing placeholders for remote files. It also syncs the content with your remote storage. For more information, see Nonreplicated File Provider extension.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "regular",
+              "fontColor": "#333333 (dark gray)",
+              "links": [
+                {
+                  "text": "Nonreplicated File Provider extension",
+                  "targetId": "Nonreplicated File Provider extension documentation",
+                  "type": "internal-link",
+                  "color": "#007AFF (Apple blue)"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-share-files-locally-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 40,
+              "y": 1040,
+              "width": 250,
+              "height": 32
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Share files locally",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "22px",
+              "fontWeight": "semibold",
+              "fontColor": "#000000 (black)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-share-files-paragraph1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 40,
+              "y": 1085,
+              "width": 700,
+              "height": 48
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "You don't need a File Provider extension to allow access to documents that your app stores locally.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "regular",
+              "fontColor": "#333333 (dark gray)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-share-files-paragraph2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 40,
+              "y": 1145,
+              "width": 700,
+              "height": 120
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "In iOS, to give other apps access to the files in your Documents directory, set the following keys in your app's Info tab or its Info.plist file. For document browser-based apps, set the UISupportsDocumentBrowser key. For all other apps, set both the UIFileSharingEnabled and LSSupportsOpeningDocumentsInPlace keys.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "regular",
+              "fontColor": "#333333 (dark gray)",
+              "inlineCode": [
+                {
+                  "text": "UISupportsDocumentBrowser",
+                  "fontFamily": "SF Mono",
+                  "fontSize": "15px",
+                  "backgroundColor": "#F5F5F7 (light gray)"
+                },
+                {
+                  "text": "UIFileSharingEnabled",
+                  "fontFamily": "SF Mono",
+                  "fontSize": "15px",
+                  "backgroundColor": "#F5F5F7 (light gray)"
+                },
+                {
+                  "text": "LSSupportsOpeningDocumentsInPlace",
+                  "fontFamily": "SF Mono",
+                  "fontSize": "15px",
+                  "backgroundColor": "#F5F5F7 (light gray)"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-share-files-paragraph3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 40,
+              "y": 1280,
+              "width": 700,
+              "height": 72
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "After you set these keys, other apps can open and edit the contents of your Documents directory in place. Your files also appear in both the Files app and the document browser. For more information, see the UIDocumentBrowserViewController class.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "regular",
+              "fontColor": "#333333 (dark gray)",
+              "links": [
+                {
+                  "text": "UIDocumentBrowserViewController",
+                  "targetId": "UIDocumentBrowserViewController class documentation",
+                  "type": "external-link",
+                  "color": "#007AFF (Apple blue)"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-topics-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 40,
+              "y": 1380,
+              "width": 100,
+              "height": 32
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Topics",
+              "level": 2,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "28px",
+              "fontWeight": "bold",
+              "fontColor": "#000000 (black)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-essentials-section",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 40,
+              "y": 1430,
+              "width": 150,
+              "height": 26
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Essentials",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "semibold",
+              "fontColor": "#000000 (black)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-essentials-item1",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 40,
+              "y": 1470,
+              "width": 700,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "api-reference",
+              "items": [
+                {
+                  "icon": "Document icon (gray)",
+                  "title": "File Provider updates",
+                  "titleStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "17px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "Learn about important changes to File Provider.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-extension-types-section",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 40,
+              "y": 1550,
+              "width": 200,
+              "height": 26
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Extension types",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "semibold",
+              "fontColor": "#000000 (black)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-extension-types-list",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 40,
+              "y": 1590,
+              "width": 700,
+              "height": 140
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "api-reference",
+              "items": [
+                {
+                  "icon": "Document icon (gray)",
+                  "title": "Replicated File Provider extension",
+                  "titleStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "17px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "Build a File Provider extension that syncs the local copies of your files with your remote storage.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                },
+                {
+                  "icon": "Document icon (gray)",
+                  "title": "Nonreplicated File Provider extension",
+                  "titleStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "17px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "Build a File Provider extension that hosts and manages the user's local files.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-extension-management-section",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 40,
+              "y": 1750,
+              "width": 250,
+              "height": 26
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Extension management",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "semibold",
+              "fontColor": "#000000 (black)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-extension-management-item",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 40,
+              "y": 1790,
+              "width": 700,
+              "height": 70
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "api-reference",
+              "items": [
+                {
+                  "keyword": "class",
+                  "keywordStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "title": "NSFileProviderManager",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "A manager object that you use to communicate with the file provider from either your app or your File Provider extension.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-provided-items-section",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 40,
+              "y": 1880,
+              "width": 200,
+              "height": 26
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Provided items",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "semibold",
+              "fontColor": "#000000 (black)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-provided-items-list",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 40,
+              "y": 1920,
+              "width": 700,
+              "height": 420
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "api-reference",
+              "items": [
+                {
+                  "keyword": "typealias",
+                  "keywordStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "title": "NSFileProviderItem",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "An item the File Provider extension manages.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                },
+                {
+                  "keyword": "protocol",
+                  "keywordStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "title": "NSFileProviderItemProtocol",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "A protocol that defines the properties of an item managed by the File Provider extension.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                },
+                {
+                  "keyword": "struct",
+                  "keywordStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "title": "NSFileProviderItemIdentifier",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "A unique identifier for an item managed by the File Provider extension.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                },
+                {
+                  "keyword": "struct",
+                  "keywordStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "title": "NSFileProviderItemCapabilities",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "An item's capabilities, which define the actions that the user can perform in the document browser.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                },
+                {
+                  "keyword": "struct",
+                  "keywordStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "title": "NSFileProviderTypeAndCreator",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "A structure that contains the file type and file creator codes for an item.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-cloud-search-section",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 40,
+              "y": 2360,
+              "width": 150,
+              "height": 26
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Cloud search",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "semibold",
+              "fontColor": "#000000 (black)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-cloud-search-item",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 40,
+              "y": 2400,
+              "width": 700,
+              "height": 70
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "api-reference",
+              "items": [
+                {
+                  "keyword": "protocol",
+                  "keywordStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "title": "NSFileProviderSearching",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "A protocol you implement to support searching in your file provider.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-domains-section",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 40,
+              "y": 2490,
+              "width": 120,
+              "height": 26
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Domains",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "semibold",
+              "fontColor": "#000000 (black)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-domains-item",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 40,
+              "y": 2530,
+              "width": 700,
+              "height": 70
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "api-reference",
+              "items": [
+                {
+                  "keyword": "class",
+                  "keywordStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "title": "NSFileProviderDomain",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "A File Provider extension's domain.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-errors-section",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 40,
+              "y": 2620,
+              "width": 100,
+              "height": 26
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Errors",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "semibold",
+              "fontColor": "#000000 (black)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-errors-list",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 40,
+              "y": 2660,
+              "width": 700,
+              "height": 400
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "api-reference",
+              "items": [
+                {
+                  "keyword": "struct",
+                  "keywordStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "title": "NSFileProviderError",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "A structure that contains information about File Provider extension errors.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                },
+                {
+                  "keyword": "enum",
+                  "keywordStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "title": "Code",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "The error codes for the File Provider extension.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                },
+                {
+                  "keyword": "let",
+                  "keywordStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "title": "NSFileProviderErrorDomain: String",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "The error domain for the File Provider extension.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                },
+                {
+                  "keyword": "let",
+                  "keywordStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "title": "NSFileProviderErrorItemKey: String",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "The key for accessing information about sync-related errors.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                },
+                {
+                  "keyword": "let",
+                  "keywordStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "title": "NSFileProviderErrorNonExistentItemIdentifierKey: String",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "The key for accessing the specified item's identifier when the item doesn't exist.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                },
+                {
+                  "keyword": "let",
+                  "keywordStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "title": "NSFileProviderErrorCollidingItemKey: String",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "The key for accessing the existing item from a filename collision error's user info dictionary.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true,
+                  "badge": {
+                    "text": "Deprecated",
+                    "backgroundColor": "#FF9500 (orange)",
+                    "textColor": "#FFFFFF"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-data-export-section",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 40,
+              "y": 3080,
+              "width": 150,
+              "height": 26
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Data export",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "semibold",
+              "fontColor": "#000000 (black)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-data-export-item",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 40,
+              "y": 3120,
+              "width": 700,
+              "height": 70
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "api-reference",
+              "items": [
+                {
+                  "icon": "Document icon (gray)",
+                  "title": "Exporting file provider metrics data",
+                  "titleStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "17px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "Download and analyze usage, consistency, and error data.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-global-variables-section",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 40,
+              "y": 3210,
+              "width": 280,
+              "height": 26
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Global variables and macros",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "semibold",
+              "fontColor": "#000000 (black)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-global-variables-item",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 40,
+              "y": 3250,
+              "width": 700,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "api-reference",
+              "items": [
+                {
+                  "icon": "Document icon (gray)",
+                  "title": "Global variables and macros",
+                  "titleStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "17px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": null,
+                  "isLink": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-structures-section",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 40,
+              "y": 3320,
+              "width": 150,
+              "height": 26
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Structures",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "semibold",
+              "fontColor": "#000000 (black)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-structures-list",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 40,
+              "y": 3360,
+              "width": 700,
+              "height": 140
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "api-reference",
+              "items": [
+                {
+                  "keyword": "struct",
+                  "keywordStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "title": "NSFileProviderUserInfoKey",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": null,
+                  "isLink": true
+                },
+                {
+                  "keyword": "struct",
+                  "keywordStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "title": "NSFileProviderVolumeUnsupportedReason",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "semibold",
+                    "fontColor": "#007AFF (Apple blue)"
+                  },
+                  "description": "Constants that describe why an external volume might not be eligible for storing a domain.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "regular",
+                    "fontColor": "#666666 (gray)"
+                  },
+                  "isLink": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-right-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 900,
+              "y": 120,
+              "width": 335,
+              "height": 800
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "table-of-contents",
+              "title": null,
+              "sections": [
+                {
+                  "heading": "Platforms",
+                  "items": [
+                    "iOS",
+                    "iPadOS",
+                    "macOS",
+                    "tvOS",
+                    "visionOS",
+                    "watchOS"
+                  ]
+                },
+                {
+                  "heading": "Tools",
+                  "items": [
+                    "Swift",
+                    "SwiftUI",
+                    "Swift Playground",
+                    "TestFlight",
+                    "Xcode",
+                    "Xcode Cloud",
+                    "SF Symbols"
+                  ]
+                },
+                {
+                  "heading": "Topics & Technologies",
+                  "items": [
+                    "Accessibility",
+                    "Accessories",
+                    "App Extension",
+                    "App Store",
+                    "Audio & Video",
+                    "Augmented Reality",
+                    "Design",
+                    "Distribution",
+                    "Education",
+                    "Fonts",
+                    "Games",
+                    "Health & Fitness",
+                    "In-App Purchase",
+                    "Localization",
+                    "Maps & Location",
+                    "Machine Learning & AI",
+                    "Open Source",
+                    "Security",
+                    "Safari & Web"
+                  ]
+                },
+                {
+                  "heading": "Resources",
+                  "items": [
+                    "Documentation",
+                    "Tutorials",
+                    "Downloads",
+                    "Forums",
+                    "Videos"
+                  ]
+                },
+                {
+                  "heading": "Support",
+                  "items": [
+                    "Support Articles",
+                    "Contact Us",
+                    "Bug Reporting",
+                    "System Status"
+                  ]
+                },
+                {
+                  "heading": "Account",
+                  "items": [
+                    "Apple Developer",
+                    "App Store Connect",
+                    "Certificates, IDs, & Profiles",
+                    "Feedback Assistant"
+                  ]
+                },
+                {
+                  "heading": "Programs",
+                  "items": [
+                    "Apple Developer Program",
+                    "Apple Developer Enterprise Program",
+                    "App Store Small Business Program",
+                    "MFi Program",
+                    "News Partner Program",
+                    "Video Partner Program",
+                    "Security Bounty Program",
+                    "Security Research Device Program"
+                  ]
+                },
+                {
+                  "heading": "Events",
+                  "items": [
+                    "Meet with Apple",
+                    "Apple Developer Centers",
+                    "App Store Awards",
+                    "Apple Design Awards",
+                    "Apple Developer Academies",
+                    "WWDC"
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 3520,
+              "width": 1275,
+              "height": 530
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "site-footer",
+              "backgroundColor": "#F5F5F7 (light gray)",
+              "columns": [
+                {
+                  "heading": "Platforms",
+                  "items": [
+                    "iOS",
+                    "iPadOS",
+                    "macOS",
+                    "tvOS",
+                    "visionOS",
+                    "watchOS"
+                  ]
+                },
+                {
+                  "heading": "Tools",
+                  "items": [
+                    "Swift",
+                    "SwiftUI",
+                    "Accessibility",
+                    "TestFlight",
+                    "Xcode",
+                    "Xcode Cloud",
+                    "SF Symbols"
+                  ]
+                },
+                {
+                  "heading": "Topics & Technologies",
+                  "items": [
+                    "Accessibility",
+                    "Accessories",
+                    "App Extension",
+                    "App Store",
+                    "Audio & Video",
+                    "Augmented Reality",
+                    "Design",
+                    "Distribution",
+                    "Education",
+                    "Fonts",
+                    "Games",
+                    "Health & Fitness",
+                    "In-App Purchase",
+                    "Localization",
+                    "Maps & Location",
+                    "Machine Learning & AI",
+                    "Security",
+                    "Safari & Web"
+                  ]
+                },
+                {
+                  "heading": "Resources",
+                  "items": [
+                    "Documentation",
+                    "Tutorials",
+                    "Downloads",
+                    "Forums",
+                    "Videos"
+                  ]
+                },
+                {
+                  "heading": "Support",
+                  "items": [
+                    "Support Articles",
+                    "Contact Us",
+                    "Bug Reporting",
+                    "System Status"
+                  ]
+                },
+                {
+                  "heading": "Account",
+                  "items": [
+                    "Apple Developer",
+                    "App Store Connect",
+                    "Certificates, IDs, & Profiles",
+                    "Feedback Assistant"
+                  ]
+                },
+                {
+                  "heading": "Programs",
+                  "items": [
+                    "Apple Developer Program",
+                    "Apple Developer Enterprise Program",
+                    "App Store Small Business Program",
+                    "MFi Program",
+                    "News Partner Program",
+                    "Video Partner Program",
+                    "Security Bounty Program",
+                    "Security Research Device Program"
+                  ]
+                },
+                {
+                  "heading": "Events",
+                  "items": [
+                    "Meet with Apple",
+                    "Apple Developer Centers",
+                    "App Store Awards",
+                    "Apple Design Awards",
+                    "Apple Developer Academies",
+                    "WWDC"
+                  ]
+                }
+              ],
+              "bottomBar": {
+                "feedbackLink": {
+                  "text": "To submit feedback on documentation, visit Feedback Assistant.",
+                  "url": "Feedback Assistant"
+                },
+                "themeToggle": {
+                  "options": [
+                    "Light",
+                    "Dark",
+                    "Auto"
+                  ],
+                  "currentSelection": "Auto"
+                },
+                "legalLinks": [
+                  {
+                    "text": "Copyright 2025 Apple Inc. All rights reserved.",
+                    "isLink": false
+                  },
+                  {
+                    "text": "Terms of Use",
+                    "isLink": true
+                  },
+                  {
+                    "text": "Privacy Policy",
+                    "isLink": true
+                  },
+                  {
+                    "text": "Agreements and Guidelines",
+                    "isLink": true
+                  }
+                ]
+              }
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation",
+          "page1-breadcrumb",
+          "page1-framework-label",
+          "page1-main-title",
+          "page1-subtitle",
+          "page1-platform-badges",
+          "page1-overview-heading",
+          "page1-overview-paragraph1",
+          "page1-architecture-diagram",
+          "page1-framework-intro-paragraph",
+          "page1-replicated-extension-definition",
+          "page1-nonreplicated-extension-definition",
+          "page1-replicated-explanation",
+          "page1-nonreplicated-explanation",
+          "page1-share-files-locally-heading",
+          "page1-share-files-paragraph1",
+          "page1-share-files-paragraph2",
+          "page1-share-files-paragraph3",
+          "page1-topics-heading",
+          "page1-essentials-section",
+          "page1-essentials-item1",
+          "page1-extension-types-section",
+          "page1-extension-types-list",
+          "page1-extension-management-section",
+          "page1-extension-management-item",
+          "page1-provided-items-section",
+          "page1-provided-items-list",
+          "page1-cloud-search-section",
+          "page1-cloud-search-item",
+          "page1-domains-section",
+          "page1-domains-item",
+          "page1-errors-section",
+          "page1-errors-list",
+          "page1-data-export-section",
+          "page1-data-export-item",
+          "page1-global-variables-section",
+          "page1-global-variables-item",
+          "page1-structures-section",
+          "page1-structures-list",
+          "page1-right-sidebar",
+          "page1-footer"
+        ],
+        "pageSummary": "This is the main Apple Developer Documentation page for the File Provider framework. It provides an overview of the framework's purpose (allowing other apps to access files managed by your app and synced with remote storage), describes two extension types (replicated and nonreplicated), explains how to share files locally without a File Provider extension, and lists all the API topics including classes, protocols, structs, and error handling types available in the framework."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": true,
+        "entries": [
+          {
+            "title": "Overview",
+            "pageNumber": 1
+          },
+          {
+            "title": "Share files locally",
+            "pageNumber": 1
+          },
+          {
+            "title": "Topics",
+            "pageNumber": 1,
+            "subentries": [
+              "Essentials",
+              "Extension types",
+              "Extension management",
+              "Provided items",
+              "Cloud search",
+              "Domains",
+              "Errors",
+              "Data export",
+              "Global variables and macros",
+              "Structures"
+            ]
+          }
+        ]
+      },
+      "runningHeaders": "Documentation navigation bar",
+      "runningFooters": "Apple Developer site footer with platform links, resources, and legal information",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "overview",
+          "title": "Overview",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "share-files-locally",
+              "title": "Share files locally",
+              "startPage": 1,
+              "endPage": 1
+            }
+          ],
+          "summary": "Introduces the File Provider framework, explaining its purpose for providing and syncing user documents from remote storage. Describes two extension types: NSFileProviderReplicatedExtension (system-managed, macOS 11+/iOS 16+) and NSFileProviderExtension (extension-managed, iOS 11+). Also covers local file sharing without a File Provider extension using Info.plist keys."
+        },
+        {
+          "sectionId": "topics",
+          "title": "Topics",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "essentials",
+              "title": "Essentials"
+            },
+            {
+              "sectionId": "extension-types",
+              "title": "Extension types"
+            },
+            {
+              "sectionId": "extension-management",
+              "title": "Extension management"
+            },
+            {
+              "sectionId": "provided-items",
+              "title": "Provided items"
+            },
+            {
+              "sectionId": "cloud-search",
+              "title": "Cloud search"
+            },
+            {
+              "sectionId": "domains",
+              "title": "Domains"
+            },
+            {
+              "sectionId": "errors",
+              "title": "Errors"
+            },
+            {
+              "sectionId": "data-export",
+              "title": "Data export"
+            },
+            {
+              "sectionId": "global-variables",
+              "title": "Global variables and macros"
+            },
+            {
+              "sectionId": "structures",
+              "title": "Structures"
+            }
+          ],
+          "summary": "API reference listing all classes, protocols, structs, enums, and constants available in the File Provider framework, organized by functional category."
+        }
+      ],
+      "documentFlow": "The document begins with a framework title and platform availability badges, followed by an overview section that explains the purpose and architecture of the File Provider framework with a visual diagram. It then discusses the two extension types and their differences, followed by guidance on sharing files locally without a full File Provider extension. The main body consists of a comprehensive API reference organized into logical topic groups, providing links to detailed documentation for each type. The page concludes with site-wide navigation and legal information in the footer."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "File Provider",
+          "definition": "An extension other apps use to access files and folders managed by your app and synced with a remote storage",
+          "occurrences": 20
+        },
+        {
+          "term": "NSFileProviderReplicatedExtension",
+          "definition": "A File Provider extension type where the system manages the content accessed through the extension. Available in macOS 11+ and iOS 16+.",
+          "occurrences": 2
+        },
+        {
+          "term": "NSFileProviderExtension",
+          "definition": "A File Provider extension type where the extension hosts and manages the files accessed through it. Available in iOS 11+.",
+          "occurrences": 2
+        },
+        {
+          "term": "UISupportsDocumentBrowser",
+          "definition": "Info.plist key for document browser-based apps to allow other apps access to files",
+          "occurrences": 1
+        },
+        {
+          "term": "UIFileSharingEnabled",
+          "definition": "Info.plist key to enable file sharing for non-document-browser apps",
+          "occurrences": 1
+        },
+        {
+          "term": "LSSupportsOpeningDocumentsInPlace",
+          "definition": "Info.plist key to allow opening documents in place for non-document-browser apps",
+          "occurrences": 1
+        },
+        {
+          "term": "NSFileProviderManager",
+          "definition": "A manager object that you use to communicate with the file provider from either your app or your File Provider extension",
+          "occurrences": 1
+        },
+        {
+          "term": "NSFileProviderDomain",
+          "definition": "A File Provider extension's domain",
+          "occurrences": 1
+        },
+        {
+          "term": "NSFileProviderItem",
+          "definition": "An item the File Provider extension manages",
+          "occurrences": 1
+        },
+        {
+          "term": "NSFileProviderItemProtocol",
+          "definition": "A protocol that defines the properties of an item managed by the File Provider extension",
+          "occurrences": 1
+        }
+      ],
+      "keyFindings": [
+        "File Provider framework supports iOS 11.0+, iPadOS 11.0+, Mac Catalyst 11.0+, macOS 10.15+, and visionOS 1.0+",
+        "Two extension types exist: replicated (system-managed, newer) and nonreplicated (extension-managed, legacy)",
+        "Replicated extensions are available on macOS 11+ and iOS 16+, while nonreplicated extensions are available on iOS 11+",
+        "Local file sharing can be achieved without a File Provider extension using Info.plist keys",
+        "For document browser-based apps, use UISupportsDocumentBrowser key",
+        "For other apps, use both UIFileSharingEnabled and LSSupportsOpeningDocumentsInPlace keys",
+        "Files appear in both the Files app and document browser after setting appropriate keys",
+        "NSFileProviderErrorCollidingItemKey is deprecated"
+      ],
+      "technicalSpecifications": {
+        "minimumDeploymentTargets": {
+          "iOS": "11.0+",
+          "iPadOS": "11.0+",
+          "macCatalyst": "11.0+",
+          "macOS": "10.15+",
+          "visionOS": "1.0+"
+        },
+        "extensionTypes": {
+          "replicated": {
+            "class": "NSFileProviderReplicatedExtension",
+            "availability": "macOS 11+, iOS 16+",
+            "characteristics": "System manages content, focuses on syncing between local and remote"
+          },
+          "nonreplicated": {
+            "class": "NSFileProviderExtension",
+            "availability": "iOS 11+",
+            "characteristics": "Extension manages content, including placeholders and syncing"
+          }
+        },
+        "infoPlistKeys": {
+          "documentBrowserApps": [
+            "UISupportsDocumentBrowser"
+          ],
+          "otherApps": [
+            "UIFileSharingEnabled",
+            "LSSupportsOpeningDocumentsInPlace"
+          ]
+        }
+      },
+      "designDecisions": [
+        "Two-tier extension architecture allows flexibility between system-managed (replicated) and extension-managed (nonreplicated) approaches",
+        "Info.plist configuration enables local file sharing without requiring full File Provider implementation",
+        "Namespace uses NS prefix indicating Objective-C origin with Swift compatibility"
+      ]
+    }
+  },
+  "apiReference": {
+    "classes": [
+      {
+        "name": "NSFileProviderManager",
+        "description": "A manager object that you use to communicate with the file provider from either your app or your File Provider extension.",
+        "category": "Extension management"
+      },
+      {
+        "name": "NSFileProviderDomain",
+        "description": "A File Provider extension's domain.",
+        "category": "Domains"
+      }
+    ],
+    "protocols": [
+      {
+        "name": "NSFileProviderItemProtocol",
+        "description": "A protocol that defines the properties of an item managed by the File Provider extension.",
+        "category": "Provided items"
+      },
+      {
+        "name": "NSFileProviderSearching",
+        "description": "A protocol you implement to support searching in your file provider.",
+        "category": "Cloud search"
+      }
+    ],
+    "structs": [
+      {
+        "name": "NSFileProviderItemIdentifier",
+        "description": "A unique identifier for an item managed by the File Provider extension.",
+        "category": "Provided items"
+      },
+      {
+        "name": "NSFileProviderItemCapabilities",
+        "description": "An item's capabilities, which define the actions that the user can perform in the document browser.",
+        "category": "Provided items"
+      },
+      {
+        "name": "NSFileProviderTypeAndCreator",
+        "description": "A structure that contains the file type and file creator codes for an item.",
+        "category": "Provided items"
+      },
+      {
+        "name": "NSFileProviderError",
+        "description": "A structure that contains information about File Provider extension errors.",
+        "category": "Errors"
+      },
+      {
+        "name": "NSFileProviderUserInfoKey",
+        "description": null,
+        "category": "Structures"
+      },
+      {
+        "name": "NSFileProviderVolumeUnsupportedReason",
+        "description": "Constants that describe why an external volume might not be eligible for storing a domain.",
+        "category": "Structures"
+      }
+    ],
+    "typealiases": [
+      {
+        "name": "NSFileProviderItem",
+        "description": "An item the File Provider extension manages.",
+        "category": "Provided items"
+      }
+    ],
+    "enums": [
+      {
+        "name": "Code",
+        "description": "The error codes for the File Provider extension.",
+        "category": "Errors",
+        "parentType": "NSFileProviderError"
+      }
+    ],
+    "constants": [
+      {
+        "name": "NSFileProviderErrorDomain",
+        "type": "String",
+        "description": "The error domain for the File Provider extension.",
+        "category": "Errors"
+      },
+      {
+        "name": "NSFileProviderErrorItemKey",
+        "type": "String",
+        "description": "The key for accessing information about sync-related errors.",
+        "category": "Errors"
+      },
+      {
+        "name": "NSFileProviderErrorNonExistentItemIdentifierKey",
+        "type": "String",
+        "description": "The key for accessing the specified item's identifier when the item doesn't exist.",
+        "category": "Errors"
+      },
+      {
+        "name": "NSFileProviderErrorCollidingItemKey",
+        "type": "String",
+        "description": "The key for accessing the existing item from a filename collision error's user info dictionary.",
+        "category": "Errors",
+        "deprecated": true
+      }
+    ]
+  },
+  "relatedDocumentation": [
+    {
+      "title": "File Provider updates",
+      "description": "Learn about important changes to File Provider.",
+      "type": "article"
+    },
+    {
+      "title": "Replicated File Provider extension",
+      "description": "Build a File Provider extension that syncs the local copies of your files with your remote storage.",
+      "type": "article"
+    },
+    {
+      "title": "Nonreplicated File Provider extension",
+      "description": "Build a File Provider extension that hosts and manages the user's local files.",
+      "type": "article"
+    },
+    {
+      "title": "Exporting file provider metrics data",
+      "description": "Download and analyze usage, consistency, and error data.",
+      "type": "article"
+    },
+    {
+      "title": "Global variables and macros",
+      "description": null,
+      "type": "reference"
+    },
+    {
+      "title": "UIDocumentBrowserViewController",
+      "description": "System document browser view controller class.",
+      "type": "class-reference"
+    }
+  ]
+}

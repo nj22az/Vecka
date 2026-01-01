@@ -1,0 +1,1846 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Layout and organization | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "design",
+      "primaryLanguage": "en",
+      "keywords": [
+        "Layout",
+        "organization",
+        "Apple",
+        "Developer",
+        "Documentation",
+        "Design",
+        "Human Interface Guidelines",
+        "HIG",
+        "Components",
+        "UI",
+        "SwiftUI",
+        "iOS",
+        "iPadOS",
+        "macOS",
+        "tvOS",
+        "visionOS",
+        "watchOS"
+      ],
+      "summary": "This is an Apple Developer Documentation page presenting the 'Layout and organization' section of the Human Interface Guidelines. The page serves as a navigation hub displaying 10 component categories (Boxes, Collections, Column views, Disclosure controls, Labels, Lists and tables, Lockups, Outline views, Split views, Tab views) with visual card-style thumbnails for each. The page includes comprehensive site navigation, footer links, and theme switching controls.",
+      "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+      "sourceURL": "https://developer.apple.com/design/human-interface-guidelines/layout-and-organization",
+      "fileSize": "2.8MB",
+      "format": "PDF"
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": null,
+          "height": null,
+          "unit": "pixels"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF (white)",
+        "layout": {
+          "type": "multi-column",
+          "columns": 2,
+          "margins": {
+            "top": "standard",
+            "right": "standard",
+            "bottom": "standard",
+            "left": "standard"
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation-bar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": "full-width",
+              "height": "approximately 50px"
+            },
+            "zIndex": 100,
+            "content": {
+              "navigationType": "primary-header",
+              "backgroundColor": "#FFFFFF",
+              "items": [
+                {
+                  "type": "logo",
+                  "content": "Apple Developer",
+                  "icon": "Apple logo ()",
+                  "position": "left"
+                },
+                {
+                  "type": "nav-link",
+                  "label": "News",
+                  "position": "center-group"
+                },
+                {
+                  "type": "nav-link",
+                  "label": "Discover",
+                  "position": "center-group"
+                },
+                {
+                  "type": "nav-link",
+                  "label": "Design",
+                  "position": "center-group"
+                },
+                {
+                  "type": "nav-link",
+                  "label": "Develop",
+                  "position": "center-group"
+                },
+                {
+                  "type": "nav-link",
+                  "label": "Distribute",
+                  "position": "center-group"
+                },
+                {
+                  "type": "nav-link",
+                  "label": "Support",
+                  "position": "center-group"
+                },
+                {
+                  "type": "nav-link",
+                  "label": "Account",
+                  "position": "center-group"
+                },
+                {
+                  "type": "icon-button",
+                  "icon": "search/magnifying glass",
+                  "position": "right"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-subheader-design-nav",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": "below header",
+              "width": "full-width",
+              "height": "approximately 40px"
+            },
+            "zIndex": 99,
+            "content": {
+              "navigationType": "secondary-header",
+              "leftSection": {
+                "label": "Design",
+                "style": "bold text"
+              },
+              "rightSection": {
+                "items": [
+                  {
+                    "label": "Overview"
+                  },
+                  {
+                    "label": "What's New"
+                  },
+                  {
+                    "label": "Get Started"
+                  },
+                  {
+                    "label": "Guidelines"
+                  },
+                  {
+                    "label": "Resources"
+                  }
+                ]
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-sidebar-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": "left",
+              "y": "below subheader",
+              "width": "approximately 250px",
+              "height": "full content height"
+            },
+            "zIndex": 50,
+            "content": {
+              "navigationType": "sidebar-menu",
+              "filterInput": {
+                "placeholder": "Filter",
+                "icon": "filter lines icon"
+              },
+              "menuStructure": [
+                {
+                  "label": "Getting started",
+                  "expandable": true,
+                  "expanded": false,
+                  "icon": "chevron-right"
+                },
+                {
+                  "label": "Foundations",
+                  "expandable": true,
+                  "expanded": false,
+                  "icon": "chevron-right"
+                },
+                {
+                  "label": "Patterns",
+                  "expandable": true,
+                  "expanded": false,
+                  "icon": "chevron-right"
+                },
+                {
+                  "label": "Components",
+                  "expandable": true,
+                  "expanded": true,
+                  "icon": "chevron-down",
+                  "children": [
+                    {
+                      "label": "Content",
+                      "icon": "rectangle with text icon",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "label": "Layout and organization",
+                      "icon": "grid/layout icon",
+                      "expandable": true,
+                      "expanded": true,
+                      "isCurrentPage": true,
+                      "children": [
+                        {
+                          "label": "Boxes",
+                          "expandable": false
+                        },
+                        {
+                          "label": "Collections",
+                          "expandable": false
+                        },
+                        {
+                          "label": "Column views",
+                          "expandable": false
+                        },
+                        {
+                          "label": "Disclosure controls",
+                          "expandable": false
+                        },
+                        {
+                          "label": "Labels",
+                          "expandable": false
+                        },
+                        {
+                          "label": "Lists and tables",
+                          "expandable": false
+                        },
+                        {
+                          "label": "Lockups",
+                          "expandable": false
+                        },
+                        {
+                          "label": "Outline views",
+                          "expandable": false
+                        },
+                        {
+                          "label": "Split views",
+                          "expandable": false
+                        },
+                        {
+                          "label": "Tab views",
+                          "expandable": false
+                        }
+                      ]
+                    },
+                    {
+                      "label": "Menus and actions",
+                      "icon": "menu icon",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "label": "Navigation and search",
+                      "icon": "navigation/compass icon",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "label": "Presentation",
+                      "expandable": true,
+                      "expanded": false,
+                      "icon": "chevron-right"
+                    },
+                    {
+                      "label": "Selection and input",
+                      "icon": "checkbox/selection icon",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "label": "Status",
+                      "icon": "sparkles/status icon",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "label": "System experiences",
+                      "icon": "system/window icon",
+                      "expandable": true,
+                      "expanded": false
+                    }
+                  ]
+                },
+                {
+                  "label": "Inputs",
+                  "expandable": true,
+                  "expanded": false,
+                  "icon": "chevron-right"
+                },
+                {
+                  "label": "Technologies",
+                  "expandable": true,
+                  "expanded": false,
+                  "icon": "chevron-right"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main content area",
+              "y": "top of main content",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Layout and organization",
+              "level": 1,
+              "fontStyle": {
+                "size": "large (approximately 32-40px)",
+                "weight": "bold",
+                "color": "#000000 (black)"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-card-boxes",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "grid position row 1, column 1",
+              "y": "below main heading",
+              "width": "card width (approximately 200px)",
+              "height": "card height (approximately 180px)"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "A card-style thumbnail showing a visual representation of the Boxes component. The illustration depicts a coral/salmon colored rounded rectangle container with three smaller rounded rectangle placeholder elements inside arranged horizontally. Each inner element has an image placeholder icon (mountain/landscape symbol) suggesting photo or media content. The overall design suggests a content box or card container pattern.",
+              "subjects": [
+                "rounded rectangle container",
+                "three image placeholders",
+                "card/box UI pattern"
+              ],
+              "composition": "One large coral-colored rounded rectangle container with three smaller light coral/pink rounded rectangles arranged horizontally inside, each containing a simplified mountain/photo icon",
+              "colorPalette": [
+                "#F97066 (coral/salmon)",
+                "#FECDC9 (light coral/pink)",
+                "#FFFFFF (white for icons)"
+              ],
+              "mood": "clean, modern, illustrative",
+              "technicalDetails": "Simplified UI component illustration representing a box/card container",
+              "textInImage": [],
+              "contextualRelevance": "Visual representation of the Boxes component category - containers that group related content",
+              "cardLabel": "Boxes"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-label-boxes",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-label-boxes",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": "below page1-card-boxes",
+              "y": "immediately below card",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Boxes",
+              "fontStyle": {
+                "size": "medium",
+                "weight": "semibold",
+                "color": "#000000"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-card-boxes",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-card-collections",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "grid position row 1, column 2",
+              "y": "below main heading",
+              "width": "card width",
+              "height": "card height"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "A card-style thumbnail showing a visual representation of the Collections component. The illustration shows a coral/salmon colored rounded rectangle container with four smaller rounded rectangle image placeholders arranged in a 2x2 grid pattern. Each placeholder has a simplified mountain/landscape photo icon, suggesting a photo gallery or media collection layout.",
+              "subjects": [
+                "collection grid",
+                "four image placeholders",
+                "2x2 grid layout"
+              ],
+              "composition": "One coral-colored rounded rectangle container with four light coral/pink rounded rectangles arranged in a 2x2 grid, each containing a mountain/photo icon",
+              "colorPalette": [
+                "#F97066 (coral/salmon)",
+                "#FECDC9 (light coral/pink)",
+                "#FFFFFF (white for icons)"
+              ],
+              "mood": "clean, modern, illustrative",
+              "technicalDetails": "Simplified UI component illustration representing a collection/gallery layout",
+              "textInImage": [],
+              "contextualRelevance": "Visual representation of the Collections component category - grid-based layouts for displaying multiple items",
+              "cardLabel": "Collections"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-label-collections",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-label-collections",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": "below page1-card-collections",
+              "y": "immediately below card",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Collections",
+              "fontStyle": {
+                "size": "medium",
+                "weight": "semibold",
+                "color": "#000000"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-card-collections",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-card-column-views",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "grid position row 1, column 3",
+              "y": "below main heading",
+              "width": "card width",
+              "height": "card height"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "A card-style thumbnail showing a visual representation of Column views. The illustration depicts a multi-column navigation interface typical of macOS Finder or similar file browsers. The left column shows three folder items (Folder A highlighted in blue, Folder B highlighted in coral/salmon, Folder C in coral) with folder icons. A chevron arrow indicates the selected item. The right column shows five image items (Image A through Image E) with image icons in coral/red color, representing the contents of the selected folder.",
+              "subjects": [
+                "multi-column view",
+                "folder hierarchy",
+                "file/image listing",
+                "navigation chevrons"
+              ],
+              "composition": "Two-column layout: left column with three folder rows (Folder A, B, C), middle column divider with chevron, right column with five image rows (Image A-E). Selected item (Folder B) highlighted in coral/salmon.",
+              "colorPalette": [
+                "#3B82F6 (blue for Folder A)",
+                "#F97066 (coral/salmon for Folder B and C)",
+                "#EF4444 (red for image icons)",
+                "#FFFFFF (white background)",
+                "#F3F4F6 (light gray row backgrounds)"
+              ],
+              "mood": "structured, hierarchical, navigational",
+              "technicalDetails": "Depicts macOS-style column view file browser pattern",
+              "textInImage": [
+                "Folder A",
+                "Folder B",
+                "Folder C",
+                "Image A",
+                "Image B",
+                "Image C",
+                "Image D",
+                "Image E"
+              ],
+              "contextualRelevance": "Visual representation of Column views component - hierarchical multi-column navigation pattern",
+              "cardLabel": "Column views"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-label-column-views",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-label-column-views",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": "below page1-card-column-views",
+              "y": "immediately below card",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Column views",
+              "fontStyle": {
+                "size": "medium",
+                "weight": "semibold",
+                "color": "#000000"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-card-column-views",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-card-disclosure-controls",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "grid position row 2, column 1",
+              "y": "below row 1",
+              "width": "card width",
+              "height": "card height"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "A card-style thumbnail showing a visual representation of Disclosure controls. The illustration shows a coral/salmon colored rounded rectangle container with two disclosure control indicators: a right-pointing chevron (>) on the left indicating collapsed/expandable content, and a downward-pointing chevron (v) on the right indicating expanded content. Both chevrons are displayed in white against the coral background.",
+              "subjects": [
+                "chevron disclosure indicators",
+                "expand/collapse controls",
+                "right chevron (collapsed)",
+                "down chevron (expanded)"
+              ],
+              "composition": "Coral-colored rounded rectangle with two white chevron icons - one pointing right (collapsed state) on the left side, one pointing down (expanded state) on the right side",
+              "colorPalette": [
+                "#F97066 (coral/salmon background)",
+                "#FFFFFF (white chevrons)"
+              ],
+              "mood": "clean, simple, instructional",
+              "technicalDetails": "Illustrates the two states of disclosure controls - collapsed (right chevron) and expanded (down chevron)",
+              "textInImage": [],
+              "contextualRelevance": "Visual representation of Disclosure controls - UI elements that expand/collapse content sections",
+              "cardLabel": "Disclosure controls"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-label-disclosure-controls",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-label-disclosure-controls",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": "below page1-card-disclosure-controls",
+              "y": "immediately below card",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Disclosure controls",
+              "fontStyle": {
+                "size": "medium",
+                "weight": "semibold",
+                "color": "#000000"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-card-disclosure-controls",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-card-labels",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "grid position row 2, column 2",
+              "y": "below row 1",
+              "width": "card width",
+              "height": "card height"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "A card-style thumbnail showing a visual representation of Labels. The illustration shows a coral/salmon colored rounded rectangle container with the word 'Label' displayed prominently in white text at the center. This represents a basic text label UI component.",
+              "subjects": [
+                "text label",
+                "Label text"
+              ],
+              "composition": "Coral-colored rounded rectangle with centered white text reading 'Label'",
+              "colorPalette": [
+                "#F97066 (coral/salmon background)",
+                "#FFFFFF (white text)"
+              ],
+              "mood": "clean, simple, typographic",
+              "technicalDetails": "Simple illustration of a text label component",
+              "textInImage": [
+                "Label"
+              ],
+              "contextualRelevance": "Visual representation of Labels component - text elements that describe or identify other UI elements",
+              "cardLabel": "Labels"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-label-labels",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-label-labels",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": "below page1-card-labels",
+              "y": "immediately below card",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Labels",
+              "fontStyle": {
+                "size": "medium",
+                "weight": "semibold",
+                "color": "#000000"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-card-labels",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-card-lists-tables",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "grid position row 2, column 3",
+              "y": "below row 1",
+              "width": "card width",
+              "height": "card height"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "A card-style thumbnail showing a visual representation of Lists and tables. The illustration shows a white/light background card with three table rows. Each row contains text on the left ('Table Row 1', 'Table Row 2', 'Table Row 3') and a right-pointing chevron (disclosure indicator) on the right side. The rows have a coral/salmon colored border on the left edge and coral chevrons, indicating tappable/selectable list items with navigation capability.",
+              "subjects": [
+                "table rows",
+                "list items",
+                "disclosure chevrons",
+                "navigable list"
+              ],
+              "composition": "Rounded rectangle card with three horizontal rows stacked vertically. Each row has left-aligned text and right-aligned coral chevron. Left border accent in coral color.",
+              "colorPalette": [
+                "#FFFFFF (white/light background)",
+                "#F97066 (coral/salmon accents and chevrons)",
+                "#1F2937 (dark gray/black text)"
+              ],
+              "mood": "structured, organized, interactive",
+              "technicalDetails": "Standard iOS/Apple table view pattern with disclosure indicators",
+              "textInImage": [
+                "Table Row 1",
+                "Table Row 2",
+                "Table Row 3"
+              ],
+              "contextualRelevance": "Visual representation of Lists and tables component - vertical arrangements of rows with optional navigation",
+              "cardLabel": "Lists and tables"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-label-lists-tables",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-label-lists-tables",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": "below page1-card-lists-tables",
+              "y": "immediately below card",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Lists and tables",
+              "fontStyle": {
+                "size": "medium",
+                "weight": "semibold",
+                "color": "#000000"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-card-lists-tables",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-card-lockups",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "grid position row 3, column 1",
+              "y": "below row 2",
+              "width": "card width",
+              "height": "card height"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "A card-style thumbnail showing a visual representation of Lockups. The illustration shows a coral/salmon colored rounded rectangle container with a lockup component inside. The lockup contains a circular image placeholder (with mountain/photo icon) on the left, and two lines of text on the right: 'Line 1 (Headline)' as the primary text and 'Line 2 (Footnote)' as secondary text in a smaller, lighter style. This represents a standard lockup pattern combining an image with descriptive text.",
+              "subjects": [
+                "lockup component",
+                "circular image",
+                "headline text",
+                "footnote text"
+              ],
+              "composition": "Coral rounded rectangle containing a circular avatar/image placeholder on left with two lines of white text to the right (headline above, footnote below)",
+              "colorPalette": [
+                "#F97066 (coral/salmon background)",
+                "#FECDC9 (light coral for circle)",
+                "#FFFFFF (white text)",
+                "#E5E7EB (lighter footnote text)"
+              ],
+              "mood": "structured, informative, hierarchical",
+              "technicalDetails": "Standard lockup pattern used in tvOS and other Apple platforms",
+              "textInImage": [
+                "Line 1 (Headline)",
+                "Line 2 (Footnote)"
+              ],
+              "contextualRelevance": "Visual representation of Lockups component - combined image and text elements that work as a unit",
+              "cardLabel": "Lockups"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-label-lockups",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-label-lockups",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": "below page1-card-lockups",
+              "y": "immediately below card",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Lockups",
+              "fontStyle": {
+                "size": "medium",
+                "weight": "semibold",
+                "color": "#000000"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-card-lockups",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-card-outline-views",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "grid position row 3, column 2",
+              "y": "below row 2",
+              "width": "card width",
+              "height": "card height"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "A card-style thumbnail showing a visual representation of Outline views. The illustration shows a hierarchical file/folder structure typical of an outline or tree view. At the top is 'Folder A' (expanded, indicated by down chevron) containing 'Image A', 'Image B', 'Image C' as child items. Below is 'Folder B' (collapsed, indicated by right chevron). Each item shows folder or image icons in coral/blue colors. Date stamps are shown on the right side of each row (6/6/22, 6/6/22, 6/5/22, 5/12/22, 10/20/21).",
+              "subjects": [
+                "outline view",
+                "hierarchical tree",
+                "folder structure",
+                "expand/collapse indicators",
+                "file listing with dates"
+              ],
+              "composition": "Vertical list with hierarchical indentation. Folder A expanded showing three image children, Folder B collapsed. Each row has icon, name, and date.",
+              "colorPalette": [
+                "#3B82F6 (blue folder icons)",
+                "#EF4444 (red/coral image icons)",
+                "#F97066 (coral accents)",
+                "#FFFFFF (white background)",
+                "#6B7280 (gray date text)"
+              ],
+              "mood": "hierarchical, organized, structured",
+              "technicalDetails": "macOS-style outline view with expandable folders and file details",
+              "textInImage": [
+                "Folder A",
+                "Image A",
+                "Image B",
+                "Image C",
+                "Folder B",
+                "6/6/22",
+                "6/6/22",
+                "6/5/22",
+                "5/12/22",
+                "10/20/21"
+              ],
+              "contextualRelevance": "Visual representation of Outline views - hierarchical tree structures with expandable/collapsible nodes",
+              "cardLabel": "Outline views"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-label-outline-views",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-label-outline-views",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": "below page1-card-outline-views",
+              "y": "immediately below card",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Outline views",
+              "fontStyle": {
+                "size": "medium",
+                "weight": "semibold",
+                "color": "#000000"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-card-outline-views",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-card-split-views",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "grid position row 3, column 3",
+              "y": "below row 2",
+              "width": "card width",
+              "height": "card height"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "A card-style thumbnail showing a visual representation of Split views. The illustration shows a coral/salmon colored rounded rectangle container that appears empty or minimally styled with a subtle three-dot indicator (ellipsis) in the upper right area, suggesting a split view divider handle or options control. The mostly empty space represents the two panes of a split view interface.",
+              "subjects": [
+                "split view",
+                "two-pane layout",
+                "divider",
+                "ellipsis indicator"
+              ],
+              "composition": "Coral rounded rectangle with minimal internal detail, three-dot ellipsis indicator in upper right suggesting split control",
+              "colorPalette": [
+                "#F97066 (coral/salmon background)",
+                "#FECDC9 (lighter coral accents)"
+              ],
+              "mood": "minimal, structural, layout-focused",
+              "technicalDetails": "Represents split view component for side-by-side content display",
+              "textInImage": [],
+              "contextualRelevance": "Visual representation of Split views - two-pane layouts that can be resized",
+              "cardLabel": "Split views"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-label-split-views",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-label-split-views",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": "below page1-card-split-views",
+              "y": "immediately below card",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Split views",
+              "fontStyle": {
+                "size": "medium",
+                "weight": "semibold",
+                "color": "#000000"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-card-split-views",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-card-tab-views",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "grid position row 4, column 1",
+              "y": "below row 3",
+              "width": "card width",
+              "height": "card height"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "A card-style thumbnail showing a visual representation of Tab views. The illustration shows a coral/salmon colored rounded rectangle container with a segmented control or tab bar near the top. The tab bar has a lighter coral/pink pill-shaped indicator showing the currently selected tab, positioned to the right of center, suggesting tab navigation between different content views.",
+              "subjects": [
+                "tab view",
+                "segmented control",
+                "tab indicator",
+                "tab navigation"
+              ],
+              "composition": "Coral rounded rectangle with a horizontal tab bar/segmented control near the top, showing a lighter pill-shaped selection indicator",
+              "colorPalette": [
+                "#F97066 (coral/salmon background)",
+                "#FECDC9 (lighter coral for tab bar)",
+                "#FFFFFF (white selected tab indicator)"
+              ],
+              "mood": "navigational, organized, interactive",
+              "technicalDetails": "Represents tab view component for switching between content sections",
+              "textInImage": [],
+              "contextualRelevance": "Visual representation of Tab views - interfaces that allow switching between different content areas",
+              "cardLabel": "Tab views"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-label-tab-views",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-label-tab-views",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": "below page1-card-tab-views",
+              "y": "immediately below card",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Tab views",
+              "fontStyle": {
+                "size": "medium",
+                "weight": "semibold",
+                "color": "#000000"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-card-tab-views",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-footer",
+            "elementType": "other",
+            "boundingBox": {
+              "x": 0,
+              "y": "bottom of page",
+              "width": "full-width",
+              "height": "approximately 300px"
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "footer",
+              "backgroundColor": "#FFFFFF",
+              "breadcrumb": {
+                "items": [
+                  {
+                    "icon": "Apple logo",
+                    "text": ""
+                  },
+                  {
+                    "text": "Developer"
+                  },
+                  {
+                    "text": "Documentation"
+                  }
+                ],
+                "separator": ">"
+              },
+              "columns": [
+                {
+                  "heading": "Platforms",
+                  "items": [
+                    "iOS",
+                    "iPadOS",
+                    "macOS",
+                    "tvOS",
+                    "visionOS",
+                    "watchOS"
+                  ]
+                },
+                {
+                  "heading": "Tools",
+                  "items": [
+                    "Swift",
+                    "SwiftUI",
+                    "Swift Playground",
+                    "TestFlight",
+                    "Xcode",
+                    "Xcode Cloud",
+                    "SF Symbols"
+                  ]
+                },
+                {
+                  "heading": "Topics & Technologies",
+                  "items": [
+                    "Accessibility",
+                    "Accessories",
+                    "App Extension",
+                    "App Store",
+                    "Audio & Video",
+                    "Augmented Reality",
+                    "Design",
+                    "Distribution",
+                    "Education",
+                    "Fonts",
+                    "Games",
+                    "Health & Fitness",
+                    "In-App Purchase",
+                    "Localization",
+                    "Maps & Location",
+                    "Machine Learning & AI",
+                    "Open Source",
+                    "Security",
+                    "Safari & Web"
+                  ]
+                },
+                {
+                  "heading": "Resources",
+                  "items": [
+                    "Documentation",
+                    "Tutorials",
+                    "Downloads",
+                    "Forums",
+                    "Videos"
+                  ]
+                },
+                {
+                  "heading": "Support",
+                  "items": [
+                    "Support Articles",
+                    "Contact Us",
+                    "Bug Reporting",
+                    "System Status"
+                  ]
+                },
+                {
+                  "heading": "Account",
+                  "items": [
+                    "Apple Developer",
+                    "App Store Connect",
+                    "Certificates, IDs, & Profiles",
+                    "Feedback Assistant"
+                  ]
+                },
+                {
+                  "heading": "Programs",
+                  "items": [
+                    "Apple Developer Program",
+                    "Apple Developer Enterprise Program",
+                    "App Store Small Business Program",
+                    "MFi Program",
+                    "News Partner Program",
+                    "Video Partner Program",
+                    "Security Bounty Program",
+                    "Security Research Device Program"
+                  ]
+                },
+                {
+                  "heading": "Events",
+                  "items": [
+                    "Meet with Apple",
+                    "Apple Developer Centers",
+                    "App Store Awards",
+                    "Apple Design Awards",
+                    "Apple Developer Academies",
+                    "WWDC"
+                  ]
+                }
+              ],
+              "bottomBar": {
+                "feedbackText": "To submit feedback on documentation, visit",
+                "feedbackLink": {
+                  "text": "Feedback Assistant",
+                  "url": "https://feedbackassistant.apple.com"
+                },
+                "themeToggle": {
+                  "options": [
+                    "Light",
+                    "Dark",
+                    "Auto"
+                  ],
+                  "selected": "Auto"
+                },
+                "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+                "legalLinks": [
+                  {
+                    "text": "Terms of Use"
+                  },
+                  {
+                    "text": "Privacy Policy"
+                  },
+                  {
+                    "text": "Agreements and Guidelines"
+                  }
+                ],
+                "languageSelector": {
+                  "current": "English",
+                  "hasDropdown": true
+                }
+              }
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation-bar",
+          "page1-subheader-design-nav",
+          "page1-sidebar-navigation",
+          "page1-main-heading",
+          "page1-card-boxes",
+          "page1-label-boxes",
+          "page1-card-collections",
+          "page1-label-collections",
+          "page1-card-column-views",
+          "page1-label-column-views",
+          "page1-card-disclosure-controls",
+          "page1-label-disclosure-controls",
+          "page1-card-labels",
+          "page1-label-labels",
+          "page1-card-lists-tables",
+          "page1-label-lists-tables",
+          "page1-card-lockups",
+          "page1-label-lockups",
+          "page1-card-outline-views",
+          "page1-label-outline-views",
+          "page1-card-split-views",
+          "page1-label-split-views",
+          "page1-card-tab-views",
+          "page1-label-tab-views",
+          "page1-footer"
+        ],
+        "pageSummary": "This page is the 'Layout and organization' section of Apple's Human Interface Guidelines, serving as a navigation hub for 10 UI component categories. The page displays a 3-column grid of card-style thumbnails (Boxes, Collections, Column views, Disclosure controls, Labels, Lists and tables, Lockups, Outline views, Split views, Tab views), each with an illustrative preview image and label. The page includes comprehensive site navigation in the header, a collapsible sidebar menu on the left, and an extensive footer with links to all Apple developer resources, programs, and support options."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": false,
+        "entries": []
+      },
+      "runningHeaders": "Apple Developer navigation bar with News, Discover, Design, Develop, Distribute, Support, Account",
+      "runningFooters": "Footer with Platforms, Tools, Topics & Technologies, Resources, Support, Account, Programs, Events sections",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "navigation",
+          "title": "Site Navigation",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "title": "Primary Header",
+              "description": "Main site navigation with Apple Developer branding"
+            },
+            {
+              "title": "Secondary Header",
+              "description": "Design section navigation"
+            },
+            {
+              "title": "Sidebar",
+              "description": "Hierarchical documentation navigation with filter"
+            }
+          ],
+          "summary": "Comprehensive navigation system including primary header, secondary Design-specific navigation, and collapsible sidebar with full documentation hierarchy"
+        },
+        {
+          "sectionId": "main-content",
+          "title": "Layout and organization Components",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "title": "Boxes",
+              "description": "Container components for grouping content"
+            },
+            {
+              "title": "Collections",
+              "description": "Grid-based layouts for multiple items"
+            },
+            {
+              "title": "Column views",
+              "description": "Multi-column hierarchical navigation"
+            },
+            {
+              "title": "Disclosure controls",
+              "description": "Expand/collapse UI controls"
+            },
+            {
+              "title": "Labels",
+              "description": "Text elements for identification"
+            },
+            {
+              "title": "Lists and tables",
+              "description": "Vertical row-based content organization"
+            },
+            {
+              "title": "Lockups",
+              "description": "Combined image and text units"
+            },
+            {
+              "title": "Outline views",
+              "description": "Hierarchical tree structures"
+            },
+            {
+              "title": "Split views",
+              "description": "Two-pane resizable layouts"
+            },
+            {
+              "title": "Tab views",
+              "description": "Content switching interfaces"
+            }
+          ],
+          "summary": "Grid of 10 UI component categories for organizing and laying out content in Apple platform applications"
+        },
+        {
+          "sectionId": "footer",
+          "title": "Site Footer",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Comprehensive footer with links to all Apple developer platforms, tools, technologies, resources, support, programs, and events"
+        }
+      ],
+      "documentFlow": "The page follows a standard Apple documentation layout: header navigation at top, collapsible sidebar on left for documentation hierarchy navigation, main content area displaying the 10 Layout and organization component categories in a visual card grid format, and comprehensive footer at bottom. The content is organized as a navigation hub allowing users to drill into specific component documentation."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "Layout and organization",
+          "definition": "A category of UI components in Apple's Human Interface Guidelines focused on structuring and arranging content within applications",
+          "occurrences": 3
+        },
+        {
+          "term": "Boxes",
+          "definition": "Container components that group related content together",
+          "occurrences": 2
+        },
+        {
+          "term": "Collections",
+          "definition": "Grid-based layouts for displaying multiple items, such as photos or media",
+          "occurrences": 2
+        },
+        {
+          "term": "Column views",
+          "definition": "Multi-column hierarchical navigation pattern, as seen in macOS Finder",
+          "occurrences": 2
+        },
+        {
+          "term": "Disclosure controls",
+          "definition": "UI controls (chevrons) that expand or collapse content sections",
+          "occurrences": 2
+        },
+        {
+          "term": "Labels",
+          "definition": "Text elements that describe or identify other UI elements",
+          "occurrences": 2
+        },
+        {
+          "term": "Lists and tables",
+          "definition": "Vertical arrangements of rows for displaying content with optional navigation",
+          "occurrences": 2
+        },
+        {
+          "term": "Lockups",
+          "definition": "Combined image and text elements that work as a unit, common in tvOS",
+          "occurrences": 2
+        },
+        {
+          "term": "Outline views",
+          "definition": "Hierarchical tree structures with expandable/collapsible nodes",
+          "occurrences": 2
+        },
+        {
+          "term": "Split views",
+          "definition": "Two-pane layouts that can be resized by the user",
+          "occurrences": 2
+        },
+        {
+          "term": "Tab views",
+          "definition": "Interfaces that allow switching between different content areas using tabs",
+          "occurrences": 2
+        },
+        {
+          "term": "Human Interface Guidelines (HIG)",
+          "definition": "Apple's official design documentation for creating apps across their platforms",
+          "occurrences": 1
+        },
+        {
+          "term": "Components",
+          "definition": "Reusable UI building blocks in Apple's design system",
+          "occurrences": 2
+        }
+      ],
+      "keyFindings": [
+        "Apple organizes layout and organization components into 10 distinct categories",
+        "Visual card-based navigation provides quick visual identification of each component type",
+        "The component categories span all Apple platforms: iOS, iPadOS, macOS, tvOS, visionOS, and watchOS",
+        "Disclosure controls use chevron icons to indicate expand/collapse state",
+        "Column views follow the macOS Finder navigation pattern",
+        "Lockups combine image and text elements as a single interactive unit",
+        "The page serves as a navigation hub rather than containing detailed documentation",
+        "Apple uses a consistent coral/salmon (#F97066) color theme for component illustrations"
+      ],
+      "technicalSpecifications": {
+        "supportedPlatforms": [
+          "iOS",
+          "iPadOS",
+          "macOS",
+          "tvOS",
+          "visionOS",
+          "watchOS"
+        ],
+        "relatedTools": [
+          "Swift",
+          "SwiftUI",
+          "Swift Playground",
+          "TestFlight",
+          "Xcode",
+          "Xcode Cloud",
+          "SF Symbols"
+        ],
+        "documentationSection": "Design > Components > Layout and organization",
+        "componentCount": 10
+      },
+      "designDecisions": [
+        {
+          "decision": "Card-based visual navigation",
+          "rationale": "Allows users to quickly identify component types through illustrative previews"
+        },
+        {
+          "decision": "3-column grid layout for component cards",
+          "rationale": "Efficient use of space while maintaining scannability"
+        },
+        {
+          "decision": "Collapsible sidebar navigation",
+          "rationale": "Provides hierarchical access to all documentation while allowing focus on main content"
+        },
+        {
+          "decision": "Coral/salmon color palette for illustrations",
+          "rationale": "Creates visual consistency across component previews while being distinct from UI chrome"
+        }
+      ]
+    },
+    "allTextContent": {
+      "verbatimExtraction": {
+        "headerNavigation": [
+          "Developer",
+          "News",
+          "Discover",
+          "Design",
+          "Develop",
+          "Distribute",
+          "Support",
+          "Account"
+        ],
+        "subheaderNavigation": [
+          "Design",
+          "Overview",
+          "What's New",
+          "Get Started",
+          "Guidelines",
+          "Resources"
+        ],
+        "sidebarNavigation": [
+          "Filter",
+          "Getting started",
+          "Foundations",
+          "Patterns",
+          "Components",
+          "Content",
+          "Layout and organization",
+          "Boxes",
+          "Collections",
+          "Column views",
+          "Disclosure controls",
+          "Labels",
+          "Lists and tables",
+          "Lockups",
+          "Outline views",
+          "Split views",
+          "Tab views",
+          "Menus and actions",
+          "Navigation and search",
+          "Presentation",
+          "Selection and input",
+          "Status",
+          "System experiences",
+          "Inputs",
+          "Technologies"
+        ],
+        "mainHeading": "Layout and organization",
+        "componentLabels": [
+          "Boxes",
+          "Collections",
+          "Column views",
+          "Disclosure controls",
+          "Labels",
+          "Lists and tables",
+          "Lockups",
+          "Outline views",
+          "Split views",
+          "Tab views"
+        ],
+        "cardIllustrationText": {
+          "columnViews": [
+            "Folder A",
+            "Folder B",
+            "Folder C",
+            "Image A",
+            "Image B",
+            "Image C",
+            "Image D",
+            "Image E"
+          ],
+          "labels": [
+            "Label"
+          ],
+          "listsAndTables": [
+            "Table Row 1",
+            "Table Row 2",
+            "Table Row 3"
+          ],
+          "lockups": [
+            "Line 1 (Headline)",
+            "Line 2 (Footnote)"
+          ],
+          "outlineViews": [
+            "Folder A",
+            "Image A",
+            "Image B",
+            "Image C",
+            "Folder B",
+            "6/6/22",
+            "6/6/22",
+            "6/5/22",
+            "5/12/22",
+            "10/20/21"
+          ]
+        },
+        "footerBreadcrumb": [
+          "Developer",
+          "Documentation"
+        ],
+        "footerPlatforms": [
+          "iOS",
+          "iPadOS",
+          "macOS",
+          "tvOS",
+          "visionOS",
+          "watchOS"
+        ],
+        "footerTools": [
+          "Swift",
+          "SwiftUI",
+          "Swift Playground",
+          "TestFlight",
+          "Xcode",
+          "Xcode Cloud",
+          "SF Symbols"
+        ],
+        "footerTopicsAndTechnologies": [
+          "Accessibility",
+          "Accessories",
+          "App Extension",
+          "App Store",
+          "Audio & Video",
+          "Augmented Reality",
+          "Design",
+          "Distribution",
+          "Education",
+          "Fonts",
+          "Games",
+          "Health & Fitness",
+          "In-App Purchase",
+          "Localization",
+          "Maps & Location",
+          "Machine Learning & AI",
+          "Open Source",
+          "Security",
+          "Safari & Web"
+        ],
+        "footerResources": [
+          "Documentation",
+          "Tutorials",
+          "Downloads",
+          "Forums",
+          "Videos"
+        ],
+        "footerSupport": [
+          "Support Articles",
+          "Contact Us",
+          "Bug Reporting",
+          "System Status"
+        ],
+        "footerAccount": [
+          "Apple Developer",
+          "App Store Connect",
+          "Certificates, IDs, & Profiles",
+          "Feedback Assistant"
+        ],
+        "footerPrograms": [
+          "Apple Developer Program",
+          "Apple Developer Enterprise Program",
+          "App Store Small Business Program",
+          "MFi Program",
+          "News Partner Program",
+          "Video Partner Program",
+          "Security Bounty Program",
+          "Security Research Device Program"
+        ],
+        "footerEvents": [
+          "Meet with Apple",
+          "Apple Developer Centers",
+          "App Store Awards",
+          "Apple Design Awards",
+          "Apple Developer Academies",
+          "WWDC"
+        ],
+        "footerLegal": [
+          "To submit feedback on documentation, visit Feedback Assistant.",
+          "Light",
+          "Dark",
+          "Auto",
+          "Copyright 2025 Apple Inc. All rights reserved.",
+          "Terms of Use",
+          "Privacy Policy",
+          "Agreements and Guidelines",
+          "English"
+        ]
+      }
+    },
+    "allLinks": {
+      "navigation": [
+        {
+          "text": "Apple Developer",
+          "type": "logo-link",
+          "destination": "https://developer.apple.com"
+        },
+        {
+          "text": "News",
+          "type": "nav-link",
+          "destination": "https://developer.apple.com/news/"
+        },
+        {
+          "text": "Discover",
+          "type": "nav-link",
+          "destination": "https://developer.apple.com/discover/"
+        },
+        {
+          "text": "Design",
+          "type": "nav-link",
+          "destination": "https://developer.apple.com/design/"
+        },
+        {
+          "text": "Develop",
+          "type": "nav-link",
+          "destination": "https://developer.apple.com/develop/"
+        },
+        {
+          "text": "Distribute",
+          "type": "nav-link",
+          "destination": "https://developer.apple.com/distribute/"
+        },
+        {
+          "text": "Support",
+          "type": "nav-link",
+          "destination": "https://developer.apple.com/support/"
+        },
+        {
+          "text": "Account",
+          "type": "nav-link",
+          "destination": "https://developer.apple.com/account/"
+        }
+      ],
+      "subNavigation": [
+        {
+          "text": "Overview",
+          "type": "sub-nav-link",
+          "destination": "https://developer.apple.com/design/"
+        },
+        {
+          "text": "What's New",
+          "type": "sub-nav-link",
+          "destination": "https://developer.apple.com/design/whats-new/"
+        },
+        {
+          "text": "Get Started",
+          "type": "sub-nav-link",
+          "destination": "https://developer.apple.com/design/get-started/"
+        },
+        {
+          "text": "Guidelines",
+          "type": "sub-nav-link",
+          "destination": "https://developer.apple.com/design/human-interface-guidelines/"
+        },
+        {
+          "text": "Resources",
+          "type": "sub-nav-link",
+          "destination": "https://developer.apple.com/design/resources/"
+        }
+      ],
+      "componentLinks": [
+        {
+          "text": "Boxes",
+          "type": "card-link",
+          "destination": "https://developer.apple.com/design/human-interface-guidelines/boxes"
+        },
+        {
+          "text": "Collections",
+          "type": "card-link",
+          "destination": "https://developer.apple.com/design/human-interface-guidelines/collections"
+        },
+        {
+          "text": "Column views",
+          "type": "card-link",
+          "destination": "https://developer.apple.com/design/human-interface-guidelines/column-views"
+        },
+        {
+          "text": "Disclosure controls",
+          "type": "card-link",
+          "destination": "https://developer.apple.com/design/human-interface-guidelines/disclosure-controls"
+        },
+        {
+          "text": "Labels",
+          "type": "card-link",
+          "destination": "https://developer.apple.com/design/human-interface-guidelines/labels"
+        },
+        {
+          "text": "Lists and tables",
+          "type": "card-link",
+          "destination": "https://developer.apple.com/design/human-interface-guidelines/lists-and-tables"
+        },
+        {
+          "text": "Lockups",
+          "type": "card-link",
+          "destination": "https://developer.apple.com/design/human-interface-guidelines/lockups"
+        },
+        {
+          "text": "Outline views",
+          "type": "card-link",
+          "destination": "https://developer.apple.com/design/human-interface-guidelines/outline-views"
+        },
+        {
+          "text": "Split views",
+          "type": "card-link",
+          "destination": "https://developer.apple.com/design/human-interface-guidelines/split-views"
+        },
+        {
+          "text": "Tab views",
+          "type": "card-link",
+          "destination": "https://developer.apple.com/design/human-interface-guidelines/tab-views"
+        }
+      ],
+      "footerLinks": {
+        "platforms": [
+          {
+            "text": "iOS",
+            "destination": "https://developer.apple.com/ios/"
+          },
+          {
+            "text": "iPadOS",
+            "destination": "https://developer.apple.com/ipados/"
+          },
+          {
+            "text": "macOS",
+            "destination": "https://developer.apple.com/macos/"
+          },
+          {
+            "text": "tvOS",
+            "destination": "https://developer.apple.com/tvos/"
+          },
+          {
+            "text": "visionOS",
+            "destination": "https://developer.apple.com/visionos/"
+          },
+          {
+            "text": "watchOS",
+            "destination": "https://developer.apple.com/watchos/"
+          }
+        ],
+        "tools": [
+          {
+            "text": "Swift",
+            "destination": "https://developer.apple.com/swift/"
+          },
+          {
+            "text": "SwiftUI",
+            "destination": "https://developer.apple.com/xcode/swiftui/"
+          },
+          {
+            "text": "Swift Playground",
+            "destination": "https://developer.apple.com/swift-playgrounds/"
+          },
+          {
+            "text": "TestFlight",
+            "destination": "https://developer.apple.com/testflight/"
+          },
+          {
+            "text": "Xcode",
+            "destination": "https://developer.apple.com/xcode/"
+          },
+          {
+            "text": "Xcode Cloud",
+            "destination": "https://developer.apple.com/xcode-cloud/"
+          },
+          {
+            "text": "SF Symbols",
+            "destination": "https://developer.apple.com/sf-symbols/"
+          }
+        ],
+        "legal": [
+          {
+            "text": "Terms of Use",
+            "destination": "https://www.apple.com/legal/internet-services/terms/site.html"
+          },
+          {
+            "text": "Privacy Policy",
+            "destination": "https://www.apple.com/privacy/privacy-policy/"
+          },
+          {
+            "text": "Agreements and Guidelines",
+            "destination": "https://developer.apple.com/support/terms/"
+          }
+        ],
+        "feedback": {
+          "text": "Feedback Assistant",
+          "destination": "https://feedbackassistant.apple.com/"
+        }
+      }
+    },
+    "interactiveElements": {
+      "filterInput": {
+        "type": "text-input",
+        "placeholder": "Filter",
+        "function": "Filter sidebar navigation items"
+      },
+      "expandableMenuItems": [
+        {
+          "label": "Getting started",
+          "state": "collapsed",
+          "indicator": "chevron-right"
+        },
+        {
+          "label": "Foundations",
+          "state": "collapsed",
+          "indicator": "chevron-right"
+        },
+        {
+          "label": "Patterns",
+          "state": "collapsed",
+          "indicator": "chevron-right"
+        },
+        {
+          "label": "Components",
+          "state": "expanded",
+          "indicator": "chevron-down"
+        },
+        {
+          "label": "Layout and organization",
+          "state": "expanded",
+          "indicator": "chevron-down",
+          "isCurrentPage": true
+        }
+      ],
+      "themeToggle": {
+        "type": "segmented-control",
+        "options": [
+          "Light",
+          "Dark",
+          "Auto"
+        ],
+        "currentSelection": "Auto",
+        "function": "Switch between light mode, dark mode, or auto (system preference)"
+      },
+      "languageSelector": {
+        "type": "dropdown",
+        "currentValue": "English",
+        "indicator": "chevron-down",
+        "function": "Change documentation language"
+      },
+      "searchButton": {
+        "type": "icon-button",
+        "icon": "magnifying-glass",
+        "function": "Open site search"
+      },
+      "cardLinks": {
+        "count": 10,
+        "type": "clickable-card",
+        "function": "Navigate to specific component documentation"
+      }
+    }
+  }
+}

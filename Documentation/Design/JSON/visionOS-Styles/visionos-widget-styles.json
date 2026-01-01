@@ -1,0 +1,395 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "visionOS Widget Styles - Consolidated Reference",
+      "author": "Apple Inc.",
+      "creationDate": "2025-12-27T00:00:00Z",
+      "modificationDate": null,
+      "pageCount": 7,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "visionOS",
+        "WidgetKit",
+        "widget styles",
+        "mounting styles",
+        "widget textures",
+        "level of detail",
+        "elevated",
+        "recessed",
+        "glass",
+        "paper",
+        "simplified",
+        "default"
+      ],
+      "summary": "Comprehensive documentation of visionOS widget styling APIs including mounting styles (elevated, recessed), visual textures (glass, paper), and level of detail options (default, simplified). These APIs are available starting visionOS 26.0+ and enable developers to customize widget appearance and behavior in spatial computing environments."
+    },
+    "framework": {
+      "name": "WidgetKit",
+      "platforms": {
+        "iOS": "26.0+",
+        "iPadOS": "26.0+",
+        "macCatalyst": "26.0+",
+        "visionOS": "26.0+"
+      },
+      "relatedArticle": "Updating your widgets for visionOS"
+    },
+    "apis": {
+      "widgetMountingStyle": {
+        "type": "struct",
+        "apiPath": "WidgetKit/WidgetMountingStyle",
+        "description": "Defines how a widget is visually mounted or positioned in the visionOS environment. Controls the spatial relationship between the widget and its surrounding context.",
+        "configurationMethod": {
+          "name": "supportedMountingStyles(_:)",
+          "signature": "func supportedMountingStyles([WidgetMountingStyle]) -> some View",
+          "description": "Specifies which mounting styles the widget supports. Apply this modifier to declare the visual mounting options available for your widget."
+        },
+        "styles": [
+          {
+            "name": "elevated",
+            "identifier": "elevated",
+            "declaration": "static let elevated: WidgetMountingStyle",
+            "description": "Mounting style surrounding the widget with a composite material",
+            "visualCharacteristics": {
+              "appearance": "Widget appears raised from its background surface",
+              "material": "Composite material surrounds the widget",
+              "spatialPresence": "Creates visual depth by elevating the widget above its mounting surface",
+              "lightInteraction": "Material may catch and reflect ambient lighting"
+            },
+            "useCases": [
+              "Widgets that need visual prominence",
+              "Content that should stand out from the background",
+              "Interactive widgets where depth perception aids usability",
+              "Floating or modal-style widget presentations"
+            ],
+            "platforms": ["iOS 26.0+", "iPadOS 26.0+", "Mac Catalyst", "visionOS 26.0+"]
+          },
+          {
+            "name": "recessed",
+            "identifier": "recessed",
+            "declaration": "static let recessed: WidgetMountingStyle",
+            "description": "Mounting style where a widget is displayed within a recessed portal",
+            "visualCharacteristics": {
+              "appearance": "Widget appears embedded or inset into its background surface",
+              "material": "Portal-like cutout effect",
+              "spatialPresence": "Creates depth by appearing to sit within the mounting surface",
+              "lightInteraction": "May create subtle shadow effects around the widget edges"
+            },
+            "useCases": [
+              "Widgets that should feel integrated with the environment",
+              "Content that displays through a window-like opening",
+              "Subtle, non-intrusive widget presentations",
+              "Dashboard-style layouts where widgets appear as inset panels"
+            ],
+            "platforms": ["iOS 26.0+", "iPadOS 26.0+", "Mac Catalyst", "visionOS 26.0+"]
+          }
+        ]
+      },
+      "widgetTexture": {
+        "type": "struct",
+        "apiPath": "WidgetKit/WidgetTexture",
+        "description": "Defines the visual surface treatment applied to the widget's coating layer. Controls how the widget surface appears and interacts with light in the visionOS environment.",
+        "configurationMethod": {
+          "name": "widgetTexture(_:)",
+          "signature": "func widgetTexture(WidgetTexture) -> some View",
+          "description": "Applies a texture to the widget's coating layer to define its visual surface properties."
+        },
+        "textures": [
+          {
+            "name": "glass",
+            "identifier": "glass",
+            "declaration": "static let glass: WidgetTexture",
+            "description": "A reflective, clear glass-like texture for the widget's coating layer",
+            "visualCharacteristics": {
+              "appearance": "Clear, transparent glass surface",
+              "material": "Reflective coating with glass-like properties",
+              "lightInteraction": "Reflects light and may show environmental reflections",
+              "transparency": "Clear transparency allowing content visibility through material",
+              "finish": "Smooth, polished surface"
+            },
+            "useCases": [
+              "Modern, sleek widget designs",
+              "Widgets that should feel premium and polished",
+              "Content that benefits from depth and layering effects",
+              "Spatial UI elements that integrate with visionOS glass aesthetic",
+              "Widgets requiring environmental awareness through reflections"
+            ],
+            "designConsiderations": [
+              "Consider content contrast against reflective surface",
+              "Works well with visionOS spatial design language",
+              "May require careful color choices for readability",
+              "Pairs well with the elevated mounting style for maximum depth"
+            ],
+            "platforms": ["visionOS 26.0+"]
+          },
+          {
+            "name": "paper",
+            "identifier": "paper",
+            "declaration": "static let paper: WidgetTexture",
+            "description": "A matte, paper-like texture for the widget's coating layer",
+            "visualCharacteristics": {
+              "appearance": "Matte, non-reflective surface resembling paper",
+              "material": "Paper-like coating with soft texture",
+              "lightInteraction": "Diffuses light rather than reflecting it",
+              "transparency": "Opaque surface",
+              "finish": "Soft, matte finish"
+            },
+            "useCases": [
+              "Content-focused widgets where readability is priority",
+              "Note-taking or document-style widgets",
+              "Widgets displaying text-heavy content",
+              "Designs requiring reduced visual distraction",
+              "Widgets that should feel physical and tangible"
+            ],
+            "designConsiderations": [
+              "Excellent for high-contrast text readability",
+              "Works well for information-dense layouts",
+              "Reduces visual complexity from reflections",
+              "May feel more traditional compared to glass"
+            ],
+            "platforms": ["visionOS 26.0+"]
+          }
+        ]
+      },
+      "levelOfDetail": {
+        "type": "struct",
+        "apiPath": "WidgetKit/LevelOfDetail",
+        "description": "Indicates the appropriate level of content complexity and detail a widget should display. On visionOS, this typically relates to user distance from the widget.",
+        "levels": [
+          {
+            "name": "default",
+            "identifier": "default",
+            "declaration": "static let `default`: LevelOfDetail",
+            "description": "The default level of details",
+            "behavior": "This suggests the app should lay out its content and show a default amount of information",
+            "visualCharacteristics": {
+              "contentDensity": "Standard content density",
+              "informationLevel": "Full information display",
+              "layoutComplexity": "Normal layout with all expected elements"
+            },
+            "useCases": [
+              "Standard widget viewing distance",
+              "Primary widget presentation",
+              "Normal user interaction scenarios",
+              "When full widget information is appropriate"
+            ],
+            "visionOSContext": {
+              "userDistance": "Normal viewing distance",
+              "spatialConsideration": "User is close enough to see detailed content"
+            },
+            "platforms": ["iOS 26.0+", "iPadOS 26.0+", "Mac Catalyst", "visionOS 26.0+"]
+          },
+          {
+            "name": "simplified",
+            "identifier": "simplified",
+            "declaration": "static let simplified: LevelOfDetail",
+            "description": "The level of detail should be simplified",
+            "behavior": "This suggests the app should lay out its content and show a simplified version of its content. On visionOS specifically, this signals that the user is at a further distance.",
+            "visualCharacteristics": {
+              "contentDensity": "Reduced content density",
+              "informationLevel": "Essential information only",
+              "layoutComplexity": "Simplified layout with fewer elements"
+            },
+            "useCases": [
+              "User is viewing from a distance (visionOS)",
+              "Reduced-detail presentation",
+              "Glanceable information display",
+              "When only key information should be visible"
+            ],
+            "visionOSContext": {
+              "userDistance": "Further viewing distance",
+              "spatialConsideration": "User is too far to comfortably read detailed content",
+              "adaptiveGuidance": "Hide secondary information, enlarge primary content, simplify layouts"
+            },
+            "platforms": ["iOS 26.0+", "iPadOS 26.0+", "Mac Catalyst", "visionOS 26.0+"]
+          }
+        ]
+      }
+    },
+    "implementationGuidance": {
+      "mountingStyleSelection": {
+        "title": "Choosing a Mounting Style",
+        "recommendations": [
+          {
+            "style": "elevated",
+            "when": "Widget content should appear prominent and floating",
+            "avoidWhen": "Widget should feel integrated or subtle"
+          },
+          {
+            "style": "recessed",
+            "when": "Widget should feel embedded in the environment",
+            "avoidWhen": "Widget needs to draw attention or appear interactive"
+          }
+        ]
+      },
+      "textureSelection": {
+        "title": "Choosing a Widget Texture",
+        "recommendations": [
+          {
+            "texture": "glass",
+            "when": "Widget should feel modern, premium, and spatially aware",
+            "avoidWhen": "High text readability is critical, or reflections would distract"
+          },
+          {
+            "texture": "paper",
+            "when": "Content readability is priority, or widget should feel physical",
+            "avoidWhen": "Widget should feel modern or spatially integrated with visionOS"
+          }
+        ]
+      },
+      "levelOfDetailHandling": {
+        "title": "Responding to Level of Detail Changes",
+        "recommendations": [
+          {
+            "level": "default",
+            "layoutStrategy": "Display full widget content with normal information density"
+          },
+          {
+            "level": "simplified",
+            "layoutStrategy": "Show only essential information, increase font sizes, remove secondary details",
+            "visionOSNote": "On visionOS, this indicates the user has moved further from the widget"
+          }
+        ]
+      },
+      "combinationMatrix": {
+        "title": "Style and Texture Combinations",
+        "combinations": [
+          {
+            "mountingStyle": "elevated",
+            "texture": "glass",
+            "effect": "Premium floating panel with reflective surface",
+            "bestFor": "Hero widgets, media players, interactive controls"
+          },
+          {
+            "mountingStyle": "elevated",
+            "texture": "paper",
+            "effect": "Floating card with matte finish",
+            "bestFor": "Notes, reminders, reading content"
+          },
+          {
+            "mountingStyle": "recessed",
+            "texture": "glass",
+            "effect": "Inset window with clear surface",
+            "bestFor": "Status displays, monitoring dashboards"
+          },
+          {
+            "mountingStyle": "recessed",
+            "texture": "paper",
+            "effect": "Embedded panel with soft surface",
+            "bestFor": "Document viewers, text-based widgets"
+          }
+        ]
+      }
+    },
+    "codeExamples": {
+      "applyingMountingStyle": {
+        "title": "Applying Supported Mounting Styles",
+        "swift": "struct MyWidget: Widget {\n    var body: some WidgetConfiguration {\n        StaticConfiguration(...) { entry in\n            MyWidgetView(entry: entry)\n        }\n        .supportedMountingStyles([.elevated, .recessed])\n    }\n}"
+      },
+      "applyingTexture": {
+        "title": "Applying Widget Texture",
+        "swift": "struct MyWidgetView: View {\n    var body: some View {\n        VStack {\n            // Widget content\n        }\n        .widgetTexture(.glass)\n    }\n}"
+      },
+      "respondingToLevelOfDetail": {
+        "title": "Responding to Level of Detail",
+        "swift": "@Environment(\\.widgetLevelOfDetail) var levelOfDetail\n\nvar body: some View {\n    if levelOfDetail == .simplified {\n        SimplifiedWidgetContent()\n    } else {\n        DetailedWidgetContent()\n    }\n}"
+      }
+    },
+    "sourceDocuments": [
+      {
+        "filename": "simplified | Apple Developer Documentation.pdf",
+        "apiCovered": "LevelOfDetail.simplified",
+        "status": "processed"
+      },
+      {
+        "filename": "default | Apple Developer Documentation.pdf",
+        "apiCovered": "LevelOfDetail.default",
+        "status": "processed"
+      },
+      {
+        "filename": "elevated | Apple Developer Documentation.pdf",
+        "apiCovered": "WidgetMountingStyle.elevated",
+        "status": "processed"
+      },
+      {
+        "filename": "recessed | Apple Developer Documentation.pdf",
+        "apiCovered": "WidgetMountingStyle.recessed",
+        "status": "processed"
+      },
+      {
+        "filename": "supportedMountingStyles(_:) | Apple Developer Documentation.pdf",
+        "apiCovered": "supportedMountingStyles modifier",
+        "status": "referenced_from_other_documents"
+      },
+      {
+        "filename": "paper | Apple Developer Documentation.pdf",
+        "apiCovered": "WidgetTexture.paper",
+        "status": "processed"
+      },
+      {
+        "filename": "glass | Apple Developer Documentation.pdf",
+        "apiCovered": "WidgetTexture.glass",
+        "status": "processed"
+      }
+    ],
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "WidgetMountingStyle",
+          "definition": "A struct defining how widgets are visually positioned relative to their background in visionOS",
+          "occurrences": 4
+        },
+        {
+          "term": "WidgetTexture",
+          "definition": "A struct defining the surface treatment applied to a widget's coating layer",
+          "occurrences": 4
+        },
+        {
+          "term": "LevelOfDetail",
+          "definition": "A struct indicating the appropriate content complexity based on viewing context, particularly user distance in visionOS",
+          "occurrences": 4
+        },
+        {
+          "term": "elevated",
+          "definition": "A mounting style that surrounds the widget with composite material, creating a floating appearance",
+          "occurrences": 1
+        },
+        {
+          "term": "recessed",
+          "definition": "A mounting style where the widget appears within a recessed portal, creating an inset appearance",
+          "occurrences": 1
+        },
+        {
+          "term": "glass",
+          "definition": "A reflective, clear glass-like texture for the widget's coating layer",
+          "occurrences": 2
+        },
+        {
+          "term": "paper",
+          "definition": "A matte, paper-like texture for the widget's coating layer",
+          "occurrences": 2
+        },
+        {
+          "term": "coating layer",
+          "definition": "The surface layer of a widget that textures are applied to",
+          "occurrences": 4
+        }
+      ],
+      "keyFindings": [
+        "visionOS widget styles are available starting iOS/iPadOS/visionOS 26.0+",
+        "Two mounting styles exist: elevated (floating) and recessed (inset portal)",
+        "Two textures exist: glass (reflective, clear) and paper (matte)",
+        "Level of detail can be default or simplified, with simplified indicating far user distance on visionOS",
+        "All style APIs are part of the WidgetKit framework",
+        "Textures specifically mention the 'coating layer' suggesting a layered material system",
+        "The simplified level of detail explicitly addresses spatial computing distance considerations"
+      ],
+      "designPatterns": [
+        "Use elevated + glass for premium, modern widget experiences",
+        "Use recessed + paper for content-focused, readable widgets",
+        "Implement level of detail switching for distance-aware content adaptation",
+        "Consider user distance as a key factor in visionOS widget design"
+      ]
+    }
+  }
+}

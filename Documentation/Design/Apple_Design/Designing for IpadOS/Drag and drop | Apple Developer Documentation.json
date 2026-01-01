@@ -1,0 +1,917 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Drag and drop | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "source": "Apple Developer Documentation",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/drag-and-drop",
+      "documentType": "Human Interface Guidelines - Design Pattern Documentation",
+      "primaryLanguage": "English",
+      "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+      "legalLinks": [
+        "Terms of Use",
+        "Privacy Policy",
+        "Agreements and Guidelines"
+      ],
+      "pageCount": 1,
+      "colorSchemeOptions": ["Light", "Dark", "Auto"],
+      "keywords": [
+        "drag and drop",
+        "iOS",
+        "iPadOS",
+        "macOS",
+        "visionOS",
+        "tvOS",
+        "watchOS",
+        "user interaction",
+        "content transfer",
+        "multi-item drag",
+        "spring loading",
+        "drag image",
+        "drop destination",
+        "accessibility"
+      ],
+      "summary": "This Apple Human Interface Guidelines document provides comprehensive best practices for implementing drag and drop functionality across Apple platforms. It covers interaction patterns, visual feedback, platform-specific considerations, and accessibility requirements for moving or duplicating content between locations."
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "layout": {
+          "type": "multi-column",
+          "structure": "Header navigation + Left sidebar + Main content + Right sidebar table of contents",
+          "backgroundColor": "#FFFFFF (Light mode)",
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "globalNavigation": {
+          "topBar": {
+            "leftSection": {
+              "appleLogo": {
+                "type": "icon",
+                "description": "Apple logo icon in black"
+              },
+              "siteTitle": "Developer"
+            },
+            "mainNavItems": [
+              "News",
+              "Discover",
+              "Design",
+              "Develop",
+              "Distribute",
+              "Support",
+              "Account"
+            ]
+          },
+          "secondaryNav": {
+            "section": "Design",
+            "items": [
+              "Overview",
+              "What's New",
+              "Get Started",
+              "Guidelines",
+              "Resources"
+            ]
+          }
+        },
+        "breadcrumb": {
+          "items": [
+            {
+              "text": "Design",
+              "link": true
+            }
+          ]
+        },
+        "leftSidebar": {
+          "title": "Patterns",
+          "navigationItems": [
+            {
+              "category": "Layout and Content",
+              "items": [
+                "Spatial layout",
+                "Typography",
+                "Writing"
+              ]
+            },
+            {
+              "category": "Patterns",
+              "items": [
+                "Charting data",
+                "Collaboration and sharing",
+                {
+                  "name": "Drag and drop",
+                  "selected": true,
+                  "highlighted": true
+                },
+                "Entering data",
+                "Feedback",
+                "File management",
+                "Going full screen",
+                "Launching",
+                "Live-viewing apps",
+                "Loading",
+                "Managing accounts",
+                "Managing notifications",
+                "Modality",
+                "Multitasking",
+                "Offering help",
+                "Onboarding",
+                "Playing audio",
+                "Playing haptics",
+                "Playing video",
+                "Printing",
+                "Ratings and reviews",
+                "Searching",
+                "Settings",
+                "Undo and redo",
+                "Workouts"
+              ]
+            },
+            {
+              "category": "Components",
+              "collapsed": true
+            },
+            {
+              "category": "Content",
+              "collapsed": true
+            },
+            {
+              "category": "Layout and organization",
+              "collapsed": true
+            },
+            {
+              "category": "Menus and actions",
+              "collapsed": true
+            },
+            {
+              "category": "Navigation and search",
+              "collapsed": true
+            }
+          ],
+          "filterOption": {
+            "label": "Filter",
+            "type": "expandable"
+          }
+        },
+        "rightSidebar": {
+          "title": "On This Page (Table of Contents)",
+          "items": [
+            "Drag and drop",
+            "Best practices",
+            "Providing feedback",
+            "Accepting drops",
+            "Platform considerations",
+            "Resources",
+            "Change log"
+          ]
+        },
+        "mainContent": {
+          "pageTitle": {
+            "text": "Drag and drop",
+            "level": "h1",
+            "styling": {
+              "fontSize": "large",
+              "fontWeight": "bold",
+              "color": "black"
+            }
+          },
+          "subtitle": {
+            "text": "Using drag and drop, people can move or duplicate selected photos, text, and other content by dragging the selection from one location to another.",
+            "styling": {
+              "fontSize": "medium-large",
+              "fontWeight": "normal",
+              "color": "dark gray"
+            }
+          },
+          "platformsSection": {
+            "heading": "Platforms",
+            "platforms": [
+              {
+                "name": "iOS",
+                "supported": true
+              },
+              {
+                "name": "iPadOS",
+                "supported": true
+              },
+              {
+                "name": "macOS",
+                "supported": true
+              },
+              {
+                "name": "tvOS",
+                "supported": false,
+                "note": "Not supported"
+              },
+              {
+                "name": "visionOS",
+                "supported": true
+              },
+              {
+                "name": "watchOS",
+                "supported": false,
+                "note": "Not supported"
+              }
+            ]
+          },
+          "heroImage": {
+            "elementId": "hero-drag-drop-illustration",
+            "elementType": "image",
+            "imageType": "illustration",
+            "description": "A stylized 3D illustration showing a drag and drop interaction. The image features a hand cursor/pointer icon interacting with content cards or tiles in a warm orange/coral color palette. The design uses Apple's modern illustration style with soft gradients, rounded corners, and a clean aesthetic. The illustration conveys the concept of selecting and moving content from one location to another.",
+            "colorPalette": [
+              "Warm orange/coral (#FF9500 approximate)",
+              "Soft peach/salmon tones",
+              "White",
+              "Light gray background"
+            ],
+            "position": "Top right of main content area, next to title",
+            "dimensions": "Approximately 300x200 pixels visible",
+            "contextualRelevance": "Visual representation of the drag and drop concept being documented"
+          },
+          "sections": [
+            {
+              "sectionId": "introduction",
+              "title": null,
+              "content": [
+                {
+                  "elementType": "paragraph",
+                  "text": "To perform drag and drop, people select content in one location, called the source, and drop it in another, called the destination. These locations can be in the same container - like a text view - or in different containers, like text views on opposite sides of a split view, or even in different apps."
+                },
+                {
+                  "elementType": "paragraph",
+                  "text": "Depending on various factors, the drag and drop action might move the selected content to the destination or copy it. After a successful drop, moved content exists only in the destination; copied content exists in both locations. As a general rule, dropping selected content within the same container moves it, whereas dropping content in a different container copies it. Dragging and dropping content between apps always results in a copy."
+                },
+                {
+                  "elementType": "paragraph",
+                  "text": "People use different interactions to perform drag and drop depending on platform. For example:"
+                },
+                {
+                  "elementType": "list",
+                  "listType": "unordered",
+                  "items": [
+                    "In visionOS, people pinch and hold a virtual object while dragging it to a new location in any direction, including along the z-axis.",
+                    "iOS and iPadOS support drag and drop through gestures on the touchscreen, interactions with a pointing device, and through full keyboard-access mode.",
+                    "Universal Control lets people drag content between their Mac and iPad.",
+                    "On a Mac, people can interact with a pointing device, use full keyboard access mode, or use VoiceOver to perform drag and drop."
+                  ]
+                }
+              ]
+            },
+            {
+              "sectionId": "best-practices",
+              "title": "Best practices",
+              "anchorId": "best-practices",
+              "content": [
+                {
+                  "elementType": "guideline",
+                  "heading": "As much as possible, support drag and drop throughout your app.",
+                  "text": "Most people are familiar with drag and drop and they often try it everywhere. When you use system-provided components - such as text fields and text views - you get built-in support for drag and drop."
+                },
+                {
+                  "elementType": "guideline",
+                  "heading": "Offer alternative ways to accomplish drag-and-drop actions.",
+                  "text": "Sometimes, drag-and-drop operations are inconvenient or impossible for people to perform, so it's important to provide other ways to do the same things. For example, you can include menu commands that people can use to copy an item and move it to another location. In iOS and iPadOS, you can use accessibility APIs to identify sources and destinations so that people can use assistive technologies to drag and drop in your app (for developer guidance, see accessibilityDragSourceDescriptors and accessibilityDropPointDescriptors)."
+                },
+                {
+                  "elementType": "guideline",
+                  "heading": "Determine when dragging and dropping content within your app results in a move or a copy.",
+                  "text": "In general, a move makes sense when the source and destination containers are the same - such as dragging text from one location to another within a document - and a copy makes sense when they're different, like dragging an image from one document to another. Before you change these defaults, consider the behavior that most people expect and prefer the one that is least likely to result in frustration or data loss."
+                },
+                {
+                  "elementType": "guideline",
+                  "heading": "Support multi-item drag and drop when it makes sense.",
+                  "text": "People appreciate the convenience of dragging a group of items to a destination, instead of dragging each item separately. In iOS, iPadOS, macOS, and visionOS, people can select multiple items and drag them as a group; macOS also lets people select multiple items from several apps and drag them as a group. In iPadOS, people can select an item, start dragging it, and add other items to the group without stopping the drag operation."
+                },
+                {
+                  "elementType": "guideline",
+                  "heading": "Prefer letting people undo a drag-and-drop operation.",
+                  "text": "Sometimes, people inadvertently drop content in the wrong destination, so they appreciate being able to undo the action and return to their previous state. You might also be able to help people avoid mistakes by asking for confirmation before completing a drag-and-drop operation that can't be undone. In macOS, for example, the Finder asks for confirmation when people drag a file into a write-only folder because they won't be able to open the folder and remove the dropped item. In some situations, it might make sense to provide a way to reverse the results of drag and drop when people can't undo it. For example, Photos lets people cancel photo sharing after dropping a photo into a shared photo stream."
+                },
+                {
+                  "elementType": "guideline",
+                  "heading": "Consider offering multiple versions of dragged content, ordered from highest to lowest fidelity.",
+                  "text": "By providing multiple alternatives, the destination can choose the highest quality version it can accept. For example, if people drag a line drawing they created in your app, you could offer a PDF vector representation, a lossless PNG image with transparency, and a lossy JPEG image without transparency, in that order. Another example is an app that uses rich, complicated objects, like charts. This app might offer the native chart object followed by a simpler version - like an image of the chart - for destinations that don't support chart objects."
+                },
+                {
+                  "elementType": "guideline",
+                  "heading": "Consider supporting spring loading.",
+                  "text": "Spring loading lets people activate certain controls, like buttons and segmented controls, by dragging selected content over them. For example, Calendar lets people drag a selected event over the day, week, month, or year segments in the toolbar, giving them a convenient way to move the event to a different date. On a Mac equipped with a Magic Trackpad, a button or segmented control can activate when people force-click it while continuing to hold the content; on iPad, these components can activate when people hover over them while holding the content."
+                }
+              ]
+            },
+            {
+              "sectionId": "providing-feedback",
+              "title": "Providing feedback",
+              "anchorId": "providing-feedback",
+              "introText": "Drag and drop is a dynamic process that can result in multiple outcomes. To help people feel in control the process, it's crucial to provide clear and continuous feedback throughout.",
+              "content": [
+                {
+                  "elementType": "guideline",
+                  "heading": "Display a drag image as soon as people drag a selection about three points.",
+                  "text": "It works well to create a translucent representation of the content people are dragging. Translucency helps distinguish the representation from the original content and lets people see destinations as they pass over them. Display the drag image until people drop the content."
+                },
+                {
+                  "elementType": "guideline",
+                  "heading": "If it adds clarity, modify the drag image to help people predict the result of a drag-and-drop operation.",
+                  "text": "For example, when dragging a photo into a document, the drag image could expand to show the default size of the photo in the document. You can also use drag flocking to visually group multiple drag items - letting people confirm that they haven't missed an item they want to drag - and then ungroup the items when people drop them. Although changing the drag image can provide valuable feedback, avoid creating a distracting experience in which the drag image is constantly and radically changing."
+                },
+                {
+                  "elementType": "guideline",
+                  "heading": "Show people whether a destination can accept dragged content.",
+                  "text": "For example, you might display an insertion point or highlight a containing view only when the destination can accept a dragged item, and show no visual feedback - or an explicit \"not allowed\" image, like the circle.slash from SF Symbols - when it can't. Display highlighting or other visual cues only while the content is positioned above the destination, removing the visual feedback when people drag the content away. When there are multiple possible destinations, provide visual cues that help people identify one at a time."
+                },
+                {
+                  "elementType": "guideline",
+                  "heading": "When people drop an item on an invalid destination, or when dropping fails, provide visual feedback.",
+                  "text": "For example, the item can move back from its current location to its source (if the source is still visible) or it can scale up and fade out to give the impression of the item evaporating instead of landing successfully."
+                },
+                {
+                  "elementType": "guideline",
+                  "heading": "Scroll the contents of a destination when necessary.",
+                  "text": "When people drag an item within a scrolling container that has a lot of content, the content can automatically scroll as people move the item over it. This behavior makes it easy for people to find the right place to drop the item, but if they continue the drag operation outside of the container, automatic scrolling is no longer necessary. System-provided text views and text fields behave this way by default."
+                }
+              ]
+            },
+            {
+              "sectionId": "accepting-drops",
+              "title": "Accepting drops",
+              "anchorId": "accepting-drops",
+              "content": [
+                {
+                  "elementType": "guideline",
+                  "heading": "When there's a choice, pick the richest version of dropped content your app can accept.",
+                  "text": "For example, if people drag a chart object from another app, the drag operation might offer both the rich, native chart object and a simple image of it. If your app supports charts, extract and display the native chart object; it it doesn't, use the image instead."
+                },
+                {
+                  "elementType": "guideline",
+                  "heading": "Extract only the relevant portion of dropped content if necessary.",
+                  "text": "For example, when people drag a contact to a recipient field in an email, Mail displays only the name and email address, not the contact's address information."
+                },
+                {
+                  "elementType": "guideline",
+                  "heading": "When a physical keyboard is attached, check for the Option key at drop time.",
+                  "text": "When people hold the Option key while dragging, they can force a drag-and-drop operation within the same container to behave like a copy. If people stop holding Option before dropping content in the same container, the drag operation results in a move."
+                },
+                {
+                  "elementType": "guideline",
+                  "heading": "Provide feedback when dropped content needs time to transfer.",
+                  "text": "For example, you might display a progress indicator to help people estimate how long the transfer will take. In collections, lists, and tables, you might also display a placeholder at the drop location so people know where to find the content after it finishes transferring. The system can display an alert when a time-consuming transfer occurs between apps."
+                },
+                {
+                  "elementType": "guideline",
+                  "heading": "Provide feedback when dropped content initiates a task or action.",
+                  "text": "If people drop content onto a control that initiates a task - such as printing - show people that the task has begun and keep them informed of its progress."
+                },
+                {
+                  "elementType": "guideline",
+                  "heading": "Apply appropriate styling to dropped text.",
+                  "text": "When the source and destination both support the same text styles, make sure dropped text maintains its original font, typeface, size, and other attributes. Otherwise, apply the destination's style to dropped text."
+                },
+                {
+                  "elementType": "guideline",
+                  "heading": "After a drop, maintain the content's selection state in the destination, updating it in the source as needed.",
+                  "text": "People expect the content they drop to remain selected so they can immediately act on it. When the source and destination are the same container, the content disappears from its original location when the drag operation performs a move. When a drag operation within the same container performs a copy, remove the selection state from the content that remains in the original location. When people drag selected content to a different container, deselect the content in the source."
+                }
+              ]
+            },
+            {
+              "sectionId": "platform-considerations",
+              "title": "Platform considerations",
+              "anchorId": "platform-considerations",
+              "supportNote": {
+                "text": "Not supported in tvOS or watchOS.",
+                "styling": {
+                  "fontStyle": "italic",
+                  "color": "gray"
+                }
+              },
+              "subsections": [
+                {
+                  "subsectionId": "ios-ipados",
+                  "title": "iOS, iPadOS",
+                  "content": [
+                    {
+                      "elementType": "guideline",
+                      "heading": "Let people perform multiple simultaneous drag activities.",
+                      "text": "In iPadOS, people can sequentially add items to an in-progress drag session, gathering as many items as their fingers can handle. For example, people can select an app icon on the Home Screen, start dragging it, and select additional app icons before dropping all of them in a different Home Screen or in a folder. To support this interaction, you need to let people add items during a drag - providing visual feedback through flocking - and accept multiple, simultaneous drops."
+                    }
+                  ]
+                },
+                {
+                  "subsectionId": "macos",
+                  "title": "macOS",
+                  "content": [
+                    {
+                      "elementType": "guideline",
+                      "heading": "Consider letting people drag content from your app into the Finder.",
+                      "text": "When you support this, be sure to present the content in a format your app can open later. For example, Calendar lets people drag an event to the Finder as a .ics file. People can share this file with others or drag it back to Calendar to open it. When necessary, you can output dragged content in a clipping, which is a temporary container for storing dragged content. For example, most system apps let people drag text to the Finder, where it appears as a clipping. Later, people can drag the clipping into a text field or other location that accepts text. Note that a drag-and-drop clipping isn't related to the Clipboard."
+                    },
+                    {
+                      "elementType": "guideline",
+                      "heading": "Let people drag selected content from an inactive window without first making the window active.",
+                      "text": "Selected content in an inactive window is known as a background selection and has a different appearance from selected content in the active window. In general, people expect to drag a background selection to the active window without bringing the inactive window forward. When possible, let people drag individual items from an inactive window without affecting an existing background selection. For example, people can drag an unselected file from an inactive Finder window without deselecting any of the window's selected files."
+                    },
+                    {
+                      "elementType": "guideline",
+                      "heading": "Consider displaying a badge during multi-item drag operations.",
+                      "text": "A badge is a small filled oval containing a number you can use to indicate the number of items people are dragging. If a destination can accept only a subset of dragged items, update the badge to show the new number."
+                    },
+                    {
+                      "elementType": "guideline",
+                      "heading": "Consider changing the pointer appearance to indicate what will happen when people drop content.",
+                      "text": "In addition to using the copy pointer, you might want to use the drag link, disappearing item, and operation not allowed pointers, depending on the situation. For guidance, see Pointers.",
+                      "relatedLink": {
+                        "text": "Pointers",
+                        "destination": "Pointers documentation"
+                      }
+                    },
+                    {
+                      "elementType": "guideline",
+                      "heading": "As much as possible, let people select and drag content with a single motion.",
+                      "text": "Unless people are selecting multiple items, they appreciate it when they don't have to pause between making a selection and starting the drag operation."
+                    },
+                    {
+                      "elementType": "guideline",
+                      "heading": "When possible, launch your app to handle content that people drop into empty space.",
+                      "text": "When you associate a user activity with draggable app content, your app can open a window or scene that handles the content when people drop it. For example, when people drop a URL into empty space, it launches Safari; when people drop Quick Look-supported content, Quick Look launches to display it. For developer guidance, see NSUserActivity.",
+                      "relatedLink": {
+                        "text": "NSUserActivity",
+                        "destination": "NSUserActivity documentation"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "subsectionId": "visionos",
+                  "title": "visionOS",
+                  "content": [
+                    {
+                      "elementType": "paragraph",
+                      "text": "No additional platform-specific guidelines listed for visionOS beyond the general guidance that people pinch and hold virtual objects while dragging them in any direction including along the z-axis."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "sectionId": "resources",
+              "title": "Resources",
+              "anchorId": "resources",
+              "subsections": [
+                {
+                  "subsectionId": "related",
+                  "title": "Related",
+                  "content": [
+                    {
+                      "elementType": "video",
+                      "title": "Universal Control",
+                      "description": "Play button icon indicates this is a video resource",
+                      "icon": "Play button (triangle in circle)"
+                    }
+                  ]
+                },
+                {
+                  "subsectionId": "developer-documentation",
+                  "title": "Developer documentation",
+                  "links": [
+                    {
+                      "text": "Drag and drop - UIKit",
+                      "url": "UIKit drag and drop documentation",
+                      "icon": "Document icon"
+                    },
+                    {
+                      "text": "Drag and Drop - AppKit",
+                      "url": "AppKit drag and drop documentation",
+                      "icon": "Document icon"
+                    },
+                    {
+                      "text": "File Provider",
+                      "url": "File Provider documentation",
+                      "icon": "Document icon"
+                    }
+                  ]
+                },
+                {
+                  "subsectionId": "videos",
+                  "title": "Videos",
+                  "videos": [
+                    {
+                      "title": "What's new in UIKit",
+                      "thumbnail": {
+                        "description": "Video thumbnail showing a presentation slide with UIKit content",
+                        "colorPalette": ["Dark blue", "Purple", "White text"]
+                      }
+                    },
+                    {
+                      "title": "SwiftUI on the Mac: The finishing touches",
+                      "thumbnail": {
+                        "description": "Video thumbnail showing Mac-related SwiftUI presentation",
+                        "colorPalette": ["Blue", "Orange", "White"]
+                      }
+                    },
+                    {
+                      "title": "Designed for iPad",
+                      "thumbnail": {
+                        "description": "Video thumbnail showing iPad design presentation",
+                        "colorPalette": ["Blue", "White", "Gray"]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "sectionId": "change-log",
+              "title": "Change log",
+              "anchorId": "change-log",
+              "entries": [
+                {
+                  "date": "October 24, 2023",
+                  "change": "Added artwork."
+                },
+                {
+                  "date": "June 21, 2023",
+                  "change": "Updated to include guidance for visionOS."
+                }
+              ]
+            }
+          ]
+        },
+        "footer": {
+          "sections": [
+            {
+              "title": "Tools",
+              "items": [
+                "Swift",
+                "SwiftUI",
+                "Swift Playground",
+                "TestFlight",
+                "Xcode",
+                "Xcode Cloud",
+                "SF Symbols"
+              ]
+            },
+            {
+              "title": "Topics & Technologies",
+              "items": [
+                "Accessibility",
+                "Accessories",
+                "App Extension",
+                "App Store",
+                "Audio & Video",
+                "Augmented Reality",
+                "Design",
+                "Distribution",
+                "Education",
+                "Fonts",
+                "Games",
+                "Health & Fitness",
+                "In-App Purchase",
+                "Localization",
+                "Maps & Location",
+                "Machine Learning & AI",
+                "Open Source",
+                "Security",
+                "Safari & Web"
+              ]
+            },
+            {
+              "title": "Resources",
+              "items": [
+                "Documentation",
+                "Tutorials",
+                "Downloads",
+                "Forums",
+                "Videos"
+              ]
+            },
+            {
+              "title": "Support",
+              "items": [
+                "Support Articles",
+                "Contact Us",
+                "Bug Reporting",
+                "System Status"
+              ]
+            },
+            {
+              "title": "Account",
+              "items": [
+                "Apple Developer",
+                "App Store Connect",
+                "Certificates, IDs, & Profiles",
+                "Feedback Assistant"
+              ]
+            },
+            {
+              "title": "Programs",
+              "items": [
+                "Apple Developer Program",
+                "Apple Developer Enterprise Program",
+                "App Store Small Business Program",
+                "MFi Program",
+                "News Partner Program",
+                "Video Partner Program",
+                "Security Bounty Program",
+                "Security Research Device Program"
+              ]
+            },
+            {
+              "title": "Events",
+              "items": [
+                "Meet with Apple",
+                "Apple Developer Centers",
+                "App Store Awards",
+                "Apple Design Awards",
+                "Apple Developer Academies",
+                "WWDC"
+              ]
+            }
+          ],
+          "feedbackLink": {
+            "text": "To submit feedback on documentation, visit Feedback Assistant.",
+            "linkText": "Feedback Assistant"
+          },
+          "colorSchemeToggle": {
+            "options": ["Light", "Dark", "Auto"],
+            "currentSelection": "Auto"
+          },
+          "legalSection": {
+            "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+            "links": [
+              "Terms of Use",
+              "Privacy Policy",
+              "Agreements and Guidelines"
+            ]
+          }
+        },
+        "pageSummary": "This page documents Apple's Human Interface Guidelines for implementing drag and drop functionality across iOS, iPadOS, macOS, and visionOS. It provides comprehensive guidance on best practices for enabling users to move or copy content between locations, proper visual feedback during drag operations, handling drop acceptance, and platform-specific considerations. The document emphasizes accessibility, undo capabilities, multi-item support, and consistent user experience patterns."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": true,
+        "location": "Right sidebar",
+        "entries": [
+          "Drag and drop",
+          "Best practices",
+          "Providing feedback",
+          "Accepting drops",
+          "Platform considerations",
+          "Resources",
+          "Change log"
+        ]
+      },
+      "runningHeaders": "Developer Documentation header with Apple logo and navigation",
+      "runningFooters": "Comprehensive footer with tools, resources, support, and legal information",
+      "pageNumbers": {
+        "present": false,
+        "format": "N/A - Single page web document"
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "intro",
+          "title": "Introduction",
+          "startPage": 1,
+          "endPage": 1,
+          "summary": "Defines drag and drop as selecting content from a source and dropping it at a destination, explains move vs copy behavior, and describes platform-specific interaction methods."
+        },
+        {
+          "sectionId": "best-practices",
+          "title": "Best practices",
+          "startPage": 1,
+          "endPage": 1,
+          "summary": "Seven key guidelines covering: universal support for drag and drop, alternative methods for accessibility, move vs copy decisions, multi-item support, undo capability, multiple fidelity versions, and spring loading."
+        },
+        {
+          "sectionId": "providing-feedback",
+          "title": "Providing feedback",
+          "startPage": 1,
+          "endPage": 1,
+          "summary": "Five guidelines for visual feedback: displaying drag images at 3 points, modifying drag images for clarity, showing destination acceptance, handling failed drops, and auto-scrolling containers."
+        },
+        {
+          "sectionId": "accepting-drops",
+          "title": "Accepting drops",
+          "startPage": 1,
+          "endPage": 1,
+          "summary": "Seven guidelines for handling dropped content: choosing richest format, extracting relevant portions, Option key handling, transfer progress feedback, task initiation feedback, text styling, and selection state management."
+        },
+        {
+          "sectionId": "platform-considerations",
+          "title": "Platform considerations",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "title": "iOS, iPadOS",
+              "summary": "One guideline about supporting multiple simultaneous drag activities with flocking feedback."
+            },
+            {
+              "title": "macOS",
+              "summary": "Six guidelines covering: Finder integration, background selection dragging, multi-item badges, pointer appearance changes, single-motion selection, and launching apps from empty space drops."
+            },
+            {
+              "title": "visionOS",
+              "summary": "References z-axis dragging capability mentioned in introduction."
+            }
+          ],
+          "summary": "Platform-specific implementation guidelines. Notes tvOS and watchOS are not supported."
+        },
+        {
+          "sectionId": "resources",
+          "title": "Resources",
+          "startPage": 1,
+          "endPage": 1,
+          "summary": "Links to Universal Control video, developer documentation for UIKit and AppKit drag and drop, File Provider, and three related WWDC videos."
+        },
+        {
+          "sectionId": "change-log",
+          "title": "Change log",
+          "startPage": 1,
+          "endPage": 1,
+          "summary": "Two updates: artwork added October 2023, visionOS guidance added June 2023."
+        }
+      ],
+      "documentFlow": "The document follows a logical progression from conceptual introduction, through best practices for implementation, to specific guidance on visual feedback and drop handling, then platform-specific considerations, and finally reference resources. The structure moves from general principles to specific implementation details."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "source",
+          "definition": "The location from which content is selected and dragged",
+          "occurrences": 8
+        },
+        {
+          "term": "destination",
+          "definition": "The location where dragged content is dropped",
+          "occurrences": 15
+        },
+        {
+          "term": "drag image",
+          "definition": "A translucent visual representation of the content being dragged",
+          "occurrences": 5
+        },
+        {
+          "term": "spring loading",
+          "definition": "A feature that lets people activate certain controls by dragging selected content over them",
+          "occurrences": 2
+        },
+        {
+          "term": "drag flocking",
+          "definition": "Visually grouping multiple drag items together during a drag operation",
+          "occurrences": 2
+        },
+        {
+          "term": "background selection",
+          "definition": "Selected content in an inactive window that can be dragged without activating the window",
+          "occurrences": 2
+        },
+        {
+          "term": "clipping",
+          "definition": "A temporary container for storing dragged content when dragging to Finder",
+          "occurrences": 3
+        },
+        {
+          "term": "move",
+          "definition": "A drag-and-drop operation where content exists only in the destination after dropping",
+          "occurrences": 6
+        },
+        {
+          "term": "copy",
+          "definition": "A drag-and-drop operation where content exists in both source and destination after dropping",
+          "occurrences": 7
+        },
+        {
+          "term": "fidelity",
+          "definition": "The quality level of dragged content representation, from highest (native format) to lowest (basic image)",
+          "occurrences": 1
+        }
+      ],
+      "keyFindings": [
+        "Dropping content within the same container typically moves it; dropping in a different container copies it",
+        "Dragging between apps always results in a copy operation",
+        "Drag images should appear after approximately 3 points of movement",
+        "The Option key on macOS can force a copy operation within the same container",
+        "visionOS supports dragging along the z-axis for 3D spatial interaction",
+        "Universal Control enables cross-device drag and drop between Mac and iPad",
+        "Multi-item drag operations should use flocking to visually group items",
+        "Spring loading activates controls when users hover over them while dragging",
+        "Badge indicators should show the count of items being dragged and update if destination accepts fewer",
+        "Content should remain selected after dropping to allow immediate further action"
+      ],
+      "technicalSpecifications": {
+        "accessibilityAPIs": [
+          "accessibilityDragSourceDescriptors",
+          "accessibilityDropPointDescriptors"
+        ],
+        "developerFrameworks": [
+          "UIKit (iOS/iPadOS)",
+          "AppKit (macOS)",
+          "File Provider"
+        ],
+        "relatedAPIs": [
+          "NSUserActivity"
+        ],
+        "sfSymbols": [
+          "circle.slash (not allowed indicator)"
+        ],
+        "dragImageThreshold": "3 points of movement",
+        "supportedPlatforms": {
+          "iOS": true,
+          "iPadOS": true,
+          "macOS": true,
+          "tvOS": false,
+          "visionOS": true,
+          "watchOS": false
+        }
+      },
+      "designDecisions": [
+        {
+          "decision": "Use translucent drag images",
+          "rationale": "Helps distinguish from original content and lets users see destinations beneath"
+        },
+        {
+          "decision": "Move within same container, copy between containers",
+          "rationale": "Follows user expectations and minimizes data loss risk"
+        },
+        {
+          "decision": "Provide multiple fidelity versions of dragged content",
+          "rationale": "Allows destinations to choose the highest quality format they support"
+        },
+        {
+          "decision": "Show visual feedback only while hovering over valid destinations",
+          "rationale": "Provides clear indication of where content can be dropped without cluttering the interface"
+        },
+        {
+          "decision": "Animate failed drops back to source or fade out",
+          "rationale": "Provides clear feedback that the drop did not succeed"
+        },
+        {
+          "decision": "Support undo for drag-and-drop operations",
+          "rationale": "Allows users to recover from accidental drops"
+        }
+      ],
+      "platformBehaviors": {
+        "visionOS": {
+          "interaction": "Pinch and hold while dragging in any direction including z-axis"
+        },
+        "iOS_iPadOS": {
+          "interactions": [
+            "Touchscreen gestures",
+            "Pointing device interactions",
+            "Full keyboard-access mode"
+          ],
+          "multiItemDrag": "Can add items to in-progress drag session"
+        },
+        "macOS": {
+          "interactions": [
+            "Pointing device",
+            "Full keyboard access mode",
+            "VoiceOver"
+          ],
+          "features": [
+            "Finder integration with .ics and clipping support",
+            "Background selection dragging",
+            "Multi-item badge display",
+            "Custom pointer appearances",
+            "Single-motion select and drag",
+            "Launch app from empty space drop"
+          ],
+          "springLoading": "Force-click with Magic Trackpad"
+        },
+        "universalControl": {
+          "description": "Enables dragging content between Mac and iPad"
+        }
+      }
+    },
+    "accessibilityConsiderations": {
+      "guidelines": [
+        "Offer alternative ways to accomplish drag-and-drop actions via menu commands",
+        "Use accessibility APIs (accessibilityDragSourceDescriptors, accessibilityDropPointDescriptors) on iOS/iPadOS",
+        "Support VoiceOver drag and drop on macOS",
+        "Support full keyboard access mode on all platforms"
+      ]
+    },
+    "relatedVideos": [
+      {
+        "title": "Universal Control",
+        "type": "Related video with play button"
+      },
+      {
+        "title": "What's new in UIKit",
+        "type": "WWDC session video"
+      },
+      {
+        "title": "SwiftUI on the Mac: The finishing touches",
+        "type": "WWDC session video"
+      },
+      {
+        "title": "Designed for iPad",
+        "type": "WWDC session video"
+      }
+    ]
+  }
+}

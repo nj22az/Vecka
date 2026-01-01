@@ -1,0 +1,1683 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Feedback | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "feedback",
+        "user interface",
+        "design guidelines",
+        "iOS",
+        "iPadOS",
+        "macOS",
+        "tvOS",
+        "visionOS",
+        "watchOS",
+        "Apple Human Interface Guidelines",
+        "accessibility",
+        "alerts",
+        "haptics",
+        "status feedback"
+      ],
+      "summary": "This Apple Developer Documentation page provides comprehensive design guidelines for implementing feedback mechanisms in apps and games across Apple platforms. It covers best practices for communicating status, success/failure states, warnings, and error correction opportunities to users through accessible, context-appropriate methods.",
+      "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+      "sourceUrl": "https://developer.apple.com/design/human-interface-guidelines/feedback"
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": 1275,
+          "height": 4073,
+          "unit": "pixels"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF",
+        "layout": {
+          "type": "multi-column",
+          "columns": 2,
+          "margins": {
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-global-nav",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1275,
+              "height": 48
+            },
+            "zIndex": 100,
+            "content": {
+              "navType": "global-header",
+              "backgroundColor": "#000000",
+              "items": [
+                {
+                  "label": "Apple Developer Logo",
+                  "type": "logo",
+                  "position": "left"
+                },
+                {
+                  "label": "News",
+                  "type": "link",
+                  "position": "center"
+                },
+                {
+                  "label": "Discover",
+                  "type": "link",
+                  "position": "center"
+                },
+                {
+                  "label": "Design",
+                  "type": "link",
+                  "position": "center"
+                },
+                {
+                  "label": "Develop",
+                  "type": "link",
+                  "position": "center"
+                },
+                {
+                  "label": "Distribute",
+                  "type": "link",
+                  "position": "center"
+                },
+                {
+                  "label": "Support",
+                  "type": "link",
+                  "position": "center"
+                },
+                {
+                  "label": "Account",
+                  "type": "link",
+                  "position": "center"
+                },
+                {
+                  "label": "Search",
+                  "type": "icon-button",
+                  "icon": "magnifying-glass",
+                  "position": "right"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-header-secondary-nav",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 48,
+              "width": 1275,
+              "height": 44
+            },
+            "zIndex": 99,
+            "content": {
+              "navType": "secondary-header",
+              "backgroundColor": "#F5F5F7",
+              "breadcrumb": [
+                {
+                  "icon": "house",
+                  "label": "Home"
+                },
+                {
+                  "label": "Design"
+                }
+              ],
+              "items": [
+                {
+                  "label": "Overview",
+                  "type": "link"
+                },
+                {
+                  "label": "What's New",
+                  "type": "link"
+                },
+                {
+                  "label": "Get Started",
+                  "type": "link"
+                },
+                {
+                  "label": "Guidelines",
+                  "type": "link"
+                },
+                {
+                  "label": "Resources",
+                  "type": "link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-title",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 60,
+              "y": 120,
+              "width": 400,
+              "height": 60
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 1,
+              "text": "Feedback",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "48px",
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-intro-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 60,
+              "y": 190,
+              "width": 400,
+              "height": 80
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Feedback helps people know what's happening, discover what they can do next, understand the results of actions, and avoid mistakes.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "21px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": 1.4
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-supported-platforms-section",
+            "elementType": "sidebar-section",
+            "boundingBox": {
+              "x": 520,
+              "y": 120,
+              "width": 250,
+              "height": 150
+            },
+            "zIndex": 1,
+            "content": {
+              "title": "Supported platforms",
+              "platformIcons": [
+                {
+                  "platform": "iOS",
+                  "icon": "iphone",
+                  "description": "iPhone icon"
+                },
+                {
+                  "platform": "iPadOS",
+                  "icon": "ipad",
+                  "description": "iPad icon"
+                },
+                {
+                  "platform": "macOS",
+                  "icon": "macbook",
+                  "description": "MacBook icon"
+                },
+                {
+                  "platform": "tvOS",
+                  "icon": "appletv",
+                  "description": "Apple TV icon"
+                },
+                {
+                  "platform": "visionOS",
+                  "icon": "visionpro",
+                  "description": "Apple Vision Pro icon"
+                },
+                {
+                  "platform": "watchOS",
+                  "icon": "applewatch",
+                  "description": "Apple Watch icon"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-table-of-contents",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 520,
+              "y": 280,
+              "width": 200,
+              "height": 100
+            },
+            "zIndex": 1,
+            "content": {
+              "navType": "table-of-contents",
+              "items": [
+                {
+                  "label": "Feedback",
+                  "type": "anchor-link",
+                  "isActive": true
+                },
+                {
+                  "label": "Best practices",
+                  "type": "anchor-link",
+                  "isActive": false
+                },
+                {
+                  "label": "Platform considerations",
+                  "type": "anchor-link",
+                  "isActive": false
+                },
+                {
+                  "label": "Resources",
+                  "type": "anchor-link",
+                  "isActive": false
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-hero-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": 60,
+              "y": 290,
+              "width": 400,
+              "height": 225
+            },
+            "zIndex": 1,
+            "content": {
+              "imageType": "illustration",
+              "description": "A stylized illustration showing a hand with index finger pressing or tapping, depicted in a warm orange/peach color gradient. The hand emerges from what appears to be a circular background element. There is a subtle radial glow or feedback indicator emanating from the point of touch, suggesting the concept of haptic or visual feedback from a user interaction. The illustration uses soft, rounded forms and a minimalist design aesthetic consistent with Apple's design language.",
+              "subjects": [
+                "human hand",
+                "index finger",
+                "touch gesture",
+                "feedback indicator",
+                "circular background"
+              ],
+              "composition": "Centered composition with the hand entering from the left side, finger pointing right toward the center of the circular element",
+              "colorPalette": [
+                "#F5A962 (warm orange)",
+                "#FFDAB3 (light peach)",
+                "#FFE4C4 (bisque)",
+                "#F5F5F7 (light gray background)"
+              ],
+              "mood": "Warm, approachable, illustrative of human-device interaction",
+              "technicalDetails": "Vector illustration, likely created for Apple HIG documentation",
+              "textInImage": [],
+              "contextualRelevance": "This hero image visually represents the concept of feedback - the immediate response a user receives when interacting with a device through touch. The radial glow suggests haptic or visual feedback acknowledging the user's action."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-content-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 60,
+              "y": 530,
+              "width": 600,
+              "height": 180
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Providing clear, consistent feedback as people interact with your app or game can make it feel intuitive and encourage deeper exploration. Feedback can communicate several different things, such as:",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-feedback-types-list",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 60,
+              "y": 720,
+              "width": 600,
+              "height": 160
+            },
+            "zIndex": 1,
+            "content": {
+              "listType": "unordered",
+              "bulletStyle": "disc",
+              "items": [
+                {
+                  "text": "The current status of something"
+                },
+                {
+                  "text": "The success or failure of an important task or action"
+                },
+                {
+                  "text": "A warning about an action that can have negative consequences"
+                },
+                {
+                  "text": "An opportunity to correct a mistake or problematic situation"
+                }
+              ],
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "color": "#1D1D1F"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-content-intro",
+                "relationshipType": "continues-from"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-effectiveness-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 60,
+              "y": 900,
+              "width": 600,
+              "height": 120
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "The most effective feedback tends to match the significance of the information to the way it's delivered. For example, it often works well to display status information in a passive way so that people can view it when they need it. In contrast, a warning about possible data loss needs to interrupt people so they have a chance to avoid the problem.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practices-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 60,
+              "y": 1040,
+              "width": 300,
+              "height": 40
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 2,
+              "text": "Best practices",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "32px",
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-accessibility-guideline",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 60,
+              "y": 1100,
+              "width": 600,
+              "height": 140
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Make sure all feedback is accessible. When you use multiple ways to provide feedback, you reach more people and give them the opportunity to receive the feedback in ways that work for them. For example, when you provide feedback using color, text, sound, and haptics, people can receive it whether they silence their device, look away from the screen, or use VoiceOver. (For guidance on providing haptic feedback, see Playing haptics.)",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5,
+              "inlineElements": [
+                {
+                  "type": "bold",
+                  "text": "Make sure all feedback is accessible.",
+                  "startIndex": 0,
+                  "endIndex": 37
+                },
+                {
+                  "type": "link",
+                  "text": "Playing haptics",
+                  "href": "/design/human-interface-guidelines/playing-haptics"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-status-feedback-guideline",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 60,
+              "y": 1260,
+              "width": 600,
+              "height": 140
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Consider integrating status feedback into your interface. When status feedback is available near the items it describes, people get important information without having to take action or leave their current context. For example, Mail in iOS and iPadOS describes the most recent update and displays the number of unread messages in the toolbar of the mailbox screen, making the information unobtrusive but easy for people to check when they're interested.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5,
+              "inlineElements": [
+                {
+                  "type": "bold",
+                  "text": "Consider integrating status feedback into your interface.",
+                  "startIndex": 0,
+                  "endIndex": 56
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-alerts-guideline",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 60,
+              "y": 1420,
+              "width": 600,
+              "height": 120
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Use alerts to deliver critical -- and ideally actionable -- information. By design, alerts disrupt the current context, so you need to match the importance of the information to the level of interruption. Alerts can lose their impact if you use them too often or to deliver unimportant information. For guidance, see Alerts.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5,
+              "inlineElements": [
+                {
+                  "type": "bold",
+                  "text": "Use alerts to deliver critical -- and ideally actionable -- information.",
+                  "startIndex": 0,
+                  "endIndex": 70
+                },
+                {
+                  "type": "link",
+                  "text": "Alerts",
+                  "href": "/design/human-interface-guidelines/alerts"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-data-loss-warning-guideline",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 60,
+              "y": 1560,
+              "width": 600,
+              "height": 120
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Warn people when they initiate a task that can cause data loss that's unexpected and irreversible. In contrast, don't warn people when data loss is the expected result of their action. For example, the Finder doesn't warn people every time they throw away a file because deleting the file is the expected result.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5,
+              "inlineElements": [
+                {
+                  "type": "bold",
+                  "text": "Warn people when they initiate a task that can cause data loss that's unexpected and irreversible.",
+                  "startIndex": 0,
+                  "endIndex": 97
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-confirmation-guideline",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 60,
+              "y": 1700,
+              "width": 600,
+              "height": 140
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "When it makes sense, confirm that a significant action or task has completed. For example, people appreciate getting feedback that confirms a successful Apple Pay transaction. It's generally best to reserve this type of confirmation for activities that are sufficiently important -- because people typically expect their action or task to succeed, they only need to know when it doesn't.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5,
+              "inlineElements": [
+                {
+                  "type": "bold",
+                  "text": "When it makes sense, confirm that a significant action or task has completed.",
+                  "startIndex": 0,
+                  "endIndex": 76
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-error-feedback-guideline",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 60,
+              "y": 1860,
+              "width": 600,
+              "height": 100
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Show people when a command can't be carried out and help them understand why. For example, if people request directions without specifying a destination, Maps tells them that it can't provide directions to and from the same location.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5,
+              "inlineElements": [
+                {
+                  "type": "bold",
+                  "text": "Show people when a command can't be carried out and help them understand why.",
+                  "startIndex": 0,
+                  "endIndex": 76
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-considerations-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 60,
+              "y": 1980,
+              "width": 400,
+              "height": 40
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 2,
+              "text": "Platform considerations",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "32px",
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-no-additional",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 60,
+              "y": 2040,
+              "width": 600,
+              "height": 40
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "No additional considerations for iOS, iPadOS, macOS, tvOS, or visionOS.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-watchos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 60,
+              "y": 2100,
+              "width": 150,
+              "height": 30
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 3,
+              "text": "watchOS",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "24px",
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-watchos-guideline",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 60,
+              "y": 2150,
+              "width": 600,
+              "height": 120
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Avoid displaying an indeterminate progress indicator -- such as a loading indicator -- in a watchOS app. An animated indicator can make people think they need to continue paying attention to the display, which isn't a good user experience. To provide a better experience, reassure people that they'll receive a notification when the process completes.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5,
+              "inlineElements": [
+                {
+                  "type": "bold",
+                  "text": "Avoid displaying an indeterminate progress indicator -- such as a loading indicator -- in a watchOS app.",
+                  "startIndex": 0,
+                  "endIndex": 103
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 60,
+              "y": 2290,
+              "width": 200,
+              "height": 40
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 2,
+              "text": "Resources",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "32px",
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-related-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 60,
+              "y": 2350,
+              "width": 100,
+              "height": 25
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 3,
+              "text": "Related",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-related-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 60,
+              "y": 2380,
+              "width": 300,
+              "height": 80
+            },
+            "zIndex": 1,
+            "content": {
+              "listType": "unordered",
+              "bulletStyle": "none",
+              "items": [
+                {
+                  "text": "Playing audio",
+                  "type": "link",
+                  "href": "/design/human-interface-guidelines/playing-audio",
+                  "isUnderlined": true,
+                  "color": "#0066CC"
+                },
+                {
+                  "text": "Playing haptics",
+                  "type": "link",
+                  "href": "/design/human-interface-guidelines/playing-haptics",
+                  "isUnderlined": true,
+                  "color": "#0066CC"
+                },
+                {
+                  "text": "Motion",
+                  "type": "link",
+                  "href": "/design/human-interface-guidelines/motion",
+                  "isUnderlined": true,
+                  "color": "#0066CC"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-developer-docs-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 60,
+              "y": 2480,
+              "width": 300,
+              "height": 25
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 3,
+              "text": "Developer documentation",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-developer-docs-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 60,
+              "y": 2510,
+              "width": 300,
+              "height": 30
+            },
+            "zIndex": 1,
+            "content": {
+              "listType": "unordered",
+              "bulletStyle": "none",
+              "items": [
+                {
+                  "text": "Animation and haptics -- UIKit",
+                  "type": "link",
+                  "href": "https://developer.apple.com/documentation/uikit/animation_and_haptics",
+                  "isUnderlined": true,
+                  "color": "#0066CC"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-videos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 60,
+              "y": 2560,
+              "width": 100,
+              "height": 25
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 3,
+              "text": "Videos",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-video-card-1",
+            "elementType": "image",
+            "boundingBox": {
+              "x": 60,
+              "y": 2600,
+              "width": 180,
+              "height": 140
+            },
+            "zIndex": 1,
+            "content": {
+              "imageType": "video-thumbnail",
+              "description": "Video thumbnail showing a dark background with a stylized circular UI element featuring concentric rings or circles in blue and purple tones, suggesting an interface animation or fluid design concept. The image has a gradient overlay typical of Apple's video thumbnails.",
+              "subjects": [
+                "circular UI element",
+                "concentric rings",
+                "interface animation"
+              ],
+              "composition": "Centered circular element on dark background",
+              "colorPalette": [
+                "#1A1A2E (dark blue-black)",
+                "#4A90D9 (blue)",
+                "#7B68EE (medium purple)"
+              ],
+              "mood": "Technical, modern, dynamic",
+              "technicalDetails": "WWDC video thumbnail",
+              "textInImage": [
+                "Designing Fluid Interfaces"
+              ],
+              "contextualRelevance": "Links to WWDC video about designing fluid, responsive interfaces with smooth animations and feedback",
+              "videoTitle": "Designing Fluid Interfaces",
+              "videoLink": "https://developer.apple.com/videos/play/wwdc2018/803/"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-video-caption-1",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-video-caption-1",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": 60,
+              "y": 2740,
+              "width": 180,
+              "height": 20
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Designing Fluid Interfaces",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "13px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-video-card-1",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-video-card-2",
+            "elementType": "image",
+            "boundingBox": {
+              "x": 260,
+              "y": 2600,
+              "width": 180,
+              "height": 140
+            },
+            "zIndex": 1,
+            "content": {
+              "imageType": "video-thumbnail",
+              "description": "Video thumbnail showing a colorful gradient background transitioning from warm orange/red tones on the left to cool blue/purple tones on the right, with soft, diffused lighting effects suggesting abstract design principles.",
+              "subjects": [
+                "gradient background",
+                "abstract design"
+              ],
+              "composition": "Full-bleed gradient from warm to cool colors",
+              "colorPalette": [
+                "#FF6B6B (coral red)",
+                "#4ECDC4 (teal)",
+                "#667EEA (blue-purple)"
+              ],
+              "mood": "Creative, inspiring, foundational",
+              "technicalDetails": "WWDC video thumbnail",
+              "textInImage": [
+                "Essential Design Principles"
+              ],
+              "contextualRelevance": "Links to WWDC video about fundamental design principles for Apple platforms",
+              "videoTitle": "Essential Design Principles",
+              "videoLink": "https://developer.apple.com/videos/play/wwdc2017/802/"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-video-caption-2",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-video-caption-2",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": 260,
+              "y": 2740,
+              "width": 180,
+              "height": 20
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Essential Design Principles",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "13px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-video-card-2",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-footer-breadcrumb",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 2820,
+              "width": 1275,
+              "height": 40
+            },
+            "zIndex": 1,
+            "content": {
+              "navType": "breadcrumb",
+              "backgroundColor": "#F5F5F7",
+              "items": [
+                {
+                  "icon": "apple-logo",
+                  "label": "Apple Logo"
+                },
+                {
+                  "label": "Developer"
+                },
+                {
+                  "label": "Documentation"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-mega-nav",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 2860,
+              "width": 1275,
+              "height": 800
+            },
+            "zIndex": 1,
+            "content": {
+              "navType": "footer-mega-navigation",
+              "backgroundColor": "#F5F5F7",
+              "columns": [
+                {
+                  "heading": "Platforms",
+                  "items": [
+                    "iOS",
+                    "iPadOS",
+                    "macOS",
+                    "tvOS",
+                    "visionOS",
+                    "watchOS"
+                  ]
+                },
+                {
+                  "heading": "Tools",
+                  "items": [
+                    "Swift",
+                    "SwiftUI",
+                    "Swift Playground",
+                    "TestFlight",
+                    "Xcode",
+                    "Xcode Cloud",
+                    "SF Symbols"
+                  ]
+                },
+                {
+                  "heading": "Topics & Technologies",
+                  "items": [
+                    "Accessibility",
+                    "Accessories",
+                    "App Extension",
+                    "App Store",
+                    "Audio & Video",
+                    "Augmented Reality",
+                    "Design",
+                    "Distribution",
+                    "Education",
+                    "Fonts",
+                    "Games",
+                    "Health & Fitness",
+                    "In-App Purchase",
+                    "Localization",
+                    "Maps & Location",
+                    "Machine Learning & AI",
+                    "Open Source",
+                    "Security",
+                    "Safari & Web"
+                  ]
+                },
+                {
+                  "heading": "Resources",
+                  "items": [
+                    "Documentation",
+                    "Tutorials",
+                    "Downloads",
+                    "Forums",
+                    "Videos"
+                  ]
+                },
+                {
+                  "heading": "Support",
+                  "items": [
+                    "Support Articles",
+                    "Contact Us",
+                    "Bug Reporting",
+                    "System Status"
+                  ]
+                },
+                {
+                  "heading": "Account",
+                  "items": [
+                    "Apple Developer",
+                    "App Store Connect",
+                    "Certificates, IDs, & Profiles",
+                    "Feedback Assistant"
+                  ]
+                },
+                {
+                  "heading": "Programs",
+                  "items": [
+                    "Apple Developer Program",
+                    "Apple Developer Enterprise Program",
+                    "App Store Small Business Program",
+                    "MFi Program",
+                    "News Partner Program",
+                    "Video Partner Program",
+                    "Security Bounty Program",
+                    "Security Research Device Program"
+                  ]
+                },
+                {
+                  "heading": "Events",
+                  "items": [
+                    "Meet with Apple",
+                    "Apple Developer Centers",
+                    "App Store Awards",
+                    "Apple Design Awards",
+                    "Apple Developer Academies",
+                    "WWDC"
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-feedback-notice",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 60,
+              "y": 3700,
+              "width": 600,
+              "height": 20
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "To submit feedback on documentation, visit Feedback Assistant.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "12px",
+              "fontWeight": "normal",
+              "color": "#86868B",
+              "inlineElements": [
+                {
+                  "type": "link",
+                  "text": "Feedback Assistant",
+                  "href": "https://feedbackassistant.apple.com/"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-theme-toggle",
+            "elementType": "other",
+            "boundingBox": {
+              "x": 1100,
+              "y": 3700,
+              "width": 150,
+              "height": 30
+            },
+            "zIndex": 1,
+            "content": {
+              "type": "toggle-button-group",
+              "description": "Theme toggle control with three options: Light, Dark, and Auto",
+              "options": [
+                {
+                  "label": "Light",
+                  "value": "light"
+                },
+                {
+                  "label": "Dark",
+                  "value": "dark"
+                },
+                {
+                  "label": "Auto",
+                  "value": "auto"
+                }
+              ],
+              "selectedOption": "Auto"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-legal",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 60,
+              "y": 3750,
+              "width": 1155,
+              "height": 20
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Copyright 2025 Apple Inc. All rights reserved.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "12px",
+              "fontWeight": "normal",
+              "color": "#86868B"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-legal-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 60,
+              "y": 3780,
+              "width": 400,
+              "height": 20
+            },
+            "zIndex": 1,
+            "content": {
+              "listType": "inline",
+              "separator": "|",
+              "items": [
+                {
+                  "text": "Terms of Use",
+                  "type": "link",
+                  "href": "https://www.apple.com/legal/internet-services/terms/site.html"
+                },
+                {
+                  "text": "Privacy Policy",
+                  "type": "link",
+                  "href": "https://www.apple.com/privacy/privacy-policy/"
+                },
+                {
+                  "text": "Agreements and Guidelines",
+                  "type": "link",
+                  "href": "https://developer.apple.com/support/terms/"
+                }
+              ],
+              "fontFamily": "SF Pro Text",
+              "fontSize": "12px",
+              "color": "#0066CC"
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-global-nav",
+          "page1-header-secondary-nav",
+          "page1-main-title",
+          "page1-intro-paragraph",
+          "page1-supported-platforms-section",
+          "page1-table-of-contents",
+          "page1-hero-image",
+          "page1-content-intro",
+          "page1-feedback-types-list",
+          "page1-effectiveness-paragraph",
+          "page1-best-practices-heading",
+          "page1-accessibility-guideline",
+          "page1-status-feedback-guideline",
+          "page1-alerts-guideline",
+          "page1-data-loss-warning-guideline",
+          "page1-confirmation-guideline",
+          "page1-error-feedback-guideline",
+          "page1-platform-considerations-heading",
+          "page1-platform-no-additional",
+          "page1-watchos-heading",
+          "page1-watchos-guideline",
+          "page1-resources-heading",
+          "page1-related-heading",
+          "page1-related-links",
+          "page1-developer-docs-heading",
+          "page1-developer-docs-links",
+          "page1-videos-heading",
+          "page1-video-card-1",
+          "page1-video-caption-1",
+          "page1-video-card-2",
+          "page1-video-caption-2",
+          "page1-footer-breadcrumb",
+          "page1-footer-mega-nav",
+          "page1-footer-feedback-notice",
+          "page1-footer-theme-toggle",
+          "page1-footer-legal",
+          "page1-footer-legal-links"
+        ],
+        "pageSummary": "This page from Apple's Human Interface Guidelines provides comprehensive guidance on implementing feedback mechanisms in apps and games. It defines feedback as helping users understand what's happening, discover possible actions, understand results, and avoid mistakes. The page outlines best practices including making feedback accessible through multiple modalities (color, text, sound, haptics), integrating status feedback into the interface, using alerts judiciously for critical information, warning about unexpected data loss, confirming significant completed actions, and explaining why commands cannot be carried out. Platform-specific guidance for watchOS advises against indeterminate progress indicators. Resources section links to related topics on audio, haptics, and motion, plus developer documentation and WWDC videos."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": true,
+        "entries": [
+          {
+            "title": "Feedback",
+            "pageNumber": 1,
+            "anchor": "#feedback"
+          },
+          {
+            "title": "Best practices",
+            "pageNumber": 1,
+            "anchor": "#best-practices"
+          },
+          {
+            "title": "Platform considerations",
+            "pageNumber": 1,
+            "anchor": "#platform-considerations"
+          },
+          {
+            "title": "Resources",
+            "pageNumber": 1,
+            "anchor": "#resources"
+          }
+        ]
+      },
+      "runningHeaders": "Apple Developer Documentation - Design",
+      "runningFooters": "Copyright 2025 Apple Inc.",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "introduction",
+          "title": "Feedback",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Introduction defining feedback as a mechanism to help users understand app state, available actions, action results, and error avoidance. Lists four types of feedback: status, success/failure, warnings, and error correction opportunities."
+        },
+        {
+          "sectionId": "best-practices",
+          "title": "Best practices",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Six key guidelines for implementing feedback: (1) ensure accessibility through multiple modalities, (2) integrate status feedback into UI, (3) use alerts for critical actionable information, (4) warn about unexpected irreversible data loss, (5) confirm completion of significant actions, (6) explain why commands cannot execute."
+        },
+        {
+          "sectionId": "platform-considerations",
+          "title": "Platform considerations",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "watchos",
+              "title": "watchOS",
+              "summary": "watchOS-specific guidance to avoid indeterminate progress indicators as they encourage unwanted attention to the display; instead, promise notification upon completion."
+            }
+          ],
+          "summary": "Platform-specific feedback guidance. No additional considerations for iOS, iPadOS, macOS, tvOS, or visionOS. watchOS has specific guidance about progress indicators."
+        },
+        {
+          "sectionId": "resources",
+          "title": "Resources",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "related",
+              "title": "Related",
+              "summary": "Links to related HIG topics: Playing audio, Playing haptics, Motion"
+            },
+            {
+              "sectionId": "developer-documentation",
+              "title": "Developer documentation",
+              "summary": "Link to UIKit Animation and haptics documentation"
+            },
+            {
+              "sectionId": "videos",
+              "title": "Videos",
+              "summary": "Two WWDC video references: Designing Fluid Interfaces and Essential Design Principles"
+            }
+          ],
+          "summary": "Additional resources including related HIG pages, developer documentation, and WWDC video sessions."
+        }
+      ],
+      "documentFlow": "The document follows a standard Apple HIG page structure: title and introduction establishing the topic, followed by best practices with bold lead-in sentences, platform-specific considerations organized by platform, and concluding with resources linking to related content. The page is designed for quick reference with clear section headers and actionable guidance."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "Feedback",
+          "definition": "Information provided to users that helps them know what's happening, discover what they can do next, understand the results of actions, and avoid mistakes",
+          "occurrences": 15
+        },
+        {
+          "term": "Status feedback",
+          "definition": "Passive information display showing the current state of something, ideally integrated near relevant UI items",
+          "occurrences": 2
+        },
+        {
+          "term": "Alerts",
+          "definition": "Interruptive UI elements for delivering critical and ideally actionable information",
+          "occurrences": 3
+        },
+        {
+          "term": "Haptics",
+          "definition": "Tactile feedback provided through device vibration to communicate information",
+          "occurrences": 3
+        },
+        {
+          "term": "VoiceOver",
+          "definition": "Apple's screen reader accessibility feature",
+          "occurrences": 1
+        },
+        {
+          "term": "Indeterminate progress indicator",
+          "definition": "A loading indicator that shows activity without indicating completion percentage, discouraged on watchOS",
+          "occurrences": 1
+        }
+      ],
+      "keyFindings": [
+        "Effective feedback matches the significance of information to delivery method - passive for status, interruptive for warnings",
+        "Accessibility requires multiple feedback modalities: color, text, sound, and haptics",
+        "Status feedback should be integrated into the interface near relevant items to avoid context switching",
+        "Alerts should be reserved for critical, actionable information to maintain their impact",
+        "Only warn about data loss when it's unexpected and irreversible, not when deletion is the intended action",
+        "Confirmation feedback should be reserved for sufficiently important completed actions",
+        "Error feedback should explain why a command failed and help users understand the issue",
+        "watchOS apps should avoid indeterminate progress indicators and instead promise completion notifications"
+      ],
+      "technicalSpecifications": {
+        "supportedPlatforms": [
+          "iOS",
+          "iPadOS",
+          "macOS",
+          "tvOS",
+          "visionOS",
+          "watchOS"
+        ],
+        "relatedFrameworks": [
+          "UIKit (Animation and haptics)"
+        ],
+        "relatedHIGPages": [
+          "Playing audio",
+          "Playing haptics",
+          "Motion",
+          "Alerts"
+        ]
+      },
+      "designDecisions": [
+        {
+          "decision": "Use multiple feedback modalities simultaneously",
+          "rationale": "Ensures accessibility for users who may have silenced devices, look away from screen, or use VoiceOver"
+        },
+        {
+          "decision": "Integrate status feedback into interface rather than using separate displays",
+          "rationale": "Allows users to get information without leaving current context or taking action"
+        },
+        {
+          "decision": "Reserve alerts for critical information",
+          "rationale": "Overuse of alerts diminishes their impact and disrupts user flow"
+        },
+        {
+          "decision": "Only warn about unexpected data loss",
+          "rationale": "Users don't need warnings for expected outcomes of their intentional actions"
+        },
+        {
+          "decision": "Avoid indeterminate progress indicators on watchOS",
+          "rationale": "Animated indicators inappropriately suggest users should continue watching the display"
+        }
+      ]
+    },
+    "verbatimTextContent": {
+      "mainContent": {
+        "title": "Feedback",
+        "subtitle": "Feedback helps people know what's happening, discover what they can do next, understand the results of actions, and avoid mistakes.",
+        "supportedPlatformsLabel": "Supported platforms",
+        "introductionParagraph": "Providing clear, consistent feedback as people interact with your app or game can make it feel intuitive and encourage deeper exploration. Feedback can communicate several different things, such as:",
+        "feedbackTypesList": [
+          "The current status of something",
+          "The success or failure of an important task or action",
+          "A warning about an action that can have negative consequences",
+          "An opportunity to correct a mistake or problematic situation"
+        ],
+        "effectivenessParagraph": "The most effective feedback tends to match the significance of the information to the way it's delivered. For example, it often works well to display status information in a passive way so that people can view it when they need it. In contrast, a warning about possible data loss needs to interrupt people so they have a chance to avoid the problem.",
+        "bestPracticesSection": {
+          "heading": "Best practices",
+          "guidelines": [
+            {
+              "leadSentence": "Make sure all feedback is accessible.",
+              "body": "When you use multiple ways to provide feedback, you reach more people and give them the opportunity to receive the feedback in ways that work for them. For example, when you provide feedback using color, text, sound, and haptics, people can receive it whether they silence their device, look away from the screen, or use VoiceOver. (For guidance on providing haptic feedback, see Playing haptics.)"
+            },
+            {
+              "leadSentence": "Consider integrating status feedback into your interface.",
+              "body": "When status feedback is available near the items it describes, people get important information without having to take action or leave their current context. For example, Mail in iOS and iPadOS describes the most recent update and displays the number of unread messages in the toolbar of the mailbox screen, making the information unobtrusive but easy for people to check when they're interested."
+            },
+            {
+              "leadSentence": "Use alerts to deliver critical — and ideally actionable — information.",
+              "body": "By design, alerts disrupt the current context, so you need to match the importance of the information to the level of interruption. Alerts can lose their impact if you use them too often or to deliver unimportant information. For guidance, see Alerts."
+            },
+            {
+              "leadSentence": "Warn people when they initiate a task that can cause data loss that's unexpected and irreversible.",
+              "body": "In contrast, don't warn people when data loss is the expected result of their action. For example, the Finder doesn't warn people every time they throw away a file because deleting the file is the expected result."
+            },
+            {
+              "leadSentence": "When it makes sense, confirm that a significant action or task has completed.",
+              "body": "For example, people appreciate getting feedback that confirms a successful Apple Pay transaction. It's generally best to reserve this type of confirmation for activities that are sufficiently important — because people typically expect their action or task to succeed, they only need to know when it doesn't."
+            },
+            {
+              "leadSentence": "Show people when a command can't be carried out and help them understand why.",
+              "body": "For example, if people request directions without specifying a destination, Maps tells them that it can't provide directions to and from the same location."
+            }
+          ]
+        },
+        "platformConsiderationsSection": {
+          "heading": "Platform considerations",
+          "generalNote": "No additional considerations for iOS, iPadOS, macOS, tvOS, or visionOS.",
+          "watchOS": {
+            "heading": "watchOS",
+            "guideline": {
+              "leadSentence": "Avoid displaying an indeterminate progress indicator — such as a loading indicator — in a watchOS app.",
+              "body": "An animated indicator can make people think they need to continue paying attention to the display, which isn't a good user experience. To provide a better experience, reassure people that they'll receive a notification when the process completes."
+            }
+          }
+        },
+        "resourcesSection": {
+          "heading": "Resources",
+          "relatedSubsection": {
+            "heading": "Related",
+            "links": [
+              "Playing audio",
+              "Playing haptics",
+              "Motion"
+            ]
+          },
+          "developerDocumentationSubsection": {
+            "heading": "Developer documentation",
+            "links": [
+              "Animation and haptics — UIKit"
+            ]
+          },
+          "videosSubsection": {
+            "heading": "Videos",
+            "videos": [
+              "Designing Fluid Interfaces",
+              "Essential Design Principles"
+            ]
+          }
+        }
+      },
+      "footerContent": {
+        "feedbackNotice": "To submit feedback on documentation, visit Feedback Assistant.",
+        "copyright": "Copyright © 2025 Apple Inc. All rights reserved.",
+        "legalLinks": [
+          "Terms of Use",
+          "Privacy Policy",
+          "Agreements and Guidelines"
+        ],
+        "themeToggleOptions": [
+          "Light",
+          "Dark",
+          "Auto"
+        ]
+      }
+    },
+    "allLinks": {
+      "internalLinks": [
+        {
+          "text": "Playing haptics",
+          "href": "/design/human-interface-guidelines/playing-haptics",
+          "context": "Referenced for guidance on providing haptic feedback"
+        },
+        {
+          "text": "Alerts",
+          "href": "/design/human-interface-guidelines/alerts",
+          "context": "Referenced for guidance on alert design"
+        },
+        {
+          "text": "Playing audio",
+          "href": "/design/human-interface-guidelines/playing-audio",
+          "context": "Related HIG page"
+        },
+        {
+          "text": "Motion",
+          "href": "/design/human-interface-guidelines/motion",
+          "context": "Related HIG page"
+        }
+      ],
+      "externalLinks": [
+        {
+          "text": "Animation and haptics — UIKit",
+          "href": "https://developer.apple.com/documentation/uikit/animation_and_haptics",
+          "context": "Developer documentation reference"
+        },
+        {
+          "text": "Designing Fluid Interfaces",
+          "href": "https://developer.apple.com/videos/play/wwdc2018/803/",
+          "context": "WWDC video reference"
+        },
+        {
+          "text": "Essential Design Principles",
+          "href": "https://developer.apple.com/videos/play/wwdc2017/802/",
+          "context": "WWDC video reference"
+        },
+        {
+          "text": "Feedback Assistant",
+          "href": "https://feedbackassistant.apple.com/",
+          "context": "Documentation feedback submission"
+        },
+        {
+          "text": "Terms of Use",
+          "href": "https://www.apple.com/legal/internet-services/terms/site.html",
+          "context": "Legal link in footer"
+        },
+        {
+          "text": "Privacy Policy",
+          "href": "https://www.apple.com/privacy/privacy-policy/",
+          "context": "Legal link in footer"
+        },
+        {
+          "text": "Agreements and Guidelines",
+          "href": "https://developer.apple.com/support/terms/",
+          "context": "Legal link in footer"
+        }
+      ],
+      "navigationLinks": {
+        "globalNav": [
+          "News",
+          "Discover",
+          "Design",
+          "Develop",
+          "Distribute",
+          "Support",
+          "Account"
+        ],
+        "secondaryNav": [
+          "Overview",
+          "What's New",
+          "Get Started",
+          "Guidelines",
+          "Resources"
+        ],
+        "footerPlatforms": [
+          "iOS",
+          "iPadOS",
+          "macOS",
+          "tvOS",
+          "visionOS",
+          "watchOS"
+        ],
+        "footerTools": [
+          "Swift",
+          "SwiftUI",
+          "Swift Playground",
+          "TestFlight",
+          "Xcode",
+          "Xcode Cloud",
+          "SF Symbols"
+        ],
+        "footerTopicsAndTechnologies": [
+          "Accessibility",
+          "Accessories",
+          "App Extension",
+          "App Store",
+          "Audio & Video",
+          "Augmented Reality",
+          "Design",
+          "Distribution",
+          "Education",
+          "Fonts",
+          "Games",
+          "Health & Fitness",
+          "In-App Purchase",
+          "Localization",
+          "Maps & Location",
+          "Machine Learning & AI",
+          "Open Source",
+          "Security",
+          "Safari & Web"
+        ],
+        "footerResources": [
+          "Documentation",
+          "Tutorials",
+          "Downloads",
+          "Forums",
+          "Videos"
+        ],
+        "footerSupport": [
+          "Support Articles",
+          "Contact Us",
+          "Bug Reporting",
+          "System Status"
+        ],
+        "footerAccount": [
+          "Apple Developer",
+          "App Store Connect",
+          "Certificates, IDs, & Profiles",
+          "Feedback Assistant"
+        ],
+        "footerPrograms": [
+          "Apple Developer Program",
+          "Apple Developer Enterprise Program",
+          "App Store Small Business Program",
+          "MFi Program",
+          "News Partner Program",
+          "Video Partner Program",
+          "Security Bounty Program",
+          "Security Research Device Program"
+        ],
+        "footerEvents": [
+          "Meet with Apple",
+          "Apple Developer Centers",
+          "App Store Awards",
+          "Apple Design Awards",
+          "Apple Developer Academies",
+          "WWDC"
+        ]
+      }
+    }
+  }
+}

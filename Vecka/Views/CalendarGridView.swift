@@ -2,8 +2,8 @@
 //  CalendarGridView.swift
 //  Vecka
 //
-//  Elegant borderless calendar grid with floating dates
-//  Dark slate design language - negative space is the hero
+//  Japanese packaging design - Bold borders, bright colors, maximum contrast
+//  情報デザイン (Jōhō Dezain)
 //
 
 import SwiftUI
@@ -16,10 +16,9 @@ struct CalendarGridView: View {
     let selectedDay: CalendarDay? // Added for selection styling
     let onDayTap: (CalendarDay) -> Void
     let onWeekTap: (CalendarWeek) -> Void
-    let hasDataForDay: ((Date) -> (hasNotes: Bool, hasExpenses: Bool, hasTrips: Bool))?
-    // MARK: - Weather parameters (Disabled)
-    // let showWeather: Bool
-    // let weatherData: [Date: DayWeather]
+    /// 情報デザイン: Data check callback for showing colored indicators
+    /// Returns which special day types exist for a given date
+    let hasDataForDay: ((Date) -> DayDataCheck)?
 
     init(
         month: CalendarMonth,
@@ -27,10 +26,7 @@ struct CalendarGridView: View {
         selectedDay: CalendarDay?,
         onDayTap: @escaping (CalendarDay) -> Void,
         onWeekTap: @escaping (CalendarWeek) -> Void,
-        hasDataForDay: ((Date) -> (hasNotes: Bool, hasExpenses: Bool, hasTrips: Bool))? = nil
-        // Weather parameters disabled
-        // showWeather: Bool = false,
-        // weatherData: [Date: DayWeather] = [:]
+        hasDataForDay: ((Date) -> DayDataCheck)? = nil
     ) {
         self.month = month
         self.selectedWeek = selectedWeek
@@ -38,30 +34,46 @@ struct CalendarGridView: View {
         self.onDayTap = onDayTap
         self.onWeekTap = onWeekTap
         self.hasDataForDay = hasDataForDay
-        // self.showWeather = showWeather
-        // self.weatherData = weatherData
     }
+}
+
+// MARK: - Day Data Check (情報デザイン: Unified special day types)
+
+/// Tracks which special day types exist for a calendar day
+struct DayDataCheck {
+    var hasHoliday: Bool = false      // RED - HOL
+    var hasObservance: Bool = false   // ORANGE - OBS
+    var hasEvent: Bool = false        // PURPLE - EVT
+    var hasBirthday: Bool = false     // PINK - BDY (from Contacts)
+    var hasNote: Bool = false         // YELLOW - NTE
+    var hasTrip: Bool = false         // BLUE - TRP
+    var hasExpense: Bool = false      // GREEN - EXP
+
+    static let empty = DayDataCheck()
+}
+
+extension CalendarGridView {
 
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
 
     // HIG: 8 columns (1 for week number + 7 days)
     private var columns: [GridItem] {
         [
-            GridItem(.fixed(weekColumnWidth), spacing: 0), // Week Number Column
-            GridItem(.flexible(), spacing: 0),             // Mon
-            GridItem(.flexible(), spacing: 0),             // Tue
-            GridItem(.flexible(), spacing: 0),             // Wed
-            GridItem(.flexible(), spacing: 0),             // Thu
-            GridItem(.flexible(), spacing: 0),             // Fri
-            GridItem(.flexible(), spacing: 0),             // Sat
-            GridItem(.flexible(), spacing: 0)              // Sun
+            GridItem(.fixed(weekColumnWidth), spacing: JohoDimensions.spacingXS), // Week Number Column
+            GridItem(.flexible(), spacing: JohoDimensions.spacingXS),             // Mon
+            GridItem(.flexible(), spacing: JohoDimensions.spacingXS),             // Tue
+            GridItem(.flexible(), spacing: JohoDimensions.spacingXS),             // Wed
+            GridItem(.flexible(), spacing: JohoDimensions.spacingXS),             // Thu
+            GridItem(.flexible(), spacing: JohoDimensions.spacingXS),             // Fri
+            GridItem(.flexible(), spacing: JohoDimensions.spacingXS),             // Sat
+            GridItem(.flexible(), spacing: JohoDimensions.spacingXS)              // Sun
         ]
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Calendar grid with subtle squircle cells
-            LazyVGrid(columns: columns, spacing: 4) {
+        VStack(spacing: JohoDimensions.spacingSM) {
+            // Calendar grid with thick-bordered cells
+            LazyVGrid(columns: columns, spacing: JohoDimensions.spacingXS) {
                 // Header Row
                 headerRow
 
@@ -76,7 +88,8 @@ struct CalendarGridView: View {
                     }
                 }
             }
-            .padding(.horizontal, Spacing.extraSmall)
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .padding(.vertical, JohoDimensions.spacingSM)
             .frame(maxWidth: .infinity)
         }
         .frame(maxWidth: .infinity)
@@ -86,28 +99,35 @@ struct CalendarGridView: View {
 
     @ViewBuilder
     private var headerRow: some View {
-        // Week column header
+        // Week column header - black background with white text
         Text("W")
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(SlateColors.tertiaryText)
-            .frame(height: 32)
+            .font(JohoFont.label)
+            .foregroundStyle(JohoColors.white)
+            .frame(height: 28)
             .frame(maxWidth: .infinity)
+            .background(JohoColors.black)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
             .accessibilityLabel(Localization.weekColumnHeader)
 
-        // Day Headers (MON-SUN)
+        // Day Headers (MON-SUN) - UPPERCASE, bold, rounded
         ForEach(0..<7, id: \.self) { index in
             weekdayHeaderCell(for: index)
         }
     }
 
     private func weekdayHeaderCell(for index: Int) -> some View {
-        let isSunday = index == 6
-
-        return Text(weekdaySymbol(for: index))
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(isSunday ? SlateColors.sundayBlue : SlateColors.secondaryText)
+        let isWeekend = index >= 5 // Saturday (5) and Sunday (6)
+        return Text(weekdaySymbol(for: index).uppercased())
+            .font(JohoFont.label)
+            .foregroundStyle(JohoColors.black)
             .frame(maxWidth: .infinity)
-            .frame(height: 32)
+            .frame(height: 28)
+            .background(isWeekend ? JohoColors.pink.opacity(0.3) : Color(hex: "F0F0F0"))
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+            )
             .accessibilityLabel(weekdayName(for: index))
     }
 
@@ -120,18 +140,35 @@ struct CalendarGridView: View {
             onWeekTap(week)
             HapticManager.impact(.light)
         }) {
-            ZStack {
-                // Background squircle
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(isSelected ? SlateColors.selectionHighlight : SlateColors.mediumSlate.opacity(0.3))
+            HStack(spacing: 0) {
+                ZStack {
+                    // Background - black squircle like JohoWeekBadge
+                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                        .fill(JohoColors.black)
 
-                Text("\(week.weekNumber)")
-                    .font(.system(size: isPad ? 13 : 11, weight: .medium))
-                    .foregroundStyle(week.isCurrentWeek ? SlateColors.sidebarActiveBar : SlateColors.tertiaryText)
-                    .monospacedDigit()
+                    // Border - white when selected/current, dark otherwise
+                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                        .stroke(
+                            (week.isCurrentWeek || isSelected) ? JohoColors.white : JohoColors.black.opacity(0.3),
+                            lineWidth: (week.isCurrentWeek || isSelected) ? JohoDimensions.borderMedium : JohoDimensions.borderThin
+                        )
+
+                    // Week number
+                    Text("\(week.weekNumber)")
+                        .font(JohoFont.headline)
+                        .foregroundStyle(JohoColors.white)
+                        .monospacedDigit()
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: cellSize)
+
+                // Subtle vertical separator after week number
+                Rectangle()
+                    .fill(JohoColors.white.opacity(0.2))
+                    .frame(width: 1)
+                    .frame(height: cellSize - 8)
+                    .padding(.leading, JohoDimensions.spacingXS)
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: cellSize)
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Week \(week.weekNumber)")
@@ -139,28 +176,98 @@ struct CalendarGridView: View {
     }
 
     private func dayCell(_ day: CalendarDay) -> some View {
-        let isSaturday = Calendar.iso8601.component(.weekday, from: day.date) == 7
-        let isSunday = Calendar.iso8601.component(.weekday, from: day.date) == 1
         let isSelected = selectedDay?.id == day.id
+        let dataCheck = hasDataForDay?(day.date)
 
         return Button {
             onDayTap(day)
             HapticManager.impact(.light)
         } label: {
             ZStack {
-                // Base cell background - subtle squircle for visual structure
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                // Base cell background following JohoDayCell pattern
+                Squircle(cornerRadius: JohoDimensions.radiusSmall)
                     .fill(cellBackground(for: day, isSelected: isSelected))
 
-                // Content - just the number, clean and uniform
-                Text("\(day.dayNumber)")
-                    .font(.system(size: isPad ? 17 : 15, weight: cellFontWeight(for: day, isSelected: isSelected)))
-                    .foregroundStyle(dayTextColor(for: day, isSaturday: isSaturday, isSunday: isSunday))
-                    .monospacedDigit()
+                // Border - thick black border, extra thick for today/selected
+                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                    .stroke(
+                        JohoColors.black,
+                        lineWidth: (day.isToday || isSelected) ? JohoDimensions.borderThick : JohoDimensions.borderThin
+                    )
+
+                // Day number - bold rounded font
+                VStack(spacing: 2) {
+                    Text("\(day.dayNumber)")
+                        .font(isPad ? JohoFont.headline : JohoFont.subheadline)
+                        .fontWeight(.bold)
+                        .foregroundStyle(dayTextColor(for: day, isSelected: isSelected))
+                        .monospacedDigit()
+
+                    // 情報デザイン: Unified colored circles with BLACK borders
+                    HStack(spacing: 3) {
+                        // Holiday indicator - RED (HOL)
+                        if day.isHoliday || dataCheck?.hasHoliday == true {
+                            Circle()
+                                .fill(JohoColors.red)
+                                .frame(width: 7, height: 7)
+                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                        }
+
+                        // Observance indicator - ORANGE (OBS)
+                        if dataCheck?.hasObservance == true {
+                            Circle()
+                                .fill(JohoColors.orange)
+                                .frame(width: 7, height: 7)
+                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                        }
+
+                        // Event indicator - PURPLE (EVT)
+                        if dataCheck?.hasEvent == true {
+                            Circle()
+                                .fill(JohoColors.eventPurple)
+                                .frame(width: 7, height: 7)
+                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                        }
+
+                        // Birthday indicator - PINK (BDY)
+                        if dataCheck?.hasBirthday == true {
+                            Circle()
+                                .fill(JohoColors.pink)
+                                .frame(width: 7, height: 7)
+                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                        }
+
+                        // Note indicator - YELLOW (NTE)
+                        if dataCheck?.hasNote == true {
+                            Circle()
+                                .fill(JohoColors.yellow)
+                                .frame(width: 7, height: 7)
+                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                        }
+
+                        // Trip indicator - BLUE (TRP)
+                        if dataCheck?.hasTrip == true {
+                            Circle()
+                                .fill(JohoColors.tripBlue)
+                                .frame(width: 7, height: 7)
+                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                        }
+
+                        // Expense indicator - GREEN (EXP)
+                        if dataCheck?.hasExpense == true {
+                            Circle()
+                                .fill(JohoColors.green)
+                                .frame(width: 7, height: 7)
+                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                        }
+                    }
+                    .frame(height: 8)
+                }
             }
             .frame(maxWidth: .infinity)
             .frame(height: cellSize)
-            .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .contentShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+            .opacity(day.isInCurrentMonth ? 1.0 : 0.4) // Dim out-of-month days
         }
         .buttonStyle(.plain)
         .accessibilityLabel(accessibilityLabel(for: day))
@@ -168,33 +275,28 @@ struct CalendarGridView: View {
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
-    // Cell background based on state
+    // Cell background following Joho style
     private func cellBackground(for day: CalendarDay, isSelected: Bool) -> Color {
-        if day.isToday {
-            return SlateColors.todayHighlight
-        }
+        // Selected = black background (white text)
         if isSelected {
-            return SlateColors.selectionHighlight
+            return JohoColors.black
         }
-        if day.isHoliday {
-            return Color.red.opacity(0.15)
+        // Today = yellow background (black text)
+        if day.isToday {
+            return JohoColors.yellow
         }
-        if day.isInCurrentMonth {
-            return SlateColors.mediumSlate.opacity(0.5)
-        }
-        // Out of month - more subtle
-        return SlateColors.mediumSlate.opacity(0.2)
+        // Default = white background (black text)
+        return JohoColors.white
     }
 
-    // Font weight based on state
-    private func cellFontWeight(for day: CalendarDay, isSelected: Bool) -> Font.Weight {
-        if day.isToday || isSelected {
-            return .bold
+    // Text color following Joho contrast rules
+    private func dayTextColor(for day: CalendarDay, isSelected: Bool) -> Color {
+        // Selected day = white text on black background
+        if isSelected {
+            return JohoColors.white
         }
-        if day.isHoliday {
-            return .semibold
-        }
-        return .regular
+        // All other days = black text for maximum contrast
+        return JohoColors.black
     }
 
     // MARK: - Helper Methods
@@ -215,24 +317,6 @@ struct CalendarGridView: View {
         return names[calendarIndex]
     }
 
-    private func dayTextColor(for day: CalendarDay, isSaturday: Bool, isSunday: Bool) -> Color {
-        // Out of month days are muted
-        if !day.isInCurrentMonth {
-            return SlateColors.mutedText
-        }
-        // Holidays are red
-        if day.isHoliday {
-            return .red
-        }
-        // Sunday is blue (not red!)
-        if isSunday {
-            return SlateColors.sundayBlue
-        }
-        // Saturday is normal (not blue!)
-        // Today and all other days use primary text
-        return SlateColors.primaryText
-    }
-
     private func accessibilityLabel(for day: CalendarDay) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
@@ -245,11 +329,11 @@ struct CalendarGridView: View {
     // MARK: - Layout Constants
 
     private var weekColumnWidth: CGFloat {
-        isPad ? 50 : 44
+        isPad ? 54 : 44
     }
 
     private var cellSize: CGFloat {
-        isPad ? 60 : 44
+        isPad ? 64 : 48
     }
 
     private func color(for colorName: String) -> Color {

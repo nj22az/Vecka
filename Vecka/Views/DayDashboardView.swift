@@ -2,7 +2,7 @@
 //  DayDashboardView.swift
 //  Vecka
 //
-//  Inline "dashboard" beneath the month grid (Apple Calendar-like).
+//  Inline "dashboard" beneath the month grid - Japanese Packaging Design
 //
 
 import SwiftUI
@@ -87,203 +87,202 @@ struct DayDashboardView: View {
         return isExpanded ? Localization.less : Localization.more
     }
 
+    // MARK: - Joho Design System Body
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .firstTextBaseline) {
-                // Week status (date now shown in header above calendar)
-                Text(subtitleText)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
+        ScrollView {
+            VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
+                // HEADER - Simplified to avoid redundancy
+                // Only shows TODAY badge (if today) or weekday, plus formatted date
+                JohoPageHeader(
+                    title: formattedDate,
+                    badge: headerBadge,
+                    subtitle: Calendar.current.isDateInToday(date) ? weekdayName : nil
+                )
+                .padding(.horizontal, JohoDimensions.spacingLG)
 
-                Spacer(minLength: 0)
+                // HOLIDAYS SECTION
+                if !holidays.isEmpty {
+                    JohoSectionBox(title: "HOLIDAYS", zone: .holidays, icon: "star.fill") {
+                        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                            ForEach(holidays.prefix(2)) { holiday in
+                                HStack(spacing: JohoDimensions.spacingSM) {
+                                    Image(systemName: holiday.symbolName ?? (holiday.isRedDay ? "flag.fill" : "flag"))
+                                        .font(.system(size: 16, weight: .bold))
+                                        .foregroundStyle(JohoColors.black)
 
-                if notes.count > 0 {
-                    Text("\(notes.count)")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, Spacing.small)
-                        .padding(.vertical, Spacing.extraSmall)
-                        .background(.secondary.opacity(0.10), in: Capsule())
-                }
-            }
+                                    Text(holiday.name)
+                                        .font(JohoFont.body)
+                                        .foregroundStyle(JohoColors.black)
 
-            if !holidays.isEmpty {
-                VStack(alignment: .leading, spacing: 10) {
-                    ForEach(holidays.prefix(2)) { holiday in
-                        HStack(spacing: 10) {
-                            Image(systemName: holiday.symbolName ?? (holiday.isRedDay ? "flag.fill" : "flag"))
-                                .symbolRenderingMode(.hierarchical)
-                                .foregroundStyle(holiday.isRedDay ? .red : AppColors.accentBlue)
+                                    Spacer(minLength: 0)
 
-                            Text(holiday.name)
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(.primary)
+                                    if holiday.isRedDay {
+                                        JohoPill(text: "RED DAY", style: .whiteOnBlack, size: .small)
+                                    }
+                                }
+                                .accessibilityElement(children: .combine)
+                                .accessibilityLabel("\(holiday.name)\(holiday.isRedDay ? ", public holiday" : "")")
+                            }
 
-                            Spacer(minLength: 0)
+                            if holidays.count > 2 {
+                                Text(String.localizedStringWithFormat(
+                                    NSLocalizedString("holiday.more_count", value: "+%d more", comment: "Additional holidays count"),
+                                    holidays.count - 2
+                                ))
+                                .font(JohoFont.bodySmall)
+                                .foregroundStyle(JohoColors.black.opacity(0.7))
+                            }
                         }
-                        .accessibilityElement(children: .combine)
-                        .accessibilityLabel("\(holiday.name)\(holiday.isRedDay ? ", public holiday" : "")")
                     }
-
-                    if holidays.count > 2 {
-                        Text(String.localizedStringWithFormat(
-                            NSLocalizedString("holiday.more_count", value: "+%d more", comment: "Additional holidays count"),
-                            holidays.count - 2
-                        ))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    }
+                    .padding(.horizontal, JohoDimensions.spacingLG)
                 }
 
+                // NOTES SECTION
                 if !notes.isEmpty {
-                    Divider()
-                }
-            }
-
-            if !notes.isEmpty {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        Text(Localization.notesForDay)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.primary)
-
-                        Spacer(minLength: 0)
-
-                        if showExpandToggle {
-                            Button(expandTitle) {
-                                withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
-                                    isExpanded.toggle()
+                    JohoSectionBox(title: "NOTES", zone: .notes, icon: "note.text") {
+                        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                            HStack {
+                                if showExpandToggle {
+                                    Button(expandTitle) {
+                                        withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
+                                            isExpanded.toggle()
+                                        }
+                                    }
+                                    .font(JohoFont.bodySmall)
+                                    .foregroundStyle(JohoColors.black)
+                                    .accessibilityLabel(expandTitle)
                                 }
                             }
-                            .font(.subheadline.weight(.semibold))
-                            .buttonStyle(.plain)
-                            .foregroundStyle(AppColors.accentBlue)
-                            .accessibilityLabel(expandTitle)
+
+                            ForEach(visibleNotes) { note in
+                                Button(action: { onOpenNotes(date) }) {
+                                    NotePreviewRow(note: note, expanded: isExpanded)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel(noteAccessibilityLabel(note))
+                                .accessibilityHint("Double tap to edit")
+                            }
+
+                            if !isExpanded, notes.count > previewLimit {
+                                Text(String.localizedStringWithFormat(
+                                    NSLocalizedString("note.more_count", value: "+%d more", comment: "Additional notes count"),
+                                    notes.count - previewLimit
+                                ))
+                                .font(JohoFont.bodySmall)
+                                .foregroundStyle(JohoColors.black.opacity(0.7))
+                            }
                         }
                     }
-
-                    ForEach(visibleNotes) { note in
-                        Button(action: { onOpenNotes(date) }) {
-                            NotePreviewRow(note: note, expanded: isExpanded)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(noteAccessibilityLabel(note))
-                        .accessibilityHint("Double tap to edit")
-                    }
-
-                    if !isExpanded, notes.count > previewLimit {
-                        Text(String.localizedStringWithFormat(
-                            NSLocalizedString("note.more_count", value: "+%d more", comment: "Additional notes count"),
-                            notes.count - previewLimit
-                        ))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    }
-                }
-            }
-
-            if !expenses.isEmpty {
-                if !notes.isEmpty || !holidays.isEmpty {
-                    Divider()
+                    .padding(.horizontal, JohoDimensions.spacingLG)
                 }
 
-                Button {
-                    onOpenExpenses?(date)
-                } label: {
-                    VStack(alignment: .leading, spacing: 10) {
-                        HStack {
-                            Text("Expenses")
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(.primary)
+                // EXPENSES SECTION
+                if !expenses.isEmpty {
+                    Button {
+                        onOpenExpenses?(date)
+                    } label: {
+                        JohoSectionBox(title: "EXPENSES", zone: .expenses, icon: "yensign.circle") {
+                            VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                                HStack {
+                                    Text("Total")
+                                        .font(JohoFont.body)
+                                        .foregroundStyle(JohoColors.black)
 
-                            Spacer(minLength: 0)
+                                    Spacer(minLength: 0)
 
-                            Text(totalExpenseAmount, format: .currency(code: baseCurrency))
-                                .font(.subheadline.weight(.semibold))
-                                .foregroundStyle(.green)
-                        }
+                                    Text(totalExpenseAmount, format: .currency(code: baseCurrency))
+                                        .font(JohoFont.monoMedium)
+                                        .foregroundStyle(JohoColors.black)
+                                }
 
-                        ForEach(expenses) { expense in
-                            ExpenseDayRow(expense: expense)
+                                ForEach(expenses) { expense in
+                                    ExpenseDayRow(expense: expense)
+                                }
+                            }
                         }
                     }
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel("\(expenses.count) expenses, total \(totalExpenseAmount.formatted(.currency(code: baseCurrency)))")
-                .accessibilityHint("Double tap to view expenses")
-            }
-
-            // Trips Section
-            if !trips.isEmpty {
-                if !notes.isEmpty || !holidays.isEmpty || !expenses.isEmpty {
-                    Divider()
+                    .buttonStyle(.plain)
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+                    .accessibilityLabel("\(expenses.count) expenses, total \(totalExpenseAmount.formatted(.currency(code: baseCurrency)))")
+                    .accessibilityHint("Double tap to view expenses")
                 }
 
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        Image(systemName: "airplane.departure")
-                            .font(.subheadline)
-                            .foregroundStyle(.blue)
-
-                        Text("Trips")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.primary)
+                // TRIPS SECTION
+                if !trips.isEmpty {
+                    JohoSectionBox(title: "TRIPS", zone: .trips, icon: "airplane.departure") {
+                        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                            ForEach(trips) { trip in
+                                TripDayRow(trip: trip)
+                            }
+                        }
                     }
+                    .padding(.horizontal, JohoDimensions.spacingLG)
                     .accessibilityLabel("\(trips.count) active trips")
-
-                    ForEach(trips) { trip in
-                        TripDayRow(trip: trip)
-                    }
-                }
-            }
-
-            if !pinnedCountdownNotes.isEmpty {
-                if !notes.isEmpty || !holidays.isEmpty || !expenses.isEmpty || !trips.isEmpty {
-                    Divider()
                 }
 
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        Text(Localization.pinnedHeader)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.primary)
-
-                        Spacer(minLength: 0)
-
-                        if showPinnedExpandToggle {
-                            Button(isPinnedExpanded ? Localization.showLess : Localization.showAll) {
-                                withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
-                                    isPinnedExpanded.toggle()
+                // PINNED COUNTDOWNS SECTION
+                if !pinnedCountdownNotes.isEmpty {
+                    JohoSectionBox(title: "PINNED", zone: .calendar, icon: "pin.fill") {
+                        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                            if showPinnedExpandToggle {
+                                Button(isPinnedExpanded ? Localization.showLess : Localization.showAll) {
+                                    withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
+                                        isPinnedExpanded.toggle()
+                                    }
                                 }
+                                .font(JohoFont.bodySmall)
+                                .foregroundStyle(JohoColors.black)
                             }
-                            .font(.subheadline.weight(.semibold))
-                            .buttonStyle(.plain)
-                            .foregroundStyle(AppColors.accentBlue)
+
+                            ForEach(visiblePinnedNotes) { note in
+                                Button(action: { onOpenNotes(note.day) }) {
+                                    PinnedCountdownRow(note: note, daysRemaining: daysUntil(note.day))
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel(pinnedNoteAccessibilityLabel(note))
+                                .accessibilityHint("Double tap to view")
+                            }
+
+                            if !isPinnedExpanded, pinnedCountdownNotes.count > pinnedPreviewLimit {
+                                Text(String.localizedStringWithFormat(
+                                    NSLocalizedString("pinned.more_count", value: "+%d more", comment: "Additional pinned notes count"),
+                                    pinnedCountdownNotes.count - pinnedPreviewLimit
+                                ))
+                                .font(JohoFont.bodySmall)
+                                .foregroundStyle(JohoColors.black.opacity(0.7))
+                            }
                         }
                     }
-
-                    ForEach(visiblePinnedNotes) { note in
-                        Button(action: { onOpenNotes(note.day) }) {
-                            PinnedCountdownRow(note: note, daysRemaining: daysUntil(note.day))
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(pinnedNoteAccessibilityLabel(note))
-                        .accessibilityHint("Double tap to view")
-                    }
-
-                    if !isPinnedExpanded, pinnedCountdownNotes.count > pinnedPreviewLimit {
-                        Text(String.localizedStringWithFormat(
-                            NSLocalizedString("pinned.more_count", value: "+%d more", comment: "Additional pinned notes count"),
-                            pinnedCountdownNotes.count - pinnedPreviewLimit
-                        ))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    }
+                    .padding(.horizontal, JohoDimensions.spacingLG)
                 }
             }
+            .padding(.vertical, JohoDimensions.spacingLG)
         }
-        .padding(Spacing.medium)
-        .glassCard(cornerRadius: 16, material: .regularMaterial)
+        .johoBackground()
+    }
+
+    // MARK: - Header Helpers
+
+    private var headerBadge: String {
+        if Calendar.current.isDateInToday(date) {
+            return "TODAY"
+        }
+        return weekdayName
+    }
+
+    private var formattedDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMMM"
+        formatter.locale = locale
+        return formatter.string(from: date)
+    }
+
+    private var weekdayName: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"
+        formatter.locale = locale
+        return formatter.string(from: date)
     }
 
     private var subtitleText: String {
@@ -328,36 +327,38 @@ struct DayDashboardView: View {
     }
 }
 
-// MARK: - Expense Day Row
+// MARK: - Expense Day Row (Joho Design)
 
 private struct ExpenseDayRow: View {
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
     let expense: ExpenseItem
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: JohoDimensions.spacingSM) {
             // Category icon
             if let category = expense.category {
                 Image(systemName: category.iconName)
-                    .foregroundStyle(category.color)
-                    .frame(width: 24, alignment: .center)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(JohoColors.black)
+                    .frame(width: 28, height: 28)
             } else {
                 Image(systemName: "creditcard")
-                    .foregroundStyle(.secondary)
-                    .frame(width: 24, alignment: .center)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(JohoColors.black)
+                    .frame(width: 28, height: 28)
             }
 
             // Description
             VStack(alignment: .leading, spacing: 2) {
                 Text(expense.itemDescription)
-                    .font(.body.weight(.medium))
-                    .foregroundStyle(.primary)
+                    .font(JohoFont.body)
+                    .foregroundStyle(JohoColors.black)
                     .lineLimit(1)
 
                 if let merchant = expense.merchantName {
                     Text(merchant)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
                         .lineLimit(1)
                 }
             }
@@ -367,19 +368,23 @@ private struct ExpenseDayRow: View {
             // Amount
             VStack(alignment: .trailing, spacing: 2) {
                 Text(expense.amount, format: .currency(code: expense.currency))
-                    .font(.body.weight(.semibold))
-                    .foregroundStyle(.primary)
+                    .font(JohoFont.monoMedium)
+                    .foregroundStyle(JohoColors.black)
 
                 if let converted = expense.convertedAmount, expense.currency != baseCurrency {
                     Text(converted, format: .currency(code: baseCurrency))
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
+                        .font(JohoFont.monoSmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
                 }
             }
         }
-        .padding(.vertical, Spacing.small)
-        .padding(.horizontal, Spacing.small)
-        .background(.secondary.opacity(0.06), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .padding(JohoDimensions.spacingSM)
+        .background(JohoColors.white.opacity(0.4))
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+        )
     }
 }
 
@@ -397,36 +402,36 @@ private struct NotePreviewRow: View {
         }
         let timeSource = note.scheduledAt ?? note.date
 
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 10) {
+        VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
+            HStack(spacing: JohoDimensions.spacingSM) {
                 Text(timeSource.formatted(date: .omitted, time: .shortened))
-                    .font(.caption2.weight(.medium))
-                    .foregroundStyle(.secondary)
-                    .monospacedDigit()
+                    .font(JohoFont.monoSmall)
+                    .foregroundStyle(JohoColors.black.opacity(0.6))
 
                 Spacer(minLength: 0)
 
                 if note.pinnedToDashboard == true {
                     Image(systemName: "pin.fill")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(JohoColors.black)
                 }
 
                 if let color = note.color {
                     Circle()
                         .fill(colorForName(color))
-                        .frame(width: 8, height: 8)
+                        .frame(width: 10, height: 10)
+                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
                 }
             }
 
-            HStack(spacing: 8) {
+            HStack(spacing: JohoDimensions.spacingSM) {
                 Image(systemName: note.symbolName ?? NoteSymbolCatalog.defaultSymbol)
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(JohoColors.black)
 
                 Text(title)
-                    .font(.body.weight(.semibold))
-                    .foregroundStyle(.primary)
+                    .font(JohoFont.body)
+                    .foregroundStyle(JohoColors.black)
                     .lineLimit(1)
 
                 Spacer(minLength: 0)
@@ -434,25 +439,29 @@ private struct NotePreviewRow: View {
 
             if let subtitle, !subtitle.isEmpty {
                 Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(JohoColors.black.opacity(0.7))
                     .lineLimit(expanded ? 8 : 2)
             }
         }
-        .padding(.vertical, Spacing.small)
-        .padding(.horizontal, Spacing.small)
-        .background(.secondary.opacity(0.06), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .padding(JohoDimensions.spacingSM)
+        .background(JohoColors.white.opacity(0.4))
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+        )
     }
 
     private func colorForName(_ name: String) -> Color {
         switch name {
-        case "red": return .red
-        case "blue": return .blue
-        case "green": return .green
-        case "orange": return .orange
-        case "purple": return .purple
-        case "yellow": return .yellow
-        default: return AppColors.accentBlue
+        case "red": return JohoColors.pink
+        case "blue": return JohoColors.cyan
+        case "green": return JohoColors.green
+        case "orange": return JohoColors.orange
+        case "purple": return Color(hex: "B19CD9")
+        case "yellow": return JohoColors.yellow
+        default: return JohoColors.cyan
         }
     }
 
@@ -502,8 +511,6 @@ private struct NotePreviewRow: View {
         onOpenNotes: { _ in },
         onOpenExpenses: { _ in }
     )
-    .padding()
-    .background(AppColors.background)
 }
 
 private struct PinnedCountdownRow: View {
@@ -515,37 +522,35 @@ private struct PinnedCountdownRow: View {
         let scheduleText = scheduleLine(for: note)
         let badgeText = countdownBadgeText(days: daysRemaining)
 
-        HStack(spacing: 12) {
+        HStack(spacing: JohoDimensions.spacingSM) {
             Image(systemName: note.symbolName ?? NoteSymbolCatalog.defaultSymbol)
-                .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(AppColors.accentBlue)
-                .frame(width: 24, alignment: .center)
+                .font(.system(size: 20, weight: .bold))
+                .foregroundStyle(JohoColors.black)
+                .frame(width: 32, alignment: .center)
 
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
                 Text(title)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
+                    .font(JohoFont.body)
+                    .foregroundStyle(JohoColors.black)
                     .lineLimit(1)
 
                 Text([scheduleText, subtitle].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " • "))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(JohoColors.black.opacity(0.7))
                     .lineLimit(2)
             }
 
             Spacer(minLength: 0)
 
-            Text(badgeText)
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, Spacing.small)
-                .padding(.vertical, Spacing.small)
-                .background(.secondary.opacity(0.10), in: Capsule())
-                .monospacedDigit()
+            JohoPill(text: badgeText, style: .whiteOnBlack, size: .small)
         }
-        .padding(.vertical, Spacing.small)
-        .padding(.horizontal, Spacing.small)
-        .background(.secondary.opacity(0.06), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .padding(JohoDimensions.spacingSM)
+        .background(JohoColors.white.opacity(0.4))
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+        )
     }
 
     private func scheduleLine(for note: DailyNote) -> String {
@@ -601,58 +606,60 @@ private struct PinnedCountdownRow: View {
     }
 }
 
-// MARK: - Trip Day Row
+// MARK: - Trip Day Row (Joho Design)
 
 private struct TripDayRow: View {
     let trip: TravelTrip
 
     var body: some View {
-        HStack(spacing: 10) {
-            // Trip icon with color
-            Image(systemName: "airplane.departure")
-                .font(.body)
-                .foregroundStyle(trip.tripType.color)
-                .frame(width: 24, height: 24)
-                .background(trip.tripType.color.opacity(0.1), in: RoundedRectangle(cornerRadius: 6, style: .continuous))
+        HStack(spacing: JohoDimensions.spacingSM) {
+            // Trip icon
+            JohoIconBadge(icon: "airplane.departure", zone: .trips, size: 36)
 
             // Trip info
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
                 Text(trip.tripName)
-                    .font(.body)
-                    .foregroundStyle(.primary)
+                    .font(JohoFont.body)
+                    .foregroundStyle(JohoColors.black)
 
                 HStack(spacing: 4) {
                     Text(trip.destination)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.7))
 
                     Text("•")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.7))
 
                     Text("\(trip.duration) days")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.7))
                 }
             }
 
             Spacer()
 
-            // Date range
+            // Date range badge
             VStack(alignment: .trailing, spacing: 2) {
                 Text(trip.startDate.formatted(date: .abbreviated, time: .omitted))
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .font(JohoFont.monoSmall)
+                    .foregroundStyle(JohoColors.black)
 
-                Text("to")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                Text("→")
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(JohoColors.black.opacity(0.6))
 
                 Text(trip.endDate.formatted(date: .abbreviated, time: .omitted))
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .font(JohoFont.monoSmall)
+                    .foregroundStyle(JohoColors.black)
             }
         }
-        .padding(.vertical, Spacing.extraSmall)
+        .padding(JohoDimensions.spacingSM)
+        .background(JohoColors.white.opacity(0.4))
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+        )
     }
 }

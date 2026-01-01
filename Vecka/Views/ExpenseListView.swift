@@ -2,7 +2,8 @@
 //  ExpenseListView.swift
 //  Vecka
 //
-//  Comprehensive expense list with filtering and grouping
+//  Comprehensive expense list with authentic Japanese Jōhō Dezain packaging
+//  GREEN zone for financial tracking
 //
 
 import SwiftUI
@@ -13,7 +14,7 @@ struct ExpenseListView: View {
     @Query(sort: \ExpenseItem.date, order: .reverse) private var allExpenses: [ExpenseItem]
     @Query(sort: \ExpenseCategory.sortOrder) private var categories: [ExpenseCategory]
     @Query(sort: \TravelTrip.startDate, order: .reverse) private var trips: [TravelTrip]
-    
+
     // Base Currency
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
     @State private var isRecalculating = false
@@ -35,61 +36,76 @@ struct ExpenseListView: View {
     var body: some View {
         // Note: This view is embedded via NavigationLink or presented in sheet with NavigationStack
         // Do NOT add NavigationStack here to avoid nested navigation issues
-        VStack(spacing: 0) {
-            // Summary Card
-            summaryCard
+        ScrollView {
+            VStack(spacing: JohoDimensions.spacingMD) {
+                // Page Header with inline actions (情報デザイン)
+                HStack(alignment: .top) {
+                    JohoPageHeader(
+                        title: "Expenses",
+                        badge: selectedDateRange.rawValue.uppercased()
+                    )
 
-            // Filter Bar
-            filterBar
+                    Spacer()
 
-            // Expense List
-            expenseList
-        }
-        .slateBackground()
-        .standardNavigation(title: "Expenses")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        showAddExpense = true
-                    } label: {
-                        Label("Add Expense", systemImage: "plus.circle.fill")
-                    }
-                }
-
-                ToolbarItem(placement: .secondaryAction) {
-                    Menu {
-                        Section("Group By") {
-                            Button {
-                                groupBy = .date
-                            } label: {
-                                Label("Date", systemImage: groupBy == .date ? "checkmark" : "")
-                            }
-
-                            Button {
-                                groupBy = .category
-                            } label: {
-                                Label("Category", systemImage: groupBy == .category ? "checkmark" : "")
-                            }
-
-                            Button {
-                                groupBy = .trip
-                            } label: {
-                                Label("Trip", systemImage: groupBy == .trip ? "checkmark" : "")
-                            }
+                    // Inline action buttons
+                    HStack(spacing: JohoDimensions.spacingSM) {
+                        Button {
+                            showAddExpense = true
+                        } label: {
+                            JohoActionButton(icon: "plus")
                         }
 
-                        Section {
-                            Button {
-                                showFilterSheet = true
-                            } label: {
-                                Label("Filter Options", systemImage: "line.3.horizontal.decrease.circle")
+                        Menu {
+                            Section("Group By") {
+                                Button {
+                                    groupBy = .date
+                                } label: {
+                                    Label("Date", systemImage: groupBy == .date ? "checkmark" : "")
+                                }
+
+                                Button {
+                                    groupBy = .category
+                                } label: {
+                                    Label("Category", systemImage: groupBy == .category ? "checkmark" : "")
+                                }
+
+                                Button {
+                                    groupBy = .trip
+                                } label: {
+                                    Label("Trip", systemImage: groupBy == .trip ? "checkmark" : "")
+                                }
                             }
+
+                            Section {
+                                Button {
+                                    showFilterSheet = true
+                                } label: {
+                                    Label("Filter Options", systemImage: "line.3.horizontal.decrease.circle")
+                                }
+                            }
+                        } label: {
+                            JohoActionButton(icon: "ellipsis")
                         }
-                    } label: {
-                        Label("Options", systemImage: "ellipsis.circle")
                     }
                 }
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.top, JohoDimensions.spacingSM)
+
+                // Summary Card
+                summaryCard
+
+                // Category Breakdown Grid
+                categoryBreakdownGrid
+
+                // Filter Bar
+                filterBar
+
+                // Recent Expenses
+                recentExpensesSection
             }
+        }
+        .johoBackground()
+        .toolbar(.hidden, for: .navigationBar)
             .sheet(isPresented: $showAddExpense) {
                 ExpenseEntryView()
             }
@@ -114,49 +130,96 @@ struct ExpenseListView: View {
     // MARK: - Summary Card
 
     private var summaryCard: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 20) {
-                // Total Expenses
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Total")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    
-                    if isRecalculating {
-                        ProgressView()
-                            .controlSize(.small)
-                    } else {
-                        Text(totalAmount, format: .currency(code: baseCurrency))
-                            .font(.title2.weight(.semibold))
-                            .foregroundStyle(.primary)
-                    }
-                }
+        JohoCard {
+            VStack(spacing: JohoDimensions.spacingSM) {
+                JohoPill(text: "Total", style: .whiteOnBlack)
 
-                Spacer()
+                Text(formattedTotal)
+                    .font(JohoFont.displayLarge)
+                    .foregroundStyle(JohoColors.black)
 
+                HStack(spacing: JohoDimensions.spacingXS) {
+                    Text(baseCurrency)
+                        .font(JohoFont.body)
+                        .foregroundStyle(JohoColors.black.opacity(0.7))
 
-                // Count
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text("Expenses")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    Text("\(filteredExpenses.count)")
-                        .font(.title2.weight(.semibold))
-                        .foregroundStyle(.blue)
+                    Text("•")
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+
+                    Text("\(filteredExpenses.count) transactions")
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.7))
                 }
             }
+            .frame(maxWidth: .infinity)
         }
-        .padding()
-        .glassCard(cornerRadius: 12, material: .ultraThinMaterial)
-        .padding(.horizontal)
-        .padding(.top, Spacing.small)
+        .padding(.horizontal, JohoDimensions.spacingLG)
+    }
+
+    private var formattedTotal: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: totalAmount)) ?? "0"
+    }
+
+    // MARK: - Category Breakdown Grid
+
+    private var categoryBreakdownGrid: some View {
+        LazyVGrid(
+            columns: [
+                GridItem(.flexible(), spacing: JohoDimensions.spacingSM),
+                GridItem(.flexible(), spacing: JohoDimensions.spacingSM),
+                GridItem(.flexible(), spacing: JohoDimensions.spacingSM)
+            ],
+            spacing: JohoDimensions.spacingSM
+        ) {
+            JohoStatBox(
+                value: categorySummaries.count > 0 ? categorySummaries[0].amount : "0",
+                label: categorySummaries.count > 0 ? categorySummaries[0].name : "—",
+                zone: .trips
+            )
+            JohoStatBox(
+                value: categorySummaries.count > 1 ? categorySummaries[1].amount : "0",
+                label: categorySummaries.count > 1 ? categorySummaries[1].name : "—",
+                zone: .contacts
+            )
+            JohoStatBox(
+                value: categorySummaries.count > 2 ? categorySummaries[2].amount : "0",
+                label: categorySummaries.count > 2 ? categorySummaries[2].name : "—",
+                zone: .calendar
+            )
+        }
+        .padding(.horizontal, JohoDimensions.spacingLG)
+    }
+
+    private var categorySummaries: [(name: String, amount: String)] {
+        let grouped = Dictionary(grouping: filteredExpenses) { expense in
+            expense.category?.name ?? "Other"
+        }
+
+        let sorted = grouped.map { (category, expenses) -> (String, Double) in
+            let total = expenses.reduce(0.0) { sum, expense in
+                sum + (expense.convertedAmount ?? expense.amount)
+            }
+            return (category, total)
+        }.sorted { $0.1 > $1.1 }
+
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+
+        return sorted.prefix(3).map { category, total in
+            let formatted = formatter.string(from: NSNumber(value: total)) ?? "0"
+            return (category, formatted)
+        }
     }
 
     // MARK: - Filter Bar
 
     private var filterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
+            HStack(spacing: JohoDimensions.spacingSM) {
                 FilterChip(
                     title: "All",
                     isSelected: selectedFilter == .all
@@ -184,7 +247,6 @@ struct ExpenseListView: View {
                     FilterChip(
                         title: category.name,
                         icon: category.iconName,
-                        iconColor: category.color,
                         isSelected: true
                     ) {
                         selectedCategory = nil
@@ -201,45 +263,79 @@ struct ExpenseListView: View {
                     }
                 }
             }
-            .padding(.horizontal)
-            .padding(.vertical, Spacing.small)
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.vertical, JohoDimensions.spacingSM)
         }
     }
 
-    // MARK: - Expense List
+    // MARK: - Recent Expenses Section
 
-    private var expenseList: some View {
-        Group {
+    private var recentExpensesSection: some View {
+        VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
+            JohoPill(text: "Recent", style: .whiteOnBlack, size: .large)
+                .padding(.horizontal, JohoDimensions.spacingLG)
+
             if filteredExpenses.isEmpty {
                 emptyState
             } else {
-                List {
-                    ForEach(groupedExpenses.keys.sorted(by: >), id: \.self) { key in
-                        Section {
-                            ForEach(groupedExpenses[key] ?? []) { expense in
-                                ExpenseRow(expense: expense)
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        selectedExpense = expense
-                                    }
-                            }
-                        } header: {
-                            Text(sectionHeader(for: key))
-                                .foregroundStyle(SlateColors.secondaryText)
-                        }
-                    }
-                }
-                .standardListStyle()
+                expensesList
             }
         }
     }
 
+    // MARK: - Expenses List
+
+    private var expensesList: some View {
+        LazyVStack(spacing: JohoDimensions.spacingSM) {
+            ForEach(filteredExpenses.prefix(20)) { expense in
+                JohoListRow(
+                    title: expense.itemDescription,
+                    subtitle: subtitleText(for: expense),
+                    icon: expense.category?.iconName ?? "creditcard.fill",
+                    zone: .expenses,
+                    badge: formattedAmount(for: expense),
+                    showChevron: true
+                )
+                .onTapGesture {
+                    selectedExpense = expense
+                }
+                .accessibilityLabel("\(expense.itemDescription), \(formattedAmount(for: expense))")
+                .accessibilityAddTraits(.isButton)
+            }
+        }
+        .padding(.horizontal, JohoDimensions.spacingLG)
+    }
+
+    private func subtitleText(for expense: ExpenseItem) -> String {
+        var components: [String] = []
+
+        if let merchant = expense.merchantName {
+            components.append(merchant)
+        }
+
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        components.append(formatter.string(from: expense.date))
+
+        return components.joined(separator: " • ")
+    }
+
+    private func formattedAmount(for expense: ExpenseItem) -> String {
+        let amount = expense.convertedAmount ?? expense.amount
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: amount)) ?? "0"
+    }
+
     private var emptyState: some View {
-        ContentUnavailableView(
-            "No Expenses",
-            systemImage: "creditcard",
-            description: Text("Tap + to add your first expense")
+        JohoEmptyState(
+            title: "No Expenses",
+            message: "Tap + to add your first expense",
+            icon: "creditcard.fill",
+            zone: .expenses
         )
+        .padding(JohoDimensions.spacingXL)
     }
 
     // MARK: - Computed Properties
@@ -335,75 +431,43 @@ struct ExpenseListView: View {
     }
 }
 
-// MARK: - Expense Row
+// MARK: - Expense Row (Legacy - keeping for compatibility)
 
 struct ExpenseRow: View {
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
     let expense: ExpenseItem
 
     var body: some View {
-        HStack(spacing: 12) {
-            // Category Icon
-            if let category = expense.category {
-                Image(systemName: category.iconName)
-                    .font(.title3)
-                    .foregroundStyle(category.color)
-                    .frame(width: 40, height: 40)
-                    .background(category.color.opacity(0.1), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-            } else {
-                Image(systemName: "creditcard.fill")
-                    .font(.title3)
-                    .foregroundStyle(.secondary)
-                    .frame(width: 40, height: 40)
-                    .background(Color.secondary.opacity(0.1), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-            }
+        JohoListRow(
+            title: expense.itemDescription,
+            subtitle: subtitleText,
+            icon: expense.category?.iconName ?? "creditcard.fill",
+            zone: .expenses,
+            badge: formattedAmount,
+            showChevron: true
+        )
+    }
 
-            // Details
-            VStack(alignment: .leading, spacing: 4) {
-                Text(expense.itemDescription)
-                    .font(.body)
-                    .foregroundStyle(.primary)
+    private var subtitleText: String {
+        var components: [String] = []
 
-                HStack(spacing: 8) {
-                    if let merchant = expense.merchantName {
-                        Text(merchant)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    if expense.receiptImageData != nil {
-                        Image(systemName: "camera.fill")
-                            .font(.caption2)
-                            .foregroundStyle(.blue)
-                    }
-
-                    if expense.currency != baseCurrency {
-                        Text(expense.currency)
-                            .font(.caption2)
-                            .padding(.horizontal, Spacing.small)
-                            .padding(.vertical, Spacing.extraSmall)
-                            .background(Color.blue.opacity(0.2), in: Capsule())
-                            .foregroundStyle(.blue)
-                    }
-                }
-            }
-
-            Spacer()
-
-            // Amount
-            VStack(alignment: .trailing, spacing: 4) {
-                Text(expense.amount, format: .currency(code: expense.currency))
-                    .font(.body.weight(.semibold))
-                    .foregroundStyle(.primary)
-
-                if let converted = expense.convertedAmount, expense.currency != baseCurrency {
-                    Text(converted, format: .currency(code: baseCurrency))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
+        if let merchant = expense.merchantName {
+            components.append(merchant)
         }
-        .padding(.vertical, Spacing.extraSmall)
+
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        components.append(formatter.string(from: expense.date))
+
+        return components.joined(separator: " • ")
+    }
+
+    private var formattedAmount: String {
+        let amount = expense.convertedAmount ?? expense.amount
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: amount)) ?? "0"
     }
 }
 
@@ -412,34 +476,37 @@ struct ExpenseRow: View {
 struct FilterChip: View {
     let title: String
     var icon: String?
-    var iconColor: Color = .blue
     let isSelected: Bool
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 6) {
+            HStack(spacing: 4) {
                 if let icon = icon {
                     Image(systemName: icon)
-                        .font(.caption)
-                        .foregroundStyle(isSelected ? iconColor : .secondary)
+                        .font(JohoFont.labelSmall)
+                        .foregroundStyle(isSelected ? JohoColors.white : JohoColors.black)
                 }
 
                 Text(title)
-                    .font(.subheadline)
-                    .foregroundStyle(isSelected ? .white : .primary)
+                    .font(JohoFont.label)
+                    .foregroundStyle(isSelected ? JohoColors.white : JohoColors.black)
 
                 if isSelected {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.caption)
-                        .foregroundStyle(.white.opacity(0.7))
+                        .font(JohoFont.labelSmall)
+                        .foregroundStyle(JohoColors.white.opacity(0.8))
                 }
             }
-            .padding(.horizontal, Spacing.small)
-            .padding(.vertical, Spacing.small)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
             .background(
-                isSelected ? Color.blue : Color.secondary.opacity(0.1),
+                isSelected ? JohoColors.black : JohoColors.white,
                 in: Capsule()
+            )
+            .overlay(
+                Capsule()
+                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
             )
         }
         .buttonStyle(.plain)
@@ -461,108 +528,199 @@ struct FilterOptionsSheet: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                Section("Date Range") {
-                    ForEach([DateRange.all, .thisWeek, .thisMonth, .thisYear], id: \.self) { range in
-                        Button {
-                            selectedDateRange = range
-                        } label: {
-                            HStack {
-                                Text(range.rawValue)
-                                    .foregroundStyle(.primary)
-                                Spacer()
-                                if selectedDateRange == range {
-                                    Image(systemName: "checkmark")
-                                        .foregroundStyle(.blue)
+            ScrollView {
+                VStack(spacing: JohoDimensions.spacingLG) {
+                    // Date Range Section
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "Date Range", style: .whiteOnBlack, size: .medium)
+
+                        VStack(spacing: JohoDimensions.spacingXS) {
+                            ForEach([DateRange.all, .thisWeek, .thisMonth, .thisYear], id: \.self) { range in
+                                Button {
+                                    selectedDateRange = range
+                                } label: {
+                                    HStack {
+                                        Text(range.rawValue)
+                                            .font(JohoFont.body)
+                                            .foregroundStyle(JohoColors.black)
+                                        Spacer()
+                                        if selectedDateRange == range {
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .font(JohoFont.body)
+                                                .foregroundStyle(JohoColors.black)
+                                        }
+                                    }
+                                    .padding(JohoDimensions.spacingMD)
+                                    .background(JohoColors.white)
+                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                                    .overlay(
+                                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                            .stroke(
+                                                selectedDateRange == range ? JohoColors.black : JohoColors.black.opacity(0.3),
+                                                lineWidth: selectedDateRange == range ? JohoDimensions.borderMedium : JohoDimensions.borderThin
+                                            )
+                                    )
                                 }
+                                .buttonStyle(.plain)
                             }
                         }
                     }
-                }
 
-                Section("Category") {
-                    Button {
-                        selectedCategory = nil
-                    } label: {
-                        HStack {
-                            Text("All Categories")
-                                .foregroundStyle(.primary)
-                            Spacer()
-                            if selectedCategory == nil {
-                                Image(systemName: "checkmark")
-                                    .foregroundStyle(.blue)
-                            }
-                        }
-                    }
+                    // Category Section
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "Category", style: .whiteOnBlack, size: .medium)
 
-                    ForEach(categories) { category in
-                        Button {
-                            selectedCategory = category
-                        } label: {
-                            HStack {
-                                Image(systemName: category.iconName)
-                                    .foregroundStyle(category.color)
-                                Text(category.name)
-                                    .foregroundStyle(.primary)
-                                Spacer()
-                                if selectedCategory?.id == category.id {
-                                    Image(systemName: "checkmark")
-                                        .foregroundStyle(.blue)
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if !trips.isEmpty {
-                    Section("Trip") {
-                        Button {
-                            selectedTrip = nil
-                        } label: {
-                            HStack {
-                                Text("All Trips")
-                                    .foregroundStyle(.primary)
-                                Spacer()
-                                if selectedTrip == nil {
-                                    Image(systemName: "checkmark")
-                                        .foregroundStyle(.blue)
-                                }
-                            }
-                        }
-
-                        ForEach(trips) { trip in
+                        VStack(spacing: JohoDimensions.spacingXS) {
                             Button {
-                                selectedTrip = trip
+                                selectedCategory = nil
                             } label: {
                                 HStack {
-                                    Image(systemName: "airplane")
-                                        .foregroundStyle(trip.tripType.color)
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(trip.tripName)
-                                            .foregroundStyle(.primary)
-                                        Text(trip.destination)
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                    }
+                                    Text("All Categories")
+                                        .font(JohoFont.body)
+                                        .foregroundStyle(JohoColors.black)
                                     Spacer()
-                                    if selectedTrip?.id == trip.id {
-                                        Image(systemName: "checkmark")
-                                            .foregroundStyle(.blue)
+                                    if selectedCategory == nil {
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .font(JohoFont.body)
+                                            .foregroundStyle(JohoColors.black)
                                     }
+                                }
+                                .padding(JohoDimensions.spacingMD)
+                                .background(JohoColors.white)
+                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                                .overlay(
+                                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                        .stroke(
+                                            selectedCategory == nil ? JohoColors.black : JohoColors.black.opacity(0.3),
+                                            lineWidth: selectedCategory == nil ? JohoDimensions.borderMedium : JohoDimensions.borderThin
+                                        )
+                                )
+                            }
+                            .buttonStyle(.plain)
+
+                            ForEach(categories) { category in
+                                Button {
+                                    selectedCategory = category
+                                } label: {
+                                    HStack(spacing: JohoDimensions.spacingSM) {
+                                        JohoIconBadge(icon: category.iconName, zone: .expenses, size: 32)
+                                        Text(category.name)
+                                            .font(JohoFont.body)
+                                            .foregroundStyle(JohoColors.black)
+                                        Spacer()
+                                        if selectedCategory?.id == category.id {
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .font(JohoFont.body)
+                                                .foregroundStyle(JohoColors.black)
+                                        }
+                                    }
+                                    .padding(JohoDimensions.spacingMD)
+                                    .background(JohoColors.white)
+                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                                    .overlay(
+                                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                            .stroke(
+                                                selectedCategory?.id == category.id ? JohoColors.black : JohoColors.black.opacity(0.3),
+                                                lineWidth: selectedCategory?.id == category.id ? JohoDimensions.borderMedium : JohoDimensions.borderThin
+                                            )
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+
+                    // Trips Section
+                    if !trips.isEmpty {
+                        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                            JohoPill(text: "Trip", style: .whiteOnBlack, size: .medium)
+
+                            VStack(spacing: JohoDimensions.spacingXS) {
+                                Button {
+                                    selectedTrip = nil
+                                } label: {
+                                    HStack {
+                                        Text("All Trips")
+                                            .font(JohoFont.body)
+                                            .foregroundStyle(JohoColors.black)
+                                        Spacer()
+                                        if selectedTrip == nil {
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .font(JohoFont.body)
+                                                .foregroundStyle(JohoColors.black)
+                                        }
+                                    }
+                                    .padding(JohoDimensions.spacingMD)
+                                    .background(JohoColors.white)
+                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                                    .overlay(
+                                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                            .stroke(
+                                                selectedTrip == nil ? JohoColors.black : JohoColors.black.opacity(0.3),
+                                                lineWidth: selectedTrip == nil ? JohoDimensions.borderMedium : JohoDimensions.borderThin
+                                            )
+                                    )
+                                }
+                                .buttonStyle(.plain)
+
+                                ForEach(trips) { trip in
+                                    Button {
+                                        selectedTrip = trip
+                                    } label: {
+                                        HStack(spacing: JohoDimensions.spacingSM) {
+                                            JohoIconBadge(icon: "airplane", zone: .trips, size: 32)
+                                            VStack(alignment: .leading, spacing: 2) {
+                                                Text(trip.tripName)
+                                                    .font(JohoFont.body)
+                                                    .foregroundStyle(JohoColors.black)
+                                                Text(trip.destination)
+                                                    .font(JohoFont.bodySmall)
+                                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                                            }
+                                            Spacer()
+                                            if selectedTrip?.id == trip.id {
+                                                Image(systemName: "checkmark.circle.fill")
+                                                    .font(JohoFont.body)
+                                                    .foregroundStyle(JohoColors.black)
+                                            }
+                                        }
+                                        .padding(JohoDimensions.spacingMD)
+                                        .background(JohoColors.white)
+                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                                        .overlay(
+                                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                                .stroke(
+                                                    selectedTrip?.id == trip.id ? JohoColors.black : JohoColors.black.opacity(0.3),
+                                                    lineWidth: selectedTrip?.id == trip.id ? JohoDimensions.borderMedium : JohoDimensions.borderThin
+                                                )
+                                        )
+                                    }
+                                    .buttonStyle(.plain)
                                 }
                             }
                         }
                     }
                 }
+                .padding(JohoDimensions.spacingLG)
             }
-            .standardListStyle()
-            .standardNavigation(title: "Filter Options")
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
+            .johoBackground()
+            .toolbar(.hidden, for: .navigationBar)
+            .safeAreaInset(edge: .top) {
+                // Inline header with done button (情報デザイン)
+                HStack {
+                    JohoPageHeader(title: "Filter Options", badge: "FILTER")
+
+                    Spacer()
+
+                    Button {
                         dismiss()
+                    } label: {
+                        JohoActionButton(icon: "checkmark")
                     }
                 }
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.top, JohoDimensions.spacingSM)
+                .background(JohoColors.background)
             }
         }
     }
@@ -579,85 +737,107 @@ struct ExpenseDetailView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 20) {
-                    // Amount Card
-                    VStack(spacing: 8) {
-                        Text(expense.amount, format: .currency(code: expense.currency))
-                            .font(.system(size: 48, weight: .bold))
+                VStack(spacing: JohoDimensions.spacingLG) {
+                    // Amount Card - Hero display
+                    JohoCard {
+                        VStack(spacing: JohoDimensions.spacingMD) {
+                            JohoPill(text: "Amount", style: .whiteOnBlack)
 
-                        if let converted = expense.convertedAmount, expense.currency != baseCurrency {
-                            Text("\(converted, format: .currency(code: baseCurrency)) (converted)")
-                                .font(.title3)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .glassCard(cornerRadius: 16, material: .ultraThinMaterial)
+                            Text(expense.amount, format: .currency(code: expense.currency))
+                                .font(JohoFont.displayLarge)
+                                .foregroundStyle(JohoColors.black)
 
-                    // Details
-                    VStack(alignment: .leading, spacing: 16) {
-                        DetailRow(label: "Description", value: expense.itemDescription)
-
-                        if let merchant = expense.merchantName {
-                            DetailRow(label: "Merchant", value: merchant)
-                        }
-
-                        if let category = expense.category {
-                            HStack {
-                                Text("Category")
-                                    .foregroundStyle(.secondary)
-                                Spacer()
-                                Label(category.name, systemImage: category.iconName)
-                                    .foregroundStyle(category.color)
+                            if let converted = expense.convertedAmount, expense.currency != baseCurrency {
+                                Text("\(converted, format: .currency(code: baseCurrency)) (converted)")
+                                    .font(JohoFont.body)
+                                    .foregroundStyle(JohoColors.black.opacity(0.7))
                             }
                         }
+                        .frame(maxWidth: .infinity)
+                    }
 
-                        DetailRow(label: "Date", value: expense.date.formatted(date: .long, time: .omitted))
+                    // Details Section
+                    JohoSectionBox(title: "Details", zone: .expenses) {
+                        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                            JohoMetricRow(label: "Description", value: expense.itemDescription, zone: .expenses)
 
-                        if let notes = expense.notes {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Notes")
-                                    .foregroundStyle(.secondary)
-                                Text(notes)
-                                    .foregroundStyle(.primary)
+                            if let merchant = expense.merchantName {
+                                JohoMetricRow(label: "Merchant", value: merchant, zone: .expenses)
+                            }
+
+                            if let category = expense.category {
+                                HStack(spacing: JohoDimensions.spacingSM) {
+                                    Text("Category")
+                                        .font(JohoFont.body)
+                                        .foregroundStyle(JohoColors.black)
+                                    Spacer()
+                                    HStack(spacing: JohoDimensions.spacingXS) {
+                                        JohoIconBadge(icon: category.iconName, zone: .expenses, size: 24)
+                                        Text(category.name)
+                                            .font(JohoFont.body)
+                                            .foregroundStyle(JohoColors.black)
+                                    }
+                                }
+                                .padding(.horizontal, JohoDimensions.spacingMD)
+                                .padding(.vertical, JohoDimensions.spacingSM)
+                                .background(SectionZone.expenses.background.opacity(0.3))
+                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            }
+
+                            JohoMetricRow(label: "Date", value: expense.date.formatted(date: .long, time: .omitted), zone: .expenses)
+
+                            if let notes = expense.notes {
+                                VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
+                                    Text("Notes")
+                                        .font(JohoFont.body)
+                                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                                    Text(notes)
+                                        .font(JohoFont.body)
+                                        .foregroundStyle(JohoColors.black)
+                                }
+                                .padding(.horizontal, JohoDimensions.spacingMD)
+                                .padding(.vertical, JohoDimensions.spacingSM)
+                                .background(SectionZone.expenses.background.opacity(0.3))
+                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             }
                         }
                     }
-                    .padding()
-                    .glassCard(cornerRadius: 16, material: .ultraThinMaterial)
 
-                    // Receipt
+                    // Receipt Section
                     if let imageData = expense.receiptImageData,
                        let uiImage = UIImage(data: imageData) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Receipt")
-                                .font(.headline)
+                        JohoSectionBox(title: "Receipt", zone: .expenses) {
                             Image(uiImage: uiImage)
                                 .resizable()
                                 .scaledToFit()
-                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         }
-                        .padding()
-                        .glassCard(cornerRadius: 16, material: .ultraThinMaterial)
                     }
                 }
-                .padding()
+                .padding(JohoDimensions.spacingLG)
             }
-            .slateBackground()
-            .standardNavigation(title: "Expense Details")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Edit") {
-                        showEditSheet = true
-                    }
-                }
-                
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
+            .johoBackground()
+            .toolbar(.hidden, for: .navigationBar)
+            .safeAreaInset(edge: .top) {
+                // Inline header with actions (情報デザイン)
+                HStack {
+                    Button {
                         dismiss()
+                    } label: {
+                        JohoActionButton(icon: "xmark")
+                    }
+
+                    Spacer()
+
+                    Button {
+                        showEditSheet = true
+                    } label: {
+                        JohoActionButton(icon: "pencil")
                     }
                 }
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.top, JohoDimensions.spacingSM)
+                .background(JohoColors.background)
             }
             .sheet(isPresented: $showEditSheet) {
                 ExpenseEntryView(existingExpense: expense)
@@ -666,20 +846,7 @@ struct ExpenseDetailView: View {
     }
 }
 
-struct DetailRow: View {
-    let label: String
-    let value: String
-
-    var body: some View {
-        HStack {
-            Text(label)
-                .foregroundStyle(.secondary)
-            Spacer()
-            Text(value)
-                .foregroundStyle(.primary)
-        }
-    }
-}
+// DetailRow removed - replaced by JohoMetricRow
 
 // MARK: - Supporting Types
 

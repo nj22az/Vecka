@@ -1,0 +1,1811 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Scroll views | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": "2025-07-28",
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "scroll views",
+        "scrolling",
+        "scroll indicator",
+        "scroll bar",
+        "iOS",
+        "iPadOS",
+        "macOS",
+        "tvOS",
+        "visionOS",
+        "watchOS",
+        "SwiftUI",
+        "UIKit",
+        "AppKit",
+        "Human Interface Guidelines",
+        "scroll edge effects",
+        "page controls",
+        "Digital Crown"
+      ],
+      "summary": "Apple Human Interface Guidelines documentation for scroll views, explaining best practices for implementing scrolling content across all Apple platforms. The document covers scroll indicators, scroll edge effects, platform-specific considerations, and provides developer references for ScrollView, UIScrollView, and NSScrollView."
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": null,
+          "height": null,
+          "unit": "pixels"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF",
+        "layout": {
+          "type": "multi-column",
+          "columns": 3,
+          "margins": {
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": "100%",
+              "height": 50
+            },
+            "zIndex": 100,
+            "content": {
+              "type": "global-navigation",
+              "items": [
+                {
+                  "label": "Apple Developer",
+                  "icon": "Apple logo",
+                  "url": null
+                },
+                {
+                  "label": "News",
+                  "url": null
+                },
+                {
+                  "label": "Discover",
+                  "url": null
+                },
+                {
+                  "label": "Design",
+                  "url": null
+                },
+                {
+                  "label": "Develop",
+                  "url": null
+                },
+                {
+                  "label": "Distribute",
+                  "url": null
+                },
+                {
+                  "label": "Support",
+                  "url": null
+                },
+                {
+                  "label": "Account",
+                  "url": null
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-design-subnav",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 50,
+              "width": "100%",
+              "height": 40
+            },
+            "zIndex": 99,
+            "content": {
+              "type": "section-navigation",
+              "sectionTitle": "Design",
+              "items": [
+                {
+                  "label": "Overview",
+                  "url": null
+                },
+                {
+                  "label": "What's New",
+                  "url": null
+                },
+                {
+                  "label": "Get Started",
+                  "url": null
+                },
+                {
+                  "label": "Guidelines",
+                  "url": null
+                },
+                {
+                  "label": "Resources",
+                  "url": null
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-left-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 90,
+              "width": 250,
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "sidebar-navigation",
+              "title": "Design",
+              "filterEnabled": true,
+              "sections": [
+                {
+                  "title": "Getting started",
+                  "items": []
+                },
+                {
+                  "title": "Foundations",
+                  "items": []
+                },
+                {
+                  "title": "Patterns",
+                  "items": []
+                },
+                {
+                  "title": "Components",
+                  "items": [],
+                  "subsections": [
+                    {
+                      "title": "Content",
+                      "items": []
+                    },
+                    {
+                      "title": "Layout and organization",
+                      "items": []
+                    },
+                    {
+                      "title": "Menus and actions",
+                      "items": []
+                    },
+                    {
+                      "title": "Navigation and search",
+                      "items": []
+                    },
+                    {
+                      "title": "Presentation",
+                      "expanded": true,
+                      "items": [
+                        "Action sheets",
+                        "Alerts",
+                        "Page controls",
+                        "Panels",
+                        "Popovers",
+                        "Scroll views (current)",
+                        "Sheets",
+                        "Windows"
+                      ]
+                    },
+                    {
+                      "title": "Selection and input",
+                      "items": []
+                    },
+                    {
+                      "title": "Status",
+                      "items": []
+                    },
+                    {
+                      "title": "System experiences",
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "title": "Inputs",
+                  "items": []
+                },
+                {
+                  "title": "Technologies",
+                  "items": []
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-right-sidebar-toc",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": "right",
+              "y": 90,
+              "width": 200,
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "table-of-contents",
+              "title": "Scroll views",
+              "items": [
+                {
+                  "label": "Best practices",
+                  "anchor": "#best-practices"
+                },
+                {
+                  "label": "Scroll edge effects",
+                  "anchor": "#scroll-edge-effects"
+                },
+                {
+                  "label": "Platform considerations",
+                  "anchor": "#platform-considerations"
+                },
+                {
+                  "label": "Resources",
+                  "anchor": "#resources"
+                },
+                {
+                  "label": "Change log",
+                  "anchor": "#change-log"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-title",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 250,
+              "y": 90,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 1,
+              "text": "Scroll views",
+              "fontWeight": "bold",
+              "fontSize": "large"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 130,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "A scroll view lets people view content that's larger than the view's boundaries by moving the content vertically or horizontally.",
+              "fontWeight": "normal",
+              "fontSize": "large",
+              "style": "lead paragraph"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "follows"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-platforms-badge",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": "right-of-title",
+              "y": 90,
+              "width": 150,
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "type": "platform-badges",
+              "label": "Platforms",
+              "platforms": [
+                "iOS",
+                "iPadOS",
+                "macOS",
+                "tvOS",
+                "visionOS",
+                "watchOS"
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "associated-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-hero-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": 250,
+              "y": 180,
+              "width": "100%",
+              "height": 300
+            },
+            "zIndex": 1,
+            "content": {
+              "imageType": "illustration",
+              "description": "A stylized illustration showing a scroll view interface element. The image depicts a rectangular content area with a vertical scroll indicator on the right side. The scroll indicator is shown as a thin, rounded bar positioned partway down the track, indicating the current scroll position. The illustration uses a clean, minimal Apple design aesthetic with soft colors and rounded corners typical of Apple's Human Interface Guidelines documentation.",
+              "subjects": [
+                "scroll view container",
+                "scroll indicator",
+                "content area"
+              ],
+              "composition": "Centered horizontal layout showing a simplified scroll view UI mockup",
+              "colorPalette": [
+                "light gray background",
+                "darker gray scroll indicator",
+                "white content area"
+              ],
+              "mood": "clean, technical, instructional",
+              "technicalDetails": "UI illustration demonstrating scroll view anatomy",
+              "textInImage": [],
+              "contextualRelevance": "Visual introduction to the scroll view component being documented"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-description",
+                "relationshipType": "illustrates"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-intro-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 500,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "The scroll view itself has no appearance, but it can display a translucent scroll indicator that typically appears after people begin scrolling the view's content. Although the appearance and behavior of scroll indicators can vary per platform, all indicators provide visual feedback about the scrolling action. For example, in iOS, iPadOS, macOS, visionOS, and watchOS, the indicator shows whether the currently visible content is near the beginning, middle, or end of the view.",
+              "fontWeight": "normal",
+              "fontSize": "normal"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practices-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 250,
+              "y": 600,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 2,
+              "text": "Best practices",
+              "fontWeight": "bold",
+              "fontSize": "medium-large",
+              "anchorId": "best-practices"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 640,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Support default scrolling gestures and keyboard shortcuts. People are accustomed to the systemwide scrolling behavior and expect it to work everywhere. If you build custom scrolling for a view, make sure your scroll indicators use the elastic behavior that people expect.",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "formatting": {
+                "firstSentenceBold": true
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 700,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Make it apparent when content is scrollable. Because scroll indicators aren't always visible, it can be helpful to make it obvious when content extends beyond the view. For example, displaying partial content at the edge of a view indicates that there's more content in that direction. Although most people immediately try scrolling a view to discover if additional content is available, it's considerate to draw their attention to it.",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "formatting": {
+                "firstSentenceBold": true
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 780,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Avoid putting a scroll view inside another scroll view with the same orientation. Nesting scroll views that have the same orientation can create an unpredictable interface that's difficult to control. It's alright to place a horizontal scroll view inside a vertical scroll view (or vice versa), however.",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "formatting": {
+                "firstSentenceBold": true
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-4",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 850,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Consider supporting page-by-page scrolling if it makes sense for your content. In some situations, people appreciate scrolling by a fixed amount of content per interaction instead of scrolling continuously. On most platforms, you can define the size of such a page - typically the current height or width of the view - and define an interaction that scrolls one page at a time. To help maintain context during page-by-page scrolling, you can define a unit of overlap, such as a line of text, a row of glyphs, or part of a picture, and subtract the unit from the page size. For developer guidance, see PagingScrollTargetBehavior.",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "formatting": {
+                "firstSentenceBold": true
+              },
+              "links": [
+                {
+                  "text": "PagingScrollTargetBehavior",
+                  "type": "developer-documentation"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-5",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 950,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "In some cases, scroll automatically to help people find their place. Although people initiate almost all scrolling, automatic scrolling can be helpful when relevant content is no longer in view, such as when:",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "formatting": {
+                "firstSentenceBold": true
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-auto-scroll-list",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 270,
+              "y": 1000,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Your app performs an operation that selects content or places the insertion point in an area that's currently hidden. For example, when your app locates text that people are searching for, scroll the content to bring the new selection into view."
+                },
+                {
+                  "text": "People start entering information in a location that's not currently visible. For example, if the insertion point is on one page and people navigate to another page, scroll back to the insertion point as soon as they begin to enter text."
+                },
+                {
+                  "text": "The pointer moves past the edge of the view while people are making a selection. In this case, follow the pointer by scrolling in the direction it moves."
+                },
+                {
+                  "text": "People select something and scroll to a new location before acting on the selection. In this case, scroll until the selection is in view before performing the operation."
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-best-practice-5",
+                "relationshipType": "continues-from"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-auto-scroll-note",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 1150,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "In all cases, automatically scroll the content only as much as necessary to help people retain context. For example, if part of a selection is visible, you don't need to scroll the entire selection into view.",
+              "fontWeight": "normal",
+              "fontSize": "normal"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-zoom-guidance",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 1200,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "If you support zoom, set appropriate maximum and minimum scale values. For example, zooming in on text until a single character fills the screen doesn't make sense in most situations.",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "formatting": {
+                "firstSentenceBold": true
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-scroll-edge-effects-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 250,
+              "y": 1260,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 2,
+              "text": "Scroll edge effects",
+              "fontWeight": "bold",
+              "fontSize": "medium-large",
+              "anchorId": "scroll-edge-effects"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-scroll-edge-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 1300,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "In iOS, iPadOS, and macOS, a scroll edge effect is a variable blur that provides a transition between a content area and an area with Liquid Glass controls, such as toolbars. In most cases, the system applies a scroll edge effect automatically when a pinned element overlaps with scrolling content. If you use custom controls or layouts, the effect might not appear, and you may need to add it manually. For developer guidance, see ScrollEdgeEffectStyle and UIScrollEdgeEffect.",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "links": [
+                {
+                  "text": "Liquid Glass",
+                  "type": "internal-link"
+                },
+                {
+                  "text": "ScrollEdgeEffectStyle",
+                  "type": "developer-documentation"
+                },
+                {
+                  "text": "UIScrollEdgeEffect",
+                  "type": "developer-documentation"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-scroll-edge-styles",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 1380,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "There are two styles of scroll edge effect: soft and hard.",
+              "fontWeight": "normal",
+              "fontSize": "normal"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-scroll-edge-soft",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 1410,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Use a soft edge effect in most cases, especially in iOS and iPadOS, to provide a subtle transition that works well for toolbars and interactive elements like buttons.",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "formatting": {
+                "emphasisText": "soft"
+              },
+              "links": [
+                {
+                  "text": "soft edge effect",
+                  "type": "internal-link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-scroll-edge-hard",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 1460,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Use a hard edge effect primarily in macOS for a stronger, more opaque boundary that's ideal for interactive text, backless controls, or pinned table headers that need extra clarity.",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "formatting": {
+                "emphasisText": "hard"
+              },
+              "links": [
+                {
+                  "text": "hard edge effect",
+                  "type": "internal-link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-scroll-edge-usage-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 1520,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Only use a scroll edge effect when a scroll view is adjacent to floating interface elements. Scroll edge effects aren't decorative. They don't block or darken like overlays; they exist to clarify where controls and content meet.",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "formatting": {
+                "firstSentenceBold": true
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-scroll-edge-usage-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 1580,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Apply one scroll edge effect per view. In split view layouts on iPad and Mac, each pane can have its own scroll edge effect; in this case, keep them consistent in height to maintain alignment.",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "formatting": {
+                "firstSentenceBold": true
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-page-control-guidance",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 1640,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Consider showing a page control when a scroll view is in page-by-page mode. Page controls show how many pages, screens, or other chunks of content are available and indicates which one is currently visible. For example, Weather uses a page control to indicate movement between people's saved locations. If you show a page control with a scroll view, don't show the scrolling indicator on the same axis to avoid confusing people with redundant controls.",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "formatting": {
+                "firstSentenceBold": true
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 250,
+              "y": 1720,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 2,
+              "text": "Platform considerations",
+              "fontWeight": "bold",
+              "fontSize": "medium-large",
+              "anchorId": "platform-considerations"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ios-ipados-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 250,
+              "y": 1760,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 3,
+              "text": "iOS, iPadOS",
+              "fontWeight": "bold",
+              "fontSize": "medium"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ios-paging",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 1790,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Consider showing a page control when a scroll view is in page-by-page mode. Page controls show how many pages, screens, or other chunks of content are available and indicates which one is currently visible. For example, Weather uses a page control to indicate movement between people's saved locations. If you show a page control with a scroll view, don't show the scrolling indicator on the same axis to avoid confusing people with redundant controls.",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "formatting": {
+                "firstSentenceBold": true
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 250,
+              "y": 1880,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 3,
+              "text": "macOS",
+              "fontWeight": "bold",
+              "fontSize": "medium"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-note",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 1910,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "In macOS, a scroll indicator is commonly called a scroll bar.",
+              "fontWeight": "normal",
+              "fontSize": "normal"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-panels",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 1940,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "If necessary, use small or mini scroll bars in a panel. When space is tight, you can use smaller scroll bars in panels that need to coexist with other windows. Be sure to use the same size for all controls in such a panel.",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "formatting": {
+                "firstSentenceBold": true
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-tvos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 250,
+              "y": 2000,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 3,
+              "text": "tvOS",
+              "fontWeight": "bold",
+              "fontSize": "medium"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-tvos-content",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 2030,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Views in tvOS can scroll, but they aren't treated as distinct objects with scroll indicators. Instead, when content exceeds the size of the screen, the system automatically scrolls the interface to keep focused items visible.",
+              "fontWeight": "normal",
+              "fontSize": "normal"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 250,
+              "y": 2090,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 3,
+              "text": "visionOS",
+              "fontWeight": "bold",
+              "fontSize": "medium"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 2120,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "In visionOS, the scroll indicator has a small, fixed size to help communicate that people can scroll efficiently without making large movements. To make it easy to find, the scroll indicator always appears in a predictable location with respect to the window: vertically centered at the trailing edge during vertical scrolling and horizontally centered at the window's bottom edge during horizontal scrolling.",
+              "fontWeight": "normal",
+              "fontSize": "normal"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-behavior",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 2200,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "When people begin swiping content in the direction they want it to scroll, the scroll indicator appears at the window's edge, visually reinforcing the effect of their gesture and providing feedback about the content's current position and overall length. When people look at the scroll indicator and begin a drag gesture, the indicator enables a jog bar experience that lets people manipulate the scrolling speed instead of the content's position. In this experience, the scroll indicator reveals tick marks that speed up or slow down as people make small adjustments to their gesture, providing visual feedback that helps people precisely control scrolling acceleration.",
+              "fontWeight": "normal",
+              "fontSize": "normal"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-video",
+            "elementType": "other",
+            "boundingBox": {
+              "x": 250,
+              "y": 2300,
+              "width": "auto",
+              "height": 200
+            },
+            "zIndex": 1,
+            "content": {
+              "type": "video-player",
+              "description": "An embedded video player showing a demonstration of the visionOS scroll indicator behavior. The video shows the jog bar experience with tick marks that appear when interacting with the scroll indicator. A 'Play' button is visible for starting the video playback.",
+              "controls": [
+                "Play button"
+              ],
+              "contextualRelevance": "Demonstrates the unique scroll indicator jog bar experience in visionOS"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-visionos-behavior",
+                "relationshipType": "illustrates"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-visionos-size-note",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 2520,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "If necessary, account for the size of the scroll indicator. Although the indicator's overall size is small, it's a little thicker than the same component in iOS. If your content uses tight margins, consider increasing them to prevent the scroll indicator from overlapping the content.",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "formatting": {
+                "firstSentenceBold": true
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-watchos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 250,
+              "y": 2590,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 3,
+              "text": "watchOS",
+              "fontWeight": "bold",
+              "fontSize": "medium"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-watchos-vertical",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 2620,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Prefer vertically scrolling content. People are accustomed to using the Digital Crown to navigate to and within apps on Apple Watch. If your app contains a single list or content view, rotating the Digital Crown scrolls vertically when your app's content is taller than the height of the display.",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "formatting": {
+                "firstSentenceBold": true
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-watchos-tabviews",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 2700,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Use tab views to provide page-by-page scrolling. watchOS displays tab views as pages. If you place tab views in a vertical stack, people can rotate the Digital Crown to move vertically through full-screen pages of content. In this scenario, the system displays a page indicator next to the Digital Crown that shows people where they are in the content, both within the current page and within a set of pages. For guidance, see Tab views.",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "formatting": {
+                "firstSentenceBold": true
+              },
+              "links": [
+                {
+                  "text": "Tab views",
+                  "type": "internal-link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-watchos-paging",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 2800,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "When displaying paged content, consider limiting the content of an individual page to a single screen height. Embracing this constraint clarifies the purpose of each page, helping you create a more glanceable design. However, if your app has long pages, people can still use the Digital Crown both to navigate between shorter pages and to scroll content in a longer page because the page indicator expands into a scroll indicator when necessary. Use variable-height pages judiciously and place them after fixed-height pages when possible.",
+              "fontWeight": "normal",
+              "fontSize": "normal",
+              "formatting": {
+                "firstSentenceBold": true
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 250,
+              "y": 2900,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 2,
+              "text": "Resources",
+              "fontWeight": "bold",
+              "fontSize": "medium-large",
+              "anchorId": "resources"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-related-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 250,
+              "y": 2940,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 3,
+              "text": "Related",
+              "fontWeight": "bold",
+              "fontSize": "medium"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-related-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 250,
+              "y": 2970,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Page controls",
+                  "type": "link"
+                },
+                {
+                  "text": "Gestures",
+                  "type": "link"
+                },
+                {
+                  "text": "Pointing devices",
+                  "type": "link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-developer-docs-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 250,
+              "y": 3050,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 3,
+              "text": "Developer documentation",
+              "fontWeight": "bold",
+              "fontSize": "medium"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-developer-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 250,
+              "y": 3080,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "ScrollView",
+                  "type": "link",
+                  "framework": "SwiftUI"
+                },
+                {
+                  "text": "UIScrollView",
+                  "type": "link",
+                  "framework": "UIKit"
+                },
+                {
+                  "text": "NSScrollView",
+                  "type": "link",
+                  "framework": "AppKit"
+                },
+                {
+                  "text": "WKPageOrientation",
+                  "type": "link",
+                  "framework": "WatchKit"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-changelog-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 250,
+              "y": 3180,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 2,
+              "text": "Change log",
+              "fontWeight": "bold",
+              "fontSize": "medium-large",
+              "anchorId": "change-log"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-changelog-table",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 250,
+              "y": 3220,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "tableTitle": "Date Changes",
+              "columnCount": 2,
+              "rowCount": 5,
+              "headers": [
+                "Date",
+                "Changes"
+              ],
+              "rows": [
+                {
+                  "rowIndex": 0,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "July 28, 2025",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Added guidance for scroll edge effects.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 1,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "February 2, 2024",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Added artwork showing the behavior of the visionOS scroll indicator.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 2,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "December 5, 2023",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Described the visionOS scroll indicator and added guidance for integrating it with window layout.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 3,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "June 5, 2023",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Updated guidance for using scroll views in watchOS.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tableSummary": "A chronological log of updates made to this documentation page, showing when new platform guidance and features were added."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-feedback-link",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 250,
+              "y": 3350,
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "To submit feedback on documentation, visit Feedback Assistant.",
+              "fontWeight": "normal",
+              "fontSize": "small",
+              "links": [
+                {
+                  "text": "Feedback Assistant",
+                  "type": "external-link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-theme-toggle",
+            "elementType": "other",
+            "boundingBox": {
+              "x": "right",
+              "y": 3350,
+              "width": 150,
+              "height": 30
+            },
+            "zIndex": 1,
+            "content": {
+              "type": "theme-toggle",
+              "options": [
+                "Light",
+                "Dark",
+                "Auto"
+              ],
+              "description": "Toggle buttons for switching between light mode, dark mode, and auto (system) theme"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer",
+            "elementType": "other",
+            "boundingBox": {
+              "x": 0,
+              "y": 3400,
+              "width": "100%",
+              "height": 200
+            },
+            "zIndex": 1,
+            "content": {
+              "type": "global-footer",
+              "sections": [
+                {
+                  "title": "Tools",
+                  "items": [
+                    "Swift",
+                    "SwiftUI",
+                    "Swift Playground",
+                    "TestFlight",
+                    "Xcode",
+                    "Xcode Cloud",
+                    "SF Symbols"
+                  ]
+                },
+                {
+                  "title": "Topics & Technologies",
+                  "items": [
+                    "Accessibility",
+                    "Accessories",
+                    "App Extension",
+                    "App Store",
+                    "Audio & Video",
+                    "Augmented Reality",
+                    "Design",
+                    "Distribution",
+                    "Education",
+                    "Fonts",
+                    "Games",
+                    "Health & Fitness",
+                    "In-App Purchase",
+                    "Localization",
+                    "Maps & Location",
+                    "Machine Learning & AI",
+                    "Open Source",
+                    "Security",
+                    "Safari & Web"
+                  ]
+                },
+                {
+                  "title": "Resources",
+                  "items": [
+                    "Documentation",
+                    "Tutorials",
+                    "Downloads",
+                    "Forums",
+                    "Videos"
+                  ]
+                },
+                {
+                  "title": "Support",
+                  "items": [
+                    "Support Articles",
+                    "Contact Us",
+                    "Bug Reporting",
+                    "System Status"
+                  ]
+                },
+                {
+                  "title": "Account",
+                  "items": [
+                    "Apple Developer",
+                    "App Store Connect",
+                    "Certificates, IDs, & Profiles",
+                    "Feedback Assistant"
+                  ]
+                },
+                {
+                  "title": "Programs",
+                  "items": [
+                    "Apple Developer Program",
+                    "Apple Developer Enterprise Program",
+                    "App Store Small Business Program",
+                    "MFi Program",
+                    "News Partner Program",
+                    "Video Partner Program",
+                    "Security Bounty Program",
+                    "Security Research Device Program"
+                  ]
+                },
+                {
+                  "title": "Events",
+                  "items": [
+                    "Meet with Apple",
+                    "Apple Developer Centers",
+                    "App Store Awards",
+                    "Apple Design Awards",
+                    "Apple Developer Academies",
+                    "WWDC"
+                  ]
+                }
+              ],
+              "copyright": "Copyright (c) 2025 Apple Inc. All rights reserved.",
+              "legalLinks": [
+                "Terms of Use",
+                "Privacy Policy",
+                "Agreements and Guidelines"
+              ]
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation",
+          "page1-design-subnav",
+          "page1-main-title",
+          "page1-main-description",
+          "page1-platforms-badge",
+          "page1-hero-image",
+          "page1-intro-paragraph",
+          "page1-best-practices-heading",
+          "page1-best-practice-1",
+          "page1-best-practice-2",
+          "page1-best-practice-3",
+          "page1-best-practice-4",
+          "page1-best-practice-5",
+          "page1-auto-scroll-list",
+          "page1-auto-scroll-note",
+          "page1-zoom-guidance",
+          "page1-scroll-edge-effects-heading",
+          "page1-scroll-edge-intro",
+          "page1-scroll-edge-styles",
+          "page1-scroll-edge-soft",
+          "page1-scroll-edge-hard",
+          "page1-scroll-edge-usage-1",
+          "page1-scroll-edge-usage-2",
+          "page1-page-control-guidance",
+          "page1-platform-heading",
+          "page1-ios-ipados-heading",
+          "page1-ios-paging",
+          "page1-macos-heading",
+          "page1-macos-note",
+          "page1-macos-panels",
+          "page1-tvos-heading",
+          "page1-tvos-content",
+          "page1-visionos-heading",
+          "page1-visionos-intro",
+          "page1-visionos-behavior",
+          "page1-visionos-video",
+          "page1-visionos-size-note",
+          "page1-watchos-heading",
+          "page1-watchos-vertical",
+          "page1-watchos-tabviews",
+          "page1-watchos-paging",
+          "page1-resources-heading",
+          "page1-related-heading",
+          "page1-related-links",
+          "page1-developer-docs-heading",
+          "page1-developer-links",
+          "page1-changelog-heading",
+          "page1-changelog-table",
+          "page1-feedback-link",
+          "page1-theme-toggle",
+          "page1-footer"
+        ],
+        "pageSummary": "This is the complete Apple Human Interface Guidelines documentation page for Scroll Views. It provides comprehensive guidance on implementing scroll views across all Apple platforms (iOS, iPadOS, macOS, tvOS, visionOS, and watchOS), including best practices for scroll indicators, scroll edge effects with Liquid Glass, page-by-page scrolling, automatic scrolling behaviors, and platform-specific considerations such as the Digital Crown on watchOS and the jog bar experience on visionOS."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": true,
+        "entries": [
+          {
+            "title": "Best practices",
+            "page": 1
+          },
+          {
+            "title": "Scroll edge effects",
+            "page": 1
+          },
+          {
+            "title": "Platform considerations",
+            "page": 1
+          },
+          {
+            "title": "Resources",
+            "page": 1
+          },
+          {
+            "title": "Change log",
+            "page": 1
+          }
+        ]
+      },
+      "runningHeaders": "Design - Developer Documentation - English",
+      "runningFooters": "Copyright (c) 2025 Apple Inc. All rights reserved.",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "introduction",
+          "title": "Introduction",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Defines what a scroll view is and explains the role of scroll indicators in providing visual feedback across platforms."
+        },
+        {
+          "sectionId": "best-practices",
+          "title": "Best practices",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Provides seven key guidelines for implementing scroll views: supporting default gestures, making scrollability apparent, avoiding nested same-orientation scroll views, supporting page-by-page scrolling, implementing automatic scrolling appropriately, and setting appropriate zoom scale values."
+        },
+        {
+          "sectionId": "scroll-edge-effects",
+          "title": "Scroll edge effects",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Explains scroll edge effects (soft and hard) which provide visual transitions between content areas and Liquid Glass controls like toolbars. Covers when to use each style and usage guidelines."
+        },
+        {
+          "sectionId": "platform-considerations",
+          "title": "Platform considerations",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "ios-ipados",
+              "title": "iOS, iPadOS",
+              "summary": "Guidance on using page controls with scroll views in paging mode."
+            },
+            {
+              "sectionId": "macos",
+              "title": "macOS",
+              "summary": "Notes that scroll indicators are called scroll bars in macOS, with guidance on using small or mini scroll bars in panels."
+            },
+            {
+              "sectionId": "tvos",
+              "title": "tvOS",
+              "summary": "Explains that tvOS views scroll automatically to keep focused items visible without explicit scroll indicators."
+            },
+            {
+              "sectionId": "visionos",
+              "title": "visionOS",
+              "summary": "Detailed explanation of the unique visionOS scroll indicator behavior including fixed positioning, jog bar experience, and tick marks for controlling scroll acceleration."
+            },
+            {
+              "sectionId": "watchos",
+              "title": "watchOS",
+              "summary": "Guidance on vertical scrolling with Digital Crown, using tab views for page-by-page scrolling, and limiting individual page heights."
+            }
+          ],
+          "summary": "Platform-specific guidance for implementing scroll views on iOS/iPadOS, macOS, tvOS, visionOS, and watchOS."
+        },
+        {
+          "sectionId": "resources",
+          "title": "Resources",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Links to related HIG articles (Page controls, Gestures, Pointing devices) and developer documentation (ScrollView, UIScrollView, NSScrollView, WKPageOrientation)."
+        },
+        {
+          "sectionId": "change-log",
+          "title": "Change log",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Chronological record of documentation updates from June 2023 through July 2025."
+        }
+      ],
+      "documentFlow": "The document begins with a definition of scroll views and their core functionality, then provides comprehensive best practices for implementation. It introduces the concept of scroll edge effects as a newer feature (added July 2025) for Liquid Glass interfaces. The bulk of the content addresses platform-specific considerations, giving detailed guidance for each Apple platform's unique scroll view behaviors. The document concludes with resources linking to related articles and developer APIs, followed by a change log showing the document's evolution."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "scroll view",
+          "definition": "A view that lets people view content that's larger than the view's boundaries by moving the content vertically or horizontally",
+          "occurrences": 15
+        },
+        {
+          "term": "scroll indicator",
+          "definition": "A translucent visual element that provides feedback about scrolling action and current position in content",
+          "occurrences": 12
+        },
+        {
+          "term": "scroll bar",
+          "definition": "macOS terminology for scroll indicator",
+          "occurrences": 3
+        },
+        {
+          "term": "scroll edge effect",
+          "definition": "A variable blur that provides a transition between a content area and an area with Liquid Glass controls, such as toolbars",
+          "occurrences": 8
+        },
+        {
+          "term": "Liquid Glass",
+          "definition": "Apple's design system for translucent interface controls introduced with iOS 26/macOS 26",
+          "occurrences": 1
+        },
+        {
+          "term": "soft edge effect",
+          "definition": "A subtle scroll edge effect transition best for toolbars and interactive elements, especially in iOS and iPadOS",
+          "occurrences": 1
+        },
+        {
+          "term": "hard edge effect",
+          "definition": "A stronger, more opaque scroll edge effect boundary ideal for interactive text, backless controls, or pinned table headers in macOS",
+          "occurrences": 1
+        },
+        {
+          "term": "page control",
+          "definition": "An indicator showing how many pages are available and which one is currently visible",
+          "occurrences": 4
+        },
+        {
+          "term": "page-by-page scrolling",
+          "definition": "Scrolling by a fixed amount of content per interaction instead of continuously",
+          "occurrences": 3
+        },
+        {
+          "term": "jog bar",
+          "definition": "visionOS scroll indicator feature that lets people manipulate scrolling speed instead of content position",
+          "occurrences": 1
+        },
+        {
+          "term": "Digital Crown",
+          "definition": "Physical input control on Apple Watch used for scrolling and navigation",
+          "occurrences": 4
+        },
+        {
+          "term": "PagingScrollTargetBehavior",
+          "definition": "SwiftUI API for implementing page-by-page scrolling",
+          "occurrences": 1
+        },
+        {
+          "term": "ScrollEdgeEffectStyle",
+          "definition": "SwiftUI API for configuring scroll edge effects",
+          "occurrences": 1
+        },
+        {
+          "term": "UIScrollEdgeEffect",
+          "definition": "UIKit API for configuring scroll edge effects",
+          "occurrences": 1
+        }
+      ],
+      "keyFindings": [
+        "Scroll views should support default system scrolling gestures and keyboard shortcuts with elastic behavior",
+        "Nested scroll views with the same orientation should be avoided as they create unpredictable interfaces",
+        "Automatic scrolling should be used sparingly and only as much as necessary to maintain user context",
+        "Scroll edge effects come in two styles: soft (for iOS/iPadOS toolbars) and hard (for macOS text/headers)",
+        "Scroll edge effects should only be used when scroll views are adjacent to floating interface elements",
+        "In visionOS, scroll indicators have fixed positioning and support a jog bar experience for precise speed control",
+        "watchOS scroll views should prefer vertical scrolling and use tab views for page-by-page navigation",
+        "tvOS automatically scrolls content to keep focused items visible without explicit scroll indicators",
+        "Page controls should not be shown alongside scroll indicators on the same axis to avoid redundancy"
+      ],
+      "technicalSpecifications": {
+        "supportedPlatforms": [
+          "iOS",
+          "iPadOS",
+          "macOS",
+          "tvOS",
+          "visionOS",
+          "watchOS"
+        ],
+        "frameworks": {
+          "SwiftUI": "ScrollView",
+          "UIKit": "UIScrollView",
+          "AppKit": "NSScrollView",
+          "WatchKit": "WKPageOrientation"
+        },
+        "apiReferences": [
+          "PagingScrollTargetBehavior",
+          "ScrollEdgeEffectStyle",
+          "UIScrollEdgeEffect"
+        ]
+      },
+      "designDecisions": [
+        {
+          "decision": "Scroll indicators are translucent and appear after scrolling begins",
+          "rationale": "Provides feedback without cluttering the interface when not needed"
+        },
+        {
+          "decision": "Different scroll edge effect styles for different platforms",
+          "rationale": "iOS/iPadOS uses soft edges for touch interfaces while macOS uses hard edges for precise pointer interactions"
+        },
+        {
+          "decision": "visionOS scroll indicators have fixed positioning at window edges",
+          "rationale": "Predictable location helps users find the indicator in spatial computing environment"
+        },
+        {
+          "decision": "watchOS prefers vertical scrolling",
+          "rationale": "Aligns with Digital Crown rotation direction and user expectations"
+        },
+        {
+          "decision": "tvOS has no explicit scroll indicators",
+          "rationale": "Focus-based navigation means system handles scrolling automatically"
+        }
+      ]
+    }
+  }
+}

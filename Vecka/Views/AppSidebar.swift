@@ -11,42 +11,30 @@ import SwiftUI
 // MARK: - Sidebar Selection
 
 enum SidebarSelection: String, Hashable, Identifiable, CaseIterable {
-    case summary
+    case tools       // 情報デザイン draggable widget workspace (renamed from workspace)
     case calendar
-    case notes
     case contacts
-    case expenses
-    case trips
-    case holidays
-    case observances
+    case specialDays  // Combined Holidays, Observances, Countdowns, Notes, Trips & Expenses
     case settings
 
     var id: String { rawValue }
 
     var label: String {
         switch self {
-        case .summary: return "Summary"
+        case .tools: return "Tools"
         case .calendar: return Localization.calendar
-        case .notes: return Localization.notes
         case .contacts: return Localization.contacts
-        case .expenses: return Localization.expenses
-        case .trips: return Localization.trips
-        case .holidays: return Localization.holidays
-        case .observances: return Localization.observances
+        case .specialDays: return "Special Days"
         case .settings: return Localization.settings
         }
     }
 
     var icon: String {
         switch self {
-        case .summary: return "square.grid.2x2"
+        case .tools: return "wrench.and.screwdriver"
         case .calendar: return "calendar"
-        case .notes: return "doc.text"
         case .contacts: return "person.2"
-        case .expenses: return "dollarsign.circle"
-        case .trips: return "airplane"
-        case .holidays: return "star"
-        case .observances: return "bell"
+        case .specialDays: return "star.fill"
         case .settings: return "gearshape"
         }
     }
@@ -54,14 +42,10 @@ enum SidebarSelection: String, Hashable, Identifiable, CaseIterable {
     /// The accent color for this item's circle background when selected
     var accentColor: Color {
         switch self {
-        case .summary: return Color(hex: "FFD700")     // Gold
+        case .tools: return Color(hex: "00B4D8")       // Cyan (情報デザイン accent)
         case .calendar: return Color(hex: "E53E3E")    // Red
-        case .notes: return Color(hex: "4A5568")       // Gray
         case .contacts: return Color(hex: "718096")    // Slate
-        case .expenses: return Color(hex: "38A169")    // Green
-        case .trips: return Color(hex: "3182CE")       // Blue
-        case .holidays: return Color(hex: "D69E2E")    // Amber
-        case .observances: return Color(hex: "9F7AEA") // Purple
+        case .specialDays: return Color(hex: "FFD700") // Gold (star = gold)
         case .settings: return Color(hex: "718096")    // Slate
         }
     }
@@ -120,7 +104,7 @@ struct AppSidebar: View {
             .frame(maxWidth: .infinity)
             .padding(.bottom, Spacing.medium)
         }
-        .background(.ultraThinMaterial)
+        .background(JohoColors.white)
         .navigationBarHidden(true)
     }
 }

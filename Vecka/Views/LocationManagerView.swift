@@ -2,7 +2,7 @@
 //  LocationManagerView.swift
 //  Vecka
 //
-//  User interface for managing weather locations
+//  User interface for managing saved locations
 //
 
 import SwiftUI
@@ -39,10 +39,12 @@ struct LocationManagerView: View {
                     .onTapGesture {
                         selectCurrentLocation()
                     }
+                    .accessibilityLabel("Use current location\(useCurrentLocation ? ", selected" : "")")
+                    .accessibilityAddTraits(.isButton)
                 } header: {
                     Text("Auto-Detect")
                 } footer: {
-                    Text("Use your device's current location for weather forecasts")
+                    Text("Use your device's current location")
                 }
 
                 // Saved Locations
@@ -57,6 +59,8 @@ struct LocationManagerView: View {
                             .onTapGesture {
                                 selectLocation(location)
                             }
+                            .accessibilityLabel("\(location.name)\(!useCurrentLocation && selectedLocationID == location.id.uuidString ? ", selected" : "")")
+                            .accessibilityAddTraits(.isButton)
                         }
                         .onDelete(perform: deleteLocations)
                     } header: {
@@ -96,14 +100,11 @@ struct LocationManagerView: View {
     private func selectCurrentLocation() {
         useCurrentLocation = true
         selectedLocationID = ""
-        WeatherService.shared.selectedLocation = nil
-        WeatherService.shared.updateLocation()
     }
 
     private func selectLocation(_ location: SavedLocation) {
         useCurrentLocation = false
         selectedLocationID = location.id.uuidString
-        WeatherService.shared.selectedLocation = location
     }
 
     private func deleteLocations(at offsets: IndexSet) {

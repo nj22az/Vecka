@@ -1,0 +1,2387 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Playing haptics | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "haptics",
+        "haptic feedback",
+        "Core Haptics",
+        "UIFeedbackGenerator",
+        "iOS",
+        "watchOS",
+        "macOS",
+        "visionOS",
+        "tvOS",
+        "iPadOS",
+        "Taptic Engine",
+        "Force Touch",
+        "Digital Crown",
+        "Apple Pencil Pro",
+        "game controllers"
+      ],
+      "summary": "Apple Developer Documentation page covering haptic feedback implementation across Apple platforms. The document provides best practices for using system-provided and custom haptics, platform-specific considerations for iOS, macOS, and watchOS, and guidance on notification, impact, and selection haptic patterns.",
+      "sourceUrl": "https://developer.apple.com/design/human-interface-guidelines/playing-haptics",
+      "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+      "legalLinks": [
+        "Terms of Use",
+        "Privacy Policy",
+        "Agreements and Guidelines"
+      ]
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": null,
+          "height": null,
+          "unit": "px"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF",
+        "layout": {
+          "type": "multi-column",
+          "columns": 2,
+          "margins": {
+            "top": null,
+            "right": null,
+            "bottom": null,
+            "left": null
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": "100%",
+              "height": "auto"
+            },
+            "zIndex": 100,
+            "content": {
+              "type": "global-navigation",
+              "items": [
+                {
+                  "label": "News",
+                  "type": "link"
+                },
+                {
+                  "label": "Discover",
+                  "type": "link"
+                },
+                {
+                  "label": "Design",
+                  "type": "link"
+                },
+                {
+                  "label": "Develop",
+                  "type": "link"
+                },
+                {
+                  "label": "Distribute",
+                  "type": "link"
+                },
+                {
+                  "label": "Support",
+                  "type": "link"
+                },
+                {
+                  "label": "Account",
+                  "type": "link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-breadcrumb-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": "below-header",
+              "width": "100%",
+              "height": "auto"
+            },
+            "zIndex": 99,
+            "content": {
+              "type": "breadcrumb",
+              "items": [
+                {
+                  "label": "Design",
+                  "type": "link"
+                },
+                {
+                  "label": "Overview",
+                  "type": "link"
+                },
+                {
+                  "label": "What's New",
+                  "type": "link"
+                },
+                {
+                  "label": "Get Started",
+                  "type": "link"
+                },
+                {
+                  "label": "Guidelines",
+                  "type": "link"
+                },
+                {
+                  "label": "Resources",
+                  "type": "link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-hero-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "center",
+              "y": "top-content",
+              "width": "large",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "imageType": "illustration",
+              "description": "Abstract circular design featuring concentric rings in orange/coral gradient color scheme. The rings create a spherical, three-dimensional effect suggesting vibration or haptic waves emanating from a central point. The design uses smooth curved lines that overlap and interweave, creating depth through layering. The background is a solid orange/coral color matching the lighter tones in the rings.",
+              "subjects": [
+                "concentric circles",
+                "vibration waves",
+                "haptic feedback visualization"
+              ],
+              "composition": "Centered composition with overlapping circular rings creating a 3D spherical illusion",
+              "colorPalette": [
+                "coral orange (#FF6B4A)",
+                "deep orange (#E85A3A)",
+                "burnt orange (#D44A2A)"
+              ],
+              "mood": "Modern, technical, abstract",
+              "technicalDetails": "Vector illustration representing haptic feedback concept",
+              "textInImage": [],
+              "contextualRelevance": "Hero illustration symbolizing haptic vibration/feedback patterns - the concentric rings visualize the tactile sensation of haptic feedback"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "illustration-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-main-title",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-hero",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 1,
+              "text": "Playing haptics",
+              "style": {
+                "fontSize": "large",
+                "fontWeight": "bold",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-subtitle",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "left-column",
+              "y": "below-title",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Playing haptics can engage people's sense of touch and bring their familiarity with the physical world into your app or game.",
+              "style": {
+                "fontSize": "medium",
+                "fontWeight": "normal",
+                "color": "gray"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "subtitle-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-intro-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-subtitle",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Depending on the platform and the device people are using, the system can play haptics in addition to visual and auditory feedback. For example, components like switches, sliders, and pickers automatically play haptic feedback on supported iPhone models; on Apple Watch, the Taptic Engine generates haptics for a number of built-in feedback patterns, which watchOS combines with an audible tone. On a Mac that's equipped with a Force Touch trackpad, an app can play haptics while people drag content or when they force click to change the speed of media controls.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-external-devices-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-intro",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "In addition to built-in haptic capabilities, some external input devices can also play haptics. For example:",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-external-devices-list",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-external-devices-paragraph",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "In an iPadOS, macOS, tvOS, or visionOS app or game, game controllers can provide haptic feedback (for developer guidance, see Playing Haptics on Game Controllers).",
+                  "links": [
+                    {
+                      "text": "Playing Haptics on Game Controllers",
+                      "type": "developer-documentation-link"
+                    }
+                  ]
+                },
+                {
+                  "text": "Apple Pencil Pro and some trackpads can provide haptic feedback when connected to certain iPad models. (For details on Apple Pencil features and compatibility, see Apple Pencil.)",
+                  "links": [
+                    {
+                      "text": "Apple Pencil",
+                      "type": "external-link"
+                    }
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practices-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-external-devices-list",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 2,
+              "text": "Best practices",
+              "style": {
+                "fontSize": "large",
+                "fontWeight": "bold",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-best-practices-heading",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Use system-provided haptic patterns according to their documented meanings. People recognize standard haptics because the system plays them consistently on interactions with standard controls. If the documented use case for a pattern doesn't make sense in your app or game, avoid using the pattern to mean something else. Instead, use a generic pattern or create your own, where supported. For guidance, see Custom haptics.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              },
+              "emphasisText": "Use system-provided haptic patterns according to their documented meanings.",
+              "links": [
+                {
+                  "text": "Custom haptics",
+                  "type": "internal-anchor-link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-best-practice-1",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Use haptics consistently throughout your app or game. It's important to build a clear, causal relationship between each haptic and the action that causes it so people learn to associate certain haptic patterns with certain experiences. If a haptic doesn't reinforce a cause-and-effect relationship, it can be confusing and seem gratuitous. For example, if your game plays a specific haptic pattern when a character fails to finish a mission, people associate that pattern with a negative outcome. If you use the same haptic pattern for a positive outcome like a level completion, people will be confused.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              },
+              "emphasisText": "Use haptics consistently throughout your app or game."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-best-practice-2",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Prefer using haptics to complement other feedback in your app or game. When visual, auditory, and tactile feedback are in harmony - as they generally are in the physical world - the user experience is more coherent and can seem more natural. For example, you generally want to match the intensity and sharpness of a haptic with the intensity and sharpness of the animation it accompanies. You can also synchronize sound with haptics; for developer guidance, see Delivering Rich App Experiences with Haptics.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              },
+              "emphasisText": "Prefer using haptics to complement other feedback in your app or game.",
+              "links": [
+                {
+                  "text": "Delivering Rich App Experiences with Haptics",
+                  "type": "developer-documentation-link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-4",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-best-practice-3",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Avoid overusing haptics. Sometimes a haptic can feel just right when it happens occasionally, but become tiresome when it plays frequently. Doing user testing can help you discover a balance that most people appreciate. Often, the best haptic experience is one that people may not be conscious of, but miss when it's turned off.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              },
+              "emphasisText": "Avoid overusing haptics."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-5",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-best-practice-4",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "In most apps, prefer playing short haptics that complement discrete events. Although long-running haptics that accompany a gameplay flow can enhance the experience, long-running haptics in an app can dilute the meaning of the feedback and distract people from their task. On Apple Pencil Pro, for example, continuous or long-lasting haptics don't tend to clarify the writing or drawing experience and can even make holding the pencil less pleasant.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              },
+              "emphasisText": "In most apps, prefer playing short haptics that complement discrete events."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-6",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-best-practice-5",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Make haptics optional. Let people turn off or mute haptics, and make sure people can still enjoy your app or game without them.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              },
+              "emphasisText": "Make haptics optional."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-7",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-best-practice-6",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Be aware that playing haptics might impact other user experiences. By design, haptics produce enough physical force for people to feel the vibration. Ensure that haptic vibrations don't disrupt experiences involving device features like the camera, gyroscope, or microphone.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              },
+              "emphasisText": "Be aware that playing haptics might impact other user experiences."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-custom-haptics-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-best-practice-7",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 2,
+              "text": "Custom haptics",
+              "style": {
+                "fontSize": "large",
+                "fontWeight": "bold",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-custom-haptics-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-custom-haptics-heading",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Games often use custom haptics to enhance gameplay. Although it's less common, nongame apps might also use custom haptics to provide a richer, more delightful experience. You can design custom haptic patterns that vary dynamically, based on user input or context. For example, the impact players feel when a game character jumps from a tree can be stronger than when the character jumps in place, and substantial experiences - like a collision or a hit - can feel very different from subtle experiences like the approach of footsteps or a looming danger.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-building-blocks-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-custom-haptics-intro",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "There are two basic building blocks you can use to generate custom haptic patterns.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-building-blocks-list",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-building-blocks-intro",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Transient events are brief and compact, often feeling like taps or impulses. The experience of tapping the Flashlight button on the Home Screen is an example of a transient event.",
+                  "emphasisText": "Transient events"
+                },
+                {
+                  "text": "Continuous events feel like sustained vibrations, such as the experience of the lasers effect in a message.",
+                  "emphasisText": "Continuous events"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-sharpness-intensity-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-building-blocks-list",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Regardless of the type of haptic event you use to generate a custom haptic, you can also control its sharpness and intensity. You can think of sharpness as a way to abstract a haptic experience into the waveform that produces the corresponding physical sensations. Specifying sharpness lets you relay to the system your intent for the experience. For example, you might use sharpness values to convey an experience that's soft, rounded, or organic, or one that's crisp, precise, or mechanical. As the term implies, intensity means the strength of the haptic.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-combining-events-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-sharpness-intensity-paragraph",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "By combining transient and continuous events, varying sharpness and intensity, and including optional audio content, you can create a wide range of different haptic experiences. For developer guidance, see Core Haptics.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              },
+              "links": [
+                {
+                  "text": "Core Haptics",
+                  "type": "developer-documentation-link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-considerations-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-combining-events-paragraph",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 2,
+              "text": "Platform considerations",
+              "style": {
+                "fontSize": "large",
+                "fontWeight": "bold",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ios-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-platform-considerations-heading",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 3,
+              "text": "iOS",
+              "style": {
+                "fontSize": "medium",
+                "fontWeight": "bold",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ios-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-ios-heading",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "On supported iPhone models, you can add haptics to your experience in the following ways:",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ios-methods-list",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-ios-intro",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Use standard UI components - like toggles, sliders, and pickers - that play Apple-designed system haptics by default."
+                },
+                {
+                  "text": "When it makes sense, use a feedback generator to play one of several predefined haptic patterns in the categories of notification, impact, and selection (for developer guidance, see UIFeedbackGenerator).",
+                  "links": [
+                    {
+                      "text": "UIFeedbackGenerator",
+                      "type": "developer-documentation-link"
+                    }
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-notification-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-ios-methods-list",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 4,
+              "text": "Notification",
+              "style": {
+                "fontSize": "medium",
+                "fontWeight": "bold",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-notification-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-notification-heading",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Notification haptics provide feedback about the outcome of a task or action, such as depositing a check or unlocking a vehicle.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-notification-haptics-table",
+            "elementType": "table",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-notification-description",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "tableTitle": "Notification Haptics",
+              "columnCount": 2,
+              "rowCount": 3,
+              "headers": [
+                "Play Button",
+                "Description"
+              ],
+              "rows": [
+                {
+                  "rowIndex": 0,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "[Play Button]",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      },
+                      "interactiveElement": {
+                        "type": "button",
+                        "label": "Play",
+                        "action": "Play Success haptic"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Success. Indicates that a task or action has completed.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 1,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "[Play Button]",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      },
+                      "interactiveElement": {
+                        "type": "button",
+                        "label": "Play",
+                        "action": "Play Warning haptic"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Warning. Indicates that a task or action has produced a warning of some kind.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 2,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "[Play Button]",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      },
+                      "interactiveElement": {
+                        "type": "button",
+                        "label": "Play",
+                        "action": "Play Error haptic"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Error. Indicates that an error has occurred.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tableSummary": "Table listing three notification haptic types (Success, Warning, Error) with play buttons and descriptions of when each should be used."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-impact-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-notification-haptics-table",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 4,
+              "text": "Impact",
+              "style": {
+                "fontSize": "medium",
+                "fontWeight": "bold",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-impact-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-impact-heading",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Impact haptics provide a physical metaphor you can use to complement a visual experience. For example, people might feel a tap when a view snaps into place or a thud when two heavy objects collide.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-impact-haptics-table",
+            "elementType": "table",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-impact-description",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "tableTitle": "Impact Haptics",
+              "columnCount": 2,
+              "rowCount": 5,
+              "headers": [
+                "Play Button",
+                "Description"
+              ],
+              "rows": [
+                {
+                  "rowIndex": 0,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "[Play Button]",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      },
+                      "interactiveElement": {
+                        "type": "button",
+                        "label": "Play",
+                        "action": "Play Light impact haptic"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Light. Indicates a collision between small or lightweight UI objects.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 1,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "[Play Button]",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      },
+                      "interactiveElement": {
+                        "type": "button",
+                        "label": "Play",
+                        "action": "Play Medium impact haptic"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Medium. Indicates a collision between medium-sized or medium-weight UI objects.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 2,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "[Play Button]",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      },
+                      "interactiveElement": {
+                        "type": "button",
+                        "label": "Play",
+                        "action": "Play Heavy impact haptic"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Heavy. Indicates a collision between large or heavyweight UI objects.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 3,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "[Play Button]",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      },
+                      "interactiveElement": {
+                        "type": "button",
+                        "label": "Play",
+                        "action": "Play Rigid impact haptic"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Rigid. Indicates a collision between hard or inflexible UI objects.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 4,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "[Play Button]",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      },
+                      "interactiveElement": {
+                        "type": "button",
+                        "label": "Play",
+                        "action": "Play Soft impact haptic"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Soft. Indicates a collision between soft or flexible UI objects.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tableSummary": "Table listing five impact haptic types (Light, Medium, Heavy, Rigid, Soft) with play buttons and descriptions of the collision types each represents."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-selection-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-impact-haptics-table",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 4,
+              "text": "Selection",
+              "style": {
+                "fontSize": "medium",
+                "fontWeight": "bold",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-selection-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-selection-heading",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Selection haptics provide feedback while the values of a UI element are changing.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-selection-haptics-table",
+            "elementType": "table",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-selection-description",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "tableTitle": "Selection Haptics",
+              "columnCount": 2,
+              "rowCount": 1,
+              "headers": [
+                "Play Button",
+                "Description"
+              ],
+              "rows": [
+                {
+                  "rowIndex": 0,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "[Play Button]",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      },
+                      "interactiveElement": {
+                        "type": "button",
+                        "label": "Play",
+                        "action": "Play Selection haptic"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Selection. Indicates that a UI element's values are changing.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tableSummary": "Table listing the Selection haptic type with play button and description of when it should be used for UI value changes."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-selection-haptics-table",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 3,
+              "text": "macOS",
+              "style": {
+                "fontSize": "medium",
+                "fontWeight": "bold",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-macos-heading",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "When a Magic Trackpad is available, your app can provide one of the three following haptic patterns in response to a drag operation or force click.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-haptics-table",
+            "elementType": "table",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-macos-intro",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "tableTitle": "macOS Haptic Feedback Patterns",
+              "columnCount": 2,
+              "rowCount": 3,
+              "headers": [
+                "Haptic feedback pattern",
+                "Description"
+              ],
+              "rows": [
+                {
+                  "rowIndex": 0,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "Alignment",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Indicates the alignment of a dragged item. For example, this pattern could be used in a drawing app when the people drag a shape into alignment with another shape. Other scenarios where this type of feedback could be used might include scaling an object to fit within specific dimensions, positioning an object at a preferred location, or reaching the beginning/end or minimum/maximum of something like a scrubber in a video app.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 1,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "Level change",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Indicates movement between discrete levels of pressure. For example, as people press a fast-forward button on a video player, playback could increase or decrease and haptic feedback could be provided as different levels of pressure are reached.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 2,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "Generic",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Intended for providing general feedback when the other patterns don't apply.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tableSummary": "Table listing three macOS haptic feedback patterns (Alignment, Level change, Generic) with detailed descriptions of use cases for each pattern when using Magic Trackpad."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-developer-guidance",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-macos-haptics-table",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "For developer guidance, see NSHapticFeedbackPerformer.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              },
+              "links": [
+                {
+                  "text": "NSHapticFeedbackPerformer",
+                  "type": "developer-documentation-link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-watchos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-macos-developer-guidance",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 3,
+              "text": "watchOS",
+              "style": {
+                "fontSize": "medium",
+                "fontWeight": "bold",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-watchos-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-watchos-heading",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Apple Watch Series 4 and later provides haptic feedback for the Digital Crown, which gives people a more tactile experience as they scroll through content. By default, the system provides linear haptic detents that people can feel as they rotate the Digital Crown. Some system controls, like table views, provide detents as new items scroll onto the screen. For developer guidance, see WKHapticType.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              },
+              "links": [
+                {
+                  "text": "WKHapticType",
+                  "type": "developer-documentation-link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-watchos-haptics-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-watchos-intro",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "watchOS defines the following set of haptics, each of which conveys a specific meaning to people.",
+              "style": {
+                "fontSize": "normal",
+                "fontWeight": "normal",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-watchos-haptics-list",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-watchos-haptics-intro",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Up"
+                },
+                {
+                  "text": "Down"
+                },
+                {
+                  "text": "Success"
+                },
+                {
+                  "text": "Failure"
+                },
+                {
+                  "text": "Retry"
+                },
+                {
+                  "text": "Start"
+                },
+                {
+                  "text": "Stop"
+                },
+                {
+                  "text": "Click"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-watchos-notification-haptic",
+            "elementType": "table",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-watchos-haptics-list",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "tableTitle": "watchOS Notification Haptic",
+              "columnCount": 2,
+              "rowCount": 1,
+              "headers": [
+                "Play Button",
+                "Description"
+              ],
+              "rows": [
+                {
+                  "rowIndex": 0,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "[Play Button]",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      },
+                      "interactiveElement": {
+                        "type": "button",
+                        "label": "Play",
+                        "action": "Play Notification haptic"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Notification. Tells the person that something significant or out of the ordinary has happened and requires their attention. The system plays this same haptic when a local or remote notification arrives.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tableSummary": "Table showing the watchOS Notification haptic with play button and description explaining it alerts users to significant events requiring attention."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-watchos-notification-haptic",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 2,
+              "text": "Resources",
+              "style": {
+                "fontSize": "large",
+                "fontWeight": "bold",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-related-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-resources-heading",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 3,
+              "text": "Related",
+              "style": {
+                "fontSize": "medium",
+                "fontWeight": "bold",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-related-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-related-heading",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "listType": "unordered",
+              "listStyle": "links",
+              "items": [
+                {
+                  "text": "Feedback",
+                  "type": "internal-link"
+                },
+                {
+                  "text": "Gestures",
+                  "type": "internal-link"
+                },
+                {
+                  "text": "Core Haptics",
+                  "type": "internal-link"
+                },
+                {
+                  "text": "Date Changes",
+                  "type": "internal-link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-developer-documentation-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-related-links",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 3,
+              "text": "Developer documentation",
+              "style": {
+                "fontSize": "medium",
+                "fontWeight": "bold",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-developer-documentation-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-developer-documentation-heading",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "listType": "unordered",
+              "listStyle": "links",
+              "items": [
+                {
+                  "text": "Core Haptics",
+                  "type": "developer-documentation-link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-videos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-developer-documentation-links",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 3,
+              "text": "Videos",
+              "style": {
+                "fontSize": "medium",
+                "fontWeight": "bold",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-video-cards",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-videos-heading",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "listType": "grid",
+              "listStyle": "video-cards",
+              "items": [
+                {
+                  "title": "Practice audio haptic design",
+                  "type": "video-link",
+                  "thumbnail": "Video thumbnail showing abstract waveform visualization"
+                },
+                {
+                  "title": "Introducing Core Haptics",
+                  "type": "video-link",
+                  "thumbnail": "Video thumbnail showing Core Haptics introduction slide"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-changelog-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-video-cards",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "level": 2,
+              "text": "Change log",
+              "style": {
+                "fontSize": "large",
+                "fontWeight": "bold",
+                "color": "black"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-changelog-table",
+            "elementType": "table",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-changelog-heading",
+              "width": "content-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "tableTitle": "Document Change Log",
+              "columnCount": 2,
+              "rowCount": 2,
+              "headers": [
+                "Date",
+                "Description"
+              ],
+              "rows": [
+                {
+                  "rowIndex": 0,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "May 7, 2024",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Added guidance for playing haptics on Apple Pencil Pro.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 1,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "June 21, 2023",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Updated to include guidance for visionOS.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tableSummary": "Change log showing two updates: May 7, 2024 adding Apple Pencil Pro haptics guidance, and June 21, 2023 adding visionOS guidance."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-right-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": "right-column",
+              "y": "top-content",
+              "width": "sidebar-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "type": "page-navigation",
+              "sections": [
+                {
+                  "heading": "Platforms",
+                  "items": [
+                    "iOS",
+                    "iPadOS",
+                    "macOS",
+                    "tvOS",
+                    "visionOS",
+                    "watchOS"
+                  ]
+                },
+                {
+                  "heading": "Tools",
+                  "items": [
+                    "Swift",
+                    "SwiftUI",
+                    "Swift Playground",
+                    "TestFlight",
+                    "Xcode",
+                    "Xcode Cloud",
+                    "SF Symbols"
+                  ]
+                },
+                {
+                  "heading": "Topics & Technologies",
+                  "items": [
+                    "Accessibility",
+                    "Accessories",
+                    "App Extension",
+                    "App Store",
+                    "Audio & Video",
+                    "Augmented Reality",
+                    "Design",
+                    "Distribution",
+                    "Education",
+                    "Fonts",
+                    "Games",
+                    "Health & Fitness",
+                    "In-App Purchase",
+                    "Localization",
+                    "Maps & Location",
+                    "Machine Learning & AI",
+                    "Open Source",
+                    "Security",
+                    "Safari & Web"
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-on-page-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": "right-sidebar-bottom",
+              "y": "below-sidebar-categories",
+              "width": "sidebar-width",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "type": "table-of-contents",
+              "heading": "Playing haptics",
+              "items": [
+                {
+                  "text": "Best practices",
+                  "type": "anchor-link"
+                },
+                {
+                  "text": "Custom haptics",
+                  "type": "anchor-link"
+                },
+                {
+                  "text": "Platform considerations",
+                  "type": "anchor-link"
+                },
+                {
+                  "text": "Resources",
+                  "type": "anchor-link"
+                },
+                {
+                  "text": "Change log",
+                  "type": "anchor-link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer",
+            "elementType": "footer",
+            "boundingBox": {
+              "x": 0,
+              "y": "bottom",
+              "width": "100%",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "sections": [
+                {
+                  "heading": "Resources",
+                  "items": [
+                    {
+                      "text": "Documentation",
+                      "type": "link"
+                    },
+                    {
+                      "text": "Tutorials",
+                      "type": "link"
+                    },
+                    {
+                      "text": "Downloads",
+                      "type": "link"
+                    },
+                    {
+                      "text": "Forums",
+                      "type": "link"
+                    },
+                    {
+                      "text": "Videos",
+                      "type": "link"
+                    }
+                  ]
+                },
+                {
+                  "heading": "Support",
+                  "items": [
+                    {
+                      "text": "Support Articles",
+                      "type": "link"
+                    },
+                    {
+                      "text": "Contact Us",
+                      "type": "link"
+                    },
+                    {
+                      "text": "Bug Reporting",
+                      "type": "link"
+                    },
+                    {
+                      "text": "System Status",
+                      "type": "link"
+                    }
+                  ]
+                },
+                {
+                  "heading": "Account",
+                  "items": [
+                    {
+                      "text": "Apple Developer",
+                      "type": "link"
+                    },
+                    {
+                      "text": "App Store Connect",
+                      "type": "link"
+                    },
+                    {
+                      "text": "Certificates, IDs, & Profiles",
+                      "type": "link"
+                    },
+                    {
+                      "text": "Feedback Assistant",
+                      "type": "link"
+                    }
+                  ]
+                },
+                {
+                  "heading": "Programs",
+                  "items": [
+                    {
+                      "text": "Apple Developer Program",
+                      "type": "link"
+                    },
+                    {
+                      "text": "Apple Developer Enterprise Program",
+                      "type": "link"
+                    },
+                    {
+                      "text": "App Store Small Business Program",
+                      "type": "link"
+                    },
+                    {
+                      "text": "MFi Program",
+                      "type": "link"
+                    },
+                    {
+                      "text": "News Partner Program",
+                      "type": "link"
+                    },
+                    {
+                      "text": "Video Partner Program",
+                      "type": "link"
+                    },
+                    {
+                      "text": "Security Bounty Program",
+                      "type": "link"
+                    },
+                    {
+                      "text": "Security Research Device Program",
+                      "type": "link"
+                    }
+                  ]
+                },
+                {
+                  "heading": "Events",
+                  "items": [
+                    {
+                      "text": "Meet with Apple",
+                      "type": "link"
+                    },
+                    {
+                      "text": "Apple Developer Centers",
+                      "type": "link"
+                    },
+                    {
+                      "text": "App Store Awards",
+                      "type": "link"
+                    },
+                    {
+                      "text": "Apple Design Awards",
+                      "type": "link"
+                    },
+                    {
+                      "text": "Apple Developer Academies",
+                      "type": "link"
+                    },
+                    {
+                      "text": "WWDC",
+                      "type": "link"
+                    }
+                  ]
+                }
+              ],
+              "legalText": "Copyright 2025 Apple Inc. All rights reserved.",
+              "legalLinks": [
+                {
+                  "text": "Terms of Use",
+                  "type": "link"
+                },
+                {
+                  "text": "Privacy Policy",
+                  "type": "link"
+                },
+                {
+                  "text": "Agreements and Guidelines",
+                  "type": "link"
+                }
+              ],
+              "feedbackLink": {
+                "text": "To submit feedback on documentation, visit Feedback Assistant.",
+                "type": "link"
+              },
+              "themeToggle": {
+                "options": [
+                  "Light",
+                  "Dark",
+                  "Auto"
+                ]
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-language-selector",
+            "elementType": "interactive",
+            "boundingBox": {
+              "x": "footer-area",
+              "y": "bottom",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 1,
+            "content": {
+              "type": "dropdown",
+              "label": "Developer Documentation",
+              "currentValue": "English",
+              "purpose": "Language selection for documentation"
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation",
+          "page1-breadcrumb-navigation",
+          "page1-hero-image",
+          "page1-main-title",
+          "page1-main-subtitle",
+          "page1-intro-paragraph",
+          "page1-external-devices-paragraph",
+          "page1-external-devices-list",
+          "page1-best-practices-heading",
+          "page1-best-practice-1",
+          "page1-best-practice-2",
+          "page1-best-practice-3",
+          "page1-best-practice-4",
+          "page1-best-practice-5",
+          "page1-best-practice-6",
+          "page1-best-practice-7",
+          "page1-custom-haptics-heading",
+          "page1-custom-haptics-intro",
+          "page1-building-blocks-intro",
+          "page1-building-blocks-list",
+          "page1-sharpness-intensity-paragraph",
+          "page1-combining-events-paragraph",
+          "page1-platform-considerations-heading",
+          "page1-ios-heading",
+          "page1-ios-intro",
+          "page1-ios-methods-list",
+          "page1-notification-heading",
+          "page1-notification-description",
+          "page1-notification-haptics-table",
+          "page1-impact-heading",
+          "page1-impact-description",
+          "page1-impact-haptics-table",
+          "page1-selection-heading",
+          "page1-selection-description",
+          "page1-selection-haptics-table",
+          "page1-macos-heading",
+          "page1-macos-intro",
+          "page1-macos-haptics-table",
+          "page1-macos-developer-guidance",
+          "page1-watchos-heading",
+          "page1-watchos-intro",
+          "page1-watchos-haptics-intro",
+          "page1-watchos-haptics-list",
+          "page1-watchos-notification-haptic",
+          "page1-resources-heading",
+          "page1-related-heading",
+          "page1-related-links",
+          "page1-developer-documentation-heading",
+          "page1-developer-documentation-links",
+          "page1-videos-heading",
+          "page1-video-cards",
+          "page1-changelog-heading",
+          "page1-changelog-table",
+          "page1-footer"
+        ],
+        "pageSummary": "Apple Developer Documentation page providing comprehensive guidance on implementing haptic feedback across Apple platforms. Covers best practices for using system-provided haptics, creating custom haptic patterns using transient and continuous events with sharpness and intensity controls, and platform-specific implementations for iOS (notification, impact, selection haptics), macOS (Magic Trackpad patterns), and watchOS (Digital Crown haptics and system haptic types)."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": true,
+        "entries": [
+          {
+            "title": "Best practices",
+            "pageNumber": 1
+          },
+          {
+            "title": "Custom haptics",
+            "pageNumber": 1
+          },
+          {
+            "title": "Platform considerations",
+            "pageNumber": 1
+          },
+          {
+            "title": "Resources",
+            "pageNumber": 1
+          },
+          {
+            "title": "Change log",
+            "pageNumber": 1
+          }
+        ]
+      },
+      "runningHeaders": "Apple Developer - Design Guidelines Navigation",
+      "runningFooters": "Apple Developer Site Footer with Resources, Support, Account, Programs, and Events sections",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "introduction",
+          "title": "Introduction",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Introduces haptic feedback capabilities across Apple platforms including iPhone Taptic Engine, Apple Watch, Mac Force Touch trackpad, game controllers, and Apple Pencil Pro."
+        },
+        {
+          "sectionId": "best-practices",
+          "title": "Best practices",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Seven key guidelines for haptic implementation: use documented meanings, maintain consistency, complement other feedback, avoid overuse, prefer short haptics, make optional, and consider impact on other device features."
+        },
+        {
+          "sectionId": "custom-haptics",
+          "title": "Custom haptics",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Explains custom haptic creation using transient events (taps/impulses) and continuous events (sustained vibrations), with control over sharpness and intensity parameters."
+        },
+        {
+          "sectionId": "platform-considerations",
+          "title": "Platform considerations",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "ios-platform",
+              "title": "iOS",
+              "summary": "Covers iOS haptic implementation via standard UI components and UIFeedbackGenerator, detailing notification (success/warning/error), impact (light/medium/heavy/rigid/soft), and selection haptic types."
+            },
+            {
+              "sectionId": "macos-platform",
+              "title": "macOS",
+              "summary": "Describes Magic Trackpad haptic patterns: alignment, level change, and generic feedback for drag operations and force clicks."
+            },
+            {
+              "sectionId": "watchos-platform",
+              "title": "watchOS",
+              "summary": "Details Digital Crown haptic feedback and watchOS haptic types: up, down, success, failure, retry, start, stop, click, and notification."
+            }
+          ],
+          "summary": "Platform-specific guidance for implementing haptics on iOS, macOS, and watchOS with detailed haptic type documentation."
+        },
+        {
+          "sectionId": "resources",
+          "title": "Resources",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Links to related documentation (Feedback, Gestures, Core Haptics, Date Changes), developer documentation, and WWDC videos on haptic design."
+        },
+        {
+          "sectionId": "change-log",
+          "title": "Change log",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Document revision history showing updates for Apple Pencil Pro (May 2024) and visionOS (June 2023) guidance."
+        }
+      ],
+      "documentFlow": "The document begins with an introduction explaining haptic capabilities across Apple's device ecosystem, then provides seven best practices for haptic implementation. It continues with guidance on creating custom haptics using transient and continuous events. Platform-specific sections detail haptic APIs and patterns for iOS (UIFeedbackGenerator), macOS (NSHapticFeedbackPerformer), and watchOS (WKHapticType). The document concludes with related resources, developer documentation links, video references, and a change log."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "Haptics",
+          "definition": "Tactile feedback that engages people's sense of touch, bringing familiarity with the physical world into apps and games",
+          "occurrences": 30
+        },
+        {
+          "term": "Taptic Engine",
+          "definition": "Apple's haptic feedback hardware in Apple Watch that generates haptics for built-in feedback patterns",
+          "occurrences": 1
+        },
+        {
+          "term": "Force Touch trackpad",
+          "definition": "Mac trackpad that can play haptics while people drag content or force click",
+          "occurrences": 1
+        },
+        {
+          "term": "Transient events",
+          "definition": "Brief and compact haptic events that feel like taps or impulses",
+          "occurrences": 2
+        },
+        {
+          "term": "Continuous events",
+          "definition": "Haptic events that feel like sustained vibrations",
+          "occurrences": 2
+        },
+        {
+          "term": "Sharpness",
+          "definition": "A haptic parameter that abstracts the experience into a waveform - can convey soft/rounded/organic or crisp/precise/mechanical sensations",
+          "occurrences": 4
+        },
+        {
+          "term": "Intensity",
+          "definition": "The strength of a haptic feedback",
+          "occurrences": 3
+        },
+        {
+          "term": "UIFeedbackGenerator",
+          "definition": "iOS API for playing predefined haptic patterns in notification, impact, and selection categories",
+          "occurrences": 1
+        },
+        {
+          "term": "NSHapticFeedbackPerformer",
+          "definition": "macOS API for providing haptic feedback patterns with Magic Trackpad",
+          "occurrences": 1
+        },
+        {
+          "term": "WKHapticType",
+          "definition": "watchOS API defining haptic types for Apple Watch",
+          "occurrences": 1
+        },
+        {
+          "term": "Core Haptics",
+          "definition": "Apple framework for creating custom haptic patterns by combining transient and continuous events",
+          "occurrences": 3
+        },
+        {
+          "term": "Digital Crown",
+          "definition": "Apple Watch input device that provides haptic feedback (haptic detents) during rotation on Series 4 and later",
+          "occurrences": 2
+        },
+        {
+          "term": "Apple Pencil Pro",
+          "definition": "Stylus that can provide haptic feedback when connected to certain iPad models",
+          "occurrences": 3
+        }
+      ],
+      "keyFindings": [
+        "System-provided haptic patterns should be used according to their documented meanings to maintain user recognition and consistency",
+        "Haptics should build clear cause-and-effect relationships to avoid confusing users",
+        "Visual, auditory, and tactile feedback should be harmonized for a coherent user experience",
+        "Haptic intensity and sharpness should match accompanying animation intensity and sharpness",
+        "Overusing haptics can make them tiresome - the best haptic experience may be one users don't consciously notice but miss when turned off",
+        "Short haptics for discrete events are preferred in apps; long-running haptics are more appropriate for games",
+        "Haptics should always be optional and not required for app functionality",
+        "Haptic vibrations can impact camera, gyroscope, and microphone functionality",
+        "iOS offers three haptic categories: notification (success/warning/error), impact (light/medium/heavy/rigid/soft), and selection",
+        "macOS Magic Trackpad supports alignment, level change, and generic haptic patterns",
+        "watchOS defines eight haptic types: up, down, success, failure, retry, start, stop, click, plus notification",
+        "Custom haptics can be created using transient events (taps) and continuous events (vibrations) with variable sharpness and intensity"
+      ],
+      "technicalSpecifications": {
+        "supportedPlatforms": [
+          "iOS",
+          "iPadOS",
+          "macOS",
+          "tvOS",
+          "visionOS",
+          "watchOS"
+        ],
+        "iOSHapticTypes": {
+          "notification": [
+            "Success",
+            "Warning",
+            "Error"
+          ],
+          "impact": [
+            "Light",
+            "Medium",
+            "Heavy",
+            "Rigid",
+            "Soft"
+          ],
+          "selection": [
+            "Selection"
+          ]
+        },
+        "macOSHapticPatterns": [
+          "Alignment",
+          "Level change",
+          "Generic"
+        ],
+        "watchOSHapticTypes": [
+          "Up",
+          "Down",
+          "Success",
+          "Failure",
+          "Retry",
+          "Start",
+          "Stop",
+          "Click",
+          "Notification"
+        ],
+        "customHapticBuildingBlocks": [
+          "Transient events",
+          "Continuous events"
+        ],
+        "customHapticParameters": [
+          "Sharpness",
+          "Intensity"
+        ],
+        "developerAPIs": {
+          "iOS": "UIFeedbackGenerator",
+          "macOS": "NSHapticFeedbackPerformer",
+          "watchOS": "WKHapticType",
+          "crossPlatform": "Core Haptics"
+        },
+        "hardwareRequirements": {
+          "appleWatch": "Apple Watch Series 4 or later for Digital Crown haptic feedback",
+          "mac": "Force Touch trackpad or Magic Trackpad",
+          "iPad": "Certain models for Apple Pencil Pro haptic support"
+        }
+      },
+      "designDecisions": [
+        {
+          "decision": "Use system haptics for standard interactions",
+          "rationale": "People recognize standard haptics because the system plays them consistently"
+        },
+        {
+          "decision": "Match haptic intensity to visual animation intensity",
+          "rationale": "Creates harmony between visual, auditory, and tactile feedback for a more natural experience"
+        },
+        {
+          "decision": "Keep app haptics short and discrete",
+          "rationale": "Long-running haptics can dilute feedback meaning and distract from tasks; they're better suited for games"
+        },
+        {
+          "decision": "Always provide haptic opt-out",
+          "rationale": "Users should be able to enjoy the app without haptics; some may find them disruptive"
+        },
+        {
+          "decision": "Test haptics with real users",
+          "rationale": "User testing helps discover the right balance that most people appreciate"
+        }
+      ]
+    }
+  }
+}

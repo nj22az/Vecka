@@ -1,0 +1,1305 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Positioning content relative to the safe area | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "safe area",
+        "UIKit",
+        "layout",
+        "constraints",
+        "safeAreaLayoutGuide",
+        "safeAreaInsets",
+        "additionalSafeAreaInsets",
+        "iOS",
+        "view controller",
+        "Auto Layout"
+      ],
+      "summary": "Apple Developer Documentation article explaining how to position views within the visible portion of the interface using safe areas. Covers using safeAreaLayoutGuide and safeAreaInsets properties, and demonstrates how to extend safe areas for custom container view controllers.",
+      "sourceUrl": "https://developer.apple.com/documentation/uikit/view_layout/positioning_content_relative_to_the_safe_area",
+      "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+      "documentationLanguage": "Swift"
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": null,
+          "height": null,
+          "unit": "points"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF",
+        "layout": {
+          "type": "multi-column",
+          "columns": 2,
+          "margins": {
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": "100%",
+              "height": 50
+            },
+            "zIndex": 100,
+            "content": {
+              "type": "header-navigation",
+              "items": [
+                {
+                  "icon": "Apple logo",
+                  "label": "Developer",
+                  "type": "home-link"
+                },
+                {
+                  "label": "News",
+                  "type": "nav-link"
+                },
+                {
+                  "label": "Discover",
+                  "type": "nav-link"
+                },
+                {
+                  "label": "Design",
+                  "type": "nav-link"
+                },
+                {
+                  "label": "Develop",
+                  "type": "nav-link"
+                },
+                {
+                  "label": "Distribute",
+                  "type": "nav-link"
+                },
+                {
+                  "label": "Support",
+                  "type": "nav-link"
+                },
+                {
+                  "label": "Account",
+                  "type": "nav-link"
+                },
+                {
+                  "icon": "magnifying glass",
+                  "type": "search-button"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-documentation-header",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 0,
+              "y": 50,
+              "width": "100%",
+              "height": 30
+            },
+            "zIndex": 99,
+            "content": {
+              "text": "Documentation",
+              "level": 1,
+              "fontWeight": "bold",
+              "additionalElements": [
+                {
+                  "label": "Language: Swift",
+                  "type": "language-selector",
+                  "position": "right"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-breadcrumb",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 200,
+              "y": 80,
+              "width": 400,
+              "height": 20
+            },
+            "zIndex": 98,
+            "content": {
+              "type": "breadcrumb",
+              "items": [
+                {
+                  "label": "UIKit",
+                  "link": true
+                },
+                {
+                  "label": "View layout",
+                  "link": true
+                },
+                {
+                  "label": "Positioning content relative to the safe area",
+                  "link": false,
+                  "current": true
+                }
+              ],
+              "separator": "/"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 80,
+              "width": 200,
+              "height": 600
+            },
+            "zIndex": 50,
+            "content": {
+              "type": "sidebar-navigation",
+              "sections": [
+                {
+                  "header": "< All Technologies",
+                  "collapsible": true
+                },
+                {
+                  "header": "UIKit",
+                  "items": [
+                    {
+                      "label": "Positioning content relative to t...",
+                      "icon": "document",
+                      "expandable": true,
+                      "current": true
+                    }
+                  ]
+                },
+                {
+                  "items": [
+                    {
+                      "label": "NSLayoutConstraint",
+                      "icon": "C",
+                      "iconType": "class"
+                    },
+                    {
+                      "label": "UILayoutSupport",
+                      "icon": "Pr",
+                      "iconType": "protocol"
+                    }
+                  ]
+                },
+                {
+                  "header": "Layout guides",
+                  "items": [
+                    {
+                      "label": "UILayoutGuide",
+                      "icon": "C",
+                      "iconType": "class"
+                    },
+                    {
+                      "label": "NSLayoutDimension",
+                      "icon": "C",
+                      "iconType": "class"
+                    }
+                  ]
+                },
+                {
+                  "header": "Anchors",
+                  "items": [
+                    {
+                      "label": "NSLayoutAnchor",
+                      "icon": "C",
+                      "iconType": "class"
+                    },
+                    {
+                      "label": "NSLayoutXAxisAnchor",
+                      "icon": "C",
+                      "iconType": "class"
+                    },
+                    {
+                      "label": "NSLayoutYAxisAnchor",
+                      "icon": "C",
+                      "iconType": "class"
+                    },
+                    {
+                      "label": "var NSLAYOUTANCHOR_H: Int32",
+                      "icon": "V",
+                      "iconType": "variable"
+                    }
+                  ]
+                },
+                {
+                  "header": "Appearance customization",
+                  "expandable": true,
+                  "expanded": false
+                },
+                {
+                  "header": "Animation and haptics",
+                  "expandable": true,
+                  "expanded": false
+                },
+                {
+                  "header": "Windows and screens",
+                  "expandable": true,
+                  "expanded": false
+                },
+                {
+                  "header": "User interactions",
+                  "items": []
+                },
+                {
+                  "header": "Touches, presses, and gestures",
+                  "expandable": true,
+                  "expanded": false
+                },
+                {
+                  "header": "Menus and shortcuts",
+                  "expandable": true,
+                  "expanded": false
+                },
+                {
+                  "header": "Drag and drop",
+                  "expandable": true,
+                  "expanded": false
+                }
+              ],
+              "filterInput": {
+                "placeholder": "Filter",
+                "icon": "/"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-article-type-label",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 220,
+              "y": 100,
+              "width": 50,
+              "height": 20
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Article",
+              "style": "label",
+              "color": "gray"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-main-title",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 220,
+              "y": 120,
+              "width": 500,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Positioning content relative to the safe area",
+              "level": 1,
+              "fontWeight": "bold",
+              "fontSize": "large"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-subtitle",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 220,
+              "y": 180,
+              "width": 500,
+              "height": 30
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Position views so that they aren't obstructed by other content.",
+              "fontStyle": "italic",
+              "color": "gray"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-overview-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 220,
+              "y": 220,
+              "width": 100,
+              "height": 30
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Overview",
+              "level": 2,
+              "fontWeight": "bold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-overview-paragraph-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 220,
+              "y": 250,
+              "width": 600,
+              "height": 100
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Safe areas help you place your views within the visible portion of the overall interface. UIKit-defined view controllers may position special views on top of your content. For example, a navigation controller displays a navigation bar on top of the underlying view controller's content. Even when such views are partially transparent, they still occlude the content that's underneath them. In tvOS, the safe area also includes the screen's overscan insets, which represent the area covered by the screen's bezel.",
+              "formatting": {
+                "mentions": [
+                  {
+                    "term": "UIKit",
+                    "type": "framework"
+                  },
+                  {
+                    "term": "tvOS",
+                    "type": "platform"
+                  }
+                ]
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-overview-paragraph-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 220,
+              "y": 350,
+              "width": 600,
+              "height": 80
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Use safe areas as an aid to laying out your content. Each view has its own layout guide (accessible from the safeAreaLayoutGuide property) that you can use to create constraints for items inside the view. If you aren't using Auto Layout to position your views, you can obtain the raw inset values from the view's safeAreaInsets property.",
+              "formatting": {
+                "inlineCode": [
+                  {
+                    "text": "safeAreaLayoutGuide",
+                    "type": "property",
+                    "link": true
+                  },
+                  {
+                    "text": "safeAreaInsets",
+                    "type": "property",
+                    "link": true
+                  }
+                ]
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-overview-paragraph-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 220,
+              "y": 430,
+              "width": 600,
+              "height": 30
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "The following image shows two different devices with a view of the Calendar app and the safe area associated with each one."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-calendar-screenshot-image",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-calendar-screenshot-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": 220,
+              "y": 460,
+              "width": 600,
+              "height": 400
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "screenshot",
+              "description": "Side-by-side comparison of two iPhone devices showing the iOS Calendar app with safe area indicators. The left device shows an iPhone with a notch (likely iPhone X or later), and the right device shows an iPhone without a notch (or with Dynamic Island). Both devices display the Calendar app in a monthly view with various calendar events listed below.",
+              "subjects": [
+                "iPhone with notch",
+                "iPhone without notch or with Dynamic Island",
+                "Calendar app interface",
+                "Safe area boundaries"
+              ],
+              "composition": "Two iPhone device frames positioned side by side horizontally, each showing the Calendar app with magenta/pink highlighted safe area regions",
+              "colorPalette": [
+                "#FFFFFF (white background)",
+                "#FF00FF (magenta safe area highlight)",
+                "#007AFF (iOS blue accent)",
+                "#000000 (black device frames)",
+                "#F5F5F5 (light gray UI elements)"
+              ],
+              "technicalDetails": {
+                "software": "iOS Calendar app",
+                "state": "Monthly calendar view with events list",
+                "visibleMonth": "October 2022",
+                "deviceTypes": [
+                  "iPhone with notch (Face ID model)",
+                  "iPhone (newer model)"
+                ]
+              },
+              "textInImage": [
+                "< Oct 2022",
+                "S M T W T F S (weekday headers)",
+                "2-31 (calendar day numbers)",
+                "Drop off dry cleaning",
+                "Project Sync",
+                "Lunch with Eric",
+                "Team Meeting",
+                "Dinner with Friends",
+                "Today",
+                "Calendars",
+                "Safe area (label pointing to highlighted region)",
+                "5 min",
+                "1 hr",
+                "9:47 (status bar time)"
+              ],
+              "calendarEvents": [
+                {
+                  "title": "Drop off dry cleaning",
+                  "color": "yellow"
+                },
+                {
+                  "title": "Project Sync",
+                  "color": "green"
+                },
+                {
+                  "title": "Lunch with Eric",
+                  "color": "blue"
+                },
+                {
+                  "title": "Team Meeting",
+                  "color": "purple"
+                },
+                {
+                  "title": "Dinner with Friends",
+                  "color": "green"
+                }
+              ],
+              "safeAreaVisualization": {
+                "highlightColor": "magenta/pink semi-transparent",
+                "leftDevice": {
+                  "topInset": "Accounts for notch and status bar",
+                  "bottomInset": "Accounts for home indicator",
+                  "labelPosition": "Left side with arrow pointing to content area"
+                },
+                "rightDevice": {
+                  "topInset": "Accounts for Dynamic Island or status bar",
+                  "bottomInset": "Accounts for home indicator",
+                  "labelPosition": "Right side with arrow pointing to content area"
+                }
+              },
+              "contextualRelevance": "Demonstrates how safe areas differ between device form factors and how the Calendar app's content is positioned within the safe area boundaries, avoiding the notch, Dynamic Island, and home indicator regions"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-overview-paragraph-3",
+                "relationshipType": "referenced-by"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-extend-safe-area-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 220,
+              "y": 880,
+              "width": 500,
+              "height": 40
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Extend the safe area to include custom views",
+              "level": 2,
+              "fontWeight": "bold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-extend-paragraph-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 220,
+              "y": 920,
+              "width": 600,
+              "height": 100
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Your container view controller can display its own content views over the views of an embedded child view controller. In this situation, update the child view controller's safe area to exclude the areas covered by the container view controller's content views. UIKit container view controllers already adjust the safe area of their child view controllers to account for content views. For example, navigation controllers extend the safe area of their child view controllers to account for the navigation bar."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-extend-paragraph-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 220,
+              "y": 1020,
+              "width": 600,
+              "height": 80
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "To extend the safe area of an embedded child view controller, modify its additionalSafeAreaInsets property. Suppose you define a container view controller that displays custom views along the bottom and right edges of the screen, as shown in the following image. Because the child view controller's content is underneath the custom views, you must extend the bottom and right insets of the child view controller's safe area to account for those views.",
+              "formatting": {
+                "inlineCode": [
+                  {
+                    "text": "additionalSafeAreaInsets",
+                    "type": "property",
+                    "link": true
+                  }
+                ]
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-custom-views-diagram",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-custom-views-diagram",
+            "elementType": "diagram",
+            "boundingBox": {
+              "x": 300,
+              "y": 1100,
+              "width": 400,
+              "height": 300
+            },
+            "zIndex": 10,
+            "content": {
+              "diagramType": "architecture",
+              "title": "Container view controller with custom views",
+              "description": "A schematic diagram showing an iPhone screen layout with a container view controller that has custom views overlaying the bottom and right edges of the screen. The diagram illustrates how the safe area must be extended to account for these custom overlay views.",
+              "nodes": [
+                {
+                  "nodeId": "device-frame",
+                  "label": "iPhone device frame",
+                  "shape": "rounded-rectangle",
+                  "style": {
+                    "fillColor": "#FFFFFF",
+                    "borderColor": "#000000",
+                    "textColor": "#000000"
+                  },
+                  "position": {
+                    "x": "center",
+                    "y": "center"
+                  },
+                  "semanticRole": "Device container showing the overall screen boundaries"
+                },
+                {
+                  "nodeId": "status-bar",
+                  "label": "Status bar",
+                  "shape": "rectangle",
+                  "style": {
+                    "fillColor": "#E0E0E0",
+                    "borderColor": "#CCCCCC",
+                    "textColor": "#000000"
+                  },
+                  "position": {
+                    "x": "top",
+                    "y": "0"
+                  },
+                  "semanticRole": "System status bar at top of screen"
+                },
+                {
+                  "nodeId": "safe-area",
+                  "label": "Safe area",
+                  "shape": "rectangle",
+                  "style": {
+                    "fillColor": "#FFB6C1 (light pink)",
+                    "borderColor": "none",
+                    "textColor": "#000000"
+                  },
+                  "position": {
+                    "x": "left-center",
+                    "y": "center"
+                  },
+                  "semanticRole": "The adjusted safe area after accounting for custom views, shown in pink/magenta"
+                },
+                {
+                  "nodeId": "custom-view-right",
+                  "label": "Custom views",
+                  "shape": "rectangle",
+                  "style": {
+                    "fillColor": "#A0A0A0 (gray)",
+                    "borderColor": "#808080",
+                    "textColor": "#000000"
+                  },
+                  "position": {
+                    "x": "right edge",
+                    "y": "full height"
+                  },
+                  "semanticRole": "Custom view displayed along the right edge of the screen by the container view controller"
+                },
+                {
+                  "nodeId": "custom-view-bottom",
+                  "label": "Custom views",
+                  "shape": "rectangle",
+                  "style": {
+                    "fillColor": "#A0A0A0 (gray)",
+                    "borderColor": "#808080",
+                    "textColor": "#000000"
+                  },
+                  "position": {
+                    "x": "bottom edge",
+                    "y": "bottom"
+                  },
+                  "semanticRole": "Custom view displayed along the bottom edge of the screen by the container view controller"
+                }
+              ],
+              "connections": [],
+              "annotations": [
+                {
+                  "text": "Safe area",
+                  "targetNodeId": "safe-area",
+                  "style": "label with arrow",
+                  "position": "left of safe area"
+                },
+                {
+                  "text": "Custom views",
+                  "targetNodeId": "custom-view-right",
+                  "style": "label with arrow",
+                  "position": "right of custom view"
+                }
+              ],
+              "legend": {
+                "present": false,
+                "entries": []
+              },
+              "narrativeWalkthrough": "The diagram shows an iPhone screen with the main content area in pink (representing the safe area), a gray vertical bar along the right edge (custom view), and a gray horizontal bar along the bottom edge (custom view). Labels with arrows point to the 'Safe area' on the left and 'Custom views' on the right. This illustrates that when a container view controller adds its own views over the child's content, the safe area must be extended inward to prevent the child's content from being hidden under these overlay views."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-extend-paragraph-2",
+                "relationshipType": "referenced-by"
+              },
+              {
+                "relatedElementId": "page1-code-block",
+                "relationshipType": "referenced-by"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-code-intro-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 220,
+              "y": 1400,
+              "width": 600,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "The following code shows the viewDidAppear(_:) method of the container view controller that extends the safe area of its child view controller to account for the custom views, as shown in the image. Make your modifications in this method because the safe area insets for a view aren't accurate until the view is added to a view hierarchy.",
+              "formatting": {
+                "inlineCode": [
+                  {
+                    "text": "viewDidAppear(_:)",
+                    "type": "method",
+                    "link": true
+                  }
+                ]
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-code-block",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-code-block",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 220,
+              "y": 1460,
+              "width": 600,
+              "height": 300
+            },
+            "zIndex": 10,
+            "content": {
+              "language": "Swift",
+              "code": "override func viewDidAppear(_ animated: Bool) {\n    var newSafeArea = UIEdgeInsets()\n    // Adjust the safe area to accommodate \n    // the width of the side view.\n    if let sideViewWidth = sideView?.bounds.size.width {\n        newSafeArea.right += sideViewWidth\n    }\n    // Adjust the safe area to accommodate \n    // the height of the bottom view.\n    if let bottomViewHeight = bottomView?.bounds.size.height {\n        newSafeArea.bottom += bottomViewHeight\n    }\n    // Adjust the safe area insets of the \n    // embedded child view controller.\n    let child = self.childViewControllers[0]\n    child.additionalSafeAreaInsets = newSafeArea\n}",
+              "syntaxHighlighting": {
+                "keywords": [
+                  "override",
+                  "func",
+                  "var",
+                  "if",
+                  "let"
+                ],
+                "types": [
+                  "Bool",
+                  "UIEdgeInsets"
+                ],
+                "properties": [
+                  "sideView",
+                  "bounds",
+                  "size",
+                  "width",
+                  "bottomView",
+                  "height",
+                  "right",
+                  "bottom",
+                  "childViewControllers",
+                  "additionalSafeAreaInsets"
+                ],
+                "methods": [
+                  "viewDidAppear"
+                ],
+                "comments": [
+                  "// Adjust the safe area to accommodate",
+                  "// the width of the side view.",
+                  "// Adjust the safe area to accommodate",
+                  "// the height of the bottom view.",
+                  "// Adjust the safe area insets of the",
+                  "// embedded child view controller."
+                ]
+              },
+              "explanation": "This code demonstrates how to extend the safe area of a child view controller when the container view controller has custom overlay views. The method creates a UIEdgeInsets struct, adds the width of a right-side custom view to the right inset, adds the height of a bottom custom view to the bottom inset, then assigns these additional insets to the child view controller's additionalSafeAreaInsets property.",
+              "codeStyle": {
+                "backgroundColor": "#F5F5F7",
+                "fontFamily": "SF Mono, monospace",
+                "fontSize": "14px"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-custom-views-diagram",
+                "relationshipType": "implements"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-see-also-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 220,
+              "y": 1780,
+              "width": 100,
+              "height": 30
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "See Also",
+              "level": 2,
+              "fontWeight": "bold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-constraints-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 220,
+              "y": 1820,
+              "width": 150,
+              "height": 25
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Constraints",
+              "level": 3,
+              "fontWeight": "semibold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-item-1",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 220,
+              "y": 1850,
+              "width": 600,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "icon": "document icon",
+                  "title": "Positioning content within layout margins",
+                  "link": true,
+                  "description": "Position views so that they aren't crowded by other content."
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-item-2",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 220,
+              "y": 1910,
+              "width": 600,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "definition",
+              "items": [
+                {
+                  "term": "class NSLayoutConstraint",
+                  "termType": "class",
+                  "icon": "C",
+                  "definition": "The relationship between two user interface objects that must be satisfied by the constraint-based layout system.",
+                  "link": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-item-3",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 220,
+              "y": 1970,
+              "width": 600,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "definition",
+              "items": [
+                {
+                  "term": "protocol UILayoutSupport",
+                  "termType": "protocol",
+                  "icon": "Pr",
+                  "definition": "A set of methods that provide layout support and access to layout anchors.",
+                  "link": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 2100,
+              "width": "100%",
+              "height": 400
+            },
+            "zIndex": 5,
+            "content": {
+              "type": "footer",
+              "sections": [
+                {
+                  "header": "Platforms",
+                  "items": [
+                    "iOS",
+                    "iPadOS",
+                    "macOS",
+                    "tvOS",
+                    "visionOS",
+                    "watchOS"
+                  ]
+                },
+                {
+                  "header": "Tools",
+                  "items": [
+                    "Swift",
+                    "SwiftUI",
+                    "Swift Playground",
+                    "TestFlight",
+                    "Xcode",
+                    "Xcode Cloud",
+                    "SF Symbols"
+                  ]
+                },
+                {
+                  "header": "Topics & Technologies",
+                  "items": [
+                    "Accessibility",
+                    "Accessories",
+                    "App Extension",
+                    "App Store",
+                    "Audio & Video",
+                    "Augmented Reality",
+                    "Design",
+                    "Distribution",
+                    "Education",
+                    "Fonts",
+                    "Games",
+                    "Health & Fitness",
+                    "In-App Purchase",
+                    "Localization",
+                    "Maps & Location",
+                    "Machine Learning & AI",
+                    "Open Source",
+                    "Security",
+                    "Safari & Web"
+                  ]
+                },
+                {
+                  "header": "Resources",
+                  "items": [
+                    "Documentation",
+                    "Tutorials",
+                    "Downloads",
+                    "Forums",
+                    "Videos"
+                  ]
+                },
+                {
+                  "header": "Support",
+                  "items": [
+                    "Support Articles",
+                    "Contact Us",
+                    "Bug Reporting",
+                    "System Status"
+                  ]
+                },
+                {
+                  "header": "Account",
+                  "items": [
+                    "Apple Developer",
+                    "App Store Connect",
+                    "Certificates, IDs, & Profiles",
+                    "Feedback Assistant"
+                  ]
+                },
+                {
+                  "header": "Programs",
+                  "items": [
+                    "Apple Developer Program",
+                    "Apple Developer Enterprise Program",
+                    "App Store Small Business Program",
+                    "MFi Program",
+                    "News Partner Program",
+                    "Video Partner Program",
+                    "Security Bounty Program",
+                    "Security Research Device Program"
+                  ]
+                },
+                {
+                  "header": "Events",
+                  "items": [
+                    "Meet with Apple",
+                    "Apple Developer Centers",
+                    "App Store Awards",
+                    "Apple Design Awards",
+                    "Apple Developer Academies",
+                    "WWDC"
+                  ]
+                }
+              ],
+              "feedbackLink": {
+                "text": "To submit feedback on documentation, visit Feedback Assistant.",
+                "url": "Feedback Assistant"
+              },
+              "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+              "legalLinks": [
+                "Terms of Use",
+                "Privacy Policy",
+                "Agreements and Guidelines"
+              ],
+              "themeToggle": {
+                "options": [
+                  "Light",
+                  "Dark",
+                  "Auto"
+                ],
+                "currentSelection": "Auto"
+              }
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation",
+          "page1-documentation-header",
+          "page1-breadcrumb",
+          "page1-article-type-label",
+          "page1-main-title",
+          "page1-subtitle",
+          "page1-overview-heading",
+          "page1-overview-paragraph-1",
+          "page1-overview-paragraph-2",
+          "page1-overview-paragraph-3",
+          "page1-calendar-screenshot-image",
+          "page1-extend-safe-area-heading",
+          "page1-extend-paragraph-1",
+          "page1-extend-paragraph-2",
+          "page1-custom-views-diagram",
+          "page1-code-intro-paragraph",
+          "page1-code-block",
+          "page1-see-also-heading",
+          "page1-constraints-heading",
+          "page1-see-also-item-1",
+          "page1-see-also-item-2",
+          "page1-see-also-item-3",
+          "page1-footer"
+        ],
+        "pageSummary": "This page is an Apple Developer Documentation article explaining how to position content relative to the safe area in UIKit. It covers the concept of safe areas, how to use safeAreaLayoutGuide and safeAreaInsets properties, demonstrates with screenshots how safe areas appear on different iPhone models, and provides code for extending safe areas when using custom container view controllers with overlay views."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": false,
+        "entries": []
+      },
+      "runningHeaders": "Documentation - Apple Developer",
+      "runningFooters": "Copyright 2025 Apple Inc. All rights reserved.",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "overview",
+          "title": "Overview",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Introduces the concept of safe areas in UIKit, explaining that they help position views within the visible portion of the interface, avoiding system UI elements like navigation bars. Covers safeAreaLayoutGuide and safeAreaInsets properties."
+        },
+        {
+          "sectionId": "extend-safe-area",
+          "title": "Extend the safe area to include custom views",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Explains how container view controllers can extend safe areas for child view controllers using additionalSafeAreaInsets when displaying custom overlay views. Includes code example showing implementation in viewDidAppear method."
+        },
+        {
+          "sectionId": "see-also",
+          "title": "See Also - Constraints",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Lists related documentation including Positioning content within layout margins, NSLayoutConstraint class, and UILayoutSupport protocol."
+        }
+      ],
+      "documentFlow": "The document follows a standard Apple documentation structure: it begins with a title and brief description, followed by an Overview section that introduces the core concept with visual examples. It then progresses to a more advanced topic (extending safe areas for custom views) with both a diagram and code example. Finally, it provides related documentation links in the See Also section."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "safe area",
+          "definition": "The portion of a view that is guaranteed to be visible and not obscured by system UI elements like navigation bars, tab bars, the notch, or home indicator.",
+          "occurrences": 15
+        },
+        {
+          "term": "safeAreaLayoutGuide",
+          "definition": "A UILayoutGuide property on UIView that provides layout anchors for the safe area, used to create Auto Layout constraints.",
+          "occurrences": 2
+        },
+        {
+          "term": "safeAreaInsets",
+          "definition": "A UIEdgeInsets property on UIView containing the raw inset values for the safe area, useful when not using Auto Layout.",
+          "occurrences": 3
+        },
+        {
+          "term": "additionalSafeAreaInsets",
+          "definition": "A property on UIViewController that allows you to extend the safe area insets of a child view controller to account for custom overlay views.",
+          "occurrences": 3
+        },
+        {
+          "term": "overscan insets",
+          "definition": "In tvOS, the area covered by the screen's bezel that is included in the safe area calculation.",
+          "occurrences": 1
+        },
+        {
+          "term": "UIEdgeInsets",
+          "definition": "A struct with top, left, bottom, and right CGFloat values used to define insets from edges.",
+          "occurrences": 1
+        },
+        {
+          "term": "container view controller",
+          "definition": "A view controller that manages and coordinates the presentation of one or more child view controllers.",
+          "occurrences": 4
+        },
+        {
+          "term": "viewDidAppear(_:)",
+          "definition": "A UIViewController lifecycle method called after the view has been added to the view hierarchy, making it the appropriate place to modify safe area insets.",
+          "occurrences": 2
+        }
+      ],
+      "keyFindings": [
+        "Safe areas help position views within the visible portion of the interface, avoiding obstruction by system UI elements.",
+        "Each view has its own safeAreaLayoutGuide for Auto Layout and safeAreaInsets for manual positioning.",
+        "tvOS safe areas include overscan insets to account for TV bezels.",
+        "UIKit container view controllers automatically adjust child view controller safe areas.",
+        "Custom container view controllers must manually extend safe areas using additionalSafeAreaInsets.",
+        "Safe area modifications should be made in viewDidAppear(_:) because insets aren't accurate until the view is in the hierarchy.",
+        "Navigation controllers automatically extend safe areas to account for the navigation bar."
+      ],
+      "technicalSpecifications": {
+        "platforms": [
+          "iOS",
+          "iPadOS",
+          "macOS",
+          "tvOS",
+          "visionOS",
+          "watchOS"
+        ],
+        "frameworks": [
+          "UIKit"
+        ],
+        "minimumRequirements": "iOS 11.0+ (when safe areas were introduced)",
+        "relatedAPIs": [
+          "safeAreaLayoutGuide",
+          "safeAreaInsets",
+          "additionalSafeAreaInsets",
+          "UIEdgeInsets",
+          "NSLayoutConstraint",
+          "UILayoutSupport",
+          "UILayoutGuide",
+          "viewDidAppear(_:)"
+        ]
+      },
+      "designDecisions": [
+        {
+          "decision": "Use viewDidAppear for safe area modifications",
+          "rationale": "Safe area insets are not accurate until the view is added to a view hierarchy"
+        },
+        {
+          "decision": "Extend safe areas for custom overlay views",
+          "rationale": "Child view controller content should not be hidden under container's custom views"
+        }
+      ],
+      "codeExamples": [
+        {
+          "title": "Extending safe area for custom views",
+          "language": "Swift",
+          "purpose": "Demonstrates how to modify additionalSafeAreaInsets to account for custom overlay views in a container view controller",
+          "fullCode": "override func viewDidAppear(_ animated: Bool) {\n    var newSafeArea = UIEdgeInsets()\n    // Adjust the safe area to accommodate \n    // the width of the side view.\n    if let sideViewWidth = sideView?.bounds.size.width {\n        newSafeArea.right += sideViewWidth\n    }\n    // Adjust the safe area to accommodate \n    // the height of the bottom view.\n    if let bottomViewHeight = bottomView?.bounds.size.height {\n        newSafeArea.bottom += bottomViewHeight\n    }\n    // Adjust the safe area insets of the \n    // embedded child view controller.\n    let child = self.childViewControllers[0]\n    child.additionalSafeAreaInsets = newSafeArea\n}"
+        }
+      ]
+    },
+    "links": {
+      "internalLinks": [
+        {
+          "text": "safeAreaLayoutGuide",
+          "url": "/documentation/uikit/uiview/safearealayoutguide",
+          "context": "Property reference"
+        },
+        {
+          "text": "safeAreaInsets",
+          "url": "/documentation/uikit/uiview/safeareainsets",
+          "context": "Property reference"
+        },
+        {
+          "text": "additionalSafeAreaInsets",
+          "url": "/documentation/uikit/uiviewcontroller/additionalsafeareainsets",
+          "context": "Property reference"
+        },
+        {
+          "text": "viewDidAppear(_:)",
+          "url": "/documentation/uikit/uiviewcontroller/viewdidappear",
+          "context": "Method reference"
+        },
+        {
+          "text": "Positioning content within layout margins",
+          "url": "/documentation/uikit/view_layout/positioning_content_within_layout_margins",
+          "context": "Related article"
+        },
+        {
+          "text": "NSLayoutConstraint",
+          "url": "/documentation/uikit/nslayoutconstraint",
+          "context": "Related class"
+        },
+        {
+          "text": "UILayoutSupport",
+          "url": "/documentation/uikit/uilayoutsupport",
+          "context": "Related protocol"
+        },
+        {
+          "text": "UILayoutGuide",
+          "url": "/documentation/uikit/uilayoutguide",
+          "context": "Sidebar navigation"
+        },
+        {
+          "text": "NSLayoutDimension",
+          "url": "/documentation/uikit/nslayoutdimension",
+          "context": "Sidebar navigation"
+        },
+        {
+          "text": "NSLayoutAnchor",
+          "url": "/documentation/uikit/nslayoutanchor",
+          "context": "Sidebar navigation"
+        },
+        {
+          "text": "NSLayoutXAxisAnchor",
+          "url": "/documentation/uikit/nslayoutxaxisanchor",
+          "context": "Sidebar navigation"
+        },
+        {
+          "text": "NSLayoutYAxisAnchor",
+          "url": "/documentation/uikit/nslayoutyaxisanchor",
+          "context": "Sidebar navigation"
+        }
+      ],
+      "externalLinks": [
+        {
+          "text": "Feedback Assistant",
+          "url": "https://feedbackassistant.apple.com",
+          "context": "Documentation feedback"
+        }
+      ]
+    },
+    "accessibilityNotes": {
+      "imagesWithAltText": [
+        {
+          "imageId": "page1-calendar-screenshot-image",
+          "altTextProvided": false,
+          "suggestedAltText": "Two iPhone devices showing the Calendar app with safe area regions highlighted in pink, demonstrating how safe areas differ between iPhone models with and without notches"
+        },
+        {
+          "imageId": "page1-custom-views-diagram",
+          "altTextProvided": false,
+          "suggestedAltText": "Diagram of an iPhone screen showing a container view controller layout with custom views on the right and bottom edges, and the adjusted safe area highlighted in pink"
+        }
+      ],
+      "codeBlockAccessibility": {
+        "languageIdentified": true,
+        "commentsProvided": true
+      }
+    }
+  }
+}

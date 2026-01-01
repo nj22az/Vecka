@@ -1,0 +1,551 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Dark Mode | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "source": "Apple Human Interface Guidelines",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/dark-mode",
+      "lastUpdated": "2024-08-06",
+      "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+      "documentType": "design-guidelines",
+      "primaryLanguage": "en",
+      "keywords": [
+        "dark mode",
+        "appearance",
+        "color palette",
+        "system colors",
+        "background colors",
+        "accessibility",
+        "iOS",
+        "iPadOS",
+        "macOS",
+        "tvOS",
+        "vibrancy",
+        "contrast"
+      ],
+      "summary": "Apple's official Human Interface Guidelines for implementing Dark Mode, a systemwide appearance setting that uses a dark color palette to provide comfortable viewing in low-light environments. The document covers best practices, color adaptations, icons and images, text legibility, and platform-specific considerations."
+    },
+    "supportedPlatforms": [
+      {
+        "platform": "iOS",
+        "supported": true,
+        "notes": "Full Dark Mode support with base and elevated background colors"
+      },
+      {
+        "platform": "iPadOS",
+        "supported": true,
+        "notes": "Full Dark Mode support with base and elevated background colors"
+      },
+      {
+        "platform": "macOS",
+        "supported": true,
+        "notes": "Full Dark Mode support with desktop tinting feature"
+      },
+      {
+        "platform": "tvOS",
+        "supported": true,
+        "notes": "No additional considerations mentioned"
+      },
+      {
+        "platform": "visionOS",
+        "supported": false,
+        "notes": "Dark Mode is not supported"
+      },
+      {
+        "platform": "watchOS",
+        "supported": false,
+        "notes": "Dark Mode is not supported"
+      }
+    ],
+    "definition": {
+      "description": "Dark Mode is a systemwide appearance setting that uses a dark color palette to provide a comfortable viewing experience tailored for low-light environments.",
+      "userBehavior": "In iOS, iPadOS, macOS, and tvOS, people often choose Dark Mode as their default interface style, and they generally expect all apps and games to respect their preference.",
+      "systemBehavior": "In Dark Mode, the system uses a dark color palette for all screens, views, menus, and controls, and may also use greater perceptual contrast to make foreground content stand out against the darker backgrounds."
+    },
+    "bestPractices": {
+      "guidelines": [
+        {
+          "id": "bp-001",
+          "rule": "Avoid offering an app-specific appearance setting",
+          "rationale": "An app-specific appearance mode option creates more work for people because they have to adjust more than one setting to get the appearance they want. Worse, they may think your app is broken because it doesn't respond to their systemwide appearance choice.",
+          "priority": "high"
+        },
+        {
+          "id": "bp-002",
+          "rule": "Ensure that your app looks good in both appearance modes",
+          "rationale": "In addition to using one mode or the other, people can choose the Auto appearance setting, which switches between the light and dark appearances as conditions change throughout the day, potentially while your app is running.",
+          "priority": "high"
+        },
+        {
+          "id": "bp-003",
+          "rule": "Test your content to make sure that it remains comfortably legible in both appearance modes",
+          "rationale": "In Dark Mode with Increase Contrast and Reduce Transparency turned on (both separately and together), you may find places where dark text is less legible when it's on a dark background. Turning on Increase Contrast in Dark Mode can result in reduced visual contrast between dark text and a dark background.",
+          "accessibilityConsiderations": [
+            "Test with Increase Contrast enabled",
+            "Test with Reduce Transparency enabled",
+            "Test with both settings enabled simultaneously",
+            "People with strong vision might still be able to read lower contrast text, but such text could be illegible for many"
+          ],
+          "priority": "high"
+        },
+        {
+          "id": "bp-004",
+          "rule": "In rare cases, consider using only a dark appearance in the interface",
+          "rationale": "It can make sense for an app that supports immersive media viewing to use a permanently dark appearance that lets the UI recede and helps people focus on the media.",
+          "example": {
+            "app": "Stocks",
+            "description": "The Stocks app uses a dark-only appearance"
+          },
+          "priority": "low"
+        }
+      ]
+    },
+    "darkModeColors": {
+      "overview": {
+        "description": "The color palette in Dark Mode includes dimmer background colors and brighter foreground colors.",
+        "importantNote": "These colors aren't necessarily inversions of their light counterparts: while many colors are inverted, some are not."
+      },
+      "adaptiveColors": {
+        "guideline": "Embrace colors that adapt to the current appearance",
+        "semanticColors": {
+          "macOS": [
+            {
+              "name": "labelColor",
+              "purpose": "Primary text color that adapts to appearance",
+              "adaptsAutomatically": true
+            },
+            {
+              "name": "controlColor",
+              "purpose": "Control background color that adapts to appearance",
+              "adaptsAutomatically": true
+            }
+          ],
+          "iOS_iPadOS": [
+            {
+              "name": "separator",
+              "purpose": "Separator line color that adapts to appearance",
+              "adaptsAutomatically": true
+            }
+          ]
+        },
+        "customColors": {
+          "implementation": "Add a Color Set asset to your app's asset catalog in Xcode, and specify the bright and dim variants of the color.",
+          "warning": "Avoid using hard-coded color values or colors that don't adapt."
+        }
+      },
+      "contrastRequirements": {
+        "guideline": "Aim for sufficient color contrast in all appearances",
+        "minimumContrastRatio": {
+          "value": "4.5:1",
+          "scope": "Between foreground and background colors"
+        },
+        "recommendedContrastRatio": {
+          "value": "7:1",
+          "scope": "For custom foreground and background colors, especially in small text"
+        },
+        "benefits": [
+          "Ensures foreground content stands out from the background",
+          "Helps content meet recommended accessibility guidelines"
+        ],
+        "systemColorsBenefit": "Using system-defined colors can help you achieve a good contrast ratio between your foreground and background content."
+      },
+      "whiteBackgrounds": {
+        "guideline": "Soften the color of white backgrounds",
+        "implementation": "If you display a content image that includes a white background, consider slightly darkening the image to prevent the background from glowing in the surrounding Dark Mode context."
+      },
+      "backgroundColors": {
+        "iOS_iPadOS": {
+          "description": "In Dark Mode, the system uses two sets of background colors — called base and elevated — to enhance the perception of depth when one dark interface is layered above another.",
+          "types": [
+            {
+              "name": "base",
+              "brightness": "dimmer",
+              "purpose": "Making background interfaces appear to recede",
+              "usage": "Default background for primary content areas"
+            },
+            {
+              "name": "elevated",
+              "brightness": "brighter",
+              "purpose": "Making foreground interfaces appear to advance",
+              "usage": "Popovers, modal sheets, foreground interfaces"
+            }
+          ],
+          "dynamicBehavior": {
+            "description": "Dark Mode is dynamic, which means that the background color automatically changes from base to elevated when an interface is in the foreground, such as a popover or modal sheet.",
+            "additionalUseCases": [
+              "Visual separation between apps in a multitasking environment",
+              "Visual separation between windows in a multiple-window context"
+            ]
+          },
+          "guideline": "Prefer the system background colors",
+          "warning": "Using a custom background color can make it harder for people to perceive these system-provided visual distinctions."
+        },
+        "macOS": {
+          "desktopTinting": {
+            "description": "When people choose the graphite accent color in General settings, macOS causes window backgrounds to pick up color from the current desktop picture.",
+            "name": "desktop tinting",
+            "effect": "A subtle effect that helps windows blend more harmoniously with their surrounding content."
+          },
+          "transparencyGuidelines": {
+            "guideline": "Include some transparency in custom component backgrounds when appropriate",
+            "rationale": "Transparency lets your components pick up color from the window background when desktop tinting is active, creating a visual harmony that can persist even when the desktop picture changes.",
+            "when": [
+              "Custom component has a visible background or bezel",
+              "Component is in a neutral state (not using color)"
+            ],
+            "whenNot": [
+              "Component is in a state that uses color",
+              "Reason: Can cause the component's color to fluctuate when the window background adjusts to a different location on the desktop or when the desktop picture changes"
+            ]
+          }
+        }
+      }
+    },
+    "iconsAndImages": {
+      "sfSymbols": {
+        "guideline": "Use SF Symbols wherever possible",
+        "benefits": [
+          "Automatically adapt to Dark Mode",
+          "Work well in both appearance modes when using dynamic colors to tint them",
+          "Work well when adding vibrancy"
+        ],
+        "systemBehavior": "The system uses SF Symbols (which automatically adapt to Dark Mode) and full-color images that are optimized for both the light and dark appearances."
+      },
+      "interfaceIcons": {
+        "guideline": "Design separate interface icons for the light and dark appearances if necessary",
+        "examples": [
+          {
+            "scenario": "Moon icon",
+            "lightAppearance": "May need a subtle dark outline to contrast well with a light background",
+            "darkAppearance": "May need no outline when displaying on a dark background"
+          },
+          {
+            "scenario": "Oil drop icon",
+            "lightAppearance": "No border needed",
+            "darkAppearance": "Might need a slight border to make the edge visible against a dark background"
+          }
+        ]
+      },
+      "fullColorImages": {
+        "guideline": "Make sure full-color images and icons look good in both appearances",
+        "approach": [
+          "Use the same asset if it looks good in both light and dark appearances",
+          "If an asset looks good in only one mode, modify the asset or create separate light and dark assets",
+          "Use asset catalogs to combine your assets into a single named image"
+        ],
+        "commonIssues": {
+          "darkBackground": "On a dark background, illustrations may have poor contrast and many details may be lost",
+          "solution": "Adjust illustration for better contrast on a dark background"
+        }
+      }
+    },
+    "textLegibility": {
+      "overview": {
+        "description": "The system uses vibrancy and increased contrast to maintain the legibility of text on darker backgrounds."
+      },
+      "labelColors": {
+        "guideline": "Use the system-provided label colors for labels",
+        "availableColors": [
+          {
+            "name": "primary",
+            "purpose": "Main text labels",
+            "adaptsAutomatically": true
+          },
+          {
+            "name": "secondary",
+            "purpose": "Secondary text labels",
+            "adaptsAutomatically": true
+          },
+          {
+            "name": "tertiary",
+            "purpose": "Tertiary text labels",
+            "adaptsAutomatically": true
+          },
+          {
+            "name": "quaternary",
+            "purpose": "Least prominent text labels",
+            "adaptsAutomatically": true
+          }
+        ],
+        "behavior": "The primary, secondary, tertiary, and quaternary label colors adapt automatically to the light and dark appearances."
+      },
+      "systemViews": {
+        "guideline": "Use system views to draw text fields and text views",
+        "benefits": [
+          "System views and controls make your app's text look good on all backgrounds",
+          "Adjusting automatically for the presence or absence of vibrancy"
+        ],
+        "recommendation": "When possible, use a system-provided view to display text instead of drawing the text yourself."
+      }
+    },
+    "platformConsiderations": {
+      "iOS_iPadOS": {
+        "backgroundColorSystem": {
+          "description": "The system uses two sets of background colors — called base and elevated",
+          "purpose": "To enhance the perception of depth when one dark interface is layered above another",
+          "baseColors": {
+            "description": "Dimmer colors",
+            "purpose": "Making background interfaces appear to recede"
+          },
+          "elevatedColors": {
+            "description": "Brighter colors",
+            "purpose": "Making foreground interfaces appear to advance"
+          }
+        },
+        "dynamicBehavior": "Dark Mode is dynamic, which means that the background color automatically changes from base to elevated when an interface is in the foreground",
+        "examples": [
+          "Popover",
+          "Modal sheet",
+          "Visual separation between apps in multitasking environment",
+          "Visual separation between windows in multiple-window context"
+        ],
+        "guideline": "Prefer the system background colors",
+        "warning": "Using a custom background color can make it harder for people to perceive these system-provided visual distinctions."
+      },
+      "macOS": {
+        "desktopTinting": {
+          "trigger": "When people choose the graphite accent color in General settings",
+          "effect": "macOS causes window backgrounds to pick up color from the current desktop picture",
+          "name": "desktop tinting",
+          "result": "A subtle effect that helps windows blend more harmoniously with their surrounding content"
+        },
+        "transparencyGuidelines": {
+          "guideline": "Include some transparency in custom component backgrounds when appropriate",
+          "purpose": "Transparency lets your components pick up color from the window background when desktop tinting is active",
+          "benefit": "Creating a visual harmony that can persist even when the desktop picture changes",
+          "applicability": {
+            "add": [
+              "Custom component has a visible background or bezel",
+              "Component is in a neutral state that doesn't use color"
+            ],
+            "avoid": [
+              "Component is in a state that uses color"
+            ],
+            "reason": "Adding transparency when using color can cause the component's color to fluctuate when the window background adjusts to a different location on the desktop or when the desktop picture changes"
+          }
+        }
+      },
+      "tvOS": {
+        "notes": "No additional considerations for tvOS"
+      },
+      "visionOS": {
+        "supported": false,
+        "notes": "Dark Mode isn't supported in visionOS"
+      },
+      "watchOS": {
+        "supported": false,
+        "notes": "Dark Mode isn't supported in watchOS"
+      }
+    },
+    "relatedResources": {
+      "topics": [
+        {
+          "name": "Color",
+          "relationship": "Related guidance for using color with Dark Mode"
+        },
+        {
+          "name": "Materials",
+          "relationship": "Related guidance for material effects"
+        },
+        {
+          "name": "Typography",
+          "relationship": "Related guidance for text styling"
+        },
+        {
+          "name": "Accessibility",
+          "relationship": "Related guidance for accessibility considerations"
+        }
+      ],
+      "videos": [
+        {
+          "title": "Meet Liquid Glass",
+          "description": "Related WWDC video"
+        },
+        {
+          "title": "Implementing Dark Mode on iOS",
+          "description": "Implementation guidance video"
+        }
+      ]
+    },
+    "implementationChecklist": {
+      "colorAdaptation": [
+        {
+          "item": "Use semantic/system colors that adapt automatically",
+          "priority": "required"
+        },
+        {
+          "item": "Create Color Set assets in Xcode for custom colors with light and dark variants",
+          "priority": "required"
+        },
+        {
+          "item": "Avoid hard-coded color values",
+          "priority": "required"
+        },
+        {
+          "item": "Ensure minimum 4.5:1 contrast ratio",
+          "priority": "required"
+        },
+        {
+          "item": "Strive for 7:1 contrast ratio for small text",
+          "priority": "recommended"
+        },
+        {
+          "item": "Soften white backgrounds in content images",
+          "priority": "recommended"
+        }
+      ],
+      "iconsAndImages": [
+        {
+          "item": "Use SF Symbols wherever possible",
+          "priority": "recommended"
+        },
+        {
+          "item": "Create separate icon variants for light/dark if needed",
+          "priority": "conditional"
+        },
+        {
+          "item": "Test full-color images in both appearances",
+          "priority": "required"
+        },
+        {
+          "item": "Use asset catalogs to manage light/dark image variants",
+          "priority": "recommended"
+        }
+      ],
+      "text": [
+        {
+          "item": "Use system-provided label colors (primary, secondary, tertiary, quaternary)",
+          "priority": "required"
+        },
+        {
+          "item": "Use system views for text fields and text views",
+          "priority": "recommended"
+        }
+      ],
+      "backgrounds": [
+        {
+          "item": "Prefer system background colors",
+          "priority": "required"
+        },
+        {
+          "item": "Understand base vs elevated background distinction (iOS/iPadOS)",
+          "priority": "required"
+        },
+        {
+          "item": "Consider desktop tinting compatibility (macOS)",
+          "priority": "recommended"
+        },
+        {
+          "item": "Add appropriate transparency to custom components (macOS)",
+          "priority": "conditional"
+        }
+      ],
+      "testing": [
+        {
+          "item": "Test in both light and dark appearances",
+          "priority": "required"
+        },
+        {
+          "item": "Test with Auto appearance setting",
+          "priority": "required"
+        },
+        {
+          "item": "Test with Increase Contrast enabled",
+          "priority": "required"
+        },
+        {
+          "item": "Test with Reduce Transparency enabled",
+          "priority": "required"
+        },
+        {
+          "item": "Test with both Increase Contrast and Reduce Transparency enabled together",
+          "priority": "required"
+        }
+      ]
+    },
+    "changeLog": [
+      {
+        "date": "2024-08-06",
+        "changes": "Added art contrasting the light and dark appearances"
+      }
+    ],
+    "swiftImplementation": {
+      "systemColors": {
+        "iOS": {
+          "labels": [
+            "UIColor.label",
+            "UIColor.secondaryLabel",
+            "UIColor.tertiaryLabel",
+            "UIColor.quaternaryLabel"
+          ],
+          "backgrounds": [
+            "UIColor.systemBackground",
+            "UIColor.secondarySystemBackground",
+            "UIColor.tertiarySystemBackground",
+            "UIColor.systemGroupedBackground",
+            "UIColor.secondarySystemGroupedBackground",
+            "UIColor.tertiarySystemGroupedBackground"
+          ],
+          "separators": [
+            "UIColor.separator",
+            "UIColor.opaqueSeparator"
+          ]
+        },
+        "SwiftUI": {
+          "labels": [
+            "Color.primary",
+            "Color.secondary"
+          ],
+          "backgrounds": [
+            "Color(.systemBackground)",
+            "Color(.secondarySystemBackground)",
+            "Color(.tertiarySystemBackground)"
+          ],
+          "environment": [
+            "@Environment(\\.colorScheme) var colorScheme"
+          ]
+        },
+        "macOS": {
+          "labels": [
+            "NSColor.labelColor",
+            "NSColor.secondaryLabelColor",
+            "NSColor.tertiaryLabelColor",
+            "NSColor.quaternaryLabelColor"
+          ],
+          "controls": [
+            "NSColor.controlColor",
+            "NSColor.controlBackgroundColor"
+          ]
+        }
+      },
+      "assetCatalog": {
+        "colorSetStructure": {
+          "description": "Create a Color Set in Assets.xcassets with Any Appearance and Dark Appearance variants",
+          "variants": [
+            {
+              "appearance": "Any Appearance",
+              "usage": "Used for light mode and as fallback"
+            },
+            {
+              "appearance": "Dark Appearance",
+              "usage": "Used specifically for dark mode"
+            }
+          ]
+        },
+        "imageSetStructure": {
+          "description": "Create an Image Set with Any Appearance and Dark Appearance variants",
+          "variants": [
+            {
+              "appearance": "Any Appearance",
+              "usage": "Used for light mode and as fallback"
+            },
+            {
+              "appearance": "Dark Appearance",
+              "usage": "Used specifically for dark mode"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

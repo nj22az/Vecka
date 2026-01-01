@@ -1,0 +1,293 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "padding(_:_:) | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": ["SwiftUI", "padding", "layout", "View", "modifier", "Edge.Set", "CGFloat"],
+      "summary": "Official Apple documentation for the SwiftUI padding(_:_:) instance method, which adds equal padding amounts to specific edges of a view. Covers parameters, return values, usage examples, and related padding functions."
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": { "width": 612, "height": 792, "unit": "points" },
+        "orientation": "portrait",
+        "backgroundColor": "#1C1C1E",
+        "layout": {
+          "type": "multi-column",
+          "columns": 2,
+          "margins": { "top": 60, "right": 40, "bottom": 80, "left": 200 },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [],
+        "readingOrder": [],
+        "pageSummary": "Complete documentation page for SwiftUI padding modifier with API reference, parameters, code examples, and related methods."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": { "present": true, "entries": ["Parameters", "Return Value", "Mentioned in", "Discussion", "See Also"] },
+      "runningHeaders": "Documentation - SwiftUI / View / padding(_:_:)",
+      "runningFooters": "Copyright 2025 Apple Inc. All rights reserved.",
+      "pageNumbers": { "present": false, "format": null }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "api-declaration",
+          "title": "API Declaration",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "The padding(_:_:) method signature with platform availability information."
+        },
+        {
+          "sectionId": "parameters",
+          "title": "Parameters",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Documentation of the edges and length parameters."
+        },
+        {
+          "sectionId": "discussion",
+          "title": "Discussion",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Detailed usage instructions with code examples demonstrating edge-specific and default padding."
+        },
+        {
+          "sectionId": "see-also",
+          "title": "See Also",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Related padding functions and types for comprehensive padding control."
+        }
+      ],
+      "documentFlow": "The document begins with the API declaration and platform availability, followed by parameter descriptions, usage discussion with code examples, and concludes with related methods."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        { "term": "Edge.Set", "definition": "An OptionSet defining which edges to apply padding to (top, bottom, leading, trailing, horizontal, vertical, all)", "occurrences": 3 },
+        { "term": "CGFloat", "definition": "The numeric type for specifying padding length in points", "occurrences": 2 },
+        { "term": "nonisolated", "definition": "Swift concurrency attribute indicating the function can be called from any isolation context", "occurrences": 1 },
+        { "term": "ScenePadding", "definition": "A struct representing padding amounts appropriate for the current scene context", "occurrences": 2 }
+      ],
+      "keyFindings": [
+        "Platform-specific default padding is applied when length parameter is nil",
+        "Modifier order matters - padding should be applied before border to include padded area",
+        "Both parameters can be omitted for default padding on all edges",
+        "SwiftUI automatically chooses appropriate padding for platform and presentation context"
+      ],
+      "technicalSpecifications": {},
+      "designDecisions": []
+    }
+  },
+  "paddingAPI": {
+    "methodName": "padding(_:_:)",
+    "methodType": "Instance Method",
+    "description": "Adds an equal padding amount to specific edges of this view.",
+    "availability": {
+      "iOS": "13.0+",
+      "iPadOS": "13.0+",
+      "macCatalyst": "13.0+",
+      "macOS": "10.15+",
+      "tvOS": "13.0+",
+      "visionOS": "1.0+",
+      "watchOS": "6.0+"
+    },
+    "declaration": {
+      "swift": "nonisolated func padding(_ edges: Edge.Set = .all, _ length: CGFloat? = nil) -> some View",
+      "attributes": ["nonisolated"]
+    },
+    "parameters": [
+      {
+        "name": "edges",
+        "type": "Edge.Set",
+        "defaultValue": ".all",
+        "description": "The set of edges to pad for this view. The default is all.",
+        "possibleValues": [
+          { "value": ".all", "description": "Apply padding to all edges" },
+          { "value": ".top", "description": "Apply padding to top edge only" },
+          { "value": ".bottom", "description": "Apply padding to bottom edge only" },
+          { "value": ".leading", "description": "Apply padding to leading edge only" },
+          { "value": ".trailing", "description": "Apply padding to trailing edge only" },
+          { "value": ".horizontal", "description": "Apply padding to leading and trailing edges" },
+          { "value": ".vertical", "description": "Apply padding to top and bottom edges" },
+          { "value": "[.bottom, .trailing]", "description": "Example of combining multiple edges using OptionSet syntax" }
+        ]
+      },
+      {
+        "name": "length",
+        "type": "CGFloat?",
+        "defaultValue": "nil",
+        "description": "An amount, given in points, to pad this view on the specified edges. If you set the value to nil, SwiftUI uses a platform-specific default amount. The default value of this parameter is nil."
+      }
+    ],
+    "returnValue": {
+      "type": "some View",
+      "description": "A view that's padded by the specified amount on the specified edges."
+    }
+  },
+  "paddingGuidelines": {
+    "standardPaddingValues": {
+      "description": "SwiftUI provides platform-specific default padding when no explicit value is provided",
+      "defaultBehavior": "When length is nil, SwiftUI uses a platform-specific default amount appropriate for the platform and presentation context",
+      "recommendedApproach": "Use nil/default padding for standard spacing, explicit values for custom requirements",
+      "commonExplicitValues": [
+        { "value": 4, "use": "Minimal spacing" },
+        { "value": 8, "use": "Compact spacing" },
+        { "value": 12, "use": "Small spacing" },
+        { "value": 16, "use": "Standard spacing (common default)" },
+        { "value": 20, "use": "Medium spacing (used in documentation example)" },
+        { "value": 24, "use": "Large spacing" },
+        { "value": 32, "use": "Extra large spacing" }
+      ]
+    },
+    "edgeSpecificPadding": {
+      "description": "Control padding on specific edges using Edge.Set values",
+      "singleEdges": [
+        { "edge": ".top", "description": "Padding on top edge only" },
+        { "edge": ".bottom", "description": "Padding on bottom edge only" },
+        { "edge": ".leading", "description": "Padding on leading (left in LTR) edge only" },
+        { "edge": ".trailing", "description": "Padding on trailing (right in LTR) edge only" }
+      ],
+      "compositeEdges": [
+        { "edge": ".horizontal", "description": "Padding on both leading and trailing edges" },
+        { "edge": ".vertical", "description": "Padding on both top and bottom edges" },
+        { "edge": ".all", "description": "Padding on all four edges (default)" }
+      ],
+      "customCombinations": {
+        "description": "Combine multiple edges using OptionSet array syntax",
+        "example": "[.bottom, .trailing]",
+        "note": "Any combination of Edge.Set values can be combined"
+      }
+    },
+    "widgetSpecificPadding": {
+      "description": "Widgets should use scenePadding for appropriate content insets",
+      "recommendations": [
+        {
+          "method": "scenePadding(Edge.Set)",
+          "description": "Adds padding appropriate for the current scene (widget, app, etc.)",
+          "useCase": "Use for widget content to respect safe areas and system margins"
+        },
+        {
+          "method": "scenePadding(ScenePadding, edges: Edge.Set)",
+          "description": "Adds a specified kind of padding appropriate for the current scene",
+          "useCase": "Fine-grained control over scene-aware padding types"
+        }
+      ],
+      "ScenePaddingType": {
+        "description": "The padding used to space a view from its containing scene",
+        "note": "Automatically adapts to widget size and platform requirements"
+      },
+      "widgetBestPractices": [
+        "Use scenePadding() instead of fixed padding values for widget content margins",
+        "Let the system determine appropriate padding for different widget sizes",
+        "Combine with contentMargins for additional fine-tuning if needed"
+      ]
+    },
+    "modifierOrderImportance": {
+      "description": "The order in which you apply modifiers matters significantly for padding",
+      "rule": "Apply padding BEFORE applying border to ensure the border encompasses the padded region",
+      "correctOrder": [".padding()", ".border()"],
+      "incorrectOrder": [".border()", ".padding()"],
+      "visualImpact": "Incorrect order results in border not including the padded space"
+    }
+  },
+  "codeExamples": [
+    {
+      "id": "edge-specific-padding",
+      "title": "Edge-Specific Padding Example",
+      "description": "Demonstrates applying 20 points of padding to specific edges (bottom and trailing)",
+      "code": "VStack {\n    Text(\"Text padded by 20 points on the bottom and trailing edges.\")\n        .padding([.bottom, .trailing], 20)\n        .border(.gray)\n    Text(\"Unpadded text for comparison.\")\n        .border(.yellow)\n}",
+      "keyPoints": [
+        "Uses array syntax to specify multiple edges",
+        "Explicit 20-point padding value",
+        "Padding applied before border modifier"
+      ]
+    },
+    {
+      "id": "default-padding",
+      "title": "Default Padding Example",
+      "description": "Demonstrates using platform-default padding on all edges",
+      "code": "VStack {\n    Text(\"Text with default padding.\")\n        .padding()\n        .border(.gray)\n    Text(\"Unpadded text for comparison.\")\n        .border(.yellow)\n}",
+      "keyPoints": [
+        "No parameters means all edges with default amount",
+        "SwiftUI chooses appropriate default for platform",
+        "Simplest form for standard spacing"
+      ]
+    }
+  ],
+  "relatedMethods": [
+    {
+      "name": "padding(_:)",
+      "signature": "func padding(_:)",
+      "description": "Adds a different padding amount to each edge of this view.",
+      "useCase": "When you need independent control over padding for each edge using EdgeInsets"
+    },
+    {
+      "name": "padding3D(_:)",
+      "signature": "func padding3D(_:)",
+      "description": "Pads this view using the edge insets you specify.",
+      "useCase": "3D padding for visionOS spatial layouts"
+    },
+    {
+      "name": "padding3D(Edge3D.Set, CGFloat?)",
+      "signature": "func padding3D(Edge3D.Set, CGFloat?) -> some View",
+      "description": "Pads this view using the edge insets you specify.",
+      "useCase": "Edge-specific 3D padding for visionOS"
+    },
+    {
+      "name": "scenePadding(Edge.Set)",
+      "signature": "func scenePadding(Edge.Set) -> some View",
+      "description": "Adds padding to the specified edges of this view using an amount that's appropriate for the current scene.",
+      "useCase": "Scene-aware padding for widgets and different presentation contexts"
+    },
+    {
+      "name": "scenePadding(ScenePadding, edges: Edge.Set)",
+      "signature": "func scenePadding(ScenePadding, edges: Edge.Set) -> some View",
+      "description": "Adds a specified kind of padding to the specified edges of this view using an amount that's appropriate for the current scene.",
+      "useCase": "Specific scene padding types with edge control"
+    }
+  ],
+  "relatedTypes": [
+    {
+      "name": "ScenePadding",
+      "type": "struct",
+      "description": "The padding used to space a view from its containing scene."
+    },
+    {
+      "name": "Edge.Set",
+      "type": "OptionSet",
+      "description": "A set of edges defining which sides of a view to apply modifications to."
+    },
+    {
+      "name": "Edge3D.Set",
+      "type": "OptionSet",
+      "description": "A set of 3D edges for visionOS spatial layouts."
+    }
+  ],
+  "implementationNotes": {
+    "forWeekGridApp": {
+      "calendarGrid": {
+        "recommendation": "Use .padding() with default values for standard cell spacing",
+        "example": ".padding(.horizontal, 8) for horizontal cell margins"
+      },
+      "widgetViews": {
+        "recommendation": "Prefer scenePadding() over fixed padding for widget content",
+        "rationale": "Automatically adapts to small/medium/large widget sizes"
+      },
+      "touchTargets": {
+        "recommendation": "Ensure padding contributes to 44pt minimum touch targets per Apple HIG",
+        "calculation": "Content size + padding should equal or exceed 44 points"
+      }
+    }
+  }
+}

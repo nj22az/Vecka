@@ -32,9 +32,15 @@ final class HolidayRule {
     /// Optional SF Symbol name used in the UI/calendar.
     var symbolName: String?
 
+    /// Optional icon background color (hex string, e.g., "FFB5BA")
+    var iconColor: String?
+
     /// Set when the user edits a rule; used to avoid overwriting user changes in migrations.
     var userModifiedAt: Date?
-    
+
+    /// Optional notes/description for the observance
+    var notes: String?
+
     // Rule Configuration
     var type: HolidayRuleType
     
@@ -53,7 +59,9 @@ final class HolidayRule {
         isRedDay: Bool,
         titleOverride: String? = nil,
         symbolName: String? = nil,
+        iconColor: String? = nil,
         userModifiedAt: Date? = nil,
+        notes: String? = nil,
         type: HolidayRuleType,
         month: Int? = nil,
         day: Int? = nil,
@@ -69,7 +77,9 @@ final class HolidayRule {
         self.isRedDay = isRedDay
         self.titleOverride = titleOverride
         self.symbolName = symbolName
+        self.iconColor = iconColor
         self.userModifiedAt = userModifiedAt
+        self.notes = notes
         self.type = type
         self.month = month
         self.day = day

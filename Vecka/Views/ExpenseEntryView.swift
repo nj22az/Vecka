@@ -2,13 +2,317 @@
 //  ExpenseEntryView.swift
 //  Vecka
 //
-//  Quick expense entry (accessed from + button)
+//  情報デザイン expense entry (accessed from + button)
 //
 
 import SwiftUI
 import SwiftData
 import PhotosUI
 
+// MARK: - 情報デザイン Expense Editor Sheet (Standalone - like Event editor)
+
+/// Standalone expense editor sheet matching the Event editor pattern
+/// Used when creating expenses from the + menu
+struct JohoExpenseEditorSheet: View {
+    let selectedDate: Date
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+
+    @State private var amount: String = ""
+    @State private var currency: String = "SEK"
+    @State private var description: String = ""
+    @State private var merchant: String = ""
+    @State private var selectedCategory: ExpenseCategory?
+    @FocusState private var isFocused: Bool
+
+    // Categories
+    @Query(sort: \ExpenseCategory.sortOrder) private var categories: [ExpenseCategory]
+
+    // Base Currency
+    @AppStorage("baseCurrency") private var baseCurrency = "SEK"
+
+    // Expense accent color - GREEN from design system
+    private let accentColor = Color(hex: "BBF7D0")  // Light green for expenses
+    private let solidAccent = Color(hex: "38A169")  // Solid green
+
+    private var canSave: Bool {
+        guard let amountValue = Double(amount.replacingOccurrences(of: ",", with: ".")) else {
+            return false
+        }
+        return amountValue > 0 && !description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    init(selectedDate: Date = Date()) {
+        self.selectedDate = selectedDate
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: JohoDimensions.spacingLG) {
+                // Header with Cancel/Save buttons (情報デザイン style)
+                HStack {
+                    Button { dismiss() } label: {
+                        Text("Cancel")
+                            .font(JohoFont.body)
+                            .foregroundStyle(JohoColors.black)
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+                            .padding(.vertical, JohoDimensions.spacingMD)
+                            .background(JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            )
+                    }
+
+                    Spacer()
+
+                    Button {
+                        saveExpense()
+                        dismiss()
+                    } label: {
+                        Text("Save")
+                            .font(JohoFont.body.bold())
+                            .foregroundStyle(canSave ? JohoColors.black : JohoColors.black.opacity(0.4))
+                            .padding(.horizontal, JohoDimensions.spacingLG)
+                            .padding(.vertical, JohoDimensions.spacingMD)
+                            .background(canSave ? accentColor : JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            )
+                    }
+                    .disabled(!canSave)
+                }
+                .padding(.top, JohoDimensions.spacingLG)
+
+                // Main content card
+                VStack(spacing: JohoDimensions.spacingLG) {
+                    // Title with type indicator (情報デザイン)
+                    HStack(spacing: JohoDimensions.spacingSM) {
+                        Circle()
+                            .fill(solidAccent)
+                            .frame(width: 20, height: 20)
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+                        Text("New Expense")
+                            .font(JohoFont.displaySmall)
+                            .foregroundStyle(JohoColors.black)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Expense icon - 情報デザイン compartmentalized style
+                    ZStack {
+                        Circle()
+                            .fill(accentColor)
+                            .frame(width: 64, height: 64)
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 2.5))
+
+                        Image(systemName: "banknote.fill")
+                            .font(.system(size: 26, weight: .bold))
+                            .foregroundStyle(JohoColors.black)
+                    }
+
+                    // Amount field - 情報デザイン prominent display
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "AMOUNT", style: .whiteOnBlack, size: .small)
+
+                        HStack(spacing: JohoDimensions.spacingSM) {
+                            // Amount input with currency symbol
+                            HStack(spacing: 4) {
+                                TextField("0", text: $amount)
+                                    .font(.system(size: 28, weight: .bold, design: .monospaced))
+                                    .keyboardType(.decimalPad)
+                                    .foregroundStyle(JohoColors.black)
+                                    .focused($isFocused)
+                                    .multilineTextAlignment(.trailing)
+                            }
+                            .padding(JohoDimensions.spacingMD)
+                            .frame(maxWidth: .infinity)
+                            .background(JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            )
+
+                            // Currency picker - 情報デザイン styled
+                            Menu {
+                                ForEach(CurrencyDefinition.defaultCurrencies) { curr in
+                                    Button(curr.code) {
+                                        currency = curr.code
+                                    }
+                                }
+                            } label: {
+                                Text(currency)
+                                    .font(.system(size: 16, weight: .bold, design: .monospaced))
+                                    .foregroundStyle(JohoColors.black)
+                                    .frame(width: 70)
+                                    .padding(.vertical, JohoDimensions.spacingMD)
+                                    .background(accentColor)
+                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                                    .overlay(
+                                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                    )
+                            }
+                        }
+                    }
+
+                    // Description field
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "DESCRIPTION", style: .whiteOnBlack, size: .small)
+
+                        TextField("What did you pay for?", text: $description)
+                            .font(JohoFont.body)
+                            .foregroundStyle(JohoColors.black)
+                            .padding(JohoDimensions.spacingMD)
+                            .background(JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            )
+                    }
+
+                    // Merchant field (optional)
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "MERCHANT", style: .whiteOnBlack, size: .small)
+
+                        TextField("Store name (optional)", text: $merchant)
+                            .font(JohoFont.body)
+                            .foregroundStyle(JohoColors.black)
+                            .padding(JohoDimensions.spacingMD)
+                            .background(JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            )
+                    }
+
+                    // Category picker - 情報デザイン grid with icons only
+                    if !categories.isEmpty {
+                        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                            HStack {
+                                JohoPill(text: "CATEGORY", style: .whiteOnBlack, size: .small)
+                                Spacer()
+                                if let cat = selectedCategory {
+                                    Text(cat.name.uppercased())
+                                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                                }
+                            }
+
+                            // Grid layout - 4 columns, responsive
+                            LazyVGrid(columns: [
+                                GridItem(.flexible()),
+                                GridItem(.flexible()),
+                                GridItem(.flexible()),
+                                GridItem(.flexible())
+                            ], spacing: JohoDimensions.spacingSM) {
+                                // None option
+                                categoryButton(nil, isSelected: selectedCategory == nil)
+
+                                ForEach(categories) { category in
+                                    categoryButton(category, isSelected: selectedCategory?.id == category.id)
+                                }
+                            }
+                        }
+                    }
+
+                    // Date display - 情報デザイン styled
+                    HStack {
+                        JohoPill(text: "DATE", style: .whiteOnBlack, size: .small)
+                        Spacer()
+                        HStack(spacing: 6) {
+                            Image(systemName: "calendar")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundStyle(JohoColors.black)
+                            Text(selectedDate.formatted(date: .abbreviated, time: .omitted))
+                                .font(.system(size: 14, weight: .bold, design: .rounded))
+                                .foregroundStyle(JohoColors.black)
+                        }
+                        .padding(.horizontal, JohoDimensions.spacingMD)
+                        .padding(.vertical, JohoDimensions.spacingSM)
+                        .background(accentColor.opacity(0.5))
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                        )
+                    }
+                }
+                .padding(JohoDimensions.spacingLG)
+                .background(JohoColors.white)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                )
+            }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.bottom, JohoDimensions.spacingXL)
+        }
+        .johoBackground()
+        .onAppear {
+            currency = baseCurrency
+            // Don't auto-focus - let user tap to interact
+        }
+    }
+
+    // 情報デザイン category button - icon only with color fill
+    @ViewBuilder
+    private func categoryButton(_ category: ExpenseCategory?, isSelected: Bool) -> some View {
+        Button {
+            selectedCategory = category
+            HapticManager.selection()
+        } label: {
+            ZStack {
+                // Background circle
+                Circle()
+                    .fill(isSelected ? (category?.color ?? JohoColors.black) : JohoColors.white)
+                    .frame(width: 48, height: 48)
+                    .overlay(
+                        Circle()
+                            .stroke(category?.color ?? JohoColors.black, lineWidth: isSelected ? 3 : 2)
+                    )
+
+                // Icon
+                Image(systemName: category?.iconName ?? "minus")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(isSelected ? JohoColors.white : (category?.color ?? JohoColors.black))
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func saveExpense() {
+        guard let amountValue = Double(amount.replacingOccurrences(of: ",", with: ".")) else { return }
+        let trimmedDesc = description.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedDesc.isEmpty else { return }
+
+        let expense = ExpenseItem(
+            date: selectedDate,
+            amount: amountValue,
+            currency: currency,
+            merchantName: merchant.isEmpty ? nil : merchant,
+            itemDescription: trimmedDesc,
+            notes: nil
+        )
+        expense.category = selectedCategory
+        modelContext.insert(expense)
+
+        do {
+            try modelContext.save()
+            HapticManager.notification(.success)
+        } catch {
+            Log.w("Failed to save expense: \(error.localizedDescription)")
+        }
+    }
+}
+
+// Legacy ExpenseEntryView for backwards compatibility with full features
 struct ExpenseEntryView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
@@ -25,6 +329,11 @@ struct ExpenseEntryView: View {
     @State private var selectedDate: Date
     @State private var notes = ""
 
+    // Date components (情報デザイン)
+    @State private var selectedDay: Int
+    @State private var selectedMonth: Int
+    @State private var selectedYear: Int
+
     // Receipt
     @State private var receiptImage: UIImage?
     @State private var showImagePicker = false
@@ -40,20 +349,27 @@ struct ExpenseEntryView: View {
     @State private var errorMessage = ""
 
     // Focus management
-    @FocusState private var isAmountFocused: Bool
+    @FocusState private var focusedField: ExpenseField?
     @State private var exchangeRateString: String = "1.0"
-    
+
     // Base Currency
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
-    
+
     // Edit Mode
     let existingExpense: ExpenseItem?
+
+    enum ExpenseField {
+        case amount, merchant, description, notes
+    }
 
     init(date: Date = Date(), trip: TravelTrip? = nil, existingExpense: ExpenseItem? = nil) {
         self.initialDate = date
         self.trip = trip
         self.existingExpense = existingExpense
-        
+
+        let calendar = Calendar.iso8601
+        let dateToUse = existingExpense?.date ?? date
+
         if let expense = existingExpense {
             _amount = State(initialValue: String(format: "%.2f", expense.amount))
             _currency = State(initialValue: expense.currency)
@@ -62,347 +378,150 @@ struct ExpenseEntryView: View {
             _selectedCategory = State(initialValue: expense.category)
             _selectedDate = State(initialValue: expense.date)
             _notes = State(initialValue: expense.notes ?? "")
-            
+
             let rate = expense.exchangeRate ?? 1.0
             _exchangeRateString = State(initialValue: String(format: "%.4f", rate))
-            
+
             if let data = expense.receiptImageData {
                 _receiptImage = State(initialValue: UIImage(data: data))
             }
         } else {
             _selectedDate = State(initialValue: date)
-            // Initialize currency with a default value, will be updated by onAppear if baseCurrency is different
-            _currency = State(initialValue: "SEK") 
+            _currency = State(initialValue: "SEK")
         }
+
+        // Initialize date components
+        _selectedDay = State(initialValue: calendar.component(.day, from: dateToUse))
+        _selectedMonth = State(initialValue: calendar.component(.month, from: dateToUse))
+        _selectedYear = State(initialValue: calendar.component(.year, from: dateToUse))
     }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                // Quick Template Selection
-                if !categories.isEmpty {
-                    Section {
-                        Button {
-                            showTemplatePicker = true
-                        } label: {
-                            Label("Use Template", systemImage: "doc.text.fill")
-                                .foregroundStyle(.blue)
-                        }
-                    }
+        // Redirect to new simplified sheet
+        JohoExpenseEditorSheet(selectedDate: initialDate)
+    }
+}
+
+// MARK: - 情報デザイン Template Picker
+
+struct JohoTemplatePickerSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    let categories: [ExpenseCategory]
+    let onSelect: (ExpenseTemplate) -> Void
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("TEMPLATE")
+                        .font(.system(size: 9, weight: .black, design: .monospaced))
+                        .foregroundStyle(JohoColors.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(JohoColors.cyan)
+
+                    Text("SELECT PRESET")
+                        .font(.system(size: 20, weight: .black, design: .monospaced))
+                        .foregroundStyle(JohoColors.black)
                 }
 
-                // Amount Section
-                Section {
-                    HStack {
-                        TextField("Amount", text: $amount)
-                            .keyboardType(.decimalPad)
-                            .font(.title2.weight(.semibold))
-                            .focused($isAmountFocused)
+                Spacer()
 
-                        Picker("Currency", selection: $currency) {
-                            ForEach(CurrencyDefinition.defaultCurrencies) { curr in
-                                Text(curr.code).tag(curr.code)
-                            }
-                        }
-                        .pickerStyle(.menu)
-                    }
-
-                    TextField("Merchant (optional)", text: $merchant)
-                } header: {
-                    Text(NSLocalizedString("expenses.amount", value: "Amount", comment: "Amount label"))
+                Button { dismiss() } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 14, weight: .black, design: .rounded))
+                        .foregroundStyle(JohoColors.black)
+                        .frame(width: 36, height: 36)
+                        .background(JohoColors.white)
+                        .clipShape(Squircle(cornerRadius: 8))
+                        .overlay(
+                            Squircle(cornerRadius: 8)
+                                .stroke(JohoColors.black, lineWidth: 3)
+                        )
                 }
+            }
+            .padding(JohoDimensions.spacingLG)
+            .background(JohoColors.white)
 
-                // Details Section
-                Section {
-                    TextField("Description", text: $description)
+            Rectangle().fill(JohoColors.black).frame(height: 3)
 
-                    DatePicker("Date", selection: $selectedDate, displayedComponents: .date)
-
-                    // Category Picker
-                    Picker("Category", selection: $selectedCategory) {
-                        Text("None").tag(nil as ExpenseCategory?)
-                        ForEach(categories) { category in
-                            Label {
-                                Text(category.name)
-                            } icon: {
+            // Template list
+            ScrollView {
+                VStack(spacing: 0) {
+                    ForEach(categories) { category in
+                        if let templates = category.templates, !templates.isEmpty {
+                            // Category header
+                            HStack(spacing: 8) {
                                 Image(systemName: category.iconName)
+                                    .font(.system(size: 12, weight: .bold))
                                     .foregroundStyle(category.color)
-                            }
-                            .tag(category as ExpenseCategory?)
-                        }
-                    }
-                } header: {
-                    Text(NSLocalizedString("expenses.details", value: "Details", comment: "Details label"))
-                }
-
-                // Receipt Section
-                Section {
-                    if let image = receiptImage {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(maxHeight: 200)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-
-                        Button(role: .destructive) {
-                            receiptImage = nil
-                        } label: {
-                            Label("Remove Receipt", systemImage: "trash")
-                        }
-                    } else {
-                        Button {
-                            showImagePicker = true
-                        } label: {
-                            Label("Add Receipt Photo", systemImage: "camera.fill")
-                        }
-                    }
-                } header: {
-                    Text(NSLocalizedString("expenses.receipt", value: "Receipt", comment: "Receipt label"))
-                }
-
-                // Exchange Rate (hidden if same as Base)
-                if currency != baseCurrency {
-                    Section {
-                        HStack {
-                            Text(NSLocalizedString("expenses.exchange_rate", value: "Exchange Rate", comment: "Exchange rate label"))
-                            Spacer()
-                            TextField("Rate", text: $exchangeRateString)
-                                .keyboardType(.decimalPad)
-                                .multilineTextAlignment(.trailing)
-                        }
-
-                        if let calculatedAmount = Double(amount.replacingOccurrences(of: ",", with: ".")) {
-                            let rate = Double(exchangeRateString.replacingOccurrences(of: ",", with: ".")) ?? 0.0
-                            HStack {
-                                Text(NSLocalizedString("expenses.converted_amount", value: "Converted Amount", comment: "Converted amount label"))
+                                Text(category.name.uppercased())
+                                    .font(.system(size: 10, weight: .black, design: .monospaced))
+                                    .foregroundStyle(JohoColors.white)
                                 Spacer()
-                                Text((calculatedAmount * rate), format: .currency(code: baseCurrency))
-                                    .foregroundStyle(.secondary)
                             }
-                        }
-                    } header: {
-                        Text(NSLocalizedString("expenses.currency_conversion", value: "Currency Conversion", comment: "Currency conversion header"))
-                    } footer: {
-                       let rate = Double(exchangeRateString.replacingOccurrences(of: ",", with: ".")) ?? 0.0
-                        Text("\(NSLocalizedString("expenses.rate_for", value: "Rate for", comment: "Rate for date prefix")) \(selectedDate.formatted(date: .abbreviated, time: .omitted)): 1 \(currency) = \(rate, format: .number.precision(.fractionLength(2...4))) \(baseCurrency)")
-                    }
-                }
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+                            .padding(.vertical, 8)
+                            .background(JohoColors.black)
 
-                // Notes Section
-                Section {
-                    TextEditor(text: $notes)
-                        .frame(minHeight: 80)
-                } header: {
-                    Text(NSLocalizedString("expenses.notes", value: "Notes (Optional)", comment: "Notes label"))
-                }
-
-                // Trip Assignment
-                if let trip = trip {
-                    Section {
-                        HStack {
-                            Label(trip.tripName, systemImage: "airplane")
-                            Spacer()
-                            Image(systemName: "checkmark")
-                                .foregroundStyle(.green)
-                        }
-                    } header: {
-                        Text(NSLocalizedString("expenses.trip", value: "Trip", comment: "Trip label"))
-                    }
-                }
-            }
-            .navigationTitle("New Expense")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        if !isValid {
-                            if let amountValue = Double(amount.replacingOccurrences(of: ",", with: ".")) {
-                                let (isValidAmount, validationError) = ConfigurationManager.shared.validate(
-                                    field: "expense_amount",
-                                    value: amountValue,
-                                    context: modelContext
-                                )
-                                if !isValidAmount, let error = validationError {
-                                    errorMessage = error
-                                    showError = true
-                                } else if description.isEmpty {
-                                    errorMessage = "Please enter a description"
-                                    showError = true
+                            // Templates
+                            ForEach(templates) { template in
+                                Button {
+                                    onSelect(template)
+                                    dismiss()
+                                } label: {
+                                    JohoTemplateRow(template: template, category: category)
                                 }
-                            } else {
-                                errorMessage = "Please enter a valid number"
-                                showError = true
+                                .buttonStyle(.plain)
+
+                                Rectangle().fill(JohoColors.black.opacity(0.1)).frame(height: 1)
                             }
-                        } else {
-                            saveExpense()
                         }
                     }
                 }
             }
-            .onChange(of: currency) { _, newCurrency in
-                if newCurrency != baseCurrency {
-                    fetchExchangeRate(currency: newCurrency, date: selectedDate)
-                }
-            }
-            .onChange(of: selectedDate) { _, newDate in
-                if currency != baseCurrency {
-                    fetchExchangeRate(currency: currency, date: newDate)
-                }
-            }
-            .sheet(isPresented: $showTemplatePicker) {
-                TemplatePickerView(categories: categories) { template in
-                    applyTemplate(template)
-                }
-            }
-            .sheet(isPresented: $showImagePicker) {
-                ImagePicker(image: $receiptImage)
-            }
-            .alert("Error", isPresented: $showError) {
-                Button("OK", role: .cancel) {}
-            } message: {
-                Text(errorMessage)
-            }
-            .onAppear {
-                // Auto-focus amount field
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                    isAmountFocused = true
-                }
-                // If it's a new expense, set currency to baseCurrency
-                if existingExpense == nil {
-                    currency = baseCurrency
-                }
-            }
         }
+        .background(JohoColors.white)
+        .presentationCornerRadius(0)
+        .presentationDetents([.medium, .large])
     }
+}
 
-    // MARK: - Validation
+private struct JohoTemplateRow: View {
+    let template: ExpenseTemplate
+    let category: ExpenseCategory
 
-    private var isValid: Bool {
-        // Validate amount using database rules
-        guard let amountValue = Double(amount.replacingOccurrences(of: ",", with: ".")) else {
-            return false
-        }
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: category.iconName)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(category.color)
+                .frame(width: 32, height: 32)
+                .background(category.color.opacity(0.15))
+                .clipShape(Squircle(cornerRadius: 6))
 
-        let (isValidAmount, _) = ConfigurationManager.shared.validate(
-            field: "expense_amount",
-            value: amountValue,
-            context: modelContext
-        )
+            VStack(alignment: .leading, spacing: 2) {
+                Text(template.name.uppercased())
+                    .font(.system(size: 12, weight: .bold, design: .monospaced))
+                    .foregroundStyle(JohoColors.black)
 
-        if !isValidAmount {
-            return false
-        }
-
-        return !description.isEmpty
-    }
-
-    // MARK: - Actions
-
-    private func fetchExchangeRate(currency: String, date: Date) {
-        Task {
-            do {
-                let rate = try await CurrencyService.shared.getRate(
-                    from: currency,
-                    to: baseCurrency,
-                    date: date,
-                    context: modelContext
-                )
-                await MainActor.run {
-                    self.exchangeRateString = String(format: "%.4f", rate)
+                if let amount = template.defaultAmount {
+                    Text("\(String(format: "%.0f", amount)) \(template.defaultCurrency)")
+                        .font(.system(size: 10, weight: .medium, design: .monospaced))
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
                 }
-            } catch {
-                Log.w("Failed to fetch rate: \(error)")
             }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12, weight: .bold))
+                .foregroundStyle(JohoColors.black.opacity(0.6))
         }
-    }
-
-    // MARK: - Save
-
-    private func saveExpense() {
-        guard let amountValue = Double(amount.replacingOccurrences(of: ",", with: ".")) else {
-            errorMessage = "Invalid amount"
-            showError = true
-            return
-        }
-
-        let expense: ExpenseItem
-        if let existing = existingExpense {
-            expense = existing
-            expense.date = selectedDate
-            expense.amount = amountValue
-            expense.currency = currency
-            expense.merchantName = merchant.isEmpty ? nil : merchant
-            expense.itemDescription = description
-            expense.notes = notes.isEmpty ? nil : notes
-            expense.dateModified = Date()
-        } else {
-            expense = ExpenseItem(
-                date: selectedDate,
-                amount: amountValue,
-                currency: currency,
-                merchantName: merchant.isEmpty ? nil : merchant,
-                itemDescription: description,
-                notes: notes.isEmpty ? nil : notes
-            )
-            // Insert immediately if new
-            modelContext.insert(expense)
-        }
-
-        // Set category
-        expense.category = selectedCategory
-
-        // Set trip
-        expense.trip = trip
-
-        // Set receipt image
-        if let image = receiptImage,
-           let imageData = image.jpegData(compressionQuality: 0.8) {
-            expense.receiptImageData = imageData
-            expense.receiptFileName = "receipt_\(UUID().uuidString).jpg"
-        }
-
-        // Handle exchange rate
-        if currency != baseCurrency {
-            let rate = Double(exchangeRateString.replacingOccurrences(of: ",", with: ".")) ?? 1.0
-            expense.exchangeRate = rate
-            expense.convertedAmount = amountValue * rate
-        }
-
-        // Save and dismiss
-        do {
-            try modelContext.save()
-            Log.i("Expense saved successfully: \(expense.itemDescription)")
-            dismiss()
-        } catch {
-            Log.w("Failed to save expense: \(error)")
-            errorMessage = "Failed to save expense: \(error.localizedDescription)"
-            showError = true
-        }
-    }
-
-    // MARK: - Template
-
-    private func applyTemplate(_ template: ExpenseTemplate) {
-        description = template.name
-        currency = template.defaultCurrency
-
-        if let defaultAmount = template.defaultAmount {
-            amount = String(format: "%.2f", defaultAmount)
-        }
-
-        if let notes = template.notes {
-            self.notes = notes
-        }
-
-        selectedCategory = template.category
-
-        showTemplatePicker = false
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, 12)
+        .background(JohoColors.white)
     }
 }
 

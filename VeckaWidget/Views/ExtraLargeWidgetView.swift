@@ -2,8 +2,8 @@
 //  ExtraLargeWidgetView.swift
 //  VeckaWidget
 //
-//  Extra Large widget (iPad): Clean design with Liquid Glass on navigation only
-//  Glass = week badge only. All content = clean and readable.
+//  情報デザイン (Jōhō Dezain) Extra Large Widget (iPad)
+//  Two-column layout: Today info + Full month calendar
 //
 
 import SwiftUI
@@ -23,12 +23,10 @@ struct VeckaExtraLargeWidgetView: View {
 
     private let holidayEngine = WidgetHolidayEngine()
 
-    private var monthName: String {
-        entry.date.formatted(.dateTime.month(.wide).locale(.autoupdatingCurrent)).capitalized
-    }
-
-    private var yearString: String {
-        entry.date.formatted(.dateTime.year().locale(.autoupdatingCurrent))
+    private var monthYear: String {
+        let month = entry.date.formatted(.dateTime.month(.wide).locale(.autoupdatingCurrent)).uppercased()
+        let year = entry.date.formatted(.dateTime.year().locale(.autoupdatingCurrent))
+        return "\(month) \(year)"
     }
 
     private var dayOfMonth: Int {
@@ -36,7 +34,7 @@ struct VeckaExtraLargeWidgetView: View {
     }
 
     private var weekdayName: String {
-        entry.date.formatted(.dateTime.weekday(.wide).locale(.autoupdatingCurrent)).capitalized
+        entry.date.formatted(.dateTime.weekday(.wide).locale(.autoupdatingCurrent)).uppercased()
     }
 
     private var firstOfMonth: Date {
@@ -102,78 +100,59 @@ struct VeckaExtraLargeWidgetView: View {
     }
 
     var body: some View {
-        HStack(spacing: 24) {
-            // LEFT: Today Info
-            VStack(alignment: .leading, spacing: 16) {
-                // Week Badge - GLASS (navigation element)
-                HStack {
-                    Text("Week \(entry.weekNumber)")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 7)
-                        .glassEffect(.regular, in: .capsule)
+        HStack(spacing: JohoDimensions.spacingXL) {
+            // LEFT COLUMN: Today Info
+            VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
+                // Week Badge
+                JohoWeekBadge(weekNumber: entry.weekNumber, size: .large)
 
-                    Spacer()
-                }
+                Spacer()
 
-                // Today - NO GLASS (content)
-                VStack(alignment: .leading, spacing: 4) {
+                // Big Day Number
+                VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
                     Text("\(dayOfMonth)")
-                        .font(.system(size: 64, weight: .light))
-                        .foregroundStyle(.primary)
+                        .font(JohoWidgetFont.displayLarge)
+                        .foregroundStyle(JohoWidgetColors.black)
 
                     Text(weekdayName)
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundStyle(.primary)
-
-                    Text("\(monthName) \(yearString)")
-                        .font(.system(size: 14))
-                        .foregroundStyle(.secondary)
+                        .font(JohoWidgetFont.headerMedium)
+                        .foregroundStyle(JohoWidgetColors.black.opacity(0.6))
                 }
 
-                // Today's Holidays - NO GLASS (content)
+                // Today's Holidays
                 if !entry.todaysHolidays.isEmpty {
-                    VStack(alignment: .leading, spacing: 6) {
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                         ForEach(entry.todaysHolidays.prefix(2), id: \.id) { holiday in
-                            HStack(spacing: 8) {
-                                Circle()
-                                    .fill(holiday.isRedDay ? WidgetColors.holiday : WidgetColors.observance)
-                                    .frame(width: 8, height: 8)
-
-                                Text(holiday.displayName)
-                                    .font(.system(size: 13, weight: .medium))
-                                    .foregroundStyle(holiday.isRedDay ? WidgetColors.holiday : WidgetColors.observance)
-                            }
+                            JohoHolidayPill(name: holiday.displayName, isRedDay: holiday.isRedDay)
                         }
                     }
                 }
 
                 Spacer()
 
-                // Upcoming - NO GLASS (content)
+                // Upcoming Holidays
                 if !upcomingHolidays.isEmpty {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Upcoming")
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(.secondary)
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        Text("UPCOMING")
+                            .font(JohoWidgetFont.labelBold)
+                            .foregroundStyle(JohoWidgetColors.black.opacity(0.6))
 
                         ForEach(Array(upcomingHolidays.prefix(3).enumerated()), id: \.offset) { _, item in
-                            HStack(spacing: 8) {
+                            HStack(spacing: JohoDimensions.spacingSM) {
                                 Circle()
-                                    .fill(item.holiday.isRedDay ? WidgetColors.holiday : WidgetColors.observance)
+                                    .fill(item.holiday.isRedDay ? JohoWidgetColors.pink : JohoWidgetColors.cyan)
                                     .frame(width: 5, height: 5)
 
                                 Text(item.holiday.displayName)
-                                    .font(.system(size: 12))
-                                    .foregroundStyle(.primary)
+                                    .font(JohoWidgetFont.body)
+                                    .foregroundStyle(JohoWidgetColors.black)
                                     .lineLimit(1)
 
                                 Spacer()
 
                                 Text(daysUntilText(item.daysUntil))
-                                    .font(.system(size: 11))
-                                    .foregroundStyle(.secondary)
+                                    .font(JohoWidgetFont.labelSmall)
+                                    .foregroundStyle(JohoWidgetColors.black.opacity(0.6))
                             }
                         }
                     }
@@ -181,60 +160,69 @@ struct VeckaExtraLargeWidgetView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            // RIGHT: Calendar Grid (clean, no redundant header)
-            VStack(spacing: 8) {
-                // Weekday Headers only
+            // RIGHT COLUMN: Calendar Grid
+            VStack(spacing: JohoDimensions.spacingSM) {
+                // Month header
+                Text(monthYear)
+                    .font(JohoWidgetFont.headerMedium)
+                    .foregroundStyle(JohoWidgetColors.black)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                // Weekday headers
                 HStack(spacing: 0) {
                     Text("W")
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundStyle(.secondary)
-                        .frame(width: 24)
+                        .font(JohoWidgetFont.labelSmall)
+                        .foregroundStyle(JohoWidgetColors.black.opacity(0.6))
+                        .frame(width: 26)
 
                     ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { index, symbol in
                         Text(symbol)
-                            .font(.system(size: 11, weight: .semibold))
+                            .font(JohoWidgetFont.labelBold)
                             .foregroundStyle(weekdayHeaderColor(for: index))
                             .frame(maxWidth: .infinity)
                     }
                 }
 
-                // Calendar Rows
+                // Calendar rows
                 ForEach(Array(weeksInMonth.enumerated()), id: \.offset) { weekIndex, week in
                     HStack(spacing: 0) {
                         Text("\(weekNumber(for: weekIndex))")
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(.secondary.opacity(0.6))
-                            .frame(width: 24)
+                            .font(JohoWidgetFont.weekNumber)
+                            .foregroundStyle(JohoWidgetColors.black.opacity(0.6))
+                            .frame(width: 26)
 
                         ForEach(0..<7, id: \.self) { dayIndex in
                             if let day = week[dayIndex] {
-                                dayCellView(day: day, dayIndex: dayIndex)
+                                dayCell(day: day, dayIndex: dayIndex)
                             } else {
                                 Color.clear.frame(maxWidth: .infinity)
                             }
                         }
                     }
-                    .frame(height: 36)
+                    .frame(height: 34)
                 }
             }
             .frame(maxWidth: .infinity)
         }
-        .padding(16)
+        .padding(JohoDimensions.spacingXL)
         .widgetURL(URL(string: "vecka://week/\(entry.weekNumber)/\(entry.year)"))
-        .containerBackground(.fill.tertiary, for: .widget)
+        .containerBackground(for: .widget) {
+            // 情報デザイン: WHITE background with BLACK border
+            ZStack {
+                RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous)
+                    .fill(JohoWidgetColors.white)
+                RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous)
+                    .stroke(JohoWidgetColors.black, lineWidth: JohoDimensions.borderBold)
+            }
+        }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(widgetAccessibilityLabel)
+        .accessibilityLabel(accessibilityLabel)
     }
 
-    private var widgetAccessibilityLabel: String {
-        let todayFormatted = entry.date.formatted(date: .complete, time: .omitted)
-        var label = "\(monthName) \(yearString) calendar, Week \(entry.weekNumber). Today: \(todayFormatted)"
+    private var accessibilityLabel: String {
+        var label = "\(monthYear) calendar, Week \(entry.weekNumber). Today: \(weekdayName) \(dayOfMonth)"
         if let holiday = entry.todaysHolidays.first {
             label += ", \(holiday.displayName)"
-        }
-        if !upcomingHolidays.isEmpty {
-            let upcoming = upcomingHolidays.prefix(2).map { "\($0.holiday.displayName) in \($0.daysUntil) days" }.joined(separator: ", ")
-            label += ". Upcoming: \(upcoming)"
         }
         return label
     }
@@ -247,38 +235,24 @@ struct VeckaExtraLargeWidgetView: View {
     }
 
     private func weekdayHeaderColor(for index: Int) -> Color {
-        switch index {
-        case 6: return WidgetColors.sundayBlue  // Sunday = Blue
-        default: return .secondary               // Saturday and weekdays = normal
-        }
+        index == 6 ? JohoWidgetColors.sundayBlue : JohoWidgetColors.black.opacity(0.7)
     }
 
     @ViewBuilder
-    private func dayCellView(day: Int, dayIndex: Int) -> some View {
+    private func dayCell(day: Int, dayIndex: Int) -> some View {
         let isToday = self.isToday(day: day)
         let dayDate = dateFor(day: day)
         let holidays = dayDate.map { holidayEngine.getHolidays(for: $0) } ?? []
         let isRedDay = holidays.first?.isRedDay ?? false
+        let isSunday = dayIndex == 6
 
-        let textColor: Color = {
-            if isToday { return .white }
-            if isRedDay { return WidgetColors.holiday }
-            if dayIndex == 6 { return WidgetColors.sundayBlue }  // Sunday = Blue
-            return .primary
-        }()
-
-        ZStack {
-            if isToday {
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(WidgetColors.accent)
-                    .frame(width: 30, height: 30)
-            }
-
-            Text("\(day)")
-                .font(.system(size: 14, weight: isToday ? .bold : .regular))
-                .foregroundStyle(textColor)
-        }
-        .frame(maxWidth: .infinity)
+        JohoDayCell(
+            day: day,
+            isToday: isToday,
+            isRedDay: isRedDay,
+            isSunday: isSunday,
+            cellSize: 28
+        )
     }
 
     private func isToday(day: Int) -> Bool {

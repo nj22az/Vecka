@@ -47,16 +47,18 @@ struct NoteIconPickerView: View {
                         .font(.title2)
                         .frame(width: 50, height: 50)
                         .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(selection == symbol ? Color.blue.opacity(0.2) : Color.gray.opacity(0.1))
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(selection == symbol ? JohoColors.cyan.opacity(0.2) : JohoColors.black.opacity(0.05))
                         )
                         .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .strokeBorder(selection == symbol ? Color.blue : Color.clear, lineWidth: 2)
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .strokeBorder(selection == symbol ? JohoColors.cyan : Color.clear, lineWidth: 2)
                         )
                         .onTapGesture {
                             selection = symbol
                         }
+                        .accessibilityLabel("Icon \(symbol)")
+                        .accessibilityAddTraits(.isButton)
                 }
             }
             .padding()

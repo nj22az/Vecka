@@ -1,0 +1,1381 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Web views | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "web views",
+        "WKWebView",
+        "WebKit",
+        "HTML",
+        "iOS",
+        "iPadOS",
+        "macOS",
+        "visionOS",
+        "Apple Developer",
+        "Human Interface Guidelines",
+        "HIG"
+      ],
+      "summary": "Apple Developer documentation page describing web views, a component that loads and displays rich web content such as embedded HTML and websites directly within apps. The document covers best practices, platform considerations, and related resources for implementing web views across Apple platforms.",
+      "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+      "sourceURL": "https://developer.apple.com/design/human-interface-guidelines/web-views"
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": 816,
+          "height": 1872,
+          "unit": "pixels"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF",
+        "layout": {
+          "type": "multi-column",
+          "columns": 3,
+          "margins": {
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation-bar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": 816,
+              "height": 44
+            },
+            "zIndex": 100,
+            "content": {
+              "backgroundColor": "#000000",
+              "items": [
+                {
+                  "type": "logo",
+                  "text": "Developer",
+                  "icon": "Apple logo (white)",
+                  "position": "left"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "News",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Discover",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Design",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Develop",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Distribute",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Support",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Account",
+                  "position": "center"
+                },
+                {
+                  "type": "icon",
+                  "icon": "Search magnifying glass",
+                  "position": "right"
+                }
+              ],
+              "textColor": "#FFFFFF",
+              "fontSize": "14px"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-secondary-nav-bar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 44,
+              "width": 816,
+              "height": 40
+            },
+            "zIndex": 99,
+            "content": {
+              "backgroundColor": "#F5F5F7",
+              "leftSection": {
+                "text": "Design",
+                "fontWeight": "semibold",
+                "fontSize": "16px"
+              },
+              "rightSection": {
+                "items": [
+                  "Overview",
+                  "What's New",
+                  "Get Started",
+                  "Guidelines",
+                  "Resources"
+                ],
+                "textColor": "#424245",
+                "fontSize": "12px"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-left-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 84,
+              "width": 200,
+              "height": 400
+            },
+            "zIndex": 50,
+            "content": {
+              "type": "hierarchical-menu",
+              "filterInput": {
+                "placeholder": "Filter",
+                "icon": "horizontal lines with filter symbol"
+              },
+              "menuItems": [
+                {
+                  "level": 0,
+                  "text": "Getting started",
+                  "expandable": true,
+                  "expanded": false,
+                  "icon": "chevron right"
+                },
+                {
+                  "level": 0,
+                  "text": "Foundations",
+                  "expandable": true,
+                  "expanded": false,
+                  "icon": "chevron right"
+                },
+                {
+                  "level": 0,
+                  "text": "Patterns",
+                  "expandable": true,
+                  "expanded": false,
+                  "icon": "chevron right"
+                },
+                {
+                  "level": 0,
+                  "text": "Components",
+                  "expandable": true,
+                  "expanded": true,
+                  "icon": "chevron down",
+                  "children": [
+                    {
+                      "level": 1,
+                      "text": "Content",
+                      "icon": "quotation marks in rounded square",
+                      "expandable": true,
+                      "expanded": true,
+                      "children": [
+                        {
+                          "level": 2,
+                          "text": "Charts",
+                          "selected": false
+                        },
+                        {
+                          "level": 2,
+                          "text": "Image views",
+                          "selected": false
+                        },
+                        {
+                          "level": 2,
+                          "text": "Text views",
+                          "selected": false
+                        },
+                        {
+                          "level": 2,
+                          "text": "Web views",
+                          "selected": true,
+                          "fontWeight": "bold"
+                        }
+                      ]
+                    },
+                    {
+                      "level": 1,
+                      "text": "Layout and organization",
+                      "icon": "grid layout symbol",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "level": 1,
+                      "text": "Menus and actions",
+                      "icon": "list symbol",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "level": 1,
+                      "text": "Navigation and search",
+                      "icon": "compass symbol",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "level": 1,
+                      "text": "Presentation",
+                      "icon": "rectangle on rectangle symbol",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "level": 1,
+                      "text": "Selection and input",
+                      "icon": "checkmark in square symbol",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "level": 1,
+                      "text": "Status",
+                      "icon": "sparkle or star symbol",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "level": 1,
+                      "text": "System experiences",
+                      "icon": "rectangle with lines symbol",
+                      "expandable": true,
+                      "expanded": false
+                    }
+                  ]
+                },
+                {
+                  "level": 0,
+                  "text": "Inputs",
+                  "expandable": true,
+                  "expanded": false,
+                  "icon": "chevron right"
+                },
+                {
+                  "level": 0,
+                  "text": "Technologies",
+                  "expandable": true,
+                  "expanded": false,
+                  "icon": "chevron right"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-title",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 220,
+              "y": 84,
+              "width": 400,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Web views",
+              "level": 1,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "40px",
+              "fontWeight": "bold",
+              "textColor": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 220,
+              "y": 134,
+              "width": 400,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "A web view loads and displays rich web content, such as embedded HTML and websites, directly within your app.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "regular",
+              "textColor": "#1D1D1F",
+              "lineHeight": "1.4"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "follows"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-hero-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": 220,
+              "y": 200,
+              "width": 420,
+              "height": 220
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "A stylized illustration demonstrating a web view component within an app interface. The image shows a coral/salmon colored rounded rectangle background representing an app window. Inside is a white/light gray rounded rectangle representing the web view container. The web view displays a Safari compass icon (circular with a red and white directional indicator) in the center, symbolizing web browsing capability. There are subtle UI chrome elements including small horizontal lines suggesting a toolbar or address bar area at the top of the web view, and decorative curved lines at the top left corner of the outer container.",
+              "subjects": [
+                "Web view UI component",
+                "Safari compass icon",
+                "App window container",
+                "Toolbar indicator lines"
+              ],
+              "composition": "Centered composition with nested rounded rectangles. The Safari compass icon is prominently centered within the inner white rectangle. Decorative elements frame the top-left corner.",
+              "colorPalette": [
+                "#F5866A (coral/salmon background)",
+                "#FFFFFF (white web view container)",
+                "#FF3B30 (red in compass icon)",
+                "#E8E8E8 (light gray shadows/lines)"
+              ],
+              "mood": "Clean, modern, minimalist Apple design aesthetic",
+              "technicalDetails": "Vector illustration, flat design style with subtle shadows, rounded corners consistent with iOS/macOS design language",
+              "textInImage": [],
+              "contextualRelevance": "This hero image visually represents the web view component concept, using the Safari compass icon to indicate web browsing functionality embedded within an app container. It demonstrates how web content appears as a distinct view within an app's interface.",
+              "dimensions": {
+                "width": 420,
+                "height": 220
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-hero-image-caption",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-hero-image-caption",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": 220,
+              "y": 425,
+              "width": 420,
+              "height": 20
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "For example, Mail uses a web view to show HTML content in messages.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "12px",
+              "fontWeight": "regular",
+              "textColor": "#6E6E73"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-hero-image",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-right-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 660,
+              "y": 100,
+              "width": 156,
+              "height": 200
+            },
+            "zIndex": 50,
+            "content": {
+              "sections": [
+                {
+                  "title": "Supported platforms",
+                  "titleFontSize": "11px",
+                  "titleColor": "#6E6E73",
+                  "items": [
+                    {
+                      "type": "platform-icons",
+                      "icons": [
+                        {
+                          "platform": "iPhone",
+                          "icon": "iPhone outline",
+                          "supported": true
+                        },
+                        {
+                          "platform": "iPad",
+                          "icon": "iPad outline",
+                          "supported": true
+                        },
+                        {
+                          "platform": "Mac",
+                          "icon": "Mac/laptop outline",
+                          "supported": true
+                        },
+                        {
+                          "platform": "Apple TV",
+                          "icon": "TV outline",
+                          "supported": false,
+                          "appearance": "grayed out"
+                        },
+                        {
+                          "platform": "Apple Watch",
+                          "icon": "Watch outline",
+                          "supported": false,
+                          "appearance": "grayed out"
+                        },
+                        {
+                          "platform": "Vision Pro",
+                          "icon": "Vision Pro/goggles outline",
+                          "supported": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "title": "On this page",
+                  "items": [
+                    {
+                      "text": "Web views",
+                      "linkType": "anchor",
+                      "textColor": "#1D1D1F"
+                    },
+                    {
+                      "text": "Best practices",
+                      "linkType": "anchor",
+                      "textColor": "#6E6E73"
+                    },
+                    {
+                      "text": "Platform considerations",
+                      "linkType": "anchor",
+                      "textColor": "#6E6E73"
+                    },
+                    {
+                      "text": "Resources",
+                      "linkType": "anchor",
+                      "textColor": "#6E6E73"
+                    }
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practices-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 220,
+              "y": 460,
+              "width": 400,
+              "height": 35
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Best practices",
+              "level": 2,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "28px",
+              "fontWeight": "bold",
+              "textColor": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 220,
+              "y": 500,
+              "width": 420,
+              "height": 100
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Support forward and back navigation when appropriate. Web views support forward and back navigation, but this behavior isn't available by default. If people are likely to use your web view to visit multiple pages, allow forward and back navigation, and provide corresponding controls to initiate these features.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "15px",
+              "fontWeight": "regular",
+              "textColor": "#1D1D1F",
+              "lineHeight": "1.5",
+              "formatting": {
+                "boldText": "Support forward and back navigation when appropriate.",
+                "boldRange": "first sentence"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-best-practices-heading",
+                "relationshipType": "follows"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-best-practice-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 220,
+              "y": 610,
+              "width": 420,
+              "height": 100
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Avoid using a web view to build a web browser. Using a web view to let people briefly access a website without leaving the context of your app is fine, but Safari is the primary way people browse the web. Attempting to replicate the functionality of Safari in your app is unnecessary and discouraged.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "15px",
+              "fontWeight": "regular",
+              "textColor": "#1D1D1F",
+              "lineHeight": "1.5",
+              "formatting": {
+                "boldText": "Avoid using a web view to build a web browser.",
+                "boldRange": "first sentence"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-best-practice-1",
+                "relationshipType": "follows"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-platform-considerations-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 220,
+              "y": 720,
+              "width": 400,
+              "height": 35
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Platform considerations",
+              "level": 2,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "28px",
+              "fontWeight": "bold",
+              "textColor": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-considerations-content",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 220,
+              "y": 760,
+              "width": 420,
+              "height": 40
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "No additional considerations for iOS, iPadOS, macOS, or visionOS. Not supported in tvOS or watchOS.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "15px",
+              "fontWeight": "regular",
+              "fontStyle": "italic",
+              "textColor": "#6E6E73",
+              "lineHeight": "1.5"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-platform-considerations-heading",
+                "relationshipType": "follows"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-resources-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 220,
+              "y": 820,
+              "width": 400,
+              "height": 35
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Resources",
+              "level": 2,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "28px",
+              "fontWeight": "bold",
+              "textColor": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-related-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 220,
+              "y": 860,
+              "width": 400,
+              "height": 25
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Related",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "semibold",
+              "textColor": "#1D1D1F"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-resources-heading",
+                "relationshipType": "child-of"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-resources-related-link",
+            "elementType": "link",
+            "boundingBox": {
+              "x": 220,
+              "y": 890,
+              "width": 100,
+              "height": 20
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Webkit.org",
+              "url": "https://webkit.org",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "15px",
+              "fontWeight": "regular",
+              "textColor": "#0066CC",
+              "textDecoration": "underline"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-resources-related-heading",
+                "relationshipType": "follows"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-resources-devdocs-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 220,
+              "y": 920,
+              "width": 400,
+              "height": 25
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Developer documentation",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "semibold",
+              "textColor": "#1D1D1F"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-resources-heading",
+                "relationshipType": "child-of"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-resources-devdocs-link",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 220,
+              "y": 950,
+              "width": 200,
+              "height": 20
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "WKWebView — WebKit",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "15px",
+              "fontWeight": "regular",
+              "textColor": "#1D1D1F",
+              "links": [
+                {
+                  "text": "WKWebView",
+                  "url": "https://developer.apple.com/documentation/webkit/wkwebview",
+                  "textColor": "#0066CC",
+                  "textDecoration": "underline"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-resources-devdocs-heading",
+                "relationshipType": "follows"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-resources-videos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 220,
+              "y": 990,
+              "width": 400,
+              "height": 25
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Videos",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "semibold",
+              "textColor": "#1D1D1F"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-resources-heading",
+                "relationshipType": "child-of"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-video-thumbnail",
+            "elementType": "image",
+            "boundingBox": {
+              "x": 220,
+              "y": 1020,
+              "width": 180,
+              "height": 100
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "video-thumbnail",
+              "description": "A dark/black rectangular video thumbnail featuring two technology icons side by side. On the left is a yellow rounded square icon containing 'JS' text (representing JavaScript). On the right is a light blue/teal rounded square icon containing a Safari compass symbol (white circle with directional indicator). The icons are presented on a dark gradient background typical of Apple WWDC video thumbnails.",
+              "subjects": [
+                "JavaScript logo icon",
+                "Safari/WebKit compass icon"
+              ],
+              "composition": "Two square icons centered horizontally on dark background, spaced evenly apart",
+              "colorPalette": [
+                "#000000 (black background)",
+                "#F7DF1E (JavaScript yellow)",
+                "#5AC8FA (Safari blue/teal)",
+                "#FFFFFF (white icon details)"
+              ],
+              "mood": "Technical, professional, WWDC presentation style",
+              "technicalDetails": "Video thumbnail, likely 16:9 or similar aspect ratio, dark theme consistent with Apple developer video branding",
+              "textInImage": [
+                "JS"
+              ],
+              "contextualRelevance": "This thumbnail represents the 'Explore WKWebView additions' WWDC video, showing the relationship between JavaScript and WebKit/Safari technologies that power web views."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-video-caption",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-video-caption",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": 220,
+              "y": 1125,
+              "width": 180,
+              "height": 40
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Explore WKWebView additions",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "13px",
+              "fontWeight": "medium",
+              "textColor": "#1D1D1F",
+              "linkType": "video-link"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-video-thumbnail",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-breadcrumb-nav",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 148,
+              "y": 1200,
+              "width": 200,
+              "height": 20
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "breadcrumb",
+              "items": [
+                {
+                  "icon": "Apple logo",
+                  "type": "icon"
+                },
+                {
+                  "text": "Developer",
+                  "type": "link",
+                  "separator": ">"
+                },
+                {
+                  "text": "Documentation",
+                  "type": "link",
+                  "separator": ">"
+                }
+              ],
+              "textColor": "#424245",
+              "fontSize": "12px"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-columns",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 148,
+              "y": 1230,
+              "width": 668,
+              "height": 450
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "footer-navigation",
+              "columns": [
+                {
+                  "title": "Platforms",
+                  "titleFontWeight": "semibold",
+                  "items": [
+                    "iOS",
+                    "iPadOS",
+                    "macOS",
+                    "tvOS",
+                    "visionOS",
+                    "watchOS"
+                  ]
+                },
+                {
+                  "title": "Tools",
+                  "titleFontWeight": "semibold",
+                  "items": [
+                    "Swift",
+                    "SwiftUI",
+                    "Swift Playground",
+                    "TestFlight",
+                    "Xcode",
+                    "Xcode Cloud",
+                    "SF Symbols"
+                  ]
+                },
+                {
+                  "title": "Topics & Technologies",
+                  "titleFontWeight": "semibold",
+                  "items": [
+                    "Accessibility",
+                    "Accessories",
+                    "App Extension",
+                    "App Store",
+                    "Audio & Video",
+                    "Augmented Reality",
+                    "Design",
+                    "Distribution",
+                    "Education",
+                    "Fonts",
+                    "Games",
+                    "Health & Fitness",
+                    "In-App Purchase",
+                    "Localization",
+                    "Maps & Location",
+                    "Machine Learning & AI",
+                    "Open Source",
+                    "Security",
+                    "Safari & Web"
+                  ]
+                },
+                {
+                  "title": "Resources",
+                  "titleFontWeight": "semibold",
+                  "items": [
+                    "Documentation",
+                    "Tutorials",
+                    "Downloads",
+                    "Forums",
+                    "Videos"
+                  ]
+                },
+                {
+                  "title": "Support",
+                  "titleFontWeight": "semibold",
+                  "items": [
+                    "Support Articles",
+                    "Contact Us",
+                    "Bug Reporting",
+                    "System Status"
+                  ]
+                },
+                {
+                  "title": "Account",
+                  "titleFontWeight": "semibold",
+                  "items": [
+                    "Apple Developer",
+                    "App Store Connect",
+                    "Certificates, IDs, & Profiles",
+                    "Feedback Assistant"
+                  ]
+                },
+                {
+                  "title": "Programs",
+                  "titleFontWeight": "semibold",
+                  "items": [
+                    "Apple Developer Program",
+                    "Apple Developer Enterprise Program",
+                    "App Store Small Business Program",
+                    "MFi Program",
+                    "News Partner Program",
+                    "Video Partner Program",
+                    "Security Bounty Program",
+                    "Security Research Device Program"
+                  ]
+                },
+                {
+                  "title": "Events",
+                  "titleFontWeight": "semibold",
+                  "items": [
+                    "Meet with Apple",
+                    "Apple Developer Centers",
+                    "App Store Awards",
+                    "Apple Design Awards",
+                    "Apple Developer Academies",
+                    "WWDC"
+                  ]
+                }
+              ],
+              "textColor": "#424245",
+              "fontSize": "12px",
+              "linkColor": "#424245"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-feedback",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 148,
+              "y": 1720,
+              "width": 400,
+              "height": 20
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "To submit feedback on documentation, visit Feedback Assistant.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "12px",
+              "fontWeight": "regular",
+              "textColor": "#6E6E73",
+              "links": [
+                {
+                  "text": "Feedback Assistant",
+                  "url": "https://feedbackassistant.apple.com",
+                  "textColor": "#0066CC"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-theme-toggle",
+            "elementType": "control",
+            "boundingBox": {
+              "x": 620,
+              "y": 1720,
+              "width": 120,
+              "height": 28
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "segmented-control",
+              "options": [
+                {
+                  "text": "Light",
+                  "selected": false
+                },
+                {
+                  "text": "Dark",
+                  "selected": false
+                },
+                {
+                  "text": "Auto",
+                  "selected": true,
+                  "backgroundColor": "#0066CC",
+                  "textColor": "#FFFFFF"
+                }
+              ],
+              "borderRadius": "14px",
+              "backgroundColor": "#E8E8ED"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-legal",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 148,
+              "y": 1760,
+              "width": 500,
+              "height": 20
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Copyright © 2025 Apple Inc. All rights reserved.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "12px",
+              "fontWeight": "regular",
+              "textColor": "#6E6E73"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-links",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 148,
+              "y": 1780,
+              "width": 400,
+              "height": 20
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "inline-links",
+              "items": [
+                {
+                  "text": "Terms of Use",
+                  "url": "https://www.apple.com/legal/internet-services/terms/site.html"
+                },
+                {
+                  "text": "Privacy Policy",
+                  "url": "https://www.apple.com/privacy/privacy-policy/"
+                },
+                {
+                  "text": "Agreements and Guidelines",
+                  "url": "https://developer.apple.com/support/terms/"
+                }
+              ],
+              "separator": " ",
+              "textColor": "#424245",
+              "fontSize": "12px"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-language-selector",
+            "elementType": "control",
+            "boundingBox": {
+              "x": 720,
+              "y": 1780,
+              "width": 80,
+              "height": 20
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "dropdown",
+              "currentValue": "English",
+              "icon": "chevron down",
+              "textColor": "#424245",
+              "fontSize": "12px"
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation-bar",
+          "page1-secondary-nav-bar",
+          "page1-main-title",
+          "page1-main-description",
+          "page1-hero-image",
+          "page1-hero-image-caption",
+          "page1-best-practices-heading",
+          "page1-best-practice-1",
+          "page1-best-practice-2",
+          "page1-platform-considerations-heading",
+          "page1-platform-considerations-content",
+          "page1-resources-heading",
+          "page1-resources-related-heading",
+          "page1-resources-related-link",
+          "page1-resources-devdocs-heading",
+          "page1-resources-devdocs-link",
+          "page1-resources-videos-heading",
+          "page1-video-thumbnail",
+          "page1-video-caption",
+          "page1-breadcrumb-nav",
+          "page1-footer-columns",
+          "page1-footer-feedback",
+          "page1-footer-legal",
+          "page1-footer-links"
+        ],
+        "pageSummary": "This Apple Developer documentation page provides guidance on using web views in iOS, iPadOS, macOS, and visionOS applications. The page explains that web views load and display rich web content like HTML and websites within apps, using Mail's HTML message display as an example. Two key best practices are provided: supporting forward/back navigation for multi-page browsing scenarios, and avoiding building full web browsers since Safari serves that purpose. The page notes no platform-specific considerations exist for supported platforms, while tvOS and watchOS do not support web views. Resources include links to Webkit.org, WKWebView developer documentation, and a WWDC video about WKWebView additions."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": false,
+        "entries": []
+      },
+      "runningHeaders": "Apple Developer navigation bar with News, Discover, Design, Develop, Distribute, Support, Account links",
+      "runningFooters": "Apple legal footer with copyright, Terms of Use, Privacy Policy, Agreements and Guidelines, language selector",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "introduction",
+          "title": "Web views",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Introduction defining web views as components that load and display rich web content including HTML and websites directly within apps."
+        },
+        {
+          "sectionId": "best-practices",
+          "title": "Best practices",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Two key recommendations: enable forward/back navigation for multi-page scenarios, and avoid replicating Safari's browser functionality."
+        },
+        {
+          "sectionId": "platform-considerations",
+          "title": "Platform considerations",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Notes that web views work on iOS, iPadOS, macOS, and visionOS without special considerations, but are not supported on tvOS or watchOS."
+        },
+        {
+          "sectionId": "resources",
+          "title": "Resources",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "resources-related",
+              "title": "Related",
+              "summary": "Link to Webkit.org external resource"
+            },
+            {
+              "sectionId": "resources-devdocs",
+              "title": "Developer documentation",
+              "summary": "Link to WKWebView API documentation in WebKit framework"
+            },
+            {
+              "sectionId": "resources-videos",
+              "title": "Videos",
+              "summary": "Link to 'Explore WKWebView additions' WWDC video"
+            }
+          ],
+          "summary": "Collection of related resources including Webkit.org, WKWebView documentation, and educational video content."
+        }
+      ],
+      "documentFlow": "The document follows Apple's standard HIG documentation pattern: title and description, followed by a hero image with caption, then best practices guidelines, platform-specific notes, and finally related resources. The left sidebar provides navigation context within the broader Components > Content section of the Human Interface Guidelines, while the right sidebar shows supported platforms and on-page navigation anchors."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "Web view",
+          "definition": "A component that loads and displays rich web content, such as embedded HTML and websites, directly within an app",
+          "occurrences": 6
+        },
+        {
+          "term": "WKWebView",
+          "definition": "The WebKit class that provides web view functionality in Apple platforms",
+          "occurrences": 2
+        },
+        {
+          "term": "WebKit",
+          "definition": "Apple's web browser engine framework that powers Safari and web views",
+          "occurrences": 2
+        },
+        {
+          "term": "Forward and back navigation",
+          "definition": "Browser-style navigation between previously visited pages within a web view",
+          "occurrences": 2
+        }
+      ],
+      "keyFindings": [
+        "Web views are supported on iOS, iPadOS, macOS, and visionOS",
+        "Web views are NOT supported on tvOS or watchOS",
+        "Forward and back navigation is supported but not enabled by default - must be explicitly implemented",
+        "Apple discourages using web views to build full web browser applications",
+        "Safari is positioned as the primary way people browse the web",
+        "Mail app uses web views to display HTML content in email messages",
+        "WKWebView is the recommended API for implementing web views"
+      ],
+      "technicalSpecifications": {
+        "supportedPlatforms": [
+          "iOS",
+          "iPadOS",
+          "macOS",
+          "visionOS"
+        ],
+        "unsupportedPlatforms": [
+          "tvOS",
+          "watchOS"
+        ],
+        "framework": "WebKit",
+        "primaryClass": "WKWebView",
+        "navigationBehavior": "Forward/back supported but not default"
+      },
+      "designDecisions": [
+        {
+          "decision": "Support forward and back navigation when appropriate",
+          "rationale": "If people are likely to use web view to visit multiple pages, they need navigation controls",
+          "context": "Web views support this but don't enable it by default"
+        },
+        {
+          "decision": "Avoid building a web browser with web views",
+          "rationale": "Safari is the primary way people browse the web; replicating its functionality is unnecessary and discouraged",
+          "context": "Web views should be used for brief website access without leaving app context"
+        }
+      ]
+    },
+    "links": {
+      "internalLinks": [
+        {
+          "text": "Getting started",
+          "destination": "HIG Getting started section"
+        },
+        {
+          "text": "Foundations",
+          "destination": "HIG Foundations section"
+        },
+        {
+          "text": "Patterns",
+          "destination": "HIG Patterns section"
+        },
+        {
+          "text": "Components",
+          "destination": "HIG Components section"
+        },
+        {
+          "text": "Content",
+          "destination": "HIG Components > Content section"
+        },
+        {
+          "text": "Charts",
+          "destination": "HIG Charts documentation"
+        },
+        {
+          "text": "Image views",
+          "destination": "HIG Image views documentation"
+        },
+        {
+          "text": "Text views",
+          "destination": "HIG Text views documentation"
+        },
+        {
+          "text": "Layout and organization",
+          "destination": "HIG Layout and organization section"
+        },
+        {
+          "text": "Menus and actions",
+          "destination": "HIG Menus and actions section"
+        },
+        {
+          "text": "Navigation and search",
+          "destination": "HIG Navigation and search section"
+        },
+        {
+          "text": "Presentation",
+          "destination": "HIG Presentation section"
+        },
+        {
+          "text": "Selection and input",
+          "destination": "HIG Selection and input section"
+        },
+        {
+          "text": "Status",
+          "destination": "HIG Status section"
+        },
+        {
+          "text": "System experiences",
+          "destination": "HIG System experiences section"
+        },
+        {
+          "text": "Inputs",
+          "destination": "HIG Inputs section"
+        },
+        {
+          "text": "Technologies",
+          "destination": "HIG Technologies section"
+        }
+      ],
+      "externalLinks": [
+        {
+          "text": "Webkit.org",
+          "url": "https://webkit.org",
+          "description": "WebKit open source project website"
+        },
+        {
+          "text": "WKWebView",
+          "url": "https://developer.apple.com/documentation/webkit/wkwebview",
+          "description": "Apple Developer documentation for WKWebView class"
+        },
+        {
+          "text": "Explore WKWebView additions",
+          "url": "https://developer.apple.com/videos/play/wwdc/",
+          "description": "WWDC video about WKWebView features and additions"
+        },
+        {
+          "text": "Feedback Assistant",
+          "url": "https://feedbackassistant.apple.com",
+          "description": "Apple's feedback submission tool for documentation"
+        },
+        {
+          "text": "Terms of Use",
+          "url": "https://www.apple.com/legal/internet-services/terms/site.html",
+          "description": "Apple website terms of use"
+        },
+        {
+          "text": "Privacy Policy",
+          "url": "https://www.apple.com/privacy/privacy-policy/",
+          "description": "Apple privacy policy"
+        },
+        {
+          "text": "Agreements and Guidelines",
+          "url": "https://developer.apple.com/support/terms/",
+          "description": "Apple Developer program agreements and guidelines"
+        }
+      ]
+    }
+  }
+}

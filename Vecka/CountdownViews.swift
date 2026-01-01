@@ -59,18 +59,18 @@ struct CountdownCard: View {
     
     private var iconBackgroundColor: Color {
         if isSelected {
-            return AppColors.accentBlue.opacity(0.2)
+            return JohoColors.cyan.opacity(0.2)
         }
         
-        return AppColors.textTertiary.opacity(0.1)
+        return JohoColors.black.opacity(0.5).opacity(0.1)
     }
     
     private var iconForegroundColor: Color {
         if isSelected {
-            return AppColors.accentBlue
+            return JohoColors.cyan
         }
         
-        return AppColors.textSecondary
+        return JohoColors.black.opacity(0.7)
     }
     
     // MARK: - Text Content
@@ -78,7 +78,7 @@ struct CountdownCard: View {
     private var countdownTitle: some View {
         Text(titleText)
             .font(Typography.labelLarge)
-            .foregroundStyle(AppColors.textPrimary)
+            .foregroundStyle(JohoColors.black)
             .lineLimit(2)
             .multilineTextAlignment(.center)
     }
@@ -86,7 +86,7 @@ struct CountdownCard: View {
     private var countdownSubtitle: some View {
         Text(subtitleText)
             .font(Typography.caption1.weight(.medium))
-            .foregroundStyle(AppColors.textSecondary)
+            .foregroundStyle(JohoColors.black.opacity(0.7))
             .lineLimit(1)
             .textCase(.uppercase)
             .tracking(0.5)
@@ -124,20 +124,20 @@ struct CountdownCard: View {
                 .font(Typography.caption2.weight(.bold))
                 .tracking(0.5)
         }
-        .foregroundStyle(AppColors.accentBlue)
+        .foregroundStyle(JohoColors.cyan)
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
         .background(
             Capsule()
-                .fill(AppColors.accentBlue.opacity(0.2))
+                .fill(JohoColors.cyan.opacity(0.2))
         )
     }
     
     // MARK: - Card Styling
     
     private var cardBackground: some View {
-        Rectangle()
-            .fill(AnyShapeStyle(Material.thinMaterial))
+        Squircle(cornerRadius: LayoutConstants.cornerRadius)
+            .fill(JohoColors.white)
     }
     
     private var cardBorder: some View {
@@ -147,7 +147,7 @@ struct CountdownCard: View {
     
     private var borderColor: Color {
         if isSelected {
-            return AppColors.accentBlue.opacity(0.6)
+            return JohoColors.cyan.opacity(0.6)
         }
         
         return Color.white.opacity(0.2)
@@ -155,7 +155,7 @@ struct CountdownCard: View {
     
     private var shadowColor: Color {
         if isSelected {
-            return AppColors.accentBlue.opacity(0.3)
+            return JohoColors.cyan.opacity(0.3)
         }
         
         return Color.black.opacity(0.1)
@@ -209,7 +209,7 @@ struct CountdownPickerSheet: View {
     @State private var showingCustomDialog = false
     @State private var newCustomName: String = ""
     @State private var newCustomDate: Date = Date()
-    @State private var newCustomAnnual: Bool = true
+    @State private var newCustomAnnual: Bool = false
     // Disclosure state to reduce clutter
     @State private var showPredefined: Bool = false
     @State private var showCustomEvents: Bool = true
@@ -345,9 +345,9 @@ struct CountdownPickerSheet: View {
         let icon = (type == .custom ? (custom?.iconName ?? type.icon) : type.icon)
         let title = (type == .custom ? (custom?.name ?? "Custom") : type.displayName)
         HStack {
-            Image(systemName: icon).foregroundStyle(AppColors.textSecondary)
+            Image(systemName: icon).foregroundStyle(JohoColors.black.opacity(0.7))
             Text(title)
-                .foregroundStyle(AppColors.textPrimary)
+                .foregroundStyle(JohoColors.black)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
             Spacer()
@@ -381,10 +381,10 @@ struct CountdownPickerSheet: View {
         let icon = (type == .custom ? (custom?.iconName ?? type.icon) : type.icon)
         let title = (type == .custom ? (custom?.name ?? "Custom") : type.displayName)
         HStack {
-            Image(systemName: icon).foregroundStyle(AppColors.textSecondary)
-            Text(title).foregroundStyle(AppColors.textPrimary)
+            Image(systemName: icon).foregroundStyle(JohoColors.black.opacity(0.7))
+            Text(title).foregroundStyle(JohoColors.black)
             Spacer()
-            if isSelectedRow { Image(systemName: "checkmark").foregroundStyle(AppColors.accentBlue) }
+            if isSelectedRow { Image(systemName: "checkmark").foregroundStyle(JohoColors.cyan) }
         }
         .contentShape(Rectangle())
         .onTapGesture {
@@ -394,12 +394,14 @@ struct CountdownPickerSheet: View {
             }
             HapticManager.selection()
         }
+        .accessibilityLabel("\(title)\(isSelectedRow ? ", selected" : "")")
+        .accessibilityAddTraits(.isButton)
         .swipeActions(edge: .leading) {
             if favorites.contains(SavedCountdown(type: type, custom: custom)) {
                 Button(role: .destructive) { toggleFavorite(type: type, custom: custom) } label: { Label("Unfavorite", systemImage: "star.slash") }
             } else {
                 Button { toggleFavorite(type: type, custom: custom) } label: { Label("Favorite", systemImage: "star") }
-                    .tint(AppColors.accentBlue)
+                    .tint(JohoColors.cyan)
             }
         }
     }
@@ -437,13 +439,13 @@ struct CountdownPickerSheet: View {
     @ViewBuilder
     private func favoriteRow(_ fav: SavedCountdown) -> some View {
         HStack {
-            Image(systemName: fav.icon).foregroundStyle(AppColors.textSecondary)
+            Image(systemName: fav.icon).foregroundStyle(JohoColors.black.opacity(0.7))
             Text(fav.displayName)
-                .foregroundStyle(AppColors.textPrimary)
+                .foregroundStyle(JohoColors.black)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
             Spacer()
-            if (fav.type == selectedCountdown) { Image(systemName: "checkmark.circle.fill").foregroundStyle(AppColors.accentBlue) }
+            if (fav.type == selectedCountdown) { Image(systemName: "checkmark.circle.fill").foregroundStyle(JohoColors.cyan) }
         }
         .contentShape(Rectangle())
         .onTapGesture {
@@ -453,6 +455,8 @@ struct CountdownPickerSheet: View {
             }
             HapticManager.selection()
         }
+        .accessibilityLabel("\(fav.displayName)\(fav.type == selectedCountdown ? ", selected" : "")")
+        .accessibilityAddTraits(.isButton)
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button(role: .destructive) {
                 if let idx = favorites.firstIndex(of: fav) { favorites.remove(at: idx); saveFavorites() }
@@ -473,87 +477,329 @@ struct CountdownPickerSheet: View {
             }
         }()
         return HStack {
-            Image(systemName: current.icon).foregroundStyle(AppColors.textSecondary)
+            Image(systemName: current.icon).foregroundStyle(JohoColors.black.opacity(0.7))
             Text(current.displayName)
-                .foregroundStyle(AppColors.textPrimary)
+                .foregroundStyle(JohoColors.black)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
             Spacer()
-            Image(systemName: "checkmark.circle.fill").foregroundStyle(AppColors.accentBlue)
+            Image(systemName: "checkmark.circle.fill").foregroundStyle(JohoColors.cyan)
         }
     }
 }
 
 // MARK: - Custom Countdown Dialog
-/// Apple HIG-compliant dialog for creating custom countdowns
+/// 情報デザイン compliant dialog for creating custom events (matches Holiday/Observance editor)
 struct CustomCountdownDialog: View {
     @Binding var name: String
     @Binding var date: Date
     @Binding var isAnnual: Bool
     @Binding var selectedCountdown: CountdownType
     @Environment(\.dismiss) private var dismiss
-    
+
     let onSave: () -> Void
-    
+
     // Icon selection
-    @State private var iconName: String = LucidIcon.defaultIcon
-    
+    @State private var iconName: String = "calendar.badge.clock"
+    @State private var showingIconPicker = false
+
+    // Event type color (purple for events)
+    private let eventColor = SpecialDayType.event.accentColor
+
+    // Color palette for icon backgrounds
+    private let iconColorPalette: [(name: String, hex: String)] = [
+        ("Purple", "E9D5FF"),
+        ("Cyan", "A5F3FC"),
+        ("Pink", "FECDD3"),
+        ("Yellow", "FFE566"),
+        ("Green", "BBF7D0"),
+        ("Orange", "FED7AA")
+    ]
+    @State private var selectedIconColor: String? = "E9D5FF"
+
+    private var canSave: Bool {
+        !name.trimmingCharacters(in: .whitespaces).isEmpty
+    }
+
+    private var iconBackgroundColor: Color {
+        if let hex = selectedIconColor {
+            return Color(hex: hex)
+        }
+        return eventColor.opacity(0.2)
+    }
+
+    // Date components
+    private var selectedMonth: Int {
+        Calendar.current.component(.month, from: date)
+    }
+
+    private var selectedDay: Int {
+        Calendar.current.component(.day, from: date)
+    }
+
     var body: some View {
-        NavigationView {
-            Form {
-                Section {
-                    TextField("Event Name", text: $name)
-                        .textFieldStyle(.roundedBorder)
-                    
-                    DatePicker("Event Date", selection: $date, displayedComponents: [.date])
-                    
-                    Toggle("Repeat Annually", isOn: $isAnnual)
-                } header: {
-                    Text("Event Details")
-                } footer: {
-                    Text(footerText)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                
-                Section("Icon") {
-                    IconPickerGrid(selectedIcon: $iconName)
-                }
-            }
-            .navigationTitle("Custom Event")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
+        ScrollView {
+            VStack(spacing: JohoDimensions.spacingLG) {
+                // Header with Cancel/Save buttons
+                HStack {
+                    Button { dismiss() } label: {
+                        Text("Cancel")
+                            .font(JohoFont.body)
+                            .foregroundStyle(JohoColors.black)
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+                            .padding(.vertical, JohoDimensions.spacingMD)
+                            .background(JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            )
                     }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
+
+                    Spacer()
+
+                    Button {
                         saveCustomCountdown()
                         selectedCountdown = .custom
                         onSave()
                         dismiss()
+                    } label: {
+                        Text("Save")
+                            .font(JohoFont.body.bold())
+                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                            .padding(.horizontal, JohoDimensions.spacingLG)
+                            .padding(.vertical, JohoDimensions.spacingMD)
+                            .background(canSave ? eventColor : JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            )
                     }
-                    .fontWeight(.semibold)
-                    .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .disabled(!canSave)
                 }
+                .padding(.top, JohoDimensions.spacingLG)
+
+                // Main content card
+                VStack(spacing: JohoDimensions.spacingLG) {
+                    // Title with type indicator - 情報デザイン: Filled circle with BLACK border
+                    HStack(spacing: JohoDimensions.spacingSM) {
+                        Circle()
+                            .fill(eventColor)
+                            .frame(width: 20, height: 20)
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+                        Text("New Event")
+                            .font(JohoFont.displaySmall)
+                            .foregroundStyle(JohoColors.black)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Icon & Color row
+                    HStack(spacing: JohoDimensions.spacingMD) {
+                        // Icon selector
+                        Button { showingIconPicker = true } label: {
+                            Image(systemName: iconName)
+                                .font(.system(size: 28, weight: .bold))
+                                .foregroundStyle(JohoColors.black)
+                                .frame(width: 56, height: 56)
+                                .background(iconBackgroundColor)
+                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                .overlay(
+                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                                )
+                        }
+
+                        // Color picker (compact)
+                        HStack(spacing: 8) {
+                            ForEach(iconColorPalette, id: \.hex) { color in
+                                Button {
+                                    selectedIconColor = color.hex
+                                    HapticManager.selection()
+                                } label: {
+                                    Circle()
+                                        .fill(Color(hex: color.hex))
+                                        .frame(width: 32, height: 32)
+                                        .overlay(
+                                            Circle()
+                                                .stroke(JohoColors.black, lineWidth: selectedIconColor == color.hex ? 3 : 1)
+                                        )
+                                }
+                            }
+                        }
+                    }
+
+                    // Name field
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "NAME", style: .whiteOnBlack, size: .small)
+
+                        TextField("e.g., Anniversary", text: $name)
+                            .font(JohoFont.headline)
+                            .foregroundStyle(JohoColors.black)
+                            .padding(JohoDimensions.spacingMD)
+                            .background(JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            )
+                    }
+
+                    // Date picker (month/day)
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "DATE", style: .whiteOnBlack, size: .small)
+
+                        HStack(spacing: JohoDimensions.spacingMD) {
+                            // Month picker
+                            Menu {
+                                ForEach(1...12, id: \.self) { month in
+                                    Button {
+                                        updateDate(month: month, day: selectedDay)
+                                    } label: {
+                                        Text(monthName(month))
+                                    }
+                                }
+                            } label: {
+                                Text(monthName(selectedMonth))
+                                    .font(JohoFont.body)
+                                    .foregroundStyle(JohoColors.black)
+                                    .padding(JohoDimensions.spacingSM)
+                                    .frame(minWidth: 80)
+                                    .background(JohoColors.white)
+                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                    .overlay(
+                                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                    )
+                            }
+
+                            // Day picker
+                            Menu {
+                                ForEach(1...daysInMonth(selectedMonth), id: \.self) { day in
+                                    Button {
+                                        updateDate(month: selectedMonth, day: day)
+                                    } label: {
+                                        Text("\(day)")
+                                    }
+                                }
+                            } label: {
+                                Text("\(selectedDay)")
+                                    .font(JohoFont.body)
+                                    .monospacedDigit()
+                                    .foregroundStyle(JohoColors.black)
+                                    .padding(JohoDimensions.spacingSM)
+                                    .frame(width: 60)
+                                    .background(JohoColors.white)
+                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                    .overlay(
+                                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                    )
+                            }
+
+                            Spacer()
+                        }
+                    }
+
+                    // Repeat annually toggle
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "REPEAT", style: .whiteOnBlack, size: .small)
+
+                        HStack {
+                            Text("Repeat annually")
+                                .font(JohoFont.body)
+                                .foregroundStyle(JohoColors.black)
+
+                            Spacer()
+
+                            // 情報デザイン toggle
+                            Button {
+                                withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
+                                    isAnnual.toggle()
+                                }
+                                HapticManager.selection()
+                            } label: {
+                                ZStack(alignment: isAnnual ? .trailing : .leading) {
+                                    Capsule()
+                                        .fill(isAnnual ? eventColor : JohoColors.black.opacity(0.2))
+                                        .frame(width: 50, height: 28)
+                                        .overlay(
+                                            Capsule()
+                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                        )
+
+                                    Circle()
+                                        .fill(JohoColors.white)
+                                        .frame(width: 22, height: 22)
+                                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                                        .padding(3)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                        }
+                        .padding(JohoDimensions.spacingMD)
+                        .background(JohoColors.white)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                        )
+                    }
+                }
+                .padding(JohoDimensions.spacingLG)
+                .background(JohoColors.white)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                )
+
+                Spacer(minLength: JohoDimensions.spacingXL)
             }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.bottom, JohoDimensions.spacingXL)
+        }
+        .johoBackground()
+        .navigationBarHidden(true)
+        .sheet(isPresented: $showingIconPicker) {
+            JohoIconPickerSheet(selectedSymbol: $iconName)
         }
     }
-    
-    private var footerText: String {
-        if isAnnual {
-            return "This event will repeat every year on the same date."
-        } else {
-            return "This is a one-time event that won't repeat."
+
+    // MARK: - Helper Functions
+
+    private func monthName(_ month: Int) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM"
+        let calendar = Calendar.current
+        let dateComponents = DateComponents(year: 2024, month: month, day: 1)
+        let tempDate = calendar.date(from: dateComponents) ?? Date()
+        return formatter.string(from: tempDate)
+    }
+
+    private func daysInMonth(_ month: Int) -> Int {
+        let calendar = Calendar.current
+        let dateComponents = DateComponents(year: 2024, month: month, day: 1)
+        guard let tempDate = calendar.date(from: dateComponents),
+              let range = calendar.range(of: .day, in: .month, for: tempDate) else {
+            return 31
+        }
+        return range.count
+    }
+
+    private func updateDate(month: Int, day: Int) {
+        let calendar = Calendar.current
+        let year = calendar.component(.year, from: date)
+        let maxDay = daysInMonth(month)
+        let validDay = min(day, maxDay)
+        if let newDate = calendar.date(from: DateComponents(year: year, month: month, day: validDay)) {
+            date = newDate
         }
     }
-    
+
     private func saveCustomCountdown() {
         let countdown = CustomCountdown(name: name, date: date, isAnnual: isAnnual, iconName: iconName)
-        
+
         // Save to UserDefaults
         var existingCountdowns: [CustomCountdown] = []
         if let data = UserDefaults.standard.data(forKey: "customCountdowns"),
@@ -563,7 +809,7 @@ struct CustomCountdownDialog: View {
         // Limit to maximum two saved custom events
         if existingCountdowns.count >= 2 { existingCountdowns.removeFirst() }
         existingCountdowns.append(countdown)
-        
+
         if let data = try? JSONEncoder().encode(existingCountdowns) {
             UserDefaults.standard.set(data, forKey: "customCountdowns")
         }
@@ -572,6 +818,135 @@ struct CustomCountdownDialog: View {
         if let selectedData = try? JSONEncoder().encode(countdown) {
             UserDefaults.standard.set(selectedData, forKey: "selectedCustomCountdown")
         }
+    }
+}
+
+// MARK: - 情報デザイン Icon Picker Grid
+private struct JohoIconPickerGrid: View {
+    @Binding var selectedIcon: String
+    private let columns = [GridItem(.adaptive(minimum: 50), spacing: 10)]
+
+    var body: some View {
+        LazyVGrid(columns: columns, spacing: 10) {
+            ForEach(LucidIcon.allNames, id: \.self) { name in
+                Button {
+                    selectedIcon = name
+                    HapticManager.selection()
+                } label: {
+                    ZStack {
+                        Circle()
+                            .fill(selectedIcon == name ? SpecialDayType.event.accentColor : JohoColors.white)
+                            .frame(width: 48, height: 48)
+                            .overlay(
+                                Circle()
+                                    .stroke(JohoColors.black, lineWidth: selectedIcon == name ? JohoDimensions.borderThick : JohoDimensions.borderMedium)
+                            )
+
+                        Image(systemName: name)
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundStyle(selectedIcon == name ? JohoColors.white : JohoColors.black)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+}
+
+// MARK: - 情報デザイン Icon Picker Sheet
+private struct JohoIconPickerSheet: View {
+    @Binding var selectedSymbol: String
+    @Environment(\.dismiss) private var dismiss
+
+    private let symbolCategories: [(name: String, symbols: [String])] = [
+        ("MARU-BATSU", ["circle", "circle.fill", "xmark", "xmark.circle.fill", "triangle", "triangle.fill", "square", "square.fill", "diamond", "diamond.fill"]),
+        ("EVENTS", ["star.fill", "sparkles", "gift.fill", "birthday.cake.fill", "party.popper.fill", "balloon.fill", "heart.fill", "bell.fill", "calendar.badge.clock"]),
+        ("NATURE", ["leaf.fill", "flower.fill", "sun.max.fill", "moon.fill", "snowflake", "cloud.sun.fill", "flame.fill", "drop.fill"]),
+        ("PEOPLE", ["person.fill", "person.2.fill", "figure.stand", "heart.circle.fill", "hand.raised.fill"]),
+        ("TIME", ["calendar", "clock.fill", "hourglass", "timer", "sunrise.fill", "sunset.fill"]),
+    ]
+
+    private let columns = [GridItem(.adaptive(minimum: 52), spacing: JohoDimensions.spacingSM)]
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: JohoDimensions.spacingLG) {
+                // Header
+                VStack(spacing: JohoDimensions.spacingSM) {
+                    HStack {
+                        Button { dismiss() } label: {
+                            Text("Cancel")
+                                .font(JohoFont.body)
+                                .foregroundStyle(JohoColors.black)
+                                .padding(.horizontal, JohoDimensions.spacingMD)
+                                .padding(.vertical, JohoDimensions.spacingSM)
+                                .background(JohoColors.white)
+                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                .overlay(
+                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                )
+                        }
+                        Spacer()
+                    }
+
+                    Text("Choose Icon")
+                        .font(JohoFont.displaySmall)
+                        .foregroundStyle(JohoColors.black)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .padding(JohoDimensions.spacingLG)
+                .background(JohoColors.white)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                )
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.top, JohoDimensions.spacingLG)
+
+                // Categories
+                ForEach(symbolCategories, id: \.name) { category in
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: category.name, style: .whiteOnBlack, size: .small)
+
+                        LazyVGrid(columns: columns, spacing: JohoDimensions.spacingSM) {
+                            ForEach(category.symbols, id: \.self) { symbol in
+                                Button {
+                                    selectedSymbol = symbol
+                                    HapticManager.selection()
+                                    dismiss()
+                                } label: {
+                                    Image(systemName: symbol)
+                                        .font(.system(size: 20, weight: .bold))
+                                        .foregroundStyle(selectedSymbol == symbol ? JohoColors.white : JohoColors.black)
+                                        .frame(width: 52, height: 52)
+                                        .background(selectedSymbol == symbol ? SpecialDayType.event.accentColor : JohoColors.white)
+                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                        .overlay(
+                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                                        )
+                                }
+                            }
+                        }
+                    }
+                    .padding(JohoDimensions.spacingMD)
+                    .background(JohoColors.white)
+                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+                    .overlay(
+                        Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                    )
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+                }
+
+                Spacer(minLength: JohoDimensions.spacingXL)
+            }
+        }
+        .johoBackground()
+        .presentationCornerRadius(20)
+        .presentationDetents([.large])
     }
 }
 
@@ -602,11 +977,11 @@ struct IconPickerGrid: View {
                 Button(action: { selectedIcon = name; HapticManager.selection() }) {
                     ZStack {
                         Circle()
-                            .fill(selectedIcon == name ? AppColors.accentBlue.opacity(0.22) : AppColors.textTertiary.opacity(0.08))
+                            .fill(selectedIcon == name ? JohoColors.cyan.opacity(0.22) : JohoColors.black.opacity(0.5).opacity(0.08))
                             .frame(width: 44, height: 44)
                         Image(systemName: name)
                             .font(.system(size: 18, weight: .semibold))
-                            .foregroundStyle(selectedIcon == name ? AppColors.accentBlue : AppColors.textSecondary)
+                            .foregroundStyle(selectedIcon == name ? JohoColors.cyan : JohoColors.black.opacity(0.7))
                     }
                 }
                 .buttonStyle(.plain)

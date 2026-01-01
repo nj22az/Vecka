@@ -214,9 +214,13 @@ struct VeckaWidgetEntry: TimelineEntry {
         date.formatted(.dateTime.month(.wide))
     }
 
-    // Helper to get color in view
+    // Helper to get color in view (uses 情報デザイン colors)
     func dayColor(for mode: WidgetRenderingMode) -> Color {
-        Theme.accentColor(for: weekday, mode: mode)
+        // Sunday = blue, other days = black (情報デザイン style)
+        switch weekday {
+        case 1: return JohoWidgetColors.sundayBlue
+        default: return JohoWidgetColors.black
+        }
     }
 
     var weekRange: String {

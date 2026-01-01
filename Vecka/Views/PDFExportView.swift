@@ -78,7 +78,7 @@ struct PDFExportView: View {
                         }
                         Picker("Year", selection: $selectedYear) {
                             ForEach(yearRange(), id: \.self) { year in
-                                Text(String(year)).tag(year)
+                                Text(verbatim: "\(year)").tag(year)
                             }
                         }
 
@@ -90,14 +90,14 @@ struct PDFExportView: View {
                         }
                         Picker("Year", selection: $selectedYear) {
                             ForEach(yearRange(), id: \.self) { year in
-                                Text(String(year)).tag(year)
+                                Text(verbatim: "\(year)").tag(year)
                             }
                         }
 
                     case .year:
                         Picker("Year", selection: $selectedYear) {
                             ForEach(yearRange(), id: \.self) { year in
-                                Text(String(year)).tag(year)
+                                Text(verbatim: "\(year)").tag(year)
                             }
                         }
 
@@ -180,7 +180,14 @@ struct PDFExportView: View {
                             }
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .glassCard(cornerRadius: 12, material: .ultraThinMaterial)
+                            .background(
+                                Squircle(cornerRadius: 12)
+                                    .fill(JohoColors.white)
+                            )
+                            .overlay(
+                                Squircle(cornerRadius: 12)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            )
 
                             // Daily Activity Preview (first 3 days)
                             VStack(alignment: .leading, spacing: 12) {
@@ -261,7 +268,7 @@ struct PDFExportView: View {
                                     .padding(Spacing.small)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .background(Color.secondary.opacity(0.05))
-                                    .cornerRadius(10)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                                 }
 
                                 if preview.dailyEntries.count > 3 {

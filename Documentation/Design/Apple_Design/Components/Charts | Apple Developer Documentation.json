@@ -1,0 +1,1800 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Charts | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "charts",
+        "Swift Charts",
+        "data visualization",
+        "marks",
+        "axes",
+        "accessibility",
+        "Audio Graphs",
+        "VoiceOver",
+        "iOS",
+        "iPadOS",
+        "macOS",
+        "tvOS",
+        "visionOS",
+        "watchOS"
+      ],
+      "summary": "Apple Human Interface Guidelines documentation for designing and implementing charts in apps. Covers chart anatomy (marks, axes, descriptive content), best practices for data visualization, color usage, accessibility features including Audio Graphs and VoiceOver support, and platform-specific considerations."
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": null,
+          "height": null,
+          "unit": "pixels"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF",
+        "layout": {
+          "type": "multi-column",
+          "columns": 2,
+          "margins": {
+            "top": null,
+            "right": null,
+            "bottom": null,
+            "left": null
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": "100%",
+              "height": "auto"
+            },
+            "zIndex": 100,
+            "content": {
+              "type": "site-navigation",
+              "items": [
+                {
+                  "label": "News",
+                  "url": null
+                },
+                {
+                  "label": "Discover",
+                  "url": null
+                },
+                {
+                  "label": "Design",
+                  "url": null,
+                  "isActive": true
+                },
+                {
+                  "label": "Develop",
+                  "url": null
+                },
+                {
+                  "label": "Distribute",
+                  "url": null
+                },
+                {
+                  "label": "Support",
+                  "url": null
+                },
+                {
+                  "label": "Account",
+                  "url": null
+                }
+              ],
+              "logo": {
+                "type": "Apple logo",
+                "position": "leading"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-design-subnav",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": "below-header",
+              "width": "100%",
+              "height": "auto"
+            },
+            "zIndex": 99,
+            "content": {
+              "type": "sub-navigation",
+              "items": [
+                {
+                  "label": "Design",
+                  "url": null
+                },
+                {
+                  "label": "Overview",
+                  "url": null
+                },
+                {
+                  "label": "What's New",
+                  "url": null
+                },
+                {
+                  "label": "Get Started",
+                  "url": null
+                },
+                {
+                  "label": "Guidelines",
+                  "url": null,
+                  "isActive": true
+                },
+                {
+                  "label": "Resources",
+                  "url": null
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-sidebar-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": "below-subnav",
+              "width": "20%",
+              "height": "auto"
+            },
+            "zIndex": 50,
+            "content": {
+              "type": "sidebar-navigation",
+              "sections": [
+                {
+                  "title": "Getting started",
+                  "items": []
+                },
+                {
+                  "title": "Foundations",
+                  "items": []
+                },
+                {
+                  "title": "Patterns",
+                  "items": []
+                },
+                {
+                  "title": "Components",
+                  "items": [
+                    {
+                      "label": "Content",
+                      "items": [
+                        "Charts",
+                        "Image views",
+                        "Text views",
+                        "Web views"
+                      ],
+                      "activeItem": "Charts"
+                    },
+                    {
+                      "label": "Layout and organization",
+                      "items": []
+                    },
+                    {
+                      "label": "Menus and actions",
+                      "items": []
+                    },
+                    {
+                      "label": "Navigation and search",
+                      "items": []
+                    },
+                    {
+                      "label": "Presentation",
+                      "items": []
+                    },
+                    {
+                      "label": "Selection and input",
+                      "items": []
+                    },
+                    {
+                      "label": "Status",
+                      "items": []
+                    },
+                    {
+                      "label": "System experiences",
+                      "items": []
+                    }
+                  ]
+                },
+                {
+                  "title": "Inputs",
+                  "items": []
+                },
+                {
+                  "title": "Technologies",
+                  "items": []
+                }
+              ],
+              "filterInput": {
+                "placeholder": "Filter",
+                "position": "top"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-title",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "top",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 1,
+              "text": "Charts",
+              "fontWeight": "bold",
+              "fontSize": "large"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-subtitle",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-title",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Organize data in a chart to communicate information with clarity and visual appeal.",
+              "fontStyle": "subtitle",
+              "color": "secondary-text"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-platforms-section",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-subtitle",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "label": "Platforms",
+              "items": [
+                "iOS",
+                "iPadOS",
+                "macOS",
+                "tvOS",
+                "visionOS",
+                "watchOS"
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-hero-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-platforms",
+              "width": "100%",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "A gradient hero banner image transitioning from coral/salmon pink on the left side through orange in the middle to light yellow/cream on the right side. The gradient creates a warm, vibrant visual effect typical of Apple's design aesthetic. The image serves as a decorative header for the Charts documentation page.",
+              "subjects": [
+                "gradient background",
+                "decorative banner"
+              ],
+              "composition": "Horizontal gradient flowing left to right",
+              "colorPalette": [
+                "#FF6B6B (coral pink)",
+                "#FF8C42 (orange)",
+                "#FFE4B5 (light cream/yellow)"
+              ],
+              "mood": "Warm, vibrant, modern",
+              "technicalDetails": null,
+              "textInImage": [],
+              "contextualRelevance": "Decorative hero image establishing visual hierarchy and Apple's design language for the Charts documentation"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-intro-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-hero",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "An effective chart highlights a few key pieces of information in a dataset, helping people gain insights and make decisions. For example, people might use a chart to:\n\n- Learn how upcoming weather conditions might affect their plans.\n- Analyze stock prices to understand past performance and discover trends.\n- Review fitness data to monitor their progress and set new goals.\n\nTo learn about designing charts to enhance your experience, see Charting data; for developer guidance, see Creating a chart using Swift Charts.",
+              "links": [
+                {
+                  "text": "Charting data",
+                  "url": "Charting data"
+                },
+                {
+                  "text": "Creating a chart using Swift Charts",
+                  "url": "Creating a chart using Swift Charts"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-anatomy-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-intro",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Anatomy",
+              "fontWeight": "bold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-anatomy-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-anatomy-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "A chart comprises several graphical elements that depict the values in a dataset and convey information about them.\n\nA mark is a visual representation of a data value. You create a chart by supplying one or more series of data values, assigning each value to a mark. To specify the style of chart you want to display — such as bar chart, line chart, or scatter plot — you choose a mark type, such as bar, line, or point (for guidance, see Marks). The general task of depicting individual data values in a chart is called plotting, and the area that contains the marks is called the plot area.\n\nTo depict a value, each type of mark uses visual attributes that are determined by a scale, which maps data values like numbers, dates, or categories to visual characteristics like position, color, or height. For example, a bar mark can use a particular height to represent the magnitude of a value and a particular position to represent the time at which the value occurred.\n\nTo give people the context they need to interpret a chart's visual characteristics, you supply descriptive content that can take a few different forms.\n\nYou can use an axis to help define a frame of reference for the data represented by a set of marks. Many charts display a pair of axes at the edges of the plot area — one horizontal and one vertical — where each axis represents a variable like time, amount, or category.\n\nAn axis can include ticks, which are reference points that help people visually locate the position of important values along the axis, such as a 0, 50%, and 100%. Many charts display grid lines that each extend from a tick across the plot area to help people visually estimate a data value when its mark isn't near an axis.\n\nYou also have multiple ways to describe chart elements to help people interpret the data and to highlight the key information you want to communicate. For example, you can supply labels that name items like axes, grid lines, ticks, or marks, and accessibility labels that describe chart elements for people who use assistive technologies. To provide context and additional details, you can create descriptive titles, subtitles, and annotations. When needed, you can also create a legend, which describes chart properties that aren't related to a mark's position, such as the use of color or shape to denote different value categories.\n\nClear, accurate descriptions can help make a chart more approachable and accessible; to learn about additional ways to improve the accessibility of your chart, see Enhancing the accessibility of a chart.",
+              "links": [
+                {
+                  "text": "Marks",
+                  "url": "#marks"
+                },
+                {
+                  "text": "Enhancing the accessibility of a chart",
+                  "url": "#enhancing-the-accessibility-of-a-chart"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-histogram-chart-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "within-anatomy-section",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "chart",
+              "description": "A histogram/bar chart showing time-based data distribution. The chart displays vertical bars in a coral/salmon color against a white background. The X-axis shows time values from 9 to 12PM with tick marks at 9, 10, 11, and 12PM. The Y-axis shows percentage values with 100 at the top and 50 in the middle. The bars vary in height showing a distribution pattern, with most bars being relatively short (below 50%) and a few taller bars reaching higher values. The tallest bars appear to be around the 10-11 time range.",
+              "subjects": [
+                "histogram",
+                "bar chart",
+                "time-series data"
+              ],
+              "composition": "Vertical bars arranged horizontally along time axis",
+              "colorPalette": [
+                "#FF6B6B (coral/salmon bars)",
+                "#FFFFFF (background)",
+                "#000000 (axis labels)"
+              ],
+              "mood": "Clean, analytical",
+              "technicalDetails": "Shows time distribution from 9AM to 12PM with percentage values on Y-axis",
+              "textInImage": [
+                "9",
+                "10",
+                "11",
+                "12PM",
+                "100",
+                "50"
+              ],
+              "contextualRelevance": "Demonstrates the anatomy of a chart including marks (bars), axes (X and Y), tick marks, and grid lines"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-anatomy-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-marks-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-anatomy",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Marks",
+              "fontWeight": "bold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-marks-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-marks-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Choose a mark type based on the information you want to communicate about the data. Some of the most familiar mark types are bar, line, and point; for developer guidance on these and other mark types, see Swift Charts.\n\nBar marks work well in charts that help people compare values in different categories or view the relative proportions of various parts in a whole. When used to help people understand data that changes over time, bar charts work especially well when each value can represent a sum, like the total number of steps taken in a day.\n\nLine marks can also show how values change over time. In a line chart, a line connects all data values in one series of data. The slope of the line reveals the magnitude of change between data values and can help people visualize overall trends.\n\nPoint marks help you depict individual data values as visually distinct marks. A set of point marks can show how two different properties of your data relate to each other, helping people inspect individual data values and identify outliers and clusters.\n\nConsider combining mark types when it adds clarity to your chart. For example, if you use a line chart to show a change over time, you might want to add point marks on top of the line to highlight individual data points. By combining points with a line, you can help people understand the overall trend while also drawing their attention to individual values.",
+              "links": [
+                {
+                  "text": "Swift Charts",
+                  "url": "Swift Charts"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-bar-chart-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "within-marks-section",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "chart",
+              "description": "A horizontal bar chart showing data distribution in warm coral/salmon and orange tones. The bars are horizontal, extending from left to right with varying lengths. The bars use a gradient or varied coloring from coral pink to orange. This chart demonstrates bar marks as one of the fundamental mark types in data visualization.",
+              "subjects": [
+                "horizontal bar chart",
+                "bar marks"
+              ],
+              "composition": "Horizontal bars stacked vertically",
+              "colorPalette": [
+                "#FF6B6B (coral)",
+                "#FF8C42 (orange)"
+              ],
+              "mood": "Clean, illustrative",
+              "technicalDetails": null,
+              "textInImage": [],
+              "contextualRelevance": "Illustrates bar marks as described in the Marks section, showing how bar charts help compare values across categories"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-marks-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-axes-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-marks",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Axes",
+              "fontWeight": "bold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-axes-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-axes-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Use a fixed or dynamic axis range depending on the meaning of your chart. In a fixed range, the upper and lower bounds of the axis never change, whereas in a dynamic range, the upper and lower bounds can vary with the current data. Consider using a fixed range when specific minimum and maximum values are meaningful for all possible data values. For example, people expect a chart that shows a battery's current charge to have a minimum value of 0% (completely empty) and a maximum value of 100% (completely full).\n\nIn contrast, consider using a dynamic range when the possible data values can vary widely and you want the marks to fill the available plot area. For example, the upper bound of the Y axis range in the Health app's Steps chart varies so that the largest number of steps in a particular time period is close to the top of the chart.\n\nDefine the value of the lower bound based on mark type and chart usage. For example, bar charts can work well when you use zero for the lower bound of the Y axis, because doing so lets people visually compare the relative heights of individual bars to get a reasonable estimate of their values. In contrast, defining a lower bound of zero can sometimes make meaningful differences between values more difficult to discern. For example, a heart rate chart that always uses zero for the lower bound could obscure important differences between resting and active readings because the differences occur in a range that's far from zero.\n\nPrefer familiar sequences of values in the tick and grid-line labels for an axis. For example, if you use a common number sequence like 0, 5, 10, etc., people are likely to know at a glance that each tick value equals the previous value plus five. Even though a sequence like 1, 6, 11, etc., follows the same rule, it's not common, so most people are likely to spend extra time thinking about the interval between values.\n\nTailor the appearance of grid lines and labels to a chart's use cases. Too many grid lines can be visually overwhelming, distracting people from the data; too few grid lines can make it difficult to estimate a mark's value. To help you determine the appropriate density and visual weight of these elements, consider a chart's context in the interface, the interactions you support, and the tasks people can do in the chart. For example, if people can inspect individual data points by interacting with a chart, you might use fewer grid lines and light label colors to ensure the data remains visually prominent."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-steps-chart-weekly",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "main-content-left",
+              "y": "within-axes-section",
+              "width": "50%",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "screenshot",
+              "description": "A Health app Steps chart showing weekly range data. The chart displays a bar chart with blue bars representing daily step counts. At the top is a gray 'D' indicator and 'AVERAGE' label showing '1,577 steps' with the date range 'Jul 12-18, 2025'. Below the average is a time range selector showing 'W' (Week), 'M' (Month), '6M' (6 Months), and 'Y' (Year) options, with 'W' currently selected. The Y-axis shows values '6,000', '4,000', '2,000' from top to bottom. The X-axis shows days of the week: 'Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'. The bars vary in height with some days showing higher step counts than others. Some days appear to have minimal or no data (shown as very short bars or baseline).",
+              "subjects": [
+                "Health app",
+                "steps chart",
+                "weekly view",
+                "bar chart"
+              ],
+              "composition": "Vertical bar chart with header information, time range selector, and axis labels",
+              "colorPalette": [
+                "#007AFF (blue bars)",
+                "#8E8E93 (gray labels)",
+                "#FFFFFF (background)"
+              ],
+              "mood": "Informational, health-focused",
+              "technicalDetails": "iOS Health app Steps chart in weekly view mode. Shows dynamic Y-axis range (0-6,000) that adjusts based on data.",
+              "textInImage": [
+                "D",
+                "AVERAGE",
+                "1,577 steps",
+                "Jul 12-18, 2025",
+                "W",
+                "M",
+                "6M",
+                "Y",
+                "6,000",
+                "4,000",
+                "2,000",
+                "Sat",
+                "Sun",
+                "Mon",
+                "Tue",
+                "Wed",
+                "Thu",
+                "Fri"
+              ],
+              "contextualRelevance": "Demonstrates dynamic axis range - the Y-axis upper bound varies based on the data in the selected time period, with the largest value close to the top of the chart"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-axes-heading",
+                "relationshipType": "grouped-with"
+              },
+              {
+                "relatedElementId": "page1-steps-chart-monthly",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-steps-chart-monthly",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "main-content-right",
+              "y": "within-axes-section",
+              "width": "50%",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "screenshot",
+              "description": "A Health app Steps chart showing monthly range data. This chart appears similar to the weekly view but displays data across a full month period. The bar chart uses blue bars to represent daily step counts over the monthly timeframe. The Y-axis scale and specific values would adjust based on the monthly data range. The 'M' option in the time range selector would be highlighted/selected.",
+              "subjects": [
+                "Health app",
+                "steps chart",
+                "monthly view",
+                "bar chart"
+              ],
+              "composition": "Vertical bar chart with header information, time range selector, and axis labels",
+              "colorPalette": [
+                "#007AFF (blue bars)",
+                "#8E8E93 (gray labels)",
+                "#FFFFFF (background)"
+              ],
+              "mood": "Informational, health-focused",
+              "technicalDetails": "iOS Health app Steps chart in monthly view mode showing longer time range",
+              "textInImage": [],
+              "contextualRelevance": "Paired with weekly view to demonstrate how dynamic axis ranges can vary based on selected time period"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-axes-heading",
+                "relationshipType": "grouped-with"
+              },
+              {
+                "relatedElementId": "page1-steps-chart-weekly",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-axes-caption",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-steps-charts",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Weekly range                                          Monthly range",
+              "alignment": "distributed"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-steps-chart-weekly",
+                "relationshipType": "caption-for"
+              },
+              {
+                "relatedElementId": "page1-steps-chart-monthly",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-descriptive-content-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-axes",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Descriptive content",
+              "fontWeight": "bold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-descriptive-content-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-descriptive-content-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Write descriptions that help people understand what a chart does before they view it. When you provide information-rich titles and labels that describe the purpose and functionality of a chart, you give people the context they need before they dive in and examine the details. Providing context in this way is especially important for VoiceOver users and those with certain types of cognitive disabilities because they rely on your descriptions to understand the purpose and primary message of your chart before they decide to investigate it further.\n\nSummarize the main message of your chart to help make it approachable and useful for everyone. Although a primary reason to use a chart is to display the data that supports the main message, it's essential to summarize key information so that people can grasp it quickly. For example, Weather provides a title and subtitle that succinctly describe the expected precipitation for the next hour, giving people the most important information without requiring them to examine the details of the chart."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practices-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-descriptive-content",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Best practices",
+              "fontWeight": "bold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practices-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-best-practices-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Establish a consistent visual hierarchy that helps communicate the relative importance of various chart elements. Typically, you want the data itself to be most prominent, while letting the descriptions and axes provide additional context without competing with the data.\n\nIn a compact environment, maximize the width of the plot area to give people enough space to comfortably examine a chart. To help important data fit well in a given width, ensure that labels on a vertical axis are as short as possible without losing clarity. You might also consider describing units in other areas of the chart, such as in a title, and placing a longer axis label, such as a category name, inside the plot area when doing so doesn't obscure important information.\n\nMake every chart in your app accessible. Charts — like all infographics — need to be fully accessible to everyone, regardless of how they perceive content. For example, it's essential to support VoiceOver, which describes onscreen content to help people get information and navigate without needing to see the screen (to learn more about VoiceOver, see Vision). In addition to supplying accessibility labels that describe the components of your chart, you can enhance the VoiceOver experience by also using Audio Graphs. Audio graphs provides chart information to VoiceOver, which constructs a set of tones that audibly represent a chart's data values and their trend; it also lets you present high-level text summaries that provide additional context. For guidance, see Enhancing the accessibility of a chart.\n\nLet people interact with the data when it makes sense, but don't require interaction to reveal critical information. In Stocks, for example, people are often most interested in a stock's performance over time, so the app displays a line graph that depicts performance during the time period people choose, such as one day, three months, or five years. If people want to explore additional details, they can drag a vertical indicator through the line graph, revealing the value at the selected time.\n\nMake it easy for everyone to interact with a chart. Sometimes, chart marks are too small to target with a finger or a pointer, making your chart hard to use for people with reduced motor control and uncomfortable for everyone. When this is the case, consider expanding the hit target to include the entire plot area, letting people scrub across the area to reveal various values.\n\nMake an interactive chart easy to navigate when using keyboard commands (including full keyboard access) or Switch Control. By default, these input types tend to visit individual onscreen elements in a linear sequence, such as the sequence of values in a data file. If you want to provide a custom navigation experience in your chart, here are two main ways to do so. The first way is to use accessibility APIs (such as accessibilityRespondsToUserInteraction(_:)) to specify a logical and predictable path through your chart's information. For example, you might want to let people navigate along the X axis instead of jumping back and forth. The second way — which is particularly useful if you need to present a very large dataset — is to let people move focus among subsets of values instead of navigating through all individual data points. Note that both of these customizations can also enhance the VoiceOver experience, even when your chart isn't interactive. For guidance, see Accessibility.\n\nHelp people notice important changes in a chart. For example, if people don't notice when marks or axes change, they can misread a chart. Animating such changes can help people notice them, but you need to highlight the changes in other ways, too, to ensure that VoiceOver users and people who turn off animations know about them. For developer guidance, see UIAccessibility.Notification (UIKit) or NSAccessibility.Notification (AppKit).\n\nAlign a chart with surrounding interface elements. For example, it often works well to align the leading edge of a chart with the leading edge of other views in a screen. One way to maintain a clean leading edge in a chart is to display the label for each vertical grid line on its trailing side. You might also consider shifting the Y axis to the trailing side of the chart so that its tick labels don't protrude past the chart's leading edge. If you end up with a label that doesn't appear to be associated with anything, you can use a tick to anchor it to a grid line.",
+              "links": [
+                {
+                  "text": "Vision",
+                  "url": "Vision"
+                },
+                {
+                  "text": "Enhancing the accessibility of a chart",
+                  "url": "#enhancing-the-accessibility-of-a-chart"
+                },
+                {
+                  "text": "accessibilityRespondsToUserInteraction(_:)",
+                  "url": "accessibilityRespondsToUserInteraction(_:)",
+                  "type": "code"
+                },
+                {
+                  "text": "Accessibility",
+                  "url": "Accessibility"
+                },
+                {
+                  "text": "UIAccessibility.Notification",
+                  "url": "UIAccessibility.Notification"
+                },
+                {
+                  "text": "NSAccessibility.Notification",
+                  "url": "NSAccessibility.Notification"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-color-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-best-practices",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Color",
+              "fontWeight": "bold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-color-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-color-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "As in all other parts of your interface, using color in a chart can help you clarify information, evoke your brand, and provide visual continuity. For general guidance on using color in ways that everyone can appreciate, see Inclusive color.\n\nAvoid relying solely on color to differentiate between different pieces of data or communicate essential information in a chart. Using meaningful color in a chart works well to highlight differences and elevate key details, but it's crucial to include alternative ways to convey this information so that people can use your chart regardless of whether they can discern colors. One way to supplement color is to use different shapes or patterns to depict different parts of data. For example, in addition to using red and black or red and white colors, Health uses two different shapes in the point marks that represent the two components of blood pressure.\n\nAid comprehension by adding visual separation between contiguous areas of color. For example, in a bar chart that stacks marks in a single row or column, it's common to assign a different color to each mark. In this design, adding separators between the marks can help people distinguish individual ones.",
+              "links": [
+                {
+                  "text": "Inclusive color",
+                  "url": "Inclusive color"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-blood-pressure-chart",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "within-color-section",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "screenshot",
+              "description": "A Health app blood pressure chart showing two types of data points using different visual representations. The chart displays '124/84' as the main reading with 'mmHg' as the unit. Below the reading is text indicating 'Elevated' and 'Last 12 Months' as the time range. The chart uses both color AND shape to differentiate between systolic (top number) and diastolic (bottom number) blood pressure readings - one series uses filled/solid markers while the other uses open/hollow markers, demonstrating accessibility best practice of not relying solely on color.",
+              "subjects": [
+                "blood pressure chart",
+                "Health app",
+                "accessibility example"
+              ],
+              "composition": "Point chart with dual data series using different shapes",
+              "colorPalette": [
+                "#FF3B30 (red/coral)",
+                "#000000 (black)",
+                "#FFFFFF (white/hollow markers)"
+              ],
+              "mood": "Medical, informational",
+              "technicalDetails": "iOS Health app blood pressure visualization showing how to use shape in addition to color for accessibility",
+              "textInImage": [
+                "124/84",
+                "mmHg",
+                "Elevated",
+                "Last 12 Months"
+              ],
+              "contextualRelevance": "Demonstrates the best practice of using different shapes (not just colors) to differentiate data series, ensuring accessibility for users who cannot discern colors"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-color-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-accessibility-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-color",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Enhancing the accessibility of a chart",
+              "fontWeight": "bold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-accessibility-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-accessibility-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "When you use Swift Charts to create a chart, you get a default implementation of Audio graphs, in addition to a default accessibility element for each mark (or group of marks) that describes its value.\n\nConsider using Audio Graphs to give VoiceOver users more information about your chart. You can customize the default Audio Graphs implementation that Swift Charts provides by supplying a chart title and descriptive summary that VoiceOver speaks to help people understand the purpose and main features of your chart. If you don't use Audio Graphs, you need to provide an overview of the chart's structure and purpose. For example, you need to identify the chart's type — such as bar or line — explain what each axis represents, and describe details like the upper and lower axis bounds."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-accessibility-important-callout",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "within-accessibility-section",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "important-callout",
+              "label": "Important",
+              "text": "Unlike an image — which requires one descriptive accessibility label — a chart often needs to offer an accessibility label for each important or interactive element. Depending on the purpose of your chart and the scope and density of its marks, you need to decide whether it's essential to describe each mark or whether it improves the accessibility experience to describe groups of marks. In some cases, it can make sense to use a single accessibility label that provides a succinct, high-level description of the chart, such as when you use a small version of a chart in a button that reveals a more detailed version."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-accessibility-labels-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-important-callout",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Write accessibility labels that support the purpose of your chart. For example, Maps shows elevation for a cycling route using a chart that represents the change in elevation over the course of the route. The purpose of the chart is to give people a sense of the terrain for the entire route, not to provide individual elevations. For this reason, Maps provides accessibility labels that summarize the elevation changes over a portion of the route, rather than providing labels for each individual moment. In contrast, Health offers an accessibility label for each bar in the Steps chart, because the purpose of the chart is to give people their actual step count for each tracking period."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-cycling-elevation-chart",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "within-accessibility-section",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "screenshot",
+              "description": "A Maps app cycling elevation chart showing terrain changes along a cycling route. The chart displays an area/line graph with elevation data represented as a filled area. The graph shows varying elevation with peaks and valleys along the horizontal route axis. A portion of the chart appears to be highlighted or selected (shown in a darker or different shade), demonstrating how VoiceOver would focus on and describe a specific section of the route's elevation data.",
+              "subjects": [
+                "elevation chart",
+                "cycling route",
+                "Maps app",
+                "accessibility example"
+              ],
+              "composition": "Area chart showing elevation profile along horizontal distance axis",
+              "colorPalette": [
+                "Green (elevation fill)",
+                "Darker highlight for selected section"
+              ],
+              "mood": "Navigational, informational",
+              "technicalDetails": "iOS Maps app cycling elevation chart demonstrating accessibility labels for route segments rather than individual data points",
+              "textInImage": [],
+              "contextualRelevance": "Demonstrates how accessibility labels should match chart purpose - summarizing terrain sections rather than individual elevation points"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-accessibility-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-cycling-elevation-caption",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-cycling-elevation-chart",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "For the focused section of this cycling elevation chart, VoiceOver provides information about that portion of the route, including distance and elevation changes."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-cycling-elevation-chart",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-accessibility-guidelines-list",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-cycling-caption",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "introText": "The following guidelines can help you write useful accessibility labels for chart elements.",
+              "items": [
+                {
+                  "title": "Prioritize clarity and comprehensiveness.",
+                  "text": "In general, it's rarely enough to merely report a data value unless you also include context that helps people understand it, like the date or location that's associated with it. Aim to concisely describe the context for a value without repeating information that people can get in other ways, like an axis name that Audio Graphs or your overview provides. Follow context-setting information with a succinct description of the element's details."
+                },
+                {
+                  "title": "Avoid using subjective terms.",
+                  "text": "Subjective words — like rapidly, gradually, and almost — communicate your interpretation of the data. To help people form their own interpretations, use actual values in your descriptions."
+                },
+                {
+                  "title": "Maximize clarity in data descriptions by avoiding potentially ambiguous formats and abbreviations.",
+                  "text": "For example, using \"June 6\" is clearer than using \"6/6\"; similarly, spelling out \"60 minutes\" or \"60 meters\" is clearer than using the abbreviation \"60m.\""
+                },
+                {
+                  "title": "Describe what the chart's details represent, not what they look like.",
+                  "text": "Consider a chart that uses red and blue colors to help people visually distinguish two different data series. It's crucial to create accessibility labels that identify what each series represents, but describing the colors that visually represent them can add unnecessary information and be distracting."
+                },
+                {
+                  "title": "Be consistent throughout your app when referring to a specific axis.",
+                  "text": "For example, if you always mention the X axis first, people can spend less time figuring out which axis is relevant in a description."
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-hide-labels-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-guidelines-list",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Hide visible text labels for axes and ticks from assistive technologies. Axis and tick labels help people visually assess trends in a chart and estimate mark values. VoiceOver users can get mark values and trend information through accessibility labels and Audio Graphs, so they don't generally need the content in the visible labels."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-considerations-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-accessibility",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Platform considerations",
+              "fontWeight": "bold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-no-considerations",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-platform-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "No additional considerations for iOS, iPadOS, macOS, tvOS, visionOS."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-watchos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-no-considerations",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 3,
+              "text": "watchOS",
+              "fontWeight": "bold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-watchos-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-watchos-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "In general, avoid requiring complex chart interactions in your watchOS app. As much as possible, prefer displaying useful information people can get at a glance and supporting simple interactions when they add value. If you also offer a version of your app in another platform, consider using it to display more details and to support additional interactions with your chart. For example, Heart Rate in watchOS displays a chart of the wearer's heart-rate data for the current day, whereas the Health app on iPhone displays heart-rate data for several different periods of time and lets people examine individual marks."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-watchos",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Resources",
+              "fontWeight": "bold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-related-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-resources-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 3,
+              "text": "Related",
+              "fontWeight": "semibold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-related-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-related-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "links",
+              "items": [
+                {
+                  "text": "Charting data",
+                  "url": "Charting data",
+                  "icon": "document"
+                },
+                {
+                  "text": "Swift Charts",
+                  "url": "Swift Charts",
+                  "icon": "document"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-developer-docs-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-related-links",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 3,
+              "text": "Developer documentation",
+              "fontWeight": "semibold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-videos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-dev-docs-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 3,
+              "text": "Videos",
+              "fontWeight": "semibold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-video-cards",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-videos-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "video-cards",
+              "items": [
+                {
+                  "title": "Bring Swift Charts to the third dimension",
+                  "thumbnail": "Video thumbnail showing 3D chart visualization",
+                  "url": null
+                },
+                {
+                  "title": "Design app experiences with charts",
+                  "thumbnail": "Video thumbnail",
+                  "url": null
+                },
+                {
+                  "title": "Design an effective chart",
+                  "thumbnail": "Video thumbnail",
+                  "url": null
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-changelog-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-videos",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Change log",
+              "fontWeight": "bold"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-changelog-table",
+            "elementType": "table",
+            "boundingBox": {
+              "x": "main-content",
+              "y": "below-changelog-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "tableTitle": null,
+              "columnCount": 2,
+              "rowCount": 1,
+              "headers": [
+                "Date",
+                "Changes"
+              ],
+              "rows": [
+                {
+                  "rowIndex": 0,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "September 23, 2022",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "New page.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tableSummary": "Document changelog showing the page was created on September 23, 2022"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-right-sidebar-toc",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": "right-sidebar",
+              "y": "top",
+              "width": "20%",
+              "height": "auto"
+            },
+            "zIndex": 50,
+            "content": {
+              "type": "table-of-contents",
+              "title": "Charts",
+              "items": [
+                {
+                  "label": "Anatomy",
+                  "url": "#anatomy"
+                },
+                {
+                  "label": "Marks",
+                  "url": "#marks"
+                },
+                {
+                  "label": "Axes",
+                  "url": "#axes"
+                },
+                {
+                  "label": "Descriptive content",
+                  "url": "#descriptive-content"
+                },
+                {
+                  "label": "Best practices",
+                  "url": "#best-practices"
+                },
+                {
+                  "label": "Color",
+                  "url": "#color"
+                },
+                {
+                  "label": "Enhancing the accessibility of a chart",
+                  "url": "#enhancing-the-accessibility-of-a-chart"
+                },
+                {
+                  "label": "Platform considerations",
+                  "url": "#platform-considerations"
+                },
+                {
+                  "label": "Resources",
+                  "url": "#resources"
+                },
+                {
+                  "label": "Change log",
+                  "url": "#change-log"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-right-sidebar-supported-platforms",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": "right-sidebar",
+              "y": "below-toc",
+              "width": "20%",
+              "height": "auto"
+            },
+            "zIndex": 50,
+            "content": {
+              "label": "Supported platforms",
+              "items": [
+                "iOS",
+                "iPadOS",
+                "macOS",
+                "tvOS",
+                "visionOS",
+                "watchOS"
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer",
+            "elementType": "other",
+            "boundingBox": {
+              "x": 0,
+              "y": "bottom",
+              "width": "100%",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "footer",
+              "sections": [
+                {
+                  "title": "Tools",
+                  "items": [
+                    "Swift",
+                    "SwiftUI",
+                    "Swift Playground",
+                    "TestFlight",
+                    "Xcode",
+                    "Xcode Cloud",
+                    "SF Symbols"
+                  ]
+                },
+                {
+                  "title": "Topics & Technologies",
+                  "items": [
+                    "Accessibility",
+                    "Accessories",
+                    "App Extension",
+                    "App Store",
+                    "Audio & Video",
+                    "Augmented Reality",
+                    "Design",
+                    "Distribution",
+                    "Education",
+                    "Fonts",
+                    "Games",
+                    "Health & Fitness",
+                    "In-App Purchase",
+                    "Localization",
+                    "Maps & Location",
+                    "Machine Learning & AI",
+                    "Open Source",
+                    "Security",
+                    "Safari & Web"
+                  ]
+                },
+                {
+                  "title": "Resources",
+                  "items": [
+                    "Documentation",
+                    "Tutorials",
+                    "Downloads",
+                    "Forums",
+                    "Videos"
+                  ]
+                },
+                {
+                  "title": "Support",
+                  "items": [
+                    "Support Articles",
+                    "Contact Us",
+                    "Bug Reporting",
+                    "System Status"
+                  ]
+                },
+                {
+                  "title": "Account",
+                  "items": [
+                    "Apple Developer",
+                    "App Store Connect",
+                    "Certificates, IDs, & Profiles",
+                    "Feedback Assistant"
+                  ]
+                },
+                {
+                  "title": "Programs",
+                  "items": [
+                    "Apple Developer Program",
+                    "Apple Developer Enterprise Program",
+                    "App Store Small Business Program",
+                    "MFi Program",
+                    "News Partner Program",
+                    "Video Partner Program",
+                    "Security Bounty Program",
+                    "Security Research Device Program"
+                  ]
+                },
+                {
+                  "title": "Events",
+                  "items": [
+                    "Meet with Apple",
+                    "Apple Developer Centers",
+                    "App Store Awards",
+                    "Apple Design Awards",
+                    "Apple Developer Academies",
+                    "WWDC"
+                  ]
+                }
+              ],
+              "copyright": "Copyright (c) 2025 Apple Inc. All rights reserved.",
+              "legalLinks": [
+                {
+                  "text": "Terms of Use",
+                  "url": null
+                },
+                {
+                  "text": "Privacy Policy",
+                  "url": null
+                },
+                {
+                  "text": "Agreements and Guidelines",
+                  "url": null
+                }
+              ],
+              "feedbackNote": "To submit feedback on documentation, visit Feedback Assistant.",
+              "themeSelector": {
+                "options": [
+                  "Light",
+                  "Dark",
+                  "Auto"
+                ]
+              },
+              "languageSelector": {
+                "current": "English",
+                "label": "Developer Documentation"
+              }
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation",
+          "page1-design-subnav",
+          "page1-sidebar-navigation",
+          "page1-main-title",
+          "page1-main-subtitle",
+          "page1-platforms-section",
+          "page1-hero-image",
+          "page1-intro-paragraph",
+          "page1-anatomy-heading",
+          "page1-anatomy-paragraph",
+          "page1-histogram-chart-image",
+          "page1-marks-heading",
+          "page1-marks-paragraph",
+          "page1-bar-chart-image",
+          "page1-axes-heading",
+          "page1-axes-paragraph",
+          "page1-steps-chart-weekly",
+          "page1-steps-chart-monthly",
+          "page1-axes-caption",
+          "page1-descriptive-content-heading",
+          "page1-descriptive-content-paragraph",
+          "page1-best-practices-heading",
+          "page1-best-practices-paragraph",
+          "page1-color-heading",
+          "page1-color-paragraph",
+          "page1-blood-pressure-chart",
+          "page1-accessibility-heading",
+          "page1-accessibility-intro",
+          "page1-accessibility-important-callout",
+          "page1-accessibility-labels-paragraph",
+          "page1-cycling-elevation-chart",
+          "page1-cycling-elevation-caption",
+          "page1-accessibility-guidelines-list",
+          "page1-hide-labels-paragraph",
+          "page1-platform-considerations-heading",
+          "page1-platform-no-considerations",
+          "page1-watchos-heading",
+          "page1-watchos-paragraph",
+          "page1-resources-heading",
+          "page1-resources-related-heading",
+          "page1-related-links",
+          "page1-developer-docs-heading",
+          "page1-videos-heading",
+          "page1-video-cards",
+          "page1-changelog-heading",
+          "page1-changelog-table",
+          "page1-right-sidebar-toc",
+          "page1-right-sidebar-supported-platforms",
+          "page1-footer"
+        ],
+        "pageSummary": "Apple Human Interface Guidelines documentation page for Charts component. Covers chart anatomy (marks, axes, descriptive content), best practices for visual hierarchy and interactivity, color usage guidelines with accessibility considerations, detailed accessibility enhancement guidance including Audio Graphs and VoiceOver support, platform-specific considerations for watchOS, and related resources including videos and developer documentation links."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": true,
+        "entries": [
+          {
+            "title": "Anatomy",
+            "page": 1
+          },
+          {
+            "title": "Marks",
+            "page": 1
+          },
+          {
+            "title": "Axes",
+            "page": 1
+          },
+          {
+            "title": "Descriptive content",
+            "page": 1
+          },
+          {
+            "title": "Best practices",
+            "page": 1
+          },
+          {
+            "title": "Color",
+            "page": 1
+          },
+          {
+            "title": "Enhancing the accessibility of a chart",
+            "page": 1
+          },
+          {
+            "title": "Platform considerations",
+            "page": 1
+          },
+          {
+            "title": "Resources",
+            "page": 1
+          },
+          {
+            "title": "Change log",
+            "page": 1
+          }
+        ]
+      },
+      "runningHeaders": "Apple Developer Documentation - Design Guidelines",
+      "runningFooters": "Copyright (c) 2025 Apple Inc. All rights reserved.",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "introduction",
+          "title": "Introduction",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Introduces charts as a tool for highlighting key information in datasets, helping users gain insights and make decisions in contexts like weather, stocks, and fitness data."
+        },
+        {
+          "sectionId": "anatomy",
+          "title": "Anatomy",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Explains the fundamental components of a chart: marks (visual representations of data values), scales (mappings from data to visual characteristics), axes (frames of reference), ticks and grid lines (reference points), and descriptive content (labels, titles, legends)."
+        },
+        {
+          "sectionId": "marks",
+          "title": "Marks",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Details three primary mark types: bar marks (for comparing categories and proportions), line marks (for showing change over time and trends), and point marks (for depicting individual data values and relationships). Recommends combining mark types when it adds clarity."
+        },
+        {
+          "sectionId": "axes",
+          "title": "Axes",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Guidance on axis configuration including fixed vs. dynamic ranges, lower bound selection based on mark type, using familiar number sequences for ticks, and tailoring grid line density to chart use cases."
+        },
+        {
+          "sectionId": "descriptive-content",
+          "title": "Descriptive content",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Emphasizes writing descriptions that help users understand charts before viewing them in detail, with focus on providing context for VoiceOver users and those with cognitive disabilities. Recommends summarizing main messages."
+        },
+        {
+          "sectionId": "best-practices",
+          "title": "Best practices",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Comprehensive guidelines covering visual hierarchy, compact environment optimization, accessibility requirements (VoiceOver, Audio Graphs), interaction design, keyboard/Switch Control navigation, animation of changes, and alignment with surrounding interface elements."
+        },
+        {
+          "sectionId": "color",
+          "title": "Color",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Guidelines for using color in charts: avoid relying solely on color for differentiation, supplement with shapes/patterns, add visual separation between contiguous color areas."
+        },
+        {
+          "sectionId": "accessibility",
+          "title": "Enhancing the accessibility of a chart",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Detailed accessibility guidance including Audio Graphs implementation, writing effective accessibility labels (prioritize clarity, avoid subjective terms, use unambiguous formats, describe meaning not appearance, be consistent), and hiding visual labels from assistive technologies."
+        },
+        {
+          "sectionId": "platform-considerations",
+          "title": "Platform considerations",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "watchos",
+              "title": "watchOS",
+              "summary": "Recommends avoiding complex chart interactions on watchOS, preferring glanceable information and simple interactions, with detailed views available on companion platforms."
+            }
+          ],
+          "summary": "Platform-specific guidelines. No additional considerations for iOS, iPadOS, macOS, tvOS, or visionOS. watchOS has specific guidance for simpler interactions."
+        },
+        {
+          "sectionId": "resources",
+          "title": "Resources",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Links to related documentation (Charting data, Swift Charts), developer documentation, and WWDC videos about Swift Charts and chart design."
+        },
+        {
+          "sectionId": "changelog",
+          "title": "Change log",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Document history showing the page was created on September 23, 2022."
+        }
+      ],
+      "documentFlow": "The document follows a logical progression from introducing charts and their purpose, through explaining fundamental components (anatomy, marks, axes), to providing practical guidance (descriptive content, best practices, color usage), then addressing accessibility in depth, platform-specific considerations, and finally resources for further learning. The structure allows readers to understand both the 'what' and 'how' of chart design following Apple's Human Interface Guidelines."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "Mark",
+          "definition": "A visual representation of a data value in a chart. Common types include bar, line, and point marks.",
+          "occurrences": 20
+        },
+        {
+          "term": "Scale",
+          "definition": "A mapping that converts data values like numbers, dates, or categories to visual characteristics like position, color, or height.",
+          "occurrences": 1
+        },
+        {
+          "term": "Plot area",
+          "definition": "The area of a chart that contains the marks representing data values.",
+          "occurrences": 5
+        },
+        {
+          "term": "Axis",
+          "definition": "A frame of reference for data, typically displayed at the edges of the plot area representing variables like time, amount, or category.",
+          "occurrences": 15
+        },
+        {
+          "term": "Tick",
+          "definition": "Reference points along an axis that help people visually locate the position of important values.",
+          "occurrences": 5
+        },
+        {
+          "term": "Grid line",
+          "definition": "Lines extending from ticks across the plot area to help people visually estimate data values when marks aren't near an axis.",
+          "occurrences": 5
+        },
+        {
+          "term": "Legend",
+          "definition": "A chart element that describes properties not related to a mark's position, such as the use of color or shape to denote different value categories.",
+          "occurrences": 1
+        },
+        {
+          "term": "Audio Graphs",
+          "definition": "An accessibility feature that provides chart information to VoiceOver, constructing tones that audibly represent chart data values and their trend.",
+          "occurrences": 5
+        },
+        {
+          "term": "Swift Charts",
+          "definition": "Apple's framework for creating charts programmatically, providing default accessibility implementations and mark types.",
+          "occurrences": 5
+        },
+        {
+          "term": "Fixed range",
+          "definition": "An axis range where the upper and lower bounds never change, useful when specific min/max values are meaningful (e.g., 0-100% for battery).",
+          "occurrences": 2
+        },
+        {
+          "term": "Dynamic range",
+          "definition": "An axis range where the upper and lower bounds vary with current data, allowing marks to fill the available plot area.",
+          "occurrences": 2
+        }
+      ],
+      "keyFindings": [
+        "Charts should highlight a few key pieces of information, not overwhelm with data",
+        "Bar marks are best for comparing categories and viewing proportions; line marks for showing change over time; point marks for individual values and relationships",
+        "Combining mark types (e.g., line + points) can add clarity",
+        "Use fixed axis ranges when specific min/max values are meaningful; dynamic ranges when data varies widely",
+        "Bar charts work well with zero as the lower bound; other chart types may need non-zero bounds to show meaningful differences",
+        "Use familiar number sequences (0, 5, 10) rather than unusual ones (1, 6, 11) for tick labels",
+        "Data should be visually prominent; descriptions and axes should provide context without competing",
+        "Never rely solely on color to differentiate data - always provide alternative ways (shapes, patterns)",
+        "Audio Graphs should be customized with chart titles and descriptive summaries for VoiceOver users",
+        "Accessibility labels should describe what data represents, not what it looks like",
+        "Hide visible axis/tick labels from assistive technologies - VoiceOver users get this info through accessibility labels and Audio Graphs",
+        "On watchOS, prefer glanceable information over complex chart interactions"
+      ],
+      "technicalSpecifications": {
+        "supportedPlatforms": [
+          "iOS",
+          "iPadOS",
+          "macOS",
+          "tvOS",
+          "visionOS",
+          "watchOS"
+        ],
+        "framework": "Swift Charts",
+        "accessibilityAPIs": [
+          "Audio Graphs",
+          "accessibilityRespondsToUserInteraction(_:)",
+          "UIAccessibility.Notification (UIKit)",
+          "NSAccessibility.Notification (AppKit)"
+        ],
+        "markTypes": [
+          "bar",
+          "line",
+          "point"
+        ],
+        "documentCreated": "September 23, 2022"
+      },
+      "designDecisions": [
+        {
+          "decision": "Visual hierarchy prioritization",
+          "rationale": "Data should be most prominent, with descriptions and axes providing context without competing, ensuring users can quickly identify key information"
+        },
+        {
+          "decision": "Shape + color for data differentiation",
+          "rationale": "Using both color AND different shapes (as Health does for blood pressure) ensures accessibility for users who cannot discern colors"
+        },
+        {
+          "decision": "Context-appropriate accessibility labels",
+          "rationale": "Labels should match chart purpose - Maps provides route segment summaries for elevation charts (terrain overview), while Health provides individual bar labels for Steps (actual counts)"
+        },
+        {
+          "decision": "Expanded hit targets for small marks",
+          "rationale": "When marks are too small to target easily, expanding hit targets to the entire plot area improves usability for everyone, especially those with reduced motor control"
+        },
+        {
+          "decision": "Simplified watchOS interactions",
+          "rationale": "Watch displays should prioritize glanceable information, with detailed views and complex interactions reserved for companion devices with larger screens"
+        }
+      ]
+    }
+  }
+}

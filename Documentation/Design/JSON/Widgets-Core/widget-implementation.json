@@ -1,0 +1,1348 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Apple WidgetKit Implementation Guidelines - Comprehensive Reference",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 6,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "WidgetKit",
+        "SwiftUI",
+        "widgets",
+        "iOS",
+        "iPadOS",
+        "macOS",
+        "watchOS",
+        "visionOS",
+        "timeline",
+        "configuration",
+        "animation",
+        "App Intents",
+        "Live Activities",
+        "complications"
+      ],
+      "summary": "Comprehensive Apple Developer Documentation covering WidgetKit implementation strategies, including multi-platform support, configurable widgets using App Intents, timeline management for updates, animation guidelines for data changes, background handling across contexts, and overall WidgetKit strategy recommendations. These six documents form the core reference for building production-quality widgets across Apple platforms."
+    },
+    "sourceDocuments": [
+      {
+        "documentId": "doc-1-platforms",
+        "title": "Preparing widgets for additional platforms, contexts, and appearances",
+        "sourceFile": "Preparing widgets for additional platforms, contexts, and appearances | Apple Developer Documentatio.pdf",
+        "focus": "Multi-platform widget considerations and rendering modes"
+      },
+      {
+        "documentId": "doc-2-configurable",
+        "title": "Making a configurable widget",
+        "sourceFile": "Making a configurable widget | Apple Developer Documentation.pdf",
+        "focus": "Configuration intents and App Intents integration"
+      },
+      {
+        "documentId": "doc-3-updates",
+        "title": "Keeping a widget up to date",
+        "sourceFile": "Keeping a widget up to date | Apple Developer Documentation.pdf",
+        "focus": "Timeline updates and refresh strategies"
+      },
+      {
+        "documentId": "doc-4-animation",
+        "title": "Animating data updates in widgets and Live Activities",
+        "sourceFile": "Animating data updates in widgets and Live Activities | Apple Developer Documentation.pdf",
+        "focus": "Animation guidelines and SwiftUI transitions"
+      },
+      {
+        "documentId": "doc-5-background",
+        "title": "Displaying the right widget background",
+        "sourceFile": "Displaying the right widget background | Apple Developer Documentation.pdf",
+        "focus": "Background handling and containerBackground modifier"
+      },
+      {
+        "documentId": "doc-6-strategy",
+        "title": "Developing a WidgetKit strategy",
+        "sourceFile": "Developing a WidgetKit strategy | Apple Developer Documentation.pdf",
+        "focus": "Overall WidgetKit strategy and planning recommendations"
+      }
+    ],
+    "topics": {
+      "multiPlatformConsiderations": {
+        "topicId": "topic-multi-platform",
+        "title": "Multi-Platform Widget Considerations",
+        "sourceDocument": "doc-1-platforms",
+        "summary": "Widgets must adapt their appearance to fit various contexts across Apple platforms. Each context may use different rendering modes, and widgets should support all applicable modes for maximum compatibility.",
+        "renderingModes": {
+          "description": "WidgetKit uses three different rendering modes to display widgets appropriately for each context",
+          "modes": [
+            {
+              "modeId": "accented",
+              "name": "accented",
+              "description": "Divides the widget's view hierarchy into an accent group and a primary group, then applies a solid color to each group. Used for Liquid Glass appearance on newer platforms.",
+              "implementation": {
+                "viewModifier": "widgetAccentable(_:)",
+                "purpose": "Group views into the accent group for accent coloring",
+                "relatedGuidance": "Optimizing your widget for accented rendering mode and Liquid Glass"
+              }
+            },
+            {
+              "modeId": "vibrant",
+              "name": "vibrant",
+              "description": "Desaturates text, images, and gauges into monochrome and creates a vibrant effect by coloring content appropriately for the Lock Screen background or macOS desktop. People can also color the Lock Screen with a colored tint, and WidgetKit uses a red tint for widgets in StandBy low-light conditions.",
+              "usageContexts": [
+                "Lock Screen",
+                "macOS desktop",
+                "iPhone StandBy (including Night Mode with red tint)"
+              ]
+            },
+            {
+              "modeId": "fullColor",
+              "name": "fullColor",
+              "description": "Does not change the color of your widget's views. Use gradients and full-color images, text, and gauges in this mode.",
+              "usageContexts": [
+                "Home Screen (iOS 18 and older)",
+                "CarPlay",
+                "Apple Watch Smart Stack"
+              ]
+            }
+          ]
+        },
+        "renderingModeMatrix": {
+          "description": "Support matrix showing which rendering modes each widget family must support",
+          "families": [
+            {
+              "family": "WidgetFamily.systemSmall",
+              "fullColor": true,
+              "accented": true,
+              "vibrant": true
+            },
+            {
+              "family": "WidgetFamily.systemMedium",
+              "fullColor": true,
+              "accented": true,
+              "vibrant": true
+            },
+            {
+              "family": "WidgetFamily.systemLarge",
+              "fullColor": true,
+              "accented": true,
+              "vibrant": true
+            },
+            {
+              "family": "WidgetFamily.systemExtraLarge",
+              "fullColor": true,
+              "accented": true,
+              "vibrant": true
+            },
+            {
+              "family": "WidgetFamily.systemExtraLarge Portrait",
+              "fullColor": true,
+              "accented": true,
+              "vibrant": true,
+              "note": "visionOS only"
+            },
+            {
+              "family": "WidgetFamily.accessoryCircular",
+              "fullColor": false,
+              "accented": true,
+              "vibrant": true
+            },
+            {
+              "family": "WidgetFamily.accessoryCorner",
+              "fullColor": false,
+              "accented": true,
+              "vibrant": true,
+              "note": "watchOS only"
+            },
+            {
+              "family": "WidgetFamily.accessoryRectangular",
+              "fullColor": true,
+              "accented": true,
+              "vibrant": true
+            },
+            {
+              "family": "WidgetFamily.accessoryInline",
+              "fullColor": false,
+              "accented": true,
+              "vibrant": true
+            }
+          ]
+        },
+        "implementationPattern": {
+          "description": "Code pattern for handling different rendering modes",
+          "environmentVariable": "widgetRenderingMode",
+          "codeExample": {
+            "language": "swift",
+            "code": "@Environment(\\.widgetRenderingMode) var renderingMode\n\nvar body: some View {\n    ZStack {\n        switch renderingMode {\n        case .fullColor:\n            // Create views for full-color widgets and watch complications.\n        case .accented:\n            // Create views and group applicable views in the accented group.\n            VStack {\n                // ...\n            }\n            .widgetAccentable()\n            // Additional views that you don't group in the accented group.\n        case .vibrant:\n            // Create views for Lock Screen widgets on iPhone and iPad.\n        }\n    }\n}"
+          }
+        },
+        "platformSpecificBehaviors": {
+          "standByAndCarPlay": {
+            "description": "On iPhone in StandBy, the Lock Screen shows two widgets side by side on a dark background. In CarPlay, widgets appear on a dedicated Widgets screen.",
+            "widgetUsed": "WidgetFamily.systemSmall",
+            "behavior": "WidgetKit scales the small widget to fit available space",
+            "guidance": "Refer to Adding StandBy and CarPlay support to your widget"
+          },
+          "macFontSizing": {
+            "description": "When people place an iPhone widget on a Mac desktop, the system renders it using iOS font metrics. Native Mac app widgets use macOS font sizing.",
+            "recommendation": "If sharing code across iOS and macOS targets, verify font sizing in macOS and adjust as needed."
+          },
+          "alwaysOn": {
+            "description": "For accessory widgets and WidgetKit complications, detect Always On state to color views appropriately for reduced luminance.",
+            "environmentVariable": "isLuminanceReduced",
+            "designGuidance": [
+              "Human Interface Guidelines > Always On",
+              "Human Interface Guidelines > Widgets"
+            ]
+          }
+        },
+        "disfavoredLocations": {
+          "description": "Some widgets may not work well in specific contexts. Use disfavoredLocations to indicate this.",
+          "example": "A widget relying on high-resolution photos and background colors may not work well on Lock Screen where vibrant treatment is applied.",
+          "modifier": "disfavoredLocations(_:for:)",
+          "effect": "Widget appears in widget gallery's 'Other' section for the disfavored location"
+        }
+      },
+      "configurableWidgets": {
+        "topicId": "topic-configurable",
+        "title": "Configuration Intents and Options",
+        "sourceDocument": "doc-2-configurable",
+        "summary": "Widgets can provide customizable properties using App Intents, the same mechanism used by Siri Suggestions and Siri Shortcuts. This enables users to select specific data to display, such as choosing a stock symbol or entering a tracking number.",
+        "implementationSteps": [
+          {
+            "step": 1,
+            "action": "Add custom app intent types conforming to WidgetConfigurationIntent",
+            "description": "Define the configurable properties in your Xcode project"
+          },
+          {
+            "step": 2,
+            "action": "Specify AppIntentTimelineProvider as timeline provider",
+            "description": "Incorporate the person's choices into your timeline entries"
+          },
+          {
+            "step": 3,
+            "action": "Add code for dynamic data if needed",
+            "description": "Implement entity queries to provide dynamic values at runtime"
+          }
+        ],
+        "appIntentStructure": {
+          "description": "Custom app intent structure for configurable widgets",
+          "requiredProperties": {
+            "title": {
+              "type": "LocalizedStringResource",
+              "purpose": "Describes the action the intent enables (title case, verb + noun)"
+            },
+            "description": {
+              "type": "IntentDescription",
+              "purpose": "Human-readable string describing the intent"
+            }
+          },
+          "parameterWrapper": {
+            "name": "@Parameter",
+            "purpose": "Add configurable properties to the intent",
+            "behavior": "WidgetKit automatically creates UI for editing based on parameter type",
+            "typeMapping": {
+              "String": "Text entry field",
+              "Int": "Number pad",
+              "AppEnum": "Predefined static list of values",
+              "AppEntity": "Dynamic list with query support"
+            },
+            "orderNote": "Parameter order in the intent determines display order when editing"
+          },
+          "codeExample": {
+            "language": "swift",
+            "code": "struct SelectCharacterIntent: WidgetConfigurationIntent {\n    static var title: LocalizedStringResource = \"Select Character\"\n    static var description = IntentDescription(\"Selects the character to display\")\n    \n    @Parameter(title: \"Character\")\n    var character: CharacterDetail\n    \n    init(character: CharacterDetail) {\n        self.character = character\n    }\n    \n    init() {\n    }\n}"
+          }
+        },
+        "appEntityRequirements": {
+          "description": "Custom types used as app intent parameters must conform to AppEntity",
+          "requiredImplementations": [
+            {
+              "property": "typeDisplayRepresentation",
+              "type": "TypeDisplayRepresentation",
+              "purpose": "Display name for the type"
+            },
+            {
+              "property": "defaultQuery",
+              "type": "EntityQuery conforming type",
+              "purpose": "Provides dynamic values at runtime"
+            },
+            {
+              "property": "displayRepresentation",
+              "type": "DisplayRepresentation",
+              "purpose": "How individual instances are displayed"
+            }
+          ],
+          "codeExample": {
+            "language": "swift",
+            "code": "struct CharacterDetail: AppEntity {\n    let id: String\n    let avatar: String\n    let healthLevel: Double\n    let heroType: String\n    let isAvailable = true\n    \n    static var typeDisplayRepresentation: TypeDisplayRepresentation = \"Character\"\n    static var defaultQuery = CharacterQuery()\n    \n    var displayRepresentation: DisplayRepresentation {\n        DisplayRepresentation(title: \"\\(avatar) \\(id)\")\n    }\n    \n    static let allCharacters: [CharacterDetail] = [\n        // Character definitions\n    ]\n}"
+          }
+        },
+        "entityQueryImplementation": {
+          "description": "EntityQuery provides dynamic values for configurable parameters",
+          "requiredMethods": [
+            {
+              "method": "entities(for:)",
+              "purpose": "Map AppEntity identifiers to corresponding entity instances",
+              "signature": "func entities(for identifiers: [CharacterDetail.ID]) async throws -> [CharacterDetail]"
+            },
+            {
+              "method": "suggestedEntities()",
+              "purpose": "Provide list of suggested values when person edits widget",
+              "signature": "func suggestedEntities() async throws -> [CharacterDetail]"
+            },
+            {
+              "method": "defaultResult()",
+              "purpose": "Specify default value for a parameter",
+              "signature": "func defaultResult() async -> CharacterDetail?"
+            }
+          ],
+          "codeExample": {
+            "language": "swift",
+            "code": "struct CharacterQuery: EntityQuery {\n    func entities(for identifiers: [CharacterDetail.ID]) async throws -> [CharacterDetail] {\n        CharacterDetail.allCharacters.filter { identifiers.contains($0.id) }\n    }\n    \n    func suggestedEntities() async throws -> [CharacterDetail] {\n        CharacterDetail.allCharacters.filter { $0.isAvailable }\n    }\n    \n    func defaultResult() async -> CharacterDetail? {\n        try? await suggestedEntities().first\n    }\n}"
+          }
+        },
+        "defaultValues": {
+          "description": "Non-optional parameters require default values",
+          "options": [
+            {
+              "option": "Parameter default attribute",
+              "example": "@Parameter(title: \"Title\", default: \"A Default Title\") var title: String"
+            },
+            {
+              "option": "Query defaultResult() method",
+              "description": "Implement defaultResult() in query type"
+            },
+            {
+              "option": "Intent initializer methods",
+              "description": "For AppEntity parameters, implement init methods to provide default values"
+            }
+          ]
+        },
+        "widgetConfiguration": {
+          "description": "Configurable widgets use AppIntentConfiguration",
+          "codeExample": {
+            "language": "swift",
+            "code": "struct CharacterDetailWidget: Widget {\n    var body: some WidgetConfiguration {\n        AppIntentConfiguration(\n            kind: kind,\n            intent: SelectCharacterIntent.self,\n            provider: CharacterDetailProvider()) { entry in\n            CharacterDetailView(entry: entry)\n        }\n        .configurationDisplayName(\"Character Details\")\n        .description(\"Displays a character's health and other details\")\n        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])\n    }\n}"
+          }
+        },
+        "timelineProviderIntegration": {
+          "description": "AppIntentTimelineProvider receives configuration and generates timeline",
+          "codeExample": {
+            "language": "swift",
+            "code": "struct CharacterDetailProvider: AppIntentTimelineProvider {\n    func timeline(for configuration: SelectCharacterIntent, in context: Context) async -> Timeline<CharacterDetailEntry> {\n        let entry = CharacterDetailEntry(date: Date(), detail: configuration.character)\n        let timeline = Timeline(entries: [entry], policy: .never)\n        return timeline\n    }\n}"
+          }
+        },
+        "accessingIntentInApp": {
+          "description": "When person taps widget, WidgetKit passes customized intent to app via NSUserActivity",
+          "swiftUIMethod": "onContinueUserActivity(_:perform:)",
+          "uikitMethod": "scene(_:continue:)",
+          "accessMethod": "widgetConfigurationIntent(of:)",
+          "fetchAllWidgets": "getCurrentConfigurations(_:) to fetch WidgetInfo objects"
+        },
+        "watchOSConsiderations": {
+          "description": "Watch complications use same app intents mechanism but have choice for preconfigured vs user-configured",
+          "recommendations": {
+            "method": "recommendations()",
+            "returnPreconfigured": "Return array of AppIntentRecommendation objects for preconfigured complications",
+            "returnUserConfigurable": "Return empty array [] to let people configure themselves"
+          },
+          "olderVersionNote": "watchOS 11 and older don't have interface for configuring widgets or complications - offer preconfigured complications",
+          "invalidation": {
+            "method": "invalidateConfigurationRecommendations()",
+            "purpose": "Tell WidgetKit to get new recommendations when app receives new relevant data"
+          }
+        },
+        "migrationNote": {
+          "description": "Prior to iOS 17, iPadOS 17, and macOS 14, configurable widgets used SiriKit Intents",
+          "guidance": "Refer to Migrating widgets from SiriKit Intents to App Intents"
+        }
+      },
+      "timelineUpdates": {
+        "topicId": "topic-timeline",
+        "title": "Timeline Updates and Refresh Strategies",
+        "sourceDocument": "doc-3-updates",
+        "summary": "Widgets display content using SwiftUI views rendered by WidgetKit in a separate process. Since widget extensions are not continually active, content freshness is maintained through timelines, app-triggered reloads, and WidgetKit push notifications.",
+        "updateMechanisms": [
+          {
+            "mechanism": "Timeline-based updates",
+            "description": "Create timeline for regular, predictable events with future dates"
+          },
+          {
+            "mechanism": "App-triggered reloads",
+            "description": "Tell system to reload timelines when data changes (e.g., push notification received)"
+          },
+          {
+            "mechanism": "WidgetKit push notifications",
+            "description": "Additional update mechanism that doesn't replace timeline updates"
+          }
+        ],
+        "reloadBudget": {
+          "description": "WidgetKit uses a budget system to distribute widget reloads and preserve battery life",
+          "factorsConsidered": [
+            "Frequency and times widget is visible to user",
+            "Widget's last reload time",
+            "Whether widget's containing app is active"
+          ],
+          "budgetDetails": {
+            "scope": "Each active widget instance has its own budget",
+            "period": "24-hour period tuned to user's daily usage pattern (not necessarily midnight)",
+            "typicalBudget": "40 to 70 refreshes per day for frequently viewed widgets",
+            "refreshInterval": "Roughly every 15 to 60 minutes, varies based on many factors",
+            "learningPeriod": "System takes few days to learn user's behavior - widget may receive more reloads initially"
+          },
+          "exemptFromBudget": [
+            "Widget's containing app is in foreground",
+            "Widget's containing app has active audio or navigation session",
+            "Widget performs an app intent (button tap, toggle)",
+            "Widget performs an animation",
+            "System locale changes",
+            "Dynamic Type or Accessibility settings change"
+          ],
+          "automaticUpdates": "Don't request timeline reload for system appearance or locale changes - system updates automatically",
+          "standByNote": "In StandBy, system refreshes widget display at system-defined rate that doesn't count against budget"
+        },
+        "systemManagedReloads": {
+          "description": "WidgetKit sometimes reloads widgets beyond your schedule to keep content fresh",
+          "scenarios": [
+            {
+              "scenario": "Rarely visited Home Screen page",
+              "behavior": "WidgetKit may reduce reload frequency, then reload when page becomes visible"
+            },
+            {
+              "scenario": "Location Services usage",
+              "behavior": "WidgetKit reloads after significant location change"
+            }
+          ]
+        },
+        "timelineBestPractices": {
+          "description": "Guidelines for creating effective timelines",
+          "recommendations": [
+            "Generate timeline for as many future dates as possible",
+            "Keep interval between entries as large as possible for displayed content",
+            "Minimum 5 minutes between timeline entries (WidgetKit may coalesce reloads)"
+          ]
+        },
+        "timelineProvider": {
+          "description": "Custom TimelineProvider implementation generates timeline entries",
+          "components": {
+            "TimelineEntry": {
+              "purpose": "Specifies date to display widget and additional data needed",
+              "requirements": "Each entry has date/time and custom data for view"
+            },
+            "Timeline": {
+              "purpose": "Array of TimelineEntry objects plus refresh policy",
+              "structure": "Timeline(entries: [entry], policy: .atEnd)"
+            }
+          },
+          "refreshPolicies": [
+            {
+              "policy": "atEnd",
+              "description": "Request new timeline after last date in entries passes (default)"
+            },
+            {
+              "policy": "never",
+              "description": "Don't request new timeline - app uses WidgetCenter to trigger reload"
+            },
+            {
+              "policy": "after(_:)",
+              "description": "Request new timeline at specific date (before or after timeline end)",
+              "useCases": [
+                "Known future event that might alter timeline",
+                "Stock market widget: specify market open time on Monday for weekend closure"
+              ],
+              "serverLoadWarning": "Plan ahead - multiple devices may reload at same time causing server load spikes"
+            }
+          ]
+        },
+        "timelineExample": {
+          "description": "Game widget showing character health recovery",
+          "scenario": "Character at 25% health recovers 25% per hour, reaching 100% in 3 hours",
+          "timeline": {
+            "entries": [
+              "Current time (25% health)",
+              "1 hour later (50% health)",
+              "2 hours later (75% health)",
+              "3 hours later (100% health)"
+            ],
+            "refreshPolicy": "atEnd for recovery timeline, never when at 100%"
+          },
+          "dynamicEvents": {
+            "example": "Dragon battle in 2 hours",
+            "approach": "Use after(_:) with date 2 hours in future to get new timeline when battle begins"
+          }
+        },
+        "appTriggeredReloads": {
+          "description": "App can tell WidgetKit to request new timeline when something affects current timeline",
+          "methods": {
+            "reloadTimelines": {
+              "method": "WidgetCenter.shared.reloadTimelines(ofKind:)",
+              "parameter": "kind - same string as WidgetConfiguration",
+              "codeExample": "WidgetCenter.shared.reloadTimelines(ofKind: \"com.mygame.character-detail\")"
+            },
+            "reloadAllTimelines": {
+              "method": "WidgetCenter.shared.reloadAllTimelines()",
+              "useCase": "User signed out - reload all widgets in WidgetBundle"
+            }
+          },
+          "avoidUnnecessaryReloads": {
+            "method": "getCurrentConfigurations(_:)",
+            "purpose": "Verify widget with appropriate settings exists before reloading",
+            "codeExample": {
+              "language": "swift",
+              "code": "WidgetCenter.shared.getCurrentConfigurations { result in\n    guard case .success(let widgets) = result else { return }\n    if let widget = widgets.first(\n        where: { widget in\n            let intent = widget.configuration as? SelectCharacterIntent\n            return intent?.character == characterThatReceivedHealingPotion\n        }\n    ) {\n        WidgetCenter.shared.reloadTimelines(ofKind: widget.kind)\n    }\n}"
+            }
+          }
+        },
+        "smartStackRelevance": {
+          "description": "Help system determine when widget in Smart Stack is most relevant",
+          "implementation": {
+            "method": "relevance() callback in timeline provider",
+            "recommendation": "Keep relevance information up-to-date for additional visibility"
+          },
+          "reference": "Increasing the visibility of widgets in Smart Stacks"
+        },
+        "dynamicDates": {
+          "description": "Widgets can display time-based information that WidgetKit updates live",
+          "example": "Countdown timer that continues even if widget extension isn't running",
+          "reference": "Displaying dynamic dates in widgets"
+        },
+        "networkRequests": {
+          "description": "Load new data from server before reloading timeline",
+          "approach": "Use system's URL loading system and URLSession",
+          "reference": "Making network requests in a widget extension"
+        },
+        "relatedTypes": [
+          {
+            "type": "TimelineProvider",
+            "description": "Protocol advising WidgetKit when to update widget's display"
+          },
+          {
+            "type": "AppIntentTimelineProvider",
+            "description": "Protocol for user-configurable widget's display updates"
+          },
+          {
+            "type": "IntentTimelineProvider",
+            "description": "Protocol for user-configurable widget's display (SiriKit-based)"
+          },
+          {
+            "type": "TimelineProviderContext",
+            "description": "Contains details about widget rendering, including size and gallery appearance"
+          },
+          {
+            "type": "TimelineEntry",
+            "description": "Specifies date to display widget and optionally current relevance"
+          },
+          {
+            "type": "Timeline",
+            "description": "Object specifying date for WidgetKit to update widget's view"
+          },
+          {
+            "type": "WidgetCenter",
+            "description": "Contains list of user-configured widgets and methods for reloading timelines"
+          }
+        ]
+      },
+      "animationGuidelines": {
+        "topicId": "topic-animation",
+        "title": "Animation Guidelines for Data Updates",
+        "sourceDocument": "doc-4-animation",
+        "summary": "Animations bring widgets and Live Activities to life, alerting users when new information is available. Widgets and Live Activities animate data updates with default animations or custom SwiftUI animations. Earlier OS versions have limited animation support.",
+        "constraints": {
+          "maxDuration": "2 seconds maximum for all widget and Live Activity animations"
+        },
+        "defaultBehaviors": {
+          "textViews": "Animate content changes with blurred content transitions",
+          "imagesAndSymbols": "Animate with default content transitions",
+          "viewAdditionRemoval": "Views fade in and out when added/removed based on timeline updates"
+        },
+        "customizingAnimations": {
+          "description": "Replace default animations and transitions with custom ones",
+          "techniques": [
+            {
+              "technique": "Built-in transitions",
+              "options": ["opacity", "move(edge:)", "slide", "push(from:)", "combinations"]
+            },
+            {
+              "technique": "View modifiers",
+              "modifiers": ["transition(_:)", "contentTransition(_:)", "animation(_:value:)"]
+            },
+            {
+              "technique": "Timer text animation",
+              "modifier": "numericText(countsDown:)"
+            }
+          ]
+        },
+        "alwaysOnConsideration": {
+          "description": "System doesn't perform animations on Always-On displays to preserve battery",
+          "detection": "Check isLuminanceReduced environment value before animating"
+        },
+        "ios16Limitations": {
+          "description": "Live Activities on iOS 16 or earlier ignore animation modifiers",
+          "ignoredModifiers": ["withAnimation(_:_:)", "animation(_:value:)"],
+          "supported": "Built-in transitions: opacity, move(edge:), slide, push(from:), combinations"
+        },
+        "codeExamples": {
+          "numericTextTransition": {
+            "description": "Configure content transition for numeric text",
+            "code": "Text(totalCaffeine.formatCaffeine())\n    .font(.title)\n    .minimumScaleFactor(0.8)\n    .contentTransition(.numericText())"
+          },
+          "springAnimation": {
+            "description": "Add spring animation to transition",
+            "code": "Text(totalCaffeine.formatCaffeine())\n    .font(.title)\n    .minimumScaleFactor(0.8)\n    .contentTransition(.numericText())\n    .animation(.spring(duration: 0.2), value: totalCaffeine)"
+          },
+          "defaultTextAnimation": {
+            "description": "Use default text animation with customized speed and delay",
+            "code": "Text(\"Some text with \\(entry.value) that changes.\")\n    .animation(.default.speed(0.25).delay(0.5), value: entry.value)"
+          }
+        },
+        "animatingOnDataModelChange": {
+          "description": "Animate views when other widget information changes, not just direct data updates",
+          "requirements": [
+            "Data model should conform to Hashable protocol",
+            "Associate view with data model using id(_:) modifier",
+            "Add transition or animation to the view"
+          ],
+          "codeExample": {
+            "language": "swift",
+            "code": "struct LastDrinkView: View {\n    let log: CaffeineLog\n    var dateFormatStyle: Date.FormatStyle {\n        Date.FormatStyle(date: .omitted, time: .shortened)\n    }\n    var body: some View {\n        VStack(alignment: .leading) {\n            Text(log.drink.name)\n                .bold()\n            Text(\"\\(log.date, format: dateFormatStyle) - \\(log.drink.caffeine)\")\n        }\n        .font(.caption)\n        .id(log) // Associate the view with the data model.\n        .transition(.push(from: .bottom))\n    }\n}"
+          }
+        },
+        "disablingAnimations": {
+          "description": "Direct attention to most important updates by disabling animations for some views",
+          "techniques": [
+            {
+              "technique": "Identity transition",
+              "code": "transition(.identity)"
+            },
+            {
+              "technique": "Nil animation",
+              "code": "Pass nil to animation parameter of withAnimation or animation(_:value:)"
+            }
+          ],
+          "limitation": "Transaction is not available to widgets and Live Activities - cannot cancel animation by setting transaction's animation property to nil"
+        },
+        "relatedGuidance": [
+          "Adding interactivity to widgets and Live Activities",
+          "Linking to specific app scenes from your widget or Live Activity"
+        ]
+      },
+      "backgroundHandling": {
+        "topicId": "topic-background",
+        "title": "Background Handling",
+        "sourceDocument": "doc-5-background",
+        "summary": "Widgets appear differently based on context, particularly regarding background views. In vibrant appearance and StandBy, the system removes or modifies widget backgrounds. Proper marking of background views ensures correct appearance across all contexts.",
+        "backgroundBehaviors": [
+          {
+            "context": "Vibrant appearance",
+            "behavior": "System removes background or renders with semi-translucent appearance"
+          },
+          {
+            "context": "StandBy on iPhone",
+            "behavior": "System removes widget background"
+          },
+          {
+            "context": "Lock Screen",
+            "behavior": "Background removed for accessory widgets"
+          },
+          {
+            "context": "Apple Watch Smart Stack",
+            "behavior": "Rectangular widgets use default dark material background; container background provides custom appearance"
+          }
+        ],
+        "developmentWarning": {
+          "description": "If widget doesn't support removable background views or doesn't explicitly mark background as nonremovable, Xcode displays a warning message overlaying the widget during development"
+        },
+        "containerBackgroundModifier": {
+          "description": "Mark background views as removable using containerBackground modifier",
+          "implementation": {
+            "step1": "Add containerBackground(_:for:) modifier to background views",
+            "step2": "Move background color/view code inside the modifier",
+            "parameter": "Pass .widget to the for: parameter"
+          },
+          "benefit": "Use same layout and views across all widget contexts",
+          "codeExample": {
+            "language": "swift",
+            "code": "var body: some View {\n    switch family {\n    case .accessoryRectangular:\n        HStack(alignment: .center, spacing: 0) {\n            VStack(alignment: .leading) {\n                Text(entry.hero.name)\n                    .font(.headline)\n                    .widgetAccentable()\n                Text(\"Level \\(entry.hero.level)\")\n                Text(entry.hero.fullHealthDate, style: .timer)\n            }.frame(maxWidth: .infinity, alignment: .leading)\n            Avatar(hero: entry.hero, includeBackground: false)\n        }\n        .containerBackground(for: .widget) {\n            Color.gameBackground\n        }\n    // Logic for additional widget sizes.\n    }\n}"
+          }
+        },
+        "detectingBackgroundPresence": {
+          "description": "Detect whether widget appears with or without background",
+          "environmentVariable": "showsWidgetContainerBackground"
+        },
+        "optingOutOfBackgroundRemoval": {
+          "description": "Some widgets require their background for functionality (e.g., photo or map widgets)",
+          "modifier": "containerBackgroundRemovable(_:)",
+          "usage": "Set to false for widget configuration",
+          "consequence": "Widget excluded from widget gallery in contexts requiring removable background (iPad Lock Screen, StandBy)"
+        },
+        "accessoryWidgetBackground": {
+          "description": "Set consistent background for accessory widgets and complications",
+          "component": "AccessoryWidgetBackground",
+          "purpose": "Draw consistent background similar to system widgets",
+          "codeExample": {
+            "language": "swift",
+            "code": "ZStack {\n    AccessoryWidgetBackground()\n    VStack {\n        Text(\"MON\")\n        Text(\"6\")\n            .font(.title)\n    }\n}"
+          }
+        },
+        "relatedTypes": [
+          {
+            "type": "WidgetRenderingMode",
+            "description": "Constants indicating rendering mode for a widget"
+          },
+          {
+            "type": "WidgetAccentedRenderingMode",
+            "description": "Constants indicating rendering mode for Image in accented mode"
+          },
+          {
+            "type": "AccessoryWidgetBackground",
+            "description": "Adaptive background view providing standard appearance based on environment"
+          },
+          {
+            "type": "WidgetLocation",
+            "description": "Values indicating different widget locations"
+          }
+        ]
+      },
+      "widgetKitStrategy": {
+        "topicId": "topic-strategy",
+        "title": "WidgetKit Strategy Recommendations",
+        "sourceDocument": "doc-6-strategy",
+        "summary": "WidgetKit enables building widgets, controls, watch complications, and Live Activities. System experiences share design and functional similarities, making them candidates for code reuse. Planning before implementation avoids costly changes.",
+        "planningConsiderations": [
+          "Feature availability for each platform",
+          "Frameworks to use in addition to WidgetKit",
+          "Required appearances and available sizes",
+          "Technology powering content updates",
+          "Animation",
+          "Interactivity through deep links, buttons, and toggles",
+          "Configuration options",
+          "Visibility in Smart Stacks",
+          "Functional constraints"
+        ],
+        "iterativeApproach": {
+          "description": "Recommended phased approach to WidgetKit adoption",
+          "phases": [
+            {
+              "phase": 1,
+              "action": "Start with nonconfigurable systemSmall widget",
+              "benefit": "Broad exposure on iPhone, iPad, Mac, and Apple Vision Pro"
+            },
+            {
+              "phase": 2,
+              "action": "Add support for configuration"
+            },
+            {
+              "phase": 3,
+              "action": "Add additional widget sizes"
+            },
+            {
+              "phase": 4,
+              "action": "Add Live Activities or watchOS app with complications (if applicable)"
+            }
+          ]
+        },
+        "platformAvailabilityMatrix": {
+          "description": "Widget sizes and technologies available per platform",
+          "entries": [
+            {
+              "feature": "Small system widgets",
+              "iPhone": "Home Screen, Today View, StandBy",
+              "iPad": "Home Screen, Today View, Lock Screen",
+              "appleWatch": "No",
+              "mac": "Yes",
+              "visionPro": "Yes"
+            },
+            {
+              "feature": "Medium system widgets",
+              "iPhone": "Home Screen, Today View",
+              "iPad": "Home Screen, Today View",
+              "appleWatch": "No",
+              "mac": "Yes",
+              "visionPro": "Yes"
+            },
+            {
+              "feature": "Large system widgets",
+              "iPhone": "Home Screen, Today View",
+              "iPad": "Home Screen, Today View",
+              "appleWatch": "No",
+              "mac": "Yes",
+              "visionPro": "Yes"
+            },
+            {
+              "feature": "Extra large system widgets",
+              "iPhone": "No",
+              "iPad": "Home Screen, Today View",
+              "appleWatch": "No",
+              "mac": "Yes",
+              "visionPro": "Yes"
+            },
+            {
+              "feature": "Extra large portrait widgets",
+              "iPhone": "No",
+              "iPad": "No",
+              "appleWatch": "No",
+              "mac": "No",
+              "visionPro": "Yes"
+            },
+            {
+              "feature": "Circular accessory widgets",
+              "iPhone": "Lock Screen",
+              "iPad": "Lock Screen",
+              "appleWatch": "Complications and Smart Stack",
+              "mac": "No",
+              "visionPro": "No"
+            },
+            {
+              "feature": "Corner accessory widgets",
+              "iPhone": "No",
+              "iPad": "No",
+              "appleWatch": "Complications",
+              "mac": "No",
+              "visionPro": "No"
+            },
+            {
+              "feature": "Rectangular accessory widgets",
+              "iPhone": "Lock Screen",
+              "iPad": "Lock Screen",
+              "appleWatch": "Complications and Smart Stack",
+              "mac": "No",
+              "visionPro": "No"
+            },
+            {
+              "feature": "Inline accessory widgets",
+              "iPhone": "Lock Screen",
+              "iPad": "Lock Screen",
+              "appleWatch": "Complications",
+              "mac": "No",
+              "visionPro": "No"
+            },
+            {
+              "feature": "Live Activities",
+              "iPhone": "Yes",
+              "iPad": "Yes",
+              "appleWatch": "From paired iPhone",
+              "mac": "From paired iPhone",
+              "visionPro": "No"
+            },
+            {
+              "feature": "Controls",
+              "iPhone": "Yes",
+              "iPad": "Yes",
+              "appleWatch": "Yes",
+              "mac": "Yes",
+              "visionPro": "No"
+            }
+          ]
+        },
+        "frameworksToLeverage": {
+          "description": "Frameworks to use alongside WidgetKit",
+          "frameworks": [
+            {
+              "framework": "SwiftUI",
+              "purpose": "Create user interface for each feature"
+            },
+            {
+              "framework": "App Intents",
+              "purposes": [
+                "Add interactivity to widgets and Live Activities",
+                "Offer configurable widgets and complications",
+                "Provide contextual clues for Smart Stacks"
+              ]
+            },
+            {
+              "framework": "RelevanceKit",
+              "purpose": "Provide contextual clues for Smart Stacks and Widget Suggestions"
+            },
+            {
+              "framework": "ActivityKit",
+              "purpose": "Start, update, and end Live Activities"
+            }
+          ]
+        },
+        "appearancesByContext": {
+          "description": "How widgets appear in different contexts",
+          "systemSmallExamples": [
+            {
+              "context": "Home Screen iPhone/iPad (iOS 18+)",
+              "renderingMode": "accented (light/dark)"
+            },
+            {
+              "context": "Home Screen iPhone/iPad (iOS 18 and older)",
+              "renderingMode": "fullColor"
+            },
+            {
+              "context": "Lock Screen iPhone/iPad",
+              "renderingMode": "vibrant (blurred appearance)"
+            },
+            {
+              "context": "iPhone StandBy",
+              "renderingMode": "vibrant, scaled up"
+            },
+            {
+              "context": "StandBy Night Mode",
+              "renderingMode": "vibrant with red tint"
+            },
+            {
+              "context": "CarPlay",
+              "renderingMode": "fullColor, scaled up, background removed"
+            },
+            {
+              "context": "Mac",
+              "renderingMode": "accented (older: fullColor or vibrant)"
+            }
+          ],
+          "accessoryRectangularExamples": [
+            {
+              "context": "Lock Screen iPhone/iPad",
+              "renderingMode": "vibrant"
+            },
+            {
+              "context": "Apple Watch complication",
+              "renderingMode": "accented, no background"
+            },
+            {
+              "context": "Apple Watch Smart Stack",
+              "renderingMode": "fullColor"
+            }
+          ]
+        },
+        "contentUpdateMechanisms": {
+          "widgetsAndComplications": {
+            "mechanism": "Timeline",
+            "description": "Create timeline of data updates, hand to WidgetKit. Budget system limits updates to preserve battery.",
+            "additionalMechanism": "WidgetKit push notifications via APNs"
+          },
+          "liveActivities": {
+            "mechanism": "ActivityKit and ActivityKit push notifications",
+            "description": "Don't use timelines; update via ActivityKit or APNs push notifications"
+          },
+          "controls": {
+            "mechanism": "On-use, app reload, or remote push notification",
+            "description": "Update when someone uses them, app reloads them, or system receives APNs notification"
+          }
+        },
+        "interactivity": {
+          "deepLinking": {
+            "description": "Default tap launches corresponding app. Deep linking launches specific scene matching widget content.",
+            "swiftUIComponent": "Link",
+            "supportedSizes": "systemSmall or larger, Live Activities in extended or Lock Screen appearance",
+            "limitation": "iOS 16/macOS 13 and earlier: only large and extra-large widgets support Link"
+          },
+          "directInteraction": {
+            "description": "Direct interaction via App Intents framework and SwiftUI",
+            "components": ["Button", "Toggle"],
+            "initializers": "Dedicated initializers for widget/Live Activity interaction"
+          }
+        },
+        "smartStackVisibility": {
+          "iPhoneIPad": "People create stacks, swipe manually. Smart Stacks with Smart Rotate show most relevant widgets and suggestions.",
+          "appleWatch": "Widgets automatically appear in Smart Stack. People can place and pin widgets, but rely heavily on system for automatic display.",
+          "mechanism": "iOS/iPadOS rely on behavioral clues during app use. watchOS queries widget extension for contextual clues."
+        },
+        "privacyConsiderations": {
+          "description": "Lock Screen and watch faces are always visible. Widgets and complications should support redaction of sensitive information.",
+          "userControl": "People can configure to hide sensitive information when device is locked or in Always On mode",
+          "action": "Review data displayed and support redaction"
+        },
+        "sharedDataContainer": {
+          "description": "Widget extension and app share same app group, enabling shared data access",
+          "mechanism": "App group shared container",
+          "example": "App downloads data to database in shared container; widget accesses same database",
+          "reference": "Configuring app groups"
+        },
+        "functionalConstraints": {
+          "description": "Constraints that preserve battery life and user privacy",
+          "matrix": [
+            {
+              "functionality": "Network access",
+              "widgets": true,
+              "watchComplications": true,
+              "liveActivities": false
+            },
+            {
+              "functionality": "Location access",
+              "widgets": true,
+              "watchComplications": true,
+              "liveActivities": false
+            }
+          ],
+          "reference": "Accessing location information in widgets"
+        },
+        "recommendation": "Support as many sizes and complications as possible for maximum reach across the WidgetKit ecosystem"
+      }
+    },
+    "implementationChecklist": {
+      "description": "Comprehensive checklist for implementing production-quality widgets",
+      "categories": [
+        {
+          "category": "Rendering Mode Support",
+          "items": [
+            "Support fullColor rendering mode for applicable widget families",
+            "Support accented rendering mode with widgetAccentable() groupings",
+            "Support vibrant rendering mode for Lock Screen contexts",
+            "Read widgetRenderingMode environment variable and adapt views",
+            "Test in all three rendering modes"
+          ]
+        },
+        {
+          "category": "Background Handling",
+          "items": [
+            "Use containerBackground(for: .widget) modifier for background views",
+            "Move background colors/views inside containerBackground closure",
+            "Use showsWidgetContainerBackground to detect background presence if needed",
+            "Consider containerBackgroundRemovable(false) only if background is essential to functionality",
+            "Use AccessoryWidgetBackground for accessory widgets needing consistent background"
+          ]
+        },
+        {
+          "category": "Timeline Management",
+          "items": [
+            "Implement TimelineProvider or AppIntentTimelineProvider",
+            "Generate timeline entries at least 5 minutes apart",
+            "Choose appropriate refresh policy (atEnd, never, or after(_:))",
+            "Use WidgetCenter.shared.reloadTimelines(ofKind:) for app-triggered updates",
+            "Verify widget configuration exists before reloading with getCurrentConfigurations",
+            "Implement relevance() for Smart Stack visibility"
+          ]
+        },
+        {
+          "category": "Configuration (if applicable)",
+          "items": [
+            "Create custom app intent conforming to WidgetConfigurationIntent",
+            "Define parameters with @Parameter wrapper",
+            "Implement AppEntity for custom parameter types",
+            "Implement EntityQuery with entities(for:), suggestedEntities(), defaultResult()",
+            "Use AppIntentConfiguration for widget configuration",
+            "Handle customized intent in app via onContinueUserActivity"
+          ]
+        },
+        {
+          "category": "Animation",
+          "items": [
+            "Keep animations under 2 seconds maximum duration",
+            "Check isLuminanceReduced before animating (Always On displays)",
+            "Use contentTransition(_:) for custom text transitions",
+            "Use id(_:) with Hashable data models for data-driven animations",
+            "Consider disabling animations for less important view updates"
+          ]
+        },
+        {
+          "category": "Platform-Specific",
+          "items": [
+            "Test small widget in StandBy mode (scaled up)",
+            "Test small widget in CarPlay (scaled up, fullColor, no background)",
+            "Verify font sizing on macOS if sharing code with iOS",
+            "Support isLuminanceReduced for Always On displays",
+            "Use disfavoredLocations if widget doesn't work well in specific context"
+          ]
+        },
+        {
+          "category": "Privacy and Data",
+          "items": [
+            "Support redaction of sensitive data for Lock Screen visibility",
+            "Use app group shared container for data sharing between app and widget",
+            "Respect reload budget limitations",
+            "Avoid unnecessary network requests"
+          ]
+        }
+      ]
+    },
+    "keyAPIs": {
+      "description": "Key APIs and types referenced across all documents",
+      "protocols": [
+        {
+          "name": "Widget",
+          "description": "Configuration and content of a widget for Home screen or Notification Center"
+        },
+        {
+          "name": "TimelineProvider",
+          "description": "Advises WidgetKit when to update widget's display"
+        },
+        {
+          "name": "AppIntentTimelineProvider",
+          "description": "Advises WidgetKit when to update user-configurable widget's display"
+        },
+        {
+          "name": "IntentTimelineProvider",
+          "description": "Advises WidgetKit when to update user-configurable widget's display (SiriKit)"
+        },
+        {
+          "name": "TimelineEntry",
+          "description": "Specifies date to display widget and optionally current relevance"
+        },
+        {
+          "name": "WidgetConfigurationIntent",
+          "description": "Protocol for custom app intents defining configurable widget properties"
+        },
+        {
+          "name": "AppEntity",
+          "description": "Protocol for custom types used as app intent parameters"
+        },
+        {
+          "name": "EntityQuery",
+          "description": "Protocol for providing dynamic values to configurable parameters"
+        },
+        {
+          "name": "WidgetBundle",
+          "description": "Container to expose multiple widgets from single widget extension"
+        }
+      ],
+      "structs": [
+        {
+          "name": "StaticConfiguration",
+          "description": "Widget content with no user-configurable options"
+        },
+        {
+          "name": "AppIntentConfiguration",
+          "description": "Widget content using custom intent for user-configurable options"
+        },
+        {
+          "name": "Timeline",
+          "description": "Specifies date for WidgetKit to update widget's view"
+        },
+        {
+          "name": "TimelineProviderContext",
+          "description": "Details about widget rendering including size and gallery appearance"
+        },
+        {
+          "name": "WidgetInfo",
+          "description": "Information about user-configured widgets"
+        },
+        {
+          "name": "WidgetRenderingMode",
+          "description": "Constants indicating rendering mode for widget"
+        },
+        {
+          "name": "WidgetAccentedRenderingMode",
+          "description": "Constants for Image rendering in accented mode"
+        },
+        {
+          "name": "AccessoryWidgetBackground",
+          "description": "Adaptive background view for standard appearance"
+        },
+        {
+          "name": "WidgetLocation",
+          "description": "Values indicating different widget locations"
+        }
+      ],
+      "classes": [
+        {
+          "name": "WidgetCenter",
+          "description": "List of user-configured widgets and methods for reloading timelines",
+          "keyMethods": [
+            "shared",
+            "reloadTimelines(ofKind:)",
+            "reloadAllTimelines()",
+            "getCurrentConfigurations(_:)"
+          ]
+        }
+      ],
+      "enums": [
+        {
+          "name": "WidgetFamily",
+          "description": "Values defining widget size and shape",
+          "cases": [
+            "systemSmall",
+            "systemMedium",
+            "systemLarge",
+            "systemExtraLarge",
+            "accessoryCircular",
+            "accessoryCorner",
+            "accessoryRectangular",
+            "accessoryInline"
+          ]
+        }
+      ],
+      "viewModifiers": [
+        {
+          "name": "widgetAccentable(_:)",
+          "description": "Group views into accent group for accented rendering mode"
+        },
+        {
+          "name": "containerBackground(_:for:)",
+          "description": "Define removable background views"
+        },
+        {
+          "name": "containerBackgroundRemovable(_:)",
+          "description": "Opt out of background removal for widget configuration"
+        },
+        {
+          "name": "disfavoredLocations(_:for:)",
+          "description": "Indicate widget doesn't work well in specific context"
+        },
+        {
+          "name": "configurationDisplayName(_:)",
+          "description": "Set display name for widget in gallery"
+        },
+        {
+          "name": "description(_:)",
+          "description": "Set description for widget in gallery"
+        },
+        {
+          "name": "supportedFamilies(_:)",
+          "description": "Specify which widget sizes are supported"
+        },
+        {
+          "name": "contentTransition(_:)",
+          "description": "Configure custom content transition animation"
+        },
+        {
+          "name": "transition(_:)",
+          "description": "Configure view transition animation"
+        },
+        {
+          "name": "animation(_:value:)",
+          "description": "Configure animation triggered by value change"
+        },
+        {
+          "name": "id(_:)",
+          "description": "Associate view with data model for data-driven animations"
+        }
+      ],
+      "environmentValues": [
+        {
+          "name": "widgetRenderingMode",
+          "description": "Current rendering mode for the widget"
+        },
+        {
+          "name": "isLuminanceReduced",
+          "description": "Detect Always On state for reduced luminance coloring"
+        },
+        {
+          "name": "showsWidgetContainerBackground",
+          "description": "Detect whether widget appears with or without background"
+        }
+      ]
+    },
+    "relatedResources": {
+      "wwdcSessions": [
+        {
+          "sessionId": "10028",
+          "title": "Bring widgets to life",
+          "year": "WWDC23",
+          "focus": "Animation in widgets"
+        }
+      ],
+      "sampleCode": [
+        {
+          "name": "Emoji Rangers: Supporting Live Activities, interactivity, and animations",
+          "description": "Sample project demonstrating Live Activities, controls, animated data updates, and widget interactivity"
+        }
+      ],
+      "relatedDocumentation": [
+        "Creating a widget extension",
+        "Adding interactivity to widgets and Live Activities",
+        "Linking to specific app scenes from your widget or Live Activity",
+        "Adding accessible descriptions to widgets and Live Activities",
+        "Updating widgets with WidgetKit push notifications",
+        "Accessing location information in widgets",
+        "Making network requests in a widget extension",
+        "Increasing the visibility of widgets in Smart Stacks",
+        "Displaying dynamic dates in widgets",
+        "Migrating widgets from SiriKit Intents to App Intents",
+        "Optimizing your widget for accented rendering mode and Liquid Glass",
+        "Adding StandBy and CarPlay support to your widget",
+        "Supporting additional widget sizes",
+        "Configuring app groups"
+      ],
+      "humanInterfaceGuidelines": [
+        "Human Interface Guidelines > Widgets",
+        "Human Interface Guidelines > Complications",
+        "Human Interface Guidelines > Always On"
+      ]
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "Timeline",
+          "definition": "An array of TimelineEntry objects plus a refresh policy that WidgetKit uses to determine when to update widget content",
+          "occurrences": 47
+        },
+        {
+          "term": "Rendering Mode",
+          "definition": "One of three display modes (fullColor, accented, vibrant) that determine how widget content colors are processed for different contexts",
+          "occurrences": 23
+        },
+        {
+          "term": "App Intent",
+          "definition": "A mechanism for defining configurable widget properties, also used by Siri Suggestions and Shortcuts",
+          "occurrences": 31
+        },
+        {
+          "term": "Widget Budget",
+          "definition": "System-managed limit on widget reloads per 24-hour period to preserve battery life (typically 40-70 refreshes)",
+          "occurrences": 8
+        },
+        {
+          "term": "Container Background",
+          "definition": "The removable background layer of a widget that system may hide in certain contexts like StandBy or Lock Screen",
+          "occurrences": 12
+        },
+        {
+          "term": "Smart Stack",
+          "definition": "A stack of widgets where system automatically shows most relevant widget based on contextual clues",
+          "occurrences": 9
+        },
+        {
+          "term": "EntityQuery",
+          "definition": "Protocol for providing dynamic values to configurable widget parameters at runtime",
+          "occurrences": 6
+        },
+        {
+          "term": "Content Transition",
+          "definition": "SwiftUI animation applied when view content changes, supporting custom configurations for text and other elements",
+          "occurrences": 7
+        }
+      ],
+      "keyFindings": [
+        "Widgets must support all three rendering modes (fullColor, accented, vibrant) for maximum platform compatibility",
+        "Widget refresh budget is typically 40-70 reloads per day with 15-60 minute intervals for frequently viewed widgets",
+        "Timeline entries should be at least 5 minutes apart; WidgetKit may coalesce reloads",
+        "Animations in widgets and Live Activities have a maximum duration of 2 seconds",
+        "System does not animate on Always-On displays to preserve battery - check isLuminanceReduced",
+        "containerBackground(for: .widget) is required for proper background handling across contexts",
+        "watchOS 11 and older don't have interface for configuring widgets - offer preconfigured complications",
+        "Live Activities cannot access network or location - widgets can",
+        "App-triggered reloads and animations don't count against widget budget",
+        "iOS 16 Live Activities ignore custom animation modifiers but support built-in transitions"
+      ],
+      "technicalSpecifications": {
+        "minimumTimelineInterval": "5 minutes between entries",
+        "maxAnimationDuration": "2 seconds",
+        "typicalDailyBudget": "40-70 reloads",
+        "typicalRefreshInterval": "15-60 minutes",
+        "budgetLearningPeriod": "Few days for system to learn user behavior",
+        "supportedPlatforms": ["iOS", "iPadOS", "macOS", "watchOS", "visionOS", "tvOS"],
+        "minimumDeploymentTargets": {
+          "appIntentsConfiguration": "iOS 17, iPadOS 17, macOS 14",
+          "siriKitIntentsConfiguration": "Prior to iOS 17, iPadOS 17, macOS 14"
+        }
+      },
+      "designDecisions": [
+        {
+          "decision": "Use iterative approach starting with systemSmall widget",
+          "rationale": "Provides broad exposure across iPhone, iPad, Mac, and visionOS with minimal initial investment"
+        },
+        {
+          "decision": "Support as many widget sizes as possible",
+          "rationale": "Maximizes reach across WidgetKit ecosystem and platform contexts"
+        },
+        {
+          "decision": "Mark backgrounds as removable using containerBackground",
+          "rationale": "Enables same layout and views to work across all contexts automatically"
+        },
+        {
+          "decision": "Implement relevance() callback in timeline provider",
+          "rationale": "Provides contextual clues for Smart Stack visibility and Widget Suggestions"
+        },
+        {
+          "decision": "Use App Intents for configuration over SiriKit Intents",
+          "rationale": "Modern API available iOS 17+, same mechanism as Siri Suggestions/Shortcuts enables code reuse"
+        },
+        {
+          "decision": "Disable animations for less important view updates",
+          "rationale": "Directs user attention to most important data changes"
+        }
+      ]
+    }
+  }
+}

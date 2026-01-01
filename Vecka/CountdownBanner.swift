@@ -37,18 +37,18 @@ struct CountdownBanner: View {
                         // Title
                         Text(event.title)
                             .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(AppColors.textPrimary)
+                            .foregroundStyle(JohoColors.black)
                             .lineLimit(1)
 
                         Text("•")
                             .font(.caption)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(JohoColors.black.opacity(0.7))
 
                         // Days
                         let days = daysRemaining(to: event.targetDate)
                         Text("\(abs(days)) \(days == 1 ? Localization.daySingular : Localization.dayPlural)")
                             .font(.subheadline.weight(.medium))
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(JohoColors.black.opacity(0.7))
                             .textCase(.uppercase)
                             .lineLimit(1)
 
@@ -67,12 +67,12 @@ struct CountdownBanner: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 10)
                     .background(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(.ultraThinMaterial)
+                        Squircle(cornerRadius: 12)
+                            .fill(JohoColors.white)
                     )
                     .overlay(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .strokeBorder(Color(hex: event.colorHex).opacity(0.2), lineWidth: 1)
+                        Squircle(cornerRadius: 12)
+                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
                     )
                 }
                 .accessibilityElement(children: .ignore)

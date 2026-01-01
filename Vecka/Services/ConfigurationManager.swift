@@ -290,27 +290,6 @@ class ConfigurationManager {
         }
     }
 
-    // MARK: - Weather Icon Mapping
-
-    func getWeatherIcon(for conditionCode: String, context: ModelContext) -> (symbol: String, color: Color)? {
-        let descriptor = FetchDescriptor<WeatherIconMapping>(
-            predicate: #Predicate<WeatherIconMapping> { mapping in
-                mapping.conditionCode == conditionCode && mapping.isActive
-            },
-            sortBy: [SortDescriptor(\.priority, order: .reverse)]
-        )
-
-        do {
-            if let mapping = try context.fetch(descriptor).first {
-                return (mapping.sfSymbolName, Color(hex: mapping.colorHex))
-            }
-        } catch {
-            Log.e("ConfigurationManager: Failed to fetch weather icon for \(conditionCode): \(error)")
-        }
-
-        return nil
-    }
-
     // MARK: - Validation
 
     func validate(field: String, value: Any, context: ModelContext) -> (isValid: Bool, error: String?) {
@@ -483,9 +462,6 @@ class ConfigurationManager {
         // Icon Catalog
         seedIconCatalog(context: context)
 
-        // Weather Icon Mappings
-        seedWeatherIcons(context: context)
-
         do {
             try context.save()
             Log.i("ConfigurationManager: Default configuration seeded successfully")
@@ -567,28 +543,6 @@ class ConfigurationManager {
                 sortOrder: order
             )
             context.insert(icon)
-        }
-    }
-
-    private func seedWeatherIcons(context: ModelContext) {
-        let weatherMappings = [
-            ("clear", "sun.max.fill", "FFD60A", 100),
-            ("mostlyClear", "sun.max", "FFD60A", 90),
-            ("partlyCloudy", "cloud.sun.fill", "8E8E93", 80),
-            ("mostlyCloudy", "cloud.fill", "8E8E93", 70),
-            ("cloudy", "smoke.fill", "636366", 60),
-            ("rain", "cloud.rain.fill", "0A84FF", 50),
-            ("snow", "cloud.snow.fill", "5AC8FA", 40)
-        ]
-
-        for (condition, symbol, color, priority) in weatherMappings {
-            let mapping = WeatherIconMapping(
-                conditionCode: condition,
-                sfSymbolName: symbol,
-                colorHex: color,
-                priority: priority
-            )
-            context.insert(mapping)
         }
     }
 }

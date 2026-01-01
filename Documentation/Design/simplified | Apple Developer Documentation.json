@@ -1,0 +1,1705 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "simplified | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "WidgetKit",
+        "LevelOfDetail",
+        "simplified",
+        "visionOS",
+        "iOS",
+        "iPadOS",
+        "Swift",
+        "Apple Developer Documentation"
+      ],
+      "summary": "Apple Developer Documentation page describing the 'simplified' static property of the LevelOfDetail type in WidgetKit. This property indicates that widgets should display simplified content, particularly relevant for visionOS when users are at a further distance.",
+      "sourceURL": "https://developer.apple.com/documentation/widgetkit/levelofdetail/simplified",
+      "copyright": "Copyright 2025 Apple Inc. All rights reserved."
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": 960,
+          "height": 1200,
+          "unit": "pixels (approximate)"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#1C1C1E (Dark Mode)",
+        "layout": {
+          "type": "multi-column",
+          "columns": 3,
+          "margins": {
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "headerPresent": true,
+          "footerPresent": true,
+          "description": "Three-column layout with navigation header, left sidebar navigation, main content area, and comprehensive footer"
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation-bar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": "100%",
+              "height": 44
+            },
+            "zIndex": 100,
+            "content": {
+              "backgroundColor": "#000000",
+              "items": [
+                {
+                  "type": "logo",
+                  "content": "Apple Logo + Developer",
+                  "icon": "Apple logo (white)",
+                  "text": "Developer",
+                  "position": "left",
+                  "style": {
+                    "fontColor": "#FFFFFF",
+                    "fontWeight": "medium"
+                  }
+                },
+                {
+                  "type": "menu-item",
+                  "text": "News",
+                  "position": "center-left"
+                },
+                {
+                  "type": "menu-item",
+                  "text": "Discover",
+                  "position": "center-left"
+                },
+                {
+                  "type": "menu-item",
+                  "text": "Design",
+                  "position": "center"
+                },
+                {
+                  "type": "menu-item",
+                  "text": "Develop",
+                  "position": "center"
+                },
+                {
+                  "type": "menu-item",
+                  "text": "Distribute",
+                  "position": "center"
+                },
+                {
+                  "type": "menu-item",
+                  "text": "Support",
+                  "position": "center-right"
+                },
+                {
+                  "type": "menu-item",
+                  "text": "Account",
+                  "position": "center-right"
+                },
+                {
+                  "type": "icon",
+                  "content": "Search icon (magnifying glass)",
+                  "position": "right"
+                }
+              ],
+              "style": {
+                "fontColor": "#FFFFFF",
+                "fontSize": "14px",
+                "spacing": "24px between items"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-documentation-subheader",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 44,
+              "width": "100%",
+              "height": 40
+            },
+            "zIndex": 99,
+            "content": {
+              "backgroundColor": "#2C2C2E",
+              "leftSide": {
+                "icon": "Grid/document icon",
+                "text": "Documentation"
+              },
+              "rightSide": {
+                "text": "Language: Swift",
+                "style": {
+                  "fontColor": "#8E8E93"
+                }
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-left-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 84,
+              "width": 280,
+              "height": 600
+            },
+            "zIndex": 50,
+            "content": {
+              "backgroundColor": "#1C1C1E",
+              "sections": [
+                {
+                  "sectionId": "sidebar-breadcrumb",
+                  "type": "breadcrumb",
+                  "content": {
+                    "icon": "Chevron left (<)",
+                    "text": "All Technologies",
+                    "style": {
+                      "fontColor": "#8E8E93",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-framework-title",
+                  "type": "title",
+                  "content": {
+                    "text": "WidgetKit",
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "17px",
+                      "fontWeight": "semibold"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-current-item",
+                  "type": "navigation-item",
+                  "content": {
+                    "icon": "P (property indicator)",
+                    "iconColor": "#5E5CE6 (purple)",
+                    "text": "static let simplified: LevelOfDet...",
+                    "isSelected": true,
+                    "backgroundColor": "#5E5CE6 (purple highlight)",
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-section-accessory",
+                  "type": "section-header",
+                  "content": {
+                    "text": "Accessory and watchOS widgets",
+                    "style": {
+                      "fontColor": "#8E8E93",
+                      "fontSize": "12px",
+                      "textTransform": "none"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-item-creating-accessory",
+                  "type": "navigation-item",
+                  "content": {
+                    "icon": "Document icon",
+                    "iconColor": "#30D158 (green)",
+                    "text": "Creating accessory widgets and w...",
+                    "isSelected": true,
+                    "backgroundColor": "#30D158 (green highlight)",
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-item-accessorywidgetgroup",
+                  "type": "navigation-item",
+                  "content": {
+                    "icon": "S (struct indicator)",
+                    "iconColor": "#5E5CE6 (purple)",
+                    "text": "AccessoryWidgetGroup",
+                    "hasChevron": true,
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-item-accessorywidgetgroupstyle",
+                  "type": "navigation-item",
+                  "content": {
+                    "icon": "S (struct indicator)",
+                    "iconColor": "#5E5CE6 (purple)",
+                    "text": "AccessoryWidgetGroupStyle",
+                    "hasChevron": true,
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-item-migrating-clockkit",
+                  "type": "navigation-item",
+                  "content": {
+                    "icon": "Document icon",
+                    "iconColor": "#8E8E93 (gray)",
+                    "text": "Migrating ClockKit complications t...",
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-section-smart-stacks",
+                  "type": "section-header",
+                  "content": {
+                    "text": "Smart Stacks",
+                    "style": {
+                      "fontColor": "#8E8E93",
+                      "fontSize": "12px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-item-increasing-visibility",
+                  "type": "navigation-item",
+                  "content": {
+                    "icon": "Document icon",
+                    "iconColor": "#8E8E93 (gray)",
+                    "text": "Increasing the visibility of widgets i...",
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-item-timelineentryrelevance",
+                  "type": "navigation-item",
+                  "content": {
+                    "icon": "S (struct indicator)",
+                    "iconColor": "#5E5CE6 (purple)",
+                    "text": "TimelineEntryRelevance",
+                    "hasChevron": true,
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-item-relevanceconfiguration",
+                  "type": "navigation-item",
+                  "content": {
+                    "icon": "S (struct indicator)",
+                    "iconColor": "#5E5CE6 (purple)",
+                    "text": "RelevanceConfiguration",
+                    "hasChevron": true,
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-item-relevanceentriesprovider",
+                  "type": "navigation-item",
+                  "content": {
+                    "icon": "Pr (protocol indicator)",
+                    "iconColor": "#5E5CE6 (purple)",
+                    "text": "RelevanceEntriesProvider",
+                    "hasChevron": true,
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-item-relevanceentry",
+                  "type": "navigation-item",
+                  "content": {
+                    "icon": "Pr (protocol indicator)",
+                    "iconColor": "#5E5CE6 (purple)",
+                    "text": "RelevanceEntry",
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-item-widgetrelevance",
+                  "type": "navigation-item",
+                  "content": {
+                    "icon": "S (struct indicator)",
+                    "iconColor": "#5E5CE6 (purple)",
+                    "text": "WidgetRelevance",
+                    "hasChevron": true,
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-item-widgetrelevanceattribute",
+                  "type": "navigation-item",
+                  "content": {
+                    "icon": "S (struct indicator)",
+                    "iconColor": "#5E5CE6 (purple)",
+                    "text": "WidgetRelevanceAttribute",
+                    "hasChevron": true,
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-item-widgetrelevancegroup",
+                  "type": "navigation-item",
+                  "content": {
+                    "icon": "S (struct indicator)",
+                    "iconColor": "#5E5CE6 (purple)",
+                    "text": "WidgetRelevanceGroup",
+                    "hasChevron": true,
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-item-appintentrecommendation",
+                  "type": "navigation-item",
+                  "content": {
+                    "icon": "S (struct indicator)",
+                    "iconColor": "#5E5CE6 (purple)",
+                    "text": "AppIntentRecommendation",
+                    "hasChevron": true,
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-item-intentconfiguration",
+                  "type": "navigation-item",
+                  "content": {
+                    "icon": "S (struct indicator)",
+                    "iconColor": "#5E5CE6 (purple)",
+                    "text": "IntentConfiguration",
+                    "hasChevron": true,
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-item-intentrecommendation",
+                  "type": "navigation-item",
+                  "content": {
+                    "icon": "S (struct indicator)",
+                    "iconColor": "#5E5CE6 (purple)",
+                    "text": "IntentRecommendation",
+                    "hasChevron": true,
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-section-live-activities",
+                  "type": "section-header",
+                  "content": {
+                    "text": "Live Activities",
+                    "style": {
+                      "fontColor": "#8E8E93",
+                      "fontSize": "12px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-section-controls",
+                  "type": "section-header",
+                  "content": {
+                    "text": "Controls",
+                    "style": {
+                      "fontColor": "#8E8E93",
+                      "fontSize": "12px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-section-presentation",
+                  "type": "section-header",
+                  "content": {
+                    "text": "Presentation",
+                    "style": {
+                      "fontColor": "#8E8E93",
+                      "fontSize": "12px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-item-creating-views",
+                  "type": "navigation-item",
+                  "content": {
+                    "icon": "Document icon",
+                    "text": "Creating views for widgets, Live Acti...",
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-item-swiftui-views",
+                  "type": "navigation-item",
+                  "content": {
+                    "text": "SwiftUI views for widgets",
+                    "style": {
+                      "fontColor": "#FFFFFF",
+                      "fontSize": "13px"
+                    }
+                  }
+                },
+                {
+                  "sectionId": "sidebar-section-interactivity",
+                  "type": "section-header",
+                  "content": {
+                    "text": "Interactivity",
+                    "style": {
+                      "fontColor": "#8E8E93",
+                      "fontSize": "12px"
+                    }
+                  }
+                }
+              ],
+              "filterSection": {
+                "icon": "Filter lines icon",
+                "placeholder": "Filter",
+                "shortcutKey": "/",
+                "style": {
+                  "backgroundColor": "#3A3A3C",
+                  "borderRadius": "8px"
+                }
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-content",
+            "elementType": "content-area",
+            "boundingBox": {
+              "x": 280,
+              "y": 84,
+              "width": 680,
+              "height": 500
+            },
+            "zIndex": 40,
+            "content": {
+              "backgroundColor": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-breadcrumb-path",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 300,
+              "y": 100,
+              "width": 400,
+              "height": 20
+            },
+            "zIndex": 41,
+            "content": {
+              "type": "breadcrumb",
+              "items": [
+                {
+                  "text": "WidgetKit",
+                  "isLink": true,
+                  "style": {
+                    "fontColor": "#0A84FF (blue link color)",
+                    "fontSize": "13px",
+                    "textDecoration": "none"
+                  }
+                },
+                {
+                  "text": "/",
+                  "isLink": false,
+                  "style": {
+                    "fontColor": "#8E8E93",
+                    "fontSize": "13px"
+                  }
+                },
+                {
+                  "text": "LevelOfDetail",
+                  "isLink": true,
+                  "style": {
+                    "fontColor": "#0A84FF (blue link color)",
+                    "fontSize": "13px",
+                    "textDecoration": "underline"
+                  }
+                },
+                {
+                  "text": "/",
+                  "isLink": false,
+                  "style": {
+                    "fontColor": "#8E8E93",
+                    "fontSize": "13px"
+                  }
+                },
+                {
+                  "text": "simplified",
+                  "isLink": false,
+                  "style": {
+                    "fontColor": "#8E8E93",
+                    "fontSize": "13px"
+                  }
+                }
+              ],
+              "fullPath": "WidgetKit / LevelOfDetail / simplified"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-type-property-label",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": 300,
+              "y": 130,
+              "width": 200,
+              "height": 20
+            },
+            "zIndex": 41,
+            "content": {
+              "text": "Type Property",
+              "style": {
+                "fontColor": "#8E8E93",
+                "fontSize": "13px",
+                "fontWeight": "regular"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-heading",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-main-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 300,
+              "y": 150,
+              "width": 400,
+              "height": 50
+            },
+            "zIndex": 41,
+            "content": {
+              "text": "simplified",
+              "level": 1,
+              "style": {
+                "fontColor": "#FFFFFF",
+                "fontSize": "34px",
+                "fontWeight": "bold",
+                "fontFamily": "SF Pro Display"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 300,
+              "y": 210,
+              "width": 500,
+              "height": 30
+            },
+            "zIndex": 41,
+            "content": {
+              "text": "The level of detail should be simplified.",
+              "style": {
+                "fontColor": "#FFFFFF",
+                "fontSize": "17px",
+                "fontWeight": "regular",
+                "lineHeight": "1.5"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-availability",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 300,
+              "y": 250,
+              "width": 400,
+              "height": 20
+            },
+            "zIndex": 41,
+            "content": {
+              "text": "iOS 26.0+ | iPadOS 26.0+ | Mac Catalyst | visionOS 26.0+",
+              "items": [
+                {
+                  "platform": "iOS",
+                  "version": "26.0+",
+                  "separator": "|"
+                },
+                {
+                  "platform": "iPadOS",
+                  "version": "26.0+",
+                  "separator": "|"
+                },
+                {
+                  "platform": "Mac Catalyst",
+                  "version": null,
+                  "separator": "|"
+                },
+                {
+                  "platform": "visionOS",
+                  "version": "26.0+"
+                }
+              ],
+              "style": {
+                "fontColor": "#8E8E93",
+                "fontSize": "13px",
+                "fontWeight": "regular"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-code-declaration",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 300,
+              "y": 290,
+              "width": 560,
+              "height": 40
+            },
+            "zIndex": 41,
+            "content": {
+              "language": "Swift",
+              "code": "static let simplified: LevelOfDetail",
+              "tokens": [
+                {
+                  "text": "static",
+                  "type": "keyword",
+                  "color": "#FF7AB2 (pink)"
+                },
+                {
+                  "text": " ",
+                  "type": "whitespace",
+                  "color": null
+                },
+                {
+                  "text": "let",
+                  "type": "keyword",
+                  "color": "#FF7AB2 (pink)"
+                },
+                {
+                  "text": " ",
+                  "type": "whitespace",
+                  "color": null
+                },
+                {
+                  "text": "simplified",
+                  "type": "identifier",
+                  "color": "#FFFFFF (white)"
+                },
+                {
+                  "text": ":",
+                  "type": "punctuation",
+                  "color": "#FFFFFF (white)"
+                },
+                {
+                  "text": " ",
+                  "type": "whitespace",
+                  "color": null
+                },
+                {
+                  "text": "LevelOfDetail",
+                  "type": "type",
+                  "color": "#6BDFFF (cyan)"
+                }
+              ],
+              "fullDeclaration": "static let simplified: LevelOfDetail",
+              "style": {
+                "backgroundColor": "#2C2C2E",
+                "borderRadius": "8px",
+                "padding": "12px 16px",
+                "fontFamily": "SF Mono",
+                "fontSize": "14px"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-divider-1",
+            "elementType": "line",
+            "boundingBox": {
+              "x": 300,
+              "y": 350,
+              "width": 560,
+              "height": 1
+            },
+            "zIndex": 41,
+            "content": {
+              "type": "horizontal-rule",
+              "style": {
+                "borderColor": "#3A3A3C",
+                "borderWidth": "1px"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-mentioned-in-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 300,
+              "y": 370,
+              "width": 200,
+              "height": 35
+            },
+            "zIndex": 41,
+            "content": {
+              "text": "Mentioned in",
+              "level": 2,
+              "style": {
+                "fontColor": "#FFFFFF",
+                "fontSize": "22px",
+                "fontWeight": "bold",
+                "fontFamily": "SF Pro Display"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-mentioned-in-link",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 300,
+              "y": 410,
+              "width": 400,
+              "height": 25
+            },
+            "zIndex": 41,
+            "content": {
+              "type": "link",
+              "icon": "Document icon",
+              "iconColor": "#8E8E93",
+              "text": "Updating your widgets for visionOS",
+              "href": "/documentation/widgetkit/updating-your-widgets-for-visionos",
+              "style": {
+                "fontColor": "#0A84FF (blue link color)",
+                "fontSize": "15px",
+                "fontWeight": "regular",
+                "textDecoration": "none"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-discussion-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 300,
+              "y": 460,
+              "width": 200,
+              "height": 35
+            },
+            "zIndex": 41,
+            "content": {
+              "text": "Discussion",
+              "level": 2,
+              "style": {
+                "fontColor": "#FFFFFF",
+                "fontSize": "22px",
+                "fontWeight": "bold",
+                "fontFamily": "SF Pro Display"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-discussion-content",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 300,
+              "y": 500,
+              "width": 560,
+              "height": 60
+            },
+            "zIndex": 41,
+            "content": {
+              "text": "This suggests the app should lay out its content and show a simplified version of its content. On visionOS specifically, this signals that the user is at a further distance.",
+              "style": {
+                "fontColor": "#FFFFFF",
+                "fontSize": "15px",
+                "fontWeight": "regular",
+                "lineHeight": "1.6"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 600,
+              "width": "100%",
+              "height": 400
+            },
+            "zIndex": 30,
+            "content": {
+              "backgroundColor": "#1C1C1E",
+              "sections": {
+                "breadcrumbRow": {
+                  "items": [
+                    {
+                      "icon": "Apple logo",
+                      "style": {
+                        "fontColor": "#FFFFFF"
+                      }
+                    },
+                    {
+                      "text": "Developer",
+                      "isLink": true,
+                      "style": {
+                        "fontColor": "#8E8E93"
+                      }
+                    },
+                    {
+                      "text": ">",
+                      "style": {
+                        "fontColor": "#8E8E93"
+                      }
+                    },
+                    {
+                      "text": "Documentation",
+                      "isLink": true,
+                      "style": {
+                        "fontColor": "#8E8E93"
+                      }
+                    }
+                  ]
+                },
+                "columnLayout": {
+                  "columns": [
+                    {
+                      "columnId": "footer-platforms",
+                      "heading": "Platforms",
+                      "headingStyle": {
+                        "fontColor": "#FFFFFF",
+                        "fontSize": "13px",
+                        "fontWeight": "semibold"
+                      },
+                      "items": [
+                        {"text": "iOS", "isLink": true},
+                        {"text": "iPadOS", "isLink": true},
+                        {"text": "macOS", "isLink": true},
+                        {"text": "tvOS", "isLink": true},
+                        {"text": "visionOS", "isLink": true},
+                        {"text": "watchOS", "isLink": true}
+                      ],
+                      "itemStyle": {
+                        "fontColor": "#8E8E93",
+                        "fontSize": "12px"
+                      }
+                    },
+                    {
+                      "columnId": "footer-tools",
+                      "heading": "Tools",
+                      "headingStyle": {
+                        "fontColor": "#FFFFFF",
+                        "fontSize": "13px",
+                        "fontWeight": "semibold"
+                      },
+                      "items": [
+                        {"text": "Swift", "isLink": true},
+                        {"text": "SwiftUI", "isLink": true},
+                        {"text": "Swift Playground", "isLink": true},
+                        {"text": "TestFlight", "isLink": true},
+                        {"text": "Xcode", "isLink": true},
+                        {"text": "Xcode Cloud", "isLink": true},
+                        {"text": "SF Symbols", "isLink": true}
+                      ],
+                      "itemStyle": {
+                        "fontColor": "#8E8E93",
+                        "fontSize": "12px"
+                      }
+                    },
+                    {
+                      "columnId": "footer-topics",
+                      "heading": "Topics & Technologies",
+                      "headingStyle": {
+                        "fontColor": "#FFFFFF",
+                        "fontSize": "13px",
+                        "fontWeight": "semibold"
+                      },
+                      "items": [
+                        {"text": "Accessibility", "isLink": true},
+                        {"text": "Accessories", "isLink": true},
+                        {"text": "App Extension", "isLink": true},
+                        {"text": "App Store", "isLink": true},
+                        {"text": "Audio & Video", "isLink": true},
+                        {"text": "Augmented Reality", "isLink": true},
+                        {"text": "Design", "isLink": true},
+                        {"text": "Distribution", "isLink": true},
+                        {"text": "Education", "isLink": true},
+                        {"text": "Fonts", "isLink": true},
+                        {"text": "Games", "isLink": true},
+                        {"text": "Health & Fitness", "isLink": true},
+                        {"text": "In-App Purchase", "isLink": true},
+                        {"text": "Localization", "isLink": true},
+                        {"text": "Maps & Location", "isLink": true},
+                        {"text": "Machine Learning & AI", "isLink": true},
+                        {"text": "Open Source", "isLink": true},
+                        {"text": "Security", "isLink": true},
+                        {"text": "Safari & Web", "isLink": true}
+                      ],
+                      "itemStyle": {
+                        "fontColor": "#8E8E93",
+                        "fontSize": "12px"
+                      }
+                    },
+                    {
+                      "columnId": "footer-resources",
+                      "heading": "Resources",
+                      "headingStyle": {
+                        "fontColor": "#FFFFFF",
+                        "fontSize": "13px",
+                        "fontWeight": "semibold"
+                      },
+                      "items": [
+                        {"text": "Documentation", "isLink": true},
+                        {"text": "Tutorials", "isLink": true},
+                        {"text": "Downloads", "isLink": true},
+                        {"text": "Forums", "isLink": true},
+                        {"text": "Videos", "isLink": true}
+                      ],
+                      "itemStyle": {
+                        "fontColor": "#8E8E93",
+                        "fontSize": "12px"
+                      }
+                    },
+                    {
+                      "columnId": "footer-support",
+                      "heading": "Support",
+                      "headingStyle": {
+                        "fontColor": "#FFFFFF",
+                        "fontSize": "13px",
+                        "fontWeight": "semibold"
+                      },
+                      "items": [
+                        {"text": "Support Articles", "isLink": true},
+                        {"text": "Contact Us", "isLink": true},
+                        {"text": "Bug Reporting", "isLink": true},
+                        {"text": "System Status", "isLink": true}
+                      ],
+                      "itemStyle": {
+                        "fontColor": "#8E8E93",
+                        "fontSize": "12px"
+                      }
+                    },
+                    {
+                      "columnId": "footer-account",
+                      "heading": "Account",
+                      "headingStyle": {
+                        "fontColor": "#FFFFFF",
+                        "fontSize": "13px",
+                        "fontWeight": "semibold"
+                      },
+                      "items": [
+                        {"text": "Apple Developer", "isLink": true},
+                        {"text": "App Store Connect", "isLink": true},
+                        {"text": "Certificates, IDs, & Profiles", "isLink": true},
+                        {"text": "Feedback Assistant", "isLink": true}
+                      ],
+                      "itemStyle": {
+                        "fontColor": "#8E8E93",
+                        "fontSize": "12px"
+                      }
+                    },
+                    {
+                      "columnId": "footer-programs",
+                      "heading": "Programs",
+                      "headingStyle": {
+                        "fontColor": "#FFFFFF",
+                        "fontSize": "13px",
+                        "fontWeight": "semibold"
+                      },
+                      "items": [
+                        {"text": "Apple Developer Program", "isLink": true},
+                        {"text": "Apple Developer Enterprise Program", "isLink": true},
+                        {"text": "App Store Small Business Program", "isLink": true},
+                        {"text": "MFi Program", "isLink": true},
+                        {"text": "News Partner Program", "isLink": true},
+                        {"text": "Video Partner Program", "isLink": true},
+                        {"text": "Security Bounty Program", "isLink": true},
+                        {"text": "Security Research Device Program", "isLink": true}
+                      ],
+                      "itemStyle": {
+                        "fontColor": "#8E8E93",
+                        "fontSize": "12px"
+                      }
+                    },
+                    {
+                      "columnId": "footer-events",
+                      "heading": "Events",
+                      "headingStyle": {
+                        "fontColor": "#FFFFFF",
+                        "fontSize": "13px",
+                        "fontWeight": "semibold"
+                      },
+                      "items": [
+                        {"text": "Meet with Apple", "isLink": true},
+                        {"text": "Apple Developer Centers", "isLink": true},
+                        {"text": "App Store Awards", "isLink": true},
+                        {"text": "Apple Design Awards", "isLink": true},
+                        {"text": "Apple Developer Academies", "isLink": true},
+                        {"text": "WWDC", "isLink": true}
+                      ],
+                      "itemStyle": {
+                        "fontColor": "#8E8E93",
+                        "fontSize": "12px"
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-feedback",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 50,
+              "y": 950,
+              "width": 400,
+              "height": 20
+            },
+            "zIndex": 31,
+            "content": {
+              "text": "To submit feedback on documentation, visit Feedback Assistant.",
+              "links": [
+                {
+                  "text": "Feedback Assistant",
+                  "href": "https://feedbackassistant.apple.com",
+                  "style": {
+                    "fontColor": "#0A84FF (blue link color)",
+                    "textDecoration": "none"
+                  }
+                }
+              ],
+              "style": {
+                "fontColor": "#8E8E93",
+                "fontSize": "12px"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-theme-toggle",
+            "elementType": "other",
+            "boundingBox": {
+              "x": 850,
+              "y": 950,
+              "width": 100,
+              "height": 30
+            },
+            "zIndex": 31,
+            "content": {
+              "type": "segmented-control",
+              "options": [
+                {
+                  "text": "Light",
+                  "isSelected": false,
+                  "style": {
+                    "fontColor": "#8E8E93",
+                    "backgroundColor": "transparent"
+                  }
+                },
+                {
+                  "text": "Dark",
+                  "isSelected": false,
+                  "style": {
+                    "fontColor": "#8E8E93",
+                    "backgroundColor": "transparent"
+                  }
+                },
+                {
+                  "text": "Auto",
+                  "isSelected": true,
+                  "style": {
+                    "fontColor": "#FFFFFF",
+                    "backgroundColor": "#0A84FF (blue)"
+                  }
+                }
+              ],
+              "style": {
+                "borderRadius": "6px",
+                "border": "1px solid #3A3A3C"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-copyright-row",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 0,
+              "y": 980,
+              "width": "100%",
+              "height": 30
+            },
+            "zIndex": 31,
+            "content": {
+              "text": "Copyright © 2025 Apple Inc. All rights reserved.",
+              "links": [
+                {
+                  "text": "Terms of Use",
+                  "href": "https://www.apple.com/legal/internet-services/terms/site.html",
+                  "separator": "|"
+                },
+                {
+                  "text": "Privacy Policy",
+                  "href": "https://www.apple.com/privacy/privacy-policy/",
+                  "separator": "|"
+                },
+                {
+                  "text": "Agreements and Guidelines",
+                  "href": "https://developer.apple.com/support/terms/"
+                }
+              ],
+              "style": {
+                "fontColor": "#8E8E93",
+                "fontSize": "12px",
+                "textAlign": "center"
+              }
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation-bar",
+          "page1-documentation-subheader",
+          "page1-breadcrumb-path",
+          "page1-type-property-label",
+          "page1-main-heading",
+          "page1-description",
+          "page1-platform-availability",
+          "page1-code-declaration",
+          "page1-divider-1",
+          "page1-mentioned-in-heading",
+          "page1-mentioned-in-link",
+          "page1-discussion-heading",
+          "page1-discussion-content",
+          "page1-footer",
+          "page1-footer-feedback",
+          "page1-theme-toggle",
+          "page1-copyright-row"
+        ],
+        "pageSummary": "Apple Developer Documentation page for the 'simplified' static type property in WidgetKit's LevelOfDetail structure. The page is displayed in dark mode with a three-column layout: left sidebar with WidgetKit framework navigation, main content area with API documentation, and a comprehensive footer with links to Apple Developer resources. The API was introduced in iOS 26.0, iPadOS 26.0, Mac Catalyst, and visionOS 26.0. The property indicates that widget content should be displayed in a simplified manner, particularly useful for visionOS when users are at a greater viewing distance."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": false,
+        "entries": []
+      },
+      "runningHeaders": "Documentation (subheader bar)",
+      "runningFooters": "Copyright © 2025 Apple Inc. All rights reserved. with legal links",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "header-navigation",
+          "title": "Header Navigation",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Apple Developer site navigation with main menu items: News, Discover, Design, Develop, Distribute, Support, Account, and search"
+        },
+        {
+          "sectionId": "left-sidebar",
+          "title": "WidgetKit Framework Navigation",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "accessory-widgets",
+              "title": "Accessory and watchOS widgets",
+              "items": ["Creating accessory widgets and w...", "AccessoryWidgetGroup", "AccessoryWidgetGroupStyle", "Migrating ClockKit complications t..."]
+            },
+            {
+              "sectionId": "smart-stacks",
+              "title": "Smart Stacks",
+              "items": ["Increasing the visibility of widgets i...", "TimelineEntryRelevance", "RelevanceConfiguration", "RelevanceEntriesProvider", "RelevanceEntry", "WidgetRelevance", "WidgetRelevanceAttribute", "WidgetRelevanceGroup", "AppIntentRecommendation", "IntentConfiguration", "IntentRecommendation"]
+            },
+            {
+              "sectionId": "live-activities",
+              "title": "Live Activities",
+              "items": []
+            },
+            {
+              "sectionId": "controls",
+              "title": "Controls",
+              "items": []
+            },
+            {
+              "sectionId": "presentation",
+              "title": "Presentation",
+              "items": ["Creating views for widgets, Live Acti...", "SwiftUI views for widgets"]
+            },
+            {
+              "sectionId": "interactivity",
+              "title": "Interactivity",
+              "items": []
+            }
+          ],
+          "summary": "Hierarchical navigation tree for the WidgetKit framework showing related APIs, articles, and symbols organized by topic"
+        },
+        {
+          "sectionId": "main-content",
+          "title": "API Documentation",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "declaration",
+              "title": "Declaration",
+              "summary": "Swift code showing the static let declaration for simplified property"
+            },
+            {
+              "sectionId": "mentioned-in",
+              "title": "Mentioned in",
+              "summary": "Cross-reference to related article about updating widgets for visionOS"
+            },
+            {
+              "sectionId": "discussion",
+              "title": "Discussion",
+              "summary": "Explanation of the property's purpose and behavior, especially for visionOS"
+            }
+          ],
+          "summary": "Main documentation content for the 'simplified' type property including declaration, cross-references, and discussion"
+        },
+        {
+          "sectionId": "footer",
+          "title": "Site Footer",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Comprehensive footer with links organized by category: Platforms, Tools, Topics & Technologies, Resources, Support, Account, Programs, and Events"
+        }
+      ],
+      "documentFlow": "The document follows Apple's standard developer documentation layout. Users first see the navigation header, then can use the left sidebar to navigate the WidgetKit framework hierarchy. The main content area presents the API documentation in a structured format: breadcrumb path, type label, property name, brief description, platform availability, code declaration, related article references, and detailed discussion. The footer provides extensive links to other Apple Developer resources."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "simplified",
+          "definition": "A static property of LevelOfDetail that indicates the app should display a simplified version of its content",
+          "occurrences": 4
+        },
+        {
+          "term": "LevelOfDetail",
+          "definition": "A WidgetKit type that represents different levels of detail for widget content rendering",
+          "occurrences": 3
+        },
+        {
+          "term": "WidgetKit",
+          "definition": "Apple's framework for building widgets on iOS, iPadOS, macOS, and watchOS",
+          "occurrences": 5
+        },
+        {
+          "term": "visionOS",
+          "definition": "Apple's operating system for spatial computing devices (Vision Pro)",
+          "occurrences": 4
+        },
+        {
+          "term": "Type Property",
+          "definition": "A static property that belongs to the type itself rather than instances of the type",
+          "occurrences": 1
+        }
+      ],
+      "keyFindings": [
+        "The 'simplified' property is available starting from iOS 26.0, iPadOS 26.0, Mac Catalyst, and visionOS 26.0",
+        "On visionOS, 'simplified' signals that the user is at a further viewing distance from the widget",
+        "Apps should lay out their content differently when this level of detail is indicated",
+        "This property is part of the WidgetKit framework's presentation system",
+        "The feature is related to updating widgets for visionOS compatibility"
+      ],
+      "technicalSpecifications": {
+        "apiType": "Type Property (static let)",
+        "returnType": "LevelOfDetail",
+        "framework": "WidgetKit",
+        "minimumPlatformVersions": {
+          "iOS": "26.0+",
+          "iPadOS": "26.0+",
+          "macCatalyst": "supported",
+          "visionOS": "26.0+"
+        },
+        "swiftDeclaration": "static let simplified: LevelOfDetail",
+        "relatedAPIs": [
+          "LevelOfDetail",
+          "WidgetMountingStyle",
+          "supportedMountingStyles",
+          "AccessoryWidgetGroup",
+          "AccessoryWidgetGroupStyle",
+          "TimelineEntryRelevance",
+          "RelevanceConfiguration"
+        ]
+      },
+      "designDecisions": [
+        "The simplified level of detail is designed specifically for scenarios where users view widgets from a distance",
+        "visionOS spatial computing context requires adaptive content presentation based on user distance",
+        "Widget content should adapt its complexity based on viewing context"
+      ]
+    },
+    "visualDesign": {
+      "colorScheme": "Dark mode",
+      "primaryColors": {
+        "background": "#000000 (main content), #1C1C1E (sidebar and footer)",
+        "text": "#FFFFFF (headings), #8E8E93 (secondary text)",
+        "accent": "#0A84FF (links), #5E5CE6 (purple highlights), #30D158 (green highlights)",
+        "code": "#FF7AB2 (keywords), #6BDFFF (types), #FFFFFF (identifiers)"
+      },
+      "typography": {
+        "headingFont": "SF Pro Display",
+        "bodyFont": "SF Pro Text",
+        "codeFont": "SF Mono",
+        "sizes": {
+          "h1": "34px",
+          "h2": "22px",
+          "body": "15-17px",
+          "caption": "12-13px",
+          "code": "14px"
+        }
+      },
+      "iconography": {
+        "sidebarIcons": "Single-letter badges (S for struct, P for property, Pr for protocol) in purple, Document icons in gray/green",
+        "navigationIcons": "Chevrons for expandable items, Grid icon for Documentation label"
+      }
+    },
+    "allTextVerbatim": {
+      "headerNavigation": [
+        "Developer",
+        "News",
+        "Discover",
+        "Design",
+        "Develop",
+        "Distribute",
+        "Support",
+        "Account"
+      ],
+      "subheader": [
+        "Documentation",
+        "Language: Swift"
+      ],
+      "sidebarText": [
+        "All Technologies",
+        "WidgetKit",
+        "static let simplified: LevelOfDet...",
+        "Accessory and watchOS widgets",
+        "Creating accessory widgets and w...",
+        "AccessoryWidgetGroup",
+        "AccessoryWidgetGroupStyle",
+        "Migrating ClockKit complications t...",
+        "Smart Stacks",
+        "Increasing the visibility of widgets i...",
+        "TimelineEntryRelevance",
+        "RelevanceConfiguration",
+        "RelevanceEntriesProvider",
+        "RelevanceEntry",
+        "WidgetRelevance",
+        "WidgetRelevanceAttribute",
+        "WidgetRelevanceGroup",
+        "AppIntentRecommendation",
+        "IntentConfiguration",
+        "IntentRecommendation",
+        "Live Activities",
+        "Controls",
+        "Presentation",
+        "Creating views for widgets, Live Acti...",
+        "SwiftUI views for widgets",
+        "Interactivity",
+        "Filter",
+        "/"
+      ],
+      "mainContent": [
+        "WidgetKit / LevelOfDetail / simplified",
+        "Type Property",
+        "simplified",
+        "The level of detail should be simplified.",
+        "iOS 26.0+",
+        "iPadOS 26.0+",
+        "Mac Catalyst",
+        "visionOS 26.0+",
+        "static let simplified: LevelOfDetail",
+        "Mentioned in",
+        "Updating your widgets for visionOS",
+        "Discussion",
+        "This suggests the app should lay out its content and show a simplified version of its content. On visionOS specifically, this signals that the user is at a further distance."
+      ],
+      "footerSections": {
+        "platforms": ["iOS", "iPadOS", "macOS", "tvOS", "visionOS", "watchOS"],
+        "tools": ["Swift", "SwiftUI", "Swift Playground", "TestFlight", "Xcode", "Xcode Cloud", "SF Symbols"],
+        "topicsAndTechnologies": ["Accessibility", "Accessories", "App Extension", "App Store", "Audio & Video", "Augmented Reality", "Design", "Distribution", "Education", "Fonts", "Games", "Health & Fitness", "In-App Purchase", "Localization", "Maps & Location", "Machine Learning & AI", "Open Source", "Security", "Safari & Web"],
+        "resources": ["Documentation", "Tutorials", "Downloads", "Forums", "Videos"],
+        "support": ["Support Articles", "Contact Us", "Bug Reporting", "System Status"],
+        "account": ["Apple Developer", "App Store Connect", "Certificates, IDs, & Profiles", "Feedback Assistant"],
+        "programs": ["Apple Developer Program", "Apple Developer Enterprise Program", "App Store Small Business Program", "MFi Program", "News Partner Program", "Video Partner Program", "Security Bounty Program", "Security Research Device Program"],
+        "events": ["Meet with Apple", "Apple Developer Centers", "App Store Awards", "Apple Design Awards", "Apple Developer Academies", "WWDC"]
+      },
+      "footerMiscellaneous": [
+        "To submit feedback on documentation, visit Feedback Assistant.",
+        "Light",
+        "Dark",
+        "Auto",
+        "Copyright © 2025 Apple Inc. All rights reserved.",
+        "Terms of Use",
+        "Privacy Policy",
+        "Agreements and Guidelines"
+      ]
+    },
+    "sidebarNavigationStructure": {
+      "description": "Complete hierarchical structure of left sidebar navigation",
+      "items": [
+        {
+          "type": "breadcrumb",
+          "icon": "< (chevron left)",
+          "text": "All Technologies"
+        },
+        {
+          "type": "framework-title",
+          "text": "WidgetKit"
+        },
+        {
+          "type": "navigation-item",
+          "icon": "P",
+          "iconMeaning": "Property",
+          "text": "static let simplified: LevelOfDet...",
+          "fullText": "static let simplified: LevelOfDetail",
+          "isHighlighted": true,
+          "highlightColor": "purple (#5E5CE6)"
+        },
+        {
+          "type": "section-header",
+          "text": "Accessory and watchOS widgets"
+        },
+        {
+          "type": "navigation-item",
+          "icon": "document",
+          "text": "Creating accessory widgets and w...",
+          "fullText": "Creating accessory widgets and watchOS",
+          "isHighlighted": true,
+          "highlightColor": "green (#30D158)"
+        },
+        {
+          "type": "navigation-item",
+          "icon": "S",
+          "iconMeaning": "Struct",
+          "text": "AccessoryWidgetGroup",
+          "hasChevron": true
+        },
+        {
+          "type": "navigation-item",
+          "icon": "S",
+          "iconMeaning": "Struct",
+          "text": "AccessoryWidgetGroupStyle",
+          "hasChevron": true
+        },
+        {
+          "type": "navigation-item",
+          "icon": "document",
+          "text": "Migrating ClockKit complications t...",
+          "fullText": "Migrating ClockKit complications to WidgetKit"
+        },
+        {
+          "type": "section-header",
+          "text": "Smart Stacks"
+        },
+        {
+          "type": "navigation-item",
+          "icon": "document",
+          "text": "Increasing the visibility of widgets i...",
+          "fullText": "Increasing the visibility of widgets in Smart Stacks"
+        },
+        {
+          "type": "navigation-item",
+          "icon": "S",
+          "iconMeaning": "Struct",
+          "text": "TimelineEntryRelevance",
+          "hasChevron": true
+        },
+        {
+          "type": "navigation-item",
+          "icon": "S",
+          "iconMeaning": "Struct",
+          "text": "RelevanceConfiguration",
+          "hasChevron": true
+        },
+        {
+          "type": "navigation-item",
+          "icon": "Pr",
+          "iconMeaning": "Protocol",
+          "text": "RelevanceEntriesProvider",
+          "hasChevron": true
+        },
+        {
+          "type": "navigation-item",
+          "icon": "Pr",
+          "iconMeaning": "Protocol",
+          "text": "RelevanceEntry"
+        },
+        {
+          "type": "navigation-item",
+          "icon": "S",
+          "iconMeaning": "Struct",
+          "text": "WidgetRelevance",
+          "hasChevron": true
+        },
+        {
+          "type": "navigation-item",
+          "icon": "S",
+          "iconMeaning": "Struct",
+          "text": "WidgetRelevanceAttribute",
+          "hasChevron": true
+        },
+        {
+          "type": "navigation-item",
+          "icon": "S",
+          "iconMeaning": "Struct",
+          "text": "WidgetRelevanceGroup",
+          "hasChevron": true
+        },
+        {
+          "type": "navigation-item",
+          "icon": "S",
+          "iconMeaning": "Struct",
+          "text": "AppIntentRecommendation",
+          "hasChevron": true
+        },
+        {
+          "type": "navigation-item",
+          "icon": "S",
+          "iconMeaning": "Struct",
+          "text": "IntentConfiguration",
+          "hasChevron": true
+        },
+        {
+          "type": "navigation-item",
+          "icon": "S",
+          "iconMeaning": "Struct",
+          "text": "IntentRecommendation",
+          "hasChevron": true
+        },
+        {
+          "type": "section-header",
+          "text": "Live Activities"
+        },
+        {
+          "type": "section-header",
+          "text": "Controls"
+        },
+        {
+          "type": "section-header",
+          "text": "Presentation"
+        },
+        {
+          "type": "navigation-item",
+          "icon": "document",
+          "text": "Creating views for widgets, Live Acti...",
+          "fullText": "Creating views for widgets, Live Activities, and controls"
+        },
+        {
+          "type": "navigation-item",
+          "text": "SwiftUI views for widgets"
+        },
+        {
+          "type": "section-header",
+          "text": "Interactivity"
+        },
+        {
+          "type": "filter-input",
+          "icon": "filter lines",
+          "placeholder": "Filter",
+          "shortcutKey": "/"
+        }
+      ]
+    },
+    "relatedSymbolsFromSidebar": {
+      "methodsAndFunctions": [
+        {
+          "signature": "func supportedMountingStyles([W...",
+          "fullSignature": "func supportedMountingStyles([WidgetMountingStyle])",
+          "icon": "M",
+          "iconMeaning": "Method"
+        }
+      ],
+      "structs": [
+        "WidgetMountingStyle",
+        "LevelOfDetail",
+        "AccessoryWidgetGroup",
+        "AccessoryWidgetGroupStyle",
+        "TimelineEntryRelevance",
+        "RelevanceConfiguration",
+        "WidgetRelevance",
+        "WidgetRelevanceAttribute",
+        "WidgetRelevanceGroup",
+        "AppIntentRecommendation",
+        "IntentConfiguration",
+        "IntentRecommendation"
+      ],
+      "protocols": [
+        "RelevanceEntriesProvider",
+        "RelevanceEntry"
+      ],
+      "typeProperties": [
+        {
+          "signature": "static let `default`: LevelOfDetail",
+          "icon": "P",
+          "iconMeaning": "Property"
+        },
+        {
+          "signature": "static let simplified: LevelOfDet...",
+          "fullSignature": "static let simplified: LevelOfDetail",
+          "icon": "P",
+          "iconMeaning": "Property",
+          "isCurrent": true
+        }
+      ]
+    }
+  }
+}

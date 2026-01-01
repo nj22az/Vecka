@@ -1,0 +1,634 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "WidgetKit API Reference - Consolidated Documentation",
+      "author": "Apple Inc.",
+      "creationDate": "2025-12-27T00:00:00Z",
+      "sourceDocuments": [
+        "WidgetKit | Apple Developer Documentation.pdf",
+        "WidgetConfiguration | Apple Developer Documentation.pdf",
+        "WidgetRenderingMode | Apple Developer Documentation.pdf",
+        "widgetAccentable(_:) | Apple Developer Documentation.pdf"
+      ],
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "WidgetKit",
+        "SwiftUI",
+        "iOS",
+        "iPadOS",
+        "macOS",
+        "watchOS",
+        "visionOS",
+        "widgets",
+        "Live Activities",
+        "controls",
+        "complications"
+      ],
+      "summary": "Comprehensive API reference for WidgetKit framework covering widget configuration, rendering modes, and view modifiers. WidgetKit enables developers to extend their app's reach by creating widgets, watch complications, Live Activities, and controls across Apple platforms."
+    },
+    "framework": {
+      "name": "WidgetKit",
+      "description": "Extend the reach of your app by creating widgets, watch complications, Live Activities, and controls.",
+      "platforms": {
+        "iOS": "14.0+",
+        "iPadOS": "14.0+",
+        "macCatalyst": "14.0+",
+        "macOS": "11.0+",
+        "visionOS": "26.0+",
+        "watchOS": "9.0+"
+      },
+      "relatedFrameworks": [
+        "SwiftUI",
+        "ActivityKit",
+        "AppIntents"
+      ]
+    },
+    "ecosystem": {
+      "description": "WidgetKit enables an ecosystem of glanceable, up-to-date experiences across Apple platforms.",
+      "components": [
+        {
+          "name": "Widgets",
+          "description": "Elevate a small amount of timely, personally relevant information from your app, display it where people can see it at a glance, and offer specific app functionality without launching the app.",
+          "locations": {
+            "iPhone": ["Today View", "Home Screen", "Lock Screen", "StandBy", "CarPlay"],
+            "iPad": ["Today View", "Home Screen", "Lock Screen"],
+            "Mac": ["Desktop", "Notification Center"],
+            "AppleWatch": ["Smart Stack"],
+            "AppleVisionPro": ["Three-dimensional objects pinned to surfaces"]
+          }
+        },
+        {
+          "name": "Smart Stacks",
+          "description": "On iPhone and iPad, people stack widgets on their Home Screen and create Smart Stacks that use Smart Rotate to show the most contextually relevant widget.",
+          "features": [
+            "Automatic rotation to most relevant widget",
+            "User can pin widgets to fixed positions",
+            "Supports up to three complications on Apple Watch"
+          ]
+        },
+        {
+          "name": "Watch Complications",
+          "description": "People place watch complications on the Apple Watch face to view timely, relevant information when they lift their wrist.",
+          "locations": ["Watch Face", "Smart Stack"]
+        },
+        {
+          "name": "Live Activities",
+          "description": "Display up-to-date content from your app such as event and task information on the Lock Screen or in the Dynamic Island.",
+          "updateMechanism": ["ActivityKit", "ActivityKit push notifications (APNs)"],
+          "note": "Live Activities don't use timelines; they use ActivityKit and push notifications."
+        },
+        {
+          "name": "Controls",
+          "description": "Act as a button or toggle that allows people to perform actions in Control Center, on the Lock Screen, and from the Action button.",
+          "types": ["Button", "Toggle"],
+          "locations": ["Control Center", "Lock Screen", "Action button", "Menu bar (Mac)", "Control Center (Apple Watch)"],
+          "updateMechanism": "Controls update when someone uses them, the app reloads them, or via remote push notification."
+        }
+      ]
+    },
+    "apiTypes": {
+      "protocols": [
+        {
+          "name": "WidgetConfiguration",
+          "module": "SwiftUI",
+          "description": "A type that describes a widget's content.",
+          "declaration": "@MainActor @preconcurrency protocol WidgetConfiguration",
+          "platforms": {
+            "iOS": "14.0+",
+            "iPadOS": "14.0+",
+            "macCatalyst": "14.0+",
+            "macOS": "11.0+",
+            "visionOS": "1.0+",
+            "watchOS": "9.0+"
+          },
+          "isolation": {
+            "default": "@preconcurrency @MainActor",
+            "optOut": "Declare conformance in an extension to opt out of main actor isolation"
+          },
+          "requirements": [
+            {
+              "name": "body",
+              "type": "property",
+              "declaration": "var body: Self.Body",
+              "description": "The content and behavior of this widget.",
+              "required": true
+            },
+            {
+              "name": "Body",
+              "type": "associatedtype",
+              "declaration": "associatedtype Body : WidgetConfiguration",
+              "description": "The type of widget configuration representing the body of this configuration.",
+              "required": true
+            }
+          ],
+          "instanceMethods": [
+            {
+              "name": "configurationDisplayName(_:)",
+              "category": "Setting a name",
+              "description": "Sets the localized name shown for a widget when a user adds or edits the widget.",
+              "declaration": "func configurationDisplayName(_:)"
+            },
+            {
+              "name": "description(_:)",
+              "category": "Setting a description",
+              "description": "Sets the description shown for a widget when a user adds or edits it using the contents of a text view.",
+              "declaration": "func description(_:)"
+            },
+            {
+              "name": "supportedFamilies([WidgetFamily])",
+              "category": "Setting the appearance",
+              "description": "Sets the sizes that a widget supports.",
+              "declaration": "func supportedFamilies([WidgetFamily]) -> some WidgetConfiguration",
+              "returnType": "some WidgetConfiguration"
+            },
+            {
+              "name": "contentMarginsDisabled()",
+              "category": "Setting the appearance",
+              "description": "Disable default content margins.",
+              "declaration": "func contentMarginsDisabled() -> some WidgetConfiguration",
+              "returnType": "some WidgetConfiguration"
+            },
+            {
+              "name": "disfavoredLocations([WidgetLocation], for: [WidgetFamily])",
+              "category": "Setting the appearance",
+              "description": "Sets the disfavored locations for a widget.",
+              "declaration": "func disfavoredLocations([WidgetLocation], for: [WidgetFamily]) -> some WidgetConfiguration",
+              "returnType": "some WidgetConfiguration"
+            },
+            {
+              "name": "containerBackgroundRemovable(Bool)",
+              "category": "Setting the appearance",
+              "description": "A modifier that marks the background of a widget as removable.",
+              "declaration": "func containerBackgroundRemovable(Bool) -> some WidgetConfiguration",
+              "returnType": "some WidgetConfiguration"
+            },
+            {
+              "name": "backgroundTask<D, R>(BackgroundTask<D, R>, action: (D) async -> R)",
+              "category": "Managing background tasks",
+              "description": "Runs the given action when the system provides a background task.",
+              "declaration": "func backgroundTask<D, R>(BackgroundTask<D, R>, action: (D) async -> R) -> some WidgetConfiguration",
+              "returnType": "some WidgetConfiguration"
+            },
+            {
+              "name": "onBackgroundURLSessionEvents(matching:_:)",
+              "category": "Managing background tasks",
+              "description": "Adds an action to perform when events related to a URL session identified by a closure are waiting to be processed.",
+              "declaration": "func onBackgroundURLSessionEvents(matching:_:)"
+            },
+            {
+              "name": "associatedKind(String?)",
+              "category": "Instance Methods",
+              "description": "Tells the system that a relevance-based widget can replace a timeline-based widget.",
+              "declaration": "func associatedKind(String?) -> some WidgetConfiguration",
+              "returnType": "some WidgetConfiguration"
+            },
+            {
+              "name": "promptsForUserConfiguration()",
+              "category": "Instance Methods",
+              "description": "Specifies that a widget's configuration UI should be automatically presented after the widget is added.",
+              "declaration": "func promptsForUserConfiguration() -> some WidgetConfiguration",
+              "returnType": "some WidgetConfiguration"
+            },
+            {
+              "name": "pushHandler(any WidgetPushHandler.Type)",
+              "category": "Instance Methods",
+              "description": "Register a type that can handle push tokens changing for widgets.",
+              "declaration": "func pushHandler(any WidgetPushHandler.Type) -> some WidgetConfiguration",
+              "returnType": "some WidgetConfiguration"
+            },
+            {
+              "name": "supplementalActivityFamilies([ActivityFamily])",
+              "category": "Instance Methods",
+              "description": "Sets the sizes that a Live Activity supports.",
+              "declaration": "func supplementalActivityFamilies([ActivityFamily]) -> some WidgetConfiguration",
+              "returnType": "some WidgetConfiguration"
+            },
+            {
+              "name": "supportedMountingStyles([WidgetMountingStyle])",
+              "category": "Instance Methods",
+              "description": "Specifies the mounting style for this widget.",
+              "declaration": "func supportedMountingStyles([WidgetMountingStyle]) -> some WidgetConfiguration",
+              "returnType": "some WidgetConfiguration"
+            },
+            {
+              "name": "widgetTexture(WidgetTexture)",
+              "category": "Instance Methods",
+              "description": "Specifies the widget texture for this widget.",
+              "declaration": "func widgetTexture(WidgetTexture) -> some WidgetConfiguration",
+              "returnType": "some WidgetConfiguration"
+            }
+          ],
+          "conformingTypes": [
+            "EmptyWidgetConfiguration",
+            "LimitedAvailabilityConfiguration"
+          ]
+        },
+        {
+          "name": "Widget",
+          "module": "WidgetKit",
+          "description": "The configuration and content of a widget to display on the Home screen or in Notification Center."
+        },
+        {
+          "name": "WidgetBundle",
+          "module": "WidgetKit",
+          "description": "A container used to expose multiple widgets from a single widget extension."
+        },
+        {
+          "name": "TimelineProvider",
+          "module": "WidgetKit",
+          "description": "Protocol for providing timeline entries to update widget content."
+        },
+        {
+          "name": "AppIntentTimelineProvider",
+          "module": "WidgetKit",
+          "description": "Timeline provider that works with App Intents for configurable widgets."
+        },
+        {
+          "name": "IntentTimelineProvider",
+          "module": "WidgetKit",
+          "description": "Timeline provider for intent-based configurable widgets (legacy)."
+        },
+        {
+          "name": "TimelineEntry",
+          "module": "WidgetKit",
+          "description": "Protocol for entries in a widget's timeline."
+        },
+        {
+          "name": "WidgetPushHandler",
+          "module": "WidgetKit",
+          "description": "Protocol for handling push token changes for widgets."
+        }
+      ],
+      "structures": [
+        {
+          "name": "WidgetRenderingMode",
+          "module": "WidgetKit",
+          "description": "Constants that indicate the rendering mode for a widget.",
+          "declaration": "struct WidgetRenderingMode",
+          "platforms": {
+            "iOS": "16.0+",
+            "iPadOS": "16.0+",
+            "macCatalyst": "16.0+",
+            "macOS": "13.0+",
+            "visionOS": "26.0+",
+            "watchOS": "9.0+"
+          },
+          "overview": "The system can modify the appearance of accessory family widgets. For example, it renders widgets on the Lock Screen on iPhone using the vibrant mode, while it renders widget-based complications in watchOS using either the fullColor or accented modes, depending on the watch face and the user's settings.",
+          "environmentAccess": {
+            "key": ".widgetRenderingMode",
+            "usage": "@Environment(\\.widgetRenderingMode) var widgetRenderingMode"
+          },
+          "staticProperties": [
+            {
+              "name": "fullColor",
+              "type": "WidgetRenderingMode",
+              "declaration": "static let fullColor: WidgetRenderingMode",
+              "description": "The system renders the widget in full color.",
+              "useCases": ["watchOS complications (depending on watch face)", "Some widget contexts"]
+            },
+            {
+              "name": "accented",
+              "type": "WidgetRenderingMode",
+              "declaration": "static let accented: WidgetRenderingMode",
+              "description": "The system divides the widget's view hierarchy into an accent group and a default group, applying a different color to each group.",
+              "useCases": ["watchOS complications (depending on watch face and user settings)", "Liquid Glass design"]
+            },
+            {
+              "name": "vibrant",
+              "type": "WidgetRenderingMode",
+              "declaration": "static let vibrant: WidgetRenderingMode",
+              "description": "The system desaturates the widget, making a monochrome version that it uses to create an adaptive, vibrant effect.",
+              "useCases": ["iPhone Lock Screen widgets"]
+            }
+          ],
+          "conformsTo": [
+            "CustomStringConvertible",
+            "Equatable"
+          ]
+        },
+        {
+          "name": "WidgetAccentedRenderingMode",
+          "module": "WidgetKit",
+          "description": "Constants that indicate the rendering mode for an Image in when displayed in a widget in accented mode."
+        },
+        {
+          "name": "AccessoryWidgetBackground",
+          "module": "WidgetKit",
+          "description": "An adaptive background view that provides a standard appearance based on the the widget's environment."
+        },
+        {
+          "name": "WidgetLocation",
+          "module": "WidgetKit",
+          "description": "Values that indicate different widget locations."
+        },
+        {
+          "name": "Timeline",
+          "module": "WidgetKit",
+          "description": "A timeline of entries for widget updates."
+        },
+        {
+          "name": "TimelineProviderContext",
+          "module": "WidgetKit",
+          "description": "Context information for timeline provider methods."
+        },
+        {
+          "name": "WidgetPushInfo",
+          "module": "WidgetKit",
+          "description": "Information about push notifications for widgets."
+        },
+        {
+          "name": "LimitedAvailabilityConfiguration",
+          "module": "WidgetKit",
+          "description": "A type-erased widget configuration."
+        },
+        {
+          "name": "EmptyWidgetConfiguration",
+          "module": "WidgetKit",
+          "description": "An empty widget configuration."
+        },
+        {
+          "name": "WidgetPreviewContext",
+          "module": "WidgetKit",
+          "description": "A specification for the context of a widget preview."
+        }
+      ],
+      "classes": [
+        {
+          "name": "WidgetCenter",
+          "module": "WidgetKit",
+          "description": "Central class for managing widget updates and reloading timelines."
+        }
+      ],
+      "viewModifiers": [
+        {
+          "name": "widgetAccentable(_:)",
+          "module": "SwiftUI",
+          "description": "Marks a view as accentable, allowing the system to apply the accent color in accented rendering mode.",
+          "usage": "Apply to views that should receive accent coloring when the widget is rendered in accented mode.",
+          "relatedTo": "WidgetRenderingMode.accented",
+          "example": {
+            "code": "Image(systemName: \"star.fill\")\n    .widgetAccentable()",
+            "description": "Mark an image to receive accent coloring in accented rendering mode"
+          },
+          "bestPractices": [
+            "Use on views that represent primary or emphasized content",
+            "Works in conjunction with accented rendering mode on watchOS",
+            "Essential for Liquid Glass design optimization"
+          ]
+        }
+      ]
+    },
+    "renderingModes": {
+      "description": "Widget rendering modes control how the system displays widget content across different contexts and platforms.",
+      "modes": [
+        {
+          "mode": "fullColor",
+          "description": "The system renders the widget in full color, preserving all colors as specified in the widget's view hierarchy.",
+          "platforms": ["watchOS"],
+          "contexts": ["Some watch faces", "Certain widget placements"],
+          "designConsiderations": [
+            "Use vibrant, meaningful colors",
+            "Ensure sufficient contrast",
+            "Test on actual devices for color accuracy"
+          ]
+        },
+        {
+          "mode": "accented",
+          "description": "The system divides the widget's view hierarchy into an accent group and a default group, applying a different color to each group.",
+          "platforms": ["watchOS", "iOS (Liquid Glass)"],
+          "contexts": ["Watch faces with accent support", "Liquid Glass design"],
+          "designConsiderations": [
+            "Use widgetAccentable() modifier to mark views for accent coloring",
+            "Design with two-tone appearance in mind",
+            "Test with different accent colors"
+          ],
+          "implementation": {
+            "viewModifier": "widgetAccentable(_:)",
+            "relatedType": "WidgetAccentedRenderingMode"
+          }
+        },
+        {
+          "mode": "vibrant",
+          "description": "The system desaturates the widget, making a monochrome version that it uses to create an adaptive, vibrant effect.",
+          "platforms": ["iOS"],
+          "contexts": ["Lock Screen widgets"],
+          "designConsiderations": [
+            "Design with contrast in mind, not color",
+            "Use distinct shapes and values",
+            "Test on various wallpapers",
+            "Ensure readability without color"
+          ]
+        }
+      ],
+      "accessingRenderingMode": {
+        "method": "Environment property wrapper",
+        "code": "@Environment(\\.widgetRenderingMode) var widgetRenderingMode",
+        "usage": "Read the current rendering mode and customize your widget's design based on it"
+      }
+    },
+    "timelineManagement": {
+      "description": "Widgets and watch complications use a special mechanism to update their content: You create a timeline of data updates and hand it to WidgetKit. WidgetKit then makes sure the widget or complication updates its content in an energy-efficient way.",
+      "protocols": [
+        "TimelineProvider",
+        "AppIntentTimelineProvider",
+        "IntentTimelineProvider"
+      ],
+      "pushNotifications": {
+        "supported": true,
+        "handler": "WidgetPushHandler",
+        "description": "Widgets can receive updates by using the Apple Push Notification service (APNs) and remote push notifications."
+      },
+      "relatedArticles": [
+        "Keeping a widget up to date",
+        "Updating widgets with WidgetKit push notifications"
+      ]
+    },
+    "interactivity": {
+      "description": "People use buttons and toggles in widgets, controls, and Live Activities to interact with your app without launching it.",
+      "features": [
+        {
+          "feature": "Deep linking",
+          "description": "People tap a widget, watch complication, or Live Activity to launch the corresponding app or the app's scene with matching information or functionality.",
+          "relatedArticle": "Linking to specific app scenes from your widget or Live Activity"
+        },
+        {
+          "feature": "Buttons and toggles",
+          "description": "Include buttons or toggles in a widget or Live Activity to offer app functionality without launching the app.",
+          "relatedArticle": "Adding interactivity to widgets and Live Activities"
+        },
+        {
+          "feature": "Configuration",
+          "description": "People configure widgets and watch complications to display details specific to their needs.",
+          "relatedArticle": "Making a configurable widget"
+        }
+      ]
+    },
+    "codeExamples": {
+      "renderingModeDetection": {
+        "title": "Reading and responding to rendering mode",
+        "code": "@Environment(\\.widgetRenderingMode) var widgetRenderingMode\n\nvar body: some View {\n    switch widgetRenderingMode {\n    case .fullColor:\n        // Full color rendering\n        ColorfulWidgetView()\n    case .accented:\n        // Two-tone accented rendering\n        AccentedWidgetView()\n    case .vibrant:\n        // Monochrome vibrant rendering\n        MonochromeWidgetView()\n    @unknown default:\n        ColorfulWidgetView()\n    }\n}",
+        "description": "Detect the current rendering mode and customize your widget's appearance accordingly."
+      },
+      "widgetAccentableUsage": {
+        "title": "Using widgetAccentable modifier",
+        "code": "struct MyWidgetView: View {\n    var body: some View {\n        VStack {\n            Image(systemName: \"star.fill\")\n                .widgetAccentable()\n            Text(\"Featured\")\n        }\n    }\n}",
+        "description": "Mark views that should receive accent coloring in accented rendering mode."
+      },
+      "widgetConfiguration": {
+        "title": "Basic widget configuration",
+        "code": "struct MyWidget: Widget {\n    let kind: String = \"MyWidget\"\n\n    var body: some WidgetConfiguration {\n        StaticConfiguration(kind: kind, provider: Provider()) { entry in\n            MyWidgetEntryView(entry: entry)\n        }\n        .configurationDisplayName(\"My Widget\")\n        .description(\"This is an example widget.\")\n        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])\n        .contentMarginsDisabled()\n    }\n}",
+        "description": "Configure a widget with display name, description, supported sizes, and disabled content margins."
+      },
+      "mainActorIsolation": {
+        "title": "Main actor isolation for WidgetConfiguration",
+        "code": "// Default: @preconcurrency @MainActor isolation\nstruct MyCustomType: WidgetConfiguration {\n    // @preconcurrency @MainActor isolation by default\n    var body: some WidgetConfiguration {\n        // ...\n    }\n}\n\n// Opt out of main actor isolation\nextension MyCustomType: WidgetConfiguration {\n    // nonisolated by default\n}",
+        "description": "A type conforming to WidgetConfiguration inherits @preconcurrency @MainActor isolation from the protocol by default. Declare conformance in an extension to opt out."
+      }
+    },
+    "bestPractices": {
+      "development": [
+        {
+          "practice": "Iterative development",
+          "description": "Use an iterative approach and start with support for one feature or select sizes of widgets. Start with a small widget, but plan and design additional sizes and features across platforms from the beginning."
+        },
+        {
+          "practice": "Design for all rendering modes",
+          "description": "Test your widget in fullColor, accented, and vibrant modes to ensure it looks good in all contexts."
+        },
+        {
+          "practice": "Use semantic colors",
+          "description": "For vibrant mode, design with contrast rather than color. Use distinct shapes and values."
+        },
+        {
+          "practice": "Mark accentable views",
+          "description": "Use widgetAccentable() modifier on views that should receive accent coloring in accented mode."
+        }
+      ],
+      "design": [
+        {
+          "practice": "Glanceable design",
+          "description": "Widgets, watch complications, Live Activities, and controls are small and require a focused, glanceable design.",
+          "references": [
+            "Human Interface Guidelines > Widgets",
+            "Human Interface Guidelines > Complications",
+            "Human Interface Guidelines > Live Activities",
+            "Human Interface Guidelines > Controls"
+          ]
+        },
+        {
+          "practice": "Cross-platform planning",
+          "description": "Plan and design additional sizes and features across platforms from the beginning, then allow people to view your content in as many contexts as possible."
+        }
+      ],
+      "performance": [
+        {
+          "practice": "Energy efficiency",
+          "description": "WidgetKit makes sure the widget or complication updates its content in an energy-efficient way. Use timelines appropriately."
+        },
+        {
+          "practice": "Timeline optimization",
+          "description": "Create timelines that balance update frequency with battery consumption."
+        }
+      ]
+    },
+    "relatedArticles": [
+      {
+        "title": "Developing a WidgetKit strategy",
+        "description": "Explore features, tasks, related frameworks, and constraints as you make a plan to implement widgets, controls, watch complications, and Live Activities."
+      },
+      {
+        "title": "Creating a widget extension",
+        "description": "Display your app's content in a convenient, informative widget on various devices."
+      },
+      {
+        "title": "Keeping a widget up to date",
+        "description": "Plan your widget's timeline to show timely, relevant information using dynamic views, and update the timeline when things change."
+      },
+      {
+        "title": "Making a configurable widget",
+        "description": "Give people the option to customize their widgets by adding a custom app intent to your project."
+      },
+      {
+        "title": "Building Widgets Using WidgetKit and SwiftUI",
+        "description": "Create widgets to show your app's content on the Home screen, with custom intents for user-customizable settings."
+      },
+      {
+        "title": "Supporting additional widget sizes",
+        "description": "Offer widgets in additional contexts by adding support for various widget sizes."
+      },
+      {
+        "title": "Displaying the right widget background",
+        "description": "Group your widget's background views and mark them as removable to ensure your widget appears correctly for each context and platform."
+      },
+      {
+        "title": "Optimizing your widget for accented rendering mode and Liquid Glass",
+        "description": "Make your widget feel at home on Apple platforms and Liquid Glass by using accented rendering mode."
+      },
+      {
+        "title": "Adding StandBy and CarPlay support to your widget",
+        "description": "Ensure that your small system family widget works well in StandBy and CarPlay."
+      },
+      {
+        "title": "Migrating ClockKit complications to WidgetKit",
+        "description": "Guide for transitioning from ClockKit to WidgetKit for watch complications."
+      },
+      {
+        "title": "Creating views for widgets, Live Activities, and watch complications",
+        "description": "Implement glanceable views with WidgetKit and SwiftUI."
+      },
+      {
+        "title": "SwiftUI views for widgets",
+        "description": "Present your app's content in widgets with SwiftUI views."
+      },
+      {
+        "title": "Adding interactivity to widgets and Live Activities",
+        "description": "Include buttons or toggles in a widget or Live Activity to offer app functionality without launching the app."
+      },
+      {
+        "title": "Animating data updates in widgets and Live Activities",
+        "description": "Use SwiftUI animations to indicate data updates in your widgets and Live Activities."
+      },
+      {
+        "title": "Linking to specific app scenes from your widget or Live Activity",
+        "description": "Add deep links to your widgets and Live Activities that enable people to open a specific scene in your app."
+      },
+      {
+        "title": "Adding accessible descriptions to widgets and Live Activities",
+        "description": "Describe the interface elements of your widgets and Live Activities to help people understand what they represent."
+      },
+      {
+        "title": "Previewing widgets and Live Activities in Xcode",
+        "description": "Use Xcode previews to iteratively develop, fine-tune, and troubleshoot widgets and Live Activities."
+      },
+      {
+        "title": "Updating widgets with WidgetKit push notifications",
+        "description": "Use push notifications to update widget content remotely."
+      },
+      {
+        "title": "Accessing location information in widgets",
+        "description": "Use location data in your widgets appropriately."
+      },
+      {
+        "title": "Making network requests in a widget",
+        "description": "Handle network requests within widget constraints."
+      }
+    ],
+    "sampleCodeProjects": [
+      {
+        "name": "Emoji Rangers: Supporting Live Activities, interactivity, and animations",
+        "description": "Offer Live Activities, controls, animate data updates, and add interactivity to widgets."
+      }
+    ],
+    "capabilities": {
+      "location": {
+        "article": "Accessing location information in widgets",
+        "description": "Widgets can access location information with appropriate permissions."
+      },
+      "networking": {
+        "article": "Making network requests in a widget",
+        "description": "Widgets can make network requests within system constraints."
+      }
+    }
+  }
+}

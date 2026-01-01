@@ -1,0 +1,2257 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Multitasking | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": "2025-06-09",
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "multitasking",
+        "iOS",
+        "iPadOS",
+        "macOS",
+        "tvOS",
+        "visionOS",
+        "watchOS",
+        "app switching",
+        "Picture in Picture",
+        "windowed apps",
+        "Full Space",
+        "Shared Space",
+        "HIG",
+        "Human Interface Guidelines"
+      ],
+      "summary": "Apple Developer documentation page covering multitasking design guidelines across all Apple platforms. The document explains best practices for handling app switching, audio interruptions, background tasks, and platform-specific multitasking behaviors for iOS, iPadOS, macOS, tvOS, and visionOS."
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": null,
+          "height": null,
+          "unit": "pixels"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF",
+        "layout": {
+          "type": "multi-column",
+          "columns": 3,
+          "margins": {
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": "100%",
+              "height": "auto"
+            },
+            "zIndex": 100,
+            "content": {
+              "navigationType": "global-header",
+              "backgroundColor": "#FFFFFF",
+              "items": [
+                {
+                  "text": "Apple Developer",
+                  "type": "logo-link",
+                  "icon": "Apple logo (black apple symbol)",
+                  "url": "https://developer.apple.com"
+                },
+                {
+                  "text": "News",
+                  "type": "nav-link",
+                  "url": "/news/"
+                },
+                {
+                  "text": "Discover",
+                  "type": "nav-link",
+                  "url": "/discover/"
+                },
+                {
+                  "text": "Design",
+                  "type": "nav-link",
+                  "url": "/design/",
+                  "state": "active"
+                },
+                {
+                  "text": "Develop",
+                  "type": "nav-link",
+                  "url": "/develop/"
+                },
+                {
+                  "text": "Distribute",
+                  "type": "nav-link",
+                  "url": "/distribute/"
+                },
+                {
+                  "text": "Support",
+                  "type": "nav-link",
+                  "url": "/support/"
+                },
+                {
+                  "text": "Account",
+                  "type": "nav-link",
+                  "url": "/account/"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-secondary-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": "below-header",
+              "width": "100%",
+              "height": "auto"
+            },
+            "zIndex": 99,
+            "content": {
+              "navigationType": "section-header",
+              "backgroundColor": "#F5F5F7",
+              "sectionTitle": "Design",
+              "items": [
+                {
+                  "text": "Design Overview",
+                  "type": "nav-link",
+                  "url": "/design/"
+                },
+                {
+                  "text": "What's New",
+                  "type": "nav-link",
+                  "url": "/design/whats-new/"
+                },
+                {
+                  "text": "Get Started",
+                  "type": "nav-link",
+                  "url": "/design/get-started/"
+                },
+                {
+                  "text": "Guidelines",
+                  "type": "nav-link",
+                  "state": "active",
+                  "url": "/design/human-interface-guidelines/"
+                },
+                {
+                  "text": "Resources",
+                  "type": "nav-link",
+                  "url": "/design/resources/"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-left-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": "below-secondary-nav",
+              "width": "240px",
+              "height": "auto"
+            },
+            "zIndex": 50,
+            "content": {
+              "navigationType": "left-sidebar",
+              "backgroundColor": "#FFFFFF",
+              "sections": [
+                {
+                  "title": "Platforms",
+                  "items": [
+                    {"text": "iOS", "url": "/design/human-interface-guidelines/ios"},
+                    {"text": "iPadOS", "url": "/design/human-interface-guidelines/ipados"},
+                    {"text": "macOS", "url": "/design/human-interface-guidelines/macos"},
+                    {"text": "tvOS", "url": "/design/human-interface-guidelines/tvos"},
+                    {"text": "visionOS", "url": "/design/human-interface-guidelines/visionos"},
+                    {"text": "watchOS", "url": "/design/human-interface-guidelines/watchos"}
+                  ]
+                },
+                {
+                  "title": "Tools",
+                  "items": [
+                    {"text": "Swift", "url": "/swift/"},
+                    {"text": "SwiftUI", "url": "/xcode/swiftui/"},
+                    {"text": "Swift Playground", "url": "/swift-playgrounds/"},
+                    {"text": "TestFlight", "url": "/testflight/"},
+                    {"text": "Xcode", "url": "/xcode/"},
+                    {"text": "Xcode Cloud", "url": "/xcode-cloud/"},
+                    {"text": "SF Symbols", "url": "/sf-symbols/"}
+                  ]
+                },
+                {
+                  "title": "Topics & Technologies",
+                  "items": [
+                    {"text": "Accessibility", "url": "/accessibility/"},
+                    {"text": "Accessories", "url": "/accessories/"},
+                    {"text": "App Extension", "url": "/app-extensions/"},
+                    {"text": "App Store", "url": "/app-store/"},
+                    {"text": "Audio & Video", "url": "/audio-video/"},
+                    {"text": "Augmented Reality", "url": "/augmented-reality/"},
+                    {"text": "Design", "url": "/design/"},
+                    {"text": "Distribution", "url": "/distribution/"},
+                    {"text": "Education", "url": "/education/"},
+                    {"text": "Fonts", "url": "/fonts/"},
+                    {"text": "Games", "url": "/games/"},
+                    {"text": "Health & Fitness", "url": "/health-fitness/"},
+                    {"text": "In-App Purchase", "url": "/in-app-purchase/"},
+                    {"text": "Localization", "url": "/localization/"},
+                    {"text": "Maps & Location", "url": "/maps/"},
+                    {"text": "Machine Learning & AI", "url": "/machine-learning/"},
+                    {"text": "Open Source", "url": "/opensource/"},
+                    {"text": "Security", "url": "/security/"},
+                    {"text": "Safari & Web", "url": "/safari/"}
+                  ]
+                },
+                {
+                  "title": "Resources",
+                  "items": [
+                    {"text": "Documentation", "url": "/documentation/"},
+                    {"text": "Tutorials", "url": "/tutorials/"},
+                    {"text": "Downloads", "url": "/download/"},
+                    {"text": "Forums", "url": "/forums/"},
+                    {"text": "Videos", "url": "/videos/"},
+                    {"text": "Support", "url": "/support/"}
+                  ]
+                },
+                {
+                  "title": "Support",
+                  "items": [
+                    {"text": "Support Articles", "url": "/support/articles/"},
+                    {"text": "Contact Us", "url": "/contact/"},
+                    {"text": "Bug Reporting", "url": "/bug-reporting/"},
+                    {"text": "System Status", "url": "/system-status/"}
+                  ]
+                },
+                {
+                  "title": "Account",
+                  "items": [
+                    {"text": "Apple Developer", "url": "/account/"},
+                    {"text": "App Store Connect", "url": "https://appstoreconnect.apple.com"},
+                    {"text": "Certificates, IDs, & Profiles", "url": "/account/resources/"},
+                    {"text": "Feedback Assistant", "url": "https://feedbackassistant.apple.com"}
+                  ]
+                },
+                {
+                  "title": "Programs",
+                  "items": [
+                    {"text": "Apple Developer Program", "url": "/programs/"},
+                    {"text": "Apple Developer Enterprise Program", "url": "/programs/enterprise/"},
+                    {"text": "App Store Small Business Program", "url": "/app-store/small-business-program/"},
+                    {"text": "MFi Program", "url": "/programs/mfi/"},
+                    {"text": "News Partner Program", "url": "/programs/news-partner/"},
+                    {"text": "Video Partner Program", "url": "/programs/video-partner/"},
+                    {"text": "Security Bounty Program", "url": "/security-bounty/"},
+                    {"text": "Security Research Device Program", "url": "/programs/security-research-device/"}
+                  ]
+                },
+                {
+                  "title": "Events",
+                  "items": [
+                    {"text": "Meet with Apple", "url": "/events/"},
+                    {"text": "Apple Developer Centers", "url": "/developer-centers/"},
+                    {"text": "App Store Awards", "url": "/app-store/app-store-awards/"},
+                    {"text": "Apple Design Awards", "url": "/design/awards/"},
+                    {"text": "Apple Developer Academies", "url": "/academies/"},
+                    {"text": "WWDC", "url": "/wwdc/"}
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-guidelines-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 240,
+              "y": "below-secondary-nav",
+              "width": "200px",
+              "height": "auto"
+            },
+            "zIndex": 49,
+            "content": {
+              "navigationType": "guidelines-sidebar",
+              "backgroundColor": "#FFFFFF",
+              "filterInput": {
+                "placeholder": "Filter",
+                "type": "search"
+              },
+              "sections": [
+                {
+                  "title": "Patterns",
+                  "expanded": true,
+                  "items": [
+                    {"text": "Collaboration and sharing", "url": "/design/human-interface-guidelines/collaboration-and-sharing"},
+                    {"text": "Drag and drop", "url": "/design/human-interface-guidelines/drag-and-drop"},
+                    {"text": "Entering data", "url": "/design/human-interface-guidelines/entering-data"},
+                    {"text": "Feedback", "url": "/design/human-interface-guidelines/feedback"},
+                    {"text": "File management", "url": "/design/human-interface-guidelines/file-management"},
+                    {"text": "Going full screen", "url": "/design/human-interface-guidelines/going-full-screen"},
+                    {"text": "Launching", "url": "/design/human-interface-guidelines/launching"},
+                    {"text": "Live-viewing apps", "url": "/design/human-interface-guidelines/live-viewing-apps"},
+                    {"text": "Loading", "url": "/design/human-interface-guidelines/loading"},
+                    {"text": "Managing accounts", "url": "/design/human-interface-guidelines/managing-accounts"},
+                    {"text": "Managing notifications", "url": "/design/human-interface-guidelines/managing-notifications"},
+                    {"text": "Modality", "url": "/design/human-interface-guidelines/modality"},
+                    {
+                      "text": "Multitasking",
+                      "url": "/design/human-interface-guidelines/multitasking",
+                      "state": "active",
+                      "highlighted": true
+                    },
+                    {"text": "Offering help", "url": "/design/human-interface-guidelines/offering-help"},
+                    {"text": "Onboarding", "url": "/design/human-interface-guidelines/onboarding"},
+                    {"text": "Playing audio", "url": "/design/human-interface-guidelines/playing-audio"},
+                    {"text": "Playing haptics", "url": "/design/human-interface-guidelines/playing-haptics"},
+                    {"text": "Playing video", "url": "/design/human-interface-guidelines/playing-video"},
+                    {"text": "Printing", "url": "/design/human-interface-guidelines/printing"},
+                    {"text": "Ratings and reviews", "url": "/design/human-interface-guidelines/ratings-and-reviews"},
+                    {"text": "Searching", "url": "/design/human-interface-guidelines/searching"},
+                    {"text": "Settings", "url": "/design/human-interface-guidelines/settings"},
+                    {"text": "Undo and redo", "url": "/design/human-interface-guidelines/undo-and-redo"},
+                    {"text": "Workouts", "url": "/design/human-interface-guidelines/workouts"}
+                  ]
+                },
+                {
+                  "title": "Components",
+                  "expanded": false,
+                  "url": "/design/human-interface-guidelines/components"
+                },
+                {
+                  "title": "Inputs",
+                  "expanded": false,
+                  "url": "/design/human-interface-guidelines/inputs"
+                },
+                {
+                  "title": "Technologies",
+                  "expanded": false,
+                  "url": "/design/human-interface-guidelines/technologies"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-content-header",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "center",
+              "y": "top-of-main-content",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 1,
+              "text": "Multitasking",
+              "fontWeight": "bold",
+              "fontSize": "large",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-icon",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "right-of-title",
+              "y": "aligned-with-title",
+              "width": "64px",
+              "height": "64px"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "icon",
+              "description": "Orange rounded rectangle icon representing multitasking. The icon shows a stylized representation of overlapping app windows or layers - appears as a 3D orange/amber colored rounded rectangle shape with subtle depth and layering effect, suggesting multiple stacked interface elements.",
+              "subjects": ["app icon", "multitasking symbol", "layered windows"],
+              "composition": "Single centered icon with 3D perspective showing depth",
+              "colorPalette": ["#FF9500", "#FFAA33", "orange gradient"],
+              "mood": "Professional, modern, Apple design language",
+              "technicalDetails": "SF Symbol or custom Apple HIG icon for multitasking pattern",
+              "textInImage": [],
+              "contextualRelevance": "Visual identifier for the Multitasking section of Apple's Human Interface Guidelines"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-content-header",
+                "relationshipType": "icon-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-subtitle",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "center",
+              "y": "below-title",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Multitasking lets people switch quickly from one app to another, performing tasks in each.",
+              "fontWeight": "normal",
+              "fontSize": "medium",
+              "color": "#86868B",
+              "fontStyle": "subtitle"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-content-header",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-toc-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": "right-side",
+              "y": "top-of-main-content",
+              "width": "200px",
+              "height": "auto"
+            },
+            "zIndex": 48,
+            "content": {
+              "navigationType": "table-of-contents",
+              "backgroundColor": "#FFFFFF",
+              "title": "On this page",
+              "items": [
+                {
+                  "text": "Best practices",
+                  "url": "#best-practices",
+                  "level": 1
+                },
+                {
+                  "text": "Platform considerations",
+                  "url": "#platform-considerations",
+                  "level": 1
+                },
+                {
+                  "text": "Resources",
+                  "url": "#resources",
+                  "level": 1
+                },
+                {
+                  "text": "Change log",
+                  "url": "#change-log",
+                  "level": 1
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-intro-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-subtitle",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "People expect to use multitasking on their devices, and they may think something is wrong if your app doesn't allow it. With rare exceptions — such as some games, and Apple Vision Pro apps running in a Full Space — every app needs to work well with multitasking.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-intro-paragraph-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-intro-paragraph",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "In addition to app switching, multitasking can present different experiences on different devices; see Platform considerations.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F",
+              "links": [
+                {
+                  "text": "Platform considerations",
+                  "url": "#platform-considerations"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-intro-paragraph-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-intro-paragraph-2",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "A great multitasking experience helps people accomplish tasks in multiple apps by managing content in a variety of simultaneous contexts. Because you don't know when people will initiate multitasking, your app or game always needs to be prepared to save and restore their context.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practices-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-intro-section",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Best practices",
+              "fontWeight": "bold",
+              "fontSize": "large",
+              "color": "#1D1D1F",
+              "id": "best-practices"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-best-practices-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Pause activities that require people's attention or active participation when they switch away. If your app is a game or a media-viewing app, for example, make sure people don't miss anything when they switch to another app. When they switch back, let them continue as if they never left.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F",
+              "formatting": {
+                "boldSections": ["Pause activities that require people's attention or active participation when they switch away."]
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-best-practice-1",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Respond smoothly to audio interruptions. Occasionally, audio from another app or the system itself may interrupt your app's audio. For example, an incoming phone call or a music playlist initiated by Siri might interrupt your app's audio. When situations like these occur, people expect your app to respond in the following ways:",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F",
+              "formatting": {
+                "boldSections": ["Respond smoothly to audio interruptions."]
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-audio-interruption-list",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-best-practice-2",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Pause audio indefinitely for primary audio interruptions, such as playing music, podcasts, or audiobooks."
+                },
+                {
+                  "text": "Temporarily lower the volume or pause the audio for shorter interruptions, such as GPS directional notifications, and resume the original volume or playback when the interruption ends."
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-best-practice-2",
+                "relationshipType": "continues-from"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-audio-guidance-link",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-audio-interruption-list",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "For guidance, see Playing audio.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F",
+              "links": [
+                {
+                  "text": "Playing audio",
+                  "url": "/design/human-interface-guidelines/playing-audio"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-audio-guidance-link",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Finish user-initiated tasks in the background. When someone starts a task like downloading assets or processing a video file, they expect it to finish even if they switch away from your app. If your app is in the middle of performing a task that doesn't need additional input, complete it in the background before suspending.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F",
+              "formatting": {
+                "boldSections": ["Finish user-initiated tasks in the background."]
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-4",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-best-practice-3",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Use notifications sparingly. Your app can send notifications when it's suspended or running in the background. If people start an important or time-sensitive task in your app, and then switch away from it, they might appreciate receiving a notification when the task completes so they can switch back to your app and take the next step. In contrast, people don't generally need to know the moment a routine or secondary task completes. In this scenario, avoid sending an unnecessary notification; instead, let people check on the task when they return to your app. For guidance, see Managing notifications.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F",
+              "formatting": {
+                "boldSections": ["Use notifications sparingly."]
+              },
+              "links": [
+                {
+                  "text": "Managing notifications",
+                  "url": "/design/human-interface-guidelines/managing-notifications"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-considerations-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-best-practices-section",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Platform considerations",
+              "fontWeight": "bold",
+              "fontSize": "large",
+              "color": "#1D1D1F",
+              "id": "platform-considerations"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-watchos-note",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-platform-considerations-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "annotationType": "platform-note",
+              "text": "Not supported in watchOS.",
+              "fontWeight": "normal",
+              "fontSize": "small",
+              "color": "#86868B",
+              "fontStyle": "italic"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ios-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-watchos-note",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 3,
+              "text": "iOS",
+              "fontWeight": "bold",
+              "fontSize": "medium",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ios-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-ios-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "On iPhone, multitasking lets people use FaceTime or watch a video in Picture in Picture while they also use a different app.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ios-image-1",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "main-content-area-left",
+              "y": "below-ios-description",
+              "width": "300px",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "screenshot",
+              "description": "iPhone screenshot showing the App Switcher interface. The screen displays a horizontal carousel of app cards/thumbnails representing currently open applications. Multiple app windows are visible as stacked cards that users can swipe through. The interface shows a 3D card-like presentation of each app's last state. Status bar visible at top showing '9:41 Tue Apr 1'. The design uses Apple's modern iOS visual language with rounded corners and subtle shadows on each app card.",
+              "subjects": ["App Switcher", "app cards", "multitasking UI", "iPhone interface"],
+              "composition": "Horizontal carousel layout with overlapping app cards showing perspective depth",
+              "colorPalette": ["#F5F5F7", "#FFFFFF", "various app colors"],
+              "mood": "Clean, functional, system UI",
+              "technicalDetails": "iOS App Switcher accessed via swipe up and hold gesture. Shows app thumbnails with app icons below each card.",
+              "textInImage": ["9:41", "Tue", "Apr", "1"],
+              "contextualRelevance": "Demonstrates iOS app switching mechanism - the primary multitasking interface on iPhone"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ios-image-1-caption",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": "below-ios-image-1",
+              "y": "auto",
+              "width": "300px",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "The app switcher displays all currently open apps.",
+              "fontWeight": "normal",
+              "fontSize": "small",
+              "color": "#86868B"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-ios-image-1",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-ios-image-2",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "main-content-area-right",
+              "y": "aligned-with-ios-image-1",
+              "width": "300px",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "screenshot",
+              "description": "iPhone screenshot showing Picture in Picture (PiP) mode with a FaceTime call. The main screen displays the Apple Maps app with a map view of the San Francisco Bay Area, specifically showing areas like Los Altos, Antonio Rancho Preserve, San Jose, Stevens Creek County Park, Mountain View, Sunnyvale, Loyola, Cupertino, and Saratoga. A search bar at the top shows 'Search Maps'. At the bottom of the Maps interface is a 'Featured' section showing thumbnail images of destinations including Mount Fuji with 'Learn More' text, and category tabs for 'Asia' and 'Africa'. There's a small floating Picture in Picture window in the corner showing an active FaceTime video call with a person visible in the thumbnail. The status bar shows '9:41 Tue Apr 1' and network indicators showing '2,002' and '11'.",
+              "subjects": ["Picture in Picture", "FaceTime call", "Apple Maps", "floating video window"],
+              "composition": "Full-screen Maps app with small floating PiP window overlay in corner",
+              "colorPalette": ["#3C9B4D (map green)", "#F5E6C8 (map terrain)", "#0076FF (blue UI elements)", "#FFFFFF"],
+              "mood": "Productive, multi-context usage",
+              "technicalDetails": "iOS Picture in Picture mode. FaceTime window floats above Maps app. PiP window can be moved, resized, or dismissed.",
+              "textInImage": [
+                "9:41", "Tue", "Apr", "1", "2,002", "11",
+                "Los Altos", "Antonio Rancho Preserve", "San Jose", "Stevens Creek County Park",
+                "Mountain View", "Sunnyvale", "Loyola", "Cupertino", "Saratoga",
+                "Search Maps", "Featured", "Mount Fuji", "Learn More", "Asia", "Africa",
+                "Mount Fuji", "Wulingyuan", "Mount Everest", "Thu", "17"
+              ],
+              "contextualRelevance": "Demonstrates Picture in Picture multitasking - allowing video calls to continue while using another app"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ios-image-2-caption",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": "below-ios-image-2",
+              "y": "auto",
+              "width": "300px",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "A current FaceTime call can continue while people use another app.",
+              "fontWeight": "normal",
+              "fontSize": "small",
+              "color": "#86868B"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-ios-image-2",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-ipados-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-ios-section",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 3,
+              "text": "iPadOS",
+              "fontWeight": "bold",
+              "fontSize": "medium",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ipados-description-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-ipados-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "On iPad, people can view and interact with the windows of several different apps at the same time. An individual app can also support multiple open windows, which lets people view and interact with more than one window in the same app at one time.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F",
+              "links": [
+                {
+                  "text": "windows",
+                  "url": "/design/human-interface-guidelines/windows"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ipados-description-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-ipados-description-1",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "People can use iPad with either full-screen or windowed apps. When full screen, apps occupy the full screen, and people can switch between individual app windows using the app switcher.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ipados-description-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-ipados-description-2",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "When using windowed apps, app windows are resizable, and people can arrange them to suit their needs with behavior similar to macOS. The system provides window controls for common tiling configurations, entering full screen, minimizing, and closing windows. The system identifies the frontmost window by coloring its window controls and casting a drop shadow on windows behind it. For guidance, see Windows > iPadOS.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F",
+              "links": [
+                {
+                  "text": "Windows > iPadOS",
+                  "url": "/design/human-interface-guidelines/windows#ipados"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ipados-description-4",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-ipados-description-3",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Additionally, videos and FaceTime calls can also play in a Picture in Picture overlay above other content regardless of whether apps are full screen or windowed.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ipados-note",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-ipados-description-4",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "annotationType": "note",
+              "noteStyle": "info-box",
+              "label": "Note",
+              "text": "Apps don't control multitasking configurations or receive any indication of the ones that people choose.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F",
+              "backgroundColor": "#F5F5F7"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ipados-guidance",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-ipados-note",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "To help your app respond correctly when people open it while windowed, make sure it adapts gracefully to different screen sizes. For guidance, see Layout and Windows; for developer guidance, see Multitasking on iPad, Mac, and Apple Vision Pro. To learn more about how people use iPad multitasking features, see Use multitasking on your iPad.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F",
+              "links": [
+                {
+                  "text": "Layout",
+                  "url": "/design/human-interface-guidelines/layout"
+                },
+                {
+                  "text": "Windows",
+                  "url": "/design/human-interface-guidelines/windows"
+                },
+                {
+                  "text": "Multitasking on iPad, Mac, and Apple Vision Pro",
+                  "url": "/documentation/uikit/app_and_environment/scenes/supporting_multitasking_on_ipad_mac_and_apple_vision_pro"
+                },
+                {
+                  "text": "Use multitasking on your iPad",
+                  "url": "https://support.apple.com/guide/ipad/multitask-ipad207d48e1/ipados"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ipados-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "within-ipados-section",
+              "width": "600px",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "iPad screenshot or illustration showing multitasking with multiple app windows. The image demonstrates the iPadOS windowed multitasking experience where multiple app windows are displayed simultaneously on screen. Windows appear with macOS-style window controls (traffic light buttons) and can be arranged freely. The illustration shows overlapping windows with drop shadows indicating depth and the active window state. This represents the Stage Manager or similar iPadOS multitasking mode where apps can run in resizable windows rather than full screen.",
+              "subjects": ["iPadOS multitasking", "windowed apps", "multiple windows", "window controls"],
+              "composition": "Multiple overlapping windows arranged on iPad screen showing depth hierarchy",
+              "colorPalette": ["#FFFFFF", "#F5F5F7", "app-specific colors", "shadow gradients"],
+              "mood": "Productive, desktop-like experience",
+              "technicalDetails": "iPadOS Stage Manager or windowed mode. Shows primary and auxiliary windows with system-provided window controls.",
+              "textInImage": [],
+              "contextualRelevance": "Demonstrates iPadOS capability to display multiple resizable windows like macOS"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-ipados-section",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 3,
+              "text": "macOS",
+              "fontWeight": "bold",
+              "fontSize": "medium",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-macos-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-macos-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "On Mac, multitasking is the default experience because people typically run more than one app at a time, switching between windows and tasks as they work. When multiple app windows are open, macOS applies drop shadows that make the windows appear layered on the desktop, and applies other visual effects to help people distinguish different window states; for guidance, see macOS window states.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F",
+              "links": [
+                {
+                  "text": "macOS window states",
+                  "url": "/design/human-interface-guidelines/windows#macos-window-states"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-tvos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-macos-section",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 3,
+              "text": "tvOS",
+              "fontWeight": "bold",
+              "fontSize": "medium",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-tvos-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-tvos-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "On Apple TV, people can play or browse content while also playing movies or TV shows in Picture in Picture (where supported).",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-tvos-section",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 3,
+              "text": "visionOS",
+              "fontWeight": "bold",
+              "fontSize": "medium",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-description-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-visionos-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "On Apple Vision Pro, people can run multiple apps at the same time in the Shared Space, viewing and switching between windows and volumes throughout the space.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-description-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-visionos-description-1",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Only one window is active at a time in the Shared Space. When people look from one window to another, the window they're currently looking at becomes active while the previous window becomes more translucent and appears to recede along the z-axis. Closing an app window in the Shared Space transitions the app to the background without quitting it.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-note",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-visionos-description-2",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "annotationType": "note",
+              "noteStyle": "info-box",
+              "label": "Note",
+              "text": "When an app is the Now Playing app, closing its window automatically pauses audio playback; if people want to resume playback, they can do so in Control Center without opening the window.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F",
+              "backgroundColor": "#F5F5F7"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-best-practice-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-visionos-note",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Avoid interfering with the system-provided multitasking behavior. When people look from one window to another, visionOS applies a feathered mask to the window they look away from to clarify its changed state. To avoid interfering with this visual feedback, don't change the appearance of a window's edges.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F",
+              "formatting": {
+                "boldSections": ["Avoid interfering with the system-provided multitasking behavior."]
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-video",
+            "elementType": "other",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "within-visionos-section",
+              "width": "400px",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "mediaType": "video",
+              "description": "Embedded video player with Play button showing visionOS multitasking demonstration. The video thumbnail or player shows the visionOS spatial computing interface with multiple windows floating in 3D space. A circular play button icon is visible indicating the video can be played.",
+              "playButton": true,
+              "controlsVisible": true,
+              "contextualRelevance": "Demonstrates visionOS window behavior and multitasking visually"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-best-practice-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-visionos-video",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Don't pause a window's video playback when people look away from it. In visionOS, as in macOS, people expect the playback they start in one window to continue while they view or perform a task in another window.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F",
+              "formatting": {
+                "boldSections": ["Don't pause a window's video playback when people look away from it."]
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-visionos-best-practice-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-visionos-best-practice-2",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Be prepared for situations where your audio can duck. Unless an app is currently the Now Playing app, its audio can duck when people look away from it to another app.",
+              "fontWeight": "normal",
+              "fontSize": "body",
+              "color": "#1D1D1F",
+              "formatting": {
+                "boldSections": ["Be prepared for situations where your audio can duck."]
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-platform-considerations",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Resources",
+              "fontWeight": "bold",
+              "fontSize": "large",
+              "color": "#1D1D1F",
+              "id": "resources"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-related-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-resources-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 3,
+              "text": "Related",
+              "fontWeight": "bold",
+              "fontSize": "medium",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-related-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-resources-related-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Layout",
+                  "url": "/design/human-interface-guidelines/layout",
+                  "type": "link"
+                },
+                {
+                  "text": "Windows",
+                  "url": "/design/human-interface-guidelines/windows",
+                  "type": "link"
+                },
+                {
+                  "text": "Playing video",
+                  "url": "/design/human-interface-guidelines/playing-video",
+                  "type": "link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-developer-documentation-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-related-links",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 3,
+              "text": "Developer documentation",
+              "fontWeight": "bold",
+              "fontSize": "medium",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-developer-doc-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-developer-documentation-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Responding to the launch of your app — UIKit",
+                  "url": "/documentation/uikit/app_and_environment/responding_to_the_launch_of_your_app",
+                  "type": "link"
+                },
+                {
+                  "text": "Multitasking on iPad, Mac, and Apple Vision Pro — UIKit",
+                  "url": "/documentation/uikit/app_and_environment/scenes/supporting_multitasking_on_ipad_mac_and_apple_vision_pro",
+                  "type": "link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-videos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-developer-doc-links",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 3,
+              "text": "Videos",
+              "fontWeight": "bold",
+              "fontSize": "medium",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-video-card-1",
+            "elementType": "other",
+            "boundingBox": {
+              "x": "main-content-area-left",
+              "y": "below-videos-heading",
+              "width": "280px",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "cardType": "video-thumbnail",
+              "title": "Elevate the design of your iPad app",
+              "thumbnailDescription": "Video thumbnail showing iPad app design content - likely shows iPad screen with app interface demonstrating design principles",
+              "url": "/videos/play/wwdc/elevate-the-design-of-your-ipad-app/",
+              "source": "WWDC"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-video-card-2",
+            "elementType": "other",
+            "boundingBox": {
+              "x": "main-content-area-right",
+              "y": "aligned-with-video-card-1",
+              "width": "280px",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "cardType": "video-thumbnail",
+              "title": "Make your UIKit app more flexible",
+              "thumbnailDescription": "Video thumbnail showing UIKit flexibility content - likely shows code or interface demonstrating adaptive layouts",
+              "url": "/videos/play/wwdc/make-your-uikit-app-more-flexible/",
+              "source": "WWDC"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-changelog-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-videos-section",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 2,
+              "text": "Change log",
+              "fontWeight": "bold",
+              "fontSize": "large",
+              "color": "#1D1D1F",
+              "id": "change-log"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-changelog-heading-2",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-changelog-heading",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "headingLevel": 3,
+              "text": "Date Changes",
+              "fontWeight": "bold",
+              "fontSize": "medium",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-changelog-table",
+            "elementType": "table",
+            "boundingBox": {
+              "x": "main-content-area",
+              "y": "below-changelog-heading-2",
+              "width": "auto",
+              "height": "auto"
+            },
+            "zIndex": 10,
+            "content": {
+              "tableTitle": "Date Changes",
+              "columnCount": 2,
+              "rowCount": 3,
+              "headers": ["Date", "Changes"],
+              "rows": [
+                {
+                  "rowIndex": 0,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "June 9, 2025",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {"bold": false, "alignment": "left"}
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Reorganized guidance in platform considerations, and added guidance for multitasking with multiple windows in iPadOS.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {"bold": false, "alignment": "left"}
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 1,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "December 5, 2023",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {"bold": false, "alignment": "left"}
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Added artwork for primary and auxiliary windows in iPadOS.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {"bold": false, "alignment": "left"}
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 2,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "June 21, 2023",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {"bold": false, "alignment": "left"}
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Updated to include guidance for visionOS.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {"bold": false, "alignment": "left"}
+                    }
+                  ]
+                }
+              ],
+              "tableSummary": "Document revision history showing three updates: June 2025 reorganization and iPadOS windowing guidance, December 2023 iPadOS artwork additions, and June 2023 visionOS guidance inclusion."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer",
+            "elementType": "other",
+            "boundingBox": {
+              "x": 0,
+              "y": "bottom",
+              "width": "100%",
+              "height": "auto"
+            },
+            "zIndex": 5,
+            "content": {
+              "footerType": "page-footer",
+              "backgroundColor": "#FFFFFF",
+              "elements": [
+                {
+                  "type": "feedback-link",
+                  "text": "To submit feedback on documentation, visit Feedback Assistant.",
+                  "url": "https://feedbackassistant.apple.com"
+                },
+                {
+                  "type": "theme-toggle",
+                  "options": ["Light", "Dark", "Auto"],
+                  "label": "Theme selector"
+                },
+                {
+                  "type": "copyright",
+                  "text": "Copyright © 2025 Apple Inc. All rights reserved."
+                },
+                {
+                  "type": "legal-links",
+                  "items": [
+                    {"text": "Terms of Use", "url": "/terms/"},
+                    {"text": "Privacy Policy", "url": "/privacy/"},
+                    {"text": "Agreements and Guidelines", "url": "/support/terms/"}
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation",
+          "page1-secondary-navigation",
+          "page1-main-content-header",
+          "page1-main-icon",
+          "page1-subtitle",
+          "page1-intro-paragraph",
+          "page1-intro-paragraph-2",
+          "page1-intro-paragraph-3",
+          "page1-best-practices-heading",
+          "page1-best-practice-1",
+          "page1-best-practice-2",
+          "page1-audio-interruption-list",
+          "page1-audio-guidance-link",
+          "page1-best-practice-3",
+          "page1-best-practice-4",
+          "page1-platform-considerations-heading",
+          "page1-watchos-note",
+          "page1-ios-heading",
+          "page1-ios-description",
+          "page1-ios-image-1",
+          "page1-ios-image-1-caption",
+          "page1-ios-image-2",
+          "page1-ios-image-2-caption",
+          "page1-ipados-heading",
+          "page1-ipados-description-1",
+          "page1-ipados-description-2",
+          "page1-ipados-description-3",
+          "page1-ipados-description-4",
+          "page1-ipados-note",
+          "page1-ipados-guidance",
+          "page1-ipados-image",
+          "page1-macos-heading",
+          "page1-macos-description",
+          "page1-tvos-heading",
+          "page1-tvos-description",
+          "page1-visionos-heading",
+          "page1-visionos-description-1",
+          "page1-visionos-description-2",
+          "page1-visionos-note",
+          "page1-visionos-best-practice-1",
+          "page1-visionos-video",
+          "page1-visionos-best-practice-2",
+          "page1-visionos-best-practice-3",
+          "page1-resources-heading",
+          "page1-resources-related-heading",
+          "page1-related-links",
+          "page1-developer-documentation-heading",
+          "page1-developer-doc-links",
+          "page1-videos-heading",
+          "page1-video-card-1",
+          "page1-video-card-2",
+          "page1-changelog-heading",
+          "page1-changelog-heading-2",
+          "page1-changelog-table",
+          "page1-footer"
+        ],
+        "pageSummary": "Apple Developer Documentation page for Multitasking design guidelines. Covers best practices for app switching, audio interruption handling, background task completion, and notification usage. Provides platform-specific guidance for iOS (App Switcher, Picture in Picture), iPadOS (windowed apps, Stage Manager, multiple windows), macOS (native windowing), tvOS (PiP support), and visionOS (Shared Space, window focus behavior). Includes related resources, developer documentation links, WWDC video references, and a change log documenting updates from June 2023 through June 2025."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": true,
+        "location": "right-sidebar",
+        "entries": [
+          {"title": "Best practices", "anchor": "#best-practices"},
+          {"title": "Platform considerations", "anchor": "#platform-considerations"},
+          {"title": "Resources", "anchor": "#resources"},
+          {"title": "Change log", "anchor": "#change-log"}
+        ]
+      },
+      "runningHeaders": "Apple Developer > Design > Guidelines (Navigation breadcrumb)",
+      "runningFooters": "Copyright © 2025 Apple Inc. All rights reserved. | Terms of Use | Privacy Policy | Agreements and Guidelines",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "introduction",
+          "title": "Introduction",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Introduces multitasking as an expected feature across Apple devices, noting rare exceptions like Full Space apps on Vision Pro. Emphasizes the need to save and restore context."
+        },
+        {
+          "sectionId": "best-practices",
+          "title": "Best practices",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Four key guidelines: (1) Pause attention-requiring activities when switching away, (2) Handle audio interruptions gracefully with pause or duck behavior, (3) Complete user-initiated background tasks, (4) Use notifications sparingly for task completion."
+        },
+        {
+          "sectionId": "platform-considerations",
+          "title": "Platform considerations",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "ios",
+              "title": "iOS",
+              "summary": "FaceTime and video Picture in Picture support while using other apps"
+            },
+            {
+              "sectionId": "ipados",
+              "title": "iPadOS",
+              "summary": "Multiple windows, full-screen and windowed modes, resizable windows similar to macOS, window controls for tiling, and Picture in Picture"
+            },
+            {
+              "sectionId": "macos",
+              "title": "macOS",
+              "summary": "Multitasking is default, windows with drop shadows, visual distinction between window states"
+            },
+            {
+              "sectionId": "tvos",
+              "title": "tvOS",
+              "summary": "Picture in Picture for movies/TV while browsing other content"
+            },
+            {
+              "sectionId": "visionos",
+              "title": "visionOS",
+              "summary": "Shared Space with multiple apps, single active window, gaze-based focus with feathered mask transitions, audio ducking behavior, Now Playing considerations"
+            }
+          ],
+          "summary": "Platform-specific multitasking behaviors noting watchOS is not supported. Covers iOS PiP, iPadOS windowing, macOS default multitasking, tvOS PiP, and visionOS Shared Space behavior."
+        },
+        {
+          "sectionId": "resources",
+          "title": "Resources",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "related",
+              "title": "Related",
+              "summary": "Links to Layout, Windows, and Playing video HIG pages"
+            },
+            {
+              "sectionId": "developer-documentation",
+              "title": "Developer documentation",
+              "summary": "Links to UIKit documentation for app launch response and multitasking implementation"
+            },
+            {
+              "sectionId": "videos",
+              "title": "Videos",
+              "summary": "WWDC video links for iPad app design and UIKit flexibility"
+            }
+          ],
+          "summary": "Cross-references to related HIG topics, developer documentation, and WWDC session videos"
+        },
+        {
+          "sectionId": "change-log",
+          "title": "Change log",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Document revision history with three entries spanning June 2023 to June 2025"
+        }
+      ],
+      "documentFlow": "The document begins with a high-level introduction establishing multitasking as an essential app capability, then provides universal best practices applicable across platforms. It then systematically addresses each supported platform (iOS, iPadOS, macOS, tvOS, visionOS) with specific behaviors and recommendations, noting watchOS exclusion. The document concludes with cross-references to related documentation, developer resources, educational videos, and a change log tracking document evolution."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "Multitasking",
+          "definition": "The ability for users to switch quickly between apps and perform tasks in each, including running multiple apps simultaneously on some platforms",
+          "occurrences": 15
+        },
+        {
+          "term": "Picture in Picture (PiP)",
+          "definition": "A feature allowing video content or FaceTime calls to play in a floating overlay window while using another app",
+          "occurrences": 5
+        },
+        {
+          "term": "App Switcher",
+          "definition": "iOS/iPadOS interface displaying all currently open apps as cards for quick switching",
+          "occurrences": 3
+        },
+        {
+          "term": "Full Space",
+          "definition": "visionOS mode where an app takes over the entire view, preventing other apps from running alongside",
+          "occurrences": 2
+        },
+        {
+          "term": "Shared Space",
+          "definition": "visionOS default mode where multiple apps can run simultaneously with windows and volumes throughout the 3D space",
+          "occurrences": 3
+        },
+        {
+          "term": "Windowed apps",
+          "definition": "iPadOS mode where apps run in resizable, movable windows similar to macOS behavior",
+          "occurrences": 4
+        },
+        {
+          "term": "Audio ducking",
+          "definition": "Temporarily lowering audio volume when another audio source needs attention, then restoring original volume",
+          "occurrences": 2
+        },
+        {
+          "term": "Now Playing",
+          "definition": "System designation for the currently active media playback app, which receives special audio handling",
+          "occurrences": 2
+        },
+        {
+          "term": "Window controls",
+          "definition": "System-provided buttons for tiling, full screen, minimize, and close operations on iPadOS windows",
+          "occurrences": 2
+        },
+        {
+          "term": "Feathered mask",
+          "definition": "visionOS visual effect applied to unfocused windows to clarify their inactive state",
+          "occurrences": 1
+        }
+      ],
+      "keyFindings": [
+        "Every app should support multitasking with rare exceptions (some games, Full Space apps on Vision Pro)",
+        "Apps must save and restore user context because multitasking can occur at any time",
+        "Audio interruptions require different handling: indefinite pause for primary audio, temporary duck for short interruptions",
+        "User-initiated background tasks should complete even when app is not in foreground",
+        "Notifications should only be sent for important/time-sensitive task completion, not routine tasks",
+        "watchOS does not support multitasking",
+        "iPadOS supports both full-screen and windowed app modes with macOS-like behavior in windowed mode",
+        "Apps do not control or receive indication of multitasking configurations users choose",
+        "visionOS uses gaze-based focus to determine active window with visual feedback via feathering",
+        "visionOS video playback should continue when users look away, unlike attention-based content"
+      ],
+      "technicalSpecifications": {
+        "supportedPlatforms": ["iOS", "iPadOS", "macOS", "tvOS", "visionOS"],
+        "unsupportedPlatforms": ["watchOS"],
+        "iOSFeatures": ["App Switcher", "Picture in Picture", "FaceTime PiP"],
+        "iPadOSFeatures": ["Multiple windows", "Full-screen mode", "Windowed mode", "Resizable windows", "Window tiling", "Picture in Picture"],
+        "macOSFeatures": ["Default multitasking", "Window layering with drop shadows", "Window states"],
+        "tvOSFeatures": ["Picture in Picture (limited support)"],
+        "visionOSFeatures": ["Shared Space", "Single active window", "Gaze-based focus", "Feathered mask transitions", "Audio ducking", "Z-axis depth for inactive windows"]
+      },
+      "designDecisions": [
+        {
+          "decision": "Pause attention-requiring activities on app switch",
+          "rationale": "Users should not miss content when switching away from games or media apps",
+          "platforms": ["all"]
+        },
+        {
+          "decision": "Indefinite audio pause vs temporary duck",
+          "rationale": "Primary audio (music, podcasts) should pause completely for other primary audio; short system sounds only need temporary volume reduction",
+          "platforms": ["all"]
+        },
+        {
+          "decision": "Complete background tasks before suspending",
+          "rationale": "Users expect initiated tasks like downloads to finish regardless of app foreground state",
+          "platforms": ["all"]
+        },
+        {
+          "decision": "Do not pause video on gaze change in visionOS",
+          "rationale": "Matches macOS behavior where window video continues playing when viewing other windows",
+          "platforms": ["visionOS"]
+        },
+        {
+          "decision": "Do not modify window edge appearance in visionOS",
+          "rationale": "System applies feathered mask for focus feedback; custom edge styling would interfere",
+          "platforms": ["visionOS"]
+        },
+        {
+          "decision": "Apps adapt to screen sizes, not control multitasking",
+          "rationale": "Users choose their preferred multitasking configuration; apps should respond gracefully",
+          "platforms": ["iPadOS"]
+        }
+      ]
+    }
+  },
+  "allTextContent": {
+    "verbatimText": {
+      "mainHeading": "Multitasking",
+      "subtitle": "Multitasking lets people switch quickly from one app to another, performing tasks in each.",
+      "introductionParagraphs": [
+        "People expect to use multitasking on their devices, and they may think something is wrong if your app doesn't allow it. With rare exceptions — such as some games, and Apple Vision Pro apps running in a Full Space — every app needs to work well with multitasking.",
+        "In addition to app switching, multitasking can present different experiences on different devices; see Platform considerations.",
+        "A great multitasking experience helps people accomplish tasks in multiple apps by managing content in a variety of simultaneous contexts. Because you don't know when people will initiate multitasking, your app or game always needs to be prepared to save and restore their context."
+      ],
+      "bestPracticesSection": {
+        "heading": "Best practices",
+        "practices": [
+          {
+            "boldIntro": "Pause activities that require people's attention or active participation when they switch away.",
+            "fullText": "Pause activities that require people's attention or active participation when they switch away. If your app is a game or a media-viewing app, for example, make sure people don't miss anything when they switch to another app. When they switch back, let them continue as if they never left."
+          },
+          {
+            "boldIntro": "Respond smoothly to audio interruptions.",
+            "fullText": "Respond smoothly to audio interruptions. Occasionally, audio from another app or the system itself may interrupt your app's audio. For example, an incoming phone call or a music playlist initiated by Siri might interrupt your app's audio. When situations like these occur, people expect your app to respond in the following ways:",
+            "bulletPoints": [
+              "Pause audio indefinitely for primary audio interruptions, such as playing music, podcasts, or audiobooks.",
+              "Temporarily lower the volume or pause the audio for shorter interruptions, such as GPS directional notifications, and resume the original volume or playback when the interruption ends."
+            ],
+            "followUp": "For guidance, see Playing audio."
+          },
+          {
+            "boldIntro": "Finish user-initiated tasks in the background.",
+            "fullText": "Finish user-initiated tasks in the background. When someone starts a task like downloading assets or processing a video file, they expect it to finish even if they switch away from your app. If your app is in the middle of performing a task that doesn't need additional input, complete it in the background before suspending."
+          },
+          {
+            "boldIntro": "Use notifications sparingly.",
+            "fullText": "Use notifications sparingly. Your app can send notifications when it's suspended or running in the background. If people start an important or time-sensitive task in your app, and then switch away from it, they might appreciate receiving a notification when the task completes so they can switch back to your app and take the next step. In contrast, people don't generally need to know the moment a routine or secondary task completes. In this scenario, avoid sending an unnecessary notification; instead, let people check on the task when they return to your app. For guidance, see Managing notifications."
+          }
+        ]
+      },
+      "platformConsiderationsSection": {
+        "heading": "Platform considerations",
+        "platformNote": "Not supported in watchOS.",
+        "platforms": {
+          "iOS": {
+            "heading": "iOS",
+            "description": "On iPhone, multitasking lets people use FaceTime or watch a video in Picture in Picture while they also use a different app.",
+            "imageCaptions": [
+              "The app switcher displays all currently open apps.",
+              "A current FaceTime call can continue while people use another app."
+            ]
+          },
+          "iPadOS": {
+            "heading": "iPadOS",
+            "paragraphs": [
+              "On iPad, people can view and interact with the windows of several different apps at the same time. An individual app can also support multiple open windows, which lets people view and interact with more than one window in the same app at one time.",
+              "People can use iPad with either full-screen or windowed apps. When full screen, apps occupy the full screen, and people can switch between individual app windows using the app switcher.",
+              "When using windowed apps, app windows are resizable, and people can arrange them to suit their needs with behavior similar to macOS. The system provides window controls for common tiling configurations, entering full screen, minimizing, and closing windows. The system identifies the frontmost window by coloring its window controls and casting a drop shadow on windows behind it. For guidance, see Windows > iPadOS.",
+              "Additionally, videos and FaceTime calls can also play in a Picture in Picture overlay above other content regardless of whether apps are full screen or windowed."
+            ],
+            "note": "Apps don't control multitasking configurations or receive any indication of the ones that people choose.",
+            "guidance": "To help your app respond correctly when people open it while windowed, make sure it adapts gracefully to different screen sizes. For guidance, see Layout and Windows; for developer guidance, see Multitasking on iPad, Mac, and Apple Vision Pro. To learn more about how people use iPad multitasking features, see Use multitasking on your iPad."
+          },
+          "macOS": {
+            "heading": "macOS",
+            "description": "On Mac, multitasking is the default experience because people typically run more than one app at a time, switching between windows and tasks as they work. When multiple app windows are open, macOS applies drop shadows that make the windows appear layered on the desktop, and applies other visual effects to help people distinguish different window states; for guidance, see macOS window states."
+          },
+          "tvOS": {
+            "heading": "tvOS",
+            "description": "On Apple TV, people can play or browse content while also playing movies or TV shows in Picture in Picture (where supported)."
+          },
+          "visionOS": {
+            "heading": "visionOS",
+            "paragraphs": [
+              "On Apple Vision Pro, people can run multiple apps at the same time in the Shared Space, viewing and switching between windows and volumes throughout the space.",
+              "Only one window is active at a time in the Shared Space. When people look from one window to another, the window they're currently looking at becomes active while the previous window becomes more translucent and appears to recede along the z-axis. Closing an app window in the Shared Space transitions the app to the background without quitting it."
+            ],
+            "note": "When an app is the Now Playing app, closing its window automatically pauses audio playback; if people want to resume playback, they can do so in Control Center without opening the window.",
+            "bestPractices": [
+              {
+                "boldIntro": "Avoid interfering with the system-provided multitasking behavior.",
+                "fullText": "Avoid interfering with the system-provided multitasking behavior. When people look from one window to another, visionOS applies a feathered mask to the window they look away from to clarify its changed state. To avoid interfering with this visual feedback, don't change the appearance of a window's edges."
+              },
+              {
+                "boldIntro": "Don't pause a window's video playback when people look away from it.",
+                "fullText": "Don't pause a window's video playback when people look away from it. In visionOS, as in macOS, people expect the playback they start in one window to continue while they view or perform a task in another window."
+              },
+              {
+                "boldIntro": "Be prepared for situations where your audio can duck.",
+                "fullText": "Be prepared for situations where your audio can duck. Unless an app is currently the Now Playing app, its audio can duck when people look away from it to another app."
+              }
+            ]
+          }
+        }
+      },
+      "resourcesSection": {
+        "heading": "Resources",
+        "subheadings": {
+          "related": {
+            "heading": "Related",
+            "links": ["Layout", "Windows", "Playing video"]
+          },
+          "developerDocumentation": {
+            "heading": "Developer documentation",
+            "links": [
+              "Responding to the launch of your app — UIKit",
+              "Multitasking on iPad, Mac, and Apple Vision Pro — UIKit"
+            ]
+          },
+          "videos": {
+            "heading": "Videos",
+            "items": [
+              "Elevate the design of your iPad app",
+              "Make your UIKit app more flexible"
+            ]
+          }
+        }
+      },
+      "changeLogSection": {
+        "heading": "Change log",
+        "subheading": "Date Changes",
+        "entries": [
+          {
+            "date": "June 9, 2025",
+            "changes": "Reorganized guidance in platform considerations, and added guidance for multitasking with multiple windows in iPadOS."
+          },
+          {
+            "date": "December 5, 2023",
+            "changes": "Added artwork for primary and auxiliary windows in iPadOS."
+          },
+          {
+            "date": "June 21, 2023",
+            "changes": "Updated to include guidance for visionOS."
+          }
+        ]
+      },
+      "footerContent": {
+        "feedbackText": "To submit feedback on documentation, visit Feedback Assistant.",
+        "themeToggle": ["Light", "Dark", "Auto"],
+        "copyright": "Copyright © 2025 Apple Inc. All rights reserved.",
+        "legalLinks": ["Terms of Use", "Privacy Policy", "Agreements and Guidelines"]
+      }
+    }
+  },
+  "allLinks": {
+    "internalLinks": [
+      {
+        "anchorText": "Platform considerations",
+        "url": "#platform-considerations",
+        "context": "Introduction paragraph reference"
+      },
+      {
+        "anchorText": "Playing audio",
+        "url": "/design/human-interface-guidelines/playing-audio",
+        "context": "Audio interruption guidance reference"
+      },
+      {
+        "anchorText": "Managing notifications",
+        "url": "/design/human-interface-guidelines/managing-notifications",
+        "context": "Notification guidance reference"
+      },
+      {
+        "anchorText": "windows",
+        "url": "/design/human-interface-guidelines/windows",
+        "context": "iPadOS multiple windows reference"
+      },
+      {
+        "anchorText": "Windows > iPadOS",
+        "url": "/design/human-interface-guidelines/windows#ipados",
+        "context": "iPadOS window controls guidance"
+      },
+      {
+        "anchorText": "Layout",
+        "url": "/design/human-interface-guidelines/layout",
+        "context": "iPadOS screen adaptation guidance"
+      },
+      {
+        "anchorText": "Windows",
+        "url": "/design/human-interface-guidelines/windows",
+        "context": "iPadOS window guidance"
+      },
+      {
+        "anchorText": "Multitasking on iPad, Mac, and Apple Vision Pro",
+        "url": "/documentation/uikit/app_and_environment/scenes/supporting_multitasking_on_ipad_mac_and_apple_vision_pro",
+        "context": "Developer guidance for iPadOS"
+      },
+      {
+        "anchorText": "macOS window states",
+        "url": "/design/human-interface-guidelines/windows#macos-window-states",
+        "context": "macOS window state guidance"
+      },
+      {
+        "anchorText": "Layout",
+        "url": "/design/human-interface-guidelines/layout",
+        "context": "Related resources"
+      },
+      {
+        "anchorText": "Windows",
+        "url": "/design/human-interface-guidelines/windows",
+        "context": "Related resources"
+      },
+      {
+        "anchorText": "Playing video",
+        "url": "/design/human-interface-guidelines/playing-video",
+        "context": "Related resources"
+      },
+      {
+        "anchorText": "Responding to the launch of your app — UIKit",
+        "url": "/documentation/uikit/app_and_environment/responding_to_the_launch_of_your_app",
+        "context": "Developer documentation"
+      },
+      {
+        "anchorText": "Multitasking on iPad, Mac, and Apple Vision Pro — UIKit",
+        "url": "/documentation/uikit/app_and_environment/scenes/supporting_multitasking_on_ipad_mac_and_apple_vision_pro",
+        "context": "Developer documentation"
+      }
+    ],
+    "externalLinks": [
+      {
+        "anchorText": "Use multitasking on your iPad",
+        "url": "https://support.apple.com/guide/ipad/multitask-ipad207d48e1/ipados",
+        "context": "Apple Support article for iPadOS multitasking"
+      },
+      {
+        "anchorText": "Feedback Assistant",
+        "url": "https://feedbackassistant.apple.com",
+        "context": "Footer documentation feedback link"
+      }
+    ],
+    "navigationLinks": {
+      "globalHeader": [
+        {"text": "News", "url": "/news/"},
+        {"text": "Discover", "url": "/discover/"},
+        {"text": "Design", "url": "/design/"},
+        {"text": "Develop", "url": "/develop/"},
+        {"text": "Distribute", "url": "/distribute/"},
+        {"text": "Support", "url": "/support/"},
+        {"text": "Account", "url": "/account/"}
+      ],
+      "sectionHeader": [
+        {"text": "Design Overview", "url": "/design/"},
+        {"text": "What's New", "url": "/design/whats-new/"},
+        {"text": "Get Started", "url": "/design/get-started/"},
+        {"text": "Guidelines", "url": "/design/human-interface-guidelines/"},
+        {"text": "Resources", "url": "/design/resources/"}
+      ],
+      "pageTableOfContents": [
+        {"text": "Best practices", "url": "#best-practices"},
+        {"text": "Platform considerations", "url": "#platform-considerations"},
+        {"text": "Resources", "url": "#resources"},
+        {"text": "Change log", "url": "#change-log"}
+      ]
+    },
+    "videoLinks": [
+      {
+        "title": "Elevate the design of your iPad app",
+        "url": "/videos/play/wwdc/elevate-the-design-of-your-ipad-app/",
+        "source": "WWDC"
+      },
+      {
+        "title": "Make your UIKit app more flexible",
+        "url": "/videos/play/wwdc/make-your-uikit-app-more-flexible/",
+        "source": "WWDC"
+      }
+    ]
+  },
+  "allImages": [
+    {
+      "imageId": "multitasking-icon",
+      "type": "icon",
+      "location": "Header next to title",
+      "description": "Orange 3D rounded rectangle icon representing the Multitasking pattern. Features a layered, dimensional appearance suggesting overlapping windows or app layers. Uses Apple's standard HIG iconography style with gradients creating depth.",
+      "colors": ["#FF9500", "#FFAA33", "orange-amber gradient"],
+      "approximateSize": "64x64 pixels",
+      "purpose": "Visual identifier for the Multitasking section"
+    },
+    {
+      "imageId": "ios-app-switcher",
+      "type": "screenshot",
+      "location": "iOS Platform section, left image",
+      "description": "iPhone screenshot showing the App Switcher interface. Multiple app cards are displayed in a horizontal carousel with 3D perspective effect. Each card shows a thumbnail of the app's last state with the app icon below. Status bar shows '9:41 Tue Apr 1'. The interface uses Apple's modern visual design with rounded corners, subtle shadows, and layered card presentation. Apps visible include what appear to be multiple running applications arranged in a scrollable horizontal list.",
+      "colors": ["#F5F5F7 (background)", "#FFFFFF (cards)", "various app colors"],
+      "caption": "The app switcher displays all currently open apps.",
+      "purpose": "Demonstrates iOS app switching mechanism"
+    },
+    {
+      "imageId": "ios-pip-facetime",
+      "type": "screenshot",
+      "location": "iOS Platform section, right image",
+      "description": "iPhone screenshot demonstrating Picture in Picture functionality. The main screen shows Apple Maps displaying the San Francisco Bay Area with locations labeled: Los Altos, Antonio Rancho Preserve, San Jose, Stevens Creek County Park, Mountain View, Sunnyvale, Loyola, Cupertino, and Saratoga. A search bar at top reads 'Search Maps'. At the bottom is a 'Featured' section with destination cards showing Mount Fuji with 'Learn More' button, plus category tabs for 'Asia' and 'Africa', and thumbnails for Mount Fuji, Wulingyuan, and Mount Everest. A small floating Picture in Picture window in the corner shows an active FaceTime video call with a person visible. Status bar shows '9:41 Tue Apr 1' with signal indicators '2,002' and '11'. Calendar indicator shows 'Thu 17'.",
+      "colors": ["#3C9B4D (map green)", "#F5E6C8 (terrain)", "#0076FF (blue UI)", "#FFFFFF"],
+      "caption": "A current FaceTime call can continue while people use another app.",
+      "purpose": "Demonstrates Picture in Picture allowing video calls alongside other app usage"
+    },
+    {
+      "imageId": "ipados-multitasking",
+      "type": "illustration",
+      "location": "iPadOS Platform section",
+      "description": "iPad screenshot or illustration showing multitasking with multiple windowed apps. Demonstrates the iPadOS windowed experience where multiple application windows are displayed simultaneously on screen with macOS-like behavior. Windows show traffic light style controls (close, minimize, maximize) and can be freely arranged. Drop shadows indicate window layering and active state. The illustration represents Stage Manager or similar iPadOS windowing mode where apps run in resizable, overlapping windows rather than full screen.",
+      "colors": ["#FFFFFF", "#F5F5F7", "app-specific colors", "shadow gradients"],
+      "caption": null,
+      "purpose": "Demonstrates iPadOS capability for multiple resizable windows"
+    },
+    {
+      "imageId": "visionos-video",
+      "type": "video",
+      "location": "visionOS Platform section",
+      "description": "Embedded video player with circular Play button showing visionOS multitasking demonstration. The thumbnail or video frame shows the visionOS spatial computing environment with multiple app windows floating in 3D space. The video presumably demonstrates how windows behave when users shift gaze between them, including the feathered mask effect and z-axis recession of inactive windows.",
+      "controls": ["Play button (circular)"],
+      "purpose": "Video demonstration of visionOS window focus and multitasking behavior"
+    },
+    {
+      "imageId": "video-thumbnail-ipad-design",
+      "type": "thumbnail",
+      "location": "Videos section, first card",
+      "description": "WWDC video thumbnail for 'Elevate the design of your iPad app'. Shows iPad-related design content, likely featuring iPad screen with app interface demonstrating design principles and best practices for iPad app development.",
+      "title": "Elevate the design of your iPad app",
+      "source": "WWDC"
+    },
+    {
+      "imageId": "video-thumbnail-uikit-flexible",
+      "type": "thumbnail",
+      "location": "Videos section, second card",
+      "description": "WWDC video thumbnail for 'Make your UIKit app more flexible'. Shows UIKit flexibility content, likely featuring code examples or interface demonstrations showing adaptive layouts and flexible UI implementation.",
+      "title": "Make your UIKit app more flexible",
+      "source": "WWDC"
+    }
+  ],
+  "sidebarNavigation": {
+    "leftSidebar": {
+      "title": "Guidelines Navigation",
+      "filterField": {
+        "type": "search",
+        "placeholder": "Filter"
+      },
+      "patternsSection": {
+        "title": "Patterns (implied)",
+        "items": [
+          "Collaboration and sharing",
+          "Drag and drop",
+          "Entering data",
+          "Feedback",
+          "File management",
+          "Going full screen",
+          "Launching",
+          "Live-viewing apps",
+          "Loading",
+          "Managing accounts",
+          "Managing notifications",
+          "Modality",
+          "Multitasking (current/active)",
+          "Offering help",
+          "Onboarding",
+          "Playing audio",
+          "Playing haptics",
+          "Playing video",
+          "Printing",
+          "Ratings and reviews",
+          "Searching",
+          "Settings",
+          "Undo and redo",
+          "Workouts"
+        ]
+      },
+      "otherSections": [
+        "Components",
+        "Inputs",
+        "Technologies"
+      ]
+    },
+    "rightSidebar": {
+      "title": "On this page (Table of Contents)",
+      "items": [
+        "Best practices",
+        "Platform considerations",
+        "Resources",
+        "Change log"
+      ]
+    }
+  }
+}

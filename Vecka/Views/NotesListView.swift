@@ -3,6 +3,7 @@
 //  Vecka
 //
 //  Library view: Notes grouped by month, with pinned items.
+//  Design: Jōhō Dezain (Japanese Information Design) - YELLOW/AMBER zone
 //
 
 import SwiftUI
@@ -17,54 +18,77 @@ struct NotesListView: View {
     @State private var showingNewNoteFlow = false
 
     var body: some View {
-        List {
-            if !pinnedUpcomingNotes.isEmpty {
-                Section(Localization.pinnedHeader) {
-                    ForEach(pinnedUpcomingNotes) { note in
-                        NavigationLink {
-                            DailyNotesView(selectedDate: note.day, isModal: false)
-                        } label: {
-                            PinnedNoteRow(note: note, daysRemaining: daysUntil(note.day))
-                        }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            Button {
-                                unpin(note)
-                            } label: {
-                                Label("Unpin", systemImage: "pin.slash")
-                            }
-                            .tint(.gray)
+        ScrollView {
+            VStack(spacing: JohoDimensions.spacingLG) {
+                // Page header with actions
+                HStack(alignment: .top) {
+                    JohoPageHeader(
+                        title: "Your Notes",
+                        badge: "NOTES",
+                        subtitle: "\(filteredNotes.count) total"
+                    )
 
-                            Button(role: .destructive) {
-                                delete(note)
-                            } label: {
-                                Label(Localization.delete, systemImage: "trash")
-                            }
-                        }
+                    Spacer()
+
+                    // Add note button
+                    Button {
+                        showingNewNoteFlow = true
+                    } label: {
+                        JohoActionButton(icon: "plus")
                     }
+                    .accessibilityLabel(Localization.addNote)
                 }
-            }
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.top, JohoDimensions.spacingSM)
+                .safeAreaPadding(.top)
 
-            if monthSections.isEmpty {
-                ContentUnavailableView(
-                    trimmedSearch.isEmpty ? "No Notes" : "No Results",
-                    systemImage: "note.text",
-                    description: Text(trimmedSearch.isEmpty
-                        ? "Add notes from the calendar using the plus button."
-                        : "Try a different search term.")
+                // Search field
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+
+                    TextField("Search notes...", text: $searchText)
+                        .font(JohoFont.body)
+                        .foregroundStyle(JohoColors.black)
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+                .background(JohoColors.white)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
                 )
-                .listRowBackground(Color.clear)
-            } else {
-                ForEach(monthSections) { section in
-                    Section(section.title) {
-                        ForEach(section.days) { dayGroup in
+                .padding(.horizontal, JohoDimensions.spacingLG)
+
+                // Pinned section
+                if !pinnedUpcomingNotes.isEmpty {
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
+                        HStack {
+                            JohoPill(text: Localization.pinnedHeader, style: .whiteOnBlack, size: .medium)
+                            Spacer()
+                        }
+                        .padding(.horizontal, JohoDimensions.spacingLG)
+
+                        ForEach(pinnedUpcomingNotes) { note in
                             NavigationLink {
-                                DailyNotesView(selectedDate: dayGroup.day, isModal: false)
+                                DailyNotesView(selectedDate: note.day, isModal: false)
                             } label: {
-                                NotesDayRow(dayGroup: dayGroup)
+                                PinnedNoteRow(note: note, daysRemaining: daysUntil(note.day))
                             }
-                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            .buttonStyle(PlainButtonStyle())
+                            .padding(.horizontal, JohoDimensions.spacingLG)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                Button {
+                                    unpin(note)
+                                } label: {
+                                    Label("Unpin", systemImage: "pin.slash")
+                                }
+                                .tint(.gray)
+
                                 Button(role: .destructive) {
-                                    deleteDay(dayGroup.day)
+                                    delete(note)
                                 } label: {
                                     Label(Localization.delete, systemImage: "trash")
                                 }
@@ -72,21 +96,47 @@ struct NotesListView: View {
                         }
                     }
                 }
-            }
-        }
-        .standardListStyle()
-        .standardNavigation(title: "Notes")
-        .searchable(text: $searchText, prompt: Text("Search Notes"))
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showingNewNoteFlow = true
-                } label: {
-                    Image(systemName: "plus")
+
+                // Empty state or month sections
+                if monthSections.isEmpty {
+                    JohoEmptyState(
+                        title: trimmedSearch.isEmpty ? "No Notes" : "No Results",
+                        message: trimmedSearch.isEmpty
+                            ? "Add notes from the calendar using the plus button."
+                            : "Try a different search term.",
+                        icon: "note.text",
+                        zone: .notes
+                    )
+                    .padding(.top, JohoDimensions.spacingXL)
+                } else {
+                    ForEach(monthSections) { section in
+                        VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
+                            // Section header
+                            HStack {
+                                JohoPill(text: section.title, style: .whiteOnBlack, size: .medium)
+                                Spacer()
+                            }
+                            .padding(.horizontal, JohoDimensions.spacingLG)
+
+                            // Day groups
+                            ForEach(section.days) { dayGroup in
+                                NavigationLink {
+                                    DailyNotesView(selectedDate: dayGroup.day, isModal: false)
+                                } label: {
+                                    NotesDayRow(dayGroup: dayGroup)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                .padding(.horizontal, JohoDimensions.spacingLG)
+                            }
+                        }
+                    }
                 }
-                .accessibilityLabel(Localization.addNote)
             }
+            .padding(.bottom, JohoDimensions.spacingXL)
         }
+        .johoBackground()
+        .navigationBarHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
         .sheet(isPresented: $showingNewNoteFlow) {
             // Direct note creation for today - skips date picker step
             NavigationStack {
@@ -201,37 +251,53 @@ private struct NotesDayRow: View {
     let dayGroup: NotesDayGroup
 
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: dayGroup.hasPinned ? "pin.fill" : "note.text")
-                .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(dayGroup.hasPinned ? AppColors.accentBlue : .secondary)
-                .frame(width: 28, alignment: .center)
+        HStack(spacing: JohoDimensions.spacingMD) {
+            // Icon in yellow squircle
+            JohoIconBadge(
+                icon: dayGroup.hasPinned ? "pin.fill" : "note.text",
+                zone: .notes,
+                size: 40
+            )
 
+            // Text content
             VStack(alignment: .leading, spacing: 4) {
                 Text(dayGroup.day.formatted(date: .abbreviated, time: .omitted))
-                    .font(.body.weight(.medium))
-                    .foregroundStyle(.primary)
+                    .font(JohoFont.body)
+                    .foregroundStyle(JohoColors.black)
 
                 if let preview = dayGroup.preview, !preview.isEmpty {
                     Text(preview)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
                         .lineLimit(2)
                 }
             }
 
             Spacer(minLength: 0)
 
-            if dayGroup.count > 1 {
-                Text("\(dayGroup.count)")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, Spacing.small)
-                    .padding(.vertical, Spacing.extraSmall)
-                    .background(.secondary.opacity(0.10), in: Capsule())
+            // Count badge + pinned pill
+            HStack(spacing: JohoDimensions.spacingSM) {
+                if dayGroup.hasPinned {
+                    JohoPill(text: "PINNED", style: .whiteOnBlack, size: .small)
+                }
+
+                if dayGroup.count > 1 {
+                    JohoPill(text: "\(dayGroup.count)", style: .colored(SectionZone.notes.background), size: .small)
+                }
             }
+
+            // Chevron
+            Image(systemName: "chevron.right")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(JohoColors.black)
         }
-        .padding(.vertical, Spacing.extraSmall)
+        .padding(JohoDimensions.spacingMD)
+        .background(JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+        )
     }
 }
 
@@ -244,34 +310,66 @@ private struct PinnedNoteRow: View {
         let dateText = scheduleLine(for: note)
         let badgeText = countdownBadgeText(days: daysRemaining)
 
-        HStack(spacing: 12) {
-            Image(systemName: note.symbolName ?? NoteSymbolCatalog.defaultSymbol)
-                .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(AppColors.accentBlue)
-                .frame(width: 28, alignment: .center)
+        HStack(spacing: JohoDimensions.spacingMD) {
+            // Note symbol in yellow squircle
+            JohoIconBadge(
+                icon: note.symbolName ?? NoteSymbolCatalog.defaultSymbol,
+                zone: .notes,
+                size: 40
+            )
 
+            // Text content
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.body.weight(.medium))
-                    .foregroundStyle(.primary)
+                    .font(JohoFont.body)
+                    .foregroundStyle(JohoColors.black)
                     .lineLimit(1)
 
-                Text(dateText)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                HStack(spacing: JohoDimensions.spacingXS) {
+                    Text(dateText)
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                    if let duration = note.duration, duration > 0 {
+                        Text("•")
+                            .font(JohoFont.bodySmall)
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                        Text(formatDuration(duration))
+                            .font(JohoFont.bodySmall)
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                    }
+                }
             }
 
             Spacer(minLength: 0)
 
-            Text(badgeText)
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, Spacing.small)
-                .padding(.vertical, Spacing.small)
-                .background(.secondary.opacity(0.10), in: Capsule())
-                .monospacedDigit()
+            // Countdown badge
+            JohoPill(text: badgeText, style: .colored(SectionZone.notes.background), size: .small)
+
+            // Chevron
+            Image(systemName: "chevron.right")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(JohoColors.black)
         }
-        .padding(.vertical, Spacing.extraSmall)
+        .padding(JohoDimensions.spacingMD)
+        .background(JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+        )
+    }
+
+    private func formatDuration(_ seconds: TimeInterval) -> String {
+        let hours = Int(seconds) / 3600
+        let minutes = (Int(seconds) % 3600) / 60
+        if hours > 0 && minutes > 0 {
+            return "\(hours)h \(minutes)m"
+        } else if hours > 0 {
+            return "\(hours)h"
+        } else {
+            return "\(minutes)m"
+        }
     }
 
     private func titleLine(from raw: String) -> String {

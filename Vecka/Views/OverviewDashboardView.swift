@@ -3,6 +3,7 @@
 //  Vecka
 //
 //  Comprehensive overview dashboard showing summary of all user data
+//  Design: Japanese packaging style with zone-based color coding
 //
 
 import SwiftUI
@@ -20,6 +21,11 @@ struct OverviewDashboardView: View {
     @State private var showPDFExport = false
 
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
+
+    // Current week number
+    private var currentWeekNumber: Int {
+        Calendar.iso8601.component(.weekOfYear, from: Date())
+    }
 
     // Computed properties
     private var upcomingTrips: [TravelTrip] {
@@ -54,9 +60,27 @@ struct OverviewDashboardView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: isPad ? 24 : 20) {
-                // Header
-                header
+            VStack(spacing: JohoDimensions.spacingLG) {
+                // Page Header with Share Button
+                HStack(alignment: .top) {
+                    JohoPageHeader(
+                        title: "Week \(currentWeekNumber)",
+                        badge: "OVERVIEW",
+                        subtitle: Date().formatted(date: .complete, time: .omitted)
+                    )
+
+                    Spacer()
+
+                    // Share button
+                    Button {
+                        showPDFExport = true
+                    } label: {
+                        JohoActionButton(icon: "square.and.arrow.up")
+                    }
+                }
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.top, JohoDimensions.spacingSM)
+                .safeAreaPadding(.top)
 
                 // Active Trips (if any)
                 if !activeTrips.isEmpty {
@@ -95,85 +119,59 @@ struct OverviewDashboardView: View {
                     emptyState
                 }
             }
-            .padding(isPad ? 24 : 16)
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.bottom, JohoDimensions.spacingLG)
         }
-        .slateBackground()
-        .standardNavigation(title: "Overview")
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showPDFExport = true
-                } label: {
-                    Image(systemName: "square.and.arrow.up")
-                }
-            }
-        }
+        .johoBackground()
         .sheet(isPresented: $showPDFExport) {
-            SimplePDFExportView(exportContext: .summary)
-        }
-    }
-
-    // MARK: - Header
-
-    private var header: some View {
-        VStack(spacing: 12) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(Date().formatted(date: .complete, time: .omitted))
-                        .font(.title3.bold())
-                        .foregroundStyle(.primary)
-
-                    Text("Week \(Calendar.iso8601.component(.weekOfYear, from: Date()))")
-                        .font(.subheadline)
-                        .foregroundStyle(AppColors.accentBlue)
-                }
-
-                Spacer()
-            }
-            .padding()
-            .glassCard(cornerRadius: 16, material: .ultraThinMaterial)
+            OverviewPDFExportSheet(
+                weekNumber: currentWeekNumber,
+                activeTrips: activeTrips,
+                upcomingTrips: upcomingTrips,
+                recentExpenses: recentExpenses,
+                todayNotes: todayNotes,
+                activeCountdowns: activeCountdowns,
+                todayHolidays: todayHolidays
+            )
         }
     }
 
     // MARK: - Active Trips
 
     private var activeTripCards: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Active Trips")
-                .font(.headline)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, Spacing.extraSmall)
-
+        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
             ForEach(activeTrips) { trip in
                 NavigationLink(destination: TripDetailView(trip: trip)) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "airplane.departure")
-                            .font(.title2)
-                            .foregroundStyle(trip.tripType.color)
-                            .frame(width: 44, height: 44)
-                            .background(trip.tripType.color.opacity(0.1))
-                            .cornerRadius(12)
+                    JohoSectionBox(title: "Active Trip", zone: .trips, icon: "airplane.departure") {
+                        VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
+                            // Trip name and destination
+                            VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
+                                Text(trip.tripName)
+                                    .font(JohoFont.headline)
+                                    .foregroundStyle(JohoColors.black)
 
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(trip.tripName)
-                                .font(.body.weight(.semibold))
-                                .foregroundStyle(.primary)
+                                Text(trip.destination)
+                                    .font(JohoFont.bodySmall)
+                                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                            }
 
-                            Text(trip.destination)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+                            // Progress
+                            HStack {
+                                JohoPill(
+                                    text: "Day \(daysIntoTrip(trip)) of \(trip.duration)",
+                                    style: .whiteOnBlack,
+                                    size: .medium
+                                )
 
-                        Spacer()
+                                Spacer()
+                            }
 
-                        VStack(alignment: .trailing, spacing: 2) {
-                            Text("Day \(daysIntoTrip(trip))/\(trip.duration)")
-                                .font(.caption.weight(.medium))
-                                .foregroundStyle(AppColors.accentBlue)
+                            // Date range
+                            Text("\(trip.startDate.formatted(date: .abbreviated, time: .omitted)) - \(trip.endDate.formatted(date: .abbreviated, time: .omitted))")
+                                .font(JohoFont.bodySmall)
+                                .foregroundStyle(JohoColors.black.opacity(0.6))
                         }
                     }
-                    .padding()
-                    .glassCard(cornerRadius: 16, material: .ultraThinMaterial)
                 }
                 .buttonStyle(.plain)
             }
@@ -183,58 +181,47 @@ struct OverviewDashboardView: View {
     // MARK: - Upcoming Trips
 
     private var upcomingTripsCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Upcoming Trips")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
+        JohoSectionBox(title: "Upcoming Trips", zone: .trips, icon: "airplane") {
+            VStack(spacing: JohoDimensions.spacingSM) {
+                ForEach(upcomingTrips) { trip in
+                    NavigationLink(destination: TripDetailView(trip: trip)) {
+                        JohoCard(cornerRadius: JohoDimensions.radiusSmall, borderWidth: JohoDimensions.borderThin) {
+                            HStack(spacing: JohoDimensions.spacingMD) {
+                                // Icon
+                                JohoIconBadge(icon: "airplane.departure", zone: .trips, size: 36)
 
-                Spacer()
+                                // Content
+                                VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
+                                    Text(trip.tripName)
+                                        .font(JohoFont.body)
+                                        .foregroundStyle(JohoColors.black)
 
-                NavigationLink(destination: TripListView()) {
-                    Text("See All")
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(AppColors.accentBlue)
-                }
-            }
-            .padding(.horizontal, Spacing.extraSmall)
+                                    Text(trip.destination)
+                                        .font(JohoFont.bodySmall)
+                                        .foregroundStyle(JohoColors.black.opacity(0.6))
 
-            ForEach(upcomingTrips) { trip in
-                NavigationLink(destination: TripDetailView(trip: trip)) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "airplane.departure")
-                            .font(.title3)
-                            .foregroundStyle(trip.tripType.color)
-                            .frame(width: 40, height: 40)
-                            .background(trip.tripType.color.opacity(0.1))
-                            .cornerRadius(10)
+                                    Text(trip.startDate.formatted(date: .abbreviated, time: .omitted))
+                                        .font(JohoFont.bodySmall)
+                                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                                }
 
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(trip.tripName)
-                                .font(.body.weight(.medium))
-                                .foregroundStyle(.primary)
+                                Spacer()
 
-                            Text(trip.destination)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-
-                        Spacer()
-
-                        VStack(alignment: .trailing, spacing: 2) {
-                            Text(daysUntil(trip.startDate))
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-
-                            Text(trip.startDate.formatted(date: .abbreviated, time: .omitted))
-                                .font(.caption.weight(.medium))
-                                .foregroundStyle(.primary)
+                                // Days until
+                                VStack(alignment: .trailing, spacing: 2) {
+                                    Text(daysUntil(trip.startDate))
+                                        .font(JohoFont.monoMedium)
+                                        .foregroundStyle(JohoColors.black)
+                                }
+                            }
                         }
                     }
-                    .padding()
-                    .glassCard(cornerRadius: 12, material: .ultraThinMaterial)
+                    .buttonStyle(.plain)
+
+                    if trip.id != upcomingTrips.last?.id {
+                        JohoDivider()
+                    }
                 }
-                .buttonStyle(.plain)
             }
         }
     }
@@ -242,193 +229,170 @@ struct OverviewDashboardView: View {
     // MARK: - Recent Expenses
 
     private var recentExpensesCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Recent Expenses")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-
-                Spacer()
-
-                NavigationLink(destination: ExpenseListView()) {
-                    Text("See All")
-                        .font(.caption.weight(.medium))
-                        .foregroundStyle(AppColors.accentBlue)
-                }
-            }
-            .padding(.horizontal, Spacing.extraSmall)
-
-            VStack(spacing: 8) {
+        JohoSectionBox(title: "Recent Expenses", zone: .expenses, icon: "creditcard") {
+            VStack(spacing: JohoDimensions.spacingSM) {
                 ForEach(recentExpenses) { expense in
-                    HStack(spacing: 12) {
-                        if let category = expense.category {
-                            Image(systemName: category.iconName)
-                                .font(.body)
-                                .foregroundStyle(category.color)
-                                .frame(width: 32, height: 32)
-                                .background(category.color.opacity(0.1))
-                                .cornerRadius(8)
-                        } else {
-                            Image(systemName: "creditcard")
-                                .font(.body)
-                                .foregroundStyle(.green)
-                                .frame(width: 32, height: 32)
-                                .background(Color.green.opacity(0.1))
-                                .cornerRadius(8)
+                    JohoCard(cornerRadius: JohoDimensions.radiusSmall, borderWidth: JohoDimensions.borderThin) {
+                        HStack(spacing: JohoDimensions.spacingMD) {
+                            // Icon
+                            if let category = expense.category {
+                                JohoIconBadge(icon: category.iconName, zone: .expenses, size: 36)
+                            } else {
+                                JohoIconBadge(icon: "creditcard", zone: .expenses, size: 36)
+                            }
+
+                            // Content
+                            VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
+                                Text(expense.itemDescription)
+                                    .font(JohoFont.body)
+                                    .foregroundStyle(JohoColors.black)
+                                    .lineLimit(1)
+
+                                Text(expense.date.formatted(date: .abbreviated, time: .omitted))
+                                    .font(JohoFont.bodySmall)
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                            }
+
+                            Spacer()
+
+                            // Amount
+                            Text(expense.amount, format: .currency(code: expense.currency))
+                                .font(JohoFont.monoMedium)
+                                .foregroundStyle(JohoColors.black)
                         }
+                    }
 
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(expense.itemDescription)
-                                .font(.caption.weight(.medium))
-                                .foregroundStyle(.primary)
-                                .lineLimit(1)
-
-                            Text(expense.date.formatted(date: .abbreviated, time: .omitted))
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                        }
-
-                        Spacer()
-
-                        Text(expense.amount, format: .currency(code: expense.currency))
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.primary)
+                    if expense.id != recentExpenses.last?.id {
+                        JohoDivider()
                     }
                 }
             }
-            .padding()
-            .glassCard(cornerRadius: 12, material: .ultraThinMaterial)
         }
     }
 
     // MARK: - Today's Notes
 
     private var todayNotesCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Today's Notes")
-                .font(.headline)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, Spacing.extraSmall)
-
-            VStack(spacing: 8) {
+        JohoSectionBox(title: "Today's Notes", zone: .notes, icon: "note.text") {
+            VStack(spacing: JohoDimensions.spacingSM) {
                 ForEach(todayNotes, id: \.date) { note in
-                    HStack(spacing: 8) {
-                        if let symbolName = note.symbolName {
-                            Image(systemName: symbolName)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
+                    JohoCard(cornerRadius: JohoDimensions.radiusSmall, borderWidth: JohoDimensions.borderThin) {
+                        HStack(spacing: JohoDimensions.spacingMD) {
+                            // Icon
+                            if let symbolName = note.symbolName {
+                                JohoIconBadge(icon: symbolName, zone: .notes, size: 36)
+                            } else {
+                                JohoIconBadge(icon: "note.text", zone: .notes, size: 36)
+                            }
 
-                        Text(note.content)
-                            .font(.caption)
-                            .foregroundStyle(.primary)
-                            .lineLimit(3)
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                            // Content
+                            Text(note.content)
+                                .font(JohoFont.body)
+                                .foregroundStyle(JohoColors.black)
+                                .lineLimit(3)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
                     }
-                    .padding(Spacing.small)
-                    .background(Color.yellow.opacity(0.1))
-                    .cornerRadius(10)
+
+                    if note.date != todayNotes.last?.date {
+                        JohoDivider()
+                    }
                 }
             }
-            .padding()
-            .glassCard(cornerRadius: 12, material: .ultraThinMaterial)
         }
     }
 
     // MARK: - Countdowns
 
     private var countdownsCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Upcoming Events")
-                .font(.headline)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, Spacing.extraSmall)
-
-            VStack(spacing: 8) {
+        JohoSectionBox(title: "Active Countdowns", zone: .calendar, icon: "timer") {
+            VStack(spacing: JohoDimensions.spacingSM) {
                 ForEach(activeCountdowns, id: \.id) { countdown in
-                    HStack(spacing: 12) {
-                        Image(systemName: countdown.icon)
-                            .font(.body)
-                            .foregroundStyle(AppColors.accentBlue)
-                            .frame(width: 32, height: 32)
-                            .background(AppColors.accentBlue.opacity(0.1))
-                            .cornerRadius(8)
+                    JohoCard(cornerRadius: JohoDimensions.radiusSmall, borderWidth: JohoDimensions.borderThin) {
+                        HStack(spacing: JohoDimensions.spacingMD) {
+                            // Icon
+                            JohoIconBadge(icon: countdown.icon, zone: .calendar, size: 36)
 
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(countdown.title)
-                                .font(.caption.weight(.medium))
-                                .foregroundStyle(.primary)
+                            // Content
+                            VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
+                                Text(countdown.title)
+                                    .font(JohoFont.body)
+                                    .foregroundStyle(JohoColors.black)
 
-                            Text(countdown.targetDate.formatted(date: .abbreviated, time: .omitted))
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
+                                Text(countdown.targetDate.formatted(date: .abbreviated, time: .omitted))
+                                    .font(JohoFont.bodySmall)
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                            }
+
+                            Spacer()
+
+                            // Days until
+                            Text(daysUntil(countdown.targetDate))
+                                .font(JohoFont.monoMedium)
+                                .foregroundStyle(JohoColors.black)
                         }
+                    }
 
-                        Spacer()
-
-                        Text(daysUntil(countdown.targetDate))
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(AppColors.accentBlue)
+                    if countdown.id != activeCountdowns.last?.id {
+                        JohoDivider()
                     }
                 }
             }
-            .padding()
-            .glassCard(cornerRadius: 12, material: .ultraThinMaterial)
         }
     }
 
     // MARK: - Holidays
 
     private var holidaysCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Today's Holidays")
-                .font(.headline)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, Spacing.extraSmall)
-
-            VStack(spacing: 8) {
+        JohoSectionBox(title: "Today's Holidays", zone: .holidays, icon: "star.fill") {
+            VStack(spacing: JohoDimensions.spacingSM) {
                 ForEach(todayHolidays, id: \.id) { holiday in
-                    HStack(spacing: 12) {
-                        Image(systemName: "flag.fill")
-                            .font(.body)
-                            .foregroundStyle(holiday.isRedDay ? .red : .blue)
-                            .frame(width: 32, height: 32)
-                            .background((holiday.isRedDay ? Color.red : Color.blue).opacity(0.1))
-                            .cornerRadius(8)
+                    JohoCard(cornerRadius: JohoDimensions.radiusSmall, borderWidth: JohoDimensions.borderThin) {
+                        HStack(spacing: JohoDimensions.spacingMD) {
+                            // Icon
+                            JohoIconBadge(
+                                icon: holiday.isRedDay ? "flag.fill" : "flag",
+                                zone: .holidays,
+                                size: 36
+                            )
 
-                        Text(holiday.displayTitle)
-                            .font(.caption.weight(.medium))
-                            .foregroundStyle(.primary)
+                            // Content
+                            VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
+                                Text(holiday.displayTitle)
+                                    .font(JohoFont.body)
+                                    .foregroundStyle(JohoColors.black)
 
-                        Spacer()
+                                Text(holiday.isRedDay ? "Public Holiday" : "Observance")
+                                    .font(JohoFont.bodySmall)
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                            }
+
+                            Spacer()
+
+                            // Badge for red days
+                            if holiday.isRedDay {
+                                JohoPill(text: "RED DAY", style: .colored(JohoColors.pink), size: .small)
+                            }
+                        }
+                    }
+
+                    if holiday.id != todayHolidays.last?.id {
+                        JohoDivider()
                     }
                 }
             }
-            .padding()
-            .glassCard(cornerRadius: 12, material: .ultraThinMaterial)
         }
     }
 
     // MARK: - Empty State
 
     private var emptyState: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "tray")
-                .font(.system(size: 48))
-                .foregroundStyle(.secondary)
-
-            Text("No Recent Activity")
-                .font(.headline)
-                .foregroundStyle(.primary)
-
-            Text("Your trips, expenses, and notes will appear here")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(Spacing.extraLarge)
-        .glassCard(cornerRadius: 16, material: .ultraThinMaterial)
+        JohoEmptyState(
+            title: "No Recent Activity",
+            message: "Your trips, expenses, and notes will appear here",
+            icon: "tray",
+            zone: .calendar
+        )
     }
 
     // MARK: - Helper Methods
@@ -453,6 +417,196 @@ struct OverviewDashboardView: View {
         let calendar = Calendar.iso8601
         let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: trip.startDate), to: calendar.startOfDay(for: Date())).day ?? 0
         return days + 1
+    }
+}
+
+// MARK: - Overview PDF Export Sheet
+
+struct OverviewPDFExportSheet: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let weekNumber: Int
+    let activeTrips: [TravelTrip]
+    let upcomingTrips: [TravelTrip]
+    let recentExpenses: [ExpenseItem]
+    let todayNotes: [DailyNote]
+    let activeCountdowns: [CountdownEvent]
+    let todayHolidays: [HolidayCacheItem]
+
+    @State private var isExporting = false
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
+                    // Header
+                    JohoPageHeader(
+                        title: "Week \(weekNumber) Overview",
+                        badge: "EXPORT",
+                        subtitle: Date().formatted(date: .complete, time: .omitted)
+                    )
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+
+                    // Summary Stats
+                    HStack(spacing: JohoDimensions.spacingSM) {
+                        JohoStatBox(value: String(activeTrips.count + upcomingTrips.count), label: "Trips", zone: .trips)
+                        JohoStatBox(value: String(recentExpenses.count), label: "Expenses", zone: .expenses)
+                        JohoStatBox(value: String(todayNotes.count), label: "Notes", zone: .notes)
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+
+                    // Trips Section
+                    if !activeTrips.isEmpty || !upcomingTrips.isEmpty {
+                        JohoSectionBox(title: "TRIPS", zone: .trips, icon: "airplane") {
+                            VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                                ForEach(activeTrips + upcomingTrips) { trip in
+                                    HStack {
+                                        Text(trip.tripName)
+                                            .font(JohoFont.body)
+                                            .foregroundStyle(JohoColors.black)
+                                        Spacer()
+                                        Text(trip.destination)
+                                            .font(JohoFont.bodySmall)
+                                            .foregroundStyle(JohoColors.black.opacity(0.7))
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.horizontal, JohoDimensions.spacingLG)
+                    }
+
+                    // Expenses Section
+                    if !recentExpenses.isEmpty {
+                        JohoSectionBox(title: "RECENT EXPENSES", zone: .expenses, icon: "creditcard") {
+                            VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                                ForEach(recentExpenses) { expense in
+                                    HStack {
+                                        Text(expense.itemDescription)
+                                            .font(JohoFont.body)
+                                            .foregroundStyle(JohoColors.black)
+                                            .lineLimit(1)
+                                        Spacer()
+                                        Text(expense.amount, format: .currency(code: expense.currency))
+                                            .font(JohoFont.monoMedium)
+                                            .foregroundStyle(JohoColors.black)
+                                    }
+                                }
+
+                                JohoDivider()
+
+                                HStack {
+                                    Text("Total")
+                                        .font(JohoFont.headline)
+                                        .foregroundStyle(JohoColors.black)
+                                    Spacer()
+                                    Text(totalExpenses, format: .currency(code: "SEK"))
+                                        .font(JohoFont.monoMedium)
+                                        .foregroundStyle(JohoColors.black)
+                                }
+                            }
+                        }
+                        .padding(.horizontal, JohoDimensions.spacingLG)
+                    }
+
+                    // Notes Section
+                    if !todayNotes.isEmpty {
+                        JohoSectionBox(title: "TODAY'S NOTES", zone: .notes, icon: "note.text") {
+                            VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                                ForEach(todayNotes, id: \.date) { note in
+                                    Text(note.content)
+                                        .font(JohoFont.body)
+                                        .foregroundStyle(JohoColors.black)
+                                        .lineLimit(3)
+                                }
+                            }
+                        }
+                        .padding(.horizontal, JohoDimensions.spacingLG)
+                    }
+
+                    // Holidays Section
+                    if !todayHolidays.isEmpty {
+                        JohoSectionBox(title: "TODAY'S HOLIDAYS", zone: .holidays, icon: "star.fill") {
+                            VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                                ForEach(todayHolidays, id: \.id) { holiday in
+                                    HStack {
+                                        Text(holiday.displayTitle)
+                                            .font(JohoFont.body)
+                                            .foregroundStyle(JohoColors.black)
+                                        Spacer()
+                                        if holiday.isRedDay {
+                                            JohoPill(text: "RED DAY", style: .colored(JohoColors.pink), size: .small)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.horizontal, JohoDimensions.spacingLG)
+                    }
+                }
+                .padding(.vertical, JohoDimensions.spacingLG)
+            }
+            .johoBackground()
+            .navigationTitle("Export Overview")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    ShareLink(item: generateTextSummary()) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                }
+            }
+        }
+        .presentationDetents([.large])
+        .presentationCornerRadius(20)
+    }
+
+    private var totalExpenses: Double {
+        recentExpenses.reduce(0.0) { $0 + $1.amount }
+    }
+
+    private func generateTextSummary() -> String {
+        var summary = """
+        📅 WEEK \(weekNumber) OVERVIEW
+        \(Date().formatted(date: .complete, time: .omitted))
+
+        """
+
+        if !activeTrips.isEmpty || !upcomingTrips.isEmpty {
+            summary += "\n✈️ TRIPS\n"
+            for trip in activeTrips + upcomingTrips {
+                summary += "• \(trip.tripName) - \(trip.destination)\n"
+            }
+        }
+
+        if !recentExpenses.isEmpty {
+            summary += "\n💰 RECENT EXPENSES\n"
+            for expense in recentExpenses {
+                summary += "• \(expense.itemDescription): \(expense.amount) \(expense.currency)\n"
+            }
+            summary += "Total: \(String(format: "%.2f", totalExpenses)) SEK\n"
+        }
+
+        if !todayNotes.isEmpty {
+            summary += "\n📝 TODAY'S NOTES\n"
+            for note in todayNotes {
+                let preview = String(note.content.prefix(100))
+                summary += "• \(preview)\n"
+            }
+        }
+
+        if !todayHolidays.isEmpty {
+            summary += "\n⭐ TODAY'S HOLIDAYS\n"
+            for holiday in todayHolidays {
+                summary += "• \(holiday.displayTitle)\(holiday.isRedDay ? " (Red Day)" : "")\n"
+            }
+        }
+
+        summary += "\n---\nGenerated by WeekGrid"
+
+        return summary
     }
 }
 

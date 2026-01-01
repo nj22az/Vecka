@@ -16,6 +16,9 @@ struct HolidayCacheItem: Identifiable, Hashable, Sendable {
     let titleOverride: String?
     let isRedDay: Bool
     let symbolName: String?
+    let iconColor: String?   // Hex color for icon background (e.g., "FFB5BA")
+    let notes: String?
+    let isUserCreated: Bool  // True if userModifiedAt != nil
 }
 
 extension HolidayCacheItem {
@@ -26,8 +29,29 @@ extension HolidayCacheItem {
         return NSLocalizedString(name, comment: "Holiday Name")
     }
 
+    /// Returns true if this is a user-created observance that can be deleted
     var isCustom: Bool {
-        name.hasPrefix("custom.")
+        isUserCreated || name.hasPrefix("custom.")
+    }
+}
+
+/// Thread-safe storage for holiday cache, allowing cross-actor access
+/// Uses NSLock for synchronization between main app and widget background threads
+final class HolidayCacheStorage: @unchecked Sendable {
+    private var _cache: [Date: [HolidayCacheItem]] = [:]
+    private let lock = NSLock()
+
+    var cache: [Date: [HolidayCacheItem]] {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return _cache
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            _cache = newValue
+        }
     }
 }
 
@@ -36,20 +60,19 @@ extension HolidayCacheItem {
 class HolidayManager {
     static let shared = HolidayManager()
 
-    // Thread-safe cache for holiday data: [Date: [HolidayCacheItem]]
-    // Dictionary reads are atomic; writes happen on MainActor only
-    // @ObservationIgnored because cross-actor access is needed
+    // Thread-safe cache storage using a dedicated actor-safe wrapper
+    // Allows widget access from background threads without data races
     @ObservationIgnored
-    nonisolated(unsafe) private var _holidayCache: [Date: [HolidayCacheItem]] = [:]
+    private static let cacheStorage = HolidayCacheStorage()
 
-    /// Access to the holiday cache (thread-safe for reads, MainActor-only for writes)
+    /// Thread-safe access to the holiday cache
     nonisolated var holidayCache: [Date: [HolidayCacheItem]] {
-        _holidayCache
+        Self.cacheStorage.cache
     }
 
-    /// MainActor-isolated setter for the cache
+    /// MainActor-isolated setter for the cache with thread-safe write
     private func setHolidayCache(_ newValue: [Date: [HolidayCacheItem]]) {
-        _holidayCache = newValue
+        Self.cacheStorage.cache = newValue
     }
 
     // Holiday engine for date calculations
@@ -118,7 +141,10 @@ class HolidayManager {
                             name: rule.name,
                             titleOverride: rule.titleOverride,
                             isRedDay: rule.isRedDay,
-                            symbolName: symbolName
+                            symbolName: symbolName,
+                            iconColor: rule.iconColor,
+                            notes: rule.notes,
+                            isUserCreated: rule.userModifiedAt != nil
                         )
                         newCache[normalized, default: []].append(item)
                     }
@@ -271,21 +297,36 @@ class HolidayManager {
             HolidayRule(name: "holiday.hostdagjamning", isRedDay: false, type: .astronomical, month: 9),
             HolidayRule(name: "holiday.vintersolstand", isRedDay: false, type: .astronomical, month: 12),
             
-            // --- US Holidays (Seeded for "US" region) ---
+            // --- US Federal Holidays (11 total) ---
             HolidayRule(name: "New Year's Day", region: "US", isRedDay: true, type: .fixed, month: 1, day: 1),
+            HolidayRule(name: "Martin Luther King Jr. Day", region: "US", isRedDay: true, type: .nthWeekday, month: 1, weekday: 2, ordinal: 3), // 3rd Monday
+            HolidayRule(name: "Presidents' Day", region: "US", isRedDay: true, type: .nthWeekday, month: 2, weekday: 2, ordinal: 3), // 3rd Monday
+            HolidayRule(name: "Memorial Day", region: "US", isRedDay: true, type: .nthWeekday, month: 5, weekday: 2, ordinal: -1), // Last Monday
+            HolidayRule(name: "Juneteenth", region: "US", isRedDay: true, type: .fixed, month: 6, day: 19),
             HolidayRule(name: "Independence Day", region: "US", isRedDay: true, type: .fixed, month: 7, day: 4),
-            HolidayRule(name: "Christmas Day", region: "US", isRedDay: true, type: .fixed, month: 12, day: 25),
+            HolidayRule(name: "Labor Day", region: "US", isRedDay: true, type: .nthWeekday, month: 9, weekday: 2, ordinal: 1), // 1st Monday
+            HolidayRule(name: "Columbus Day", region: "US", isRedDay: true, type: .nthWeekday, month: 10, weekday: 2, ordinal: 2), // 2nd Monday
+            HolidayRule(name: "Veterans Day", region: "US", isRedDay: true, type: .fixed, month: 11, day: 11),
             HolidayRule(name: "Thanksgiving Day", region: "US", isRedDay: true, type: .nthWeekday, month: 11, weekday: 5, ordinal: 4), // 4th Thursday
-            
-            // --- Vietnamese Holidays (Seeded for "VN" region) ---
-            // Lunar
+            HolidayRule(name: "Christmas Day", region: "US", isRedDay: true, type: .fixed, month: 12, day: 25),
+
+            // --- US Observances ---
+            HolidayRule(name: "Valentine's Day", region: "US", isRedDay: false, type: .fixed, month: 2, day: 14),
+            HolidayRule(name: "St. Patrick's Day", region: "US", isRedDay: false, type: .fixed, month: 3, day: 17),
+            HolidayRule(name: "Mother's Day", region: "US", isRedDay: false, type: .nthWeekday, month: 5, weekday: 1, ordinal: 2), // 2nd Sunday
+            HolidayRule(name: "Father's Day", region: "US", isRedDay: false, type: .nthWeekday, month: 6, weekday: 1, ordinal: 3), // 3rd Sunday
+            HolidayRule(name: "Halloween", region: "US", isRedDay: false, type: .fixed, month: 10, day: 31),
+
+            // --- Vietnamese Public Holidays ---
+            HolidayRule(name: "Tết Dương lịch", region: "VN", isRedDay: true, type: .fixed, month: 1, day: 1), // New Year's Day
             HolidayRule(name: "Tết Nguyên Đán", region: "VN", isRedDay: true, type: .lunar, month: 1, day: 1), // Lunar New Year
             HolidayRule(name: "Giỗ Tổ Hùng Vương", region: "VN", isRedDay: true, type: .lunar, month: 3, day: 10), // Hung Kings
-            
-            // Fixed
-            HolidayRule(name: "Ngày Thống nhất", region: "VN", isRedDay: true, type: .fixed, month: 4, day: 30), // Reunification
+            HolidayRule(name: "Ngày Thống nhất", region: "VN", isRedDay: true, type: .fixed, month: 4, day: 30), // Reunification Day
             HolidayRule(name: "Quốc tế Lao động", region: "VN", isRedDay: true, type: .fixed, month: 5, day: 1), // Labor Day
-            HolidayRule(name: "Quốc khánh", region: "VN", isRedDay: true, type: .fixed, month: 9, day: 2) // National Day
+            HolidayRule(name: "Quốc khánh", region: "VN", isRedDay: true, type: .fixed, month: 9, day: 2), // National Day
+
+            // --- Vietnamese Observances ---
+            HolidayRule(name: "Tết Trung Thu", region: "VN", isRedDay: false, type: .lunar, month: 8, day: 15) // Mid-Autumn Festival
         ]
 
         do {

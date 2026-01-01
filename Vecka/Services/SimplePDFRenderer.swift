@@ -280,7 +280,7 @@ struct PDFDayPage: View {
                     .font(.system(size: 24, weight: .bold))
 
                 let weekInfo = WeekCalculator.shared.weekInfo(for: date)
-                Text("\(NSLocalizedString("pdf.week", value: "Week", comment: "")) \(weekInfo.weekNumber), \(weekInfo.year)")
+                Text(verbatim: "\(NSLocalizedString("pdf.week", value: "Week", comment: "")) \(weekInfo.weekNumber), \(weekInfo.year)")
                     .font(.system(size: 14))
                     .foregroundStyle(.secondary)
             }

@@ -1,0 +1,1454 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Text views | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": "2023-06-05",
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "text views",
+        "SwiftUI",
+        "UIKit",
+        "AppKit",
+        "iOS",
+        "iPadOS",
+        "macOS",
+        "tvOS",
+        "visionOS",
+        "watchOS",
+        "Human Interface Guidelines",
+        "HIG",
+        "Apple Design",
+        "multiline text",
+        "editable text",
+        "styled text"
+      ],
+      "summary": "Apple Human Interface Guidelines documentation page for Text views component. Describes text views as multiline, styled text content displays that can optionally be editable, with platform-specific considerations for iOS, iPadOS, macOS, tvOS, visionOS, and watchOS.",
+      "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+      "sourceUrl": "https://developer.apple.com/design/human-interface-guidelines/text-views"
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": 1280,
+          "height": 2400,
+          "unit": "pixels"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF",
+        "layout": {
+          "type": "multi-column",
+          "columns": 3,
+          "margins": {
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation-bar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1280,
+              "height": 48
+            },
+            "zIndex": 100,
+            "content": {
+              "backgroundColor": "#000000",
+              "items": [
+                {
+                  "type": "logo",
+                  "text": "Developer",
+                  "icon": "Apple logo (white)",
+                  "position": "left"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "News",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Discover",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Design",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Develop",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Distribute",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Support",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Account",
+                  "position": "center"
+                },
+                {
+                  "type": "icon",
+                  "description": "Search magnifying glass icon",
+                  "position": "right"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-subheader-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 48,
+              "width": 1280,
+              "height": 40
+            },
+            "zIndex": 99,
+            "content": {
+              "backgroundColor": "#F5F5F7",
+              "leftSection": {
+                "text": "Design",
+                "style": "bold"
+              },
+              "rightSection": {
+                "items": [
+                  "Overview",
+                  "What's New",
+                  "Get Started",
+                  "Guidelines",
+                  "Resources"
+                ]
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-left-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 88,
+              "width": 240,
+              "height": 600
+            },
+            "zIndex": 50,
+            "content": {
+              "type": "hierarchical-navigation",
+              "filterInput": {
+                "placeholder": "Filter",
+                "icon": "horizontal lines with filter icon"
+              },
+              "sections": [
+                {
+                  "title": "Getting started",
+                  "expandable": true,
+                  "expanded": false
+                },
+                {
+                  "title": "Foundations",
+                  "expandable": true,
+                  "expanded": false
+                },
+                {
+                  "title": "Patterns",
+                  "expandable": true,
+                  "expanded": false
+                },
+                {
+                  "title": "Components",
+                  "expandable": true,
+                  "expanded": true,
+                  "children": [
+                    {
+                      "title": "Content",
+                      "icon": "photo icon",
+                      "expandable": true,
+                      "expanded": true,
+                      "children": [
+                        {
+                          "title": "Charts",
+                          "selected": false
+                        },
+                        {
+                          "title": "Image views",
+                          "selected": false
+                        },
+                        {
+                          "title": "Text views",
+                          "selected": true,
+                          "highlighted": true
+                        },
+                        {
+                          "title": "Web views",
+                          "selected": false
+                        }
+                      ]
+                    },
+                    {
+                      "title": "Layout and organization",
+                      "icon": "grid layout icon",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "title": "Menus and actions",
+                      "icon": "menu icon",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "title": "Navigation and search",
+                      "icon": "compass icon",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "title": "Presentation",
+                      "icon": "presentation icon",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "title": "Selection and input",
+                      "icon": "cursor/pointer icon",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "title": "Status",
+                      "icon": "activity/status icon",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "title": "System experiences",
+                      "icon": "system icon",
+                      "expandable": true,
+                      "expanded": false
+                    }
+                  ]
+                },
+                {
+                  "title": "Inputs",
+                  "expandable": true,
+                  "expanded": false
+                },
+                {
+                  "title": "Technologies",
+                  "expandable": true,
+                  "expanded": false
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-title",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 100,
+              "width": 640,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Text views",
+              "level": 1,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "40px",
+              "fontWeight": "bold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 160,
+              "width": 640,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "A text view displays multiline, styled text content, which can optionally be editable.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "21px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": "1.4"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-hero-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": 260,
+              "y": 230,
+              "width": 640,
+              "height": 280
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "A stylized illustration of a text view component showing multiline text content within a bordered container. The illustration demonstrates the concept of text views with dimension indicators showing the flexible height capability.",
+              "subjects": [
+                "Text view container",
+                "Multiline text content",
+                "Dimension indicators",
+                "Sample prose text"
+              ],
+              "composition": "Central text container with coral/salmon colored background, containing multiple lines of serif text. Gray dashed lines with small squares at corners indicate resizable/flexible dimensions. The container is horizontally centered.",
+              "colorPalette": [
+                "#FF6B6B (coral/salmon background)",
+                "#FFFFFF (page background)",
+                "#1D1D1F (text color)",
+                "#CCCCCC (dimension indicator lines)"
+              ],
+              "mood": "Clean, technical, instructional",
+              "technicalDetails": "Shows a text view UI component mockup with visual indicators for flexible sizing",
+              "textInImage": [
+                "The interface is not merely a visual display—in fact, it's possible to have an interface with no visual display at all. A human interface is the sum of all communication between the computer and user. It's what presents information to the user and accepts information from the user. It's what actually puts the computer's power into the user's hands."
+              ],
+              "contextualRelevance": "Hero illustration demonstrating what a text view looks like and its capability to display multiline styled text content",
+              "visualElements": {
+                "container": {
+                  "shape": "rounded rectangle",
+                  "backgroundColor": "coral/salmon gradient",
+                  "borderStyle": "none visible"
+                },
+                "dimensionIndicators": {
+                  "style": "dashed gray lines",
+                  "corners": "small gray squares",
+                  "position": "top, left, right edges",
+                  "meaning": "indicates flexible/resizable dimensions"
+                },
+                "typography": {
+                  "fontStyle": "serif",
+                  "alignment": "left",
+                  "color": "dark gray/black"
+                }
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-description",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-intro-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 520,
+              "width": 640,
+              "height": 100
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Text views can be any height and allow scrolling when the content extends outside of the view. By default, content within a text view is aligned to the leading edge and uses the system label color. In iOS, iPadOS, and visionOS, if a text view is editable, a keyboard appears when people select the view.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": "1.5"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practices-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 640,
+              "width": 640,
+              "height": 40
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Best practices",
+              "level": 2,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "32px",
+              "fontWeight": "bold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 690,
+              "width": 640,
+              "height": 80
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Use a text view when you need to display text that's long, editable, or in a special format. Text views differ from text fields and labels in that they provide the most options for displaying specialized text and receiving text input. If you need to display a small amount of text, it's simpler to use a label or — if the text is editable — a text field.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": "1.5",
+              "links": [
+                {
+                  "text": "text fields",
+                  "url": "/design/human-interface-guidelines/text-fields",
+                  "color": "#0066CC"
+                },
+                {
+                  "text": "labels",
+                  "url": "/design/human-interface-guidelines/labels",
+                  "color": "#0066CC"
+                }
+              ],
+              "boldText": "Use a text view when you need to display text that's long, editable, or in a special format."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 780,
+              "width": 640,
+              "height": 100
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Keep text legible. Although you can use multiple fonts, colors, and alignments in creative ways, it's essential to maintain the readability of your content. It's a good idea to adopt Dynamic Type so your text still looks good if people change text size on their device. Be sure to test your content with accessibility options turned on, such as bold text. For guidance, see Accessibility and Typography.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": "1.5",
+              "links": [
+                {
+                  "text": "Accessibility",
+                  "url": "/design/human-interface-guidelines/accessibility",
+                  "color": "#0066CC"
+                },
+                {
+                  "text": "Typography",
+                  "url": "/design/human-interface-guidelines/typography",
+                  "color": "#0066CC"
+                }
+              ],
+              "boldText": "Keep text legible."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 890,
+              "width": 640,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Make useful text selectable. If a text view contains useful information such as an error message, a serial number, or an IP address, consider letting people select and copy it for pasting elsewhere.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": "1.5",
+              "boldText": "Make useful text selectable."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-considerations-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 970,
+              "width": 640,
+              "height": 40
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Platform considerations",
+              "level": 2,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "32px",
+              "fontWeight": "bold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-no-considerations",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 1020,
+              "width": 640,
+              "height": 30
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "No additional considerations for macOS, visionOS, or watchOS.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "fontStyle": "italic",
+              "color": "#86868B"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ios-ipados-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 1060,
+              "width": 640,
+              "height": 35
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "iOS, iPadOS",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "24px",
+              "fontWeight": "semibold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-ios-ipados-content",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 1100,
+              "width": 640,
+              "height": 80
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Show the appropriate keyboard type. Several different keyboard types are available, each designed to facilitate a different type of input. To streamline data entry, the keyboard you display when editing a text view needs to be appropriate for the type of content. For guidance, see Virtual keyboards.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": "1.5",
+              "links": [
+                {
+                  "text": "Virtual keyboards",
+                  "url": "/design/human-interface-guidelines/virtual-keyboards",
+                  "color": "#0066CC"
+                }
+              ],
+              "boldText": "Show the appropriate keyboard type."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-tvos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 1190,
+              "width": 640,
+              "height": 35
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "tvOS",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "24px",
+              "fontWeight": "semibold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-tvos-content",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 1230,
+              "width": 640,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "You can display text in tvOS using a text view. Because text input in tvOS is minimal by design, tvOS uses text fields for editable text instead.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "color": "#1D1D1F",
+              "lineHeight": "1.5",
+              "links": [
+                {
+                  "text": "text fields",
+                  "url": "/design/human-interface-guidelines/text-fields",
+                  "color": "#0066CC"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 1310,
+              "width": 640,
+              "height": 40
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Resources",
+              "level": 2,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "32px",
+              "fontWeight": "bold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-related-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 1360,
+              "width": 640,
+              "height": 30
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Related",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "21px",
+              "fontWeight": "semibold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-related-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 260,
+              "y": 1395,
+              "width": 640,
+              "height": 90
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Labels",
+                  "url": "/design/human-interface-guidelines/labels",
+                  "isLink": true,
+                  "linkColor": "#0066CC"
+                },
+                {
+                  "text": "Text fields",
+                  "url": "/design/human-interface-guidelines/text-fields",
+                  "isLink": true,
+                  "linkColor": "#0066CC"
+                },
+                {
+                  "text": "Combo boxes",
+                  "url": "/design/human-interface-guidelines/combo-boxes",
+                  "isLink": true,
+                  "linkColor": "#0066CC"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-developer-docs-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 1500,
+              "width": 640,
+              "height": 30
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Developer documentation",
+              "level": 3,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "21px",
+              "fontWeight": "semibold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-developer-docs-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 260,
+              "y": 1535,
+              "width": 640,
+              "height": 90
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Text",
+                  "framework": "SwiftUI",
+                  "fullText": "Text — SwiftUI",
+                  "url": "/documentation/swiftui/text",
+                  "isLink": true,
+                  "linkColor": "#0066CC",
+                  "codeStyle": true
+                },
+                {
+                  "text": "UITextView",
+                  "framework": "UIKit",
+                  "fullText": "UITextView — UIKit",
+                  "url": "/documentation/uikit/uitextview",
+                  "isLink": true,
+                  "linkColor": "#0066CC",
+                  "codeStyle": true
+                },
+                {
+                  "text": "NSTextView",
+                  "framework": "AppKit",
+                  "fullText": "NSTextView — AppKit",
+                  "url": "/documentation/appkit/nstextview",
+                  "isLink": true,
+                  "linkColor": "#0066CC",
+                  "codeStyle": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-changelog-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 1650,
+              "width": 640,
+              "height": 40
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Change log",
+              "level": 2,
+              "fontFamily": "SF Pro Display",
+              "fontSize": "32px",
+              "fontWeight": "bold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-changelog-table",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 260,
+              "y": 1700,
+              "width": 640,
+              "height": 80
+            },
+            "zIndex": 10,
+            "content": {
+              "tableTitle": null,
+              "columnCount": 2,
+              "rowCount": 2,
+              "headers": [
+                "Date",
+                "Changes"
+              ],
+              "rows": [
+                {
+                  "rowIndex": 0,
+                  "isHeader": true,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "Date",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Changes",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 1,
+                  "isHeader": false,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "June 5, 2023",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Updated guidance to reflect changes in watchOS 10.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tableSummary": "Change log table showing the documentation update history with one entry dated June 5, 2023 noting updates for watchOS 10 changes."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-right-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 920,
+              "y": 100,
+              "width": 200,
+              "height": 250
+            },
+            "zIndex": 50,
+            "content": {
+              "type": "page-navigation",
+              "sections": [
+                {
+                  "heading": "Supported platforms",
+                  "content": {
+                    "icons": [
+                      {
+                        "platform": "iOS",
+                        "icon": "iPhone outline icon"
+                      },
+                      {
+                        "platform": "iPadOS",
+                        "icon": "iPad outline icon"
+                      },
+                      {
+                        "platform": "macOS",
+                        "icon": "Mac/laptop outline icon"
+                      },
+                      {
+                        "platform": "tvOS",
+                        "icon": "Apple TV outline icon"
+                      },
+                      {
+                        "platform": "visionOS",
+                        "icon": "Vision Pro/goggles outline icon"
+                      },
+                      {
+                        "platform": "watchOS",
+                        "icon": "Apple Watch outline icon"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "heading": "On this page",
+                  "items": [
+                    {
+                      "text": "Text views",
+                      "anchor": "#text-views"
+                    },
+                    {
+                      "text": "Best practices",
+                      "anchor": "#best-practices"
+                    },
+                    {
+                      "text": "Platform considerations",
+                      "anchor": "#platform-considerations"
+                    },
+                    {
+                      "text": "Resources",
+                      "anchor": "#resources"
+                    },
+                    {
+                      "text": "Change log",
+                      "anchor": "#change-log"
+                    }
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 1850,
+              "width": 1280,
+              "height": 400
+            },
+            "zIndex": 10,
+            "content": {
+              "backgroundColor": "#F5F5F7",
+              "sections": [
+                {
+                  "breadcrumb": {
+                    "items": [
+                      {
+                        "icon": "Apple logo",
+                        "text": ""
+                      },
+                      {
+                        "text": "Developer"
+                      },
+                      {
+                        "text": "Documentation"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "columns": [
+                    {
+                      "heading": "Platforms",
+                      "items": [
+                        "iOS",
+                        "iPadOS",
+                        "macOS",
+                        "tvOS",
+                        "visionOS",
+                        "watchOS"
+                      ]
+                    },
+                    {
+                      "heading": "Tools",
+                      "items": [
+                        "Swift",
+                        "SwiftUI",
+                        "Swift Playground",
+                        "TestFlight",
+                        "Xcode",
+                        "Xcode Cloud",
+                        "SF Symbols"
+                      ]
+                    },
+                    {
+                      "heading": "Topics & Technologies",
+                      "items": [
+                        "Accessibility",
+                        "Accessories",
+                        "App Extension",
+                        "App Store",
+                        "Audio & Video",
+                        "Augmented Reality",
+                        "Design",
+                        "Distribution",
+                        "Education",
+                        "Fonts",
+                        "Games",
+                        "Health & Fitness",
+                        "In-App Purchase",
+                        "Localization",
+                        "Maps & Location",
+                        "Machine Learning & AI",
+                        "Open Source",
+                        "Security",
+                        "Safari & Web"
+                      ]
+                    },
+                    {
+                      "heading": "Resources",
+                      "items": [
+                        "Documentation",
+                        "Tutorials",
+                        "Downloads",
+                        "Forums",
+                        "Videos"
+                      ]
+                    },
+                    {
+                      "heading": "Support",
+                      "items": [
+                        "Support Articles",
+                        "Contact Us",
+                        "Bug Reporting",
+                        "System Status"
+                      ]
+                    },
+                    {
+                      "heading": "Account",
+                      "items": [
+                        "Apple Developer",
+                        "App Store Connect",
+                        "Certificates, IDs, & Profiles",
+                        "Feedback Assistant"
+                      ]
+                    },
+                    {
+                      "heading": "Programs",
+                      "items": [
+                        "Apple Developer Program",
+                        "Apple Developer Enterprise Program",
+                        "App Store Small Business Program",
+                        "MFi Program",
+                        "News Partner Program",
+                        "Video Partner Program",
+                        "Security Bounty Program",
+                        "Security Research Device Program"
+                      ]
+                    },
+                    {
+                      "heading": "Events",
+                      "items": [
+                        "Meet with Apple",
+                        "Apple Developer Centers",
+                        "App Store Awards",
+                        "Apple Design Awards",
+                        "Apple Developer Academies",
+                        "WWDC"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-bottom",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 0,
+              "y": 2250,
+              "width": 1280,
+              "height": 80
+            },
+            "zIndex": 10,
+            "content": {
+              "elements": [
+                {
+                  "text": "To submit feedback on documentation, visit ",
+                  "type": "text"
+                },
+                {
+                  "text": "Feedback Assistant",
+                  "type": "link",
+                  "url": "https://feedbackassistant.apple.com"
+                },
+                {
+                  "text": ".",
+                  "type": "text"
+                }
+              ],
+              "themeToggle": {
+                "options": [
+                  "Light",
+                  "Dark",
+                  "Auto"
+                ],
+                "selected": "Auto"
+              },
+              "copyright": "Copyright © 2025 Apple Inc. All rights reserved.",
+              "legalLinks": [
+                {
+                  "text": "Terms of Use",
+                  "url": "/terms"
+                },
+                {
+                  "text": "Privacy Policy",
+                  "url": "/privacy"
+                },
+                {
+                  "text": "Agreements and Guidelines",
+                  "url": "/agreements"
+                }
+              ],
+              "languageSelector": {
+                "current": "English",
+                "hasDropdown": true
+              }
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation-bar",
+          "page1-subheader-navigation",
+          "page1-main-title",
+          "page1-main-description",
+          "page1-hero-image",
+          "page1-intro-paragraph",
+          "page1-best-practices-heading",
+          "page1-best-practice-1",
+          "page1-best-practice-2",
+          "page1-best-practice-3",
+          "page1-platform-considerations-heading",
+          "page1-platform-no-considerations",
+          "page1-ios-ipados-heading",
+          "page1-ios-ipados-content",
+          "page1-tvos-heading",
+          "page1-tvos-content",
+          "page1-resources-heading",
+          "page1-related-heading",
+          "page1-related-links",
+          "page1-developer-docs-heading",
+          "page1-developer-docs-links",
+          "page1-changelog-heading",
+          "page1-changelog-table",
+          "page1-footer",
+          "page1-footer-bottom"
+        ],
+        "pageSummary": "Apple Human Interface Guidelines documentation page for Text views component. The page describes text views as multiline, styled text content displays with optional editability. It provides best practices for usage including when to use text views vs labels/text fields, maintaining legibility with Dynamic Type, and enabling text selection for useful content. Platform-specific guidance is provided for iOS/iPadOS (keyboard types) and tvOS (display-only usage). Resources link to related HIG components (Labels, Text fields, Combo boxes) and developer documentation (SwiftUI Text, UIKit UITextView, AppKit NSTextView)."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": true,
+        "entries": [
+          {
+            "title": "Text views",
+            "page": 1
+          },
+          {
+            "title": "Best practices",
+            "page": 1
+          },
+          {
+            "title": "Platform considerations",
+            "page": 1
+          },
+          {
+            "title": "Resources",
+            "page": 1
+          },
+          {
+            "title": "Change log",
+            "page": 1
+          }
+        ]
+      },
+      "runningHeaders": "Developer > Documentation navigation breadcrumb in footer",
+      "runningFooters": "Apple copyright, terms, privacy policy, and language selector",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "introduction",
+          "title": "Text views",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Introduction defining text views as multiline, styled text content displays that can optionally be editable, with scrolling capability and leading edge alignment by default."
+        },
+        {
+          "sectionId": "best-practices",
+          "title": "Best practices",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Three key best practices: 1) Use text views for long, editable, or specially formatted text (vs labels/text fields for simple content), 2) Keep text legible with Dynamic Type and accessibility testing, 3) Make useful text selectable for copying."
+        },
+        {
+          "sectionId": "platform-considerations",
+          "title": "Platform considerations",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "ios-ipados",
+              "title": "iOS, iPadOS",
+              "summary": "Show appropriate keyboard type for the content being entered"
+            },
+            {
+              "sectionId": "tvos",
+              "title": "tvOS",
+              "summary": "Text views display text but tvOS uses text fields for editable text due to minimal text input design"
+            }
+          ],
+          "summary": "Platform-specific considerations with no additional notes for macOS, visionOS, or watchOS. iOS/iPadOS should show appropriate keyboard types. tvOS uses text views for display only, with text fields for editable content."
+        },
+        {
+          "sectionId": "resources",
+          "title": "Resources",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "related",
+              "title": "Related",
+              "summary": "Links to related HIG components: Labels, Text fields, Combo boxes"
+            },
+            {
+              "sectionId": "developer-documentation",
+              "title": "Developer documentation",
+              "summary": "Links to framework-specific documentation: SwiftUI Text, UIKit UITextView, AppKit NSTextView"
+            }
+          ],
+          "summary": "Resource links to related HIG components and developer documentation for implementing text views in SwiftUI, UIKit, and AppKit."
+        },
+        {
+          "sectionId": "change-log",
+          "title": "Change log",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Documentation change history showing one update on June 5, 2023 for watchOS 10 changes."
+        }
+      ],
+      "documentFlow": "The document follows Apple's standard HIG documentation structure: 1) Component definition and hero image, 2) Best practices for usage, 3) Platform-specific considerations organized by OS, 4) Resource links to related components and developer documentation, 5) Change log for version history. Navigation is provided through left sidebar (full HIG hierarchy), right sidebar (on-page anchors), and footer (site-wide navigation)."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "Text view",
+          "definition": "A UI component that displays multiline, styled text content, which can optionally be editable",
+          "occurrences": 8
+        },
+        {
+          "term": "Dynamic Type",
+          "definition": "Apple's accessibility feature that allows users to change text size system-wide, which apps should support",
+          "occurrences": 1
+        },
+        {
+          "term": "Leading edge",
+          "definition": "The starting edge for text alignment (left in LTR languages, right in RTL languages)",
+          "occurrences": 1
+        },
+        {
+          "term": "System label color",
+          "definition": "The default color used for text content in text views, which adapts to light/dark mode",
+          "occurrences": 1
+        },
+        {
+          "term": "Text field",
+          "definition": "A simpler UI component for single-line, editable text (contrast with text views for multiline)",
+          "occurrences": 3
+        },
+        {
+          "term": "Label",
+          "definition": "A UI component for displaying non-editable, typically short text",
+          "occurrences": 2
+        }
+      ],
+      "keyFindings": [
+        "Text views can be any height and allow scrolling when content extends outside the view",
+        "Default content alignment is leading edge with system label color",
+        "In iOS, iPadOS, and visionOS, editable text views trigger keyboard appearance on selection",
+        "Text views provide more options than text fields or labels for specialized text display and input",
+        "Use labels or text fields for small amounts of text; text views for long, editable, or specially formatted text",
+        "Dynamic Type adoption is recommended for accessibility",
+        "Useful text (error messages, serial numbers, IP addresses) should be selectable for copying",
+        "iOS/iPadOS should display appropriate keyboard types for the content being edited",
+        "tvOS uses text views only for display; text fields handle editable text due to minimal input design",
+        "No additional considerations exist for macOS, visionOS, or watchOS"
+      ],
+      "technicalSpecifications": {
+        "supportedPlatforms": [
+          "iOS",
+          "iPadOS",
+          "macOS",
+          "tvOS",
+          "visionOS",
+          "watchOS"
+        ],
+        "frameworkImplementations": {
+          "SwiftUI": "Text",
+          "UIKit": "UITextView",
+          "AppKit": "NSTextView"
+        },
+        "defaultBehavior": {
+          "alignment": "leading edge",
+          "color": "system label color",
+          "scrolling": "enabled when content exceeds view bounds",
+          "height": "flexible (any height)"
+        },
+        "editableBehavior": {
+          "iOS": "Keyboard appears on selection",
+          "iPadOS": "Keyboard appears on selection",
+          "visionOS": "Keyboard appears on selection",
+          "tvOS": "Not editable (use text fields instead)",
+          "macOS": "Native text editing",
+          "watchOS": "Native text editing"
+        }
+      },
+      "designDecisions": [
+        {
+          "decision": "Use text view vs text field vs label",
+          "rationale": "Text views for long, editable, or specially formatted text; text fields for short editable text; labels for short non-editable text"
+        },
+        {
+          "decision": "Adopt Dynamic Type",
+          "rationale": "Ensures text remains legible when users change system text size"
+        },
+        {
+          "decision": "Enable text selection for useful content",
+          "rationale": "Allows users to copy error messages, serial numbers, IP addresses for pasting elsewhere"
+        },
+        {
+          "decision": "Choose appropriate keyboard type (iOS/iPadOS)",
+          "rationale": "Streamlines data entry by showing keyboard optimized for content type"
+        }
+      ]
+    },
+    "verbatimTextContent": {
+      "mainContent": {
+        "title": "Text views",
+        "subtitle": "A text view displays multiline, styled text content, which can optionally be editable.",
+        "heroImageQuote": "The interface is not merely a visual display—in fact, it's possible to have an interface with no visual display at all. A human interface is the sum of all communication between the computer and user. It's what presents information to the user and accepts information from the user. It's what actually puts the computer's power into the user's hands.",
+        "introductionParagraph": "Text views can be any height and allow scrolling when the content extends outside of the view. By default, content within a text view is aligned to the leading edge and uses the system label color. In iOS, iPadOS, and visionOS, if a text view is editable, a keyboard appears when people select the view.",
+        "bestPractices": {
+          "practice1": "Use a text view when you need to display text that's long, editable, or in a special format. Text views differ from text fields and labels in that they provide the most options for displaying specialized text and receiving text input. If you need to display a small amount of text, it's simpler to use a label or — if the text is editable — a text field.",
+          "practice2": "Keep text legible. Although you can use multiple fonts, colors, and alignments in creative ways, it's essential to maintain the readability of your content. It's a good idea to adopt Dynamic Type so your text still looks good if people change text size on their device. Be sure to test your content with accessibility options turned on, such as bold text. For guidance, see Accessibility and Typography.",
+          "practice3": "Make useful text selectable. If a text view contains useful information such as an error message, a serial number, or an IP address, consider letting people select and copy it for pasting elsewhere."
+        },
+        "platformConsiderations": {
+          "noConsiderations": "No additional considerations for macOS, visionOS, or watchOS.",
+          "iOSiPadOS": "Show the appropriate keyboard type. Several different keyboard types are available, each designed to facilitate a different type of input. To streamline data entry, the keyboard you display when editing a text view needs to be appropriate for the type of content. For guidance, see Virtual keyboards.",
+          "tvOS": "You can display text in tvOS using a text view. Because text input in tvOS is minimal by design, tvOS uses text fields for editable text instead."
+        }
+      },
+      "navigationElements": {
+        "topNavigation": ["News", "Discover", "Design", "Develop", "Distribute", "Support", "Account"],
+        "designSubnav": ["Overview", "What's New", "Get Started", "Guidelines", "Resources"],
+        "sidebarCategories": ["Getting started", "Foundations", "Patterns", "Components", "Inputs", "Technologies"],
+        "componentsSubcategories": ["Content", "Layout and organization", "Menus and actions", "Navigation and search", "Presentation", "Selection and input", "Status", "System experiences"],
+        "contentSubcategories": ["Charts", "Image views", "Text views", "Web views"]
+      },
+      "footerLinks": {
+        "feedbackText": "To submit feedback on documentation, visit Feedback Assistant.",
+        "copyright": "Copyright © 2025 Apple Inc. All rights reserved.",
+        "legalLinks": ["Terms of Use", "Privacy Policy", "Agreements and Guidelines"]
+      }
+    },
+    "allLinks": [
+      {
+        "text": "text fields",
+        "url": "/design/human-interface-guidelines/text-fields",
+        "context": "Best practices - comparison to text views"
+      },
+      {
+        "text": "labels",
+        "url": "/design/human-interface-guidelines/labels",
+        "context": "Best practices - comparison to text views"
+      },
+      {
+        "text": "Accessibility",
+        "url": "/design/human-interface-guidelines/accessibility",
+        "context": "Best practices - testing content"
+      },
+      {
+        "text": "Typography",
+        "url": "/design/human-interface-guidelines/typography",
+        "context": "Best practices - text legibility"
+      },
+      {
+        "text": "Virtual keyboards",
+        "url": "/design/human-interface-guidelines/virtual-keyboards",
+        "context": "iOS/iPadOS platform considerations"
+      },
+      {
+        "text": "text fields",
+        "url": "/design/human-interface-guidelines/text-fields",
+        "context": "tvOS platform considerations"
+      },
+      {
+        "text": "Labels",
+        "url": "/design/human-interface-guidelines/labels",
+        "context": "Related resources"
+      },
+      {
+        "text": "Text fields",
+        "url": "/design/human-interface-guidelines/text-fields",
+        "context": "Related resources"
+      },
+      {
+        "text": "Combo boxes",
+        "url": "/design/human-interface-guidelines/combo-boxes",
+        "context": "Related resources"
+      },
+      {
+        "text": "Text",
+        "url": "/documentation/swiftui/text",
+        "context": "Developer documentation - SwiftUI"
+      },
+      {
+        "text": "UITextView",
+        "url": "/documentation/uikit/uitextview",
+        "context": "Developer documentation - UIKit"
+      },
+      {
+        "text": "NSTextView",
+        "url": "/documentation/appkit/nstextview",
+        "context": "Developer documentation - AppKit"
+      },
+      {
+        "text": "Feedback Assistant",
+        "url": "https://feedbackassistant.apple.com",
+        "context": "Footer - submit documentation feedback"
+      }
+    ]
+  }
+}

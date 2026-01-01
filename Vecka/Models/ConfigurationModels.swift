@@ -325,33 +325,5 @@ final class IconCatalogItem {
     }
 }
 
-// MARK: - Weather Icon Mapping
-
-@Model
-final class WeatherIconMapping {
-    @Attribute(.unique) var id: UUID
-    var conditionCode: String  // "clear", "mostlyClear", "partlyCloudy", etc.
-    var sfSymbolName: String
-    var colorHex: String
-    var priority: Int
-    var isActive: Bool
-
-    init(
-        id: UUID = UUID(),
-        conditionCode: String,
-        sfSymbolName: String,
-        colorHex: String,
-        priority: Int = 0,
-        isActive: Bool = true
-    ) {
-        self.id = id
-        self.conditionCode = conditionCode
-        self.sfSymbolName = sfSymbolName
-        self.colorHex = colorHex
-        self.priority = priority
-        self.isActive = isActive
-    }
-}
-
 // Note: CurrencyDefinition exists as a struct in ExpenseModels.swift
 // Future enhancement: Migrate CurrencyDefinition struct to @Model for full database-driven currencies

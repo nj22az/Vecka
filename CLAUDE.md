@@ -4,10 +4,970 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-WeekGrid is an iOS app displaying ISO 8601 week numbers with dynamic planetary color associations. Built with SwiftUI, SwiftData, and WidgetKit, it features Swedish holiday integration, custom countdowns, and comprehensive Siri Shortcuts support. The app targets iOS 18.0+ and follows Apple HIG design principles with authentic glassmorphism materials.
+WeekGrid is an iOS app displaying ISO 8601 week numbers with semantic color coding. Built with SwiftUI, SwiftData, and WidgetKit, it features Swedish holiday integration, custom countdowns, and comprehensive Siri Shortcuts support. The app targets iOS 18.0+ and follows **情報デザイン (Jōhō Dezain)** - Japanese Information Design inspired by pharmaceutical packaging.
 
 **Project folder name**: `Vecka` (legacy, kept for backwards compatibility)
 **App name**: `WeekGrid`
+
+---
+
+## 🎨 DESIGN SYSTEM: 情報デザイン (Jōhō Dezain)
+
+### You Are The Design Guardian
+
+When working on ANY UI code in this project, you are the **情報デザイン Guardian**. You enforce the design system strictly. Design violations are bugs that must be fixed.
+
+### Core Philosophy
+
+> "Every visual element must serve a clear informational purpose. Nothing is decorative - everything communicates."
+
+Inspired by Japanese OTC medicine packaging (Muhi, Rohto, Salonpas):
+- **Compartmentalized layouts** like a bento box
+- **Thick black borders** on everything
+- **High contrast** (pure black and white)
+- **Purposeful color** (every color has semantic meaning)
+- **Squircle geometry** (continuous corner curves)
+
+### ⚠️ CRITICAL: Readability Rules (HIGHEST PRIORITY)
+
+**情報デザイン = BLACK text on WHITE backgrounds. ALWAYS.**
+
+Japanese OTC packaging is designed to be read quickly by anyone - elderly, rushed shoppers, poor lighting. This means:
+
+| Rule | Correct | WRONG |
+|------|---------|-------|
+| **Text color** | Black `#000000` | ~~White/gray on dark~~ |
+| **Content background** | White `#FFFFFF` | ~~Dark backgrounds~~ |
+| **Subtitle opacity** | Minimum 0.6 | ~~Below 0.5 (invisible)~~ |
+| **Page titles** | Inside white container | ~~Floating on dark~~ |
+| **Section headers** | Black text, visible | ~~Faint gray~~ |
+
+**The Dark Background Rule:**
+- `#1A1A2E` is the CANVAS only (outermost layer)
+- It should be BARELY visible - just thin edges around white containers
+- If you see more than 8pt of dark background anywhere, something is wrong
+- ALL content areas must have white backgrounds
+
+```swift
+// ✅ CORRECT - Content in white container, title INSIDE
+ScrollView {
+    VStack {
+        Text("Page Title")
+            .foregroundStyle(JohoColors.black)  // BLACK text
+        // ... rest of content
+    }
+    .padding()
+    .background(JohoColors.white)  // WHITE background
+    .clipShape(Squircle(cornerRadius: 16))
+    .overlay(Squircle(...).stroke(JohoColors.black, lineWidth: 3))
+}
+.johoBackground()  // Dark canvas BEHIND everything
+
+// ❌ WRONG - Title floating on dark background
+ScrollView {
+    Text("Page Title")
+        .foregroundStyle(.white)  // NO! Unreadable
+    VStack { ... }
+        .background(JohoColors.white)
+}
+```
+
+**Minimum Touch Targets & Spacing:**
+- All interactive elements: **44pt × 44pt** minimum
+- Spacing between buttons: **minimum 12pt**
+- Never stack interactive elements closer than 8pt
+
+### Legend Pills (情報デザイン Readability)
+
+Legend pills and status indicators MUST use **white backgrounds** with colored borders/text:
+
+```swift
+// ✅ CORRECT - White pill, colored border and text (readable)
+HStack(spacing: 4) {
+    Circle().fill(accentColor).frame(width: 6, height: 6)
+    Text("LABEL").foregroundStyle(accentColor)
+}
+.padding(.horizontal, 8)
+.padding(.vertical, 4)
+.background(JohoColors.white)
+.clipShape(Capsule())
+.overlay(Capsule().stroke(accentColor, lineWidth: 1.5))
+
+// ❌ WRONG - Inverted (symbol becomes unclear on colored background)
+.background(accentColor)
+.foregroundStyle(.white)
+```
+
+**Why?** Inverted pills obscure the indicator symbol (●, ○, ◆). The symbol's meaning is lost when white-on-color.
+
+### Country Color Pills (Not Emoji Flags)
+
+Emoji flags are NOT 情報デザイン compliant. Use text-based national color pills instead:
+
+| Country | Background | Text | Border | Code |
+|---------|------------|------|--------|------|
+| **SE** (Sweden) | Dark blue `#004B87` | Yellow `#FECC00` | Black | SWE |
+| **US** (USA) | Navy `#3C3B6E` | White `#FFFFFF` | Black | USA |
+| **VN** (Vietnam) | Red `#DA251D` | Yellow `#FFCD00` | Black | VN |
+
+**All country pills use black borders** for 情報デザイン uniformity.
+
+```swift
+// CountryPill: 情報デザイン compliant country indicator with text
+Text(scheme.code)  // "SWE", "USA", "VN"
+    .font(.system(size: 8, weight: .black, design: .rounded))
+    .foregroundStyle(scheme.textColor)
+    .padding(.horizontal, 6)
+    .padding(.vertical, 3)
+    .background(scheme.backgroundColor)
+    .clipShape(Capsule())
+    .overlay(Capsule().stroke(scheme.borderColor, lineWidth: 1.5))
+```
+
+### Color Semantics (MEMORIZE THIS)
+
+Colors are NEVER decorative. Each has ONE meaning:
+
+| Color | Hex | Semantic Meaning | Usage |
+|-------|-----|------------------|-------|
+| **Yellow** | `#FFE566` | NOW / Present | Today, current highlight, attention |
+| **Cyan** | `#A5F3FC` | Scheduled Time | Events, appointments, calendar items |
+| **Pink** | `#FECDD3` | Special Day | Holidays, birthdays, celebrations |
+| **Orange** | `#FED7AA` | Movement | Trips, travel, locations |
+| **Green** | `#BBF7D0` | Money | Expenses, financial, transactions |
+| **Purple** | `#E9D5FF` | People | Contacts, relationships |
+| **Red** | `#E53935` | Alert | Warnings, Sundays, errors |
+| **Cream** | `#FEF3C7` | Personal | Notes, user annotations |
+| **Black** | `#000000` | Definition | Borders, text, authority |
+| **White** | `#FFFFFF` | Content | Container backgrounds |
+| **Dark BG** | `#1A1A2E` | Canvas | App background ONLY (never containers) |
+
+### Sidebar Icon Colors (iPad IconStripSidebar)
+
+Each sidebar icon has its own semantic accent color. When selected, the icon and indicator bar use this color:
+
+| Selection | Hex | Color Name | Icon |
+|-----------|-----|------------|------|
+| **Summary** | `#FFD700` | Gold | `square.grid.2x2` |
+| **Workspace** | `#00B4D8` | Cyan | `rectangle.3.group` |
+| **Calendar** | `#E53E3E` | Red | `calendar` |
+| **Notes** | `#4A5568` | Gray | `doc.text` |
+| **Contacts** | `#718096` | Slate | `person.2` |
+| **Expenses** | `#38A169` | Green | `dollarsign.circle` |
+| **Trips** | `#3182CE` | Blue | `airplane` |
+| **Countdowns** | `#ED8936` | Orange | `timer` |
+| **Special Days** | `#FFD700` | Gold | `star.fill` |
+| **Settings** | `#718096` | Slate | `gearshape` |
+
+**Implementation:** See `SidebarSelection.accentColor` in `AppSidebar.swift`. The `IconStripButton` in `IconStripSidebar.swift` uses `item.accentColor` for both the selection bar and the icon color when selected.
+
+### Border Specifications
+
+**Every element MUST have a border. No exceptions.**
+
+| Element Type | Border Width |
+|--------------|--------------|
+| Day cells | 1pt |
+| List rows | 1.5pt |
+| Buttons | 2pt |
+| Today/Selected | 2.5pt |
+| Containers | 3pt |
+
+Border color is ALWAYS `#000000` (pure black).
+
+### Color-Coded Type Indicator Circles (PILLAR)
+
+**This is a CORE pillar of 情報デザイン. ALL indicator circles MUST follow this specification CONSISTENTLY across the entire app.**
+
+Type indicator circles show what kind of content exists for a day/item. They ALWAYS have:
+1. **Filled center** with the type's ACCENT COLOR (never white!)
+2. **BLACK border** (1-1.5pt stroke)
+3. **Consistent sizing** based on context
+
+| Type | Color | Hex | 3-Letter Code |
+|------|-------|-----|---------------|
+| **Holiday** | Red | `#E53E3E` | HOL |
+| **Observance** | Orange | `#ED8936` | OBS |
+| **Event** | Purple | `#805AD5` | EVT |
+| **Birthday** | Pink | `#D53F8C` | BDY |
+| **Note** | Yellow | `#ECC94B` | NTE |
+| **Trip** | Blue | `#3182CE` | TRP |
+| **Expense** | Green | `#38A169` | EXP |
+
+**Circle Sizes by Context:**
+
+| Context | Size | Border Width |
+|---------|------|--------------|
+| Calendar grid day | 7pt | 1pt |
+| Collapsed row indicator | 8pt | 1pt |
+| Month card stats | 8pt | 1pt |
+| Expanded section items | 10pt | 1.5pt |
+| Legend popover | 12pt | 1.5pt |
+
+**CRITICAL: Bento box backgrounds use LIGHT TINTS so colored circles remain visible!**
+
+The `SectionZone` backgrounds use light versions:
+- `.holidays` → `JohoColors.redLight` (#FECACA) - light red
+- `.birthdays` → `JohoColors.pinkLight` (#FED7E2) - light pink
+- Other zones → 30% opacity of accent color
+
+```swift
+// ✅ CORRECT - Circles ALWAYS use type's accent color
+Circle()
+    .fill(type.accentColor)  // RED for holidays, PINK for birthdays, etc.
+    .frame(width: 10, height: 10)
+    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+
+// ✅ CORRECT - Bento boxes use LIGHT tints
+SectionZone.holidays.background  // Returns JohoColors.redLight (not solid red)
+
+// ❌ WRONG - No border (looks unfinished, loses definition)
+Circle()
+    .fill(accentColor)
+    .frame(width: 8, height: 8)
+
+// ❌ WRONG - White circles (loses type color meaning!)
+Circle()
+    .fill(JohoColors.white)  // NO! Circles show type via color
+    .frame(width: 10, height: 10)
+```
+
+**Database-Driven Type Codes:**
+Use `SpecialDayType.code` property for 3-letter codes (HOL, OBS, EVT, BDY, NTE, TRP, EXP).
+```swift
+// ✅ CORRECT - Use type.code for pills
+JohoPill(text: item.type.code, style: .colored(item.type.accentColor), size: .small)
+
+// ❌ WRONG - Hardcoded strings
+JohoPill(text: "Red Day", ...)  // NO! Use item.type.code
+```
+
+**Files implementing this system:**
+- `SpecialDaysListView.swift` - Type codes, indicators, sections
+- `CalendarGridView.swift` - Day cell indicators (7pt)
+- `JohoDesignSystem.swift` - Colors, SectionZone backgrounds
+
+### Typography
+
+Font: **SF Pro Rounded** (`.design(.rounded)`)
+
+| Scale | Size | Weight | Usage |
+|-------|------|--------|-------|
+| displayLarge | 48pt | heavy | Hero numbers |
+| displayMedium | 32pt | bold | Section titles |
+| headline | 18pt | bold | Card titles |
+| body | 16pt | medium | Content |
+| bodySmall | 14pt | medium | Secondary |
+| label | 12pt | bold | Pills, badges (UPPERCASE) |
+| labelSmall | 10pt | bold | Timestamps |
+
+**Rules:**
+- NEVER use weights below `.medium`
+- ALWAYS include `.design(.rounded)`
+- Labels and pills are ALWAYS UPPERCASE
+
+### Spacing Grid
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| xs | 4pt | Cell gaps |
+| sm | 8pt | Row gaps |
+| md | 12pt | Container padding |
+| lg | 16pt | Screen margins |
+
+**Critical:** Maximum 8pt top padding on any screen (no dead space!)
+
+### Corner Radius (Squircle)
+
+All corners MUST use continuous curvature:
+
+```swift
+// ✅ CORRECT
+.clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+
+// ❌ WRONG
+.cornerRadius(12)
+```
+
+| Element | Radius |
+|---------|--------|
+| Day cells | 8pt |
+| Buttons | 8pt |
+| Pills | 6pt |
+| Cards | 12pt |
+| Containers | 16pt |
+
+### ❌ FORBIDDEN PATTERNS (Auto-Reject)
+
+**NEVER use these. Flag and fix immediately:**
+
+```swift
+// ❌ GLASS/BLUR - FORBIDDEN
+.background(.ultraThinMaterial)
+.background(.thinMaterial)
+.background(.regularMaterial)
+.background(.bar)
+
+// ❌ GRADIENTS - FORBIDDEN
+LinearGradient(...)
+RadialGradient(...)
+
+// ❌ SHADOWS AS PRIMARY DESIGN - FORBIDDEN
+.shadow(radius: 10)
+
+// ❌ RAW SYSTEM COLORS - Use JohoColors instead
+Color.blue
+Color.red
+Color.green
+
+// ❌ MISSING BORDERS - Every background needs a border
+.background(Color.white)  // Missing .overlay(...stroke())
+
+// ❌ EXCESSIVE TOP PADDING
+.padding(.top, 40)  // Max is 8pt
+
+// ❌ NON-CONTINUOUS CORNERS
+.cornerRadius(12)  // Must use style: .continuous
+
+// ❌ LOCALE-FORMATTED YEARS - Years must NEVER have spaces
+Text("\(year)")  // BAD: "1 990" with locale thousand separator
+Text(String(year))  // GOOD: "1990" always
+```
+
+### ✅ Correct Component Patterns
+
+**Container:**
+```swift
+VStack {
+    content
+}
+.padding(12)
+.background(Color.white)
+.clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+.overlay(
+    RoundedRectangle(cornerRadius: 16, style: .continuous)
+        .stroke(Color.black, lineWidth: 3)
+)
+```
+
+**Pill/Badge:**
+```swift
+Text("LABEL")
+    .font(.system(size: 12, weight: .bold, design: .rounded))
+    .foregroundStyle(Color.white)
+    .padding(.horizontal, 10)
+    .padding(.vertical, 4)
+    .background(Color.black)
+    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+```
+
+**List Row:**
+```swift
+HStack(spacing: 12) {
+    // Colored icon zone (color = semantic meaning)
+    Image(systemName: "calendar")
+        .frame(width: 40, height: 40)
+        .background(Color(hex: "A5F3FC")) // Cyan = events
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(Color.black, lineWidth: 1.5)
+        )
+
+    VStack(alignment: .leading) {
+        Text("Title").font(.system(size: 16, weight: .medium, design: .rounded))
+        Text("Subtitle").font(.system(size: 12, weight: .medium, design: .rounded))
+    }
+    Spacer()
+    Image(systemName: "chevron.right")
+}
+.padding(12)
+.background(Color.white)
+.clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+.overlay(
+    RoundedRectangle(cornerRadius: 12, style: .continuous)
+        .stroke(Color.black, lineWidth: 1.5)
+)
+```
+
+**Compartmentalized Flipcard (Bento Style):**
+
+情報デザイン flipcards should be **compartmentalized like a bento box** - distinct zones separated by dividers:
+
+```swift
+HStack(spacing: 0) {
+    // LEFT COMPARTMENT: Icon zone (visual anchor)
+    VStack {
+        Image(systemName: "snowflake")
+            .font(.system(size: 18, weight: .bold))
+            .foregroundStyle(accentColor)
+    }
+    .frame(width: 44)
+    .frame(maxHeight: .infinity)
+    .background(lightBackground)  // Tinted background
+
+    // Vertical divider (essential for compartmentalization)
+    Rectangle()
+        .fill(Color.black)
+        .frame(width: 1.5)
+
+    // RIGHT COMPARTMENT: Data zone
+    VStack(alignment: .leading, spacing: 4) {
+        Text("TITLE")
+            .font(.system(size: 11, weight: .black))
+
+        // Stats with visual indicators
+        HStack(spacing: 6) {
+            // Indicator + count
+        }
+    }
+    .padding(.horizontal, 8)
+    .frame(maxWidth: .infinity, alignment: .leading)
+}
+.frame(height: 52)
+.background(Color.white)
+.clipShape(Squircle(cornerRadius: 8))
+.overlay(Squircle(...).stroke(Color.black, lineWidth: 2))
+```
+
+**Key Principles:**
+- Icon ALWAYS in left compartment with tinted background
+- Black vertical divider between compartments
+- Data/stats in right compartment, left-aligned
+- Fixed height for consistent grid appearance
+
+**Editor Sheet (Star Page / Add Entry Pattern):**
+
+ALL entry creation sheets (Holiday, Observance, Event, Birthday, Note) MUST follow this consistent 情報デザイン pattern:
+
+```swift
+// Structure: Cancel/Save OUTSIDE card, content INSIDE card
+VStack(spacing: JohoDimensions.spacingMD) {
+    // Header with Cancel/Save buttons (OUTSIDE main card)
+    HStack {
+        Button(action: onCancel) {
+            Text("Cancel")
+                .font(JohoFont.body)
+                .foregroundStyle(JohoColors.black)
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingMD)
+                .background(JohoColors.white)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                .overlay(Squircle(...).stroke(JohoColors.black, lineWidth: 1.5))
+        }
+        Spacer()
+        Button(action: onSave) {
+            Text("Save")
+                .font(JohoFont.body.bold())
+                .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.vertical, JohoDimensions.spacingMD)
+                .background(canSave ? accentColor : JohoColors.white)  // Accent when saveable
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                .overlay(Squircle(...).stroke(JohoColors.black, lineWidth: 1.5))
+        }
+        .disabled(!canSave)
+    }
+
+    // Main content card
+    VStack(spacing: JohoDimensions.spacingLG) {
+        // Title with type indicator circle
+        HStack(spacing: JohoDimensions.spacingSM) {
+            Circle()
+                .fill(accentColor)  // Red=HOL, Orange=OBS, Purple=EVT, Pink=BDY, Yellow=NTE
+                .frame(width: 20, height: 20)
+                .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+            Text("New Holiday")  // Title matches type
+                .font(JohoFont.displaySmall)
+                .foregroundStyle(JohoColors.black)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+
+        // Icon avatar
+        ZStack {
+            Circle()
+                .fill(accentColor.opacity(0.2))
+                .frame(width: 80, height: 80)
+                .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+            Image(systemName: "star.fill")
+                .font(.system(size: 32, weight: .bold))
+                .foregroundStyle(accentColor)
+        }
+
+        // Form fields with JohoPill labels
+        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+            JohoPill(text: "FIELD NAME", style: .whiteOnBlack, size: .small)
+            TextField("placeholder", text: $value)
+                .font(JohoFont.body)
+                .padding(JohoDimensions.spacingMD)
+                .background(JohoColors.white)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                .overlay(Squircle(...).stroke(JohoColors.black, lineWidth: 1.5))
+        }
+
+        // Toggle fields use johoToggle pattern
+        HStack {
+            JohoPill(text: "OPTION", style: .whiteOnBlack, size: .small)
+            Spacer()
+            johoToggle(isOn: $optionEnabled)  // Custom toggle with accent color
+        }
+    }
+    .padding(JohoDimensions.spacingLG)
+    .background(JohoColors.white)
+    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+    .overlay(Squircle(...).stroke(JohoColors.black, lineWidth: 3))
+}
+```
+
+**Entry Type Accent Colors:**
+| Type | Color | Hex | Code |
+|------|-------|-----|------|
+| Holiday | Red | `#E53E3E` | HOL |
+| Observance | Orange | `#ED8936` | OBS |
+| Event | Purple | `#805AD5` | EVT |
+| Birthday | Pink | `#D53F8C` | BDY |
+| Note | Yellow | `#ECC94B` | NTE |
+
+**Editor Requirements:**
+- Cancel button: White background, black border, black text
+- Save button: Accent color background when valid, white background when invalid
+- Type indicator: Filled circle with accent color + black border
+- All form fields: White background + black border + JohoPill label
+- Toggles: Custom 情報デザイン toggle (not iOS default)
+- Year numbers: Use `String(year)` never `"\(year)"` to avoid locale spacing
+
+### Visual Indicators (Filled vs Outlined)
+
+Use filled/outlined shapes to distinguish categories visually:
+
+| Indicator | Style | Meaning | Example Usage |
+|-----------|-------|---------|---------------|
+| ● Filled circle | `Circle().fill(color)` | Primary/Important | Holidays, required items |
+| ○ Outlined circle | `Circle().stroke(color, lineWidth: 1.5)` | Secondary/Optional | Observances, optional items |
+| ■ Filled square | `Rectangle().fill(color)` | Active/Selected | Current state |
+| □ Outlined square | `Rectangle().stroke(color)` | Inactive/Available | Available options |
+
+```swift
+// Legend example (always include for clarity)
+HStack(spacing: 16) {
+    HStack(spacing: 4) {
+        Circle().fill(Color.red).frame(width: 10, height: 10)
+        Text("HOLIDAYS").font(.system(size: 10, weight: .bold)).foregroundStyle(.red)
+    }
+    HStack(spacing: 4) {
+        Circle().stroke(Color.orange, lineWidth: 1.5).frame(width: 10, height: 10)
+        Text("OBSERVANCES").font(.system(size: 10, weight: .bold)).foregroundStyle(.orange)
+    }
+}
+```
+
+**Rule:** When using filled/outlined indicators, ALWAYS include a legend above the content.
+
+### Priority Symbols (Hierarchy Markers)
+
+Japanese OTC uses visual priority markers. Use these to indicate importance:
+
+| Symbol | Meaning | Usage |
+|--------|---------|-------|
+| **◎** | Primary | Most important item, top priority |
+| **○** | Secondary | Standard items |
+| **△** | Tertiary | Low priority, optional |
+| **✕** | Excluded | Not applicable, don't use |
+
+```swift
+// Priority badge example
+Text("◎")
+    .font(.system(size: 14, weight: .bold))
+    .foregroundStyle(Color.black)
+```
+
+### Day Card Canvas Rules (Month Detail View)
+
+Special Days pages use a **3-column grid** of day cards. When the same date has multiple holidays/events, the card **expands vertically** to fit all content while maintaining grid alignment.
+
+**Grid Layout:**
+```
+┌─────────┬─────────┬─────────┐
+│ Jan 1   │ Jan 6   │ Jan 13  │  ← Standard 1x1 cards
+│ SWE VN  │ SWE     │         │
+│ NewYear │ Epiph.  │ Birthday│
+│ Tet...  │         │         │  ← Jan 1 expands for 2 holidays
+├─────────┼─────────┼─────────┤
+│ ...     │ ...     │ ...     │
+└─────────┴─────────┴─────────┘
+```
+
+**Day Card Sizing Rules:**
+
+| Items on Date | Card Size | Height |
+|---------------|-----------|--------|
+| 1 item | Standard | 110pt |
+| 2 items | Expanded | 130pt |
+| 3+ items | Expanded | 110 + (n-1) × 20pt |
+
+**Day Card Structure (情報デザイン Bento):**
+
+```swift
+// Standard card (single item)
+VStack(spacing: 0) {
+    // TOP (colored): Icon + country pill
+    HStack {
+        Image(systemName: icon).padding(.leading, 8)
+        Spacer()
+        CountryPill(region: region).padding(.trailing, 8)
+    }
+    .frame(height: 48)
+    .background(accentColor.opacity(0.15))
+
+    Rectangle().fill(JohoColors.black).frame(height: 1.5)  // Divider
+
+    // BOTTOM (white): Date + holiday name
+    VStack {
+        Text("\(day)").font(.system(size: 18, weight: .black))
+        Text(title).font(.system(size: 9, weight: .bold))
+        TypeIndicator(type: type)  // ● or ○
+    }
+}
+
+// Expanded card (multiple items on same date)
+VStack(spacing: 0) {
+    // TOP (colored): Date is the visual anchor
+    Text("\(day)")
+        .font(.system(size: 28, weight: .black))
+        .frame(maxWidth: .infinity)
+        .frame(height: 48)
+        .background(primaryType.accentColor.opacity(0.15))
+
+    Rectangle().fill(JohoColors.black).frame(height: 1.5)
+
+    // BOTTOM (white): List all holidays with flags
+    VStack(spacing: 6) {
+        ForEach(items) { item in
+            HStack {
+                TypeIndicator(type: item.type)  // ●/○/◆/🎂
+                Text(item.title)
+                Spacer()
+                CountryPill(region: item.region)  // Flag on right
+            }
+        }
+    }
+    .padding(8)
+}
+```
+
+**Same-Day Holiday Rules:**
+
+1. **Group by date**: All items falling on the same day combine into one card
+2. **English first**: System language determines primary display (English names)
+3. **Country pills inline**: Each holiday shows its country pill next to the name
+4. **Type indicators**: Use ● (holiday), ○ (observance), ◆ (event), 🎂 (birthday)
+5. **Vertical expansion**: Cards grow taller, never wider (maintains grid)
+
+**Canvas Boundaries:**
+
+- Month page uses 3-column `LazyVGrid`
+- Horizontal padding: `JohoDimensions.spacingLG` (16pt)
+- Inter-card spacing: `JohoDimensions.spacingSM` (8pt)
+- Cards fill available width equally (no spanning columns)
+
+### マルバツ記号 (Maru-Batsu Symbols)
+
+These are the core Japanese information symbols (also used by PlayStation). They are fundamental to 情報デザイン:
+
+| Symbol | Name | SF Symbol | Meaning |
+|--------|------|-----------|---------|
+| ○ | Maru | `circle.fill` | Correct, yes, good, approved |
+| × | Batsu | `xmark` | Wrong, no, rejected, cancel |
+| △ | Sankaku | `triangle.fill` | Caution, maybe, partial, warning |
+| □ | Shikaku | `square.fill` | Neutral, info, menu, options |
+| ◇ | Hishigata | `diamond.fill` | Special, important, highlight |
+
+**Usage in app:**
+- Icon picker organized with マルバツ symbols at the top
+- Use these for status indicators, approval states, warnings
+- Prefer filled variants for better visibility
+
+### Color Placement Rule (CRITICAL)
+
+**Colors go ONLY in icon zones, NEVER in full headers/rows.**
+
+```swift
+// ✅ CORRECT - Color in icon zone only
+HStack {
+    Image(systemName: "star")
+        .frame(width: 40, height: 40)
+        .background(SectionZone.holidays.background)  // Pink HERE
+    Text("Holiday Name")
+}
+.background(JohoColors.white)  // White background
+
+// ❌ WRONG - Full row is colored
+HStack {
+    Image(systemName: "star")
+    Text("Holiday Name")
+}
+.background(SectionZone.holidays.background)  // NO! Too much pink
+```
+
+### Attention/Warning Tiers
+
+Beyond basic Red=Alert, use tiered warning levels:
+
+| Level | Japanese | Color Treatment | Usage |
+|-------|----------|-----------------|-------|
+| Info | 情報 | Cyan border | Helpful tips |
+| Caution | 注意 | Yellow background | User should know |
+| Warning | 警告 | Red background | Action required |
+| Danger | 危険 | Black + Red stripe | Critical/destructive |
+
+### Icon Specifications
+
+**SF Symbol Standards:**
+
+| Context | Weight | Size | Style |
+|---------|--------|------|-------|
+| Navigation | `.medium` | 20pt | Outline |
+| List icons | `.medium` | 16pt | Filled |
+| Buttons | `.semibold` | 18pt | Filled |
+| Badges | `.bold` | 12pt | Filled |
+| Hero display | `.bold` | 32pt | Filled |
+
+```swift
+// ✅ CORRECT - Consistent icon styling
+Image(systemName: "calendar")
+    .font(.system(size: 16, weight: .medium))
+    .symbolRenderingMode(.hierarchical)
+```
+
+### Swipe Row Pattern
+
+Standard swipe interactions for list rows:
+
+| Direction | Action | Color | Icon |
+|-----------|--------|-------|------|
+| ← Left | Delete (destructive) | Red `#E53935` | `trash` |
+| → Right | Edit/Configure | Cyan `#A5F3FC` | `pencil` |
+
+```swift
+// Swipe action zones
+private struct JohoSwipeableRow: View {
+    @State private var offset: CGFloat = 0
+    let swipeThreshold: CGFloat = 80
+
+    var body: some View {
+        ZStack {
+            // Left zone (delete) - revealed on left swipe
+            HStack {
+                Spacer()
+                Image(systemName: "trash")
+                    .foregroundStyle(.white)
+                    .frame(width: 60)
+            }
+            .background(Color(hex: "E53935"))
+
+            // Right zone (edit) - revealed on right swipe
+            HStack {
+                Image(systemName: "pencil")
+                    .foregroundStyle(.black)
+                    .frame(width: 60)
+                Spacer()
+            }
+            .background(Color(hex: "A5F3FC"))
+
+            // Main content
+            rowContent
+                .offset(x: offset)
+                .gesture(swipeGesture)
+        }
+    }
+}
+```
+
+### Expandable Section Pattern
+
+For collapsible content groups:
+
+```swift
+private struct JohoExpandableSection<Content: View>: View {
+    let title: String
+    let color: Color  // Semantic color for section
+    @Binding var isExpanded: Bool
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header (always visible)
+            Button(action: { withAnimation(.easeInOut(duration: 0.2)) { isExpanded.toggle() } }) {
+                HStack {
+                    Text(title.uppercased())
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                    Spacer()
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 12, weight: .bold))
+                }
+                .foregroundStyle(.black)
+                .padding(12)
+                .background(color)
+            }
+
+            // Content (expandable)
+            if isExpanded {
+                content()
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color.black, lineWidth: 2)
+        )
+    }
+}
+```
+
+### Empty/Loading/Error States
+
+**Empty State:**
+```swift
+VStack(spacing: 12) {
+    Image(systemName: "tray")
+        .font(.system(size: 32, weight: .medium))
+        .foregroundStyle(.black.opacity(0.4))
+    Text("NO ITEMS")
+        .font(.system(size: 14, weight: .bold, design: .rounded))
+        .foregroundStyle(.black.opacity(0.6))
+}
+.frame(maxWidth: .infinity)
+.padding(24)
+.background(Color.white)
+.clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+.overlay(
+    RoundedRectangle(cornerRadius: 12, style: .continuous)
+        .stroke(Color.black.opacity(0.3), lineWidth: 1.5)
+)
+```
+
+**Loading State:**
+```swift
+// Pulsing border animation
+.overlay(
+    RoundedRectangle(cornerRadius: 12, style: .continuous)
+        .stroke(Color.black, lineWidth: 2)
+        .opacity(isPulsing ? 0.3 : 1.0)
+        .animation(.easeInOut(duration: 0.8).repeatForever(), value: isPulsing)
+)
+```
+
+**Error State:**
+```swift
+HStack(spacing: 12) {
+    Image(systemName: "xmark.circle.fill")
+        .foregroundStyle(Color(hex: "E53935"))
+    Text("Error message here")
+        .font(.system(size: 14, weight: .medium, design: .rounded))
+}
+.padding(12)
+.background(Color.white)
+.clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+.overlay(
+    RoundedRectangle(cornerRadius: 8, style: .continuous)
+        .stroke(Color(hex: "E53935"), lineWidth: 2)
+)
+```
+
+### Information Density Guidelines
+
+Japanese OTC succeeds by maximizing clarity, not quantity:
+
+| Principle | Rule |
+|-----------|------|
+| **One Glance** | Each card conveys ONE primary message |
+| **3-Item Max** | Maximum 3 info items per card |
+| **7±2 Rule** | 5-9 items visible without scrolling |
+| **Icon + Label** | Every data point has icon AND text |
+| **Hierarchy** | Primary info 2x size of secondary |
+
+```
+┌─────────────────────────────┐
+│ ◎ PRIMARY INFO (large)     │  ← Immediately visible
+│   ○ Secondary detail       │  ← Supports primary
+│   ○ Secondary detail       │  ← Supports primary
+│   △ Tertiary (tap for more)│  ← Optional, discoverable
+└─────────────────────────────┘
+```
+
+### Diagonal Corner Banner (Optional)
+
+For "NEW" or promotional callouts:
+
+```swift
+// 45° corner ribbon
+Text("NEW")
+    .font(.system(size: 10, weight: .bold, design: .rounded))
+    .foregroundStyle(.white)
+    .padding(.horizontal, 20)
+    .padding(.vertical, 4)
+    .background(Color(hex: "E53935"))
+    .rotationEffect(.degrees(-45))
+    .offset(x: -20, y: 10)
+```
+
+### Animation Guidelines
+
+情報デザイン uses **minimal, functional** animation:
+
+| Animation | Duration | Curve | Usage |
+|-----------|----------|-------|-------|
+| Expand/Collapse | 0.2s | easeInOut | Section toggles |
+| Swipe snap | 0.15s | spring | Row gestures |
+| Selection | 0.1s | easeOut | Tap feedback |
+| Page transition | 0.25s | easeInOut | Navigation |
+
+**FORBIDDEN Animations:**
+- Bouncy/playful springs
+- Rotation effects (except corner banners)
+- Scale animations > 1.05x
+- Continuous looping (except loading)
+
+---
+
+### Design Audit Commands
+
+```bash
+# Find forbidden glass/blur materials
+grep -rn "ultraThinMaterial\|thinMaterial\|regularMaterial" --include="*.swift"
+
+# Find non-continuous corners
+grep -rn "\.cornerRadius(" --include="*.swift"
+
+# Find raw system colors
+grep -rn "Color\.blue\|Color\.red\|Color\.green" --include="*.swift"
+
+# Find gradients
+grep -rn "LinearGradient\|RadialGradient" --include="*.swift"
+
+# Find excessive top padding
+grep -rn "\.padding(.top," --include="*.swift"
+
+# Find forbidden bouncy animations
+grep -rn "\.spring(response.*bounce" --include="*.swift"
+
+# Find scale animations (check if > 1.05)
+grep -rn "\.scaleEffect(" --include="*.swift"
+
+# Find missing .design(.rounded) on fonts
+grep -rn "\.font(.system" --include="*.swift" | grep -v "design:"
+
+# Verify icon weights are correct
+grep -rn "Image(systemName:" --include="*.swift" -A 2
+```
+
+### Design Files
+
+- `JohoDesignSystem.swift` - Core design system components and colors
+- `joho-design-system.json` - Complete specification reference
+
+---
 
 ## Build Commands
 
@@ -54,17 +1014,7 @@ xcodebuild build -project Vecka.xcodeproj -scheme Vecka \
   -destination 'platform=iOS Simulator,name=iPhone 16'
 ```
 
-### Code Quality
-```bash
-# Run SwiftLint (install with: brew install swiftlint)
-swiftlint lint
-
-# Auto-fix correctable issues
-swiftlint --fix
-
-# Check for TODO/FIXME comments
-grep -r "TODO\|FIXME" --include="*.swift" .
-```
+---
 
 ## Architecture Overview
 
@@ -82,72 +1032,27 @@ The app uses a sophisticated manager-based architecture with SwiftData persisten
 
 **1. Core Calculator Layer** (`Vecka/Core/`)
 - `WeekCalculator`: Thread-safe ISO 8601 week calculation with caching
-  - Singleton pattern with configurable calendar rules
-  - Dictionary-based cache keyed by week/year
-  - Supports custom calendar configurations from database
 
 **2. Model Layer** (`Vecka/Models/`)
-- SwiftData models for persistence:
-  - `HolidayRule`: Database-driven holiday definitions
-  - `CalendarRule`: Configurable ISO 8601 calendar systems
-  - `CountdownEvent`: User-created countdown events
-  - `DailyNote`: Daily note entries
-- Pure Swift structs:
-  - `Holiday`: Computed holiday instances
-  - `CalendarModels`: Supporting types
+- SwiftData models: `HolidayRule`, `CalendarRule`, `CountdownEvent`, `DailyNote`
+- Pure Swift structs: `Holiday`, `CalendarModels`
 
 **3. Manager Layer** (Singleton Pattern)
 - `HolidayManager`: Holiday calculation and caching
-  - Uses `HolidayEngine` for date calculation algorithms
-  - Supports fixed, Easter-relative, floating, nth-weekday, and lunar holidays
-  - Caches computed holidays by year
 - `CalendarManager`: Calendar rule management
-  - Loads/saves ISO 8601 calendar configurations
-  - Integrates with WeekCalculator for dynamic calendar updates
 - `CountdownManager`: Countdown event management
-  - Handles predefined and custom countdown events
-  - Calculates next occurrence for annual events
 
 **4. Engine Layer** (`Vecka/Models/HolidayEngine.swift`)
-- Pure algorithm implementations:
-  - Anonymous Gregorian Computus for Easter calculations
-  - Floating weekday finder (e.g., "Saturday between June 20-26")
-  - Nth weekday calculator (e.g., "2nd Sunday in November")
-  - Lunar calendar conversion for Asian holidays
+- Easter calculations, floating weekday finder, lunar calendar conversion
 
-**5. View Layer** (`Vecka/Views/`, root views)
-- **ModernCalendarView**: Modern Apple HIG-compliant UI (current default)
-  - iPad: NavigationSplitView with AppSidebar
-  - iPhone: TabView with Calendar/Library/Settings tabs
-- **ContentView**: Simple wrapper that instantiates ModernCalendarView
+**5. View Layer** (`Vecka/Views/`)
+- **ModernCalendarView**: Main calendar UI with 情報デザイン styling
 - **AppSidebar**: Left sidebar for iPad NavigationSplitView
 - **PhoneLibraryView**: Library/favorites view for iPhone TabView
-- Modular view components (15 active in `Vecka/Views/`):
-  - Calendar: `CalendarGridView`, `DayDashboardView`, `OverviewDashboardView`
-  - Notes: `DailyNotesView`, `NotesListView`
-  - Holidays: `HolidayListView`, `ObservancesListView`
-  - Weather: `WeatherForecastView` (backend complete, UI ready for re-enablement)
-  - Expenses: `ExpenseListView`, `ExpenseEntryView`
-  - Travel: `TripListView`
-  - Export: `PDFExportView`
-  - Location: `LocationManagerView`, `LocationSearchView`
+- Modular components: `CalendarGridView`, `DayDashboardView`, `WeekDetailPanel`, etc.
 
 **6. Services Layer** (`Vecka/Services/`)
-- Weather: `WeatherService` (WeatherKit integration), `WeatherIconMapper`, `WeatherLocalization`
-- Travel & Expenses: `TravelManager`, `ExpenseManager`, `CurrencyService`
-- PDF Export: `PDFExportService`, `PDFRenderer`, `PDFExportModels`
-
-**7. Core Utilities** (`Vecka/Core/`)
-- `AppInitializer`: Centralized app initialization and data seeding
-- `WeekCalculator`: Thread-safe ISO 8601 week calculations
-- Migration helpers: `NotesMigration`, `CountdownMigration`
-- Settings: `HolidayRegionSelection`
-
-### Design System (`DesignSystem.swift`)
-- **Planetary Color Associations**: 7 colors for each weekday (Monday=Moon/Silver, Tuesday=Fire/Red, etc.)
-- **Apple Semantic Colors**: Auto-adapting light/dark mode using `.systemBackground`, `.label`, etc.
-- **Typography System**: Apple HIG-compliant font scale
-- **Thread-Safe Utilities**: Safe hex color parsing with clamping
+- Weather, Travel & Expenses, PDF Export, Currency
 
 ### Data Flow Pattern
 ```
@@ -160,16 +1065,11 @@ User Action → View
      Cache Update → View Update
 ```
 
-### Performance Optimizations
-1. **Calendar Singleton**: Cached ISO 8601 calendar eliminates repeated allocations
-2. **Manager Caching**: Each manager implements dictionary-based caching with intelligent invalidation
-3. **WeekInfo Caching**: Week calculations cached by week/year key
-4. **Thread Safety**: Concurrent queue for WeekCalculator with barrier writes
+---
 
 ## Key Technical Details
 
 ### ISO 8601 Calendar Configuration
-All week calculations use a consistent ISO 8601 calendar:
 ```swift
 var calendar = Calendar(identifier: .gregorian)
 calendar.firstWeekday = 2        // Monday
@@ -177,27 +1077,33 @@ calendar.minimumDaysInFirstWeek = 4  // ISO 8601 standard
 calendar.locale = Locale(identifier: "sv_SE")
 ```
 
-Access via `Calendar.iso8601` extension or `WeekCalculator.shared`.
-
 ### Holiday Calculation System
-Holidays are defined as SwiftData `HolidayRule` entities with five types:
-- **Fixed**: Specific month/day (e.g., Christmas: Dec 25)
-- **Easter-relative**: Days offset from Easter (e.g., Good Friday: Easter - 2)
-- **Floating**: Specific weekday in date range (e.g., Midsummer: Saturday Jun 20-26)
-- **Nth weekday**: Ordinal weekday in month (e.g., Mother's Day: Last Sunday in May)
-- **Lunar**: Chinese calendar conversion (e.g., Tet: 1st day of 1st lunar month)
+Five types: Fixed, Easter-relative, Floating, Nth weekday, Lunar
+
+**Supported Regions (database-seeded):**
+| Code | Country | Flag | Bank Holidays | Observances |
+|------|---------|------|---------------|-------------|
+| SE | Sweden | 🇸🇪 | 12 | 8 |
+| US | United States | 🇺🇸 | 11 | 5 |
+| VN | Vietnam | 🇻🇳 | 6 | 1 (lunar) |
+
+Maximum 2 regions can be selected simultaneously (enforced by `HolidayRegionSelection`).
+
+To add more holidays: add `HolidayRule` entries in `HolidayManager.seedDefaultRules()`.
+
+Do NOT reference regions that are not in this list. Flags are generated from region codes using Unicode Regional Indicator symbols.
 
 ### Siri Shortcuts Integration (`Vecka/Intents/`)
 - `CurrentWeekIntent`: "What week is it?"
 - `WeekOverviewIntent`: "Show week overview"
 - `WeekForDateIntent`: Get week for specific date
-- `AppShortcuts.swift`: Defines Siri phrase triggers
 
 ### Widget Deep Linking
-Widgets use `vecka://` URL scheme:
 - `vecka://today`: Navigate to current week
 - `vecka://week/{weekNumber}/{year}`: Navigate to specific week
 - `vecka://calendar`: Navigate to calendar view
+
+---
 
 ## Important Conventions
 
@@ -205,424 +1111,214 @@ Widgets use `vecka://` URL scheme:
 - Core logic in `Vecka/Core/`
 - Data models in `Vecka/Models/`
 - Reusable views in `Vecka/Views/`
+- Design system in `Vecka/JohoDesignSystem.swift`
 - App Intents in `Vecka/Intents/`
-- Root views (`ContentView`, `MainCalendarView`, `SettingsView`) at `Vecka/` level
 
 ### Localization
 - Primary: Swedish (sv_SE)
-- Secondary: English, Japanese, Korean, German, Vietnamese, Thai, Chinese (Simplified & Traditional)
+- Secondary: English, Japanese, Korean, German, Vietnamese, Thai, Chinese
 - Use `Localization` struct for all user-facing strings
-- Holiday names localized via `HolidayRule.localizedName`
-- Localization files in `Vecka/*.lproj/Localizable.strings`
 
-### SwiftData Context Usage
-The app uses `AppInitializer` for centralized initialization and data seeding:
+### SwiftData Models
 ```swift
-// In VeckaApp.swift
 .modelContainer(for: [
     DailyNote.self,
     HolidayRule.self,
     CalendarRule.self,
     CountdownEvent.self,
-    // Expense system models
     ExpenseCategory.self,
     ExpenseTemplate.self,
     ExpenseItem.self,
     TravelTrip.self,
     MileageEntry.self,
     ExchangeRate.self,
-    // Location
     SavedLocation.self
 ])
 ```
 
-Initialization managed by `AppInitializer.swift` which seeds:
-- **CalendarManager**: Swedish (ISO 8601, active) and US calendar rules
-- **HolidayManager**: 20+ Swedish holidays with Easter calculations
-- **CountdownManager**: Predefined countdown events (New Year, Christmas, etc.)
+### 情報デザイン Compliance Checklist
 
-When adding new SwiftData models, add them to both the `modelContainer(for:)` list in `VeckaApp.swift` and update `AppInitializer.swift` if seeding is needed.
+Before committing any UI code:
+- [ ] Every container has a black border
+- [ ] Colors match semantic meaning (not random)
+- [ ] No glass/blur effects anywhere
+- [ ] All corners are squircle (continuous)
+- [ ] Typography uses SF Rounded with `.design(.rounded)`
+- [ ] No dead space at top of screens (max 8pt)
+- [ ] Dark background only on ScrollView/main container
+- [ ] All interactive elements have borders
+- [ ] Swipe rows: right=edit (cyan), left=delete (red)
+- [ ] Icons use correct weight for context (16pt medium for lists)
+- [ ] Animations are functional, not playful (max 0.25s)
+- [ ] Info density: max 3 items per card
+- [ ] Priority symbols used for importance (◎○△)
 
-### Apple HIG Compliance
-- Minimum 44pt touch targets
-- 8-point grid system spacing
-- Semantic colors for light/dark mode
-- `.ultraThinMaterial` backgrounds for glassmorphism
-- Proper accessibility labels (foundation in place)
-
-### XPC-Safe Operations
-All code must handle Xcode preview environment gracefully:
-- Wrap XPC calls in do-catch blocks
-- Provide fallback values for previews
-- Test in both simulator and preview canvas
-
-## Testing
-
-### Unit Tests (`VeckaTests/VeckaTests.swift`)
-Focus on core business logic:
-- Week calculation accuracy
-- Holiday date computation
-- Calendar rule application
-- Countdown next-occurrence logic
-
-### UI Tests (`VeckaUITests/`)
-Automated UI testing for:
-- Navigation flows
-- Widget interaction
-- Settings configuration
-- Launch performance
+---
 
 ## Common Development Tasks
 
-### Working with Travel & Expenses
-The app includes a comprehensive travel and expense tracking system:
+### Adding a New View
 
-**Data Models** (`Vecka/Models/ExpenseModels.swift`, `Vecka/Models/BusinessRules.swift`):
-- `TravelTrip`: Trip container with start/end dates, destination, purpose
-- `ExpenseItem`: Individual expenses with category, amount, currency, receipt
-- `MileageEntry`: Vehicle mileage tracking with distance and rate
-- `ExpenseCategory`: User-defined expense categories
-- `ExpenseTemplate`: Reusable expense templates
-- `ExchangeRate`: Currency conversion rates
-
-**Services**:
-- `ExpenseManager`: CRUD operations for expenses and trips
-- `TravelManager`: Trip management and report generation
-- `CurrencyService`: Currency conversion with cached rates
-
-**Views**:
-- `TripListView`: Browse and manage trips
-- `ExpenseListView`: View expenses for a trip
-- `ExpenseEntryView`: Add/edit individual expenses
-
-**PDF Export Integration**:
-Expense data is included in PDF exports via `PDFExportService` and `PDFRenderer`.
+1. Create file in `Vecka/Views/`
+2. Import `JohoDesignSystem` components
+3. Use `JohoColors` for all colors
+4. Ensure all containers have borders
+5. Use `.design(.rounded)` for all fonts
+6. Test in both light and dark mode
 
 ### Adding a New Holiday
-1. Define `HolidayRule` in SwiftData (edit `HolidayManager.seedDefaultRules`)
-2. Specify type (fixed/Easter-relative/floating/nth-weekday/lunar)
-3. Add localized name for all supported languages
-4. `HolidayEngine` automatically calculates the date
-5. Example:
 ```swift
-let valentines = HolidayRule(
-    id: "valentines-day",
-    name: "Valentine's Day",
-    localizedName: ["en": "Valentine's Day", "sv": "Alla hjärtans dag"],
+let holiday = HolidayRule(
+    id: "unique-id",
+    name: "Holiday Name",
+    localizedName: ["en": "English", "sv": "Svenska"],
     type: .fixed,
-    month: 2, day: 14,
-    regionCode: "INTL"
+    month: 12, day: 25,
+    regionCode: "SE"
 )
-context.insert(valentines)
+context.insert(holiday)
 ```
 
-### Adding a New Calendar Configuration
-1. Create `CalendarRule` entity with desired settings in `CalendarManager.seedDefaultRules`
-2. `CalendarManager` loads on app initialization
-3. `WeekCalculator` updates dynamically via `configure(with:)`
-4. Example for UK:
-```swift
-let ukRule = CalendarRule(
-    regionCode: "UK",
-    identifier: "gregorian",
-    firstWeekday: 2,  // Monday
-    minimumDaysInFirstWeek: 4,  // ISO 8601
-    localeIdentifier: "en_GB",
-    isActive: false
-)
-```
+### Working with Expenses
+- Use **Green** (`#BBF7D0`) for expense-related UI
+- Icon zone background matches semantic meaning
+- All amounts in bordered containers
 
-### Modifying UI Layout
-- **Current UI**: `ModernCalendarView.swift` (Apple HIG-compliant)
-  - iPad: Three-column NavigationSplitView (AppSidebar → month list → calendar detail)
-  - iPhone: TabView with Calendar/Library/Settings tabs
-  - Calendar grid in `CalendarGridView.swift`
-- **ContentView**: Simple wrapper instantiating ModernCalendarView
-- Navigation managed via `NavigationManager` environmentObject
-- See `TODO_VECKA_FEATURES.md` for planned UI improvements
+### Working with Trips
+- Use **Orange** (`#FED7AA`) for trip-related UI
+- Airplane icon with orange background
 
-### Adding Siri Shortcuts
-1. Create Intent in `Vecka/Intents/YourIntent.swift`
-2. Implement `AppIntent` protocol with `perform()` method
-3. Add to `AppShortcuts.swift` with phrase triggers
-4. Test via Shortcuts app or "Hey Siri"
-5. Example:
-```swift
-struct MyIntent: AppIntent {
-    static var title: LocalizedStringResource = "My Action"
-
-    func perform() async throws -> some IntentResult {
-        // Your logic here
-        return .result()
-    }
-}
-```
-
-### Working with Daily Notes
-The daily notes feature is fully implemented:
-1. SwiftData model: `DailyNote.swift` with text, color, and symbol support
-2. UI Components: `DailyNotesView.swift`, `NotesListView.swift`, `NoteColorPicker.swift`
-3. Editing: Tap any day in calendar grid to view/edit notes
-4. Features: 8 preset colors, 50+ SF Symbols, auto-save with debouncing
-5. Integration: Notes appear in calendar grid and PDF exports
+---
 
 ## Build Configuration
 
 ### Bundle Identifiers
-- Main App: `Johansson.Vecka` (legacy identifier, will update for App Store)
+- Main App: `Johansson.Vecka`
 - Widget: `Johansson.Vecka.VeckaWidget`
 - **App Store Name**: WeekGrid
 
 ### Deployment Targets
 - Main App: iOS 18.0+
 - Widget: iOS 18.0+
-- Development Team: P4LGU6F45C
-- Xcode Version: 16.2+
 - Swift Version: Swift 6.0
 
-### Capabilities & Entitlements
-- App Sandbox enabled
-- Siri & Shortcuts integration
-- WeatherKit (requires paid Apple Developer account)
-- Location services (for weather)
-- EventKit (calendar access for widget)
-- File access: read-only user-selected files for PDF export
-
-### CI/CD Pipeline
-GitHub Actions workflow (`.github/workflows/ios-build.yml`) runs on push/PR:
-- Build validation
-- Widget-specific validation
-- Unit tests (continue-on-error enabled)
-- SwiftLint code quality checks
-- Build artifact archival
+---
 
 ## Widget Implementation
 
 ### Widget Architecture
-- **Provider**: `VeckaWidget/Provider.swift` - Timeline provider with EventKit integration
-- **Entry Model**: `VeckaWidgetEntry` - Contains week info, holidays, countdown, and calendar events
-- **Views**: Separate view files in `VeckaWidget/Views/`
-  - `SmallWidgetView.swift`: Week number with planetary color
-  - `MediumWidgetView.swift`: Week number + date range
-  - `LargeWidgetView.swift`: Full 7-day calendar with events
-- **Theme**: `VeckaWidget/Theme.swift` - Shared styling and colors
-- **Components**: Reusable UI in `VeckaWidget/Components/`
+- **Provider**: Timeline provider with EventKit integration
+- **Views**: `SmallWidgetView`, `MediumWidgetView`, `LargeWidgetView`
+- **Theme**: 情報デザイン styling (borders, semantic colors)
 
 ### Widget Sizes
-- **Small (2x2)**: Week number with dynamic planetary color
-- **Medium (4x2)**: Week number + date range + next countdown
-- **Large (4x4)**: Full 7-day calendar with today highlighting, holidays, and calendar events
+- **Small**: Week number with semantic color
+- **Medium**: Week number + date range + countdown
+- **Large**: Full 7-day calendar with events
 
-### Timeline Management
-- Widget refreshes at midnight for accurate week transitions
-- Timeline provider calculates next midnight and schedules update
-- Calendar events fetched via EventKit (requires user permission)
-- Falls back gracefully if calendar access denied
-
-### Widget Deep Linking
-All widget views support deep linking via `vecka://` URL scheme. Handle in `VeckaApp.swift`:
-```swift
-.onOpenURL { url in
-    handleWidgetURL(url)
-}
-```
-
-### Adding Widget Features
-1. Update `VeckaWidgetEntry` with new data
-2. Modify `Provider.swift` to fetch/calculate data
-3. Update widget view files to display new data
-4. Ensure data is available in both app and widget targets
-5. Test in widget gallery and on home screen
-
-## Design Philosophy
-
-### Planetary Color System
-Week numbers dynamically change color based on the selected day's planetary association:
-- Monday (Moon): Silver (#C0C0C0)
-- Tuesday (Mars): Red (#E53E3E)
-- Wednesday (Mercury): Blue (#1B6DEF)
-- Thursday (Jupiter): Green (#38A169)
-- Friday (Venus): Dark Gold (#B8860B)
-- Saturday (Saturn): Brown (#8B4513)
-- Sunday (Sun): Golden (#FFD700)
-
-### Swedish Cultural Integration
-Authentic Swedish holiday calendar with proper timezone handling (Europe/Stockholm) and cultural significance preservation.
-
-### Performance-First Architecture
-- Multi-level caching (Calendar, WeekInfo, Holiday, Countdown)
-- Cached singletons prevent repeated allocations
-- Thread-safe concurrent access with barrier writes
-- Intelligent cache invalidation on date/rule changes
-
-## Known Architecture Patterns
-
-### Manager Singleton Pattern
-```swift
-class XManager {
-    static let shared = XManager()
-    private var cache: [Key: Value] = [:]
-
-    func initialize(context: ModelContext) {
-        // Seed database, load initial data
-    }
-
-    func getData() -> Value {
-        // Check cache → Query SwiftData → Update cache → Return
-    }
-}
-```
-
-All managers (`HolidayManager`, `CalendarManager`, `CountdownManager`) follow this pattern with caching for performance.
-
-### View State Management
-- `@State`: Local UI state within a view
-- `@StateObject`: Shared managers (deprecated pattern, migrating to @Observable)
-- `@Query`: SwiftData queries in views
-- `@Environment(NavigationManager.self)`: Navigation state across views
-
-### SwiftData Integration
-Models conform to SwiftData's `@Model` macro. Queries use `@Query` property wrapper in views or explicit ModelContext queries in managers.
-
-### Navigation Pattern
-Deep linking and widget taps handled via `NavigationManager`:
-```swift
-// In VeckaApp.swift
-.onOpenURL { url in
-    handleWidgetURL(url)  // Parses vecka:// URLs
-}
-
-// NavigationManager propagates to views
-class NavigationManager: ObservableObject {
-    @Published var targetDate = Date()
-    @Published var shouldScrollToWeek = false
-
-    func navigateToWeek(_ weekNumber: Int, year: Int) { ... }
-}
-```
-
-### Performance Best Practices
-1. **Use Calendar.iso8601 extension**: Reuses cached calendar instance
-2. **Manager caching**: All managers cache computed results
-3. **SwiftData @Query**: Automatic UI updates on data changes
-4. **Debouncing**: Notes auto-save uses 500ms debounce (see `DailyNotesView`)
-5. **Background processing**: Weather and PDF generation on background threads
+---
 
 ## Debugging Tips
 
 ### Week Calculation Issues
-- Verify `Calendar.iso8601` configuration (firstWeekday=2, minimumDaysInFirstWeek=4)
+- Verify `Calendar.iso8601` configuration
 - Check cache invalidation in `WeekCalculator`
-- Use `Log.i()` for debug output
 
-### Holiday Calculation Problems
-- Verify `HolidayRule` data in SwiftData
-- Test `HolidayEngine` algorithm directly
-- Check Easter calculation for moveable holidays
-- Validate timezone (Europe/Stockholm for Swedish holidays)
+### Design System Issues
+- Run audit commands to find violations
+- Check `JohoDesignSystem.swift` for correct component usage
+- Verify colors match semantic meaning
 
 ### Widget Not Updating
 - Verify timeline provider midnight calculation
-- Check widget URL scheme handling in `VeckaApp`
-- Ensure shared code compiles for widget target
+- Check widget URL scheme handling
 
-### Build Failures
-- Clean derived data: `rm -rf ~/Library/Developer/Xcode/DerivedData`
-- Verify code signing settings (usually disabled for simulator)
-- Check target membership for new files
+---
 
 ## Project Documentation
 
 ### Active Documentation
-- `CLAUDE.md`: Project instructions and architecture guide (this file)
-- `TODO_VECKA_FEATURES.md`: Feature roadmap with detailed task breakdowns
-- `REMAINING_ISSUES.md`: Deferred issues and known limitations
-- `DEVELOPMENT_REPORT_2025-12-13.md`: Most recent development status
-- `COMPLETE_REBUILD_PLAN.md`: Long-term vision and feature planning
-- `TESTFLIGHT_AUDIT.md`: TestFlight readiness checklist
+- `CLAUDE.md`: Project instructions and design system (this file)
+- `joho-design-system.json`: Complete 情報デザイン specification
+- `TODO_VECKA_FEATURES.md`: Feature roadmap
+- `REMAINING_ISSUES.md`: Deferred issues
 
-### Archived Documentation
-Historical work logs are archived in `Documentation/Archive/`:
-- Completed HIG implementation audits
-- Completed UI redesign documentation
-- Completed feature implementation logs
-- Refactoring completion reports
+---
 
-Reference archived documentation when understanding past design decisions or implementation history.
+## Quick Reference: 情報デザイン
 
-## Project Status (December 2025)
+```
+┌─────────────────────────────────────────────┐
+│         情報デザイン QUICK REFERENCE         │
+├─────────────────────────────────────────────┤
+│ COLORS (semantic only):                     │
+│   Yellow #FFE566 = Today/Now                │
+│   Cyan   #A5F3FC = Events                   │
+│   Pink   #FECDD3 = Holidays                 │
+│   Orange #FED7AA = Trips                    │
+│   Green  #BBF7D0 = Expenses                 │
+│   Purple #E9D5FF = Contacts                 │
+│   Red    #E53935 = Warnings/Sunday          │
+│   Cream  #FEF3C7 = Notes                    │
+├─────────────────────────────────────────────┤
+│ PRIORITY SYMBOLS:                           │
+│   ◎ = Primary (most important)              │
+│   ○ = Secondary (standard)                  │
+│   △ = Tertiary (optional)                   │
+│   ✕ = Excluded (don't use)                  │
+├─────────────────────────────────────────────┤
+│ マルバツ記号 (MARU-BATSU):                    │
+│   ○ circle.fill = Yes/Correct              │
+│   × xmark = No/Wrong                        │
+│   △ triangle.fill = Caution/Maybe          │
+│   □ square.fill = Neutral/Info             │
+│   ◇ diamond.fill = Special/Important       │
+├─────────────────────────────────────────────┤
+│ COLOR PLACEMENT:                            │
+│   ✓ Colors in icon zones ONLY (40pt box)   │
+│   ✗ Never color full headers/rows          │
+│   ✓ White backgrounds for containers       │
+├─────────────────────────────────────────────┤
+│ BORDERS (always black #000):                │
+│   1pt   = cells, small items                │
+│   1.5pt = list rows                         │
+│   2pt   = buttons                           │
+│   2.5pt = today/selected                    │
+│   3pt   = containers                        │
+├─────────────────────────────────────────────┤
+│ SWIPE GESTURES:                             │
+│   → Right = Edit (Cyan zone)                │
+│   ← Left  = Delete (Red zone)               │
+├─────────────────────────────────────────────┤
+│ ICONS (SF Symbols):                         │
+│   16pt .medium = List items                 │
+│   18pt .semibold = Buttons                  │
+│   20pt .medium = Navigation                 │
+│   32pt .bold = Hero display                 │
+├─────────────────────────────────────────────┤
+│ ANIMATIONS:                                 │
+│   0.1s = Selection feedback                 │
+│   0.15s = Swipe snap                        │
+│   0.2s = Expand/collapse                    │
+│   0.25s = Page transitions                  │
+├─────────────────────────────────────────────┤
+│ INFO DENSITY:                               │
+│   Max 3 items per card                      │
+│   Max 7±2 items visible                     │
+│   Primary info 2x secondary size            │
+├─────────────────────────────────────────────┤
+│ FORBIDDEN:                                  │
+│   ✗ Glass/blur materials                    │
+│   ✗ Gradients                               │
+│   ✗ Missing borders                         │
+│   ✗ Non-semantic colors                     │
+│   ✗ Dead space at top (max 8pt)             │
+│   ✗ Non-continuous corners                  │
+│   ✗ Font weights below .medium              │
+│   ✗ Bouncy/playful animations               │
+│   ✗ Scale animations > 1.05x               │
+│   ✗ Colors in full rows/headers             │
+└─────────────────────────────────────────────┘
+```
 
-### Completed Cleanup (2025-12-15 & 2025-12-27)
-**Orphaned Code Removal (2025-12-15):**
-- Deleted `AnalogClockView.swift` (5.6k LOC) - Unused StandBy mode component
-- Deleted `WeatherComponents.swift` (11.8k LOC) - Unintegrated UI components
-- Total code reduction: 17,400 LOC (8.9% of codebase)
-
-**Database & Code Optimization (2025-12-27):**
-
-**Phase 1 - Zero-Risk Deletions:**
-- Deleted 3 unused display components: `ClockDisplay.swift`, `MonthYearDisplay.swift`, `WeekNumberDisplay.swift` (~200 LOC)
-- Deleted `ExportService.swift` - duplicate export functionality (~100 LOC)
-- Removed 3 unused SwiftData models from container: `ReimbursementRate`, `ExpensePolicy`, `ApprovalWorkflow`
-- Database reduced from 15 to 12 active models (20% reduction)
-
-**Phase 2 - Aggressive Cleanup:**
-- Removed ~250 LOC of commented Weather code from `SettingsView.swift` and `ModernCalendarView.swift`
-- Deleted Business Rules system: `RuleEngine.swift`, `BusinessRules.swift` (~1,000 LOC)
-- Deleted 12 unused view components (~2,000 LOC):
-  - Countdown: `CountdownManagementView.swift`
-  - Holidays: `HolidayRuleEditorView.swift`
-  - Notes: `NoteColorPicker.swift`, `NoteAppearancePickerViews.swift`, `DayNotesBar.swift`
-  - Expenses: `DailyExpensesView.swift`, `MileageListView.swift`, `MileageEntryView.swift`, `TripReportPreviewView.swift`
-  - Weather: `WeatherStatusBanner.swift`, `WeatherBadge.swift`, `WeatherSetupAssistant.swift`
-
-**Total Cleanup Impact:**
-- **~3,550 LOC removed** in Phase 1 + Phase 2
-- **3 SwiftData models removed** from container
-- **19 files deleted** (4 core files + 12 views + 3 display components)
-- Reduced memory footprint, faster initialization, cleaner codebase
-
-**Documentation Reorganization:**
-- Archived 18 completed work logs to `Documentation/Archive/`
-- Deleted 7 superseded planning documents
-- Reduced active documentation from 32 to 7 essential files
-
-**Weather Feature Status:**
-- ✅ Backend: WeatherService.swift fully functional with WeatherKit integration
-- ✅ Settings: Weather toggle and location management implemented
-- ✅ UI: Full weather display components implemented
-  - `WeatherForecastView`: Detailed weather display
-  - `WeatherBadge`: Calendar day weather indicators
-  - `WeatherStatusBanner`: Current conditions
-  - `WeatherSetupAssistant`: First-time setup flow
-- ✅ Integration: Weather data in calendar grid and PDF exports
-- ⚠️ Requires: Paid Apple Developer account for WeatherKit access
-
-### Current Architecture State
-**Build Status**: ✅ 100% passing (0 errors, 0 warnings)
-**Code Health**: ⭐⭐⭐⭐☆ (4/5 - Good with clear improvement path)
-**Features**: 98% complete
-- ✅ Calendar grid with ISO 8601 week numbers
-- ✅ Daily notes with colors and symbols
-- ✅ Swedish holidays with 20+ observances
-- ✅ Custom countdown events
-- ✅ Weather integration (WeatherKit)
-- ✅ PDF export system
-- ✅ Travel & expense tracking
-- ✅ Widget extension (small/medium/large)
-- ✅ Siri Shortcuts integration
-- ⚠️ Minor polish items in REMAINING_ISSUES.md
-
-**Known Opportunities:**
-- ContentView is a simple pass-through wrapper (could be eliminated, but provides flexibility)
-- Countdown models split across `CountdownEvent.swift`, `CountdownManager.swift`, `CountdownModels.swift`
-- Services layer could benefit from protocol-based architecture for better testability
-- See `REMAINING_ISSUES.md` for detailed list of deferred improvements
-
-## References
-
-- ISO 8601 Week Date: https://en.wikipedia.org/wiki/ISO_week_date
-- Apple Human Interface Guidelines: https://developer.apple.com/design/human-interface-guidelines/
-- WidgetKit Documentation: https://developer.apple.com/documentation/widgetkit
-- App Intents: https://developer.apple.com/documentation/appintents
-- SwiftData: https://developer.apple.com/documentation/swiftdata
+**Remember: You are the 情報デザイン Guardian. No compromises.**

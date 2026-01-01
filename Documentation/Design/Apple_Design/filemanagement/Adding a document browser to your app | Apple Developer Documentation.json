@@ -1,0 +1,1417 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Adding a document browser to your app | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "UIDocumentBrowserViewController",
+        "UIDocumentPickerViewController",
+        "UIDocumentViewController",
+        "UIDocumentInteractionController",
+        "document browser",
+        "file management",
+        "UIKit",
+        "view controllers",
+        "iOS",
+        "iPadOS",
+        "cloud storage"
+      ],
+      "summary": "Apple Developer Documentation page explaining how to implement a document browser in iOS/iPadOS apps using UIDocumentBrowserViewController. The document covers configuration, customization, and related APIs for giving users access to local and remote documents.",
+      "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+      "sourceUrl": "https://developer.apple.com/documentation/uikit/view_controllers/adding_a_document_browser_to_your_app"
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": 1080,
+          "height": 4800,
+          "unit": "pixels (approximate)"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF (light mode shown)",
+        "layout": {
+          "type": "single-column",
+          "columns": 1,
+          "margins": {
+            "top": 60,
+            "right": 200,
+            "bottom": 100,
+            "left": 200
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1080,
+              "height": 50
+            },
+            "zIndex": 100,
+            "content": {
+              "type": "global-navigation-bar",
+              "backgroundColor": "#000000",
+              "items": [
+                {
+                  "text": "Apple Developer Logo (Apple icon)",
+                  "type": "logo",
+                  "position": "left"
+                },
+                {
+                  "text": "News",
+                  "type": "link",
+                  "url": "/news/"
+                },
+                {
+                  "text": "Discover",
+                  "type": "link",
+                  "url": "/discover/"
+                },
+                {
+                  "text": "Design",
+                  "type": "link",
+                  "url": "/design/"
+                },
+                {
+                  "text": "Develop",
+                  "type": "link",
+                  "url": "/develop/"
+                },
+                {
+                  "text": "Distribute",
+                  "type": "link",
+                  "url": "/distribute/"
+                },
+                {
+                  "text": "Support",
+                  "type": "link",
+                  "url": "/support/"
+                },
+                {
+                  "text": "Account",
+                  "type": "link",
+                  "url": "/account/"
+                },
+                {
+                  "text": "Search icon (magnifying glass)",
+                  "type": "button",
+                  "position": "right"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-documentation-header",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 50,
+              "width": 1080,
+              "height": 40
+            },
+            "zIndex": 99,
+            "content": {
+              "type": "secondary-navigation",
+              "backgroundColor": "#F5F5F7",
+              "items": [
+                {
+                  "icon": "book icon",
+                  "text": "Documentation",
+                  "type": "section-header"
+                },
+                {
+                  "text": "chevron down icon",
+                  "type": "dropdown-indicator",
+                  "position": "right"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-breadcrumb",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 200,
+              "y": 100,
+              "width": 680,
+              "height": 20
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "breadcrumb-trail",
+              "items": [
+                {
+                  "text": "UIKit",
+                  "url": "/documentation/uikit",
+                  "isLink": true
+                },
+                {
+                  "text": "/",
+                  "type": "separator"
+                },
+                {
+                  "text": "View controllers",
+                  "url": "/documentation/uikit/view_controllers",
+                  "isLink": true
+                },
+                {
+                  "text": "/",
+                  "type": "separator"
+                },
+                {
+                  "text": "Adding a document browser to your app",
+                  "isLink": false,
+                  "isCurrent": true
+                }
+              ],
+              "textStyle": {
+                "fontSize": "13px",
+                "color": "#666666"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-title",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 200,
+              "y": 130,
+              "width": 680,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 1,
+              "text": "Adding a document browser to your app",
+              "textStyle": {
+                "fontFamily": "SF Pro Display",
+                "fontSize": "34px",
+                "fontWeight": "bold",
+                "color": "#1D1D1F"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-subtitle",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 200,
+              "y": 190,
+              "width": 680,
+              "height": 30
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Give users access to their local or remote documents from within your app.",
+              "textStyle": {
+                "fontFamily": "SF Pro Text",
+                "fontSize": "17px",
+                "fontWeight": "normal",
+                "color": "#424245"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-overview-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 200,
+              "y": 250,
+              "width": 680,
+              "height": 30
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "Overview",
+              "textStyle": {
+                "fontFamily": "SF Pro Display",
+                "fontSize": "24px",
+                "fontWeight": "bold",
+                "color": "#1D1D1F"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-overview-paragraph1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 200,
+              "y": 290,
+              "width": 680,
+              "height": 70
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Use a document browser view controller as the root of your app's view hierarchy. When a user selects a document, you present its view controller modally from your document browser.",
+              "textStyle": {
+                "fontFamily": "SF Pro Text",
+                "fontSize": "15px",
+                "fontWeight": "normal",
+                "color": "#1D1D1F",
+                "lineHeight": "1.5"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-diagram-architecture",
+            "elementType": "diagram",
+            "boundingBox": {
+              "x": 300,
+              "y": 370,
+              "width": 480,
+              "height": 180
+            },
+            "zIndex": 10,
+            "content": {
+              "diagramType": "architecture",
+              "title": "Document Browser View Hierarchy",
+              "description": "A layered diagram showing the view hierarchy relationship between Document, Document browser, and App window. The layers are displayed as overlapping parallelograms (3D perspective cards) with the Document layer on top, Document browser in the middle, and App window at the bottom.",
+              "nodes": [
+                {
+                  "nodeId": "layer-document",
+                  "label": "Document",
+                  "shape": "parallelogram",
+                  "style": {
+                    "fillColor": "gradient from #A8E063 (green) to #8DC63F (darker green)",
+                    "borderColor": "none",
+                    "textColor": "#1D1D1F"
+                  },
+                  "position": {
+                    "x": 350,
+                    "y": 370
+                  },
+                  "semanticRole": "The document view controller presented modally on top"
+                },
+                {
+                  "nodeId": "layer-document-browser",
+                  "label": "Document browser",
+                  "shape": "parallelogram",
+                  "style": {
+                    "fillColor": "gradient from #FFE066 (yellow) to #E6C84D (darker yellow)",
+                    "borderColor": "none",
+                    "textColor": "#1D1D1F"
+                  },
+                  "position": {
+                    "x": 300,
+                    "y": 430
+                  },
+                  "semanticRole": "The UIDocumentBrowserViewController as root view controller"
+                },
+                {
+                  "nodeId": "layer-app-window",
+                  "label": "App window",
+                  "shape": "parallelogram",
+                  "style": {
+                    "fillColor": "gradient from #E0E0E0 (light gray) to #C0C0C0 (medium gray)",
+                    "borderColor": "none",
+                    "textColor": "#1D1D1F"
+                  },
+                  "position": {
+                    "x": 250,
+                    "y": 490
+                  },
+                  "semanticRole": "The UIWindow containing the view hierarchy"
+                }
+              ],
+              "connections": [],
+              "swimlanes": [],
+              "legend": {
+                "present": false,
+                "entries": []
+              },
+              "narrativeWalkthrough": "The diagram illustrates a three-layer view hierarchy where the App window forms the base layer (gray), the Document browser sits on top of it as the root view controller (yellow/gold), and the Document is presented modally on the topmost layer (green). This visual representation emphasizes that the document browser must be the root view controller, with documents presented modally above it."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-overview-paragraph1",
+                "relationshipType": "illustrates"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-important-callout",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 200,
+              "y": 570,
+              "width": 680,
+              "height": 130
+            },
+            "zIndex": 10,
+            "content": {
+              "calloutType": "important",
+              "backgroundColor": "#FFF3CD (light yellow/amber)",
+              "borderColor": "none",
+              "iconPresent": false,
+              "headerText": "Important",
+              "headerStyle": {
+                "fontFamily": "SF Pro Text",
+                "fontSize": "15px",
+                "fontWeight": "bold",
+                "color": "#1D1D1F"
+              },
+              "bodyText": "Always assign the document browser as your app's root view controller. Don't place the document browser in a navigation controller, tab bar, or split view, and don't present the document browser modally.\n\nIf you want to present a document browser from another location in your view hierarchy, use a UIDocumentPickerViewController instead.",
+              "bodyStyle": {
+                "fontFamily": "SF Pro Text",
+                "fontSize": "15px",
+                "fontWeight": "normal",
+                "color": "#1D1D1F",
+                "lineHeight": "1.5"
+              },
+              "links": [
+                {
+                  "text": "UIDocumentPickerViewController",
+                  "url": "/documentation/uikit/uidocumentpickerviewcontroller",
+                  "color": "#0066CC"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-overview-paragraph2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 200,
+              "y": 720,
+              "width": 680,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "The browser automatically gives users the option to share documents using the Share button or a drag-and-drop action. It also provides a standard interface for browsing and managing documents.",
+              "textStyle": {
+                "fontFamily": "SF Pro Text",
+                "fontSize": "15px",
+                "fontWeight": "normal",
+                "color": "#1D1D1F",
+                "lineHeight": "1.5"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-overview-paragraph3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 200,
+              "y": 780,
+              "width": 680,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "You set the type of documents that the user can select when the browser is first created. You can also set the browser's appearance, modify its behaviors, and add custom actions.",
+              "textStyle": {
+                "fontFamily": "SF Pro Text",
+                "fontSize": "15px",
+                "fontWeight": "normal",
+                "color": "#1D1D1F",
+                "lineHeight": "1.5"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-topics-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 200,
+              "y": 860,
+              "width": 680,
+              "height": 30
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "Topics",
+              "textStyle": {
+                "fontFamily": "SF Pro Display",
+                "fontSize": "24px",
+                "fontWeight": "bold",
+                "color": "#1D1D1F"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-configuration-subheading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 200,
+              "y": 910,
+              "width": 680,
+              "height": 25
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Configuration",
+              "textStyle": {
+                "fontFamily": "SF Pro Display",
+                "fontSize": "19px",
+                "fontWeight": "semibold",
+                "color": "#1D1D1F"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-link-setting-up",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 200,
+              "y": 945,
+              "width": 680,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "documentation-links",
+              "items": [
+                {
+                  "icon": "document icon (gray rectangle with folded corner)",
+                  "title": "Setting up a document browser app",
+                  "titleUrl": "/documentation/uikit/view_controllers/adding_a_document_browser_to_your_app/setting_up_a_document_browser_app",
+                  "titleStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "medium",
+                    "color": "#0066CC"
+                  },
+                  "description": "Add a document browser view controller to your app.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "14px",
+                    "fontWeight": "normal",
+                    "color": "#666666"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-link-presenting-documents",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 200,
+              "y": 1005,
+              "width": 680,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "documentation-links",
+              "items": [
+                {
+                  "icon": "document icon (gray rectangle with folded corner)",
+                  "title": "Presenting selected documents",
+                  "titleUrl": "/documentation/uikit/view_controllers/adding_a_document_browser_to_your_app/presenting_selected_documents",
+                  "titleStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "medium",
+                    "color": "#0066CC"
+                  },
+                  "description": "Display user-selected documents over your browser view controller.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "14px",
+                    "fontWeight": "normal",
+                    "color": "#666666"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-link-enabling-sharing",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 200,
+              "y": 1065,
+              "width": 680,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "documentation-links",
+              "items": [
+                {
+                  "icon": "document icon (gray rectangle with folded corner)",
+                  "title": "Enabling document sharing",
+                  "titleUrl": "/documentation/uikit/view_controllers/adding_a_document_browser_to_your_app/enabling_document_sharing",
+                  "titleStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "medium",
+                    "color": "#0066CC"
+                  },
+                  "description": "Give users the ability to import and export documents from your app.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "14px",
+                    "fontWeight": "normal",
+                    "color": "#666666"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-customization-subheading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 200,
+              "y": 1140,
+              "width": 680,
+              "height": 25
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Customization",
+              "textStyle": {
+                "fontFamily": "SF Pro Display",
+                "fontSize": "19px",
+                "fontWeight": "semibold",
+                "color": "#1D1D1F"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-link-customizing-browser",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 200,
+              "y": 1175,
+              "width": 680,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "documentation-links",
+              "items": [
+                {
+                  "icon": "document icon (gray rectangle with folded corner)",
+                  "title": "Customizing the browser",
+                  "titleUrl": "/documentation/uikit/view_controllers/adding_a_document_browser_to_your_app/customizing_the_browser",
+                  "titleStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "medium",
+                    "color": "#0066CC"
+                  },
+                  "description": "Customize the document browser's look and behavior.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "14px",
+                    "fontWeight": "normal",
+                    "color": "#666666"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-link-custom-actions",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 200,
+              "y": 1235,
+              "width": 680,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "documentation-links",
+              "items": [
+                {
+                  "icon": "document icon (gray rectangle with folded corner)",
+                  "title": "Adding custom actions and activities",
+                  "titleUrl": "/documentation/uikit/view_controllers/adding_a_document_browser_to_your_app/adding_custom_actions_and_activities",
+                  "titleStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "medium",
+                    "color": "#0066CC"
+                  },
+                  "description": "Add custom document browser actions, activities, and bar items.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "14px",
+                    "fontWeight": "normal",
+                    "color": "#666666"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 200,
+              "y": 1320,
+              "width": 680,
+              "height": 30
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "See Also",
+              "textStyle": {
+                "fontFamily": "SF Pro Display",
+                "fontSize": "24px",
+                "fontWeight": "bold",
+                "color": "#1D1D1F"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-documents-directories-subheading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 200,
+              "y": 1370,
+              "width": 680,
+              "height": 25
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Documents and directories",
+              "textStyle": {
+                "fontFamily": "SF Pro Display",
+                "fontSize": "19px",
+                "fontWeight": "semibold",
+                "color": "#1D1D1F"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-link-customizing-launch",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 200,
+              "y": 1405,
+              "width": 680,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "documentation-links",
+              "items": [
+                {
+                  "icon": "document icon (gray rectangle with folded corner)",
+                  "title": "Customizing a document-based app's launch experience",
+                  "titleUrl": "/documentation/uikit/view_controllers/adding_a_document_browser_to_your_app/customizing_a_document-based_apps_launch_experience",
+                  "titleStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "medium",
+                    "color": "#0066CC"
+                  },
+                  "description": "Add unique elements to your app's document launch scene.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "14px",
+                    "fontWeight": "normal",
+                    "color": "#666666"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-link-providing-access",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 200,
+              "y": 1465,
+              "width": 680,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "documentation-links",
+              "items": [
+                {
+                  "icon": "document icon (gray rectangle with folded corner)",
+                  "title": "Providing access to directories",
+                  "titleUrl": "/documentation/uikit/view_controllers/adding_a_document_browser_to_your_app/providing_access_to_directories",
+                  "titleStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "medium",
+                    "color": "#0066CC"
+                  },
+                  "description": "Use a document picker to access the content of a directory outside your app's container.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "14px",
+                    "fontWeight": "normal",
+                    "color": "#666666"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-link-building-browser-based-app",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 200,
+              "y": 1525,
+              "width": 680,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "documentation-links",
+              "items": [
+                {
+                  "icon": "code brackets icon { }",
+                  "title": "Building a document browser-based app",
+                  "titleUrl": "/documentation/uikit/view_controllers/adding_a_document_browser_to_your_app/building_a_document_browser-based_app",
+                  "titleStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "medium",
+                    "color": "#0066CC"
+                  },
+                  "description": "Use a document browser to provide access to the user's text files.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "14px",
+                    "fontWeight": "normal",
+                    "color": "#666666"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-link-custom-file-formats",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 200,
+              "y": 1585,
+              "width": 680,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "documentation-links",
+              "items": [
+                {
+                  "icon": "code brackets icon { }",
+                  "title": "Building a document browser app for custom file formats",
+                  "titleUrl": "/documentation/uikit/view_controllers/adding_a_document_browser_to_your_app/building_a_document_browser_app_for_custom_file_formats",
+                  "titleStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "15px",
+                    "fontWeight": "medium",
+                    "color": "#0066CC"
+                  },
+                  "description": "Implement a custom document file format to manage user interactions with files on different cloud storage providers.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "14px",
+                    "fontWeight": "normal",
+                    "color": "#666666"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-class-uidocumentviewcontroller",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 200,
+              "y": 1660,
+              "width": 680,
+              "height": 55
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "api-reference",
+              "items": [
+                {
+                  "prefix": "class",
+                  "prefixStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "normal",
+                    "color": "#666666"
+                  },
+                  "title": "UIDocumentViewController",
+                  "titleUrl": "/documentation/uikit/uidocumentviewcontroller",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "medium",
+                    "color": "#0066CC"
+                  },
+                  "description": "A view controller that manages and presents a document stored locally or in the cloud.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "14px",
+                    "fontWeight": "normal",
+                    "color": "#666666"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-class-uidocumentbrowserviewcontroller",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 200,
+              "y": 1725,
+              "width": 680,
+              "height": 55
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "api-reference",
+              "items": [
+                {
+                  "prefix": "class",
+                  "prefixStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "normal",
+                    "color": "#666666"
+                  },
+                  "title": "UIDocumentBrowserViewController",
+                  "titleUrl": "/documentation/uikit/uidocumentbrowserviewcontroller",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "medium",
+                    "color": "#0066CC"
+                  },
+                  "description": "A view controller for browsing and performing actions on documents that you store locally and in the cloud.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "14px",
+                    "fontWeight": "normal",
+                    "color": "#666666"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-class-uidocumentpickerviewcontroller",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 200,
+              "y": 1790,
+              "width": 680,
+              "height": 55
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "api-reference",
+              "items": [
+                {
+                  "prefix": "class",
+                  "prefixStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "normal",
+                    "color": "#666666"
+                  },
+                  "title": "UIDocumentPickerViewController",
+                  "titleUrl": "/documentation/uikit/uidocumentpickerviewcontroller",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "medium",
+                    "color": "#0066CC"
+                  },
+                  "description": "A view controller that provides access to documents or destinations outside your app's sandbox.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "14px",
+                    "fontWeight": "normal",
+                    "color": "#666666"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-class-uidocumentinteractioncontroller",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 200,
+              "y": 1855,
+              "width": 680,
+              "height": 55
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "api-reference",
+              "items": [
+                {
+                  "prefix": "class",
+                  "prefixStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "13px",
+                    "fontWeight": "normal",
+                    "color": "#666666"
+                  },
+                  "title": "UIDocumentInteractionController",
+                  "titleUrl": "/documentation/uikit/uidocumentinteractioncontroller",
+                  "titleStyle": {
+                    "fontFamily": "SF Mono",
+                    "fontSize": "15px",
+                    "fontWeight": "medium",
+                    "color": "#0066CC"
+                  },
+                  "description": "A view controller that previews, opens, or prints files with a file format that your app can't handle directly.",
+                  "descriptionStyle": {
+                    "fontFamily": "SF Pro Text",
+                    "fontSize": "14px",
+                    "fontWeight": "normal",
+                    "color": "#666666"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 1950,
+              "width": 1080,
+              "height": 600
+            },
+            "zIndex": 5,
+            "content": {
+              "type": "site-footer",
+              "backgroundColor": "#F5F5F7",
+              "columns": [
+                {
+                  "heading": "Platforms",
+                  "items": [
+                    {"text": "iOS", "url": "/ios/"},
+                    {"text": "iPadOS", "url": "/ipados/"},
+                    {"text": "macOS", "url": "/macos/"},
+                    {"text": "tvOS", "url": "/tvos/"},
+                    {"text": "visionOS", "url": "/visionos/"},
+                    {"text": "watchOS", "url": "/watchos/"}
+                  ]
+                },
+                {
+                  "heading": "Tools",
+                  "items": [
+                    {"text": "Swift", "url": "/swift/"},
+                    {"text": "SwiftUI", "url": "/xcode/swiftui/"},
+                    {"text": "Swift Playground", "url": "/swift-playgrounds/"},
+                    {"text": "TestFlight", "url": "/testflight/"},
+                    {"text": "Xcode", "url": "/xcode/"},
+                    {"text": "Xcode Cloud", "url": "/xcode-cloud/"},
+                    {"text": "SF Symbols", "url": "/sf-symbols/"}
+                  ]
+                },
+                {
+                  "heading": "Topics & Technologies",
+                  "items": [
+                    {"text": "Accessibility", "url": "/accessibility/"},
+                    {"text": "Accessories", "url": "/accessories/"},
+                    {"text": "App Extension", "url": "/app-extensions/"},
+                    {"text": "App Store", "url": "/app-store/"},
+                    {"text": "Audio & Video", "url": "/av-foundation/"},
+                    {"text": "Augmented Reality", "url": "/augmented-reality/"},
+                    {"text": "Design", "url": "/design/"},
+                    {"text": "Distribution", "url": "/distribution/"},
+                    {"text": "Education", "url": "/education/"},
+                    {"text": "Fonts", "url": "/fonts/"},
+                    {"text": "Games", "url": "/games/"},
+                    {"text": "Health & Fitness", "url": "/health-fitness/"},
+                    {"text": "In-App Purchase", "url": "/in-app-purchase/"},
+                    {"text": "Localization", "url": "/localization/"},
+                    {"text": "Maps & Location", "url": "/maps/"},
+                    {"text": "Machine Learning & AI", "url": "/machine-learning/"},
+                    {"text": "Open Source", "url": "/opensource/"},
+                    {"text": "Security", "url": "/security/"},
+                    {"text": "Safari & Web", "url": "/safari/"}
+                  ]
+                },
+                {
+                  "heading": "Resources",
+                  "items": [
+                    {"text": "Documentation", "url": "/documentation/"},
+                    {"text": "Tutorials", "url": "/tutorials/"},
+                    {"text": "Downloads", "url": "/download/"},
+                    {"text": "Forums", "url": "https://developer.apple.com/forums/"},
+                    {"text": "Videos", "url": "/videos/"}
+                  ]
+                },
+                {
+                  "heading": "Support",
+                  "items": [
+                    {"text": "Support Articles", "url": "https://support.apple.com/"},
+                    {"text": "Contact Us", "url": "/contact/"},
+                    {"text": "Bug Reporting", "url": "https://developer.apple.com/bug-reporting/"},
+                    {"text": "System Status", "url": "https://developer.apple.com/system-status/"}
+                  ]
+                },
+                {
+                  "heading": "Account",
+                  "items": [
+                    {"text": "Apple Developer", "url": "/account/"},
+                    {"text": "App Store Connect", "url": "https://appstoreconnect.apple.com/"},
+                    {"text": "Certificates, IDs, & Profiles", "url": "/account/resources/certificates/list"},
+                    {"text": "Feedback Assistant", "url": "https://feedbackassistant.apple.com/"}
+                  ]
+                },
+                {
+                  "heading": "Programs",
+                  "items": [
+                    {"text": "Apple Developer Program", "url": "/programs/"},
+                    {"text": "Apple Developer Enterprise Program", "url": "/programs/enterprise/"},
+                    {"text": "App Store Small Business Program", "url": "/app-store/small-business-program/"},
+                    {"text": "MFi Program", "url": "/programs/mfi/"},
+                    {"text": "News Partner Program", "url": "/news-partner-program/"},
+                    {"text": "Video Partner Program", "url": "/programs/video-partner-program/"},
+                    {"text": "Security Bounty Program", "url": "/security-bounty/"},
+                    {"text": "Security Research Device Program", "url": "/programs/security-research-device-program/"}
+                  ]
+                },
+                {
+                  "heading": "Events",
+                  "items": [
+                    {"text": "Meet with Apple", "url": "/events/"},
+                    {"text": "Apple Developer Centers", "url": "/developer-centers/"},
+                    {"text": "App Store Awards", "url": "/app-store/app-store-awards/"},
+                    {"text": "Apple Design Awards", "url": "/design/awards/"},
+                    {"text": "Apple Developer Academies", "url": "/academies/"},
+                    {"text": "WWDC", "url": "/wwdc/"}
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-feedback",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 200,
+              "y": 2550,
+              "width": 680,
+              "height": 20
+            },
+            "zIndex": 5,
+            "content": {
+              "text": "To submit feedback on documentation, visit Feedback Assistant.",
+              "textStyle": {
+                "fontFamily": "SF Pro Text",
+                "fontSize": "12px",
+                "fontWeight": "normal",
+                "color": "#666666"
+              },
+              "links": [
+                {
+                  "text": "Feedback Assistant",
+                  "url": "https://feedbackassistant.apple.com/"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-theme-toggle",
+            "elementType": "other",
+            "boundingBox": {
+              "x": 900,
+              "y": 2550,
+              "width": 120,
+              "height": 30
+            },
+            "zIndex": 5,
+            "content": {
+              "type": "toggle-button-group",
+              "description": "Theme selector with three options",
+              "buttons": [
+                {
+                  "label": "Light",
+                  "isSelected": false
+                },
+                {
+                  "label": "Dark",
+                  "isSelected": false
+                },
+                {
+                  "label": "Auto",
+                  "isSelected": true,
+                  "style": {
+                    "backgroundColor": "#007AFF (blue, indicating active selection)"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-copyright-footer",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 200,
+              "y": 2590,
+              "width": 680,
+              "height": 20
+            },
+            "zIndex": 5,
+            "content": {
+              "text": "Copyright © 2025 Apple Inc. All rights reserved.",
+              "textStyle": {
+                "fontFamily": "SF Pro Text",
+                "fontSize": "12px",
+                "fontWeight": "normal",
+                "color": "#666666"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-legal-links",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 200,
+              "y": 2610,
+              "width": 680,
+              "height": 20
+            },
+            "zIndex": 5,
+            "content": {
+              "type": "legal-links",
+              "items": [
+                {
+                  "text": "Terms of Use",
+                  "url": "https://www.apple.com/legal/internet-services/terms/site.html"
+                },
+                {
+                  "text": "Privacy Policy",
+                  "url": "https://www.apple.com/privacy/privacy-policy/"
+                },
+                {
+                  "text": "Agreements and Guidelines",
+                  "url": "/support/terms/"
+                }
+              ],
+              "textStyle": {
+                "fontFamily": "SF Pro Text",
+                "fontSize": "12px",
+                "fontWeight": "normal",
+                "color": "#666666"
+              }
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation",
+          "page1-documentation-header",
+          "page1-breadcrumb",
+          "page1-main-title",
+          "page1-subtitle",
+          "page1-overview-heading",
+          "page1-overview-paragraph1",
+          "page1-diagram-architecture",
+          "page1-important-callout",
+          "page1-overview-paragraph2",
+          "page1-overview-paragraph3",
+          "page1-topics-heading",
+          "page1-configuration-subheading",
+          "page1-link-setting-up",
+          "page1-link-presenting-documents",
+          "page1-link-enabling-sharing",
+          "page1-customization-subheading",
+          "page1-link-customizing-browser",
+          "page1-link-custom-actions",
+          "page1-see-also-heading",
+          "page1-documents-directories-subheading",
+          "page1-link-customizing-launch",
+          "page1-link-providing-access",
+          "page1-link-building-browser-based-app",
+          "page1-link-custom-file-formats",
+          "page1-class-uidocumentviewcontroller",
+          "page1-class-uidocumentbrowserviewcontroller",
+          "page1-class-uidocumentpickerviewcontroller",
+          "page1-class-uidocumentinteractioncontroller",
+          "page1-footer",
+          "page1-footer-feedback",
+          "page1-theme-toggle",
+          "page1-copyright-footer",
+          "page1-legal-links"
+        ],
+        "pageSummary": "This Apple Developer Documentation page explains how to add a document browser to an iOS/iPadOS app using UIDocumentBrowserViewController. It covers the view hierarchy requirements (document browser must be root), configuration topics (setting up, presenting documents, enabling sharing), customization options (appearance, behaviors, custom actions), and related APIs (UIDocumentViewController, UIDocumentPickerViewController, UIDocumentInteractionController). The page includes a layered diagram showing the proper view hierarchy and an important callout warning about the root view controller requirement."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": false,
+        "entries": []
+      },
+      "runningHeaders": "Documentation navigation bar with Apple Developer branding",
+      "runningFooters": "Site-wide footer with platform links, tools, resources, programs, and legal information",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "overview",
+          "title": "Overview",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Introduces the document browser view controller as the root of an app's view hierarchy, explains modal presentation of selected documents, and describes automatic sharing capabilities."
+        },
+        {
+          "sectionId": "topics-configuration",
+          "title": "Topics - Configuration",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Links to three configuration articles: setting up a document browser app, presenting selected documents, and enabling document sharing."
+        },
+        {
+          "sectionId": "topics-customization",
+          "title": "Topics - Customization",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Links to two customization articles: customizing the browser appearance/behavior and adding custom actions/activities."
+        },
+        {
+          "sectionId": "see-also",
+          "title": "See Also - Documents and directories",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Related documentation including launch customization, directory access, sample code projects, and four UIKit document-related view controller classes."
+        }
+      ],
+      "documentFlow": "The document begins with a high-level overview explaining the document browser's role and architectural requirements, supported by a visual diagram. An important callout emphasizes the critical constraint that the browser must be the root view controller. The document then organizes related subtopics into Configuration and Customization categories, followed by a See Also section with related documentation and API references."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "UIDocumentBrowserViewController",
+          "definition": "A view controller for browsing and performing actions on documents that you store locally and in the cloud.",
+          "occurrences": 2
+        },
+        {
+          "term": "UIDocumentPickerViewController",
+          "definition": "A view controller that provides access to documents or destinations outside your app's sandbox. Use this when you need a document browser at a non-root location in the view hierarchy.",
+          "occurrences": 2
+        },
+        {
+          "term": "UIDocumentViewController",
+          "definition": "A view controller that manages and presents a document stored locally or in the cloud.",
+          "occurrences": 1
+        },
+        {
+          "term": "UIDocumentInteractionController",
+          "definition": "A view controller that previews, opens, or prints files with a file format that your app can't handle directly.",
+          "occurrences": 1
+        },
+        {
+          "term": "root view controller",
+          "definition": "The topmost view controller in an app's view hierarchy, directly assigned to the window. The document browser must serve as the root view controller.",
+          "occurrences": 2
+        },
+        {
+          "term": "modal presentation",
+          "definition": "A presentation style where a view controller is displayed on top of another, typically covering the screen. Documents are presented modally from the document browser.",
+          "occurrences": 2
+        }
+      ],
+      "keyFindings": [
+        "Document browser must be the root view controller - never embed it in navigation controllers, tab bars, split views, or present it modally",
+        "When a user selects a document, present its view controller modally from the document browser",
+        "Use UIDocumentPickerViewController instead if you need document browser functionality at a non-root location",
+        "The browser automatically provides Share button and drag-and-drop for document sharing",
+        "Document types must be specified when the browser is first created",
+        "Browser appearance, behaviors, and custom actions can be configured after creation"
+      ],
+      "technicalSpecifications": {
+        "minimumDeploymentTarget": "iOS (version not specified on this page)",
+        "frameworks": ["UIKit"],
+        "keyClasses": [
+          "UIDocumentBrowserViewController",
+          "UIDocumentPickerViewController",
+          "UIDocumentViewController",
+          "UIDocumentInteractionController"
+        ],
+        "viewHierarchyRequirement": "Document browser must be window's root view controller"
+      },
+      "designDecisions": [
+        {
+          "decision": "Document browser as root view controller",
+          "rationale": "Ensures consistent document browsing experience and proper integration with system file providers and cloud storage"
+        },
+        {
+          "decision": "Modal presentation for documents",
+          "rationale": "Allows the browser to remain in the view hierarchy for easy navigation back to file selection"
+        },
+        {
+          "decision": "Provide UIDocumentPickerViewController as alternative",
+          "rationale": "Offers flexibility for apps that need document selection from non-root locations in their navigation"
+        }
+      ]
+    }
+  }
+}

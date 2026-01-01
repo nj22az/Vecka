@@ -1,0 +1,2094 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "UILayoutGuide | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "UILayoutGuide",
+        "Auto Layout",
+        "UIKit",
+        "iOS",
+        "layout anchors",
+        "constraints",
+        "placeholder views",
+        "keyboard layout",
+        "Swift"
+      ],
+      "summary": "Apple Developer Documentation page for UILayoutGuide, a UIKit class that provides a rectangular area capable of interacting with Auto Layout. The document explains how layout guides replace placeholder views for defining spaces and encapsulating UI elements, includes code examples, and documents all properties, methods, and relationships of the class."
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": 1512,
+          "height": 6508,
+          "unit": "pixels"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF",
+        "layout": {
+          "type": "multi-column",
+          "columns": 3,
+          "margins": {
+            "top": 0,
+            "right": 0,
+            "bottom": 40,
+            "left": 0
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1512,
+              "height": 52
+            },
+            "zIndex": 100,
+            "content": {
+              "navigationType": "primary-header",
+              "backgroundColor": "#000000",
+              "items": [
+                {
+                  "type": "logo",
+                  "text": "Developer",
+                  "icon": "Apple logo (white)",
+                  "link": "https://developer.apple.com"
+                },
+                {
+                  "type": "menu-item",
+                  "text": "News",
+                  "link": null
+                },
+                {
+                  "type": "menu-item",
+                  "text": "Discover",
+                  "link": null
+                },
+                {
+                  "type": "menu-item",
+                  "text": "Design",
+                  "link": null
+                },
+                {
+                  "type": "menu-item",
+                  "text": "Develop",
+                  "link": null
+                },
+                {
+                  "type": "menu-item",
+                  "text": "Distribute",
+                  "link": null
+                },
+                {
+                  "type": "menu-item",
+                  "text": "Support",
+                  "link": null
+                },
+                {
+                  "type": "menu-item",
+                  "text": "Account",
+                  "link": null
+                }
+              ],
+              "rightSideElements": [
+                {
+                  "type": "search-icon",
+                  "icon": "magnifying glass"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-secondary-header",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 52,
+              "width": 1512,
+              "height": 44
+            },
+            "zIndex": 99,
+            "content": {
+              "navigationType": "secondary-header",
+              "backgroundColor": "#F5F5F7",
+              "items": [
+                {
+                  "type": "breadcrumb",
+                  "icon": "document icon",
+                  "text": "Documentation"
+                },
+                {
+                  "type": "language-selector",
+                  "text": "Language: Swift",
+                  "dropdownIndicator": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-left-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 96,
+              "width": 260,
+              "height": 1200
+            },
+            "zIndex": 50,
+            "content": {
+              "navigationType": "sidebar",
+              "backgroundColor": "#FFFFFF",
+              "sections": [
+                {
+                  "title": "All Technologies",
+                  "items": [
+                    {
+                      "text": "UIKit",
+                      "expandable": true,
+                      "expanded": true,
+                      "children": [
+                        {
+                          "text": "UILayoutGuide",
+                          "expandable": true,
+                          "expanded": true,
+                          "children": [
+                            "Positioning content within layout...",
+                            "Positioning content relative to the...",
+                            {
+                              "prefix": "C",
+                              "text": "NSLayoutConstraint"
+                            },
+                            {
+                              "prefix": "Pr",
+                              "text": "UILayoutSupport"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "title": "Layout guides",
+                  "items": [
+                    {
+                      "prefix": "C",
+                      "text": "UILayoutGuide",
+                      "selected": true
+                    }
+                  ]
+                },
+                {
+                  "title": "Working with layout guides",
+                  "items": [
+                    {
+                      "prefix": "P",
+                      "text": "var identifier: String"
+                    },
+                    {
+                      "prefix": "P",
+                      "text": "var layoutFrame: CGRect"
+                    },
+                    {
+                      "prefix": "P",
+                      "text": "var owningView: UIView?"
+                    }
+                  ]
+                },
+                {
+                  "title": "Creating constraints using layout...",
+                  "items": [
+                    {
+                      "prefix": "P",
+                      "text": "var bottomAnchor: NSLayoutYA..."
+                    },
+                    {
+                      "prefix": "P",
+                      "text": "var centerXAnchor: NSLayoutX..."
+                    },
+                    {
+                      "prefix": "P",
+                      "text": "var centerYAnchor: NSLayoutY..."
+                    },
+                    {
+                      "prefix": "P",
+                      "text": "var heightAnchor: NSLayoutDi..."
+                    },
+                    {
+                      "prefix": "P",
+                      "text": "var leadingAnchor: NSLayoutX..."
+                    },
+                    {
+                      "prefix": "P",
+                      "text": "var leftAnchor: NSLayoutXAxis..."
+                    },
+                    {
+                      "prefix": "P",
+                      "text": "var rightAnchor: NSLayoutXAxi..."
+                    },
+                    {
+                      "prefix": "P",
+                      "text": "var topAnchor: NSLayoutYAxisA..."
+                    },
+                    {
+                      "prefix": "P",
+                      "text": "var trailingAnchor: NSLayoutXA..."
+                    },
+                    {
+                      "prefix": "P",
+                      "text": "var widthAnchor: NSLayoutDim..."
+                    }
+                  ]
+                },
+                {
+                  "title": "Debugging the layout guide",
+                  "items": [
+                    {
+                      "prefix": "M",
+                      "text": "func constraintsAffectingLayou..."
+                    },
+                    {
+                      "prefix": "P",
+                      "text": "var hasAmbiguousLayout: Bool"
+                    }
+                  ]
+                },
+                {
+                  "title": "Handling keyboard layout",
+                  "items": [
+                    {
+                      "prefix": "P",
+                      "text": "var keyboardLayoutGuide: UIKe..."
+                    },
+                    {
+                      "prefix": "C",
+                      "text": "UIKeyboardLayoutGuide"
+                    },
+                    {
+                      "prefix": "C",
+                      "text": "UITrackingLayoutGuide"
+                    },
+                    {
+                      "prefix": "C",
+                      "text": "NSLayoutDimension"
+                    }
+                  ]
+                }
+              ],
+              "filterField": {
+                "placeholder": "Filter",
+                "icon": "/"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-breadcrumb-trail",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 280,
+              "y": 110,
+              "width": 800,
+              "height": 20
+            },
+            "zIndex": 60,
+            "content": {
+              "navigationType": "breadcrumb",
+              "items": [
+                {
+                  "text": "Developer Documentation",
+                  "link": true
+                },
+                {
+                  "text": "UIKit / UILayoutGuide",
+                  "link": true
+                }
+              ],
+              "separator": "/"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-class-badge",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 280,
+              "y": 140,
+              "width": 50,
+              "height": 20
+            },
+            "zIndex": 61,
+            "content": {
+              "type": "badge",
+              "text": "Class",
+              "backgroundColor": "#F0F0F0",
+              "textColor": "#666666",
+              "borderRadius": "4px"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-main-title",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 165,
+              "width": 800,
+              "height": 50
+            },
+            "zIndex": 62,
+            "content": {
+              "level": 1,
+              "text": "UILayoutGuide",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "40px",
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-class-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 280,
+              "y": 220,
+              "width": 800,
+              "height": 24
+            },
+            "zIndex": 63,
+            "content": {
+              "text": "A rectangular area that can interact with Auto Layout.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "fontWeight": "normal",
+              "color": "#333333"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-platform-availability",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 280,
+              "y": 255,
+              "width": 600,
+              "height": 20
+            },
+            "zIndex": 64,
+            "content": {
+              "type": "platform-badges",
+              "platforms": [
+                {
+                  "name": "iOS",
+                  "version": "9.0+"
+                },
+                {
+                  "name": "iPadOS",
+                  "version": "9.0+"
+                },
+                {
+                  "name": "Mac Catalyst",
+                  "version": "13.1+"
+                },
+                {
+                  "name": "tvOS",
+                  "version": "9.0+"
+                },
+                {
+                  "name": "visionOS",
+                  "version": "1.0+"
+                }
+              ],
+              "style": "inline-gray-badges"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-class-declaration",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 280,
+              "y": 290,
+              "width": 800,
+              "height": 50
+            },
+            "zIndex": 65,
+            "content": {
+              "language": "swift",
+              "code": "@MainActor\nclass UILayoutGuide",
+              "backgroundColor": "#F5F5F7",
+              "syntaxHighlighting": true,
+              "highlightedTokens": [
+                {
+                  "token": "@MainActor",
+                  "type": "attribute",
+                  "color": "#9B2393"
+                },
+                {
+                  "token": "class",
+                  "type": "keyword",
+                  "color": "#9B2393"
+                },
+                {
+                  "token": "UILayoutGuide",
+                  "type": "class-name",
+                  "color": "#326D74"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-overview-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 370,
+              "width": 800,
+              "height": 32
+            },
+            "zIndex": 66,
+            "content": {
+              "level": 2,
+              "text": "Overview",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "28px",
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-overview-paragraph-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 280,
+              "y": 415,
+              "width": 800,
+              "height": 180
+            },
+            "zIndex": 67,
+            "content": {
+              "text": "Use layout guides to replace the placeholder views you may have created to represent interview spaces or encapsulation in your user interface. Traditionally, there were a number of Auto Layout techniques that required placeholder views. A placeholder view is an empty view that does not have any visual elements of its own and serves only to define a rectangular region in the view hierarchy. For example, if you wanted to use constraints to define the size or location of an empty space between views, you needed to use a placeholder view to represent that space. If you wanted to center a group of objects, you needed a placeholder view to contain those objects. Similarly, placeholder views could be used to contain and encapsulate part of your user interface. Placeholder views let you break up a large, complex user interface into self-contained, modular chunks. When used properly, they could greatly simplify your Auto Layout constraint logic.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "15px",
+              "fontWeight": "normal",
+              "color": "#333333",
+              "lineHeight": "1.5"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-overview-paragraph-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 280,
+              "y": 610,
+              "width": 800,
+              "height": 120
+            },
+            "zIndex": 68,
+            "content": {
+              "text": "There are a number of costs associated with adding placeholder views to your view hierarchy. First, there is the cost of creating and maintaining the view itself. Second, the placeholder view is a full member of the view hierarchy, which means that it adds overhead to every task the hierarchy performs. Worst of all, the invisible placeholder view can intercept messages that are intended for other views, causing problems that are very difficult to find.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "15px",
+              "fontWeight": "normal",
+              "color": "#333333",
+              "lineHeight": "1.5"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-overview-paragraph-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 280,
+              "y": 745,
+              "width": 800,
+              "height": 100
+            },
+            "zIndex": 69,
+            "content": {
+              "text": "The UILayoutGuide class is designed to perform all the tasks previously performed by placeholder views, but to do it in a safer, more efficient manner. Layout guides do not define a new view. They do not participate in the view hierarchy. Instead, they simply define a rectangular region in their owning view's coordinate system that can interact with Auto Layout.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "15px",
+              "fontWeight": "normal",
+              "color": "#333333",
+              "lineHeight": "1.5",
+              "inlineLinks": [
+                {
+                  "text": "UILayoutGuide",
+                  "style": "code-inline",
+                  "link": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-creating-layout-guides-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 870,
+              "width": 800,
+              "height": 28
+            },
+            "zIndex": 70,
+            "content": {
+              "level": 2,
+              "text": "Creating Layout Guides",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "24px",
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-creating-steps-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 280,
+              "y": 910,
+              "width": 800,
+              "height": 24
+            },
+            "zIndex": 71,
+            "content": {
+              "text": "To create a layout guide, you must perform the following steps:",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "15px",
+              "fontWeight": "normal",
+              "color": "#333333"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-creating-steps-list",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 280,
+              "y": 945,
+              "width": 800,
+              "height": 90
+            },
+            "zIndex": 72,
+            "content": {
+              "listType": "ordered",
+              "startNumber": 1,
+              "items": [
+                {
+                  "number": "1",
+                  "text": "Instantiate a new layout guide."
+                },
+                {
+                  "number": "2",
+                  "text": "Add the layout guide to a view by calling the view's addLayoutGuide(_:) method.",
+                  "inlineCode": [
+                    {
+                      "text": "addLayoutGuide(_:)",
+                      "style": "code-inline"
+                    }
+                  ]
+                },
+                {
+                  "number": "3",
+                  "text": "Define the position and size of the layout guide using Auto Layout."
+                }
+              ],
+              "fontFamily": "SF Pro Text",
+              "fontSize": "15px",
+              "color": "#333333"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-equal-spacing-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 280,
+              "y": 1050,
+              "width": 800,
+              "height": 48
+            },
+            "zIndex": 73,
+            "content": {
+              "text": "You can use these guides to define the space between elements in your layout. The following example shows layout guides used to define an equal spacing between a series of views.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "15px",
+              "fontWeight": "normal",
+              "color": "#333333"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-code-example-1",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-code-example-1-language-toggle",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 280,
+              "y": 1110,
+              "width": 150,
+              "height": 24
+            },
+            "zIndex": 74,
+            "content": {
+              "type": "language-toggle",
+              "options": [
+                {
+                  "text": "Swift",
+                  "selected": false
+                },
+                {
+                  "text": "Objective-C",
+                  "selected": true
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-code-example-1",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-code-example-1",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 280,
+              "y": 1140,
+              "width": 800,
+              "height": 200
+            },
+            "zIndex": 75,
+            "content": {
+              "language": "swift",
+              "code": "let space1 = UILayoutGuide()\nview.addLayoutGuide(space1)\n\nlet space2 = UILayoutGuide()\nview.addLayoutGuide(space2)\n\nspace1.widthAnchor.constraintEqualToAnchor(space2.widthAnchor).active = true\nsaveButton.trailingAnchor.constraintEqualToAnchor(space1.leadingAnchor).active = true\ncancelButton.leadingAnchor.constraintEqualToAnchor(space1.trailingAnchor).active = true\ncancelButton.trailingAnchor.constraintEqualToAnchor(space2.leadingAnchor).active = true\nclearButton.leadingAnchor.constraintEqualToAnchor(space2.trailingAnchor).active = true",
+              "backgroundColor": "#F5F5F7",
+              "syntaxHighlighting": true,
+              "lineNumbers": false,
+              "copyButton": true,
+              "description": "Creates two UILayoutGuide instances to define equal spacing between three buttons (saveButton, cancelButton, clearButton). The width anchors of both spaces are constrained to be equal, ensuring uniform spacing."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-encapsulation-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 280,
+              "y": 1360,
+              "width": 800,
+              "height": 48
+            },
+            "zIndex": 76,
+            "content": {
+              "text": "A layout guide can also act as an opaque box that contains other views and controls, letting you encapsulate parts of your view and break up your layout into modular chunks.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "15px",
+              "fontWeight": "normal",
+              "color": "#333333"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-code-example-2",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-code-example-2-language-toggle",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 280,
+              "y": 1420,
+              "width": 150,
+              "height": 24
+            },
+            "zIndex": 77,
+            "content": {
+              "type": "language-toggle",
+              "options": [
+                {
+                  "text": "Swift",
+                  "selected": false
+                },
+                {
+                  "text": "Objective-C",
+                  "selected": true
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-code-example-2",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-code-example-2",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 280,
+              "y": 1450,
+              "width": 800,
+              "height": 400
+            },
+            "zIndex": 78,
+            "content": {
+              "language": "swift",
+              "code": "let container = UILayoutGuide()\nview.addLayoutGuide(container)\n\n// Set interior constraints\nlabel.lastBaselineAnchor.constraintEqualToAnchor(textField.lastBaselineAnchor).active = true\nlabel.leadingAnchor.constraintEqualToAnchor(container.leadingAnchor).active = true\ntextField.leadingAnchor.constraintEqualToAnchor(label.trailingAnchor, constant: 8.0).active = true\ntextField.trailingAnchor.constraintEqualToAnchor(container.trailingAnchor).active = true\ntextField.topAnchor.constraintEqualToAnchor(container.topAnchor).active = true\ntextField.bottomAnchor.constraintEqualToAnchor(container.bottomAnchor).active = true\n\n// Set exterior constraints\n// The contents of the container can be treated as an opaque box\nlet margins = view.layoutMarginsGuide\n\ncontainer.leadingAnchor.constraintEqualToAnchor(margins.leadingAnchor).active = true\ncontainer.trailingAnchor.constraintEqualToAnchor(margins.trailingAnchor).active = true\ncontainer.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor, constant: 20.0).active = true",
+              "backgroundColor": "#F5F5F7",
+              "syntaxHighlighting": true,
+              "lineNumbers": false,
+              "copyButton": true,
+              "comments": [
+                "// Set interior constraints",
+                "// Set exterior constraints",
+                "// The contents of the container can be treated as an opaque box"
+              ],
+              "description": "Demonstrates using a UILayoutGuide as a container to encapsulate a label and text field. Interior constraints position elements within the container, while exterior constraints position the container relative to the view's margins and top layout guide."
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-note-box",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 280,
+              "y": 1880,
+              "width": 800,
+              "height": 180
+            },
+            "zIndex": 79,
+            "content": {
+              "type": "note",
+              "style": "info-box",
+              "backgroundColor": "#F5F5F7",
+              "borderLeft": "4px solid #007AFF",
+              "title": "Note",
+              "paragraphs": [
+                {
+                  "text": "Layout guides provides a lightweight method for encapsulating part of your layout. Note that this technique only affects how Auto Layout interacts with the encapsulated views. It does not change the view hierarchy in any way. However, this is not the only way to create modular user interfaces. Container views and container view controllers provide an even greater degree of encapsulation, letting you separate the layout, the view hierarchy and even the related view controller code. For more information, see Adaptivity and Size Changes in View Controller Programming Guide for iOS.",
+                  "links": [
+                    {
+                      "text": "Adaptivity and Size Changes",
+                      "type": "internal-link"
+                    },
+                    {
+                      "text": "View Controller Programming Guide for iOS",
+                      "type": "external-link"
+                    }
+                  ]
+                },
+                {
+                  "text": "Additionally, layout constraints do not fully encapsulate their contents. The system still compares the priority of optional constraints inside the layout guide with the priority of optional constraints outside the guide."
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-topics-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 2100,
+              "width": 800,
+              "height": 32
+            },
+            "zIndex": 80,
+            "content": {
+              "level": 2,
+              "text": "Topics",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "28px",
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-working-with-layout-guides-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 2150,
+              "width": 800,
+              "height": 26
+            },
+            "zIndex": 81,
+            "content": {
+              "level": 3,
+              "text": "Working with layout guides",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "22px",
+              "fontWeight": "semibold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-property-identifier",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 2190,
+              "width": 800,
+              "height": 60
+            },
+            "zIndex": 82,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "var identifier: String",
+                  "description": "A string used to identify the layout guide.",
+                  "type": "property",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-property-layoutFrame",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 2260,
+              "width": 800,
+              "height": 60
+            },
+            "zIndex": 83,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "var layoutFrame: CGRect",
+                  "description": "The layout guide's frame in its owning view's coordinate system.",
+                  "type": "property",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-property-owningView",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 2330,
+              "width": 800,
+              "height": 60
+            },
+            "zIndex": 84,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "var owningView: UIView?",
+                  "description": "The view that owns this layout guide.",
+                  "type": "property",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-creating-constraints-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 2410,
+              "width": 800,
+              "height": 26
+            },
+            "zIndex": 85,
+            "content": {
+              "level": 3,
+              "text": "Creating constraints using layout anchors",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "22px",
+              "fontWeight": "semibold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-property-bottomAnchor",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 2450,
+              "width": 800,
+              "height": 60
+            },
+            "zIndex": 86,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "var bottomAnchor: NSLayoutYAxisAnchor",
+                  "description": "A layout anchor representing the bottom edge of the layout guide's frame.",
+                  "type": "property",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-property-centerXAnchor",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 2520,
+              "width": 800,
+              "height": 60
+            },
+            "zIndex": 87,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "var centerXAnchor: NSLayoutXAxisAnchor",
+                  "description": "A layout anchor representing the horizontal center of the layout guide's frame.",
+                  "type": "property",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-property-centerYAnchor",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 2590,
+              "width": 800,
+              "height": 60
+            },
+            "zIndex": 88,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "var centerYAnchor: NSLayoutYAxisAnchor",
+                  "description": "A layout anchor representing the vertical center of the layout guide's frame.",
+                  "type": "property",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-property-heightAnchor",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 2660,
+              "width": 800,
+              "height": 60
+            },
+            "zIndex": 89,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "var heightAnchor: NSLayoutDimension",
+                  "description": "A layout anchor representing the height of the layout guide's frame.",
+                  "type": "property",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-property-leadingAnchor",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 2730,
+              "width": 800,
+              "height": 60
+            },
+            "zIndex": 90,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "var leadingAnchor: NSLayoutXAxisAnchor",
+                  "description": "A layout anchor representing the leading edge of the layout guide's frame.",
+                  "type": "property",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-property-leftAnchor",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 2800,
+              "width": 800,
+              "height": 60
+            },
+            "zIndex": 91,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "var leftAnchor: NSLayoutXAxisAnchor",
+                  "description": "A layout anchor representing the left edge of the layout guide's frame.",
+                  "type": "property",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-property-rightAnchor",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 2870,
+              "width": 800,
+              "height": 60
+            },
+            "zIndex": 92,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "var rightAnchor: NSLayoutXAxisAnchor",
+                  "description": "A layout anchor representing the right edge of the layout guide's frame.",
+                  "type": "property",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-property-topAnchor",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 2940,
+              "width": 800,
+              "height": 60
+            },
+            "zIndex": 93,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "var topAnchor: NSLayoutYAxisAnchor",
+                  "description": "A layout anchor representing the top edge of the layout guide's frame.",
+                  "type": "property",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-property-trailingAnchor",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 3010,
+              "width": 800,
+              "height": 60
+            },
+            "zIndex": 94,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "var trailingAnchor: NSLayoutXAxisAnchor",
+                  "description": "A layout anchor representing the trailing edge of the layout guide's frame.",
+                  "type": "property",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-property-widthAnchor",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 3080,
+              "width": 800,
+              "height": 60
+            },
+            "zIndex": 95,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "var widthAnchor: NSLayoutDimension",
+                  "description": "A layout anchor representing the width of the layout guide's frame.",
+                  "type": "property",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-debugging-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 3160,
+              "width": 800,
+              "height": 26
+            },
+            "zIndex": 96,
+            "content": {
+              "level": 3,
+              "text": "Debugging the layout guide",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "22px",
+              "fontWeight": "semibold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-method-constraintsAffectingLayout",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 3200,
+              "width": 800,
+              "height": 60
+            },
+            "zIndex": 97,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "func constraintsAffectingLayout(for: NSLayoutConstraint.Axis) -> [NSLayoutConstraint]",
+                  "description": "The constraints that impact the layout of the guide.",
+                  "type": "method",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-property-hasAmbiguousLayout",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 3270,
+              "width": 800,
+              "height": 70
+            },
+            "zIndex": 98,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "var hasAmbiguousLayout: Bool",
+                  "description": "A Boolean value indicating whether the constraints impacting the layout guide specify its location ambiguously.",
+                  "type": "property",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-keyboard-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 3360,
+              "width": 800,
+              "height": 26
+            },
+            "zIndex": 99,
+            "content": {
+              "level": 3,
+              "text": "Handling keyboard layout",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "22px",
+              "fontWeight": "semibold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-property-keyboardLayoutGuide",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 3400,
+              "width": 800,
+              "height": 60
+            },
+            "zIndex": 100,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "var keyboardLayoutGuide: UIKeyboardLayoutGuide",
+                  "description": "A layout guide that tracks the keyboard's position in your app's layout.",
+                  "type": "property",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-class-UIKeyboardLayoutGuide",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 3470,
+              "width": 800,
+              "height": 60
+            },
+            "zIndex": 101,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "class UIKeyboardLayoutGuide",
+                  "description": "A layout guide that represents the space the keyboard occupies in your app's layout.",
+                  "type": "class",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-class-UITrackingLayoutGuide",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 3540,
+              "width": 800,
+              "height": 70
+            },
+            "zIndex": 102,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "class UITrackingLayoutGuide",
+                  "description": "A layout guide that automatically activates and deactivates layout constraints depending on its proximity to edges.",
+                  "type": "class",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-relationships-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 3640,
+              "width": 800,
+              "height": 32
+            },
+            "zIndex": 103,
+            "content": {
+              "level": 2,
+              "text": "Relationships",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "28px",
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-inherits-from-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 3690,
+              "width": 800,
+              "height": 24
+            },
+            "zIndex": 104,
+            "content": {
+              "level": 3,
+              "text": "Inherits From",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "semibold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-inherits-from-content",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 280,
+              "y": 3720,
+              "width": 800,
+              "height": 24
+            },
+            "zIndex": 105,
+            "content": {
+              "text": "NSObject",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "15px",
+              "fontWeight": "normal",
+              "color": "#007AFF",
+              "link": true
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-inherited-by-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 3760,
+              "width": 800,
+              "height": 24
+            },
+            "zIndex": 106,
+            "content": {
+              "level": 3,
+              "text": "Inherited By",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "semibold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-inherited-by-content",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 280,
+              "y": 3790,
+              "width": 800,
+              "height": 50
+            },
+            "zIndex": 107,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "UIFocusGuide",
+                  "link": true,
+                  "color": "#007AFF"
+                },
+                {
+                  "text": "UITrackingLayoutGuide",
+                  "link": true,
+                  "color": "#007AFF"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-conforms-to-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 3860,
+              "width": 800,
+              "height": 24
+            },
+            "zIndex": 108,
+            "content": {
+              "level": 3,
+              "text": "Conforms To",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "semibold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-conforms-to-content",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 280,
+              "y": 3890,
+              "width": 800,
+              "height": 250
+            },
+            "zIndex": 109,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "CVarArg",
+                  "link": true,
+                  "color": "#007AFF"
+                },
+                {
+                  "text": "Copyable",
+                  "link": true,
+                  "color": "#007AFF"
+                },
+                {
+                  "text": "CustomDebugStringConvertible",
+                  "link": true,
+                  "color": "#007AFF"
+                },
+                {
+                  "text": "CustomStringConvertible",
+                  "link": true,
+                  "color": "#007AFF"
+                },
+                {
+                  "text": "Equatable",
+                  "link": true,
+                  "color": "#007AFF"
+                },
+                {
+                  "text": "Hashable",
+                  "link": true,
+                  "color": "#007AFF"
+                },
+                {
+                  "text": "NSCoding",
+                  "link": true,
+                  "color": "#007AFF"
+                },
+                {
+                  "text": "NSObjectProtocol",
+                  "link": true,
+                  "color": "#007AFF"
+                },
+                {
+                  "text": "Sendable",
+                  "link": true,
+                  "color": "#007AFF"
+                },
+                {
+                  "text": "UIPopoverPresentationControllerSourceItem",
+                  "link": true,
+                  "color": "#007AFF"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 4170,
+              "width": 800,
+              "height": 32
+            },
+            "zIndex": 110,
+            "content": {
+              "level": 2,
+              "text": "See Also",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "28px",
+              "fontWeight": "bold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-layout-guides-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 4220,
+              "width": 800,
+              "height": 24
+            },
+            "zIndex": 111,
+            "content": {
+              "level": 3,
+              "text": "Layout guides",
+              "fontFamily": "SF Pro Display",
+              "fontSize": "20px",
+              "fontWeight": "semibold",
+              "color": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-NSLayoutDimension",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 280,
+              "y": 4260,
+              "width": 800,
+              "height": 60
+            },
+            "zIndex": 112,
+            "content": {
+              "tableType": "api-reference",
+              "rows": [
+                {
+                  "declaration": "class NSLayoutDimension",
+                  "description": "A factory class for creating size-based layout constraint objects using a fluent API.",
+                  "type": "class",
+                  "language": "swift"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-right-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 1100,
+              "y": 96,
+              "width": 400,
+              "height": 2000
+            },
+            "zIndex": 40,
+            "content": {
+              "navigationType": "right-sidebar",
+              "backgroundColor": "#FFFFFF",
+              "sections": [
+                {
+                  "title": "Platforms",
+                  "items": [
+                    "iOS",
+                    "iPadOS",
+                    "macOS",
+                    "tvOS",
+                    "visionOS",
+                    "watchOS"
+                  ]
+                },
+                {
+                  "title": "Tools",
+                  "items": [
+                    {
+                      "text": "Swift",
+                      "icon": "swift-logo"
+                    },
+                    {
+                      "text": "SwiftUI",
+                      "icon": "swiftui-logo"
+                    },
+                    {
+                      "text": "Swift Playground",
+                      "icon": "playground-logo"
+                    },
+                    {
+                      "text": "TestFlight",
+                      "icon": "testflight-logo"
+                    },
+                    {
+                      "text": "Xcode",
+                      "icon": "xcode-logo"
+                    },
+                    {
+                      "text": "Xcode Cloud",
+                      "icon": "xcode-cloud-logo"
+                    },
+                    {
+                      "text": "SF Symbols",
+                      "icon": "sf-symbols-logo"
+                    }
+                  ]
+                },
+                {
+                  "title": "Topics & Technologies",
+                  "items": [
+                    "Accessibility",
+                    "Accessories",
+                    "App Extension",
+                    "App Store",
+                    "Audio & Video",
+                    "Augmented Reality",
+                    "Design",
+                    "Distribution",
+                    "Education",
+                    "Fonts",
+                    "Games",
+                    "Health & Fitness",
+                    "In-App Purchase",
+                    "Localization",
+                    "Maps & Location",
+                    "Machine Learning & AI",
+                    "Open Source",
+                    "Security",
+                    "Safari & Web"
+                  ]
+                },
+                {
+                  "title": "Resources",
+                  "items": [
+                    "Documentation",
+                    "Tutorials",
+                    "Downloads",
+                    "Forums",
+                    "Videos"
+                  ]
+                },
+                {
+                  "title": "Support",
+                  "items": [
+                    "Support Articles",
+                    "Contact Us",
+                    "Bug Reporting",
+                    "System Status"
+                  ]
+                },
+                {
+                  "title": "Account",
+                  "items": [
+                    "Apple Developer",
+                    "App Store Connect",
+                    "Certificates, IDs, & Profiles",
+                    "Feedback Assistant"
+                  ]
+                },
+                {
+                  "title": "Programs",
+                  "items": [
+                    "Apple Developer Program",
+                    "Apple Developer Enterprise Program",
+                    "App Store Small Business Program",
+                    "MFi Program",
+                    "News Partner Program",
+                    "Video Partner Program",
+                    "Security Bounty Program",
+                    "Security Research Device Program"
+                  ]
+                },
+                {
+                  "title": "Events",
+                  "items": [
+                    "Meet with Apple",
+                    "Apple Developer Centers",
+                    "App Store Awards",
+                    "Apple Design Awards",
+                    "Apple Developer Academies",
+                    "WWDC"
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 6400,
+              "width": 1512,
+              "height": 108
+            },
+            "zIndex": 30,
+            "content": {
+              "navigationType": "footer",
+              "backgroundColor": "#F5F5F7",
+              "elements": [
+                {
+                  "type": "feedback-link",
+                  "text": "To submit feedback on documentation, visit Feedback Assistant.",
+                  "link": "https://feedbackassistant.apple.com"
+                },
+                {
+                  "type": "theme-toggle",
+                  "options": [
+                    "Light",
+                    "Dark",
+                    "Auto"
+                  ]
+                },
+                {
+                  "type": "copyright",
+                  "text": "Copyright (c) 2025 Apple Inc. All rights reserved."
+                },
+                {
+                  "type": "legal-links",
+                  "items": [
+                    {
+                      "text": "Terms of Use",
+                      "link": true
+                    },
+                    {
+                      "text": "Privacy Policy",
+                      "link": true
+                    },
+                    {
+                      "text": "Agreements and Guidelines",
+                      "link": true
+                    }
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation",
+          "page1-secondary-header",
+          "page1-breadcrumb-trail",
+          "page1-class-badge",
+          "page1-main-title",
+          "page1-class-description",
+          "page1-platform-availability",
+          "page1-class-declaration",
+          "page1-overview-heading",
+          "page1-overview-paragraph-1",
+          "page1-overview-paragraph-2",
+          "page1-overview-paragraph-3",
+          "page1-creating-layout-guides-heading",
+          "page1-creating-steps-intro",
+          "page1-creating-steps-list",
+          "page1-equal-spacing-intro",
+          "page1-code-example-1",
+          "page1-encapsulation-intro",
+          "page1-code-example-2",
+          "page1-note-box",
+          "page1-topics-heading",
+          "page1-working-with-layout-guides-heading",
+          "page1-property-identifier",
+          "page1-property-layoutFrame",
+          "page1-property-owningView",
+          "page1-creating-constraints-heading",
+          "page1-property-bottomAnchor",
+          "page1-property-centerXAnchor",
+          "page1-property-centerYAnchor",
+          "page1-property-heightAnchor",
+          "page1-property-leadingAnchor",
+          "page1-property-leftAnchor",
+          "page1-property-rightAnchor",
+          "page1-property-topAnchor",
+          "page1-property-trailingAnchor",
+          "page1-property-widthAnchor",
+          "page1-debugging-heading",
+          "page1-method-constraintsAffectingLayout",
+          "page1-property-hasAmbiguousLayout",
+          "page1-keyboard-heading",
+          "page1-property-keyboardLayoutGuide",
+          "page1-class-UIKeyboardLayoutGuide",
+          "page1-class-UITrackingLayoutGuide",
+          "page1-relationships-heading",
+          "page1-inherits-from-heading",
+          "page1-inherits-from-content",
+          "page1-inherited-by-heading",
+          "page1-inherited-by-content",
+          "page1-conforms-to-heading",
+          "page1-conforms-to-content",
+          "page1-see-also-heading",
+          "page1-see-also-layout-guides-heading",
+          "page1-see-also-NSLayoutDimension",
+          "page1-footer"
+        ],
+        "pageSummary": "Complete Apple Developer Documentation page for UILayoutGuide class, explaining how layout guides replace placeholder views in Auto Layout, with code examples for equal spacing and encapsulation patterns, full API reference including properties for layout anchors and debugging, class relationships and conformances."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": true,
+        "entries": [
+          {
+            "title": "Overview",
+            "anchor": "overview"
+          },
+          {
+            "title": "Creating Layout Guides",
+            "anchor": "creating-layout-guides"
+          },
+          {
+            "title": "Topics",
+            "anchor": "topics",
+            "children": [
+              "Working with layout guides",
+              "Creating constraints using layout anchors",
+              "Debugging the layout guide",
+              "Handling keyboard layout"
+            ]
+          },
+          {
+            "title": "Relationships",
+            "anchor": "relationships"
+          },
+          {
+            "title": "See Also",
+            "anchor": "see-also"
+          }
+        ]
+      },
+      "runningHeaders": "Developer Documentation - UIKit / UILayoutGuide",
+      "runningFooters": "Copyright (c) 2025 Apple Inc. All rights reserved.",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "header",
+          "title": "Class Header",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Class declaration showing UILayoutGuide as a MainActor class with platform availability for iOS 9.0+, iPadOS 9.0+, Mac Catalyst 13.1+, tvOS 9.0+, and visionOS 1.0+."
+        },
+        {
+          "sectionId": "overview",
+          "title": "Overview",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Explains the purpose of UILayoutGuide as a replacement for placeholder views in Auto Layout, describing the costs of placeholder views (overhead, message interception) and how layout guides provide a safer, more efficient alternative that doesn't participate in the view hierarchy."
+        },
+        {
+          "sectionId": "creating-layout-guides",
+          "title": "Creating Layout Guides",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Step-by-step guide for creating layout guides (instantiate, add to view, define position/size with constraints) with two code examples: one for equal spacing between buttons and one for encapsulating a label-textfield pair as a modular chunk."
+        },
+        {
+          "sectionId": "topics",
+          "title": "Topics",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "working-with-layout-guides",
+              "title": "Working with layout guides",
+              "summary": "Three properties: identifier (String), layoutFrame (CGRect), owningView (UIView?)"
+            },
+            {
+              "sectionId": "creating-constraints",
+              "title": "Creating constraints using layout anchors",
+              "summary": "Ten layout anchor properties: bottomAnchor, centerXAnchor, centerYAnchor, heightAnchor, leadingAnchor, leftAnchor, rightAnchor, topAnchor, trailingAnchor, widthAnchor"
+            },
+            {
+              "sectionId": "debugging",
+              "title": "Debugging the layout guide",
+              "summary": "One method (constraintsAffectingLayout) and one property (hasAmbiguousLayout) for debugging layout issues"
+            },
+            {
+              "sectionId": "keyboard-layout",
+              "title": "Handling keyboard layout",
+              "summary": "keyboardLayoutGuide property and related classes UIKeyboardLayoutGuide and UITrackingLayoutGuide for managing keyboard-aware layouts"
+            }
+          ],
+          "summary": "Complete API reference organized into four categories covering basic properties, layout anchors, debugging tools, and keyboard handling."
+        },
+        {
+          "sectionId": "relationships",
+          "title": "Relationships",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Class inheritance (from NSObject), subclasses (UIFocusGuide, UITrackingLayoutGuide), and protocol conformances (CVarArg, Copyable, CustomDebugStringConvertible, CustomStringConvertible, Equatable, Hashable, NSCoding, NSObjectProtocol, Sendable, UIPopoverPresentationControllerSourceItem)."
+        },
+        {
+          "sectionId": "see-also",
+          "title": "See Also",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Related class NSLayoutDimension for creating size-based layout constraints."
+        }
+      ],
+      "documentFlow": "The document follows Apple's standard API reference structure: starting with class declaration and brief description, followed by conceptual overview explaining the problem (placeholder views) and solution (layout guides), then practical code examples, comprehensive API reference organized by category, and finally class relationships and related resources."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "UILayoutGuide",
+          "definition": "A UIKit class that defines a rectangular area capable of interacting with Auto Layout without being a view in the hierarchy",
+          "occurrences": 15
+        },
+        {
+          "term": "placeholder view",
+          "definition": "An empty view with no visual elements used only to define rectangular regions for Auto Layout purposes",
+          "occurrences": 8
+        },
+        {
+          "term": "layout anchor",
+          "definition": "A property that represents an edge, center, or dimension of a layout guide's frame for creating constraints",
+          "occurrences": 12
+        },
+        {
+          "term": "Auto Layout",
+          "definition": "Apple's constraint-based layout system for positioning and sizing views",
+          "occurrences": 6
+        },
+        {
+          "term": "view hierarchy",
+          "definition": "The tree structure of UIView objects that defines the visual structure of an interface",
+          "occurrences": 4
+        },
+        {
+          "term": "encapsulation",
+          "definition": "Grouping related views together and treating them as a single unit for layout purposes",
+          "occurrences": 5
+        },
+        {
+          "term": "NSLayoutYAxisAnchor",
+          "definition": "A layout anchor class for creating vertical position constraints",
+          "occurrences": 4
+        },
+        {
+          "term": "NSLayoutXAxisAnchor",
+          "definition": "A layout anchor class for creating horizontal position constraints",
+          "occurrences": 6
+        },
+        {
+          "term": "NSLayoutDimension",
+          "definition": "A layout anchor class for creating size-based constraints (width/height)",
+          "occurrences": 3
+        },
+        {
+          "term": "UIKeyboardLayoutGuide",
+          "definition": "A specialized layout guide that tracks the keyboard's position for keyboard-aware layouts",
+          "occurrences": 2
+        },
+        {
+          "term": "UITrackingLayoutGuide",
+          "definition": "A layout guide that automatically activates/deactivates constraints based on proximity to edges",
+          "occurrences": 2
+        },
+        {
+          "term": "@MainActor",
+          "definition": "Swift concurrency attribute indicating the class must be used on the main thread",
+          "occurrences": 1
+        }
+      ],
+      "keyFindings": [
+        "UILayoutGuide provides all functionality of placeholder views without view hierarchy overhead",
+        "Layout guides do not intercept touch events or participate in the responder chain",
+        "Three steps to create: instantiate, add to view via addLayoutGuide(_:), define constraints",
+        "Layout guides can create equal spacing between elements by constraining their widthAnchor properties",
+        "Layout guides enable modular UI by encapsulating groups of views as opaque boxes",
+        "Interior constraints position elements within the guide; exterior constraints position the guide itself",
+        "Available since iOS 9.0, indicating long-standing API stability",
+        "Supports debugging via constraintsAffectingLayout(for:) and hasAmbiguousLayout",
+        "UIKeyboardLayoutGuide extends functionality for keyboard-aware layouts",
+        "Conforms to Sendable, indicating thread-safety considerations in Swift concurrency"
+      ],
+      "technicalSpecifications": {
+        "minimumPlatformVersions": {
+          "iOS": "9.0",
+          "iPadOS": "9.0",
+          "macCatalyst": "13.1",
+          "tvOS": "9.0",
+          "visionOS": "1.0"
+        },
+        "inheritance": "NSObject",
+        "subclasses": [
+          "UIFocusGuide",
+          "UITrackingLayoutGuide"
+        ],
+        "protocolConformances": [
+          "CVarArg",
+          "Copyable",
+          "CustomDebugStringConvertible",
+          "CustomStringConvertible",
+          "Equatable",
+          "Hashable",
+          "NSCoding",
+          "NSObjectProtocol",
+          "Sendable",
+          "UIPopoverPresentationControllerSourceItem"
+        ],
+        "attributes": [
+          "@MainActor"
+        ],
+        "framework": "UIKit"
+      },
+      "designDecisions": [
+        {
+          "decision": "Layout guides don't create views",
+          "rationale": "Avoids view hierarchy overhead, prevents message interception issues, improves performance"
+        },
+        {
+          "decision": "Uses layout anchors for constraint creation",
+          "rationale": "Provides type-safe, fluent API for creating constraints that matches UIView anchor API"
+        },
+        {
+          "decision": "Inherits from NSObject rather than UIView",
+          "rationale": "Emphasizes that layout guides are not views and shouldn't be treated as such"
+        },
+        {
+          "decision": "Provides both leading/trailing and left/right anchors",
+          "rationale": "Supports both LTR/RTL-aware layouts (leading/trailing) and fixed direction layouts (left/right)"
+        }
+      ],
+      "codeExamples": [
+        {
+          "title": "Equal Spacing Between Views",
+          "language": "swift",
+          "code": "let space1 = UILayoutGuide()\nview.addLayoutGuide(space1)\n\nlet space2 = UILayoutGuide()\nview.addLayoutGuide(space2)\n\nspace1.widthAnchor.constraintEqualToAnchor(space2.widthAnchor).active = true\nsaveButton.trailingAnchor.constraintEqualToAnchor(space1.leadingAnchor).active = true\ncancelButton.leadingAnchor.constraintEqualToAnchor(space1.trailingAnchor).active = true\ncancelButton.trailingAnchor.constraintEqualToAnchor(space2.leadingAnchor).active = true\nclearButton.leadingAnchor.constraintEqualToAnchor(space2.trailingAnchor).active = true",
+          "description": "Creates two layout guides to define equal spacing between three buttons"
+        },
+        {
+          "title": "Encapsulating Views as Modular Chunk",
+          "language": "swift",
+          "code": "let container = UILayoutGuide()\nview.addLayoutGuide(container)\n\n// Set interior constraints\nlabel.lastBaselineAnchor.constraintEqualToAnchor(textField.lastBaselineAnchor).active = true\nlabel.leadingAnchor.constraintEqualToAnchor(container.leadingAnchor).active = true\ntextField.leadingAnchor.constraintEqualToAnchor(label.trailingAnchor, constant: 8.0).active = true\ntextField.trailingAnchor.constraintEqualToAnchor(container.trailingAnchor).active = true\ntextField.topAnchor.constraintEqualToAnchor(container.topAnchor).active = true\ntextField.bottomAnchor.constraintEqualToAnchor(container.bottomAnchor).active = true\n\n// Set exterior constraints\nlet margins = view.layoutMarginsGuide\ncontainer.leadingAnchor.constraintEqualToAnchor(margins.leadingAnchor).active = true\ncontainer.trailingAnchor.constraintEqualToAnchor(margins.trailingAnchor).active = true\ncontainer.topAnchor.constraintEqualToAnchor(topLayoutGuide.bottomAnchor, constant: 20.0).active = true",
+          "description": "Uses a layout guide as container to encapsulate label and text field, with interior and exterior constraints"
+        }
+      ]
+    }
+  }
+}

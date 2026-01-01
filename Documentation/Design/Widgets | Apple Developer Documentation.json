@@ -1,0 +1,1546 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Widgets | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "source": "Apple Human Interface Guidelines",
+      "url": "https://developer.apple.com/design/human-interface-guidelines/widgets",
+      "creationDate": null,
+      "modificationDate": "2025-12-16",
+      "pageCount": 2,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "widgets",
+        "WidgetKit",
+        "iOS",
+        "iPadOS",
+        "macOS",
+        "watchOS",
+        "visionOS",
+        "CarPlay",
+        "StandBy",
+        "Lock Screen",
+        "Home Screen",
+        "Smart Stack",
+        "complications",
+        "accessory widgets",
+        "system family widgets",
+        "rendering modes",
+        "Human Interface Guidelines",
+        "HIG"
+      ],
+      "summary": "Apple's comprehensive Human Interface Guidelines documentation for designing widgets across all Apple platforms including iOS, iPadOS, macOS, watchOS, visionOS, and CarPlay. Covers widget anatomy, best practices, rendering modes, platform-specific considerations, and detailed specifications for widget dimensions."
+    },
+    "navigation": {
+      "topNavigation": {
+        "primaryLinks": [
+          {"text": "News", "url": "/news"},
+          {"text": "Discover", "url": "/discover"},
+          {"text": "Design", "url": "/design"},
+          {"text": "Develop", "url": "/develop"},
+          {"text": "Distribute", "url": "/distribute"},
+          {"text": "Support", "url": "/support"},
+          {"text": "Account", "url": "/account"}
+        ]
+      },
+      "secondaryNavigation": {
+        "designSection": [
+          {"text": "Design Overview", "url": "/design"},
+          {"text": "What's New", "url": "/design/whats-new"},
+          {"text": "Get Started", "url": "/design/get-started"},
+          {"text": "Guidelines", "url": "/design/guidelines"},
+          {"text": "Resources", "url": "/design/resources"}
+        ]
+      },
+      "sidebarNavigation": {
+        "categories": [
+          {
+            "name": "Getting started",
+            "items": []
+          },
+          {
+            "name": "Foundations",
+            "items": []
+          },
+          {
+            "name": "Patterns",
+            "items": []
+          },
+          {
+            "name": "Components",
+            "items": []
+          },
+          {
+            "name": "Content",
+            "items": []
+          },
+          {
+            "name": "Layout and organization",
+            "items": []
+          },
+          {
+            "name": "Menus and actions",
+            "items": []
+          },
+          {
+            "name": "Navigation and search",
+            "items": []
+          },
+          {
+            "name": "Presentation",
+            "items": []
+          },
+          {
+            "name": "Selection and input",
+            "items": []
+          },
+          {
+            "name": "Status",
+            "items": []
+          },
+          {
+            "name": "System experiences",
+            "items": [
+              {"text": "App Shortcuts", "url": "/design/human-interface-guidelines/app-shortcuts"},
+              {"text": "Complications", "url": "/design/human-interface-guidelines/complications"},
+              {"text": "Controls", "url": "/design/human-interface-guidelines/controls"},
+              {"text": "Live Activities", "url": "/design/human-interface-guidelines/live-activities"},
+              {"text": "Notifications", "url": "/design/human-interface-guidelines/notifications"},
+              {"text": "Status bars", "url": "/design/human-interface-guidelines/status-bars"},
+              {"text": "Top Shelf", "url": "/design/human-interface-guidelines/top-shelf"},
+              {"text": "Watch faces", "url": "/design/human-interface-guidelines/watch-faces"},
+              {"text": "Widgets", "url": "/design/human-interface-guidelines/widgets", "active": true}
+            ]
+          },
+          {
+            "name": "Inputs",
+            "items": []
+          },
+          {
+            "name": "Technologies",
+            "items": []
+          }
+        ],
+        "filterOption": {
+          "text": "Filter",
+          "functionality": "Filter navigation items"
+        }
+      },
+      "onPageNavigation": {
+        "tableOfContents": [
+          {"text": "Widgets", "level": 1},
+          {"text": "Anatomy", "level": 2},
+          {"text": "Best practices", "level": 2},
+          {"text": "Rendering modes", "level": 2},
+          {"text": "Previews and placeholders", "level": 2},
+          {"text": "Platform considerations", "level": 2},
+          {"text": "Specifications", "level": 2},
+          {"text": "Resources", "level": 2},
+          {"text": "Change log", "level": 2}
+        ]
+      },
+      "breadcrumbs": [
+        {"text": "Design", "url": "/design"},
+        {"text": "Human Interface Guidelines", "url": "/design/human-interface-guidelines"},
+        {"text": "Widgets", "url": "/design/human-interface-guidelines/widgets"}
+      ]
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {"width": "unknown", "height": "unknown", "unit": "px"},
+        "orientation": "portrait",
+        "backgroundColor": "#000000 (dark mode)",
+        "layout": {
+          "type": "multi-column",
+          "columns": 3,
+          "description": "Left sidebar navigation, main content area, right table of contents",
+          "margins": {"top": "standard", "right": "standard", "bottom": "standard", "left": "standard"},
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "sections": [
+          {
+            "sectionId": "hero",
+            "sectionType": "hero-introduction",
+            "title": "Widgets",
+            "content": {
+              "mainHeading": "Widgets",
+              "tagline": "A widget provides quick access to essential information and focused interactions from your app or game in additional contexts.",
+              "supportedPlatforms": {
+                "icons": ["iOS", "iPadOS", "macOS", "visionOS", "watchOS"],
+                "displayFormat": "Horizontal row of platform icons"
+              }
+            }
+          },
+          {
+            "sectionId": "introduction",
+            "sectionType": "body-text",
+            "content": {
+              "paragraphs": [
+                {
+                  "text": "Widgets help people organize and personalize their devices by displaying timely, glanceable content and offering specific functionality. They appear in various contexts for a consistent experience across platforms. For example, a person might place a Weather widget:",
+                  "listItems": [
+                    "On the Home Screen and Lock Screen of their iPhone and iPad",
+                    "On the desktop and Notification Center of their Mac",
+                    "On a horizontal or vertical surface when they wear Apple Vision Pro",
+                    "At a fixed position in the Smart Stack of Apple Watch"
+                  ]
+                },
+                {
+                  "text": "Widgets come in different sizes, ranging from small accessory widgets on iPhone, iPad, and Apple Watch to system family widgets that include an extra large size on iPad, Mac, and Apple Vision Pro. Additionally, widgets adapt their appearance to the context in which they appear and respond to a person's device customization. Consider the following aspects when you design widgets:",
+                  "listItems": [
+                    "The widget size to support",
+                    "The context — devices and system experiences — in which the widget may appear",
+                    "The rendering modes and color treatment that the widget receives based on the size and context"
+                  ]
+                },
+                {
+                  "text": "The WidgetKit framework provides default appearances and treatments for each widget size to fit the system experience or device where it appears. However, it's important to consider creating a custom widget design that can provide the best experience for your content in each specific context."
+                }
+              ]
+            }
+          },
+          {
+            "sectionId": "anatomy",
+            "sectionType": "section-heading",
+            "title": "Anatomy",
+            "content": {
+              "subsections": [
+                {
+                  "title": "System family widgets",
+                  "description": "System family widgets offer a broad range of sizes and may include one or more interactive elements.",
+                  "visualElements": {
+                    "widgetSizeExamples": {
+                      "description": "Row of 5 widget size examples showing Small, Medium, Large, Extra large, and Extra large portrait sizes",
+                      "widgets": [
+                        {
+                          "size": "Small",
+                          "appearance": "Square widget showing week number '26' in large white text on gradient pink-to-orange background",
+                          "visualDetails": "Rounded corners, compact square format"
+                        },
+                        {
+                          "size": "Medium",
+                          "appearance": "Horizontal rectangular widget with pink/magenta gradient background",
+                          "visualDetails": "Wider format, 2:1 aspect ratio approximately"
+                        },
+                        {
+                          "size": "Large",
+                          "appearance": "Large square widget with pink/magenta gradient",
+                          "visualDetails": "Square format, larger than small"
+                        },
+                        {
+                          "size": "Extra large",
+                          "appearance": "Extra large rectangular widget",
+                          "visualDetails": "Landscape orientation, largest standard size"
+                        },
+                        {
+                          "size": "Extra large portrait",
+                          "appearance": "Extra large portrait-oriented widget",
+                          "visualDetails": "Portrait orientation, tall format"
+                        }
+                      ]
+                    }
+                  },
+                  "table": {
+                    "title": "Supported contexts for each system family widget size",
+                    "headers": ["Widget size", "iPhone", "iPad", "Apple Watch"],
+                    "rows": [
+                      {
+                        "widgetSize": "Accessory circular",
+                        "iPhone": "Lock Screen",
+                        "iPad": "Lock Screen",
+                        "appleWatch": "Watch complications and in the Smart Stack"
+                      },
+                      {
+                        "widgetSize": "Accessory corner",
+                        "iPhone": "Not supported",
+                        "iPad": "Not supported",
+                        "appleWatch": "Watch complications"
+                      },
+                      {
+                        "widgetSize": "Accessory inline",
+                        "iPhone": "Lock Screen",
+                        "iPad": "Lock Screen",
+                        "appleWatch": "Watch complications"
+                      },
+                      {
+                        "widgetSize": "Accessory rectangular",
+                        "iPhone": "Lock Screen",
+                        "iPad": "Lock Screen",
+                        "appleWatch": "Watch complications and in the Smart Stack"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "title": "Accessory widgets",
+                  "description": "Accessory widgets display a very limited amount of information because of their size.",
+                  "content": "They appear on the following devices:",
+                  "visualElements": {
+                    "widgetExamples": {
+                      "description": "Row of 3 accessory widget examples",
+                      "widgets": [
+                        {
+                          "type": "Accessory corner",
+                          "appearance": "Small corner-positioned widget on Apple Watch face",
+                          "visualDetails": "Compact corner format for watch complications"
+                        },
+                        {
+                          "type": "Accessory inline",
+                          "appearance": "Single line of text inline with other content",
+                          "visualDetails": "Horizontal text-only format"
+                        },
+                        {
+                          "type": "Accessory rectangular",
+                          "appearance": "Small rectangular widget showing content",
+                          "visualDetails": "Compact rectangular format"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "sectionId": "appearances",
+            "sectionType": "section-heading",
+            "title": "Appearances",
+            "content": {
+              "introText": "A widget can appear in full-color, in monochrome with a tint color, or in a clear, translucent style. Depending on the location, device, and a person's customization, the system may apply a tinted or clear appearance to the widget and its included full-color images, symbols, and glyphs.",
+              "examples": [
+                {
+                  "context": "Small system widget appearance variations",
+                  "description": "For example, a small system widget appears differently depending on the device and location:",
+                  "variations": [
+                    {
+                      "platform": "iPhone and iPad Home Screen",
+                      "description": "On the Home Screen of iPhone and iPad, people choose from different appearances for widgets: light, dark, clear, and tinted. In light and dark appearances, widgets have a full-color design. In a clear appearance, the system desaturates the widget and adds translucency, highlights, and the Liquid Glass material. In a tinted appearance, the system desaturates the widget and its content, then applies a person's selected tint color.",
+                      "visualExamples": [
+                        {
+                          "name": "Full-color",
+                          "description": "Widget with full color rendering, vivid colors preserved"
+                        },
+                        {
+                          "name": "Clear",
+                          "description": "Widget with desaturated content, translucent appearance with Liquid Glass material"
+                        },
+                        {
+                          "name": "Tinted",
+                          "description": "Widget with desaturated content and user-selected tint color applied"
+                        }
+                      ]
+                    },
+                    {
+                      "platform": "Apple Vision Pro",
+                      "description": "On Apple Vision Pro, the widget appears as a 3D object, surrounded by a frame. It takes on a full-color appearance with a glass- or paper-like coating layer that responds to lighting conditions. Additionally, people can choose a tinted appearance that applies a color from a set of system-provided color palettes."
+                    },
+                    {
+                      "platform": "iPad Lock Screen",
+                      "description": "On the Lock Screen of iPad, the widget takes on a monochromatic appearance without a tint color."
+                    },
+                    {
+                      "platform": "iPhone StandBy",
+                      "description": "On the Lock Screen of iPhone in StandBy, the widget appears scaled up in size with the background removed. When the ambient light falls below a threshold, the system renders the widget with a monochromatic red tint.",
+                      "visualExamples": [
+                        {
+                          "name": "StandBy",
+                          "description": "Widget scaled up with background removed for StandBy mode"
+                        },
+                        {
+                          "name": "iPhone in StandBy during low-light conditions",
+                          "description": "Widget rendered with monochromatic red tint in low-light StandBy"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "context": "Rectangular accessory widget appearances",
+                  "description": "Similarly, a rectangular accessory widget appears as follows:",
+                  "variations": [
+                    {
+                      "platform": "iPhone and iPad Lock Screen",
+                      "description": "On the Lock Screen of iPhone and iPad, it takes on a monochromatic appearance without a tint color."
+                    },
+                    {
+                      "platform": "Apple Watch",
+                      "description": "On Apple Watch, the widget can appear as a watch complication in both full-color and tinted appearances, and it can also appear in the Smart Stack.",
+                      "visualExamples": [
+                        {
+                          "name": "Watch complication",
+                          "description": "Widget displayed as watch face complication"
+                        },
+                        {
+                          "name": "Smart Stack on Apple Watch",
+                          "description": "Widget displayed in Apple Watch Smart Stack interface"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "renderingModesSummary": {
+                "introText": "Each appearance described above includes a rendering mode that depends on the platform and a person's appearance settings:",
+                "modes": [
+                  {
+                    "name": "Full color rendering mode",
+                    "description": "The system uses the full color rendering mode for system family widgets across all platforms to display your widget in full color. It doesn't change the color of your views."
+                  },
+                  {
+                    "name": "Accented rendering mode",
+                    "description": "The system uses the accented rendering mode for system family widgets across all platforms and for accessory widgets on Apple Watch. In the accented rendering mode, the system removes the background and replaces it with a tinted color effect for a tinted appearance and a Liquid Glass background for a clear appearance. Additionally, it divides the widget's views into an accent group and a primary group, and then applies a solid color to each group."
+                  },
+                  {
+                    "name": "Vibrant rendering mode",
+                    "description": "The system uses the vibrant rendering mode for widgets on the Lock Screen of iPhone and iPad, and on iPhone in StandBy in low-light conditions. It desaturates text, images, and gauges, and creates a vibrant effect by coloring your content appropriately for the Lock Screen background or a macOS desktop. Note that people can customize the Lock Screen with a tint color, and the system applies a red tint for widgets that appear on iPhone in StandBy in low-light conditions."
+                  }
+                ]
+              },
+              "renderingModesTable": {
+                "title": "Rendering mode occurrences per platform",
+                "headers": ["Platform", "Full-color", "Accented", "Vibrant"],
+                "rows": [
+                  {
+                    "platform": "iPhone",
+                    "fullColor": "Home Screen, Today view, StandBy and CarPlay (with the background removed)",
+                    "accented": "Home Screen and Today view",
+                    "vibrant": "Lock Screen, StandBy in low-light conditions"
+                  },
+                  {
+                    "platform": "iPad",
+                    "fullColor": "Home Screen and Today view",
+                    "accented": "Home Screen and Today view",
+                    "vibrant": "Lock Screen"
+                  },
+                  {
+                    "platform": "Apple Watch",
+                    "fullColor": "Smart Stack, complications",
+                    "accented": "Smart Stack, complications",
+                    "vibrant": "Not supported"
+                  },
+                  {
+                    "platform": "Mac",
+                    "fullColor": "Desktop and Notification Center",
+                    "accented": "Not supported",
+                    "vibrant": "Desktop"
+                  },
+                  {
+                    "platform": "Apple Vision Pro",
+                    "fullColor": "Horizontal and vertical surfaces",
+                    "accented": "Horizontal and vertical surfaces",
+                    "vibrant": "Not supported"
+                  }
+                ]
+              },
+              "additionalGuidance": "For additional design guidance, see Rendering modes. For developer guidance, see Preparing widgets for additional platforms, contexts, and appearances and WidgetRenderingMode."
+            }
+          },
+          {
+            "sectionId": "best-practices",
+            "sectionType": "section-heading",
+            "title": "Best practices",
+            "content": {
+              "guidelines": [
+                {
+                  "title": "Choose simple ideas that relate to your app's main purpose.",
+                  "description": "Include timely content and relevant functionality. For example, people who use the Weather app are often most interested in the current high and low temperatures and weather conditions, so the Weather widgets prioritize this information."
+                },
+                {
+                  "title": "Aim to create a widget that gives people quick access to the content they want.",
+                  "description": "People appreciate widgets that display meaningful content and offer useful actions and deep links to key areas of your app. Replicating an app icon offers little additional value, and people may be less likely to keep it on their screens."
+                },
+                {
+                  "title": "Prefer dynamic information that changes throughout the day.",
+                  "description": "If a widget's content never appears to change, people may not keep it in a prominent position. Although widgets don't update from minute to minute, it's important to find ways to keep their content fresh to invite frequent viewing."
+                },
+                {
+                  "title": "Look for opportunities to surprise and delight.",
+                  "description": "For example, you might design a unique visual treatment for your calendar widget to display on meaningful occasions, like birthdays or holidays."
+                },
+                {
+                  "title": "Offer widgets in multiple sizes when doing so adds value.",
+                  "description": "Small widgets use their limited space to typically show a single piece of information while larger sizes support additional layers of information and actions. Avoid expanding a smaller widget's content to simply fill a larger area. It's more important to create one widget in the size that best represents the content than providing the widget in all sizes."
+                },
+                {
+                  "title": "Balance information density.",
+                  "description": "Sparse layouts can make the widget seem unnecessary, while overly dense layouts are less glanceable. Create a layout that provides essential information at a glance and allows people to view additional details by taking a longer look. If your layout is too dense, consider improving its clarity by using a larger widget size or replacing text with graphics."
+                },
+                {
+                  "title": "Display only the information that's directly related to the widget's main purpose.",
+                  "description": "In larger widgets, you can display more data — or more detailed visualizations of the data — but you don't want to lose sight of the widget's primary purpose. For example, all Calendar widgets display a person's upcoming events. In each size, the widget remains centered on events while expanding the range of information as the size increases."
+                },
+                {
+                  "title": "Use brand elements thoughtfully.",
+                  "description": "Incorporate brand colors, typefaces, and stylized glyphs to make your widget recognizable but don't overpower useful information or make your widget look out of place. When you include brand elements, people seldom need your logo or app icon to help them recognize your widget. If your widget benefits from including a small logo — for example, if your widget displays content from multiple sources — a small logo in the top-right corner is sufficient."
+                },
+                {
+                  "title": "Choose between automatically displaying content and letting people customize displayed information.",
+                  "description": "In some cases, people need to configure a widget to ensure it displays the information that's most useful for them. For example, the Stocks widget lets people select the stocks they wish to track. In contrast, some widgets — like the Podcasts widget — automatically display recent content, so people don't need to customize them. For developer guidance, see Making a configurable widget."
+                },
+                {
+                  "title": "Avoid mirroring your widget's appearance within your app.",
+                  "description": "Including an element in your app that looks like your widget but doesn't behave like it can confuse people. Additionally, people may be less likely to try other ways to interact with such an element in your app because they expect it to behave like a widget."
+                },
+                {
+                  "title": "Let people know when authentication adds value.",
+                  "description": "If your widget provides additional functionality when someone is signed in to your app, make sure people know that. For example, an app that shows upcoming reservations might include a message like \"Sign in to view reservations\" when people are signed out."
+                }
+              ]
+            }
+          },
+          {
+            "sectionId": "updating-widget-content",
+            "sectionType": "subsection",
+            "title": "Updating widget content",
+            "content": {
+              "introText": "To remain relevant and useful, widgets periodically refresh their information but don't support continuous, real-time updates, and the system may adjust the limits for updates depending on various factors.",
+              "guidelines": [
+                {
+                  "title": "Keep your widget up to date.",
+                  "description": "Finding the appropriate update frequency for your widget depends on knowing how often the data changes and estimating when people need to see new data. For example, a widget that provides information about tidal conditions at a beach is useful if it updates on an hourly basis even though conditions change constantly. If people are likely to check your widget more frequently than you can update it, consider displaying text that describes when the data was last updated."
+                },
+                {
+                  "title": "Use system functionality to refresh dates and times in your widget.",
+                  "description": "Because widget update frequency is limited, let the system automatically refresh date and time information to preserve update opportunities. Determine the update frequency that fits with the data you display and show content quickly without hiding stale data behind placeholder content. For developer guidance about widget updates, see Keeping a widget up to date."
+                },
+                {
+                  "title": "Use animated transitions to bring attention to data updates.",
+                  "description": "By default, many SwiftUI views animate content updates. Additionally, use standard and custom animations with a duration of up to two seconds to let people know when new information is available or when content displays differently. For developer guidance, see Animating data updates in widgets and Live Activities."
+                }
+              ]
+            }
+          },
+          {
+            "sectionId": "adding-interactivity",
+            "sectionType": "subsection",
+            "title": "Adding interactivity",
+            "content": {
+              "introText": "People tap or click a widget to launch its corresponding app. It can also include buttons and toggles to offer additional functionality without launching the app. For example, the Reminders widget includes toggles to mark a task as completed. When people interact with your widget in areas that aren't buttons or toggles, the interaction launches your app.",
+              "visualExample": {
+                "description": "Two states of a Reminders widget showing task completion",
+                "images": [
+                  {
+                    "label": "Incomplete tasks",
+                    "description": "Reminders widget showing a list of tasks with unchecked circular toggles"
+                  },
+                  {
+                    "label": "Completed tasks",
+                    "description": "Reminders widget showing tasks with checked/filled circular toggles indicating completion"
+                  }
+                ]
+              },
+              "guidelines": [
+                {
+                  "title": "Offer simple, relevant functionality and reserve complexity for your app.",
+                  "description": "Useful widgets offer an easy way to complete a task or action that's directly related to its content."
+                },
+                {
+                  "title": "Ensure that a widget interaction opens your app at the right location.",
+                  "description": "Deep link to details and actions that directly relate to the widget's content, and don't make people navigate to the relevant area in the app. For example, when people click or tap a medium Stocks widget, the Stocks app opens to a page that displays information about the symbol."
+                },
+                {
+                  "title": "Offer interactivity while remaining glanceable and uncluttered.",
+                  "description": "Multiple interaction targets — SwiftUI links, buttons, and toggles — might make sense for your content, but avoid creating app-like layouts in your widgets. Pay attention to the size of targets and make sure people can tap or click them with confidence and without accidentally performing unintended interactions. Note that inline accessory widgets offer only one tap target."
+                }
+              ]
+            }
+          },
+          {
+            "sectionId": "choosing-margins-and-padding",
+            "sectionType": "subsection",
+            "title": "Choosing margins and padding",
+            "content": {
+              "introText": "Widgets scale to adapt to the screen sizes of different devices and onscreen areas. Supply content at appropriate sizes to make sure that your widget looks great on every device and let the system resize or scale it as necessary. In iOS, the system ensures that your widget looks good on small devices by resizing the content you design for large devices. In iPadOS, the system renders your widget at a large size before scaling it down for display on the Home Screen.",
+              "designNote": "As you design for various devices and scale factors, use the values listed in Specifications and the Apple Design Resources for guidance; for your production widget, use SwiftUI to ensure flexibility.",
+              "guidelines": [
+                {
+                  "title": "In general, use standard margins to ensure legibility.",
+                  "description": "Use the standard margin width for widgets — 16 points for most widgets — to avoid crowding their edges and creating a cluttered appearance. If you need to use tighter margins — for example, to create content groupings for graphics, buttons, or background shapes — setting margins of 11 points can work well. Additionally, note that widgets use smaller margins on the desktop on Mac and on the Lock Screen, including in StandBy. For developer guidance, see padding(_:_:)."
+                },
+                {
+                  "title": "Coordinate the corner radius of your content with the corner radius of the widget.",
+                  "description": "To ensure that your content looks good within a widget's rounded corners, use a SwiftUI container to apply the correct corner radius. For developer guidance, see ContainerRelativeShape."
+                }
+              ]
+            }
+          },
+          {
+            "sectionId": "displaying-text-in-widgets",
+            "sectionType": "subsection",
+            "title": "Displaying text in widgets",
+            "content": {
+              "guidelines": [
+                {
+                  "title": "Prefer using the system font, text styles, and SF Symbols.",
+                  "description": "Using the system font helps your widget look at home on any platform, while making it easier for you to display great-looking text in a variety of weights, styles, and sizes. Use SF Symbols to align and scale symbols with text that uses the system font. If you use a custom font, do so sparingly, and be sure it's easy for people to read at a glance. It often works well to use a custom font for the large text in a widget and SF Pro for the smaller text. For guidance, see Typography and SF Symbols."
+                },
+                {
+                  "title": "Avoid very small font sizes.",
+                  "description": "In general, display text using fonts at 11 points or larger. Text in a font that's smaller than 11 points can be too hard for many people to read."
+                },
+                {
+                  "title": "Avoid rasterizing text.",
+                  "description": "Always use text elements and styles to ensure that your text scales well and to allow VoiceOver to speak your content."
+                }
+              ],
+              "note": {
+                "type": "Note",
+                "content": "In iOS, iPadOS, and visionOS, widgets support Dynamic Type sizes from Large to AX5 when you use Font to choose a system font or custom(_:size:) to choose a custom font. For more information about Dynamic Type sizes, see Supporting Dynamic Type."
+              }
+            }
+          },
+          {
+            "sectionId": "using-color",
+            "sectionType": "subsection",
+            "title": "Using color",
+            "content": {
+              "guidelines": [
+                {
+                  "title": "Use color to enhance a widget's appearance without competing with its content.",
+                  "description": "Beautiful colors draw the eye, but they're best when they don't prevent people from absorbing a widget's information at a glance. In your asset catalog, you can also specify the colors you want the system to use as it generates your widget's editing-mode user interface."
+                },
+                {
+                  "title": "Convey meaning without relying on specific colors to represent information.",
+                  "description": "Widgets can appear monochromatic (with or without a custom tint color), and in watchOS, the system may invert colors depending on the watch face a person chooses. Use text and iconography in addition to color to express meaning."
+                },
+                {
+                  "title": "Use full-color images judiciously.",
+                  "description": "When a person chooses a tinted or clear appearance for their widgets, the system by default desaturates full-color images. You can choose to render images in full-color, even when a person chooses a tinted or clear widget appearance. However, full-color images in these appearances draw special attention to the widget, which might make it feel as if the widget doesn't belong to the platform. For example, a full-color image in a widget might appear out of place when a person chooses a clear widget appearance. Consider reserving full-color images to represent media content, such as album art for a music app's widget, and use full-color images with smaller dimensions than the size of the widget."
+                },
+                {
+                  "title": "Support light and dark appearances.",
+                  "description": "Prefer light backgrounds for the light appearance and dark backgrounds for the dark appearance, and consider using the semantic system colors for text and backgrounds to let the colors dynamically adapt to the current appearance. You can also support different appearances by putting color variants in your asset catalog. For guidance, see Dark Mode; for developer guidance, see Asset management and Supporting Dark Mode in your interface."
+                }
+              ]
+            }
+          },
+          {
+            "sectionId": "rendering-modes",
+            "sectionType": "section-heading",
+            "title": "Rendering modes",
+            "content": {
+              "subsections": [
+                {
+                  "title": "Full-color",
+                  "content": "No specific guidance provided in this section - refers to earlier content."
+                },
+                {
+                  "title": "Accented",
+                  "content": {
+                    "guidelines": [
+                      {
+                        "title": "Group widget components into an accented and a primary group.",
+                        "description": "The accented rendering mode divides the widget's view hierarchy into an accent group and a primary group. On iPhone, iPad, and Mac, the system tints primary and accented content white. On Apple Watch, the system tints primary content white and accented content in the color of the watch face."
+                      }
+                    ],
+                    "developerGuidance": "For developer guidance, see widgetAccentable(_:) and Optimizing your widget for accented rendering mode and Liquid Glass."
+                  }
+                },
+                {
+                  "title": "Vibrant",
+                  "content": {
+                    "guidelines": [
+                      {
+                        "title": "Offer enough contrast to ensure legibility.",
+                        "description": "In the vibrant rendering mode, the opacity of pixels within an image determines the strength of the blurred background material effect. Fully transparent pixels let the background material pass through as is. The brightness of pixels determines how vibrant they appear on the Lock Screen. Brighter gray values provide more contrast, and darker values provide less contrast."
+                      },
+                      {
+                        "title": "Create optimized assets for the best vibrant effect.",
+                        "description": "Render content like images, numbers, and text at full opacity. Use white or light gray for the most prominent content and darker grayscale values for secondary elements to establish hierarchy. Confirm that image content has sufficient contrast in grayscale, and use opaque grayscale values, rather than opacities of white, to achieve the best vibrant material effect."
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "sectionId": "previews-and-placeholders",
+            "sectionType": "section-heading",
+            "title": "Previews and placeholders",
+            "content": {
+              "guidelines": [
+                {
+                  "title": "Design a realistic preview to display in the widget gallery.",
+                  "description": "Highlighting your widget's capabilities — and clearly representing the experiences each widget type or size can provide — helps people make an informed decision. You can display real data in your widget preview, but if the data takes too long to generate or load, display realistic simulated data instead."
+                },
+                {
+                  "title": "Design placeholder content that helps people recognize your widget.",
+                  "description": "An installed widget displays placeholder content while its data loads. Create an effective placeholder appearance by combining static interface components with semi-opaque shapes that stand in for dynamic content. For example, use rectangles of different widths to suggest lines of text, and circles or squares in place of glyphs and images."
+                },
+                {
+                  "title": "Write a succinct widget description.",
+                  "description": "The widget gallery displays descriptions that help people understand what each widget does. Begin a description with an action verb — for example, \"See the current weather conditions and forecast for a location\" or \"Keep track of your upcoming events and meetings.\" Avoid including unnecessary phrases that reference the widget itself, like \"This widget shows…,\" \"Use this widget to…,\" or \"Add this widget.\" Use approachable language and sentence-style capitalization."
+                },
+                {
+                  "title": "Group your widget's sizes together, and provide a single description.",
+                  "description": "If your widget is available in multiple sizes, group them together so people don't think each size is a different widget. Provide a single description of your widget — regardless of how many sizes you offer — to avoid repetition and to help people understand how each size provides a slightly different perspective on the same content and functionality."
+                },
+                {
+                  "title": "Consider coloring the Add button.",
+                  "description": "After people choose your app in the widget gallery, an Add button appears below the group of widgets you offer. You can specify a color for this button to help remind people of your brand."
+                }
+              ]
+            }
+          },
+          {
+            "sectionId": "supported-platforms",
+            "sectionType": "section-heading",
+            "title": "Supported platforms",
+            "content": {
+              "table": {
+                "headers": ["Widget size", "iPhone", "iPad", "Mac", "Apple Vision Pro"],
+                "rows": [
+                  {
+                    "widgetSize": "System small",
+                    "iPhone": "Home Screen, Today View, StandBy, and CarPlay",
+                    "iPad": "Home Screen, Today View, and Lock Screen",
+                    "Mac": "Desktop and Notification Center",
+                    "appleVisionPro": "Horizontal and vertical surfaces"
+                  },
+                  {
+                    "widgetSize": "System medium",
+                    "iPhone": "Home Screen and Today View",
+                    "iPad": "Home Screen and Today View",
+                    "Mac": "Desktop and Notification Center",
+                    "appleVisionPro": "Horizontal and vertical surfaces"
+                  },
+                  {
+                    "widgetSize": "System large",
+                    "iPhone": "Home Screen and Today View",
+                    "iPad": "Home Screen and Today View",
+                    "Mac": "Desktop and Notification Center",
+                    "appleVisionPro": "Horizontal and vertical surfaces"
+                  },
+                  {
+                    "widgetSize": "System extra large",
+                    "iPhone": "Not supported",
+                    "iPad": "Home Screen and Today View",
+                    "Mac": "Desktop and Notification Center",
+                    "appleVisionPro": "Horizontal and vertical surfaces"
+                  },
+                  {
+                    "widgetSize": "System extra large portrait",
+                    "iPhone": "Not supported",
+                    "iPad": "Not supported",
+                    "Mac": "Not supported",
+                    "appleVisionPro": "Horizontal and vertical surfaces"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "visualElements": [
+          {
+            "elementId": "page1-hero-widget-example",
+            "elementType": "image",
+            "description": "Small square widget displaying the number '26' (week number) in large white bold typography on a gradient background transitioning from pink/magenta on the left to coral/orange on the right. The widget has rounded corners consistent with iOS widget styling.",
+            "position": "Hero section, right side",
+            "contextualRelevance": "Demonstrates the primary visual appearance of a small system widget"
+          },
+          {
+            "elementId": "page1-widget-sizes-row",
+            "elementType": "image-group",
+            "description": "Horizontal row showing 5 widget size variations: Small (square), Medium (horizontal rectangle), Large (large square), Extra large (wide rectangle), Extra large portrait (tall rectangle). All shown with similar pink-magenta gradient backgrounds.",
+            "position": "Anatomy section",
+            "contextualRelevance": "Visual reference for all system family widget sizes"
+          },
+          {
+            "elementId": "page1-accessory-widgets-row",
+            "elementType": "image-group",
+            "description": "Three accessory widget examples: Accessory corner (small circular widget positioned in corner of watch face), Accessory inline (single line text widget), Accessory rectangular (small rectangular content area)",
+            "position": "Accessory widgets subsection",
+            "contextualRelevance": "Visual reference for accessory widget types used on Lock Screen and Apple Watch"
+          },
+          {
+            "elementId": "page1-appearance-variations",
+            "elementType": "image-group",
+            "description": "Three variations of a small widget: Full-color (vivid gradient), Clear (translucent with Liquid Glass effect), Tinted (monochromatic with tint color applied)",
+            "position": "Appearances section",
+            "contextualRelevance": "Demonstrates how widgets adapt to user appearance preferences on iPhone/iPad Home Screen"
+          },
+          {
+            "elementId": "page1-standby-examples",
+            "elementType": "image-group",
+            "description": "Two StandBy mode examples: Normal StandBy (widget scaled up, background removed) and StandBy in low-light conditions (monochromatic red tint applied)",
+            "position": "Appearances section - StandBy subsection",
+            "contextualRelevance": "Shows widget appearance in iPhone StandBy mode"
+          },
+          {
+            "elementId": "page1-watch-examples",
+            "elementType": "image-group",
+            "description": "Two Apple Watch widget contexts: Watch complication (widget on watch face) and Smart Stack (widget in scrollable stack interface)",
+            "position": "Appearances section - Apple Watch subsection",
+            "contextualRelevance": "Shows widget placement options on Apple Watch"
+          },
+          {
+            "elementId": "page1-reminders-widget",
+            "elementType": "image-group",
+            "description": "Two states of Reminders widget demonstrating interactivity: 'Incomplete tasks' showing unchecked circular toggles next to task items, and 'Completed tasks' showing checked/filled toggles indicating task completion",
+            "position": "Adding interactivity section",
+            "contextualRelevance": "Demonstrates interactive toggle functionality in widgets"
+          },
+          {
+            "elementId": "page1-status-bar",
+            "elementType": "ui-element",
+            "description": "iOS status bar showing: '9:41' time on left, 'Mon Jun 22' date in center, signal bars, WiFi icon, and '100%' battery indicator on right",
+            "position": "Top of page in device frame context",
+            "contextualRelevance": "Standard iOS status bar styling for context"
+          }
+        ],
+        "pageSummary": "Page 1 covers the introduction to widgets, their anatomy (system family and accessory widgets), appearance variations across platforms and user preferences, best practices for content and design, interactivity guidelines, margins/padding recommendations, text display guidelines, color usage, rendering modes (full-color, accented, vibrant), previews and placeholders guidance, and supported platform matrix."
+      },
+      {
+        "pageNumber": 2,
+        "dimensions": {"width": "unknown", "height": "unknown", "unit": "px"},
+        "orientation": "portrait",
+        "backgroundColor": "#000000 (dark mode)",
+        "layout": {
+          "type": "multi-column",
+          "columns": 3,
+          "description": "Left sidebar navigation, main content area, right table of contents",
+          "margins": {"top": "standard", "right": "standard", "bottom": "standard", "left": "standard"},
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "sections": [
+          {
+            "sectionId": "platform-considerations",
+            "sectionType": "section-heading",
+            "title": "Platform considerations",
+            "content": {
+              "platforms": [
+                {
+                  "platform": "macOS",
+                  "guidance": "No additional considerations for macOS. Not supported in tvOS."
+                },
+                {
+                  "platform": "iOS, iPadOS",
+                  "subsections": [
+                    {
+                      "title": "Lock Screen widgets",
+                      "content": {
+                        "description": "Widgets on the Lock Screen are functionally similar to watch complications and follow design principles for Complications in addition to design principles for widgets. Provide useful information in your Lock Screen widget, and don't treat it only as an additional way for people to launch into your app. In many cases, a design for complications also works well for widgets on the Lock Screen (and vice versa), so consider creating them in tandem.",
+                        "shapes": "Your app can offer widgets on the Lock Screen in three different shapes: as inline text that appears above the clock, and as circular and rectangular shapes that appear below the clock.",
+                        "guidelines": [
+                          {
+                            "title": "Support the Always-On display on iPhone.",
+                            "description": "Devices with the Always-On display render widgets on the Lock Screen with reduced luminance. Use levels of gray that provide enough contrast in the Always-On display, and make sure your content remains legible."
+                          }
+                        ],
+                        "developerGuidance": "For developer guidance, see Creating accessory widgets and watch complications."
+                      }
+                    },
+                    {
+                      "title": "Live Activities",
+                      "content": {
+                        "guidelines": [
+                          {
+                            "title": "Offer Live Activities to show real-time updates.",
+                            "description": "Widgets don't show real-time information. If your app allows people to track the progress of a task or event for a limited amount of time with frequent updates, consider offering Live Activities. Widgets and Live Activities use the same underlying frameworks and share design similarities. As a result, it can be a good idea to develop widgets and Live Activities in tandem and reuse code and design components for both features. For design guidance on Live Activities, see Live Activities; for developer guidance, see ActivityKit."
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "title": "StandBy and CarPlay",
+                      "content": {
+                        "description": "On iPhone in StandBy, the system displays two small system family widgets side-by-side, scaled up so they fill the Lock Screen. By supporting StandBy, you also ensure your widgets work well in CarPlay. CarPlay and StandBy widgets both use the small system family widget with the background removed and scaled up to best fit the grid on the Widgets screen. Glanceable information and large text are especially important in CarPlay to make your widget easy to read on a car's display.",
+                        "guidelines": [
+                          {
+                            "title": "Limit usage of rich images or color to convey meaning in StandBy.",
+                            "description": "Instead, make use of the additional space by scaling up and rearranging text so people can glance at the widget content from a greater distance. To seamlessly blend with the black background, don't use background colors for your widget when it appears in StandBy."
+                          }
+                        ],
+                        "developerGuidance": "For developer guidance, see Displaying the right widget background.",
+                        "lowLightConditions": {
+                          "description": "On iPhone in StandBy in low-light conditions, the system renders widgets in a monochromatic look with a red tint.",
+                          "visualExample": {
+                            "label": "iPhone in low-light conditions",
+                            "description": "Widget displayed with monochromatic red tint for low-light StandBy mode"
+                          }
+                        },
+                        "incorrectUsageExample": {
+                          "label": "Incorrect usage",
+                          "description": "Example showing what NOT to do when designing for StandBy"
+                        },
+                        "correctUsageExample": {
+                          "label": "Correct usage",
+                          "description": "Example showing proper StandBy widget design"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "platform": "visionOS",
+                  "content": {
+                    "description": "Widgets in visionOS are 3D objects that people place on a horizontal or vertical surface. When a person places a widget on a surface, the widget persists in that location even when the person turns Apple Vision Pro off and back on. Widgets have a consistent, real-world scale. Their size, mounting style, and treatment style impact how a person perceives them.",
+                    "customization": "visionOS widgets appear in full-color by default, but they appear in the accented rendering mode when people personalize them with tint colors using a range of system-provided color palettes. Additionally, people can customize the frame width of widgets that use the elevated mounting style, and custom options that are unique to the widget. For example, visionOS doesn't provide systemwide light or dark appearances. However, the Music poster widget offers its own customization option that lets people choose between a light and a dark theme that the app generates from the displayed album art.",
+                    "developerGuidance": "For developer guidance, see Updating your widgets for visionOS.",
+                    "guidelines": [
+                      {
+                        "title": "Adapt your design and content for the spatial experience Apple Vision Pro provides.",
+                        "description": "In visionOS, widgets don't float in isolation but are part of living rooms, kitchens, offices, and more. Consider this context early and think of widgets as part of someone's surroundings when you bring your existing widgets to visionOS or design them from scratch. For example, the Music widget adapts to a poster-like appearance that's glanceable across the room with large typography and a high-resolution image, and a productivity app might offer a small widget that easily fits on a desk."
+                      },
+                      {
+                        "title": "Test your widgets across the full range of system color palettes and in different lighting conditions.",
+                        "description": "Make sure your widget's tone, contrast, and legibility remain consistent and intentional. If you choose to exclude UI elements from tinting, test your widget in every provided tint color palette to make sure the untinted elements remain legible when a person customizes their widgets with tint colors."
+                      }
+                    ],
+                    "subsections": [
+                      {
+                        "title": "Thresholds and sizes",
+                        "content": {
+                          "description": "Widgets on Apple Vision Pro can adapt based on a person's proximity, and visionOS provides widgets with two key thresholds to design for: the simplified threshold for when a person views a widget at a distance, and the default threshold when a person views it nearby.",
+                          "visualExamples": [
+                            {
+                              "label": "Viewed from a distance",
+                              "description": "Widget showing simplified layout with larger elements for distant viewing"
+                            },
+                            {
+                              "label": "Viewed from nearby",
+                              "description": "Widget showing detailed layout with more information for close viewing"
+                            }
+                          ],
+                          "contextNote": "Because widgets can appear throughout a person's environment, it's also important to match a widget's size to the type of content it contains, and to be aware of how it appears at a variety of distances.",
+                          "guidelines": [
+                            {
+                              "title": "Design a responsive layout that shows the right level of detail for each of the two thresholds.",
+                              "description": "When a person views the widget at a distance, display a simplified version of your widget that shows fewer details and has a larger type size, and remove interactive elements like buttons or toggles. When a person views the widget from nearby, show more details and use a smaller type size. To create a smooth and consistent experience and help your layout feel continuous, maintain shared elements across both distance thresholds."
+                            },
+                            {
+                              "title": "Offer widget family sizes that fit a person's surroundings well.",
+                              "description": "Widgets map to real-world dimensions and have a permanent presence in a person's spatial environment. Think about where people might place your widget — mounted to a wall, placed on a sideboard, or sitting next to a workplace — and choose a widget family size that's right for that context. For example, offer a small system widget with content that people might place on a desk or an extra large widget to let people decorate their surroundings with something visually rich, like artwork or photography."
+                            },
+                            {
+                              "title": "Display content in a way that remains legible from a range of distances.",
+                              "description": "To make a widget feel intentional and proportionate to where they place it, people can scale a widget from 75 to 125 percent in size. Use print design principles like clear hierarchy, strong typography, and scale to make sure your content remains glanceable. Include high-resolution assets that look good scaled up to every size."
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "title": "Mounting styles",
+                        "content": {
+                          "description": "The way a widget appears on a surface plays a big role in how a person perceives it. To make it feel intentional and integrated into their surroundings, people place a widget on surfaces in distinct mounting styles.",
+                          "styles": [
+                            {
+                              "name": "Elevated style",
+                              "description": "On horizontal surfaces — for example, on a desk — the widget always appears elevated and gently tilts backward, providing a subtle angle that improves readability, and casts a soft shadow that helps it feel grounded on the surface. On vertical surfaces — for example, on a wall — the widget either appears elevated, sitting flush on the surface and similar to how you mount a picture frame."
+                            },
+                            {
+                              "name": "Recessed style",
+                              "description": "On vertical surfaces — for example, on a wall — the widget can appear recessed, with content set back into the surface, creating a depth effect that gives the illusion of a cutout in the surface. Horizontal surfaces don't use the recessed mounting style."
+                            }
+                          ],
+                          "defaultBehavior": "By default, widgets use the elevated mounting style, because it works for horizontal and vertical surfaces.",
+                          "guidelines": [
+                            {
+                              "title": "Choose the mounting style that fits your content and the experience you want to create.",
+                              "description": "By default, visionOS widgets use the elevated mounting style, which is ideal for content that you want to stand out and feel present, like reminders, media, or glanceable data. Recessed widgets are ideal for immersive or ambient content, like weather or editorial content, and people can only place them on a vertical surface. If a style doesn't suit your widget, you can opt out of it for each widget. If you choose to only support the recessed mounting style, people can't place the widget on a horizontal surface. For example, a weather app might only support the recessed mounting style to give the illusion of looking out of a window for its large and extra-large system family widgets, and only support the elevated style for its small system family widget."
+                            }
+                          ],
+                          "developerNote": {
+                            "type": "Developer note",
+                            "content": "Use the supportedMountingStyles(_:) property of your WidgetConfiguration to declare supported mounting styles — elevated, recessed, or both — for all widgets included in the configuration. To offer a widget that only supports one mounting style and other widgets that support both mounting styles, create separate widget configurations. For example, create one widget configuration for the widget that only supports the recessed mounting style, and a second configuration for the widgets that support both mounting styles."
+                          },
+                          "additionalGuidelines": [
+                            {
+                              "title": "Test your elevated widget designs with each system-provided frame width.",
+                              "description": "People can choose from different system-defined frame widths for widgets that use the elevated mounting style. You can't change your layout based on the frame width a person chooses, so make sure your widget layout stays visually balanced for each frame width."
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "title": "Treatment styles",
+                        "content": {
+                          "description": "In addition to size and mounting style, the system applies one of two treatment styles to visionOS widgets. Choosing the right treatment for your widget helps reinforce the experience you want to create.",
+                          "styles": [
+                            {
+                              "name": "Paper style",
+                              "description": "The paper style creates a more grounded, print-like style that feels solid and makes the widget feel like part of its surroundings. When lighting conditions change, widgets in the paper style become darker or lighter in response."
+                            },
+                            {
+                              "name": "Glass style",
+                              "description": "The glass style creates a lighter, layered look that adds depth and visual separation between foreground and background elements to emphasize clarity and contrast. The foreground elements always stay bright and legible, and don't dim or brighten, even as ambient light changes."
+                            }
+                          ],
+                          "guidelines": [
+                            {
+                              "title": "Choose the paper style for a print-like look that feels more like a real object in the room.",
+                              "description": "The entire widget responds to the ambient lighting and blends naturally into its surroundings. For example, the Music poster widget uses the paper style to display albums and playlists like framed artwork on a wall."
+                            },
+                            {
+                              "title": "Choose the glass style for information-rich widgets.",
+                              "description": "Glass visually separates foreground and background elements, allowing you to decide which parts of your interface adapt to the surroundings and which stay visually consistent. Foreground elements appear in full color, unaffected by ambient lighting, to make sure important content stays sharp and legible. For example, a News widget appears with editorial images in the background with a soft, print-like look. Its headlines stay in the foreground, crisp and easy to read."
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "platform": "watchOS",
+                  "content": {
+                    "guidelines": [
+                      {
+                        "title": "Provide a colorful background that conveys meaning.",
+                        "description": "By default, widgets in the Smart Stack use a black background. Consider using a custom background color that provides additional meaning. For example, the Stocks app uses a red background for falling stock values and a green background if a stock's value rises."
+                      },
+                      {
+                        "title": "Encourage the system to display or elevate the position of your watchOS widget in the Smart Stack.",
+                        "description": "Relevancy information helps the system show your widget when people need it most. Relevance can be location-based or specific to ongoing system actions, like a workout. For developer guidance, see RelevanceKit."
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "sectionId": "specifications",
+            "sectionType": "section-heading",
+            "title": "Specifications",
+            "content": {
+              "introText": "As you design your widgets, use the following values for guidance.",
+              "footnote": "* When Display Zoom is set to More Space.",
+              "subsections": [
+                {
+                  "title": "iOS dimensions",
+                  "table": {
+                    "headers": ["Screen size (portrait, pt)", "Small (pt)", "Medium (pt)", "Large (pt)", "Circular (pt)"],
+                    "rows": [
+                      {"screenSize": "430x932", "small": "170x170", "medium": "364x170", "large": "364x382", "circular": "76x76"},
+                      {"screenSize": "428x926", "small": "170x170", "medium": "364x170", "large": "364x382", "circular": "76x76"},
+                      {"screenSize": "414x896", "small": "169x169", "medium": "360x169", "large": "360x379", "circular": "76x76"},
+                      {"screenSize": "414x736", "small": "159x159", "medium": "348x157", "large": "348x357", "circular": "76x76"},
+                      {"screenSize": "393x852", "small": "158x158", "medium": "338x158", "large": "338x354", "circular": "72x72"},
+                      {"screenSize": "390x844", "small": "158x158", "medium": "338x158", "large": "338x354", "circular": "72x72"},
+                      {"screenSize": "375x812", "small": "155x155", "medium": "329x155", "large": "329x345", "circular": "72x72"},
+                      {"screenSize": "375x667", "small": "148x148", "medium": "321x148", "large": "321x324", "circular": "68x68"},
+                      {"screenSize": "360x780", "small": "155x155", "medium": "329x155", "large": "329x345", "circular": "72x72"},
+                      {"screenSize": "320x568", "small": "141x141", "medium": "292x141", "large": "292x311", "circular": "N/A"}
+                    ]
+                  }
+                },
+                {
+                  "title": "iPadOS dimensions",
+                  "table": {
+                    "headers": ["Screen size (portrait, pt)", "Target", "Small (pt)", "Medium (pt)", "Large (pt)"],
+                    "rows": [
+                      {"screenSize": "768x1024", "target": "Canvas", "small": "141x141", "medium": "305.5x141", "large": "305.5x305.5"},
+                      {"screenSize": "768x1024", "target": "Device", "small": "120x120", "medium": "260x120", "large": "260x260"},
+                      {"screenSize": "744x1133", "target": "Canvas", "small": "141x141", "medium": "305.5x141", "large": "305.5x305.5"},
+                      {"screenSize": "744x1133", "target": "Device", "small": "120x120", "medium": "260x120", "large": "260x260"},
+                      {"screenSize": "810x1080", "target": "Canvas", "small": "146x146", "medium": "320.5x146", "large": "320.5x320.5"},
+                      {"screenSize": "810x1080", "target": "Device", "small": "124x124", "medium": "272x124", "large": "272x272"},
+                      {"screenSize": "820x1180", "target": "Canvas", "small": "155x155", "medium": "342x155", "large": "342x342"},
+                      {"screenSize": "820x1180", "target": "Device", "small": "136x136", "medium": "300x136", "large": "300x300"},
+                      {"screenSize": "834x1112", "target": "Canvas", "small": "150x150", "medium": "327.5x150", "large": "327.5x327.5"},
+                      {"screenSize": "834x1112", "target": "Device", "small": "132x132", "medium": "288x132", "large": "288x288"},
+                      {"screenSize": "834x1194", "target": "Canvas", "small": "155x155", "medium": "342x155", "large": "342x342"},
+                      {"screenSize": "834x1194", "target": "Device", "small": "136x136", "medium": "300x136", "large": "300x300"},
+                      {"screenSize": "954x1373 *", "target": "Canvas", "small": "162x162", "medium": "350x162", "large": "350x350"},
+                      {"screenSize": "954x1373 *", "target": "Device", "small": "162x162", "medium": "350x162", "large": "350x350"},
+                      {"screenSize": "970x1389 *", "target": "Canvas", "small": "162x162", "medium": "350x162", "large": "350x350"},
+                      {"screenSize": "970x1389 *", "target": "Device", "small": "162x162", "medium": "350x162", "large": "350x350"},
+                      {"screenSize": "1024x1366", "target": "Canvas", "small": "170x170", "medium": "378.5x170", "large": "378.5x378.5"},
+                      {"screenSize": "1024x1366", "target": "Device", "small": "160x160", "medium": "356x160", "large": "356x356"},
+                      {"screenSize": "1192x1590 *", "target": "Canvas", "small": "188x188", "medium": "412x188", "large": "412x412"},
+                      {"screenSize": "1192x1590 *", "target": "Device", "small": "188x188", "medium": "412x188", "large": "412x412"}
+                    ]
+                  }
+                },
+                {
+                  "title": "visionOS dimensions",
+                  "table": {
+                    "headers": ["Widget", "Size in pt", "Size in mm (scaled to 100%)"],
+                    "rows": [
+                      {"widget": "Small", "sizePt": "158x158", "sizeMm": "268x268"},
+                      {"widget": "Medium", "sizePt": "338x158", "sizeMm": "574x268"},
+                      {"widget": "Large", "sizePt": "338x354", "sizeMm": "574x600"},
+                      {"widget": "Extra large", "sizePt": "450x338", "sizeMm": "763x574"},
+                      {"widget": "Extra large portrait", "sizePt": "338x450", "sizeMm": "574x763"}
+                    ]
+                  }
+                },
+                {
+                  "title": "watchOS dimensions",
+                  "table": {
+                    "headers": ["Apple Watch size", "Size of a widget in the Smart Stack (pt)"],
+                    "rows": [
+                      {"watchSize": "40mm", "widgetSize": "152x69.5"},
+                      {"watchSize": "41mm", "widgetSize": "165x72.5"},
+                      {"watchSize": "44mm", "widgetSize": "173x76.5"},
+                      {"watchSize": "45mm", "widgetSize": "184x80.5"},
+                      {"watchSize": "49mm", "widgetSize": "191x81.5"}
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "sectionId": "resources",
+            "sectionType": "section-heading",
+            "title": "Resources",
+            "content": {
+              "subsections": [
+                {
+                  "title": "Related",
+                  "items": [
+                    {
+                      "type": "link",
+                      "text": "Layout",
+                      "url": "/design/human-interface-guidelines/layout"
+                    }
+                  ]
+                },
+                {
+                  "title": "Developer documentation",
+                  "items": [
+                    {
+                      "type": "link",
+                      "text": "WidgetKit",
+                      "url": "/documentation/widgetkit"
+                    },
+                    {
+                      "type": "link",
+                      "text": "Developing a WidgetKit strategy — WidgetKit",
+                      "url": "/documentation/widgetkit/developing-a-widgetkit-strategy"
+                    }
+                  ]
+                },
+                {
+                  "title": "Videos",
+                  "items": [
+                    {
+                      "type": "video-card",
+                      "title": "What's new in widgets",
+                      "description": "WWDC video about widget updates",
+                      "thumbnail": "Video thumbnail showing widget interface"
+                    },
+                    {
+                      "type": "video-card",
+                      "title": "Design widgets for visionOS",
+                      "description": "WWDC video about visionOS widget design",
+                      "thumbnail": "Video thumbnail showing visionOS widget"
+                    },
+                    {
+                      "type": "video-card",
+                      "title": "Bring widgets to life",
+                      "description": "WWDC video about widget animations and interactions",
+                      "thumbnail": "Video thumbnail showing animated widget"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "sectionId": "change-log",
+            "sectionType": "section-heading",
+            "title": "Change log",
+            "content": {
+              "entries": [
+                {
+                  "date": "December 16, 2025",
+                  "changes": "Updated guidance for all platforms, and added guidance for visionOS and CarPlay."
+                },
+                {
+                  "date": "January 17, 2025",
+                  "changes": "Corrected watchOS widget dimensions."
+                },
+                {
+                  "date": "June 10, 2024",
+                  "changes": "Updated to include guidance for accented widgets in iOS 18 and iPadOS 18."
+                },
+                {
+                  "date": "June 5, 2023",
+                  "changes": "Updated guidance to include widgets in watchOS, widgets on the iPad Lock Screen, and updates for iOS 17, iPadOS 17, and macOS 14."
+                },
+                {
+                  "date": "November 3, 2022",
+                  "changes": "Added guidance for widgets on the iPhone Lock Screen and updated design comprehensives for iPhone 14, iPhone 14 Pro, and iPhone 14 Pro Max."
+                }
+              ],
+              "feedbackNote": "To submit feedback on documentation, visit Feedback Assistant."
+            }
+          }
+        ],
+        "visualElements": [
+          {
+            "elementId": "page2-standby-low-light",
+            "elementType": "image",
+            "description": "iPhone displaying StandBy mode in low-light conditions with widget rendered in monochromatic red tint",
+            "position": "StandBy and CarPlay section",
+            "contextualRelevance": "Demonstrates the red-tinted appearance of widgets in low-light StandBy mode"
+          },
+          {
+            "elementId": "page2-correct-incorrect-usage",
+            "elementType": "image-comparison",
+            "description": "Side-by-side comparison showing 'Incorrect usage' and 'Correct usage' examples for StandBy widget design",
+            "position": "StandBy and CarPlay section",
+            "contextualRelevance": "Visual guidance on proper widget design for StandBy mode"
+          },
+          {
+            "elementId": "page2-visionos-distance-thresholds",
+            "elementType": "image-comparison",
+            "description": "Two widget states showing 'Viewed from a distance' (simplified layout, larger text) and 'Viewed from nearby' (detailed layout, smaller text)",
+            "position": "visionOS Thresholds and sizes section",
+            "contextualRelevance": "Demonstrates adaptive layout based on viewing distance in visionOS"
+          },
+          {
+            "elementId": "page2-video-thumbnails",
+            "elementType": "image-group",
+            "description": "Three video thumbnail cards for WWDC videos: 'What's new in widgets', 'Design widgets for visionOS', and 'Bring widgets to life'",
+            "position": "Resources section - Videos subsection",
+            "contextualRelevance": "Links to related WWDC video content"
+          }
+        ],
+        "pageSummary": "Page 2 covers platform-specific considerations for macOS, iOS/iPadOS (Lock Screen, Live Activities, StandBy/CarPlay), visionOS (thresholds, mounting styles, treatment styles), and watchOS. Also includes comprehensive specifications tables for widget dimensions across all platforms (iOS, iPadOS, visionOS, watchOS), resources section with related links and WWDC videos, and a detailed change log of documentation updates."
+      }
+    ],
+    "footer": {
+      "appearanceToggle": {
+        "options": ["Light", "Dark", "Auto"],
+        "currentSelection": "Dark"
+      },
+      "copyright": "Copyright © 2025 Apple Inc. All rights reserved.",
+      "legalLinks": [
+        {"text": "Terms of Use", "url": "/terms"},
+        {"text": "Privacy Policy", "url": "/privacy"},
+        {"text": "Agreements and Guidelines", "url": "/agreements"}
+      ],
+      "footerNavigation": {
+        "columns": [
+          {
+            "title": "Platforms",
+            "links": [
+              {"text": "iOS", "url": "/ios"},
+              {"text": "iPadOS", "url": "/ipados"},
+              {"text": "macOS", "url": "/macos"},
+              {"text": "tvOS", "url": "/tvos"},
+              {"text": "visionOS", "url": "/visionos"},
+              {"text": "watchOS", "url": "/watchos"}
+            ]
+          },
+          {
+            "title": "Tools",
+            "links": [
+              {"text": "Swift", "url": "/swift"},
+              {"text": "SwiftUI", "url": "/swiftui"},
+              {"text": "Swift Playground", "url": "/swift-playgrounds"},
+              {"text": "TestFlight", "url": "/testflight"},
+              {"text": "Xcode", "url": "/xcode"},
+              {"text": "Xcode Cloud", "url": "/xcode-cloud"},
+              {"text": "SF Symbols", "url": "/sf-symbols"}
+            ]
+          },
+          {
+            "title": "Topics & Technologies",
+            "links": [
+              {"text": "Accessibility", "url": "/accessibility"},
+              {"text": "Accessories", "url": "/accessories"},
+              {"text": "App Extension", "url": "/app-extensions"},
+              {"text": "App Store", "url": "/app-store"},
+              {"text": "Audio & Video", "url": "/audio-video"},
+              {"text": "Augmented Reality", "url": "/augmented-reality"},
+              {"text": "Design", "url": "/design"},
+              {"text": "Distribution", "url": "/distribution"},
+              {"text": "Education", "url": "/education"},
+              {"text": "Fonts", "url": "/fonts"},
+              {"text": "Games", "url": "/games"},
+              {"text": "Health & Fitness", "url": "/health-fitness"},
+              {"text": "In-App Purchase", "url": "/in-app-purchase"},
+              {"text": "Localization", "url": "/localization"},
+              {"text": "Maps & Location", "url": "/maps-location"},
+              {"text": "Machine Learning & AI", "url": "/machine-learning"},
+              {"text": "Open Source", "url": "/open-source"},
+              {"text": "Security", "url": "/security"},
+              {"text": "Safari & Web", "url": "/safari-web"}
+            ]
+          },
+          {
+            "title": "Resources",
+            "links": [
+              {"text": "Documentation", "url": "/documentation"},
+              {"text": "Tutorials", "url": "/tutorials"},
+              {"text": "Downloads", "url": "/downloads"},
+              {"text": "Forums", "url": "/forums"},
+              {"text": "Videos", "url": "/videos"}
+            ]
+          },
+          {
+            "title": "Support",
+            "links": [
+              {"text": "Support Articles", "url": "/support"},
+              {"text": "Contact Us", "url": "/contact"},
+              {"text": "Bug Reporting", "url": "/bug-reporting"},
+              {"text": "System Status", "url": "/system-status"}
+            ]
+          },
+          {
+            "title": "Account",
+            "links": [
+              {"text": "Apple Developer", "url": "/account"},
+              {"text": "App Store Connect", "url": "/app-store-connect"},
+              {"text": "Certificates, IDs, & Profiles", "url": "/certificates"},
+              {"text": "Feedback Assistant", "url": "/feedback-assistant"}
+            ]
+          },
+          {
+            "title": "Programs",
+            "links": [
+              {"text": "Apple Developer Program", "url": "/programs/developer"},
+              {"text": "Apple Developer Enterprise Program", "url": "/programs/enterprise"},
+              {"text": "App Store Small Business Program", "url": "/programs/small-business"},
+              {"text": "MFi Program", "url": "/programs/mfi"},
+              {"text": "News Partner Program", "url": "/programs/news"},
+              {"text": "Video Partner Program", "url": "/programs/video"},
+              {"text": "Security Bounty Program", "url": "/security-bounty"},
+              {"text": "Security Research Device Program", "url": "/security-research"}
+            ]
+          },
+          {
+            "title": "Events",
+            "links": [
+              {"text": "Meet with Apple", "url": "/events/meet"},
+              {"text": "Apple Developer Centers", "url": "/developer-centers"},
+              {"text": "App Store Awards", "url": "/app-store-awards"},
+              {"text": "Apple Design Awards", "url": "/design-awards"},
+              {"text": "Apple Developer Academies", "url": "/academies"},
+              {"text": "WWDC", "url": "/wwdc"}
+            ]
+          }
+        ]
+      },
+      "languageSelector": {
+        "currentLanguage": "English",
+        "label": "Developer Documentation"
+      }
+    },
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": true,
+        "entries": [
+          "Widgets",
+          "Anatomy",
+          "Best practices",
+          "Rendering modes",
+          "Previews and placeholders",
+          "Platform considerations",
+          "Specifications",
+          "Resources",
+          "Change log"
+        ]
+      },
+      "runningHeaders": "Apple Developer Documentation header with navigation",
+      "runningFooters": "Apple Inc. copyright and legal links",
+      "pageNumbers": {"present": false, "format": "N/A - web document"}
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "introduction",
+          "title": "Widgets Introduction",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Overview of widgets as quick-access components providing essential information across Apple platforms"
+        },
+        {
+          "sectionId": "anatomy",
+          "title": "Anatomy",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": ["System family widgets", "Accessory widgets"],
+          "summary": "Description of widget types, sizes, and supported contexts"
+        },
+        {
+          "sectionId": "appearances",
+          "title": "Appearances",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Widget appearance variations including full-color, clear, tinted, and platform-specific treatments"
+        },
+        {
+          "sectionId": "best-practices",
+          "title": "Best practices",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": ["Updating widget content", "Adding interactivity", "Choosing margins and padding", "Displaying text in widgets", "Using color"],
+          "summary": "Guidelines for designing effective, glanceable, and useful widgets"
+        },
+        {
+          "sectionId": "rendering-modes",
+          "title": "Rendering modes",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": ["Full-color", "Accented", "Vibrant"],
+          "summary": "Explanation of the three rendering modes and their applications"
+        },
+        {
+          "sectionId": "previews-placeholders",
+          "title": "Previews and placeholders",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Guidance on designing gallery previews and loading placeholder content"
+        },
+        {
+          "sectionId": "supported-platforms",
+          "title": "Supported platforms",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Matrix of widget size support across iPhone, iPad, Mac, and Apple Vision Pro"
+        },
+        {
+          "sectionId": "platform-considerations",
+          "title": "Platform considerations",
+          "startPage": 2,
+          "endPage": 2,
+          "subsections": ["macOS", "iOS, iPadOS", "visionOS", "watchOS"],
+          "summary": "Platform-specific design guidance including Lock Screen, StandBy, CarPlay, spatial computing, and Smart Stack"
+        },
+        {
+          "sectionId": "specifications",
+          "title": "Specifications",
+          "startPage": 2,
+          "endPage": 2,
+          "subsections": ["iOS dimensions", "iPadOS dimensions", "visionOS dimensions", "watchOS dimensions"],
+          "summary": "Comprehensive dimension tables for all widget sizes across all platforms"
+        },
+        {
+          "sectionId": "resources",
+          "title": "Resources",
+          "startPage": 2,
+          "endPage": 2,
+          "subsections": ["Related", "Developer documentation", "Videos"],
+          "summary": "Links to related HIG content, WidgetKit documentation, and WWDC videos"
+        },
+        {
+          "sectionId": "change-log",
+          "title": "Change log",
+          "startPage": 2,
+          "endPage": 2,
+          "subsections": [],
+          "summary": "History of documentation updates from November 2022 to December 2025"
+        }
+      ],
+      "documentFlow": "The document begins with a hero introduction defining widgets and their cross-platform presence, then systematically covers widget anatomy (types and sizes), appearance variations, best practices for design and content, rendering mode details, preview/placeholder guidance, and a supported platforms matrix. The second page focuses on platform-specific considerations for each Apple platform, detailed dimension specifications, related resources, and a version history."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {"term": "System family widgets", "definition": "Widget category offering broad range of sizes (small, medium, large, extra large) that may include interactive elements", "occurrences": 5},
+        {"term": "Accessory widgets", "definition": "Small widgets with limited information display, appearing on Lock Screen and Apple Watch", "occurrences": 4},
+        {"term": "Full-color rendering mode", "definition": "Rendering mode displaying widget in full color without color changes to views", "occurrences": 3},
+        {"term": "Accented rendering mode", "definition": "Rendering mode that removes background, adds tinted/Liquid Glass effect, and divides views into accent and primary groups", "occurrences": 4},
+        {"term": "Vibrant rendering mode", "definition": "Rendering mode that desaturates content and creates vibrant effect for Lock Screen/desktop backgrounds", "occurrences": 3},
+        {"term": "Liquid Glass", "definition": "Translucent material effect applied to widgets in clear appearance mode in iOS 18+", "occurrences": 3},
+        {"term": "StandBy", "definition": "iPhone mode displaying scaled-up widgets side-by-side with background removed", "occurrences": 8},
+        {"term": "Smart Stack", "definition": "Apple Watch interface for displaying widgets in a scrollable stack with relevancy-based ordering", "occurrences": 6},
+        {"term": "Elevated mounting style", "definition": "visionOS widget style where widget appears raised from surface with tilt and shadow", "occurrences": 4},
+        {"term": "Recessed mounting style", "definition": "visionOS widget style where content appears set back into surface creating depth illusion", "occurrences": 3},
+        {"term": "Paper style", "definition": "visionOS treatment creating print-like appearance that responds to ambient lighting", "occurrences": 3},
+        {"term": "Glass style", "definition": "visionOS treatment adding depth with foreground elements staying bright regardless of lighting", "occurrences": 3},
+        {"term": "Canvas size", "definition": "iPadOS widget dimension at full size before scaling", "occurrences": 10},
+        {"term": "Device size", "definition": "iPadOS widget dimension as displayed on device after scaling", "occurrences": 10}
+      ],
+      "keyFindings": [
+        "Widgets support five system family sizes: small, medium, large, extra large, and extra large portrait",
+        "Accessory widgets include circular, corner, inline, and rectangular variants",
+        "Three rendering modes exist: full-color, accented, and vibrant",
+        "iOS 18 introduced Liquid Glass material for clear appearance widgets",
+        "StandBy and CarPlay share the same widget treatment (background removed, scaled up)",
+        "visionOS widgets use real-world scale measured in both points and millimeters",
+        "visionOS offers two mounting styles (elevated, recessed) and two treatment styles (paper, glass)",
+        "Widgets scale from 75% to 125% in visionOS based on user preference",
+        "Standard widget margin is 16 points; tighter margins of 11 points acceptable for content groupings",
+        "Minimum recommended font size is 11 points",
+        "Animation duration for content updates should be up to 2 seconds maximum",
+        "watchOS widgets can use relevancy information via RelevanceKit to influence Smart Stack position"
+      ],
+      "technicalSpecifications": {
+        "marginStandard": "16 points",
+        "marginTight": "11 points",
+        "minimumFontSize": "11 points",
+        "animationMaxDuration": "2 seconds",
+        "dynamicTypeSupportRange": "Large to AX5",
+        "visionOSScaleRange": "75% to 125%",
+        "iOSWidgetSizes": {
+          "430x932": {"small": "170x170", "medium": "364x170", "large": "364x382", "circular": "76x76"},
+          "393x852": {"small": "158x158", "medium": "338x158", "large": "338x354", "circular": "72x72"},
+          "375x667": {"small": "148x148", "medium": "321x148", "large": "321x324", "circular": "68x68"}
+        },
+        "visionOSWidgetSizes": {
+          "small": {"pt": "158x158", "mm": "268x268"},
+          "medium": {"pt": "338x158", "mm": "574x268"},
+          "large": {"pt": "338x354", "mm": "574x600"},
+          "extraLarge": {"pt": "450x338", "mm": "763x574"},
+          "extraLargePortrait": {"pt": "338x450", "mm": "574x763"}
+        },
+        "watchOSSmartStackSizes": {
+          "40mm": "152x69.5",
+          "41mm": "165x72.5",
+          "44mm": "173x76.5",
+          "45mm": "184x80.5",
+          "49mm": "191x81.5"
+        }
+      },
+      "designDecisions": [
+        "Use system font (SF Pro) for widget text for platform consistency",
+        "Reserve complex functionality for the app; widgets should offer simple, relevant actions",
+        "Deep link widget taps to relevant app locations, not just app launch",
+        "Use brand elements sparingly; small logo in top-right if needed",
+        "Create single description for all widget sizes to avoid repetition",
+        "Consider configurable vs automatic content based on use case",
+        "Use rectangles and circles as placeholders for dynamic content",
+        "Color the Add button in widget gallery for brand recognition",
+        "Support Always-On display with sufficient grayscale contrast",
+        "Limit rich images/colors in StandBy; scale up text instead"
+      ],
+      "developerReferences": [
+        {"name": "WidgetKit", "url": "/documentation/widgetkit"},
+        {"name": "WidgetRenderingMode", "url": "/documentation/widgetkit/widgetrenderingmode"},
+        {"name": "Making a configurable widget", "url": "/documentation/widgetkit/making-a-configurable-widget"},
+        {"name": "Keeping a widget up to date", "url": "/documentation/widgetkit/keeping-a-widget-up-to-date"},
+        {"name": "Animating data updates in widgets and Live Activities", "url": "/documentation/widgetkit/animating-data-updates"},
+        {"name": "padding(_:_:)", "url": "/documentation/swiftui/view/padding"},
+        {"name": "ContainerRelativeShape", "url": "/documentation/swiftui/containerrelativeshape"},
+        {"name": "widgetAccentable(_:)", "url": "/documentation/widgetkit/widgetaccentable"},
+        {"name": "ActivityKit", "url": "/documentation/activitykit"},
+        {"name": "RelevanceKit", "url": "/documentation/relevancekit"},
+        {"name": "supportedMountingStyles(_:)", "url": "/documentation/widgetkit/widgetconfiguration/supportedmountingstyles"},
+        {"name": "Creating accessory widgets and watch complications", "url": "/documentation/widgetkit/creating-accessory-widgets"},
+        {"name": "Displaying the right widget background", "url": "/documentation/widgetkit/displaying-widget-background"},
+        {"name": "Updating your widgets for visionOS", "url": "/documentation/widgetkit/updating-widgets-visionos"},
+        {"name": "Preparing widgets for additional platforms, contexts, and appearances", "url": "/documentation/widgetkit/preparing-widgets"},
+        {"name": "Optimizing your widget for accented rendering mode and Liquid Glass", "url": "/documentation/widgetkit/optimizing-accented-rendering"}
+      ],
+      "relatedHIGSections": [
+        {"name": "Complications", "url": "/design/human-interface-guidelines/complications"},
+        {"name": "Live Activities", "url": "/design/human-interface-guidelines/live-activities"},
+        {"name": "Dark Mode", "url": "/design/human-interface-guidelines/dark-mode"},
+        {"name": "Typography", "url": "/design/human-interface-guidelines/typography"},
+        {"name": "SF Symbols", "url": "/design/human-interface-guidelines/sf-symbols"},
+        {"name": "Layout", "url": "/design/human-interface-guidelines/layout"},
+        {"name": "Supporting Dynamic Type", "url": "/design/human-interface-guidelines/dynamic-type"}
+      ],
+      "wwdcVideos": [
+        {"title": "What's new in widgets", "description": "Overview of widget framework updates"},
+        {"title": "Design widgets for visionOS", "description": "visionOS-specific widget design guidance"},
+        {"title": "Bring widgets to life", "description": "Animation and interaction techniques for widgets"}
+      ]
+    }
+  }
+}

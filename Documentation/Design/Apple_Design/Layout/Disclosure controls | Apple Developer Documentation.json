@@ -1,0 +1,1732 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Disclosure controls | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "disclosure controls",
+        "disclosure triangle",
+        "disclosure button",
+        "SwiftUI",
+        "AppKit",
+        "iOS",
+        "iPadOS",
+        "macOS",
+        "visionOS",
+        "UI components",
+        "Human Interface Guidelines",
+        "Apple Design"
+      ],
+      "summary": "Apple Developer Documentation page describing disclosure controls, which reveal and hide information and functionality related to specific controls or views. The document covers best practices, disclosure triangles, disclosure buttons, platform considerations, and developer resources.",
+      "sourceUrl": "https://developer.apple.com/design/human-interface-guidelines/disclosure-controls",
+      "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+      "legalLinks": [
+        {
+          "text": "Terms of Use",
+          "url": "https://developer.apple.com/terms/"
+        },
+        {
+          "text": "Privacy Policy",
+          "url": "https://www.apple.com/privacy/privacy-policy/"
+        },
+        {
+          "text": "Agreements and Guidelines",
+          "url": "https://developer.apple.com/support/terms/"
+        }
+      ],
+      "feedbackMechanism": "To submit feedback on documentation, visit Feedback Assistant."
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": null,
+          "height": null,
+          "unit": "px"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF",
+        "layout": {
+          "type": "multi-column",
+          "columns": 3,
+          "margins": {
+            "top": 0,
+            "right": 0,
+            "bottom": 0,
+            "left": 0
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation-primary",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": "100%",
+              "height": 44
+            },
+            "zIndex": 100,
+            "content": {
+              "navigationType": "primary-header",
+              "backgroundColor": "#1D1D1F",
+              "items": [
+                {
+                  "text": "Apple Developer",
+                  "icon": "Apple logo",
+                  "url": "https://developer.apple.com/",
+                  "position": "leading"
+                },
+                {
+                  "text": "News",
+                  "url": "https://developer.apple.com/news/"
+                },
+                {
+                  "text": "Discover",
+                  "url": "https://developer.apple.com/discover/"
+                },
+                {
+                  "text": "Design",
+                  "url": "https://developer.apple.com/design/"
+                },
+                {
+                  "text": "Develop",
+                  "url": "https://developer.apple.com/develop/"
+                },
+                {
+                  "text": "Distribute",
+                  "url": "https://developer.apple.com/distribute/"
+                },
+                {
+                  "text": "Support",
+                  "url": "https://developer.apple.com/support/"
+                },
+                {
+                  "text": "Account",
+                  "url": "https://developer.apple.com/account/"
+                },
+                {
+                  "icon": "Search icon (magnifying glass)",
+                  "position": "trailing"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-header-navigation-secondary",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 44,
+              "width": "100%",
+              "height": 44
+            },
+            "zIndex": 99,
+            "content": {
+              "navigationType": "secondary-header",
+              "backgroundColor": "#F5F5F7",
+              "breadcrumb": "Design",
+              "items": [
+                {
+                  "text": "Overview",
+                  "url": "https://developer.apple.com/design/"
+                },
+                {
+                  "text": "What's New",
+                  "url": "https://developer.apple.com/design/whats-new/"
+                },
+                {
+                  "text": "Get Started",
+                  "url": "https://developer.apple.com/design/get-started/"
+                },
+                {
+                  "text": "Guidelines",
+                  "url": "https://developer.apple.com/design/human-interface-guidelines/"
+                },
+                {
+                  "text": "Resources",
+                  "url": "https://developer.apple.com/design/resources/"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-sidebar-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 88,
+              "width": 240,
+              "height": "auto"
+            },
+            "zIndex": 50,
+            "content": {
+              "navigationType": "sidebar",
+              "filterControl": {
+                "type": "text-field",
+                "placeholder": "Filter"
+              },
+              "sections": [
+                {
+                  "title": "Getting started",
+                  "expandable": true,
+                  "expanded": false,
+                  "icon": "chevron.right"
+                },
+                {
+                  "title": "Foundations",
+                  "expandable": true,
+                  "expanded": false,
+                  "icon": "chevron.right"
+                },
+                {
+                  "title": "Patterns",
+                  "expandable": true,
+                  "expanded": false,
+                  "icon": "chevron.right"
+                },
+                {
+                  "title": "Components",
+                  "expandable": true,
+                  "expanded": true,
+                  "icon": "chevron.down",
+                  "children": [
+                    {
+                      "title": "Content",
+                      "icon": "square.grid.2x2",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "title": "Layout and organization",
+                      "icon": "rectangle.3.group",
+                      "expandable": true,
+                      "expanded": true,
+                      "children": [
+                        {
+                          "title": "Boxes",
+                          "url": "/design/human-interface-guidelines/boxes"
+                        },
+                        {
+                          "title": "Collections",
+                          "url": "/design/human-interface-guidelines/collections"
+                        },
+                        {
+                          "title": "Column views",
+                          "url": "/design/human-interface-guidelines/column-views"
+                        },
+                        {
+                          "title": "Disclosure controls",
+                          "url": "/design/human-interface-guidelines/disclosure-controls",
+                          "isActive": true,
+                          "highlighted": true
+                        },
+                        {
+                          "title": "Labels",
+                          "url": "/design/human-interface-guidelines/labels"
+                        },
+                        {
+                          "title": "Lists and tables",
+                          "url": "/design/human-interface-guidelines/lists-and-tables"
+                        },
+                        {
+                          "title": "Lockups",
+                          "url": "/design/human-interface-guidelines/lockups"
+                        },
+                        {
+                          "title": "Outline views",
+                          "url": "/design/human-interface-guidelines/outline-views"
+                        },
+                        {
+                          "title": "Split views",
+                          "url": "/design/human-interface-guidelines/split-views"
+                        },
+                        {
+                          "title": "Tab views",
+                          "url": "/design/human-interface-guidelines/tab-views"
+                        }
+                      ]
+                    },
+                    {
+                      "title": "Menus and actions",
+                      "icon": "list.bullet",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "title": "Navigation and search",
+                      "icon": "magnifyingglass",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "title": "Presentation",
+                      "icon": "rectangle.on.rectangle",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "title": "Selection and input",
+                      "icon": "hand.tap",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "title": "Status",
+                      "icon": "info.circle",
+                      "expandable": true,
+                      "expanded": false
+                    },
+                    {
+                      "title": "System experiences",
+                      "icon": "gearshape",
+                      "expandable": true,
+                      "expanded": false
+                    }
+                  ]
+                },
+                {
+                  "title": "Inputs",
+                  "expandable": true,
+                  "expanded": false,
+                  "icon": "chevron.right"
+                },
+                {
+                  "title": "Technologies",
+                  "expandable": true,
+                  "expanded": false,
+                  "icon": "chevron.right"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-title",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 100,
+              "width": 600,
+              "height": 48
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 1,
+              "text": "Disclosure controls",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 40,
+              "fontWeight": "bold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 160,
+              "width": 450,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Disclosure controls reveal and hide information and functionality related to specific controls or views.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 17,
+              "fontWeight": "regular",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-hero-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": 260,
+              "y": 230,
+              "width": 600,
+              "height": 200
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "Two-state illustration showing disclosure control behavior. Left side shows 'Collapsed' state with a downward-pointing chevron icon on a coral/salmon colored rounded rectangle background. Right side shows 'Expanded' state with an upward-pointing chevron icon on a larger coral/salmon colored rounded rectangle that has expanded to reveal additional content area below it.",
+              "subjects": [
+                "Collapsed disclosure control with down chevron",
+                "Expanded disclosure control with up chevron",
+                "Comparison of two states side by side"
+              ],
+              "composition": "Horizontal side-by-side comparison. Left side labeled 'Collapsed' shows a smaller rounded rectangle with chevron pointing down. Right side labeled 'Expanded' shows a taller rounded rectangle with chevron pointing up, demonstrating the expanded content area.",
+              "colorPalette": [
+                "#FF6B6B (coral/salmon background)",
+                "#FFFFFF (chevron icons)",
+                "#F5F5F7 (page background)",
+                "#1D1D1F (label text)"
+              ],
+              "mood": "Clean, instructional, modern",
+              "technicalDetails": "Vector illustration demonstrating UI state change",
+              "textInImage": [
+                "Collapsed",
+                "Expanded"
+              ],
+              "contextualRelevance": "Hero illustration introducing the concept of disclosure controls showing their two primary states - collapsed and expanded",
+              "labels": {
+                "left": "Collapsed",
+                "right": "Expanded"
+              },
+              "visualIndicators": {
+                "collapsed": "Down-pointing chevron (V shape)",
+                "expanded": "Up-pointing chevron (^ shape)"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-description",
+                "relationshipType": "illustrates"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-supported-platforms-sidebar",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 880,
+              "y": 100,
+              "width": 200,
+              "height": 40
+            },
+            "zIndex": 20,
+            "content": {
+              "label": "Supported platforms",
+              "platformIcons": [
+                {
+                  "platform": "iOS",
+                  "icon": "iPhone icon",
+                  "supported": true
+                },
+                {
+                  "platform": "iPadOS",
+                  "icon": "iPad icon",
+                  "supported": true
+                },
+                {
+                  "platform": "macOS",
+                  "icon": "Mac icon",
+                  "supported": true
+                },
+                {
+                  "platform": "tvOS",
+                  "icon": "TV icon",
+                  "supported": false,
+                  "appearance": "grayed out"
+                },
+                {
+                  "platform": "visionOS",
+                  "icon": "Vision Pro icon",
+                  "supported": true
+                },
+                {
+                  "platform": "watchOS",
+                  "icon": "Watch icon",
+                  "supported": false,
+                  "appearance": "grayed out"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-on-this-page-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 880,
+              "y": 160,
+              "width": 200,
+              "height": 150
+            },
+            "zIndex": 20,
+            "content": {
+              "navigationType": "on-this-page",
+              "title": "Disclosure controls",
+              "items": [
+                {
+                  "text": "Best practices",
+                  "anchor": "#best-practices"
+                },
+                {
+                  "text": "Disclosure triangles",
+                  "anchor": "#disclosure-triangles"
+                },
+                {
+                  "text": "Disclosure buttons",
+                  "anchor": "#disclosure-buttons"
+                },
+                {
+                  "text": "Platform considerations",
+                  "anchor": "#platform-considerations"
+                },
+                {
+                  "text": "Resources",
+                  "anchor": "#resources"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practices-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 450,
+              "width": 600,
+              "height": 36
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "Best practices",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 28,
+              "fontWeight": "bold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practices-content",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 500,
+              "width": 600,
+              "height": 100
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Use a disclosure control to hide details until they're relevant. Place controls that people are most likely to use at the top of the disclosure hierarchy so they're always visible, with more advanced functionality hidden by default. This organization helps people quickly find the most essential information without overwhelming them with too many detailed options.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 17,
+              "fontWeight": "regular",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5,
+              "emphasis": {
+                "boldText": "Use a disclosure control to hide details until they're relevant."
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-disclosure-triangles-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 620,
+              "width": 600,
+              "height": 36
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "Disclosure triangles",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 28,
+              "fontWeight": "bold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-disclosure-triangles-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 670,
+              "width": 600,
+              "height": 80
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "A disclosure triangle shows and hides information and functionality associated with a view or a list of items. For example, Keynote uses a disclosure triangle to show advanced options when exporting a presentation, and the Finder uses disclosure triangles to progressively reveal hierarchy when navigating a folder structure in list view.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 17,
+              "fontWeight": "regular",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-disclosure-triangles-state-toggle",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 260,
+              "y": 760,
+              "width": 200,
+              "height": 30
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "tab-toggle",
+              "tabs": [
+                {
+                  "text": "Collapsed",
+                  "state": "active"
+                },
+                {
+                  "text": "Expanded",
+                  "state": "inactive"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-disclosure-triangles-image",
+                "relationshipType": "controls"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-disclosure-triangles-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": 260,
+              "y": 800,
+              "width": 400,
+              "height": 150
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "illustration",
+              "description": "Finder-style list view showing three folders with disclosure triangles. Each row shows a folder icon (blue folder) with the folder name beside it. Disclosure triangles appear to the left of each folder, pointing to the right (indicating collapsed state).",
+              "subjects": [
+                "Folder 1 with disclosure triangle",
+                "Folder 2 with disclosure triangle",
+                "Folder 3 with disclosure triangle"
+              ],
+              "composition": "Vertical list layout with three rows. Each row contains: right-pointing disclosure triangle (gray chevron), blue folder icon, folder name text.",
+              "colorPalette": [
+                "#007AFF (folder icon blue)",
+                "#8E8E93 (disclosure triangle gray)",
+                "#1D1D1F (folder name text)",
+                "#FFFFFF (background)"
+              ],
+              "mood": "Clean, functional, system UI",
+              "technicalDetails": "macOS Finder-style list view with expandable folders",
+              "textInImage": [
+                "Folder 1",
+                "Folder 2",
+                "Folder 3"
+              ],
+              "contextualRelevance": "Demonstrates disclosure triangles in a real-world context showing folder hierarchy navigation",
+              "visualElements": [
+                {
+                  "row": 1,
+                  "disclosureTriangle": "right-pointing (>)",
+                  "icon": "blue folder",
+                  "label": "Folder 1"
+                },
+                {
+                  "row": 2,
+                  "disclosureTriangle": "right-pointing (>)",
+                  "icon": "blue folder",
+                  "label": "Folder 2"
+                },
+                {
+                  "row": 3,
+                  "disclosureTriangle": "right-pointing (>)",
+                  "icon": "blue folder",
+                  "label": "Folder 3"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-disclosure-triangles-state-toggle",
+                "relationshipType": "controlled-by"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-disclosure-triangles-behavior",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 970,
+              "width": 600,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "A disclosure triangle points inward from the leading edge when its content is hidden and down when its content is visible. Clicking or tapping the disclosure triangle switches between these two states, and the view expands or collapses accordingly to accommodate the content.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 17,
+              "fontWeight": "regular",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-disclosure-triangles-guideline",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 1050,
+              "width": 600,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Provide a descriptive label when using a disclosure triangle. Make sure your labels indicate what is disclosed or hidden, like \"Advanced Options.\"",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 17,
+              "fontWeight": "regular",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5,
+              "emphasis": {
+                "boldText": "Provide a descriptive label when using a disclosure triangle."
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-disclosure-triangles-developer-reference",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 1120,
+              "width": 600,
+              "height": 30
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "For developer guidance, see NSButton.BezelStyle.disclosure.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 17,
+              "fontWeight": "regular",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5,
+              "links": [
+                {
+                  "text": "NSButton.BezelStyle.disclosure",
+                  "url": "https://developer.apple.com/documentation/appkit/nsbutton/bezelstyle/disclosure",
+                  "color": "#0066CC"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-disclosure-buttons-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 1180,
+              "width": 600,
+              "height": 36
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "Disclosure buttons",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 28,
+              "fontWeight": "bold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-disclosure-buttons-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 1230,
+              "width": 600,
+              "height": 80
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "A disclosure button shows and hides functionality associated with a specific control. For example, the macOS Save sheet shows a disclosure button next to the Save As text field. When people click or tap this button, the Save dialog expands to give advanced navigation options for selecting an output location for their document.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 17,
+              "fontWeight": "regular",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-disclosure-buttons-behavior",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 1330,
+              "width": 600,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "A disclosure button points down when its content is hidden and up when its content is visible. Clicking or tapping the disclosure button switches between these two states, and the view expands or collapses accordingly to accommodate the content.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 17,
+              "fontWeight": "regular",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-disclosure-buttons-state-toggle",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 260,
+              "y": 1410,
+              "width": 200,
+              "height": 30
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "tab-toggle",
+              "tabs": [
+                {
+                  "text": "Collapsed",
+                  "state": "active"
+                },
+                {
+                  "text": "Expanded",
+                  "state": "inactive"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-disclosure-buttons-image",
+                "relationshipType": "controls"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-disclosure-buttons-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": 260,
+              "y": 1450,
+              "width": 350,
+              "height": 120
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "screenshot",
+              "description": "macOS Save dialog sheet in collapsed state. Shows a minimal save interface with 'Save As' text field containing 'Untitled', a 'Tags' field, a 'Where' dropdown showing 'All Projects' with a disclosure button (down chevron) next to it, and Cancel/Save buttons at the bottom.",
+              "subjects": [
+                "macOS Save dialog",
+                "Save As text field",
+                "Tags field",
+                "Where dropdown with disclosure button",
+                "Cancel button",
+                "Save button"
+              ],
+              "composition": "Vertical form layout typical of macOS sheets. Fields stacked vertically with labels on the left. Disclosure button appears as a small down-chevron button adjacent to the Where dropdown.",
+              "colorPalette": [
+                "#FFFFFF (dialog background)",
+                "#F5F5F7 (field backgrounds)",
+                "#007AFF (Save button blue)",
+                "#8E8E93 (secondary text gray)",
+                "#1D1D1F (primary text)"
+              ],
+              "mood": "System UI, functional, native macOS",
+              "technicalDetails": "macOS Save sheet in collapsed/minimal mode, before disclosure button is clicked",
+              "textInImage": [
+                "Save As:",
+                "Untitled",
+                "Tags:",
+                "Where:",
+                "All Projects",
+                "Cancel",
+                "Save"
+              ],
+              "contextualRelevance": "Demonstrates disclosure button in a real-world macOS Save dialog context",
+              "uiElements": [
+                {
+                  "type": "text-field",
+                  "label": "Save As:",
+                  "value": "Untitled"
+                },
+                {
+                  "type": "text-field",
+                  "label": "Tags:",
+                  "value": ""
+                },
+                {
+                  "type": "dropdown",
+                  "label": "Where:",
+                  "value": "All Projects",
+                  "hasDisclosureButton": true,
+                  "disclosureButtonState": "collapsed (down chevron)"
+                },
+                {
+                  "type": "button",
+                  "label": "Cancel",
+                  "style": "secondary"
+                },
+                {
+                  "type": "button",
+                  "label": "Save",
+                  "style": "primary",
+                  "color": "#007AFF"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-disclosure-buttons-state-toggle",
+                "relationshipType": "controlled-by"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-disclosure-buttons-guideline-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 1590,
+              "width": 600,
+              "height": 60
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Place a disclosure button near the content that it shows and hides. Establish a clear relationship between the control and the expanded choices that appear when a person clicks or taps a button.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 17,
+              "fontWeight": "regular",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5,
+              "emphasis": {
+                "boldText": "Place a disclosure button near the content that it shows and hides."
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-disclosure-buttons-guideline-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 1670,
+              "width": 600,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Use no more than one disclosure button in a single view. Multiple disclosure buttons add complexity and can be confusing.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 17,
+              "fontWeight": "regular",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5,
+              "emphasis": {
+                "boldText": "Use no more than one disclosure button in a single view."
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-disclosure-buttons-developer-reference",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 1740,
+              "width": 600,
+              "height": 30
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "For developer guidance, see NSButton.BezelStyle.pushDisclosure.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 17,
+              "fontWeight": "regular",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5,
+              "links": [
+                {
+                  "text": "NSButton.BezelStyle.pushDisclosure",
+                  "url": "https://developer.apple.com/documentation/appkit/nsbutton/bezelstyle/pushdisclosure",
+                  "color": "#0066CC"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-considerations-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 1800,
+              "width": 600,
+              "height": 36
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "Platform considerations",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 28,
+              "fontWeight": "bold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-considerations-macos",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 1850,
+              "width": 600,
+              "height": 30
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "No additional considerations for macOS. Not supported in tvOS or watchOS.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 17,
+              "fontWeight": "regular",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-considerations-ios-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 1900,
+              "width": 600,
+              "height": 30
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "iOS, iPadOS, visionOS",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 22,
+              "fontWeight": "semibold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-considerations-ios-content",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 260,
+              "y": 1940,
+              "width": 600,
+              "height": 50
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "Disclosure controls are available in iOS, iPadOS, and visionOS with the SwiftUI DisclosureGroup view.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 17,
+              "fontWeight": "regular",
+              "color": "#1D1D1F",
+              "lineHeight": 1.5,
+              "links": [
+                {
+                  "text": "DisclosureGroup",
+                  "url": "https://developer.apple.com/documentation/swiftui/disclosuregroup",
+                  "color": "#0066CC"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 2020,
+              "width": 600,
+              "height": 36
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "Resources",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 28,
+              "fontWeight": "bold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-related-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 2070,
+              "width": 600,
+              "height": 26
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Related",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 20,
+              "fontWeight": "semibold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-related-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 260,
+              "y": 2100,
+              "width": 600,
+              "height": 80
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Outline views",
+                  "url": "https://developer.apple.com/design/human-interface-guidelines/outline-views",
+                  "color": "#0066CC"
+                },
+                {
+                  "text": "Lists and tables",
+                  "url": "https://developer.apple.com/design/human-interface-guidelines/lists-and-tables",
+                  "color": "#0066CC"
+                },
+                {
+                  "text": "Buttons",
+                  "url": "https://developer.apple.com/design/human-interface-guidelines/buttons",
+                  "color": "#0066CC"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-developer-docs-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 2200,
+              "width": 600,
+              "height": 26
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Developer documentation",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 20,
+              "fontWeight": "semibold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-developer-docs-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 260,
+              "y": 2230,
+              "width": 600,
+              "height": 80
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "DisclosureGroup",
+                  "framework": "SwiftUI",
+                  "url": "https://developer.apple.com/documentation/swiftui/disclosuregroup",
+                  "color": "#0066CC",
+                  "displayFormat": "DisclosureGroup — SwiftUI"
+                },
+                {
+                  "text": "NSButton.BezelStyle.disclosure",
+                  "framework": "AppKit",
+                  "url": "https://developer.apple.com/documentation/appkit/nsbutton/bezelstyle/disclosure",
+                  "color": "#0066CC",
+                  "displayFormat": "NSButton.BezelStyle.disclosure — AppKit"
+                },
+                {
+                  "text": "NSButton.BezelStyle.pushDisclosure",
+                  "framework": "AppKit",
+                  "url": "https://developer.apple.com/documentation/appkit/nsbutton/bezelstyle/pushdisclosure",
+                  "color": "#0066CC",
+                  "displayFormat": "NSButton.BezelStyle.pushDisclosure — AppKit"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-videos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 260,
+              "y": 2330,
+              "width": 600,
+              "height": 26
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Videos",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 20,
+              "fontWeight": "semibold",
+              "color": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-videos-card",
+            "elementType": "image",
+            "boundingBox": {
+              "x": 260,
+              "y": 2360,
+              "width": 300,
+              "height": 180
+            },
+            "zIndex": 10,
+            "content": {
+              "imageType": "video-thumbnail",
+              "description": "Video thumbnail card for WWDC session 'Stacks, Grids, and Outlines in SwiftUI'. Shows a dark background with colorful geometric shapes representing stacks and grids.",
+              "subjects": [
+                "Video thumbnail",
+                "WWDC session card"
+              ],
+              "composition": "Card layout with thumbnail image on top and title text below",
+              "colorPalette": [
+                "#1D1D1F (background)",
+                "#FF6B6B (accent color)",
+                "#007AFF (blue accent)",
+                "#FFFFFF (text)"
+              ],
+              "mood": "Professional, educational",
+              "technicalDetails": "WWDC session video thumbnail with play indicator",
+              "textInImage": [
+                "Stacks, Grids, and Outlines in SwiftUI"
+              ],
+              "contextualRelevance": "Related WWDC video resource about SwiftUI layout including outline views which use disclosure controls",
+              "videoInfo": {
+                "title": "Stacks, Grids, and Outlines in SwiftUI",
+                "type": "WWDC Session",
+                "url": "https://developer.apple.com/videos/play/wwdc2020/10031/"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 2550,
+              "width": "100%",
+              "height": 400
+            },
+            "zIndex": 5,
+            "content": {
+              "navigationType": "footer",
+              "backgroundColor": "#F5F5F7",
+              "columns": [
+                {
+                  "title": "Platforms",
+                  "items": [
+                    "iOS",
+                    "iPadOS",
+                    "macOS",
+                    "tvOS",
+                    "visionOS",
+                    "watchOS"
+                  ]
+                },
+                {
+                  "title": "Tools",
+                  "items": [
+                    "Swift",
+                    "SwiftUI",
+                    "Swift Playground",
+                    "TestFlight",
+                    "Xcode",
+                    "Xcode Cloud",
+                    "SF Symbols"
+                  ]
+                },
+                {
+                  "title": "Topics & Technologies",
+                  "items": [
+                    "Accessibility",
+                    "Accessories",
+                    "App Extension",
+                    "App Store",
+                    "Audio & Video",
+                    "Augmented Reality",
+                    "Design",
+                    "Distribution",
+                    "Education",
+                    "Fonts",
+                    "Games",
+                    "Health & Fitness",
+                    "In-App Purchase",
+                    "Localization",
+                    "Maps & Location",
+                    "Machine Learning & AI",
+                    "Open Source",
+                    "Security",
+                    "Safari & Web"
+                  ]
+                },
+                {
+                  "title": "Resources",
+                  "items": [
+                    {
+                      "text": "Documentation",
+                      "url": "https://developer.apple.com/documentation/"
+                    },
+                    {
+                      "text": "Tutorials",
+                      "url": "https://developer.apple.com/tutorials/"
+                    },
+                    {
+                      "text": "Downloads",
+                      "url": "https://developer.apple.com/download/"
+                    },
+                    {
+                      "text": "Forums",
+                      "url": "https://developer.apple.com/forums/"
+                    },
+                    {
+                      "text": "Videos",
+                      "url": "https://developer.apple.com/videos/"
+                    }
+                  ]
+                },
+                {
+                  "title": "Support",
+                  "items": [
+                    {
+                      "text": "Support Articles",
+                      "url": "https://developer.apple.com/support/"
+                    },
+                    {
+                      "text": "Contact Us",
+                      "url": "https://developer.apple.com/contact/"
+                    },
+                    {
+                      "text": "Bug Reporting",
+                      "url": "https://developer.apple.com/bug-reporting/"
+                    },
+                    {
+                      "text": "System Status",
+                      "url": "https://developer.apple.com/system-status/"
+                    }
+                  ]
+                },
+                {
+                  "title": "Account",
+                  "items": [
+                    {
+                      "text": "Apple Developer",
+                      "url": "https://developer.apple.com/account/"
+                    },
+                    {
+                      "text": "App Store Connect",
+                      "url": "https://appstoreconnect.apple.com/"
+                    },
+                    {
+                      "text": "Certificates, IDs, & Profiles",
+                      "url": "https://developer.apple.com/account/resources/"
+                    },
+                    {
+                      "text": "Feedback Assistant",
+                      "url": "https://feedbackassistant.apple.com/"
+                    }
+                  ]
+                },
+                {
+                  "title": "Programs",
+                  "items": [
+                    "Apple Developer Program",
+                    "Apple Developer Enterprise Program",
+                    "App Store Small Business Program",
+                    "MFi Program",
+                    "News Partner Program",
+                    "Video Partner Program",
+                    "Security Bounty Program",
+                    "Security Research Device Program"
+                  ]
+                },
+                {
+                  "title": "Events",
+                  "items": [
+                    "Meet with Apple",
+                    "Apple Developer Centers",
+                    "App Store Awards",
+                    "Apple Design Awards",
+                    "Apple Developer Academies",
+                    "WWDC"
+                  ]
+                }
+              ],
+              "themeToggle": {
+                "options": [
+                  "Light",
+                  "Dark",
+                  "Auto"
+                ],
+                "currentSelection": "Auto"
+              },
+              "languageSelector": {
+                "currentLanguage": "English",
+                "label": "Developer Documentation"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-copyright-bar",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 0,
+              "y": 2950,
+              "width": "100%",
+              "height": 40
+            },
+            "zIndex": 5,
+            "content": {
+              "text": "To submit feedback on documentation, visit Feedback Assistant. Copyright 2025 Apple Inc. All rights reserved. Terms of Use Privacy Policy Agreements and Guidelines",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 12,
+              "fontWeight": "regular",
+              "color": "#86868B",
+              "links": [
+                {
+                  "text": "Feedback Assistant",
+                  "url": "https://feedbackassistant.apple.com/"
+                },
+                {
+                  "text": "Terms of Use",
+                  "url": "https://developer.apple.com/terms/"
+                },
+                {
+                  "text": "Privacy Policy",
+                  "url": "https://www.apple.com/privacy/privacy-policy/"
+                },
+                {
+                  "text": "Agreements and Guidelines",
+                  "url": "https://developer.apple.com/support/terms/"
+                }
+              ]
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation-primary",
+          "page1-header-navigation-secondary",
+          "page1-main-title",
+          "page1-main-description",
+          "page1-hero-image",
+          "page1-best-practices-heading",
+          "page1-best-practices-content",
+          "page1-disclosure-triangles-heading",
+          "page1-disclosure-triangles-intro",
+          "page1-disclosure-triangles-state-toggle",
+          "page1-disclosure-triangles-image",
+          "page1-disclosure-triangles-behavior",
+          "page1-disclosure-triangles-guideline",
+          "page1-disclosure-triangles-developer-reference",
+          "page1-disclosure-buttons-heading",
+          "page1-disclosure-buttons-intro",
+          "page1-disclosure-buttons-behavior",
+          "page1-disclosure-buttons-state-toggle",
+          "page1-disclosure-buttons-image",
+          "page1-disclosure-buttons-guideline-1",
+          "page1-disclosure-buttons-guideline-2",
+          "page1-disclosure-buttons-developer-reference",
+          "page1-platform-considerations-heading",
+          "page1-platform-considerations-macos",
+          "page1-platform-considerations-ios-heading",
+          "page1-platform-considerations-ios-content",
+          "page1-resources-heading",
+          "page1-resources-related-heading",
+          "page1-resources-related-links",
+          "page1-resources-developer-docs-heading",
+          "page1-resources-developer-docs-links",
+          "page1-resources-videos-heading",
+          "page1-resources-videos-card",
+          "page1-footer",
+          "page1-copyright-bar"
+        ],
+        "pageSummary": "Apple Developer Documentation page for Disclosure Controls - UI components that reveal and hide information and functionality. Covers two types: disclosure triangles (for hierarchical content like folder lists) and disclosure buttons (for expanding/collapsing specific controls like save dialogs). Includes best practices, platform-specific guidance, and developer resources."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": true,
+        "entries": [
+          {
+            "title": "Best practices",
+            "anchor": "#best-practices"
+          },
+          {
+            "title": "Disclosure triangles",
+            "anchor": "#disclosure-triangles"
+          },
+          {
+            "title": "Disclosure buttons",
+            "anchor": "#disclosure-buttons"
+          },
+          {
+            "title": "Platform considerations",
+            "anchor": "#platform-considerations"
+          },
+          {
+            "title": "Resources",
+            "anchor": "#resources"
+          }
+        ]
+      },
+      "runningHeaders": "Design / Disclosure controls",
+      "runningFooters": "Apple Developer Documentation footer with site navigation",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "intro",
+          "title": "Introduction",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Brief introduction defining disclosure controls as UI elements that reveal and hide information related to specific controls or views."
+        },
+        {
+          "sectionId": "best-practices",
+          "title": "Best practices",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Guidelines for using disclosure controls: hide details until relevant, place commonly-used controls at top of hierarchy, keep advanced functionality hidden by default."
+        },
+        {
+          "sectionId": "disclosure-triangles",
+          "title": "Disclosure triangles",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Detailed explanation of disclosure triangles - used for hierarchical content like folder structures. Points inward when collapsed, down when expanded. Examples include Keynote export options and Finder list view."
+        },
+        {
+          "sectionId": "disclosure-buttons",
+          "title": "Disclosure buttons",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Detailed explanation of disclosure buttons - used for expanding specific controls. Points down when collapsed, up when expanded. Primary example is macOS Save dialog. Limit to one per view."
+        },
+        {
+          "sectionId": "platform-considerations",
+          "title": "Platform considerations",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "platform-ios",
+              "title": "iOS, iPadOS, visionOS",
+              "summary": "SwiftUI DisclosureGroup view available for these platforms."
+            }
+          ],
+          "summary": "Platform-specific guidance: macOS has full support, tvOS and watchOS do not support disclosure controls, iOS/iPadOS/visionOS use SwiftUI DisclosureGroup."
+        },
+        {
+          "sectionId": "resources",
+          "title": "Resources",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "resources-related",
+              "title": "Related",
+              "summary": "Links to related HIG topics: Outline views, Lists and tables, Buttons."
+            },
+            {
+              "sectionId": "resources-developer-docs",
+              "title": "Developer documentation",
+              "summary": "API references: DisclosureGroup (SwiftUI), NSButton.BezelStyle.disclosure (AppKit), NSButton.BezelStyle.pushDisclosure (AppKit)."
+            },
+            {
+              "sectionId": "resources-videos",
+              "title": "Videos",
+              "summary": "WWDC video: Stacks, Grids, and Outlines in SwiftUI."
+            }
+          ],
+          "summary": "Collection of related HIG pages, developer documentation links, and WWDC video resources."
+        }
+      ],
+      "documentFlow": "The document follows a standard Apple HIG structure: introduction with visual example, best practices for implementation, detailed sections for each disclosure control type (triangles and buttons) with visual examples and specific guidelines, platform-specific considerations, and finally a resources section with related documentation and videos."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "Disclosure control",
+          "definition": "UI component that reveals and hides information and functionality related to specific controls or views",
+          "occurrences": 5
+        },
+        {
+          "term": "Disclosure triangle",
+          "definition": "A control that shows and hides information and functionality associated with a view or list of items, pointing inward when collapsed and down when expanded",
+          "occurrences": 6
+        },
+        {
+          "term": "Disclosure button",
+          "definition": "A control that shows and hides functionality associated with a specific control, pointing down when collapsed and up when expanded",
+          "occurrences": 7
+        },
+        {
+          "term": "DisclosureGroup",
+          "definition": "SwiftUI view for implementing disclosure controls on iOS, iPadOS, and visionOS",
+          "occurrences": 2
+        },
+        {
+          "term": "NSButton.BezelStyle.disclosure",
+          "definition": "AppKit API for creating disclosure triangles in macOS",
+          "occurrences": 2
+        },
+        {
+          "term": "NSButton.BezelStyle.pushDisclosure",
+          "definition": "AppKit API for creating disclosure buttons in macOS",
+          "occurrences": 2
+        }
+      ],
+      "keyFindings": [
+        "Disclosure triangles point inward (right-pointing chevron) when collapsed and down when expanded",
+        "Disclosure buttons point down when collapsed and up when expanded",
+        "Use only ONE disclosure button per view to avoid complexity and confusion",
+        "Always provide descriptive labels for disclosure triangles indicating what is disclosed",
+        "Place disclosure buttons near the content they show/hide",
+        "Disclosure controls are NOT supported on tvOS or watchOS",
+        "iOS, iPadOS, and visionOS use SwiftUI DisclosureGroup for disclosure controls",
+        "macOS uses AppKit NSButton.BezelStyle for disclosure controls"
+      ],
+      "technicalSpecifications": {
+        "supportedPlatforms": {
+          "iOS": {
+            "supported": true,
+            "api": "SwiftUI DisclosureGroup"
+          },
+          "iPadOS": {
+            "supported": true,
+            "api": "SwiftUI DisclosureGroup"
+          },
+          "macOS": {
+            "supported": true,
+            "api": "NSButton.BezelStyle.disclosure, NSButton.BezelStyle.pushDisclosure"
+          },
+          "tvOS": {
+            "supported": false
+          },
+          "visionOS": {
+            "supported": true,
+            "api": "SwiftUI DisclosureGroup"
+          },
+          "watchOS": {
+            "supported": false
+          }
+        },
+        "apis": {
+          "swiftui": [
+            {
+              "name": "DisclosureGroup",
+              "url": "https://developer.apple.com/documentation/swiftui/disclosuregroup",
+              "platforms": ["iOS", "iPadOS", "visionOS", "macOS"]
+            }
+          ],
+          "appkit": [
+            {
+              "name": "NSButton.BezelStyle.disclosure",
+              "url": "https://developer.apple.com/documentation/appkit/nsbutton/bezelstyle/disclosure",
+              "platforms": ["macOS"],
+              "purpose": "Disclosure triangles"
+            },
+            {
+              "name": "NSButton.BezelStyle.pushDisclosure",
+              "url": "https://developer.apple.com/documentation/appkit/nsbutton/bezelstyle/pushdisclosure",
+              "platforms": ["macOS"],
+              "purpose": "Disclosure buttons"
+            }
+          ]
+        }
+      },
+      "designDecisions": [
+        {
+          "decision": "Limit disclosure buttons to one per view",
+          "rationale": "Multiple disclosure buttons add complexity and can be confusing"
+        },
+        {
+          "decision": "Place most-used controls at top of disclosure hierarchy",
+          "rationale": "Helps people quickly find essential information without being overwhelmed"
+        },
+        {
+          "decision": "Hide advanced functionality by default",
+          "rationale": "Prevents overwhelming users with too many detailed options"
+        },
+        {
+          "decision": "Different arrow directions for triangles vs buttons",
+          "rationale": "Triangles (hierarchical): right when collapsed, down when expanded. Buttons (inline): down when collapsed, up when expanded. This matches their use contexts."
+        }
+      ],
+      "usageExamples": [
+        {
+          "context": "Keynote export",
+          "controlType": "Disclosure triangle",
+          "description": "Shows advanced options when exporting a presentation"
+        },
+        {
+          "context": "Finder list view",
+          "controlType": "Disclosure triangle",
+          "description": "Progressively reveals folder hierarchy when navigating"
+        },
+        {
+          "context": "macOS Save sheet",
+          "controlType": "Disclosure button",
+          "description": "Expands Save dialog to show advanced navigation options for selecting output location"
+        }
+      ]
+    }
+  }
+}

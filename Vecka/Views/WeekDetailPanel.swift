@@ -4,6 +4,7 @@
 //
 //  Right-side panel showing week details, calendar events, and notes
 //  Combines EventKit integration with WeekGrid's daily notes
+//  Uses Joho Design System - authentic Japanese packaging aesthetic
 //
 
 import SwiftUI
@@ -20,61 +21,133 @@ struct WeekDetailPanel: View {
     let onDayTap: (CalendarDay) -> Void
 
     @State private var eventManager = CalendarEventManager()
-
+    @State private var expandedDays: Set<String> = []
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Week Header
-            weekHeader
-                .padding(.horizontal, Spacing.large)
-                .padding(.top, Spacing.large)
-                .padding(.bottom, Spacing.medium)
+        ScrollView {
+            VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
+                // Redesigned header - inline week badge + date range
+                weekHeader
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+                    .padding(.top, JohoDimensions.spacingLG)
 
-            // Subtle divider
-            Rectangle()
-                .fill(SlateColors.divider)
-                .frame(height: 1)
+                // Week summary statistics (no "7 days" - show holidays instead)
+                weekSummaryStats
+                    .padding(.horizontal, JohoDimensions.spacingLG)
 
-            // Day-by-day event list
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
+                // Day-by-day breakdown with more spacing
+                VStack(spacing: JohoDimensions.spacingMD) {
                     ForEach(week.days) { day in
-                        DayEventRow(
+                        CollapsibleDayCard(
                             day: day,
                             isSelected: selectedDay?.id == day.id,
+                            isExpanded: isExpanded(day),
                             calendarEvents: eventManager.events(for: day.date),
                             notes: notesFor(day),
                             holidays: holidaysFor(day),
-                            onTap: { onDayTap(day) }
+                            onTap: { onDayTap(day) },
+                            onToggle: { toggleExpand(day) }
                         )
                     }
                 }
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.bottom, JohoDimensions.spacingLG)
             }
         }
         .frame(minWidth: 280, idealWidth: 320, maxWidth: 400)
-        .background(SlateColors.mediumSlate)
+        .johoBackground()
         .onAppear {
             eventManager.requestAccessAndFetchEvents(for: week)
+            initializeExpandedDays()
         }
         .onChange(of: week.id) { _, _ in
             eventManager.fetchEvents(for: week)
+            initializeExpandedDays()
         }
     }
 
-    // MARK: - Week Header
+    // MARK: - Week Header (Redesigned)
 
     private var weekHeader: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // "WEEK 01" in caps with tracking
-            Text("WEEK \(String(format: "%02d", week.weekNumber))")
-                .font(Typography.bodySmall.weight(.semibold))
-                .tracking(2)
-                .foregroundStyle(SlateColors.secondaryText)
+        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+            HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
+                JohoPill(text: "Week \(week.weekNumber)", style: .whiteOnBlack, size: .large)
 
-            // Date range
-            Text(dateRangeText)
-                .font(.subheadline)
-                .foregroundStyle(SlateColors.primaryText)
+                Spacer()
+
+                Text(dateRangeText)
+                    .font(JohoFont.body)
+                    .foregroundStyle(JohoColors.white.opacity(0.7))
+            }
+        }
+    }
+
+    // MARK: - Expand/Collapse Logic
+
+    private func isExpanded(_ day: CalendarDay) -> Bool {
+        expandedDays.contains(day.id)
+    }
+
+    private func toggleExpand(_ day: CalendarDay) {
+        if expandedDays.contains(day.id) {
+            expandedDays.remove(day.id)
+        } else {
+            expandedDays.insert(day.id)
+        }
+    }
+
+    private func initializeExpandedDays() {
+        expandedDays.removeAll()
+        // Auto-expand today and selected day
+        for day in week.days {
+            let hasContent = !notesFor(day).isEmpty ||
+                             !holidaysFor(day).isEmpty ||
+                             !eventManager.events(for: day.date).isEmpty
+            if day.isToday || hasContent || selectedDay?.id == day.id {
+                expandedDays.insert(day.id)
+            }
+        }
+    }
+
+    // MARK: - Week Summary Stats
+
+    private var weekSummaryStats: some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            JohoStatBox(
+                value: "\(calendarEventsCount)",
+                label: "Events",
+                zone: .calendar
+            )
+
+            JohoStatBox(
+                value: "\(holidaysCount)",
+                label: "Holidays",
+                zone: .holidays
+            )
+
+            JohoStatBox(
+                value: "\(notesCount)",
+                label: "Notes",
+                zone: .notes
+            )
+        }
+    }
+
+    private var calendarEventsCount: Int {
+        week.days.reduce(0) { count, day in
+            count + eventManager.events(for: day.date).count
+        }
+    }
+
+    private var holidaysCount: Int {
+        week.days.reduce(0) { count, day in
+            count + holidaysFor(day).count
+        }
+    }
+
+    private var notesCount: Int {
+        week.days.reduce(0) { count, day in
+            count + notesFor(day).count
         }
     }
 
@@ -83,9 +156,6 @@ struct WeekDetailPanel: View {
         guard let endDate = calendar.date(byAdding: .day, value: 6, to: week.startDate) else {
             return ""
         }
-
-        let yearFormatter = DateFormatter()
-        yearFormatter.dateFormat = "yyyy"
 
         let startFormatter = DateFormatter()
         let endFormatter = DateFormatter()
@@ -102,11 +172,10 @@ struct WeekDetailPanel: View {
             endFormatter.dateFormat = "MMM d"
         }
 
-        let year = yearFormatter.string(from: week.startDate)
         let start = startFormatter.string(from: week.startDate)
         let end = endFormatter.string(from: endDate)
 
-        return "\(year) · \(start) – \(end)"
+        return "\(start) – \(end)"
     }
 
     // MARK: - Data Helpers
@@ -135,25 +204,83 @@ struct WeekDetailSheetContent: View {
     let onDayTap: (CalendarDay) -> Void
 
     @State private var eventManager = CalendarEventManager()
+    @State private var expandedDays: Set<String> = []
 
     var body: some View {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                ForEach(week.days) { day in
-                    DayEventRow(
-                        day: day,
-                        isSelected: selectedDay?.id == day.id,
-                        calendarEvents: eventManager.events(for: day.date),
-                        notes: notesFor(day),
-                        holidays: holidaysFor(day),
-                        onTap: { onDayTap(day) }
-                    )
+            VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
+                // Redesigned header - inline week badge + date range
+                HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
+                    JohoPill(text: "Week \(week.weekNumber)", style: .whiteOnBlack, size: .large)
+
+                    Spacer()
+
+                    Text(dateRangeText)
+                        .font(JohoFont.body)
+                        .foregroundStyle(JohoColors.white.opacity(0.7))
                 }
+                .padding(.horizontal, JohoDimensions.spacingLG)
+
+                // Day-by-day breakdown with more spacing
+                VStack(spacing: JohoDimensions.spacingMD) {
+                    ForEach(week.days) { day in
+                        CollapsibleDayCard(
+                            day: day,
+                            isSelected: selectedDay?.id == day.id,
+                            isExpanded: isExpanded(day),
+                            calendarEvents: eventManager.events(for: day.date),
+                            notes: notesFor(day),
+                            holidays: holidaysFor(day),
+                            onTap: { onDayTap(day) },
+                            onToggle: { toggleExpand(day) }
+                        )
+                    }
+                }
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.bottom, JohoDimensions.spacingLG)
             }
         }
-        .background(SlateColors.mediumSlate)
+        .johoBackground()
         .onAppear {
             eventManager.requestAccessAndFetchEvents(for: week)
+            initializeExpandedDays()
+        }
+    }
+
+    private var dateRangeText: String {
+        let calendar = Calendar.iso8601
+        guard let endDate = calendar.date(byAdding: .day, value: 6, to: week.startDate) else {
+            return ""
+        }
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
+        let start = formatter.string(from: week.startDate)
+        let end = formatter.string(from: endDate)
+        return "\(start) – \(end)"
+    }
+
+    private func isExpanded(_ day: CalendarDay) -> Bool {
+        expandedDays.contains(day.id)
+    }
+
+    private func toggleExpand(_ day: CalendarDay) {
+        if expandedDays.contains(day.id) {
+            expandedDays.remove(day.id)
+        } else {
+            expandedDays.insert(day.id)
+        }
+    }
+
+    private func initializeExpandedDays() {
+        expandedDays.removeAll()
+        for day in week.days {
+            let hasContent = !notesFor(day).isEmpty ||
+                             !holidaysFor(day).isEmpty ||
+                             !eventManager.events(for: day.date).isEmpty
+            if day.isToday || hasContent || selectedDay?.id == day.id {
+                expandedDays.insert(day.id)
+            }
         }
     }
 
@@ -169,92 +296,208 @@ struct WeekDetailSheetContent: View {
     }
 }
 
-// MARK: - Day Event Row
+// MARK: - Collapsible Day Card
 
-struct DayEventRow: View {
+struct CollapsibleDayCard: View {
     let day: CalendarDay
     let isSelected: Bool
+    let isExpanded: Bool
     let calendarEvents: [EKEvent]
     let notes: [DailyNote]
     let holidays: [HolidayCacheItem]
     let onTap: () -> Void
+    let onToggle: () -> Void
 
     private var hasContent: Bool {
         !calendarEvents.isEmpty || !notes.isEmpty || !holidays.isEmpty
     }
 
     var body: some View {
-        Button(action: onTap) {
-            HStack(alignment: .top, spacing: 12) {
-                // Day column
-                dayColumn
-                    .frame(width: 44)
-
-                // Events column
-                VStack(alignment: .leading, spacing: 6) {
-                    // Holidays first
-                    ForEach(holidays, id: \.id) { holiday in
-                        EventItemView(
-                            time: nil,
-                            title: holiday.displayTitle,
-                            icon: holiday.symbolName ?? "star.fill",
-                            color: holiday.isRedDay ? .red : SlateColors.sundayBlue
-                        )
-                    }
-
-                    // Calendar events
-                    ForEach(calendarEvents, id: \.eventIdentifier) { event in
-                        EventItemView(
-                            time: formatTime(event.startDate),
-                            title: event.title ?? "Event",
-                            icon: "calendar",
-                            color: Color(cgColor: event.calendar.cgColor)
-                        )
-                    }
-
-                    // Notes
-                    ForEach(notes) { note in
-                        EventItemView(
-                            time: nil,
-                            title: firstLine(of: note.content),
-                            icon: note.symbolName ?? "note.text",
-                            color: noteColor(note)
-                        )
-                    }
-
-                    // Empty state
-                    if !hasContent {
-                        Text("No events")
-                            .font(.subheadline)
-                            .foregroundStyle(SlateColors.tertiaryText)
-                            .padding(.vertical, Spacing.extraSmall)
-                    }
+        JohoCard(
+            cornerRadius: JohoDimensions.radiusMedium,
+            borderWidth: (isSelected || day.isToday) ? JohoDimensions.borderThick : JohoDimensions.borderMedium
+        ) {
+            VStack(alignment: .leading, spacing: 0) {
+                // Header row (always visible) - tap to select day
+                Button(action: onTap) {
+                    headerRow
                 }
+                .buttonStyle(.plain)
 
-                Spacer()
+                // Expanded content
+                if isExpanded {
+                    expandedContent
+                        .padding(.top, JohoDimensions.spacingSM)
+                }
             }
-            .padding(.horizontal, Spacing.large)
-            .padding(.vertical, Spacing.small)
-            .background(isSelected ? SlateColors.selectionHighlight : Color.clear)
         }
-        .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(accessibilityLabel)
     }
 
-    // MARK: - Day Column
+    // MARK: - Header Row (Simplified: [TUE 30] + Date)
 
-    private var dayColumn: some View {
-        VStack(alignment: .center, spacing: 2) {
-            Text(weekdayShort)
-                .font(.caption2.weight(.medium))
-                .foregroundStyle(SlateColors.tertiaryText)
+    private var headerRow: some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            // Combined day badge: [TUE 30]
+            HStack(spacing: 4) {
+                Text(weekdayShort)
+                    .font(JohoFont.labelSmall)
+                Text("\(day.dayNumber)")
+                    .font(JohoFont.headline)
+            }
+            .foregroundStyle(dayBadgeTextColor)
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .padding(.vertical, JohoDimensions.spacingXS)
+            .background(dayBadgeBackground)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+            )
 
-            Text("\(day.dayNumber)")
-                .font(.title3.weight(.semibold))
-                .foregroundStyle(dayColor)
+            // Full date
+            Text(fullDateText)
+                .font(JohoFont.body)
+                .foregroundStyle(JohoColors.black)
+
+            Spacer()
+
+            // Status indicators
+            HStack(spacing: JohoDimensions.spacingXS) {
+                // Today pill
+                if day.isToday {
+                    JohoPill(text: "Today", style: .colored(JohoColors.yellow), size: .small)
+                }
+
+                // Content indicator dots (when collapsed)
+                if !isExpanded && hasContent {
+                    contentIndicatorDots
+                }
+
+                // Expand/collapse chevron - tap to toggle (44pt min touch target)
+                Button(action: onToggle) {
+                    Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(JohoColors.black)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
         }
     }
+
+    // MARK: - Content Indicator Dots (shown when collapsed)
+
+    private var contentIndicatorDots: some View {
+        HStack(spacing: 3) {
+            if !holidays.isEmpty {
+                Circle()
+                    .fill(JohoColors.pink)
+                    .frame(width: 8, height: 8)
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+            }
+            if !calendarEvents.isEmpty {
+                Circle()
+                    .fill(JohoColors.cyan)
+                    .frame(width: 8, height: 8)
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+            }
+            if !notes.isEmpty {
+                Circle()
+                    .fill(JohoColors.yellow)
+                    .frame(width: 8, height: 8)
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+            }
+        }
+    }
+
+    // MARK: - Expanded Content
+
+    @ViewBuilder
+    private var expandedContent: some View {
+        if hasContent {
+            VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                // Holidays
+                if !holidays.isEmpty {
+                    JohoSectionBox(title: "Holidays", zone: .holidays, icon: "star.fill") {
+                        VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
+                            ForEach(holidays, id: \.id) { holiday in
+                                EventItemView(
+                                    time: nil,
+                                    title: holiday.displayTitle,
+                                    icon: holiday.symbolName ?? "star.fill",
+                                    isRedDay: holiday.isRedDay
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Calendar events
+                if !calendarEvents.isEmpty {
+                    JohoSectionBox(title: "Events", zone: .calendar, icon: "calendar") {
+                        VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
+                            ForEach(calendarEvents, id: \.eventIdentifier) { event in
+                                EventItemView(
+                                    time: formatTime(event.startDate),
+                                    title: event.title ?? "Event",
+                                    icon: "calendar"
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Notes
+                if !notes.isEmpty {
+                    JohoSectionBox(title: "Notes", zone: .notes, icon: "note.text") {
+                        VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
+                            ForEach(notes) { note in
+                                EventItemView(
+                                    time: nil,
+                                    title: firstLine(of: note.content),
+                                    icon: note.symbolName ?? "note.text"
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            // Empty state
+            Text("No events or notes")
+                .font(JohoFont.bodySmall)
+                .foregroundStyle(JohoColors.black.opacity(0.6))
+                .padding(.vertical, JohoDimensions.spacingXS)
+        }
+    }
+
+    // MARK: - Day Badge Styling
+
+    private var dayBadgeBackground: Color {
+        if isSelected {
+            return JohoColors.black
+        }
+        if day.isToday {
+            return JohoColors.yellow
+        }
+        let weekday = Calendar.iso8601.component(.weekday, from: day.date)
+        if weekday == 1 { // Sunday
+            return JohoColors.pink.opacity(0.3)
+        }
+        return JohoColors.white
+    }
+
+    private var dayBadgeTextColor: Color {
+        if isSelected {
+            return JohoColors.white
+        }
+        return JohoColors.black
+    }
+
+    // MARK: - Formatters
 
     private var weekdayShort: String {
         let formatter = DateFormatter()
@@ -262,18 +505,11 @@ struct DayEventRow: View {
         return formatter.string(from: day.date).uppercased()
     }
 
-    private var dayColor: Color {
-        let weekday = Calendar.iso8601.component(.weekday, from: day.date)
-        if weekday == 1 { // Sunday
-            return SlateColors.sundayBlue
-        }
-        if day.isToday {
-            return SlateColors.sidebarActiveBar
-        }
-        return SlateColors.primaryText
+    private var fullDateText: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM d, yyyy"
+        return formatter.string(from: day.date)
     }
-
-    // MARK: - Helpers
 
     private func formatTime(_ date: Date) -> String {
         let formatter = DateFormatter()
@@ -283,18 +519,6 @@ struct DayEventRow: View {
 
     private func firstLine(of text: String) -> String {
         text.components(separatedBy: .newlines).first ?? text
-    }
-
-    private func noteColor(_ note: DailyNote) -> Color {
-        switch note.color {
-        case "red": return .red
-        case "blue": return .blue
-        case "green": return .green
-        case "orange": return .orange
-        case "purple": return .purple
-        case "yellow": return .yellow
-        default: return SlateColors.secondaryText
-        }
     }
 
     private var accessibilityLabel: String {
@@ -322,34 +546,53 @@ struct EventItemView: View, Equatable {
     let time: String?
     let title: String
     let icon: String
-    let color: Color
+    var isRedDay: Bool = false
 
     static func == (lhs: EventItemView, rhs: EventItemView) -> Bool {
         lhs.time == rhs.time &&
         lhs.title == rhs.title &&
         lhs.icon == rhs.icon &&
-        lhs.color == rhs.color
+        lhs.isRedDay == rhs.isRedDay
     }
 
     var body: some View {
-        HStack(spacing: 8) {
-            if let time = time {
-                Text(time)
-                    .font(.caption.monospacedDigit())
-                    .foregroundStyle(SlateColors.secondaryText)
-                    .frame(width: 40, alignment: .leading)
+        HStack(spacing: JohoDimensions.spacingSM) {
+            // Icon badge
+            Image(systemName: icon)
+                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoColors.black)
+                .frame(width: 24, height: 24)
+                .background(iconBackground)
+                .clipShape(Circle())
+
+            // Title
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(JohoColors.black)
+                    .lineLimit(2)
+
+                if let time = time {
+                    Text(time)
+                        .font(JohoFont.monoSmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                }
             }
 
-            Image(systemName: icon)
-                .font(.caption)
-                .foregroundStyle(color)
-                .frame(width: 16)
+            Spacer()
 
-            Text(title)
-                .font(.subheadline)
-                .foregroundStyle(SlateColors.primaryText)
-                .lineLimit(1)
+            // Red day indicator
+            if isRedDay {
+                JohoPill(text: "Red Day", style: .colored(JohoColors.pink), size: .small)
+            }
         }
+    }
+
+    private var iconBackground: Color {
+        if isRedDay {
+            return JohoColors.pink
+        }
+        return JohoColors.white
     }
 }
 
@@ -422,17 +665,29 @@ class CalendarEventManager {
 
     return HStack(spacing: 0) {
         Rectangle()
-            .fill(SlateColors.deepSlate)
+            .fill(JohoColors.black)
             .frame(width: 300)
 
         WeekDetailPanel(
             week: currentWeek,
-            selectedDay: nil,
+            selectedDay: currentWeek.days.first,
             notes: [],
             holidays: [],
             onDayTap: { _ in }
         )
     }
     .frame(width: 600, height: 500)
-    .preferredColorScheme(.dark)
+}
+
+#Preview("Week Detail Sheet") {
+    let currentMonth = CalendarMonth.current()
+    let currentWeek = currentMonth.weeks.first!
+
+    return WeekDetailSheetContent(
+        week: currentWeek,
+        selectedDay: nil,
+        notes: [],
+        holidays: [],
+        onDayTap: { _ in }
+    )
 }

@@ -58,9 +58,10 @@ struct VeckaApp: App {
             TypographyScale.self,
             SpacingScale.self,
             IconCatalogItem.self,
-            WeatherIconMapping.self,
             // Location
-            SavedLocation.self
+            SavedLocation.self,
+            // Workspace widgets (draggable/resizable widget system)
+            WorkspaceWidget.self
         ])
     }
     
@@ -100,30 +101,32 @@ struct VeckaApp: App {
 }
 
 // MARK: - Navigation Manager for Widget Deep Links
+// MainActor-isolated to ensure thread-safe state updates from widget URL handling
+@MainActor
 @Observable
 class NavigationManager {
     var targetDate = Date()
     var shouldScrollToWeek = false
-    
+
     func navigateToToday() {
         targetDate = Date()
         shouldScrollToWeek = true
     }
-    
+
     func navigateToWeek(_ weekNumber: Int) {
         let calendar = Calendar.iso8601
         let year = calendar.component(.year, from: Date())
-        
+
         // Find the date for the given week number
         if let weekDate = calendar.date(from: DateComponents(weekOfYear: weekNumber, yearForWeekOfYear: year)) {
             targetDate = weekDate
             shouldScrollToWeek = true
         }
     }
-    
+
     func navigateToWeek(_ weekNumber: Int, year: Int) {
         let calendar = Calendar.iso8601
-        
+
         // Find the date for the given week number and year
         if let weekDate = calendar.date(from: DateComponents(weekOfYear: weekNumber, yearForWeekOfYear: year)) {
             targetDate = weekDate

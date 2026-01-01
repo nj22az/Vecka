@@ -43,7 +43,6 @@ struct Localization {
     static let contacts = NSLocalizedString("navigation.contacts", value: "Contacts", comment: "Contacts section")
     static let expenses = NSLocalizedString("navigation.expenses", value: "Expenses", comment: "Expenses section")
     static let trips = NSLocalizedString("navigation.trips", value: "Trips", comment: "Trips section")
-    static let weather = NSLocalizedString("navigation.weather", value: "Weather", comment: "Weather section")
     static let selectItem = NSLocalizedString("navigation.select_item", value: "Select an item", comment: "Select item placeholder")
     static let menu = NSLocalizedString("navigation.menu", value: "Menu", comment: "Menu accessibility label")
     static let holidaysSection = NSLocalizedString("navigation.holidays_section", value: "Holidays & Events", comment: "Holidays section header")
@@ -234,6 +233,14 @@ struct Localization {
             )
         }
     }
+
+    // MARK: - Library Subtitles
+    static let noNotesYet = NSLocalizedString("library.no_notes", value: "No notes yet", comment: "No notes yet subtitle")
+    static let noHolidaysConfigured = NSLocalizedString("library.no_holidays", value: "No holidays configured", comment: "No holidays configured subtitle")
+    static let noTripsPlanned = NSLocalizedString("library.no_trips", value: "No trips planned", comment: "No trips planned subtitle")
+    static let noExpensesRecorded = NSLocalizedString("library.no_expenses", value: "No expenses recorded", comment: "No expenses recorded subtitle")
+    static let noContactsSaved = NSLocalizedString("library.no_contacts", value: "No contacts saved", comment: "No contacts saved subtitle")
+    static let specialObservances = NSLocalizedString("library.special_observances", value: "Special observances", comment: "Special observances subtitle")
 }
 
 // MARK: - Locale-Aware Date Formatters
@@ -288,10 +295,8 @@ extension DateFormatterCache {
     static let manualEntry = NSLocalizedString("location.manual_entry", value: "Manual Entry", comment: "Manual entry header")
     static let manualEntryHint = NSLocalizedString("location.manual_entry_hint", value: "Enter coordinates in decimal degrees (e.g., 59.3293, 18.0686)", comment: "Manual entry hint")
     static let autoDetect = NSLocalizedString("location.auto_detect", value: "Auto-Detect", comment: "Auto-detect button")
-    static let autoDetectHint = NSLocalizedString("location.auto_detect_hint", value: "Use your device's current location for weather forecasts", comment: "Auto-detect hint")
+    static let autoDetectHint = NSLocalizedString("location.auto_detect_hint", value: "Use your device's current location", comment: "Auto-detect hint")
     static let savedLocations = NSLocalizedString("location.saved_locations", value: "Saved Locations", comment: "Saved locations header")
-    static let loadingForecast = NSLocalizedString("weather.loading_forecast", value: "Loading forecast...", comment: "Loading forecast message")
-    static let noWeatherData = NSLocalizedString("weather.no_weather_data", value: "No Weather Data", comment: "No weather data message")
 
     // MARK: - Holidays & Observances
     static let holidays = NSLocalizedString("holidays.title", value: "Holidays", comment: "Holidays title")
@@ -347,12 +352,6 @@ extension DateFormatterCache {
     static let addTrip = NSLocalizedString("trips.add", value: "Add Trip", comment: "Add trip button")
     static let generateReport = NSLocalizedString("trips.generate_report", value: "Generate Report", comment: "Generate report button")
     static let mileage = NSLocalizedString("trips.mileage", value: "Mileage", comment: "Mileage label")
-
-    // MARK: - Weather
-    static let noWeatherDataTitle = NSLocalizedString("weather.no_data_title", value: "No Weather Data", comment: "No weather data title")
-    static let enableLocationServices = NSLocalizedString("weather.enable_location", value: "Enable location services to see the forecast", comment: "Enable location hint")
-    static let unableToLoadWeather = NSLocalizedString("weather.unable_to_load", value: "Unable to Load Weather", comment: "Unable to load weather")
-    static let manageLocations = NSLocalizedString("weather.manage_locations", value: "Manage Locations", comment: "Manage locations button")
     static let refresh = NSLocalizedString("common.refresh", value: "Refresh", comment: "Refresh button")
     static let currentLocation = NSLocalizedString("location.current", value: "Current Location", comment: "Current location button")
     static let addLocation = NSLocalizedString("location.add", value: "Add Location", comment: "Add location button")

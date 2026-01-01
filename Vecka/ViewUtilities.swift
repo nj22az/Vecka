@@ -172,12 +172,12 @@ struct ViewUtilities {
     
     /// Safe color calculation - simplified to use daily colors
     static func safeColorForDay(_ date: Date) -> Color {
-        return AppColors.colorForDay(date)
+        return JohoColors.cyan
     }
     
     /// Dynamic color selection for today/selected states
     static func dynamicStateColor(isToday: Bool) -> Color {
-        return isToday ? AppColors.accentBlue : AppColors.thursdayWood
+        return isToday ? JohoColors.cyan : JohoColors.green
     }
 }
 

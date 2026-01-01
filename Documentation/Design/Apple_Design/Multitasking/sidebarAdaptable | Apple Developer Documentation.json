@@ -1,0 +1,1727 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "sidebarAdaptable | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "SwiftUI",
+        "TabViewStyle",
+        "sidebarAdaptable",
+        "SidebarAdaptableTabViewStyle",
+        "iOS",
+        "iPadOS",
+        "macOS",
+        "tvOS",
+        "visionOS",
+        "tab bar",
+        "sidebar",
+        "navigation"
+      ],
+      "summary": "Apple Developer Documentation page for the sidebarAdaptable static property of TabViewStyle in SwiftUI. This property provides a tab bar style that adapts its appearance to each platform, displaying as a top tab bar on iPadOS (adaptable to sidebar), bottom tab bar on iOS, sidebar on macOS/tvOS, and ornament with sidebar on visionOS.",
+      "sourceURL": "https://developer.apple.com/documentation/swiftui/tabviewstyle/sidebaradaptable",
+      "copyright": "Copyright © 2025 Apple Inc. All rights reserved."
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": null,
+          "height": null,
+          "unit": "pixels"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF",
+        "layout": {
+          "type": "multi-column",
+          "columns": 3,
+          "margins": {
+            "top": 56,
+            "right": 0,
+            "bottom": 200,
+            "left": 0
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": "100%",
+              "height": 56
+            },
+            "zIndex": 100,
+            "content": {
+              "type": "top-navigation-bar",
+              "backgroundColor": "#FFFFFF",
+              "items": [
+                {
+                  "type": "logo",
+                  "text": "Developer",
+                  "icon": "Apple logo ()",
+                  "position": "left"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "News",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Discover",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Design",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Develop",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Distribute",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Support",
+                  "position": "center"
+                },
+                {
+                  "type": "nav-link",
+                  "text": "Account",
+                  "position": "center"
+                },
+                {
+                  "type": "icon-button",
+                  "icon": "magnifying glass (search)",
+                  "position": "right"
+                },
+                {
+                  "type": "language-selector",
+                  "text": "Language: Swift",
+                  "position": "far-right"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-documentation-header",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 0,
+              "y": 56,
+              "width": "100%",
+              "height": 24
+            },
+            "zIndex": 90,
+            "content": {
+              "type": "documentation-header",
+              "icon": "document icon (outlined square with lines)",
+              "text": "Documentation",
+              "level": "section-header"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-breadcrumb-link",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 24,
+              "y": 80,
+              "width": 150,
+              "height": 20
+            },
+            "zIndex": 85,
+            "content": {
+              "type": "breadcrumb-back-link",
+              "icon": "chevron-left (<)",
+              "text": "All Technologies",
+              "linkTarget": "/documentation/technologies"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-left-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 100,
+              "width": 250,
+              "height": "auto"
+            },
+            "zIndex": 80,
+            "content": {
+              "type": "left-sidebar-navigation",
+              "backgroundColor": "#F5F5F7",
+              "sections": [
+                {
+                  "sectionTitle": "SwiftUI",
+                  "sectionType": "framework-title",
+                  "items": [
+                    {
+                      "icon": "P (property icon, filled circle)",
+                      "text": "static var sidebarAdaptable: S...",
+                      "isSelected": true,
+                      "backgroundColor": "#007AFF",
+                      "textColor": "#FFFFFF"
+                    },
+                    {
+                      "icon": "P",
+                      "text": "static var tabBarOnly: TabBarO...",
+                      "isSelected": false
+                    },
+                    {
+                      "icon": "P",
+                      "text": "static var grouped: GroupedTab...",
+                      "isSelected": false
+                    },
+                    {
+                      "icon": "P",
+                      "text": "static var page: PageTabViewSt...",
+                      "isSelected": false
+                    },
+                    {
+                      "icon": "M (method icon)",
+                      "text": "static func page(indexDisplayM...",
+                      "isSelected": false
+                    },
+                    {
+                      "icon": "P",
+                      "text": "static var verticalPage: Vertical...",
+                      "isSelected": false
+                    },
+                    {
+                      "icon": "M",
+                      "text": "static func verticalPage(transiti...",
+                      "isSelected": false
+                    },
+                    {
+                      "icon": "P",
+                      "text": "static var carousel: C...",
+                      "badge": {
+                        "text": "Deprecated",
+                        "backgroundColor": "#FF3B30",
+                        "textColor": "#FFFFFF"
+                      },
+                      "isSelected": false
+                    }
+                  ]
+                },
+                {
+                  "sectionTitle": "Supporting types",
+                  "sectionType": "collapsible-group",
+                  "isExpanded": true,
+                  "items": [
+                    {
+                      "icon": "> (chevron, collapsed indicator)",
+                      "text": "DefaultTabViewStyle",
+                      "isExpandable": true
+                    },
+                    {
+                      "icon": ">",
+                      "text": "SidebarAdaptableTabViewStyle",
+                      "isExpandable": true
+                    },
+                    {
+                      "icon": ">",
+                      "text": "TabBarOnlyTabViewStyle",
+                      "isExpandable": true
+                    },
+                    {
+                      "icon": ">",
+                      "text": "GroupedTabViewStyle",
+                      "isExpandable": true
+                    },
+                    {
+                      "icon": ">",
+                      "text": "PageTabViewStyle",
+                      "isExpandable": true
+                    },
+                    {
+                      "icon": ">",
+                      "text": "VerticalPageTabViewStyle",
+                      "isExpandable": true
+                    },
+                    {
+                      "icon": ">",
+                      "text": "CarouselTabViewStyle",
+                      "badge": {
+                        "text": "Deprecated",
+                        "backgroundColor": "#FF3B30",
+                        "textColor": "#FFFFFF"
+                      },
+                      "isExpandable": true
+                    }
+                  ]
+                },
+                {
+                  "sectionTitle": "Styling groups",
+                  "sectionType": "collapsible-group",
+                  "isExpanded": false,
+                  "items": [
+                    {
+                      "icon": "M",
+                      "text": "func controlGroupStyle<S>(S) -> ...",
+                      "isExpandable": false
+                    }
+                  ]
+                }
+              ],
+              "filterInput": {
+                "placeholder": "Filter",
+                "icon": "filter lines icon",
+                "shortcutHint": "/"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-content-breadcrumbs",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 280,
+              "y": 90,
+              "width": 400,
+              "height": 20
+            },
+            "zIndex": 75,
+            "content": {
+              "type": "breadcrumb-trail",
+              "items": [
+                {
+                  "text": "SwiftUI",
+                  "isLink": true,
+                  "linkTarget": "/documentation/swiftui"
+                },
+                {
+                  "text": "/",
+                  "isLink": false
+                },
+                {
+                  "text": "TabViewStyle",
+                  "isLink": true,
+                  "linkTarget": "/documentation/swiftui/tabviewstyle"
+                },
+                {
+                  "text": "/",
+                  "isLink": false
+                },
+                {
+                  "text": "sidebarAdaptable",
+                  "isLink": false,
+                  "isCurrent": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-type-label",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 280,
+              "y": 115,
+              "width": 100,
+              "height": 18
+            },
+            "zIndex": 70,
+            "content": {
+              "text": "Type Property",
+              "fontStyle": "caption",
+              "textColor": "#6E6E73"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-heading",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-main-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 135,
+              "width": 600,
+              "height": 48
+            },
+            "zIndex": 70,
+            "content": {
+              "level": 1,
+              "text": "sidebarAdaptable",
+              "fontFamily": "SF Pro Display",
+              "fontWeight": "bold",
+              "fontSize": "36px",
+              "textColor": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 280,
+              "y": 190,
+              "width": 600,
+              "height": 24
+            },
+            "zIndex": 65,
+            "content": {
+              "text": "A tab bar style that adapts to each platform.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "17px",
+              "textColor": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-availability",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 280,
+              "y": 220,
+              "width": 600,
+              "height": 20
+            },
+            "zIndex": 60,
+            "content": {
+              "type": "platform-badges",
+              "platforms": [
+                {
+                  "name": "iOS",
+                  "version": "18.0+",
+                  "separator": "|"
+                },
+                {
+                  "name": "iPadOS",
+                  "version": "18.0+",
+                  "separator": "|"
+                },
+                {
+                  "name": "Mac Catalyst",
+                  "version": "18.0+",
+                  "separator": "|"
+                },
+                {
+                  "name": "macOS",
+                  "version": "15.0+",
+                  "separator": "|"
+                },
+                {
+                  "name": "tvOS",
+                  "version": "18.0+",
+                  "separator": "|"
+                },
+                {
+                  "name": "visionOS",
+                  "version": "2.0+"
+                }
+              ],
+              "textColor": "#6E6E73",
+              "fontSize": "13px"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-code-declaration",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 280,
+              "y": 255,
+              "width": 600,
+              "height": 60
+            },
+            "zIndex": 55,
+            "content": {
+              "language": "swift",
+              "backgroundColor": "#F5F5F7",
+              "borderRadius": "8px",
+              "padding": "16px",
+              "code": "@MainActor @preconcurrency\nstatic var sidebarAdaptable: SidebarAdaptableTabViewStyle { get }",
+              "syntaxHighlighting": [
+                {
+                  "token": "@MainActor",
+                  "color": "#9B2393",
+                  "type": "attribute"
+                },
+                {
+                  "token": "@preconcurrency",
+                  "color": "#9B2393",
+                  "type": "attribute"
+                },
+                {
+                  "token": "static",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "var",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "sidebarAdaptable",
+                  "color": "#0E67B8",
+                  "type": "identifier"
+                },
+                {
+                  "token": "SidebarAdaptableTabViewStyle",
+                  "color": "#0E67B8",
+                  "type": "type"
+                },
+                {
+                  "token": "get",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-availability-note",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 280,
+              "y": 330,
+              "width": 600,
+              "height": 20
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Available when Self is SidebarAdaptableTabViewStyle.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "15px",
+              "textColor": "#6E6E73",
+              "formatting": [
+                {
+                  "text": "Self",
+                  "style": "code/monospace"
+                },
+                {
+                  "text": "SidebarAdaptableTabViewStyle",
+                  "style": "code/monospace"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-discussion-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 370,
+              "width": 200,
+              "height": 32
+            },
+            "zIndex": 45,
+            "content": {
+              "level": 2,
+              "text": "Discussion",
+              "fontFamily": "SF Pro Display",
+              "fontWeight": "bold",
+              "fontSize": "24px",
+              "textColor": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-discussion-intro",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 280,
+              "y": 410,
+              "width": 600,
+              "height": 48
+            },
+            "zIndex": 40,
+            "content": {
+              "text": "Tab views using the sidebar adaptable style have an appearance that varies depending on the platform:",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "15px",
+              "textColor": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-behavior-list",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 280,
+              "y": 465,
+              "width": 600,
+              "height": 120
+            },
+            "zIndex": 35,
+            "content": {
+              "listType": "unordered",
+              "bulletStyle": "disc",
+              "items": [
+                {
+                  "text": "iPadOS displays a top tab bar that can adapt into a sidebar.",
+                  "fontFamily": "SF Pro Text",
+                  "fontSize": "15px"
+                },
+                {
+                  "text": "iOS displays a bottom tab bar.",
+                  "fontFamily": "SF Pro Text",
+                  "fontSize": "15px"
+                },
+                {
+                  "text": "macOS and tvOS always show a sidebar.",
+                  "fontFamily": "SF Pro Text",
+                  "fontSize": "15px"
+                },
+                {
+                  "text": "visionOS shows an ornament and also shows a sidebar for secondary tabs within a Tab Section.",
+                  "fontFamily": "SF Pro Text",
+                  "fontSize": "15px",
+                  "links": [
+                    {
+                      "text": "Tab Section",
+                      "linkTarget": "/documentation/swiftui/tabsection",
+                      "textColor": "#007AFF"
+                    }
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-modifier-instruction",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 280,
+              "y": 595,
+              "width": 600,
+              "height": 40
+            },
+            "zIndex": 30,
+            "content": {
+              "text": "To apply this style to a tab view, or to a view that contains tab views, use the tabViewStyle(_:) modifier.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": "15px",
+              "textColor": "#1D1D1F",
+              "links": [
+                {
+                  "text": "tabViewStyle(_:)",
+                  "linkTarget": "/documentation/swiftui/view/tabviewstyle(_:)",
+                  "textColor": "#007AFF",
+                  "fontStyle": "monospace"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 660,
+              "width": 200,
+              "height": 32
+            },
+            "zIndex": 25,
+            "content": {
+              "level": 2,
+              "text": "See Also",
+              "fontFamily": "SF Pro Display",
+              "fontWeight": "bold",
+              "fontSize": "24px",
+              "textColor": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-section-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 280,
+              "y": 700,
+              "width": 300,
+              "height": 24
+            },
+            "zIndex": 24,
+            "content": {
+              "level": 3,
+              "text": "Getting built-in tab view styles",
+              "fontFamily": "SF Pro Display",
+              "fontWeight": "semibold",
+              "fontSize": "18px",
+              "textColor": "#1D1D1F"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-automatic",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 280,
+              "y": 735,
+              "width": 600,
+              "height": 50
+            },
+            "zIndex": 23,
+            "content": {
+              "type": "api-reference",
+              "declaration": "static var automatic: DefaultTabViewStyle",
+              "syntaxHighlighting": [
+                {
+                  "token": "static",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "var",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "automatic",
+                  "color": "#0E67B8",
+                  "type": "identifier-link"
+                },
+                {
+                  "token": "DefaultTabViewStyle",
+                  "color": "#000000",
+                  "type": "type"
+                }
+              ],
+              "description": "The default tab view style.",
+              "linkTarget": "/documentation/swiftui/tabviewstyle/automatic"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-tabbaronly",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 280,
+              "y": 790,
+              "width": 600,
+              "height": 50
+            },
+            "zIndex": 22,
+            "content": {
+              "type": "api-reference",
+              "declaration": "static var tabBarOnly: TabBarOnlyTabViewStyle",
+              "syntaxHighlighting": [
+                {
+                  "token": "static",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "var",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "tabBarOnly",
+                  "color": "#0E67B8",
+                  "type": "identifier-link"
+                },
+                {
+                  "token": "TabBarOnlyTabViewStyle",
+                  "color": "#000000",
+                  "type": "type"
+                }
+              ],
+              "description": "A tab view style that displays a tab bar when possible.",
+              "linkTarget": "/documentation/swiftui/tabviewstyle/tabbaronly"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-grouped",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 280,
+              "y": 845,
+              "width": 600,
+              "height": 50
+            },
+            "zIndex": 21,
+            "content": {
+              "type": "api-reference",
+              "declaration": "static var grouped: GroupedTabViewStyle",
+              "syntaxHighlighting": [
+                {
+                  "token": "static",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "var",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "grouped",
+                  "color": "#0E67B8",
+                  "type": "identifier-link"
+                },
+                {
+                  "token": "GroupedTabViewStyle",
+                  "color": "#000000",
+                  "type": "type"
+                }
+              ],
+              "description": "A tab view style that displays a tab bar that groups its tabs together.",
+              "linkTarget": "/documentation/swiftui/tabviewstyle/grouped"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-page",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 280,
+              "y": 900,
+              "width": 600,
+              "height": 50
+            },
+            "zIndex": 20,
+            "content": {
+              "type": "api-reference",
+              "declaration": "static var page: PageTabViewStyle",
+              "syntaxHighlighting": [
+                {
+                  "token": "static",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "var",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "page",
+                  "color": "#0E67B8",
+                  "type": "identifier-link"
+                },
+                {
+                  "token": "PageTabViewStyle",
+                  "color": "#000000",
+                  "type": "type"
+                }
+              ],
+              "description": "A TabViewStyle that displays a paged scrolling TabView.",
+              "linkTarget": "/documentation/swiftui/tabviewstyle/page"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-page-func",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 280,
+              "y": 955,
+              "width": 600,
+              "height": 60
+            },
+            "zIndex": 19,
+            "content": {
+              "type": "api-reference",
+              "declaration": "static func page(indexDisplayMode: PageTabViewStyle.IndexDisplayMode) -> PageTabViewStyle",
+              "syntaxHighlighting": [
+                {
+                  "token": "static",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "func",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "page",
+                  "color": "#0E67B8",
+                  "type": "identifier-link"
+                },
+                {
+                  "token": "indexDisplayMode",
+                  "color": "#000000",
+                  "type": "parameter"
+                },
+                {
+                  "token": "PageTabViewStyle.IndexDisplayMode",
+                  "color": "#000000",
+                  "type": "type"
+                },
+                {
+                  "token": "PageTabViewStyle",
+                  "color": "#000000",
+                  "type": "return-type"
+                }
+              ],
+              "description": "A TabViewStyle that implements a paged scrolling TabView with an index display mode.",
+              "linkTarget": "/documentation/swiftui/tabviewstyle/page(indexdisplaymode:)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-verticalpage",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 280,
+              "y": 1020,
+              "width": 600,
+              "height": 50
+            },
+            "zIndex": 18,
+            "content": {
+              "type": "api-reference",
+              "declaration": "static var verticalPage: VerticalPageTabViewStyle",
+              "syntaxHighlighting": [
+                {
+                  "token": "static",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "var",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "verticalPage",
+                  "color": "#0E67B8",
+                  "type": "identifier-link"
+                },
+                {
+                  "token": "VerticalPageTabViewStyle",
+                  "color": "#000000",
+                  "type": "type"
+                }
+              ],
+              "description": "A TabViewStyle that displays a vertical page TabView interaction and appearance.",
+              "linkTarget": "/documentation/swiftui/tabviewstyle/verticalpage"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-verticalpage-func",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 280,
+              "y": 1075,
+              "width": 600,
+              "height": 60
+            },
+            "zIndex": 17,
+            "content": {
+              "type": "api-reference",
+              "declaration": "static func verticalPage(transitionStyle: VerticalPageTabViewStyle.TransitionStyle) -> VerticalPageTabViewStyle",
+              "syntaxHighlighting": [
+                {
+                  "token": "static",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "func",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "verticalPage",
+                  "color": "#0E67B8",
+                  "type": "identifier-link"
+                },
+                {
+                  "token": "transitionStyle",
+                  "color": "#000000",
+                  "type": "parameter"
+                },
+                {
+                  "token": "VerticalPageTabViewStyle.TransitionStyle",
+                  "color": "#000000",
+                  "type": "type"
+                },
+                {
+                  "token": "VerticalPageTabViewStyle",
+                  "color": "#000000",
+                  "type": "return-type"
+                }
+              ],
+              "description": "A TabViewStyle that implements the vertical page TabView interaction and appearance, and performs the specified transition.",
+              "linkTarget": "/documentation/swiftui/tabviewstyle/verticalpage(transitionstyle:)"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-carousel",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 280,
+              "y": 1140,
+              "width": 600,
+              "height": 60
+            },
+            "zIndex": 16,
+            "content": {
+              "type": "api-reference",
+              "declaration": "static var carousel: CarouselTabViewStyle",
+              "syntaxHighlighting": [
+                {
+                  "token": "static",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "var",
+                  "color": "#9B2393",
+                  "type": "keyword"
+                },
+                {
+                  "token": "carousel",
+                  "color": "#0E67B8",
+                  "type": "identifier-link",
+                  "strikethrough": true
+                },
+                {
+                  "token": "CarouselTabViewStyle",
+                  "color": "#000000",
+                  "type": "type",
+                  "strikethrough": true
+                }
+              ],
+              "description": "A style that implements the carousel interaction and appearance.",
+              "badge": {
+                "text": "Deprecated",
+                "backgroundColor": "#FF3B30",
+                "textColor": "#FFFFFF",
+                "borderRadius": "4px"
+              },
+              "linkTarget": "/documentation/swiftui/tabviewstyle/carousel"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-right-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": "calc(100% - 280px)",
+              "y": 100,
+              "width": 260,
+              "height": "auto"
+            },
+            "zIndex": 75,
+            "content": {
+              "type": "right-sidebar-toc",
+              "backgroundColor": "#FFFFFF",
+              "title": "On This Page (implicit)",
+              "sections": [
+                {
+                  "heading": "All Technologies",
+                  "items": [
+                    {
+                      "text": "SwiftUI",
+                      "isLink": true,
+                      "indent": 0
+                    }
+                  ]
+                },
+                {
+                  "items": [
+                    {
+                      "icon": "Pr",
+                      "text": "NavigationSplitViewStyle",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "M",
+                      "text": "func tabViewStyle<S>(S) -> som...",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "Pr",
+                      "text": "TabViewStyle",
+                      "isLink": true
+                    }
+                  ]
+                },
+                {
+                  "heading": "Getting built-in tab view styles",
+                  "items": [
+                    {
+                      "icon": "P",
+                      "text": "static var automatic: DefaultTab...",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "P",
+                      "text": "static var sidebarAdaptable: S...",
+                      "isLink": true,
+                      "isCurrentSection": true
+                    },
+                    {
+                      "icon": "P",
+                      "text": "static var tabBarOnly: TabBarO...",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "P",
+                      "text": "static var grouped: GroupedTab...",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "P",
+                      "text": "static var page: PageTabViewSt...",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "M",
+                      "text": "static func page(indexDisplayM...",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "P",
+                      "text": "static var verticalPage: Vertical...",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "M",
+                      "text": "static func verticalPage(transiti...",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "P",
+                      "text": "static var carousel: C...",
+                      "badge": "Deprecated",
+                      "isLink": true
+                    }
+                  ]
+                },
+                {
+                  "heading": "Supporting types",
+                  "items": [
+                    {
+                      "icon": "S",
+                      "text": "DefaultTabViewStyle",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "S",
+                      "text": "SidebarAdaptableTabViewStyle",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "S",
+                      "text": "TabBarOnlyTabViewStyle",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "S",
+                      "text": "GroupedTabViewStyle",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "S",
+                      "text": "PageTabViewStyle",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "S",
+                      "text": "VerticalPageTabViewStyle",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "S",
+                      "text": "CarouselTabViewStyle",
+                      "badge": "Deprecated",
+                      "isLink": true
+                    }
+                  ]
+                },
+                {
+                  "heading": "Styling groups",
+                  "items": [
+                    {
+                      "icon": "M",
+                      "text": "func controlGroupStyle<S>(S) -> ...",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "Pr",
+                      "text": "ControlGroupStyle",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "S",
+                      "text": "ControlGroupStyleConfiguration",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "M",
+                      "text": "func formStyle<S>(S) -> some Vi...",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "Pr",
+                      "text": "FormStyle",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "S",
+                      "text": "FormStyleConfiguration",
+                      "isLink": true
+                    },
+                    {
+                      "icon": "M",
+                      "text": "func groupBoxStyle<S>(S) -> so...",
+                      "isLink": true
+                    }
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer",
+            "elementType": "other",
+            "boundingBox": {
+              "x": 0,
+              "y": 1220,
+              "width": "100%",
+              "height": 200
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "page-footer",
+              "backgroundColor": "#F5F5F7",
+              "sections": [
+                {
+                  "sectionType": "footer-breadcrumb",
+                  "items": [
+                    {
+                      "icon": "Apple logo",
+                      "text": ""
+                    },
+                    {
+                      "text": "Developer",
+                      "isLink": true
+                    },
+                    {
+                      "text": ">",
+                      "separator": true
+                    },
+                    {
+                      "text": "Documentation",
+                      "isLink": true
+                    }
+                  ]
+                },
+                {
+                  "sectionType": "footer-columns",
+                  "columns": [
+                    {
+                      "heading": "Platforms",
+                      "items": [
+                        "iOS",
+                        "iPadOS",
+                        "macOS",
+                        "tvOS",
+                        "visionOS",
+                        "watchOS"
+                      ]
+                    },
+                    {
+                      "heading": "Tools",
+                      "items": [
+                        "Swift",
+                        "SwiftUI",
+                        "Swift Playground",
+                        "TestFlight",
+                        "Xcode",
+                        "Xcode Cloud",
+                        "SF Symbols"
+                      ]
+                    },
+                    {
+                      "heading": "Topics & Technologies",
+                      "items": [
+                        "Accessibility",
+                        "Accessories",
+                        "App Extension",
+                        "App Store",
+                        "Audio & Video",
+                        "Augmented Reality",
+                        "Design",
+                        "Distribution",
+                        "Education",
+                        "Fonts",
+                        "Games",
+                        "Health & Fitness",
+                        "In-App Purchase",
+                        "Localization",
+                        "Maps & Location",
+                        "Machine Learning & AI",
+                        "Open Source",
+                        "Security",
+                        "Safari & Web"
+                      ]
+                    },
+                    {
+                      "heading": "Resources",
+                      "items": [
+                        "Documentation",
+                        "Tutorials",
+                        "Downloads",
+                        "Forums",
+                        "Videos"
+                      ]
+                    },
+                    {
+                      "heading": "Support",
+                      "items": [
+                        "Support Articles",
+                        "Contact Us",
+                        "Bug Reporting",
+                        "System Status"
+                      ]
+                    },
+                    {
+                      "heading": "Account",
+                      "items": [
+                        "Apple Developer",
+                        "App Store Connect",
+                        "Certificates, IDs, & Profiles",
+                        "Feedback Assistant"
+                      ]
+                    },
+                    {
+                      "heading": "Programs",
+                      "items": [
+                        "Apple Developer Program",
+                        "Apple Developer Enterprise Program",
+                        "App Store Small Business Program",
+                        "MFi Program",
+                        "News Partner Program",
+                        "Video Partner Program",
+                        "Security Bounty Program",
+                        "Security Research Device Program"
+                      ]
+                    },
+                    {
+                      "heading": "Events",
+                      "items": [
+                        "Meet with Apple",
+                        "Apple Developer Centers",
+                        "App Store Awards",
+                        "Apple Design Awards",
+                        "Apple Developer Academies",
+                        "WWDC"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "sectionType": "footer-bottom",
+                  "items": [
+                    {
+                      "text": "To submit feedback on documentation, visit",
+                      "type": "text"
+                    },
+                    {
+                      "text": "Feedback Assistant",
+                      "type": "link",
+                      "linkTarget": "https://feedbackassistant.apple.com/"
+                    },
+                    {
+                      "text": ".",
+                      "type": "text"
+                    }
+                  ],
+                  "themeToggle": {
+                    "type": "segmented-control",
+                    "options": [
+                      {
+                        "label": "Light",
+                        "isSelected": false
+                      },
+                      {
+                        "label": "Dark",
+                        "isSelected": false
+                      },
+                      {
+                        "label": "Auto",
+                        "isSelected": true,
+                        "backgroundColor": "#007AFF",
+                        "textColor": "#FFFFFF"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "sectionType": "copyright",
+                  "text": "Copyright © 2025 Apple Inc. All rights reserved.",
+                  "links": [
+                    {
+                      "text": "Terms of Use",
+                      "linkTarget": "https://www.apple.com/legal/internet-services/terms/site.html"
+                    },
+                    {
+                      "text": "Privacy Policy",
+                      "linkTarget": "https://www.apple.com/privacy/privacy-policy/"
+                    },
+                    {
+                      "text": "Agreements and Guidelines",
+                      "linkTarget": "https://developer.apple.com/support/terms/"
+                    }
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation",
+          "page1-documentation-header",
+          "page1-breadcrumb-link",
+          "page1-main-content-breadcrumbs",
+          "page1-type-label",
+          "page1-main-heading",
+          "page1-description",
+          "page1-platform-availability",
+          "page1-code-declaration",
+          "page1-availability-note",
+          "page1-discussion-heading",
+          "page1-discussion-intro",
+          "page1-platform-behavior-list",
+          "page1-modifier-instruction",
+          "page1-see-also-heading",
+          "page1-see-also-section-heading",
+          "page1-see-also-automatic",
+          "page1-see-also-tabbaronly",
+          "page1-see-also-grouped",
+          "page1-see-also-page",
+          "page1-see-also-page-func",
+          "page1-see-also-verticalpage",
+          "page1-see-also-verticalpage-func",
+          "page1-see-also-carousel",
+          "page1-footer"
+        ],
+        "pageSummary": "This is an Apple Developer Documentation page for the sidebarAdaptable type property of TabViewStyle in SwiftUI. The page explains that this tab bar style adapts its appearance based on the platform: iPadOS shows a top tab bar adaptable to sidebar, iOS shows a bottom tab bar, macOS and tvOS always show a sidebar, and visionOS shows an ornament with sidebar for secondary tabs. The page includes the Swift declaration with @MainActor and @preconcurrency attributes, platform availability (iOS 18.0+, iPadOS 18.0+, Mac Catalyst 18.0+, macOS 15.0+, tvOS 18.0+, visionOS 2.0+), and a comprehensive 'See Also' section listing other built-in tab view styles."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": false,
+        "entries": []
+      },
+      "runningHeaders": "Documentation",
+      "runningFooters": "Copyright © 2025 Apple Inc. All rights reserved.",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "section-header",
+          "title": "Header Navigation",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Top navigation bar with Apple Developer site navigation links and language selector."
+        },
+        {
+          "sectionId": "section-api-declaration",
+          "title": "API Declaration",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "The main API declaration showing sidebarAdaptable as a static property returning SidebarAdaptableTabViewStyle, with platform availability information."
+        },
+        {
+          "sectionId": "section-discussion",
+          "title": "Discussion",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Explains how the sidebar adaptable style behaves differently on each Apple platform and how to apply it using the tabViewStyle(_:) modifier."
+        },
+        {
+          "sectionId": "section-see-also",
+          "title": "See Also",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "subsection-built-in-styles",
+              "title": "Getting built-in tab view styles",
+              "summary": "Lists all available built-in tab view styles: automatic, tabBarOnly, grouped, page, verticalPage, and carousel (deprecated)."
+            }
+          ],
+          "summary": "Reference section listing related TabViewStyle properties and methods for cross-reference."
+        },
+        {
+          "sectionId": "section-footer",
+          "title": "Footer",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Site-wide footer with links to platforms, tools, topics, resources, support, programs, and events, plus theme toggle and legal links."
+        }
+      ],
+      "documentFlow": "The document follows Apple's standard developer documentation layout with a three-column design. The left sidebar shows navigation within the SwiftUI framework hierarchy. The main content area presents the API documentation in a logical flow: type label, heading, description, platform availability, code declaration, availability constraint, discussion with platform-specific behavior, and related APIs. The right sidebar provides quick navigation within the current documentation context. The footer provides comprehensive site navigation."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "sidebarAdaptable",
+          "definition": "A static property of TabViewStyle that provides a tab bar style adapting its appearance to each platform",
+          "occurrences": 3
+        },
+        {
+          "term": "SidebarAdaptableTabViewStyle",
+          "definition": "The concrete type returned by the sidebarAdaptable property",
+          "occurrences": 2
+        },
+        {
+          "term": "TabViewStyle",
+          "definition": "A SwiftUI protocol for defining the style of tab views",
+          "occurrences": 4
+        },
+        {
+          "term": "@MainActor",
+          "definition": "Swift attribute indicating the property must be accessed from the main actor",
+          "occurrences": 1
+        },
+        {
+          "term": "@preconcurrency",
+          "definition": "Swift attribute for backward compatibility with pre-concurrency code",
+          "occurrences": 1
+        },
+        {
+          "term": "tabViewStyle(_:)",
+          "definition": "The SwiftUI modifier used to apply a tab view style to a view",
+          "occurrences": 1
+        },
+        {
+          "term": "Tab Section",
+          "definition": "A SwiftUI component used in visionOS for grouping secondary tabs within a sidebar",
+          "occurrences": 1
+        }
+      ],
+      "keyFindings": [
+        "sidebarAdaptable is available starting iOS 18.0, iPadOS 18.0, Mac Catalyst 18.0, macOS 15.0, tvOS 18.0, and visionOS 2.0",
+        "The style adapts differently per platform: iPadOS uses top tab bar convertible to sidebar, iOS uses bottom tab bar, macOS and tvOS always use sidebar, visionOS uses ornament plus sidebar for secondary tabs",
+        "The property is only available when Self is SidebarAdaptableTabViewStyle",
+        "CarouselTabViewStyle is deprecated",
+        "The tabViewStyle(_:) modifier is used to apply this style to tab views or their containing views"
+      ],
+      "technicalSpecifications": {
+        "swiftDeclaration": "@MainActor @preconcurrency static var sidebarAdaptable: SidebarAdaptableTabViewStyle { get }",
+        "returnType": "SidebarAdaptableTabViewStyle",
+        "propertyType": "static get-only",
+        "availability": {
+          "iOS": "18.0+",
+          "iPadOS": "18.0+",
+          "macCatalyst": "18.0+",
+          "macOS": "15.0+",
+          "tvOS": "18.0+",
+          "visionOS": "2.0+"
+        },
+        "framework": "SwiftUI",
+        "protocol": "TabViewStyle"
+      },
+      "designDecisions": [
+        {
+          "decision": "Platform-adaptive tab bar behavior",
+          "rationale": "Different platforms have different UI conventions - bottom tabs on iPhone, top adaptable tabs on iPad, sidebars on Mac/TV, ornaments on Vision Pro",
+          "implications": "Developers can use a single style that automatically adapts to platform conventions without conditional code"
+        },
+        {
+          "decision": "MainActor isolation",
+          "rationale": "UI-related properties must be accessed from the main thread for thread safety",
+          "implications": "Access to this property is restricted to MainActor context"
+        }
+      ]
+    },
+    "allLinks": [
+      {
+        "text": "SwiftUI",
+        "url": "/documentation/swiftui",
+        "context": "breadcrumb navigation"
+      },
+      {
+        "text": "TabViewStyle",
+        "url": "/documentation/swiftui/tabviewstyle",
+        "context": "breadcrumb navigation"
+      },
+      {
+        "text": "Tab Section",
+        "url": "/documentation/swiftui/tabsection",
+        "context": "discussion text - visionOS behavior"
+      },
+      {
+        "text": "tabViewStyle(_:)",
+        "url": "/documentation/swiftui/view/tabviewstyle(_:)",
+        "context": "discussion text - how to apply the style"
+      },
+      {
+        "text": "automatic",
+        "url": "/documentation/swiftui/tabviewstyle/automatic",
+        "context": "See Also - Getting built-in tab view styles"
+      },
+      {
+        "text": "tabBarOnly",
+        "url": "/documentation/swiftui/tabviewstyle/tabbaronly",
+        "context": "See Also - Getting built-in tab view styles"
+      },
+      {
+        "text": "grouped",
+        "url": "/documentation/swiftui/tabviewstyle/grouped",
+        "context": "See Also - Getting built-in tab view styles"
+      },
+      {
+        "text": "page",
+        "url": "/documentation/swiftui/tabviewstyle/page",
+        "context": "See Also - Getting built-in tab view styles"
+      },
+      {
+        "text": "page(indexDisplayMode:)",
+        "url": "/documentation/swiftui/tabviewstyle/page(indexdisplaymode:)",
+        "context": "See Also - Getting built-in tab view styles"
+      },
+      {
+        "text": "verticalPage",
+        "url": "/documentation/swiftui/tabviewstyle/verticalpage",
+        "context": "See Also - Getting built-in tab view styles"
+      },
+      {
+        "text": "verticalPage(transitionStyle:)",
+        "url": "/documentation/swiftui/tabviewstyle/verticalpage(transitionstyle:)",
+        "context": "See Also - Getting built-in tab view styles"
+      },
+      {
+        "text": "carousel",
+        "url": "/documentation/swiftui/tabviewstyle/carousel",
+        "context": "See Also - Getting built-in tab view styles (Deprecated)"
+      },
+      {
+        "text": "Feedback Assistant",
+        "url": "https://feedbackassistant.apple.com/",
+        "context": "footer - feedback submission"
+      },
+      {
+        "text": "Terms of Use",
+        "url": "https://www.apple.com/legal/internet-services/terms/site.html",
+        "context": "footer - legal"
+      },
+      {
+        "text": "Privacy Policy",
+        "url": "https://www.apple.com/privacy/privacy-policy/",
+        "context": "footer - legal"
+      },
+      {
+        "text": "Agreements and Guidelines",
+        "url": "https://developer.apple.com/support/terms/",
+        "context": "footer - legal"
+      }
+    ],
+    "visualElements": {
+      "icons": [
+        {
+          "description": "Apple logo () in header navigation",
+          "location": "top-left header",
+          "meaning": "Apple Developer branding"
+        },
+        {
+          "description": "Magnifying glass search icon",
+          "location": "top-right header",
+          "meaning": "Search functionality"
+        },
+        {
+          "description": "Document icon (outlined square with horizontal lines)",
+          "location": "Documentation header",
+          "meaning": "Documentation section identifier"
+        },
+        {
+          "description": "Chevron-left (<) icon",
+          "location": "All Technologies link",
+          "meaning": "Back/up navigation indicator"
+        },
+        {
+          "description": "P letter icon (property indicator)",
+          "location": "left sidebar items",
+          "meaning": "Indicates a property declaration"
+        },
+        {
+          "description": "M letter icon (method indicator)",
+          "location": "left sidebar items",
+          "meaning": "Indicates a method/function declaration"
+        },
+        {
+          "description": "S letter icon (struct indicator)",
+          "location": "right sidebar items",
+          "meaning": "Indicates a struct/type declaration"
+        },
+        {
+          "description": "Pr letters (protocol indicator)",
+          "location": "right sidebar items",
+          "meaning": "Indicates a protocol declaration"
+        },
+        {
+          "description": "Chevron-right (>) icons",
+          "location": "left sidebar expandable items",
+          "meaning": "Expandable/collapsible section indicator"
+        },
+        {
+          "description": "Filter/lines icon",
+          "location": "left sidebar filter input",
+          "meaning": "Filter functionality"
+        }
+      ],
+      "badges": [
+        {
+          "text": "Deprecated",
+          "backgroundColor": "#FF3B30 (Apple red)",
+          "textColor": "#FFFFFF",
+          "borderRadius": "4px",
+          "location": "CarouselTabViewStyle entries",
+          "meaning": "API is deprecated and should not be used in new code"
+        }
+      ],
+      "colorScheme": {
+        "primaryBackground": "#FFFFFF",
+        "secondaryBackground": "#F5F5F7 (Apple gray)",
+        "primaryText": "#1D1D1F",
+        "secondaryText": "#6E6E73",
+        "linkColor": "#007AFF (Apple blue)",
+        "codeKeywordColor": "#9B2393 (purple)",
+        "codeIdentifierColor": "#0E67B8 (blue)",
+        "selectedItemBackground": "#007AFF",
+        "selectedItemText": "#FFFFFF",
+        "deprecatedBadgeBackground": "#FF3B30",
+        "codeBlockBackground": "#F5F5F7"
+      }
+    }
+  }
+}

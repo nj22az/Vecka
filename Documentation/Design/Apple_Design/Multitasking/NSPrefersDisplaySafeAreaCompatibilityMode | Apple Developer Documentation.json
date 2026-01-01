@@ -1,0 +1,1504 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "NSPrefersDisplaySafeAreaCompatibilityMode | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "NSPrefersDisplaySafeAreaCompatibilityMode",
+        "Property List Key",
+        "Info.plist",
+        "macOS",
+        "camera housing",
+        "compatibility mode",
+        "display safe area",
+        "Bundle Resources",
+        "Information Property List"
+      ],
+      "summary": "Apple Developer Documentation page describing the NSPrefersDisplaySafeAreaCompatibilityMode property list key, which is a Boolean value that indicates whether an app prefers to run in compatibility mode when necessary on Mac computers with camera housing in the screen bezel. The document explains how the system handles display safe areas and provides guidance for developers on auditing their apps.",
+      "sourceURL": "https://developer.apple.com/documentation/bundleresources/information_property_list/nsprefersdisplaysafeareacompatibilitymode",
+      "copyright": "Copyright © 2025 Apple Inc. All rights reserved."
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": null,
+          "height": null,
+          "unit": "px"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF",
+        "layout": {
+          "type": "multi-column",
+          "columns": 3,
+          "margins": {
+            "top": null,
+            "right": null,
+            "bottom": null,
+            "left": null
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": "100%",
+              "height": null
+            },
+            "zIndex": 100,
+            "content": {
+              "navigationType": "top-navigation-bar",
+              "backgroundColor": "#000000",
+              "items": [
+                {
+                  "type": "logo",
+                  "content": "Apple Developer Logo (Apple icon)",
+                  "position": "left"
+                },
+                {
+                  "type": "link",
+                  "text": "News",
+                  "position": "center"
+                },
+                {
+                  "type": "link",
+                  "text": "Discover",
+                  "position": "center"
+                },
+                {
+                  "type": "link",
+                  "text": "Design",
+                  "position": "center"
+                },
+                {
+                  "type": "link",
+                  "text": "Develop",
+                  "position": "center"
+                },
+                {
+                  "type": "link",
+                  "text": "Distribute",
+                  "position": "center"
+                },
+                {
+                  "type": "link",
+                  "text": "Support",
+                  "position": "center"
+                },
+                {
+                  "type": "link",
+                  "text": "Account",
+                  "position": "center"
+                },
+                {
+                  "type": "icon",
+                  "content": "Search icon (magnifying glass)",
+                  "position": "right"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-documentation-header",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 0,
+              "y": null,
+              "width": "100%",
+              "height": null
+            },
+            "zIndex": 90,
+            "content": {
+              "headingLevel": 1,
+              "text": "Documentation",
+              "icon": "document icon (rectangle with lines)",
+              "styling": {
+                "fontSize": "large",
+                "fontWeight": "bold",
+                "color": "#000000"
+              },
+              "languageSelector": {
+                "label": "Language:",
+                "selectedValue": "Swift",
+                "dropdownIndicator": true
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-breadcrumb-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 85,
+            "content": {
+              "navigationType": "breadcrumb",
+              "items": [
+                {
+                  "text": "< All Technologies",
+                  "isLink": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-left-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": null,
+              "width": "approximately 250px",
+              "height": "full page height"
+            },
+            "zIndex": 80,
+            "content": {
+              "navigationType": "sidebar",
+              "backgroundColor": "#F5F5F7",
+              "sections": [
+                {
+                  "sectionTitle": "Bundle Resources",
+                  "isExpanded": true,
+                  "items": [
+                    {
+                      "text": "Information Property List",
+                      "icon": "chevron down (expanded)",
+                      "isSelected": true,
+                      "children": [
+                        {
+                          "text": "Essentials",
+                          "icon": "disclosure triangle",
+                          "children": [
+                            {
+                              "text": "Managing your app's information ...",
+                              "icon": "document icon"
+                            }
+                          ]
+                        },
+                        {
+                          "text": "Core settings",
+                          "icon": "disclosure triangle"
+                        },
+                        {
+                          "text": "Bundle configuration",
+                          "icon": "chevron right (collapsed)"
+                        },
+                        {
+                          "text": "User interface",
+                          "icon": "chevron right (collapsed)"
+                        },
+                        {
+                          "text": "App execution",
+                          "icon": "chevron right (collapsed)"
+                        },
+                        {
+                          "text": "Services",
+                          "icon": "disclosure triangle",
+                          "children": [
+                            {
+                              "text": "Protected resources",
+                              "icon": "chevron right (collapsed)"
+                            },
+                            {
+                              "text": "Data and storage",
+                              "icon": "chevron right (collapsed)"
+                            },
+                            {
+                              "text": "App services",
+                              "icon": "chevron right (collapsed)"
+                            },
+                            {
+                              "text": "Kernel and drivers",
+                              "icon": "chevron right (collapsed)"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "sectionTitle": "AVFoundation",
+                  "items": [
+                    {
+                      "text": "NSAlwaysAllowMicrophoneMode...",
+                      "icon": "T (type indicator)"
+                    }
+                  ]
+                },
+                {
+                  "sectionTitle": "BrowserEngineKit",
+                  "items": [
+                    {
+                      "text": "BEEmbeddedWebBrowserEngine",
+                      "icon": "T (type indicator)"
+                    },
+                    {
+                      "text": "BEEmbeddedWebBrowserEngine...",
+                      "icon": "T (type indicator)"
+                    }
+                  ]
+                },
+                {
+                  "sectionTitle": "Dictionaries",
+                  "items": [
+                    {
+                      "text": "IOParentMatch",
+                      "icon": null
+                    },
+                    {
+                      "text": "IOPropertyMatch",
+                      "icon": null
+                    },
+                    {
+                      "text": "NSPinnedCAIdentities",
+                      "icon": null
+                    },
+                    {
+                      "text": "NSPinnedLeafIdentities",
+                      "icon": null
+                    }
+                  ]
+                },
+                {
+                  "sectionTitle": "Type Aliases",
+                  "items": [
+                    {
+                      "text": "IOClass",
+                      "icon": "T (type indicator)"
+                    }
+                  ]
+                }
+              ],
+              "filterInput": {
+                "placeholder": "Filter",
+                "icon": "filter icon",
+                "hasSlashShortcut": true,
+                "shortcutIndicator": "/"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-content-breadcrumb",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 75,
+            "content": {
+              "navigationType": "breadcrumb",
+              "separator": "/",
+              "items": [
+                {
+                  "text": "Bundle Resources",
+                  "isLink": true,
+                  "url": "/documentation/bundleresources"
+                },
+                {
+                  "text": "Information Property List",
+                  "isLink": true,
+                  "url": "/documentation/bundleresources/information_property_list"
+                },
+                {
+                  "text": "NSPrefersDisplaySafeAreaCompatibilityMode",
+                  "isLink": false,
+                  "isCurrent": true
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-property-list-key-label",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 70,
+            "content": {
+              "text": "Property List Key",
+              "styling": {
+                "fontSize": "small",
+                "fontWeight": "normal",
+                "color": "#6E6E73",
+                "textTransform": "none"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "label-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-main-title",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 70,
+            "content": {
+              "headingLevel": 1,
+              "text": "NSPrefersDisplaySafeAreaCompatibilityMode",
+              "styling": {
+                "fontSize": "extra-large",
+                "fontWeight": "bold",
+                "color": "#1D1D1F",
+                "fontFamily": "SF Pro Display"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 65,
+            "content": {
+              "text": "A Boolean value that indicates whether the app prefers to run in compatibility mode when necessary.",
+              "styling": {
+                "fontSize": "medium",
+                "fontWeight": "normal",
+                "color": "#1D1D1F"
+              }
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-platform-availability",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 60,
+            "content": {
+              "text": "macOS 12.0+",
+              "styling": {
+                "fontSize": "small",
+                "fontWeight": "normal",
+                "color": "#6E6E73",
+                "backgroundColor": "#F5F5F7",
+                "borderRadius": "4px",
+                "padding": "2px 8px"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-details-section",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 55,
+            "content": {
+              "headingLevel": 2,
+              "text": "Details",
+              "styling": {
+                "fontSize": "large",
+                "fontWeight": "bold",
+                "color": "#1D1D1F"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-type-label",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 54,
+            "content": {
+              "labelText": "Type",
+              "valueText": "Boolean",
+              "styling": {
+                "labelFontWeight": "semibold",
+                "valueFontWeight": "normal",
+                "color": "#1D1D1F"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-discussion-section",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 50,
+            "content": {
+              "headingLevel": 2,
+              "text": "Discussion",
+              "styling": {
+                "fontSize": "large",
+                "fontWeight": "bold",
+                "color": "#1D1D1F"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-discussion-paragraph-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 49,
+            "content": {
+              "text": "On Mac computers that include a camera housing in the screen bezel, the system provides a compatibility mode to prevent apps from unintentionally putting content in the region the housing occupies. When this mode is active, the system changes the active area of the display to avoid the camera housing. The new active area ensures your app's contents are always visible and not obscured by the camera housing. The system activates this compatibility mode when an app that requires it places a window behind the camera housing in the current desktop or full-screen space.",
+              "styling": {
+                "fontSize": "medium",
+                "fontWeight": "normal",
+                "color": "#1D1D1F",
+                "lineHeight": "1.5"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-discussion-paragraph-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 48,
+            "content": {
+              "text": "On Mac computers that include a camera housing, the Finder adds a checkbox to your app's Get Info panel to enable or disable compatibility mode. If your app's Info.plist file includes the NSPrefersDisplaySafeAreaCompatibilityMode key, the Finder doesn't add that checkbox; instead, it uses the value of the key to determine whether to run your app in compatibility mode. Set the value of the key to true to always run your app in compatibility mode, and set it to false to never run your app in compatibility mode.",
+              "inlineCode": [
+                {
+                  "text": "NSPrefersDisplaySafeAreaCompatibilityMode",
+                  "styling": {
+                    "fontFamily": "SF Mono",
+                    "backgroundColor": "#F5F5F7",
+                    "color": "#E4405F"
+                  }
+                },
+                {
+                  "text": "true",
+                  "styling": {
+                    "fontFamily": "SF Mono",
+                    "backgroundColor": "#F5F5F7",
+                    "color": "#E4405F"
+                  },
+                  "isLink": true
+                },
+                {
+                  "text": "false",
+                  "styling": {
+                    "fontFamily": "SF Mono",
+                    "backgroundColor": "#F5F5F7",
+                    "color": "#E4405F"
+                  },
+                  "isLink": true
+                }
+              ],
+              "styling": {
+                "fontSize": "medium",
+                "fontWeight": "normal",
+                "color": "#1D1D1F",
+                "lineHeight": "1.5"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-discussion-paragraph-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 47,
+            "content": {
+              "text": "After you audit your app and verify that it runs correctly on Mac computers that include a camera housing, add this key to your Info.plist file and set its value to false. If you discover issues during your audit, add the key and set its value to true until you're able to fix those issues.",
+              "inlineCode": [
+                {
+                  "text": "false",
+                  "styling": {
+                    "fontFamily": "SF Mono",
+                    "backgroundColor": "#F5F5F7",
+                    "color": "#E4405F"
+                  },
+                  "isLink": true
+                },
+                {
+                  "text": "true",
+                  "styling": {
+                    "fontFamily": "SF Mono",
+                    "backgroundColor": "#F5F5F7",
+                    "color": "#E4405F"
+                  },
+                  "isLink": true
+                }
+              ],
+              "styling": {
+                "fontSize": "medium",
+                "fontWeight": "normal",
+                "color": "#1D1D1F",
+                "lineHeight": "1.5"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-note-callout",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 46,
+            "content": {
+              "calloutType": "note",
+              "label": "Note",
+              "text": "On Mac computers that include a camera housing in the bezel, the auxiliaryTopLeftArea and auxiliaryTopRightArea properties of NSScreen contain the regions to the left and right of the camera housing. Use those properties and the visibleFrame property to determine where to display your content.",
+              "inlineCode": [
+                {
+                  "text": "auxiliaryTopLeftArea",
+                  "isLink": true,
+                  "linkColor": "#0066CC"
+                },
+                {
+                  "text": "auxiliaryTopRightArea",
+                  "isLink": true,
+                  "linkColor": "#0066CC"
+                },
+                {
+                  "text": "NSScreen",
+                  "isLink": true,
+                  "linkColor": "#0066CC"
+                },
+                {
+                  "text": "visibleFrame",
+                  "isLink": true,
+                  "linkColor": "#0066CC"
+                }
+              ],
+              "styling": {
+                "backgroundColor": "#F5F5F7",
+                "borderLeft": "4px solid #0066CC",
+                "padding": "16px",
+                "borderRadius": "4px"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-section",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 45,
+            "content": {
+              "headingLevel": 2,
+              "text": "See Also",
+              "styling": {
+                "fontSize": "large",
+                "fontWeight": "bold",
+                "color": "#1D1D1F"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-styling-subsection",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 44,
+            "content": {
+              "headingLevel": 3,
+              "text": "Styling",
+              "styling": {
+                "fontSize": "medium",
+                "fontWeight": "semibold",
+                "color": "#1D1D1F"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-UIDesignRequiresCompatibility",
+            "elementType": "list",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 43,
+            "content": {
+              "listType": "definition-list",
+              "items": [
+                {
+                  "term": "UIDesignRequiresCompatibility",
+                  "termStyling": {
+                    "fontFamily": "SF Mono",
+                    "color": "#0066CC",
+                    "isLink": true
+                  },
+                  "definition": "A Boolean value that indicates whether the system runs the app using a compatibility mode for UI."
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-UIUserInterfaceStyle",
+            "elementType": "list",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 42,
+            "content": {
+              "listType": "definition-list",
+              "items": [
+                {
+                  "term": "UIUserInterfaceStyle",
+                  "termStyling": {
+                    "fontFamily": "SF Mono",
+                    "color": "#0066CC",
+                    "isLink": true
+                  },
+                  "definition": "The user interface style for the app.",
+                  "additionalInfo": {
+                    "label": "Name:",
+                    "value": "User Interface Style"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-UIViewEdgeAntialiasing",
+            "elementType": "list",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 41,
+            "content": {
+              "listType": "definition-list",
+              "items": [
+                {
+                  "term": "UIViewEdgeAntialiasing",
+                  "termStyling": {
+                    "fontFamily": "SF Mono",
+                    "color": "#0066CC",
+                    "isLink": true
+                  },
+                  "definition": "A Boolean value that indicates whether Core Animation layers use antialiasing when drawing a layer that isn't aligned to pixel boundaries.",
+                  "additionalInfo": {
+                    "label": "Name:",
+                    "value": "Renders with edge antialiasing"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-UIWhitePointAdaptivityStyle",
+            "elementType": "list",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 40,
+            "content": {
+              "listType": "definition-list",
+              "items": [
+                {
+                  "term": "UIWhitePointAdaptivityStyle",
+                  "termStyling": {
+                    "fontFamily": "SF Mono",
+                    "color": "#0066CC",
+                    "isLink": true
+                  },
+                  "definition": "The app's white-point adaptivity style, enabled on devices with True Tone displays.",
+                  "additionalInfo": {
+                    "label": "Name:",
+                    "value": "White Point Adaptivity Style"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-UIViewGroupOpacity",
+            "elementType": "list",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 39,
+            "content": {
+              "listType": "definition-list",
+              "items": [
+                {
+                  "term": "UIViewGroupOpacity",
+                  "termStyling": {
+                    "fontFamily": "SF Mono",
+                    "color": "#0066CC",
+                    "isLink": true
+                  },
+                  "definition": "A Boolean value that indicates whether Core Animation sublayers inherit the opacity of their superlayer.",
+                  "additionalInfo": {
+                    "label": "Name:",
+                    "value": "Renders with group opacity"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-UIRequiresFullScreenIgnoredStartingWithVersion",
+            "elementType": "list",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 38,
+            "content": {
+              "listType": "definition-list",
+              "items": [
+                {
+                  "term": "UIRequiresFullScreenIgnoredStartingWithVersion",
+                  "termStyling": {
+                    "fontFamily": "SF Mono",
+                    "color": "#0066CC",
+                    "isLink": true
+                  },
+                  "definition": "A string value that specifies a system version after which the system ignores the requires full screen key.",
+                  "badge": {
+                    "text": "Beta",
+                    "backgroundColor": "#5856D6",
+                    "textColor": "#FFFFFF",
+                    "borderRadius": "4px"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-UISupportsAssistiveAccess",
+            "elementType": "list",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 37,
+            "content": {
+              "listType": "definition-list",
+              "items": [
+                {
+                  "term": "UISupportsAssistiveAccess",
+                  "termStyling": {
+                    "fontFamily": "SF Mono",
+                    "color": "#0066CC",
+                    "isLink": true
+                  },
+                  "definition": "A Boolean value that indicates if an iOS or iPadOS app supports Assistive Access.",
+                  "additionalInfo": {
+                    "label": "Name:",
+                    "value": "Supports Assistive Access"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-UISupportsFullScreenInAssistiveAccess",
+            "elementType": "list",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 36,
+            "content": {
+              "listType": "definition-list",
+              "items": [
+                {
+                  "term": "UISupportsFullScreenInAssistiveAccess",
+                  "termStyling": {
+                    "fontFamily": "SF Mono",
+                    "color": "#0066CC",
+                    "isLink": true
+                  },
+                  "definition": "A Boolean value that indicates if an iOS or iPadOS app appears as full screen in Assistive Access.",
+                  "additionalInfo": {
+                    "label": "Name:",
+                    "value": "Supports full screen in Assistive Access"
+                  }
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-NSAccentColorName",
+            "elementType": "list",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 35,
+            "content": {
+              "listType": "definition-list",
+              "items": [
+                {
+                  "term": "NSAccentColorName",
+                  "termStyling": {
+                    "fontFamily": "SF Mono",
+                    "color": "#0066CC",
+                    "isLink": true
+                  },
+                  "definition": "The name of a color in an asset catalog to use for a target's global accent color."
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-NSWidgetBackgroundColorName",
+            "elementType": "list",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 34,
+            "content": {
+              "listType": "definition-list",
+              "items": [
+                {
+                  "term": "NSWidgetBackgroundColorName",
+                  "termStyling": {
+                    "fontFamily": "SF Mono",
+                    "color": "#0066CC",
+                    "isLink": true
+                  },
+                  "definition": "The name of a color in an asset catalog to use for a widget's configuration interface."
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": null,
+              "width": "100%",
+              "height": null
+            },
+            "zIndex": 10,
+            "content": {
+              "navigationType": "footer",
+              "backgroundColor": "#F5F5F7",
+              "columns": [
+                {
+                  "header": {
+                    "icon": "Apple logo",
+                    "text": "Developer"
+                  },
+                  "links": [
+                    {
+                      "text": "Documentation",
+                      "isHeader": true
+                    }
+                  ]
+                },
+                {
+                  "header": "Platforms",
+                  "links": [
+                    {"text": "iOS"},
+                    {"text": "iPadOS"},
+                    {"text": "macOS"},
+                    {"text": "tvOS"},
+                    {"text": "visionOS"},
+                    {"text": "watchOS"}
+                  ]
+                },
+                {
+                  "header": "Tools",
+                  "links": [
+                    {"text": "Swift"},
+                    {"text": "SwiftUI"},
+                    {"text": "Swift Playground"},
+                    {"text": "TestFlight"},
+                    {"text": "Xcode"},
+                    {"text": "Xcode Cloud"},
+                    {"text": "SF Symbols"}
+                  ]
+                },
+                {
+                  "header": "Topics & Technologies",
+                  "links": [
+                    {"text": "Accessibility"},
+                    {"text": "Accessories"},
+                    {"text": "App Extension"},
+                    {"text": "App Store"},
+                    {"text": "Audio & Video"},
+                    {"text": "Augmented Reality"},
+                    {"text": "Design"},
+                    {"text": "Distribution"},
+                    {"text": "Education"},
+                    {"text": "Fonts"},
+                    {"text": "Games"},
+                    {"text": "Health & Fitness"},
+                    {"text": "In-App Purchase"},
+                    {"text": "Localization"},
+                    {"text": "Maps & Location"},
+                    {"text": "Machine Learning & AI"},
+                    {"text": "Open Source"},
+                    {"text": "Security"},
+                    {"text": "Safari & Web"}
+                  ]
+                },
+                {
+                  "header": "Resources",
+                  "links": [
+                    {"text": "Documentation"},
+                    {"text": "Tutorials"},
+                    {"text": "Downloads"},
+                    {"text": "Forums"},
+                    {"text": "Videos"}
+                  ]
+                },
+                {
+                  "header": "Support",
+                  "links": [
+                    {"text": "Support Articles"},
+                    {"text": "Contact Us"},
+                    {"text": "Bug Reporting"},
+                    {"text": "System Status"}
+                  ]
+                },
+                {
+                  "header": "Account",
+                  "links": [
+                    {"text": "Apple Developer"},
+                    {"text": "App Store Connect"},
+                    {"text": "Certificates, IDs, & Profiles"},
+                    {"text": "Feedback Assistant"}
+                  ]
+                },
+                {
+                  "header": "Programs",
+                  "links": [
+                    {"text": "Apple Developer Program"},
+                    {"text": "Apple Developer Enterprise Program"},
+                    {"text": "App Store Small Business Program"},
+                    {"text": "MFi Program"},
+                    {"text": "News Partner Program"},
+                    {"text": "Video Partner Program"},
+                    {"text": "Security Bounty Program"},
+                    {"text": "Security Research Device Program"}
+                  ]
+                },
+                {
+                  "header": "Events",
+                  "links": [
+                    {"text": "Meet with Apple"},
+                    {"text": "Apple Developer Centers"},
+                    {"text": "App Store Awards"},
+                    {"text": "Apple Design Awards"},
+                    {"text": "Apple Developer Academies"},
+                    {"text": "WWDC"}
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-feedback-link",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 5,
+            "content": {
+              "text": "To submit feedback on documentation, visit Feedback Assistant.",
+              "links": [
+                {
+                  "text": "Feedback Assistant",
+                  "url": "https://feedbackassistant.apple.com",
+                  "color": "#0066CC"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-theme-switcher",
+            "elementType": "other",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": null,
+              "height": null
+            },
+            "zIndex": 5,
+            "content": {
+              "componentType": "segmented-control",
+              "options": [
+                {"text": "Light", "isSelected": false},
+                {"text": "Dark", "isSelected": false},
+                {"text": "Auto", "isSelected": true}
+              ],
+              "styling": {
+                "backgroundColor": "#E8E8ED",
+                "borderRadius": "8px"
+              }
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-copyright-footer",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": null,
+              "y": null,
+              "width": "100%",
+              "height": null
+            },
+            "zIndex": 1,
+            "content": {
+              "text": "Copyright © 2025 Apple Inc. All rights reserved.",
+              "links": [
+                {"text": "Terms of Use", "separator": "|"},
+                {"text": "Privacy Policy", "separator": "|"},
+                {"text": "Agreements and Guidelines"}
+              ],
+              "styling": {
+                "fontSize": "small",
+                "color": "#6E6E73"
+              }
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation",
+          "page1-documentation-header",
+          "page1-breadcrumb-navigation",
+          "page1-content-breadcrumb",
+          "page1-property-list-key-label",
+          "page1-main-title",
+          "page1-description",
+          "page1-platform-availability",
+          "page1-details-section",
+          "page1-type-label",
+          "page1-discussion-section",
+          "page1-discussion-paragraph-1",
+          "page1-discussion-paragraph-2",
+          "page1-discussion-paragraph-3",
+          "page1-note-callout",
+          "page1-see-also-section",
+          "page1-styling-subsection",
+          "page1-see-also-UIDesignRequiresCompatibility",
+          "page1-see-also-UIUserInterfaceStyle",
+          "page1-see-also-UIViewEdgeAntialiasing",
+          "page1-see-also-UIWhitePointAdaptivityStyle",
+          "page1-see-also-UIViewGroupOpacity",
+          "page1-see-also-UIRequiresFullScreenIgnoredStartingWithVersion",
+          "page1-see-also-UISupportsAssistiveAccess",
+          "page1-see-also-UISupportsFullScreenInAssistiveAccess",
+          "page1-see-also-NSAccentColorName",
+          "page1-see-also-NSWidgetBackgroundColorName",
+          "page1-feedback-link",
+          "page1-theme-switcher",
+          "page1-footer",
+          "page1-copyright-footer"
+        ],
+        "pageSummary": "This is the Apple Developer Documentation page for the NSPrefersDisplaySafeAreaCompatibilityMode Info.plist key. The page explains that this Boolean property list key controls whether an app runs in compatibility mode on Mac computers with camera housing (notch) in the screen bezel. The documentation describes how the system handles display safe areas, how the Finder manages the compatibility mode checkbox, and provides guidance for developers on auditing their apps. It also includes links to related NSScreen properties for handling the camera housing regions and lists related styling-related Info.plist keys in the See Also section."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": false,
+        "entries": []
+      },
+      "runningHeaders": "Documentation - Apple Developer",
+      "runningFooters": "Copyright © 2025 Apple Inc. All rights reserved.",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "section-header",
+          "title": "Header Navigation",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Global Apple Developer site navigation with links to News, Discover, Design, Develop, Distribute, Support, and Account sections."
+        },
+        {
+          "sectionId": "section-sidebar",
+          "title": "Left Sidebar Navigation",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Hierarchical navigation for Bundle Resources and Information Property List documentation, including expandable sections for Essentials, Core settings, Bundle configuration, User interface, App execution, Services, and related frameworks."
+        },
+        {
+          "sectionId": "section-main-content",
+          "title": "Main Documentation Content",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "section-details",
+              "title": "Details",
+              "summary": "Specifies the property type as Boolean."
+            },
+            {
+              "sectionId": "section-discussion",
+              "title": "Discussion",
+              "summary": "Comprehensive explanation of the compatibility mode behavior, how the Finder handles the checkbox, and guidance for auditing apps on Mac computers with camera housing."
+            },
+            {
+              "sectionId": "section-note",
+              "title": "Note",
+              "summary": "Important callout about using NSScreen properties (auxiliaryTopLeftArea, auxiliaryTopRightArea, visibleFrame) to determine content display regions around the camera housing."
+            },
+            {
+              "sectionId": "section-see-also",
+              "title": "See Also",
+              "summary": "Links to related Info.plist keys for UI styling and compatibility settings."
+            }
+          ],
+          "summary": "The main documentation content explaining the NSPrefersDisplaySafeAreaCompatibilityMode property list key, its purpose, usage, and related properties."
+        },
+        {
+          "sectionId": "section-footer",
+          "title": "Footer",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Comprehensive footer with links to platforms, tools, topics, resources, support, account management, programs, and events. Includes feedback link, theme switcher, and copyright information."
+        }
+      ],
+      "documentFlow": "The document follows Apple's standard developer documentation layout with a global navigation header, a collapsible left sidebar for navigating the documentation hierarchy, a main content area with the property description and discussion, followed by a See Also section with related properties, and a comprehensive footer with site-wide links and legal information."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "NSPrefersDisplaySafeAreaCompatibilityMode",
+          "definition": "A Boolean Info.plist key that indicates whether an app prefers to run in compatibility mode when necessary on Mac computers with camera housing in the screen bezel.",
+          "occurrences": 3
+        },
+        {
+          "term": "camera housing",
+          "definition": "The physical notch area in the screen bezel of certain Mac computers (such as MacBook Pro models with notch displays) that contains the FaceTime camera.",
+          "occurrences": 6
+        },
+        {
+          "term": "compatibility mode",
+          "definition": "A system mode that changes the active area of the display to avoid the camera housing, ensuring app contents are always visible and not obscured.",
+          "occurrences": 7
+        },
+        {
+          "term": "auxiliaryTopLeftArea",
+          "definition": "An NSScreen property containing the region to the left of the camera housing on Mac computers with a notch display.",
+          "occurrences": 1
+        },
+        {
+          "term": "auxiliaryTopRightArea",
+          "definition": "An NSScreen property containing the region to the right of the camera housing on Mac computers with a notch display.",
+          "occurrences": 1
+        },
+        {
+          "term": "visibleFrame",
+          "definition": "An NSScreen property that defines the visible area of the screen, useful for determining where to display content.",
+          "occurrences": 1
+        },
+        {
+          "term": "Info.plist",
+          "definition": "The information property list file that contains configuration information for an app bundle.",
+          "occurrences": 3
+        },
+        {
+          "term": "Get Info panel",
+          "definition": "The Finder window that displays detailed information about a selected file or application, including options to enable/disable compatibility mode.",
+          "occurrences": 1
+        }
+      ],
+      "keyFindings": [
+        "The NSPrefersDisplaySafeAreaCompatibilityMode key is available on macOS 12.0 and later.",
+        "When the key is present in Info.plist, the Finder does not show the compatibility mode checkbox in the Get Info panel.",
+        "Setting the key to true forces the app to always run in compatibility mode.",
+        "Setting the key to false forces the app to never run in compatibility mode.",
+        "Developers should audit their apps on Mac computers with camera housing before setting this key to false.",
+        "The system automatically activates compatibility mode when an app that requires it places a window behind the camera housing.",
+        "NSScreen provides auxiliaryTopLeftArea, auxiliaryTopRightArea, and visibleFrame properties for handling camera housing regions programmatically."
+      ],
+      "technicalSpecifications": {
+        "propertyListKey": "NSPrefersDisplaySafeAreaCompatibilityMode",
+        "valueType": "Boolean",
+        "platform": "macOS",
+        "minimumVersion": "12.0",
+        "relatedFramework": "AppKit",
+        "relatedClass": "NSScreen",
+        "relatedProperties": [
+          "auxiliaryTopLeftArea",
+          "auxiliaryTopRightArea",
+          "visibleFrame"
+        ]
+      },
+      "designDecisions": [
+        {
+          "decision": "The system provides automatic compatibility mode to protect legacy apps from content being obscured by camera housing.",
+          "rationale": "Ensures backward compatibility for apps that were not designed with notch displays in mind."
+        },
+        {
+          "decision": "The Info.plist key overrides the Finder checkbox.",
+          "rationale": "Allows developers to specify a definitive preference rather than leaving it to user configuration."
+        },
+        {
+          "decision": "Developers should audit before disabling compatibility mode.",
+          "rationale": "Ensures apps properly handle the camera housing region before opting out of the safety net."
+        }
+      ]
+    },
+    "relatedDocumentation": {
+      "seeAlsoLinks": [
+        {
+          "key": "UIDesignRequiresCompatibility",
+          "description": "A Boolean value that indicates whether the system runs the app using a compatibility mode for UI.",
+          "propertyListName": null
+        },
+        {
+          "key": "UIUserInterfaceStyle",
+          "description": "The user interface style for the app.",
+          "propertyListName": "User Interface Style"
+        },
+        {
+          "key": "UIViewEdgeAntialiasing",
+          "description": "A Boolean value that indicates whether Core Animation layers use antialiasing when drawing a layer that isn't aligned to pixel boundaries.",
+          "propertyListName": "Renders with edge antialiasing"
+        },
+        {
+          "key": "UIWhitePointAdaptivityStyle",
+          "description": "The app's white-point adaptivity style, enabled on devices with True Tone displays.",
+          "propertyListName": "White Point Adaptivity Style"
+        },
+        {
+          "key": "UIViewGroupOpacity",
+          "description": "A Boolean value that indicates whether Core Animation sublayers inherit the opacity of their superlayer.",
+          "propertyListName": "Renders with group opacity"
+        },
+        {
+          "key": "UIRequiresFullScreenIgnoredStartingWithVersion",
+          "description": "A string value that specifies a system version after which the system ignores the requires full screen key.",
+          "propertyListName": null,
+          "badge": "Beta"
+        },
+        {
+          "key": "UISupportsAssistiveAccess",
+          "description": "A Boolean value that indicates if an iOS or iPadOS app supports Assistive Access.",
+          "propertyListName": "Supports Assistive Access"
+        },
+        {
+          "key": "UISupportsFullScreenInAssistiveAccess",
+          "description": "A Boolean value that indicates if an iOS or iPadOS app appears as full screen in Assistive Access.",
+          "propertyListName": "Supports full screen in Assistive Access"
+        },
+        {
+          "key": "NSAccentColorName",
+          "description": "The name of a color in an asset catalog to use for a target's global accent color.",
+          "propertyListName": null
+        },
+        {
+          "key": "NSWidgetBackgroundColorName",
+          "description": "The name of a color in an asset catalog to use for a widget's configuration interface.",
+          "propertyListName": null
+        }
+      ],
+      "externalLinks": [
+        {
+          "text": "auxiliaryTopLeftArea",
+          "target": "NSScreen.auxiliaryTopLeftArea property documentation"
+        },
+        {
+          "text": "auxiliaryTopRightArea",
+          "target": "NSScreen.auxiliaryTopRightArea property documentation"
+        },
+        {
+          "text": "NSScreen",
+          "target": "NSScreen class documentation"
+        },
+        {
+          "text": "visibleFrame",
+          "target": "NSScreen.visibleFrame property documentation"
+        },
+        {
+          "text": "Feedback Assistant",
+          "target": "https://feedbackassistant.apple.com"
+        }
+      ]
+    },
+    "visualElements": {
+      "images": [],
+      "diagrams": [],
+      "charts": [],
+      "icons": [
+        {
+          "iconId": "icon-apple-logo",
+          "description": "Apple logo icon in the navigation header and footer",
+          "context": "Brand identifier for Apple Developer website",
+          "color": "black (header), gray (footer)"
+        },
+        {
+          "iconId": "icon-search",
+          "description": "Magnifying glass search icon",
+          "context": "Search functionality trigger in header navigation",
+          "color": "white/light gray"
+        },
+        {
+          "iconId": "icon-document",
+          "description": "Document icon (rectangle with horizontal lines)",
+          "context": "Indicates documentation section and document items in sidebar",
+          "color": "blue"
+        },
+        {
+          "iconId": "icon-chevron-right",
+          "description": "Right-pointing chevron/arrow",
+          "context": "Indicates collapsed/expandable sections in sidebar navigation",
+          "color": "gray"
+        },
+        {
+          "iconId": "icon-chevron-down",
+          "description": "Down-pointing chevron/arrow",
+          "context": "Indicates expanded sections in sidebar navigation",
+          "color": "gray"
+        },
+        {
+          "iconId": "icon-filter",
+          "description": "Filter funnel icon",
+          "context": "Filter input field in sidebar",
+          "color": "gray"
+        },
+        {
+          "iconId": "icon-type-T",
+          "description": "Letter T icon",
+          "context": "Indicates type definitions in sidebar navigation",
+          "color": "purple"
+        }
+      ]
+    },
+    "accessibilityFeatures": {
+      "languageSelector": {
+        "present": true,
+        "options": ["Swift"],
+        "selectedLanguage": "Swift"
+      },
+      "themeSwitcher": {
+        "present": true,
+        "options": ["Light", "Dark", "Auto"],
+        "selectedTheme": "Auto"
+      },
+      "keyboardNavigation": "Implied through standard web accessibility",
+      "screenReaderSupport": "Implied through semantic HTML structure"
+    }
+  }
+}

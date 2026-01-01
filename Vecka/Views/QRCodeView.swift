@@ -32,18 +32,17 @@ struct QRCodeView: View {
                             .scaledToFill()
                             .frame(width: 80, height: 80)
                             .clipShape(Circle())
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
                     } else {
+                        // 情報デザイン: White background with black border, black text
                         Circle()
-                            .fill(LinearGradient(
-                                colors: [.blue, .cyan],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ))
+                            .fill(JohoColors.white)
                             .frame(width: 80, height: 80)
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
                             .overlay {
                                 Text(contact.initials)
-                                    .font(.system(size: 28, weight: .semibold))
-                                    .foregroundStyle(.white)
+                                    .font(.system(size: 28, weight: .semibold, design: .rounded))
+                                    .foregroundStyle(JohoColors.black)
                             }
                     }
 
@@ -58,16 +57,19 @@ struct QRCodeView: View {
                     }
                 }
 
-                // QR Code
+                // QR Code - 情報デザイン styling
                 if let qrImage = qrCodeImage {
                     Image(uiImage: qrImage)
                         .interpolation(.none)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 250, height: 250)
-                        .background(.white)
-                        .cornerRadius(12)
-                        .shadow(radius: 5)
+                        .background(JohoColors.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(JohoColors.black, lineWidth: 2)
+                        )
                 } else {
                     ProgressView()
                         .frame(width: 250, height: 250)
@@ -189,10 +191,17 @@ struct QRCodeScannerView: View {
 
                     if scanner.isScanning {
                         Text("Point camera at QR code")
-                            .font(.headline)
-                            .foregroundStyle(.white)
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
                             .padding()
-                            .glassCard(cornerRadius: 12, material: .ultraThinMaterial)
+                            .background(
+                                Squircle(cornerRadius: 12)
+                                    .fill(JohoColors.white)
+                            )
+                            .overlay(
+                                Squircle(cornerRadius: 12)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            )
                             .padding()
                     }
                 }

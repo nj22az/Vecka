@@ -1,0 +1,808 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "ContainerRelativeShape | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "ContainerRelativeShape",
+        "SwiftUI",
+        "Shape",
+        "InsettableShape",
+        "widget",
+        "container shape",
+        "iOS",
+        "macOS",
+        "watchOS",
+        "tvOS",
+        "visionOS"
+      ],
+      "summary": "Apple Developer Documentation for ContainerRelativeShape, a SwiftUI structure that provides a shape which automatically adapts to match the corner radius of its container. This is particularly useful for widgets where content needs to follow the rounded corners of the widget container."
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": 1440,
+          "height": 900,
+          "unit": "pixels"
+        },
+        "orientation": "landscape",
+        "backgroundColor": "#1C1C1E",
+        "layout": {
+          "type": "multi-column",
+          "columns": 3,
+          "margins": {
+            "top": 48,
+            "right": 24,
+            "bottom": 80,
+            "left": 24
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1440,
+              "height": 48
+            },
+            "zIndex": 100,
+            "content": {
+              "items": [
+                "Apple Developer Logo",
+                "News",
+                "Discover",
+                "Design",
+                "Develop",
+                "Distribute",
+                "Support",
+                "Account",
+                "Search"
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-breadcrumb",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 324,
+              "y": 72,
+              "width": 400,
+              "height": 20
+            },
+            "zIndex": 10,
+            "content": {
+              "path": ["SwiftUI", "ContainerRelativeShape"],
+              "separator": "/"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-sidebar-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 24,
+              "y": 72,
+              "width": 240,
+              "height": 600
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "hierarchical-menu",
+              "items": [
+                {
+                  "label": "All Technologies",
+                  "expandable": true
+                },
+                {
+                  "label": "SwiftUI",
+                  "expanded": true,
+                  "children": [
+                    {
+                      "label": "ContainerRelativeShape",
+                      "selected": true,
+                      "children": [
+                        {
+                          "label": "Creating the shape",
+                          "children": [
+                            {
+                              "label": "init()",
+                              "type": "method"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "label": "Drawing and graphics"
+                    }
+                  ]
+                },
+                {
+                  "label": "View layout",
+                  "children": [
+                    "Layout fundamentals",
+                    "Layout adjustments",
+                    "Custom layout",
+                    "Lists",
+                    "Tables",
+                    "View groupings",
+                    "Scroll views"
+                  ]
+                },
+                {
+                  "label": "Event handling",
+                  "children": [
+                    "Gestures",
+                    "Input events",
+                    "Clipboard",
+                    "Drag and drop",
+                    "Focus"
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-title",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 324,
+              "y": 96,
+              "width": 700,
+              "height": 48
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 1,
+              "text": "ContainerRelativeShape",
+              "prefix": "Structure",
+              "fontWeight": "bold",
+              "fontSize": 36
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-description",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 324,
+              "y": 152,
+              "width": 700,
+              "height": 48
+            },
+            "zIndex": 10,
+            "content": {
+              "text": "A shape that is replaced by an inset version of the current container shape. If no container shape was defined, is replaced by a rectangle.",
+              "fontSize": 16,
+              "fontWeight": "regular",
+              "textColor": "#FFFFFF"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-availability",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 324,
+              "y": 208,
+              "width": 700,
+              "height": 40
+            },
+            "zIndex": 10,
+            "content": {
+              "type": "platform-badges",
+              "platforms": [
+                {
+                  "name": "iOS",
+                  "minimumVersion": "14.0+"
+                },
+                {
+                  "name": "iPadOS",
+                  "minimumVersion": "14.0+"
+                },
+                {
+                  "name": "Mac Catalyst",
+                  "minimumVersion": "14.0+"
+                },
+                {
+                  "name": "macOS",
+                  "minimumVersion": "11.0+"
+                },
+                {
+                  "name": "tvOS",
+                  "minimumVersion": "14.0+"
+                },
+                {
+                  "name": "visionOS",
+                  "minimumVersion": "1.0+"
+                },
+                {
+                  "name": "watchOS",
+                  "minimumVersion": "7.0+"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-declaration",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 324,
+              "y": 260,
+              "width": 700,
+              "height": 56
+            },
+            "zIndex": 10,
+            "content": {
+              "language": "swift",
+              "code": "@frozen\nstruct ContainerRelativeShape",
+              "syntaxHighlighting": {
+                "attributes": [
+                  {
+                    "token": "@frozen",
+                    "color": "#FF7AB2"
+                  }
+                ],
+                "keywords": [
+                  {
+                    "token": "struct",
+                    "color": "#FF7AB2"
+                  }
+                ],
+                "types": [
+                  {
+                    "token": "ContainerRelativeShape",
+                    "color": "#DABAFF"
+                  }
+                ]
+              },
+              "backgroundColor": "#2C2C2E"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-topics-section",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 324,
+              "y": 340,
+              "width": 200,
+              "height": 32
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "Topics",
+              "fontWeight": "bold",
+              "fontSize": 24
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-creating-shape-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 324,
+              "y": 388,
+              "width": 200,
+              "height": 24
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Creating the shape",
+              "fontWeight": "semibold",
+              "fontSize": 18
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-init-method",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 324,
+              "y": 420,
+              "width": 100,
+              "height": 24
+            },
+            "zIndex": 10,
+            "content": {
+              "language": "swift",
+              "code": "init()",
+              "type": "method-signature",
+              "linkable": true,
+              "linkColor": "#6699FF"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-creating-shape-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-relationships-section",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 324,
+              "y": 468,
+              "width": 200,
+              "height": 32
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "Relationships",
+              "fontWeight": "bold",
+              "fontSize": 24
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-conforms-to-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 324,
+              "y": 516,
+              "width": 200,
+              "height": 24
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Conforms To",
+              "fontWeight": "semibold",
+              "fontSize": 18
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-protocol-conformances",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 324,
+              "y": 548,
+              "width": 300,
+              "height": 200
+            },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Animatable",
+                  "linkable": true,
+                  "linkColor": "#6699FF",
+                  "description": "A type that describes how to animate a property of a view"
+                },
+                {
+                  "text": "BitwiseCopyable",
+                  "linkable": true,
+                  "linkColor": "#6699FF",
+                  "description": "A type whose values can be copied bit-for-bit"
+                },
+                {
+                  "text": "Copyable",
+                  "linkable": true,
+                  "linkColor": "#6699FF",
+                  "description": "A type whose values can be implicitly or explicitly copied"
+                },
+                {
+                  "text": "InsettableShape",
+                  "linkable": true,
+                  "linkColor": "#6699FF",
+                  "description": "A shape type that is able to inset itself to produce another shape"
+                },
+                {
+                  "text": "Sendable",
+                  "linkable": true,
+                  "linkColor": "#6699FF",
+                  "description": "A type whose values can safely be passed across concurrency domains"
+                },
+                {
+                  "text": "SendableMetatype",
+                  "linkable": true,
+                  "linkColor": "#6699FF",
+                  "description": "A metatype that can be sent across concurrency domains"
+                },
+                {
+                  "text": "Shape",
+                  "linkable": true,
+                  "linkColor": "#6699FF",
+                  "description": "A 2D shape that you can use when drawing a view"
+                },
+                {
+                  "text": "View",
+                  "linkable": true,
+                  "linkColor": "#6699FF",
+                  "description": "A type that represents part of your app's user interface"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-conforms-to-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-see-also-section",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 324,
+              "y": 760,
+              "width": 200,
+              "height": 32
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "See Also",
+              "fontWeight": "bold",
+              "fontSize": 24
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-see-also-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 324,
+              "y": 808,
+              "width": 300,
+              "height": 24
+            },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Setting a container shape",
+              "fontWeight": "semibold",
+              "fontSize": 18
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-container-shape-method",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 324,
+              "y": 840,
+              "width": 400,
+              "height": 48
+            },
+            "zIndex": 10,
+            "content": {
+              "language": "swift",
+              "code": "func containerShape(_:)",
+              "type": "method-signature",
+              "linkable": true,
+              "linkColor": "#6699FF",
+              "description": "Sets the container shape to use for any container relative shape or concentric rectangle within this view."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-see-also-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-insettable-shape-protocol",
+            "elementType": "code",
+            "boundingBox": {
+              "x": 324,
+              "y": 900,
+              "width": 400,
+              "height": 48
+            },
+            "zIndex": 10,
+            "content": {
+              "language": "swift",
+              "code": "protocol InsettableShape",
+              "type": "protocol-declaration",
+              "linkable": true,
+              "linkColor": "#6699FF",
+              "description": "A shape type that is able to inset itself to produce another shape."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-see-also-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-footer",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 0,
+              "y": 980,
+              "width": 1440,
+              "height": 120
+            },
+            "zIndex": 5,
+            "content": {
+              "type": "footer",
+              "sections": [
+                {
+                  "heading": "Platforms",
+                  "items": [
+                    "iOS",
+                    "iPadOS",
+                    "macOS",
+                    "tvOS",
+                    "visionOS",
+                    "watchOS"
+                  ]
+                },
+                {
+                  "heading": "Tools",
+                  "items": [
+                    "Swift",
+                    "SwiftUI",
+                    "Swift Playground",
+                    "TestFlight",
+                    "Xcode",
+                    "Xcode Cloud",
+                    "SF Symbols"
+                  ]
+                },
+                {
+                  "heading": "Topics & Technologies",
+                  "items": [
+                    "Accessibility",
+                    "App Extension",
+                    "Design",
+                    "Distribution"
+                  ]
+                },
+                {
+                  "heading": "Resources",
+                  "items": [
+                    "Documentation",
+                    "Tutorials",
+                    "Downloads",
+                    "Forums",
+                    "Videos"
+                  ]
+                }
+              ],
+              "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+              "links": [
+                "Terms of Use",
+                "Privacy Policy",
+                "Agreements and Guidelines"
+              ],
+              "feedbackNote": "To submit feedback on documentation, visit Feedback Assistant."
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation",
+          "page1-breadcrumb",
+          "page1-main-title",
+          "page1-description",
+          "page1-platform-availability",
+          "page1-declaration",
+          "page1-topics-section",
+          "page1-creating-shape-heading",
+          "page1-init-method",
+          "page1-relationships-section",
+          "page1-conforms-to-heading",
+          "page1-protocol-conformances",
+          "page1-see-also-section",
+          "page1-see-also-heading",
+          "page1-container-shape-method",
+          "page1-insettable-shape-protocol",
+          "page1-footer"
+        ],
+        "pageSummary": "Apple Developer Documentation page for ContainerRelativeShape, a SwiftUI structure that automatically adapts its shape to match the container's corner radius. The page describes the structure, its platform availability, initialization, protocol conformances, and related APIs."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": false,
+        "entries": []
+      },
+      "runningHeaders": "Documentation - Apple Developer",
+      "runningFooters": "Copyright 2025 Apple Inc.",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "overview",
+          "title": "ContainerRelativeShape Overview",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Introduction to ContainerRelativeShape including its declaration, description, and platform availability"
+        },
+        {
+          "sectionId": "topics",
+          "title": "Topics",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "creating-the-shape",
+              "title": "Creating the shape",
+              "summary": "Documents the init() initializer for creating ContainerRelativeShape instances"
+            }
+          ],
+          "summary": "API reference topics for ContainerRelativeShape"
+        },
+        {
+          "sectionId": "relationships",
+          "title": "Relationships",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "conforms-to",
+              "title": "Conforms To",
+              "summary": "Lists all protocols that ContainerRelativeShape conforms to"
+            }
+          ],
+          "summary": "Protocol conformances and type relationships"
+        },
+        {
+          "sectionId": "see-also",
+          "title": "See Also",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Related APIs for setting container shapes"
+        }
+      ],
+      "documentFlow": "The document follows Apple's standard API reference format: starting with the type declaration and description, followed by platform availability, then diving into topics (initialization), relationships (protocol conformances), and finally related APIs in the See Also section."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "ContainerRelativeShape",
+          "definition": "A SwiftUI structure that provides a shape which automatically adapts to match an inset version of the current container's shape. Falls back to a rectangle if no container shape is defined.",
+          "occurrences": 5
+        },
+        {
+          "term": "@frozen",
+          "definition": "A Swift attribute indicating the struct's stored properties are fixed and won't change in future versions, enabling compiler optimizations.",
+          "occurrences": 1
+        },
+        {
+          "term": "InsettableShape",
+          "definition": "A protocol for shape types that can inset themselves to produce another shape.",
+          "occurrences": 2
+        },
+        {
+          "term": "containerShape(_:)",
+          "definition": "A view modifier function that sets the container shape to use for any container relative shape or concentric rectangle within a view.",
+          "occurrences": 2
+        },
+        {
+          "term": "Shape",
+          "definition": "A SwiftUI protocol representing a 2D shape that can be used when drawing a view.",
+          "occurrences": 1
+        }
+      ],
+      "keyFindings": [
+        "ContainerRelativeShape automatically adapts to match the corner radius of its container",
+        "If no container shape is defined, ContainerRelativeShape falls back to a simple rectangle",
+        "The structure is marked as @frozen for performance optimization",
+        "Available on all Apple platforms: iOS 14.0+, iPadOS 14.0+, macOS 11.0+, tvOS 14.0+, visionOS 1.0+, watchOS 7.0+",
+        "Conforms to 8 protocols including Shape, View, InsettableShape, and Animatable",
+        "Can be customized using the containerShape(_:) view modifier"
+      ],
+      "technicalSpecifications": {
+        "structureName": "ContainerRelativeShape",
+        "module": "SwiftUI",
+        "declaration": "@frozen struct ContainerRelativeShape",
+        "platformAvailability": {
+          "iOS": "14.0+",
+          "iPadOS": "14.0+",
+          "macCatalyst": "14.0+",
+          "macOS": "11.0+",
+          "tvOS": "14.0+",
+          "visionOS": "1.0+",
+          "watchOS": "7.0+"
+        },
+        "protocolConformances": [
+          "Animatable",
+          "BitwiseCopyable",
+          "Copyable",
+          "InsettableShape",
+          "Sendable",
+          "SendableMetatype",
+          "Shape",
+          "View"
+        ],
+        "initializers": [
+          {
+            "signature": "init()",
+            "description": "Creates a new container relative shape"
+          }
+        ],
+        "relatedAPIs": [
+          {
+            "name": "containerShape(_:)",
+            "type": "instance method",
+            "description": "Sets the container shape to use for any container relative shape or concentric rectangle within this view"
+          },
+          {
+            "name": "InsettableShape",
+            "type": "protocol",
+            "description": "A shape type that is able to inset itself to produce another shape"
+          },
+          {
+            "name": "OffsetShape",
+            "type": "structure",
+            "description": "Related shape transformation structure"
+          },
+          {
+            "name": "TransformedShape",
+            "type": "structure",
+            "description": "Related shape transformation structure"
+          }
+        ]
+      },
+      "designDecisions": [
+        {
+          "decision": "@frozen attribute",
+          "rationale": "Enables binary compatibility and compiler optimizations by guaranteeing the struct's layout won't change"
+        },
+        {
+          "decision": "Rectangle fallback",
+          "rationale": "Provides sensible default behavior when used outside of a container that defines its shape"
+        },
+        {
+          "decision": "InsettableShape conformance",
+          "rationale": "Allows the shape to be inset, which is essential for creating concentric shapes that follow container corners"
+        }
+      ],
+      "widgetUsage": {
+        "description": "ContainerRelativeShape is particularly useful in WidgetKit widgets where content elements need to follow the rounded corners of the widget container",
+        "commonPatterns": [
+          {
+            "pattern": "Background clipping",
+            "code": "content.clipShape(ContainerRelativeShape())",
+            "description": "Clips content to match the widget's corner radius"
+          },
+          {
+            "pattern": "Inset backgrounds",
+            "code": "ContainerRelativeShape().inset(by: 4).fill(.secondary)",
+            "description": "Creates an inset background that follows the container shape with padding"
+          },
+          {
+            "pattern": "Stroke borders",
+            "code": "ContainerRelativeShape().stroke(lineWidth: 2)",
+            "description": "Draws a border that follows the container's corner radius"
+          }
+        ],
+        "benefits": [
+          "Automatically adapts to different widget sizes and corner radii",
+          "Eliminates hardcoded corner radius values",
+          "Ensures visual consistency across all Apple platforms",
+          "Future-proofs designs against potential changes in widget corner radii"
+        ]
+      }
+    }
+  }
+}

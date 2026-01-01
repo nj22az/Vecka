@@ -1,0 +1,998 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Asset Management and Dark Mode Support - Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 2,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "asset management",
+        "asset catalog",
+        "dark mode",
+        "appearance",
+        "colors",
+        "images",
+        "app icons",
+        "Xcode",
+        "iOS",
+        "macOS",
+        "SwiftUI",
+        "UIKit",
+        "widget"
+      ],
+      "summary": "Comprehensive Apple Developer documentation covering asset management in Xcode including asset catalogs for images, colors, app icons, and data files. Includes detailed guidance on supporting Dark Mode with adaptive colors, appearance-specific image variants, and proper implementation methods for automatic appearance transitions."
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": { "width": 1920, "height": 3500, "unit": "pixels" },
+        "orientation": "portrait",
+        "backgroundColor": "#1C1C1E",
+        "layout": {
+          "type": "multi-column",
+          "columns": 2,
+          "margins": { "top": 60, "right": 200, "bottom": 80, "left": 280 },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-nav",
+            "elementType": "navigation",
+            "boundingBox": { "x": 0, "y": 0, "width": 1920, "height": 60 },
+            "zIndex": 100,
+            "content": {
+              "type": "navigation-bar",
+              "items": ["News", "Discover", "Design", "Develop", "Distribute", "Support", "Account"],
+              "logo": "Apple Developer logo",
+              "backgroundColor": "#000000"
+            }
+          },
+          {
+            "elementId": "page1-sidebar",
+            "elementType": "navigation",
+            "boundingBox": { "x": 0, "y": 60, "width": 280, "height": 3200 },
+            "zIndex": 50,
+            "content": {
+              "type": "hierarchical-navigation",
+              "sections": [
+                {
+                  "title": "All Technologies",
+                  "items": ["Xcode"]
+                },
+                {
+                  "title": "Asset management",
+                  "expanded": true,
+                  "subsections": [
+                    {
+                      "title": "App icons and launch screen",
+                      "items": [
+                        "Creating your app icon using Icon Composer",
+                        "Configuring your app to use alternate app icons",
+                        "Configuring your app icon using an asset catalog",
+                        "Specifying your app's launch screen"
+                      ]
+                    },
+                    {
+                      "title": "Asset catalogs",
+                      "items": ["Managing assets with asset catalogs"]
+                    },
+                    {
+                      "title": "Images",
+                      "items": [
+                        "Adding images to your Xcode project",
+                        "Creating custom symbol images for your app"
+                      ]
+                    },
+                    {
+                      "title": "Colors",
+                      "items": [
+                        "Specifying your app's color scheme",
+                        "Supporting Dark Mode in your interface"
+                      ]
+                    },
+                    {
+                      "title": "Augmented reality assets",
+                      "items": [
+                        "Detecting Images in an AR Experience",
+                        "Scanning and Detecting 3D Objects",
+                        "Composing interactive 3D content with RealityKit and Reality Composer Pro"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "elementId": "page1-breadcrumb",
+            "elementType": "navigation",
+            "boundingBox": { "x": 300, "y": 80, "width": 400, "height": 24 },
+            "zIndex": 10,
+            "content": {
+              "type": "breadcrumb",
+              "path": ["Xcode", "Asset management"]
+            }
+          },
+          {
+            "elementId": "page1-title",
+            "elementType": "heading",
+            "boundingBox": { "x": 300, "y": 120, "width": 800, "height": 60 },
+            "zIndex": 10,
+            "content": {
+              "level": 1,
+              "text": "Asset management",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 48,
+              "fontWeight": "bold",
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page1-subtitle",
+            "elementType": "paragraph",
+            "boundingBox": { "x": 300, "y": 190, "width": 800, "height": 60 },
+            "zIndex": 10,
+            "content": {
+              "text": "Add app icons, images, strings, data files, machine learning models, and other resources to your projects, and manage how you load them at runtime.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 18,
+              "color": "#A1A1A6"
+            }
+          },
+          {
+            "elementId": "page1-overview-heading",
+            "elementType": "heading",
+            "boundingBox": { "x": 300, "y": 280, "width": 200, "height": 36 },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "Overview",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 28,
+              "fontWeight": "semibold",
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page1-overview-text-1",
+            "elementType": "paragraph",
+            "boundingBox": { "x": 300, "y": 330, "width": 800, "height": 80 },
+            "zIndex": 10,
+            "content": {
+              "text": "Apps rely on many types of assets to create a rich, dynamic, and visually engaging user experience. Xcode provides tools and settings to help you add, organize, and optimize the different asset types your app uses.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 16,
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page1-overview-text-2",
+            "elementType": "paragraph",
+            "boundingBox": { "x": 300, "y": 420, "width": 800, "height": 80 },
+            "zIndex": 10,
+            "content": {
+              "text": "Xcode simplifies managing most types of assets with asset catalogs. Use asset catalogs to organize and manage resources such as images, colors, app icons, textures, stickers, and data.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 16,
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page1-asset-type-icons",
+            "elementType": "diagram",
+            "boundingBox": { "x": 300, "y": 520, "width": 500, "height": 100 },
+            "zIndex": 10,
+            "content": {
+              "diagramType": "icon-grid",
+              "title": "Asset Types Overview",
+              "description": "Three category icons representing the main asset types manageable through Xcode asset catalogs",
+              "nodes": [
+                {
+                  "nodeId": "icon-images",
+                  "label": "Images",
+                  "shape": "rounded-rectangle",
+                  "style": { "fillColor": "#2C2C2E", "borderColor": "#3A3A3C", "textColor": "#FFFFFF" },
+                  "position": { "x": 0, "y": 0 },
+                  "icon": "photo.fill",
+                  "semanticRole": "Represents image assets including photos, illustrations, and graphics"
+                },
+                {
+                  "nodeId": "icon-colors",
+                  "label": "Colors",
+                  "shape": "rounded-rectangle",
+                  "style": { "fillColor": "#2C2C2E", "borderColor": "#3A3A3C", "textColor": "#FFFFFF" },
+                  "position": { "x": 150, "y": 0 },
+                  "icon": "paintpalette.fill",
+                  "semanticRole": "Represents color sets with appearance variants"
+                },
+                {
+                  "nodeId": "icon-data",
+                  "label": "Data",
+                  "shape": "rounded-rectangle",
+                  "style": { "fillColor": "#2C2C2E", "borderColor": "#3A3A3C", "textColor": "#FFFFFF" },
+                  "position": { "x": 300, "y": 0 },
+                  "icon": "doc.text.fill",
+                  "semanticRole": "Represents data files including JSON, CSV, and other data formats"
+                }
+              ],
+              "narrativeWalkthrough": "The documentation displays three rounded rectangular icons representing the primary asset categories: Images (with photo icon), Colors (with paint palette icon), and Data (with document icon). These illustrate that asset catalogs can manage visual assets, color definitions, and arbitrary data files."
+            }
+          },
+          {
+            "elementId": "page1-interactive-editors",
+            "elementType": "paragraph",
+            "boundingBox": { "x": 300, "y": 640, "width": 800, "height": 60 },
+            "zIndex": 10,
+            "content": {
+              "text": "Xcode also provides interactive editors for certain types of assets, like particle effects, that let you experiment, make changes, and see the results immediately.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 16,
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page1-topics-heading",
+            "elementType": "heading",
+            "boundingBox": { "x": 300, "y": 740, "width": 200, "height": 36 },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "Topics",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 28,
+              "fontWeight": "semibold",
+              "color": "#FFFFFF"
+            }
+          }
+        ],
+        "readingOrder": [
+          "page1-header-nav",
+          "page1-breadcrumb",
+          "page1-title",
+          "page1-subtitle",
+          "page1-overview-heading",
+          "page1-overview-text-1",
+          "page1-overview-text-2",
+          "page1-asset-type-icons",
+          "page1-interactive-editors",
+          "page1-topics-heading"
+        ],
+        "pageSummary": "The first page introduces Xcode's asset management capabilities, explaining that asset catalogs are the primary mechanism for organizing images, colors, app icons, textures, stickers, and data. The page serves as a hub linking to detailed documentation on specific asset types and management techniques."
+      },
+      {
+        "pageNumber": 2,
+        "dimensions": { "width": 1920, "height": 4500, "unit": "pixels" },
+        "orientation": "portrait",
+        "backgroundColor": "#1C1C1E",
+        "layout": {
+          "type": "multi-column",
+          "columns": 2,
+          "margins": { "top": 60, "right": 200, "bottom": 80, "left": 280 },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page2-title",
+            "elementType": "heading",
+            "boundingBox": { "x": 300, "y": 120, "width": 800, "height": 60 },
+            "zIndex": 10,
+            "content": {
+              "level": 1,
+              "text": "Supporting Dark Mode in your interface",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 48,
+              "fontWeight": "bold",
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page2-subtitle",
+            "elementType": "paragraph",
+            "boundingBox": { "x": 300, "y": 190, "width": 800, "height": 60 },
+            "zIndex": 10,
+            "content": {
+              "text": "Update colors, images, and behaviors so that your app adapts automatically when Dark Mode is active.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 18,
+              "color": "#A1A1A6"
+            }
+          },
+          {
+            "elementId": "page2-overview-heading",
+            "elementType": "heading",
+            "boundingBox": { "x": 300, "y": 280, "width": 200, "height": 36 },
+            "zIndex": 10,
+            "content": {
+              "level": 2,
+              "text": "Overview",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 28,
+              "fontWeight": "semibold",
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page2-overview-intro",
+            "elementType": "paragraph",
+            "boundingBox": { "x": 300, "y": 330, "width": 800, "height": 120 },
+            "zIndex": 10,
+            "content": {
+              "text": "In macOS and iOS, users can choose to adopt a system-wide light or dark appearance. The dark appearance, known as Dark Mode, implements an interface style that many apps already adopt. Users choose the aesthetic they prefer, and can also choose to toggle their interface based on ambient lighting conditions or a specific schedule.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 16,
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page2-requirement-statement",
+            "elementType": "paragraph",
+            "boundingBox": { "x": 300, "y": 460, "width": 800, "height": 80 },
+            "zIndex": 10,
+            "content": {
+              "text": "All apps should support both light and dark interface styles, but might perform better with a specific appearance in some places. For example, you might always adopt a light appearance for printed content.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 16,
+              "fontWeight": "semibold",
+              "color": "#FFFFFF",
+              "emphasis": "key-requirement"
+            }
+          },
+          {
+            "elementId": "page2-testing-guidance",
+            "elementType": "paragraph",
+            "boundingBox": { "x": 300, "y": 550, "width": 800, "height": 140 },
+            "zIndex": 10,
+            "content": {
+              "text": "Before you change your code, turn on Dark Mode and see how your app responds. The system does a lot of the work for you, and if your app uses standard views and controls, you might not need to make many changes. Standard views and controls automatically update their appearance to match the current interface style. If you already use color and image assets, you can add dark variants without changing your code.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 16,
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page2-xcode-interface-diagram",
+            "elementType": "image",
+            "boundingBox": { "x": 300, "y": 710, "width": 800, "height": 400 },
+            "zIndex": 10,
+            "content": {
+              "imageType": "screenshot",
+              "description": "Xcode asset catalog editor showing color set configuration with appearance variants. The interface displays the asset catalog navigator on the left, a color set named 'customControlColor' selected in the center, and the Attributes Inspector on the right showing appearance configuration options.",
+              "subjects": [
+                "Xcode asset catalog navigator",
+                "Color Set editor",
+                "Attributes Inspector",
+                "Appearance variant selector"
+              ],
+              "composition": "Three-panel interface layout typical of Xcode, with navigator (left), editor (center), and inspector (right)",
+              "colorPalette": ["#1C1C1E", "#2C2C2E", "#3A3A3C", "#007AFF", "#FFFFFF"],
+              "technicalDetails": "Xcode asset editor in dark appearance, showing the Appearances dropdown set to 'Any, Dark' with corresponding color wells for each appearance variant",
+              "textInImage": [
+                "Assets",
+                "customControlColor",
+                "Any Appearance",
+                "Dark Appearance",
+                "Appearances: Any, Dark",
+                "High Contrast",
+                "Color Set",
+                "Attributes Inspector"
+              ],
+              "contextualRelevance": "Demonstrates how to configure color assets with appearance variants in Xcode's asset catalog editor",
+              "annotatedFeatures": [
+                {
+                  "feature": "Appearances dropdown",
+                  "description": "Selector showing 'Any, Dark' configuration for creating appearance-specific color variants"
+                },
+                {
+                  "feature": "Color wells",
+                  "description": "Visual editors for defining specific color values for each appearance"
+                },
+                {
+                  "feature": "High Contrast checkbox",
+                  "description": "Option to add high-contrast variants for accessibility"
+                }
+              ]
+            }
+          },
+          {
+            "elementId": "page2-adaptive-colors-heading",
+            "elementType": "heading",
+            "boundingBox": { "x": 300, "y": 1130, "width": 500, "height": 32 },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Choose adaptive colors for your UI",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 24,
+              "fontWeight": "semibold",
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page2-adaptive-colors-intro",
+            "elementType": "paragraph",
+            "boundingBox": { "x": 300, "y": 1175, "width": 800, "height": 100 },
+            "zIndex": 10,
+            "content": {
+              "text": "Choose colors that adapt automatically to the underlying interface style. Light and dark interfaces use very different color palettes. Colors that work well in a light appearance may be hard to see in a dark appearance, and vice versa. An adaptive color object returns different color values for different interface styles.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 16,
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page2-adaptive-colors-methods",
+            "elementType": "list",
+            "boundingBox": { "x": 300, "y": 1290, "width": 800, "height": 200 },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "introduction": "There are two ways to create adaptive color objects:",
+              "items": [
+                {
+                  "text": "Choose semantic colors instead of fixed color values. When configuring UI elements, choose colors with names like labelColor. These semantic colors convey the intended use of the color, rather than specific color values. When you use them for their intended purpose, they render with color values appropriate for the current settings. For a complete list of semantic color names, see NSColor and UIColor.",
+                  "emphasis": "semantic-colors"
+                },
+                {
+                  "text": "Define custom colors in your asset catalog. When you need a specific color, create it as a color asset. In your asset, specify different color values for both light and dark appearances. You can also specify high-contrast versions of your colors.",
+                  "emphasis": "asset-catalog-colors"
+                }
+              ]
+            }
+          },
+          {
+            "elementId": "page2-color-code-macos",
+            "elementType": "code",
+            "boundingBox": { "x": 300, "y": 1510, "width": 800, "height": 80 },
+            "zIndex": 10,
+            "content": {
+              "language": "Swift",
+              "platform": "macOS",
+              "code": "// macOS\nlet aColor = NSColor(named: NSColor.Name(\"customControlColor\"))",
+              "purpose": "Load a color from an asset catalog by name in macOS",
+              "syntaxHighlighting": {
+                "comments": "#6A737D",
+                "keywords": "#FF7B72",
+                "strings": "#A5D6FF",
+                "types": "#79C0FF"
+              }
+            }
+          },
+          {
+            "elementId": "page2-color-code-ios",
+            "elementType": "code",
+            "boundingBox": { "x": 300, "y": 1600, "width": 800, "height": 60 },
+            "zIndex": 10,
+            "content": {
+              "language": "Swift",
+              "platform": "iOS",
+              "code": "// iOS\nlet aColor = UIColor(named: \"customControlColor\")",
+              "purpose": "Load a color from an asset catalog by name in iOS",
+              "syntaxHighlighting": {
+                "comments": "#6A737D",
+                "keywords": "#FF7B72",
+                "strings": "#A5D6FF",
+                "types": "#79C0FF"
+              }
+            }
+          },
+          {
+            "elementId": "page2-color-behavior-explanation",
+            "elementType": "paragraph",
+            "boundingBox": { "x": 300, "y": 1680, "width": 800, "height": 120 },
+            "zIndex": 10,
+            "content": {
+              "text": "When you create a color object from a color asset, you do not have to recreate that object when the current appearance changes. Each time you set the fill or stroke color for drawing, the color object loads the color variant that matches the current environment settings. The same is true for semantic colors such as labelColor, which adapt automatically to the current environment. By contrast, color objects you create using fixed component values do not adapt; you must create a new color object instead.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 16,
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page2-user-content-note",
+            "elementType": "annotation",
+            "boundingBox": { "x": 300, "y": 1820, "width": 800, "height": 100 },
+            "zIndex": 10,
+            "content": {
+              "annotationType": "note",
+              "title": "Note",
+              "text": "For the user's content, always preserve colors that the user explicitly chooses. For example, a painting app should not try to change colors that the user applies to their canvas. Use adaptable colors primarily in the views and controls for your app's chrome.",
+              "backgroundColor": "#2C2C2E",
+              "borderColor": "#3A3A3C"
+            }
+          },
+          {
+            "elementId": "page2-images-heading",
+            "elementType": "heading",
+            "boundingBox": { "x": 300, "y": 1940, "width": 500, "height": 32 },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Create images for all appearances",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 24,
+              "fontWeight": "semibold",
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page2-images-guidance",
+            "elementType": "paragraph",
+            "boundingBox": { "x": 300, "y": 1985, "width": 800, "height": 140 },
+            "zIndex": 10,
+            "content": {
+              "text": "Make sure the images in your interface look good in both light and dark appearances. Interfaces use images in many places, including in buttons, image views, and custom views and controls. If an image is difficult to see when changing appearances, provide a new image asset that looks good in the other appearance. Better yet, use a symbol image or template image, which define only the shape to render and therefore do not require separate images for light, dark, and high-contrast environments.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 16,
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page2-custom-views-heading",
+            "elementType": "heading",
+            "boundingBox": { "x": 300, "y": 2150, "width": 600, "height": 32 },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Update custom views using specific methods",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 24,
+              "fontWeight": "semibold",
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page2-custom-views-intro",
+            "elementType": "paragraph",
+            "boundingBox": { "x": 300, "y": 2195, "width": 800, "height": 100 },
+            "zIndex": 10,
+            "content": {
+              "text": "When the user changes the system appearance, the system automatically asks each window and view to redraw itself. During this process, the system calls several well-known methods for both macOS and iOS, listed in the following table, to update your content. The system updates the trait environment before calling these methods, so if you make all of your appearance-sensitive changes in these methods, your app updates itself correctly.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 16,
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page2-methods-table",
+            "elementType": "table",
+            "boundingBox": { "x": 300, "y": 2310, "width": 800, "height": 400 },
+            "zIndex": 10,
+            "content": {
+              "tableTitle": "Appearance Update Methods by Class",
+              "columnCount": 2,
+              "rowCount": 5,
+              "headers": ["Class", "Appropriate methods"],
+              "rows": [
+                {
+                  "rowIndex": 0,
+                  "cells": [
+                    { "columnIndex": 0, "content": "NSView", "colspan": 1, "rowspan": 1, "formatting": { "bold": true, "alignment": "left" } },
+                    { "columnIndex": 1, "content": "updateLayer()\ndraw(_:)\nlayout()\nupdateConstraints()", "colspan": 1, "rowspan": 1, "formatting": { "bold": false, "alignment": "left", "fontFamily": "SF Mono" } }
+                  ]
+                },
+                {
+                  "rowIndex": 1,
+                  "cells": [
+                    { "columnIndex": 0, "content": "UIView", "colspan": 1, "rowspan": 1, "formatting": { "bold": true, "alignment": "left" } },
+                    { "columnIndex": 1, "content": "traitCollectionDidChange(_:)\nlayoutSubviews()\ndraw(_:)\nupdateConstraints()\ntintColorDidChange()", "colspan": 1, "rowspan": 1, "formatting": { "bold": false, "alignment": "left", "fontFamily": "SF Mono" } }
+                  ]
+                },
+                {
+                  "rowIndex": 2,
+                  "cells": [
+                    { "columnIndex": 0, "content": "UIViewController", "colspan": 1, "rowspan": 1, "formatting": { "bold": true, "alignment": "left" } },
+                    { "columnIndex": 1, "content": "traitCollectionDidChange(_:)\nupdateViewConstraints()\nviewWillLayoutSubviews()\nviewDidLayoutSubviews()", "colspan": 1, "rowspan": 1, "formatting": { "bold": false, "alignment": "left", "fontFamily": "SF Mono" } }
+                  ]
+                },
+                {
+                  "rowIndex": 3,
+                  "cells": [
+                    { "columnIndex": 0, "content": "UIPresentationController", "colspan": 1, "rowspan": 1, "formatting": { "bold": true, "alignment": "left" } },
+                    { "columnIndex": 1, "content": "traitCollectionDidChange(_:)\ncontainerViewWillLayoutSubviews()\ncontainerViewDidLayoutSubviews()", "colspan": 1, "rowspan": 1, "formatting": { "bold": false, "alignment": "left", "fontFamily": "SF Mono" } }
+                  ]
+                }
+              ],
+              "tableSummary": "Reference table mapping UIKit and AppKit classes to their appropriate methods for handling appearance changes. These methods are called automatically by the system when the interface style changes, making them the correct locations for appearance-sensitive code."
+            }
+          },
+          {
+            "elementId": "page2-update-layer-example",
+            "elementType": "code",
+            "boundingBox": { "x": 300, "y": 2730, "width": 800, "height": 120 },
+            "zIndex": 10,
+            "content": {
+              "language": "Swift",
+              "platform": "macOS",
+              "code": "override func updateLayer() {\n    self.layer?.backgroundColor = NSColor.textBackgroundColor.cgColor\n    // Other updates.\n}",
+              "purpose": "Demonstrates moving background color assignment to updateLayer() method so it refreshes when appearance changes",
+              "explanation": "Setting background color at creation time leaves the view with a fixed color. Moving the code to updateLayer() ensures the background color refreshes whenever the environment changes."
+            }
+          },
+          {
+            "elementId": "page2-observation-example",
+            "elementType": "code",
+            "boundingBox": { "x": 300, "y": 2870, "width": 800, "height": 200 },
+            "zIndex": 10,
+            "content": {
+              "language": "Swift",
+              "platform": "macOS",
+              "code": "// Use a property to keep a reference to the key-value observation object.\nvar observation: NSKeyValueObservation?\n\nfunc applicationDidFinishLaunching(_ aNotification: Notification) {\n    observation = NSApp.observe(\\.effectiveAppearance) { (app, _) in\n        app.effectiveAppearance.performAsCurrentDrawingAppearance {\n            // Invoke your non-view code that needs to be aware of the\n            // change in appearance.\n        }\n    }\n}",
+              "purpose": "Shows how to observe appearance changes for non-view code using KVO on effectiveAppearance property",
+              "explanation": "For code not part of an NSView that cannot use the preferred methods, observe the app's effectiveAppearance property and update manually."
+            }
+          },
+          {
+            "elementId": "page2-visual-effects-heading",
+            "elementType": "heading",
+            "boundingBox": { "x": 300, "y": 3090, "width": 700, "height": 32 },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Choose visual-effect materials based on the intended usage",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 24,
+              "fontWeight": "semibold",
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page2-visual-effects-explanation",
+            "elementType": "paragraph",
+            "boundingBox": { "x": 300, "y": 3135, "width": 800, "height": 140 },
+            "zIndex": 10,
+            "content": {
+              "text": "Visual-effect views add transparency to your background views, which gives your UI more visual depth than if the backgrounds were opaque. To ensure that your content remains visible, visual-effect views blur the background content subtly and add vibrancy effects to adjust the colors of your foreground content automatically. The system updates these effects dynamically, ensuring that your app's content remains visible when the underlying content changes.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 16,
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page2-visual-effects-list",
+            "elementType": "list",
+            "boundingBox": { "x": 300, "y": 3290, "width": 800, "height": 200 },
+            "zIndex": 10,
+            "content": {
+              "listType": "unordered",
+              "introduction": "Use visual-effect views in your interface as container views, and add subviews to them to represent your foreground content. Configure each visual-effect view with the material or effects that are appropriate for the appearance you want:",
+              "items": [
+                {
+                  "text": "In macOS, configure an NSVisualEffectView with the appropriate material based on how you use that view in your interface. For example, when using a visual-effect view as the background for a sidebar interface, configure it with the NSVisualEffectView.Material.sidebar material.",
+                  "platform": "macOS"
+                },
+                {
+                  "text": "In iOS, configure a UIVisualEffectView with specific vibrancy and blur effects to create the appearance you want. Blur effects define the apparent thickness of the background view, and vibrancy effects adjust the appearance for specific types of content to ensure that they remain visible. For example, when your view contains labels, choose the UIVibrancyEffectStyle.label style or one of the other label-related vibrancy options.",
+                  "platform": "iOS"
+                }
+              ]
+            }
+          },
+          {
+            "elementId": "page2-deprecated-materials-warning",
+            "elementType": "annotation",
+            "boundingBox": { "x": 300, "y": 3510, "width": 800, "height": 80 },
+            "zIndex": 10,
+            "content": {
+              "annotationType": "important",
+              "title": "Important",
+              "text": "Do not use deprecated materials, such as NSVisualEffectView.Material.light, in macOS 10.14 and later because those materials do not adapt to Dark Mode. Instead, choose newer materials that adapt correctly to the environment.",
+              "backgroundColor": "#3A2E00",
+              "borderColor": "#FFD60A"
+            }
+          },
+          {
+            "elementId": "page2-opt-out-heading",
+            "elementType": "heading",
+            "boundingBox": { "x": 300, "y": 3610, "width": 400, "height": 32 },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Opt out only as needed",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 24,
+              "fontWeight": "semibold",
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page2-opt-out-explanation",
+            "elementType": "paragraph",
+            "boundingBox": { "x": 300, "y": 3655, "width": 800, "height": 100 },
+            "zIndex": 10,
+            "content": {
+              "text": "Make every effort to adopt both light and dark appearances in your apps. If supporting one appearance makes no sense for all or part of your app, you can opt out of appearance changes in the appropriate windows or views. For example, you might always use a light appearance for your app's printing views.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 16,
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page2-performance-heading",
+            "elementType": "heading",
+            "boundingBox": { "x": 300, "y": 3780, "width": 600, "height": 32 },
+            "zIndex": 10,
+            "content": {
+              "level": 3,
+              "text": "Avoid expensive tasks during appearance transitions",
+              "fontFamily": "SF Pro Display",
+              "fontSize": 24,
+              "fontWeight": "semibold",
+              "color": "#FFFFFF"
+            }
+          },
+          {
+            "elementId": "page2-performance-explanation",
+            "elementType": "paragraph",
+            "boundingBox": { "x": 300, "y": 3825, "width": 800, "height": 120 },
+            "zIndex": 10,
+            "content": {
+              "text": "When the user toggles between light and dark interfaces, the system asks your app to redraw all of its content. Although the system manages the drawing process, it relies on your custom code at several points during that process. Your code must be as quick as possible and not perform tasks unrelated to the appearance change. In macOS, AppKit usually creates transition animations during appearance changes, but it aborts those animations if your app takes too long to redraw itself.",
+              "fontFamily": "SF Pro Text",
+              "fontSize": 16,
+              "color": "#FFFFFF"
+            }
+          }
+        ],
+        "readingOrder": [
+          "page2-title",
+          "page2-subtitle",
+          "page2-overview-heading",
+          "page2-overview-intro",
+          "page2-requirement-statement",
+          "page2-testing-guidance",
+          "page2-xcode-interface-diagram",
+          "page2-adaptive-colors-heading",
+          "page2-adaptive-colors-intro",
+          "page2-adaptive-colors-methods",
+          "page2-color-code-macos",
+          "page2-color-code-ios",
+          "page2-color-behavior-explanation",
+          "page2-user-content-note",
+          "page2-images-heading",
+          "page2-images-guidance",
+          "page2-custom-views-heading",
+          "page2-custom-views-intro",
+          "page2-methods-table",
+          "page2-update-layer-example",
+          "page2-observation-example",
+          "page2-visual-effects-heading",
+          "page2-visual-effects-explanation",
+          "page2-visual-effects-list",
+          "page2-deprecated-materials-warning",
+          "page2-opt-out-heading",
+          "page2-opt-out-explanation",
+          "page2-performance-heading",
+          "page2-performance-explanation"
+        ],
+        "pageSummary": "The second page provides comprehensive guidance on implementing Dark Mode support. It covers adaptive color selection using semantic colors and asset catalogs, creating appearance-specific image variants, proper methods for updating custom views during appearance transitions, visual effect material configuration, opt-out strategies, and performance considerations during appearance changes."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": true,
+        "entries": [
+          { "title": "Asset management", "page": 1 },
+          { "title": "Supporting Dark Mode in your interface", "page": 2 }
+        ]
+      },
+      "runningHeaders": "Apple Developer Documentation navigation",
+      "runningFooters": "Copyright 2025 Apple Inc. All rights reserved.",
+      "pageNumbers": { "present": false, "format": null }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "asset-management-overview",
+          "title": "Asset Management Overview",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            { "sectionId": "app-icons-launch", "title": "App icons and launch screen" },
+            { "sectionId": "asset-catalogs", "title": "Asset catalogs" },
+            { "sectionId": "images", "title": "Images" },
+            { "sectionId": "colors", "title": "Colors" },
+            { "sectionId": "ar-assets", "title": "Augmented reality assets" },
+            { "sectionId": "ml-models", "title": "Machine learning models" },
+            { "sectionId": "particle-effects", "title": "Particle effects" }
+          ],
+          "summary": "Overview of Xcode's asset management capabilities including asset catalogs for images, colors, icons, textures, stickers, and data files."
+        },
+        {
+          "sectionId": "dark-mode-support",
+          "title": "Supporting Dark Mode",
+          "startPage": 2,
+          "endPage": 2,
+          "subsections": [
+            { "sectionId": "adaptive-colors", "title": "Choose adaptive colors for your UI" },
+            { "sectionId": "appearance-images", "title": "Create images for all appearances" },
+            { "sectionId": "custom-view-updates", "title": "Update custom views using specific methods" },
+            { "sectionId": "visual-effects", "title": "Choose visual-effect materials based on intended usage" },
+            { "sectionId": "opt-out", "title": "Opt out only as needed" },
+            { "sectionId": "performance", "title": "Avoid expensive tasks during appearance transitions" }
+          ],
+          "summary": "Comprehensive guide to implementing Dark Mode support including adaptive colors, appearance-specific images, proper view update methods, visual effects configuration, and performance optimization."
+        }
+      ],
+      "documentFlow": "The documentation begins with a high-level overview of asset management in Xcode, introducing asset catalogs as the primary mechanism for organizing visual resources. It then transitions to detailed guidance on Dark Mode support, progressing from understanding adaptive colors, through image management, to implementation details for custom views and visual effects. The flow moves from concept to implementation, ending with practical considerations like opt-out strategies and performance optimization."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        { "term": "Asset Catalog", "definition": "Xcode's primary mechanism for organizing and managing images, colors, app icons, textures, stickers, and data files", "occurrences": 8 },
+        { "term": "Dark Mode", "definition": "A system-wide dark appearance that users can enable, requiring apps to adapt their colors, images, and behaviors", "occurrences": 12 },
+        { "term": "Semantic Colors", "definition": "Colors with names like labelColor that convey intended use rather than specific values, automatically adapting to interface style", "occurrences": 4 },
+        { "term": "Color Set", "definition": "An asset catalog resource that specifies different color values for light, dark, and high-contrast appearances", "occurrences": 3 },
+        { "term": "Any Appearance", "definition": "The default color variant used on older systems that do not support Dark Mode", "occurrences": 2 },
+        { "term": "Visual Effect View", "definition": "A view that adds transparency and blur effects to backgrounds, with vibrancy effects for foreground content", "occurrences": 5 },
+        { "term": "Template Image", "definition": "An image that defines only shape, not requiring separate images for different appearances", "occurrences": 2 },
+        { "term": "Symbol Image", "definition": "SF Symbols that define shapes and adapt automatically to appearance without requiring multiple variants", "occurrences": 2 },
+        { "term": "Trait Collection", "definition": "Contains information about the current interface environment including appearance style", "occurrences": 3 },
+        { "term": "Effective Appearance", "definition": "The resolved appearance of a view or app, observable for non-view code that needs appearance awareness", "occurrences": 2 }
+      ],
+      "keyFindings": [
+        "All apps should support both light and dark interface styles",
+        "Standard views and controls automatically update their appearance to match the current interface style",
+        "Color assets can include variants for Any, Dark, and High Contrast appearances",
+        "Colors loaded from asset catalogs automatically adapt without recreating color objects",
+        "Symbol images and template images eliminate the need for multiple appearance-specific image variants",
+        "Appearance-sensitive code should be placed in specific methods: updateLayer(), draw(_:), traitCollectionDidChange(_:), etc.",
+        "CGColor objects do not adapt automatically and require manual updating",
+        "Visual effect materials should be chosen based on usage context (e.g., sidebar, header)",
+        "Deprecated materials like NSVisualEffectView.Material.light do not adapt to Dark Mode",
+        "Performance is critical during appearance transitions; slow code can abort transition animations"
+      ],
+      "technicalSpecifications": {
+        "platforms": ["iOS", "iPadOS", "macOS", "tvOS", "visionOS", "watchOS"],
+        "frameworks": ["UIKit", "AppKit", "SwiftUI"],
+        "minimumVersion": {
+          "iOS": "13.0",
+          "macOS": "10.14"
+        },
+        "assetCatalogCapabilities": {
+          "imageAssets": {
+            "scaleVariants": ["1x", "2x", "3x"],
+            "appearanceVariants": ["Any", "Light", "Dark"],
+            "contrastVariants": ["Standard", "High Contrast"],
+            "deviceVariants": ["Universal", "iPhone", "iPad", "Mac", "Apple Watch", "Apple TV", "CarPlay"]
+          },
+          "colorAssets": {
+            "appearanceVariants": ["Any Appearance", "Light Appearance", "Dark Appearance"],
+            "contrastVariants": ["Standard", "High Contrast"],
+            "colorSpaces": ["sRGB", "Display P3", "Extended sRGB"]
+          }
+        },
+        "semanticColors": {
+          "UIKit": [
+            "label", "secondaryLabel", "tertiaryLabel", "quaternaryLabel",
+            "systemBackground", "secondarySystemBackground", "tertiarySystemBackground",
+            "systemGroupedBackground", "secondarySystemGroupedBackground", "tertiarySystemGroupedBackground",
+            "separator", "opaqueSeparator",
+            "link", "placeholderText",
+            "systemFill", "secondarySystemFill", "tertiarySystemFill", "quaternarySystemFill"
+          ],
+          "AppKit": [
+            "labelColor", "secondaryLabelColor", "tertiaryLabelColor", "quaternaryLabelColor",
+            "textColor", "placeholderTextColor", "selectedTextColor",
+            "textBackgroundColor", "selectedTextBackgroundColor",
+            "controlBackgroundColor", "selectedControlColor",
+            "windowBackgroundColor", "underPageBackgroundColor"
+          ]
+        },
+        "visualEffectMaterials": {
+          "macOS": [
+            "sidebar", "headerView", "sheet", "windowBackground", "hudWindow",
+            "fullScreenUI", "toolTip", "contentBackground", "underWindowBackground",
+            "underPageBackground", "menu", "popover", "selection"
+          ],
+          "iOS": {
+            "blurStyles": ["systemUltraThinMaterial", "systemThinMaterial", "systemMaterial", "systemThickMaterial", "systemChromeMaterial"],
+            "vibrancyStyles": ["label", "secondaryLabel", "tertiaryLabel", "quaternaryLabel", "fill", "secondaryFill", "tertiaryFill", "separator"]
+          }
+        }
+      },
+      "designDecisions": [
+        {
+          "decision": "Use semantic colors over fixed values",
+          "rationale": "Semantic colors automatically adapt to interface style without code changes"
+        },
+        {
+          "decision": "Prefer symbol images and template images",
+          "rationale": "They define only shape and render appropriately for any appearance"
+        },
+        {
+          "decision": "Place appearance-sensitive code in specific lifecycle methods",
+          "rationale": "System updates trait environment before calling these methods, ensuring correct rendering"
+        },
+        {
+          "decision": "Use visual-effect views for transparency",
+          "rationale": "They provide depth while ensuring content visibility through blur and vibrancy"
+        },
+        {
+          "decision": "Avoid deprecated materials",
+          "rationale": "Deprecated materials like .light do not adapt to Dark Mode"
+        },
+        {
+          "decision": "Preserve user-chosen colors",
+          "rationale": "Adaptive colors are for app chrome, not user content"
+        }
+      ],
+      "implementationGuidelines": {
+        "assetCatalogBestPractices": [
+          "Create Color Set assets for custom colors requiring appearance adaptation",
+          "Use 'Any, Dark' appearance configuration for most color assets",
+          "Add high-contrast variants for accessibility compliance",
+          "Use 'Any Appearance' as fallback for older systems",
+          "Organize related assets in folders within the catalog",
+          "Use descriptive names for color assets (e.g., 'customControlColor')"
+        ],
+        "darkModeColorManagement": [
+          "Test with Dark Mode enabled before making code changes",
+          "Use semantic color names (labelColor, systemBackground) when possible",
+          "Define custom colors in asset catalog with appearance variants",
+          "Reload colors automatically by using named colors from assets",
+          "Avoid CGColor objects that don't adapt; use higher-level color types",
+          "Don't change user-selected content colors for appearance"
+        ],
+        "imageVariantsForAppearances": [
+          "Provide appearance-specific image assets when needed",
+          "Prefer SF Symbols that adapt automatically",
+          "Use template rendering mode for single-color icons",
+          "Configure image assets with 'Any, Dark' appearances",
+          "Include high-contrast variants for accessibility",
+          "Test images in both light and dark modes"
+        ],
+        "colorSetConfigurations": [
+          "Set Appearances to 'Any, Dark' in Attributes Inspector",
+          "Define distinct color values for each appearance",
+          "Consider high-contrast variants for accessibility",
+          "Use consistent color space (sRGB or Display P3)",
+          "Document color purpose in asset name or comments"
+        ],
+        "widgetSpecificConsiderations": [
+          "Widgets render in the system appearance of the device",
+          "Use semantic colors for automatic adaptation",
+          "Asset catalogs are shared but may need widget-specific variants",
+          "Test widgets in both light and dark appearances",
+          "Consider vibrancy effects for widget backgrounds",
+          "Use .widgetBackground modifier in SwiftUI for proper appearance"
+        ],
+        "viewUpdateMethods": {
+          "NSView": ["updateLayer()", "draw(_:)", "layout()", "updateConstraints()"],
+          "UIView": ["traitCollectionDidChange(_:)", "layoutSubviews()", "draw(_:)", "updateConstraints()", "tintColorDidChange()"],
+          "UIViewController": ["traitCollectionDidChange(_:)", "updateViewConstraints()", "viewWillLayoutSubviews()", "viewDidLayoutSubviews()"],
+          "UIPresentationController": ["traitCollectionDidChange(_:)", "containerViewWillLayoutSubviews()", "containerViewDidLayoutSubviews()"]
+        },
+        "performanceOptimization": [
+          "Keep appearance transition code fast and focused",
+          "Avoid unrelated tasks during appearance changes",
+          "Pre-calculate appearance-dependent values when possible",
+          "Use caching for expensive appearance-related computations",
+          "Test transition animations to ensure they complete smoothly"
+        ]
+      },
+      "codeExamples": {
+        "loadColorFromAsset": {
+          "macOS": "let aColor = NSColor(named: NSColor.Name(\"customControlColor\"))",
+          "iOS": "let aColor = UIColor(named: \"customControlColor\")"
+        },
+        "updateLayerForAppearance": "override func updateLayer() {\n    self.layer?.backgroundColor = NSColor.textBackgroundColor.cgColor\n    // Other updates.\n}",
+        "observeAppearanceChanges": "var observation: NSKeyValueObservation?\n\nfunc applicationDidFinishLaunching(_ aNotification: Notification) {\n    observation = NSApp.observe(\\.effectiveAppearance) { (app, _) in\n        app.effectiveAppearance.performAsCurrentDrawingAppearance {\n            // Invoke your non-view code that needs to be aware of the\n            // change in appearance.\n        }\n    }\n}"
+      },
+      "relatedDocumentation": [
+        { "title": "Choosing a Specific Appearance for Your macOS App", "category": "Appearance support" },
+        { "title": "Choosing a specific interface style for your iOS app", "category": "Appearance support" },
+        { "title": "Providing images for different appearances", "category": "Images" },
+        { "title": "Configuring and displaying symbol images in your UI", "category": "Images" },
+        { "title": "Adopting iOS Dark Mode", "category": "Dark Mode" },
+        { "title": "Managing assets with asset catalogs", "category": "Asset catalogs" },
+        { "title": "Adding images to your Xcode project", "category": "Images" },
+        { "title": "Creating custom symbol images for your app", "category": "Images" },
+        { "title": "Specifying your app's color scheme", "category": "Colors" }
+      ]
+    }
+  }
+}

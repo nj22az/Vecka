@@ -1,0 +1,851 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Apple Watch Complications and Accessory Widgets Design Guidelines",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": "2023-10-24",
+      "pageCount": 3,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "watchOS",
+        "complications",
+        "WidgetKit",
+        "accessory widgets",
+        "Lock Screen",
+        "Smart Stack",
+        "SwiftUI",
+        "ClockKit",
+        "Apple Watch"
+      ],
+      "summary": "Comprehensive Apple Developer documentation covering watch complications design guidelines, complication families (circular, corner, inline, rectangular), legacy templates, image specifications for all Apple Watch sizes, and guidance for creating accessory widgets that appear on Lock Screen and Apple Watch."
+    },
+    "sources": [
+      {
+        "fileName": "Complications | Apple Developer Documentation.pdf",
+        "pageCount": 2,
+        "focus": "Design guidelines, visual specifications, and best practices for watch complications"
+      },
+      {
+        "fileName": "Creating accessory widgets and watch complications | Apple Developer Documentation.pdf",
+        "pageCount": 1,
+        "focus": "Technical implementation guidance for accessory widgets and WidgetKit complications"
+      }
+    ],
+    "complicationFamilies": {
+      "overview": "Starting in watchOS 9, the system organizes complications (also known as accessories) into several families. A watch face can specify the family it supports in each complication slot.",
+      "modernFamilies": [
+        {
+          "familyName": "circular",
+          "description": "Circular layouts that can include text, gauges, and full-color images in circular areas on watch faces like Infograph and Infograph Modular.",
+          "supportedWatchFaces": ["Infograph", "Infograph Modular", "X-Large"],
+          "layouts": [
+            {
+              "layoutName": "Closed gauge image",
+              "description": "Circular image with a closed ring gauge surrounding it",
+              "supportsFullColor": true,
+              "supportsGauge": true
+            },
+            {
+              "layoutName": "Closed gauge text",
+              "description": "Text content with a closed ring gauge surrounding it",
+              "supportsFullColor": true,
+              "supportsGauge": true
+            },
+            {
+              "layoutName": "Open gauge image",
+              "description": "Circular image with an open-style gauge (arc) surrounding it",
+              "supportsFullColor": true,
+              "supportsGauge": true
+            },
+            {
+              "layoutName": "Open gauge text",
+              "description": "Text content with an open-style gauge surrounding it",
+              "supportsFullColor": true,
+              "supportsGauge": true
+            },
+            {
+              "layoutName": "Open gauge range",
+              "description": "Gauge showing a range of values with open style",
+              "supportsFullColor": true,
+              "supportsGauge": true
+            },
+            {
+              "layoutName": "Image",
+              "description": "Simple circular image layout",
+              "supportsFullColor": true,
+              "supportsGauge": false
+            },
+            {
+              "layoutName": "Stack image",
+              "description": "Stacked image layout within circular area",
+              "supportsFullColor": true,
+              "supportsGauge": false
+            },
+            {
+              "layoutName": "Stack text",
+              "description": "Stacked text layout within circular area",
+              "supportsFullColor": true,
+              "supportsGauge": false
+            }
+          ],
+          "imageSizes": {
+            "regularSize": {
+              "40mm": {
+                "image": { "points": "42x42", "pixels": "84x84 @2x" },
+                "closedGauge": { "points": "27x27", "pixels": "54x54 @2x" },
+                "openGauge": { "points": "11x11", "pixels": "22x22 @2x" },
+                "stack": { "points": "28x14", "pixels": "56x28 @2x" }
+              },
+              "41mm": {
+                "image": { "points": "44.5x44.5", "pixels": "89x89 @2x" },
+                "closedGauge": { "points": "28.5x28.5", "pixels": "57x57 @2x" },
+                "openGauge": { "points": "11.5x11.5", "pixels": "23x23 @2x" },
+                "stack": { "points": "29.5x15", "pixels": "59x30 @2x" }
+              },
+              "44mm": {
+                "image": { "points": "47x47", "pixels": "94x94 @2x" },
+                "closedGauge": { "points": "31x31", "pixels": "62x62 @2x" },
+                "openGauge": { "points": "12x12", "pixels": "24x24 @2x" },
+                "stack": { "points": "31x16", "pixels": "62x32 @2x" }
+              },
+              "45mm_49mm": {
+                "image": { "points": "50x50", "pixels": "100x100 @2x" },
+                "closedGauge": { "points": "32x32", "pixels": "64x64 @2x" },
+                "openGauge": { "points": "13x13", "pixels": "26x26 @2x" },
+                "stack": { "points": "33.5x16.5", "pixels": "67x33 @2x" }
+              }
+            },
+            "extraLargeSize": {
+              "description": "For X-Large watch face with oversized treatment of important information",
+              "40mm": {
+                "image": { "points": "120x120", "pixels": "240x240 @2x" },
+                "openGauge": { "points": "31x31", "pixels": "62x62 @2x" },
+                "closedGauge": { "points": "77x77", "pixels": "154x154 @2x" },
+                "stack": { "points": "80x40", "pixels": "160x80 @2x" }
+              },
+              "41mm": {
+                "image": { "points": "127x127", "pixels": "254x254 @2x" },
+                "openGauge": { "points": "33x33", "pixels": "66x66 @2x" },
+                "closedGauge": { "points": "81.5x81.5", "pixels": "163x163 @2x" },
+                "stack": { "points": "85x42", "pixels": "170x84 @2x" }
+              },
+              "44mm": {
+                "image": { "points": "132x132", "pixels": "264x264 @2x" },
+                "openGauge": { "points": "33x33", "pixels": "66x66 @2x" },
+                "closedGauge": { "points": "87x87", "pixels": "174x174 @2x" },
+                "stack": { "points": "87x44", "pixels": "174x88 @2x" }
+              },
+              "45mm_49mm": {
+                "image": { "points": "143x143", "pixels": "286x286 @2x" },
+                "openGauge": { "points": "37x37", "pixels": "74x74 @2x" },
+                "closedGauge": { "points": "91.5x91.5", "pixels": "183x183 @2x" },
+                "stack": { "points": "95x48", "pixels": "190x96 @2x" }
+              }
+            },
+            "note": "The system applies a circular mask to each image"
+          },
+          "typography": {
+            "style": "Rounded",
+            "weight": "Medium",
+            "regularSizes": {
+              "40mm": "12 pt",
+              "41mm": "12.5 pt",
+              "44mm": "13 pt",
+              "45mm_49mm": "14.5 pt"
+            },
+            "extraLargeSizes": {
+              "40mm": "34.5 pt",
+              "41mm": "36.5 pt",
+              "44mm": "36.5 pt",
+              "45mm_49mm": "41 pt"
+            }
+          },
+          "bezelText": {
+            "description": "Text that curves along the bezel of watch faces like Infograph",
+            "maxLength": "Nearly 180 degrees before truncating"
+          },
+          "placeholderSizes": {
+            "38mm": null,
+            "40mm_42mm": { "circular": "42x42 pt (84x84 px @2x)", "bezel": "42x42 pt (84x84 px @2x)", "extraLarge": "120x120 pt (240x240 px @2x)" },
+            "41mm": { "circular": "44.5x44.5 pt (89x89 px @2x)", "bezel": "44.5x44.5 pt (89x89 px @2x)", "extraLarge": "127x127 pt (254x254 px @2x)" },
+            "44mm": { "circular": "47x47 pt (94x94 px @2x)", "bezel": "47x47 pt (94x94 px @2x)", "extraLarge": "132x132 pt (264x264 px @2x)" }
+          }
+        },
+        {
+          "familyName": "corner",
+          "description": "Corner layouts display full-color images, text, and gauges in the corners of watch faces like Infograph.",
+          "supportedWatchFaces": ["Infograph"],
+          "supportsMulticolorText": true,
+          "layouts": [
+            {
+              "layoutName": "Circular image",
+              "description": "Circular image in corner position"
+            },
+            {
+              "layoutName": "Gauge image",
+              "description": "Image with curved gauge"
+            },
+            {
+              "layoutName": "Gauge text",
+              "description": "Text with curved gauge"
+            },
+            {
+              "layoutName": "Stack text",
+              "description": "Stacked text in corner"
+            },
+            {
+              "layoutName": "Text image",
+              "description": "Combined text and image"
+            }
+          ],
+          "imageSizes": {
+            "40mm": {
+              "circular": { "points": "32x32", "pixels": "64x64 @2x" },
+              "gauge": { "points": "20x20", "pixels": "40x40 @2x" },
+              "text": { "points": "20x20", "pixels": "40x40 @2x" }
+            },
+            "41mm": {
+              "circular": { "points": "34x34", "pixels": "68x68 @2x" },
+              "gauge": { "points": "21x21", "pixels": "42x42 @2x" },
+              "text": { "points": "21x21", "pixels": "42x42 @2x" }
+            },
+            "44mm": {
+              "circular": { "points": "36x36", "pixels": "72x72 @2x" },
+              "gauge": { "points": "22x22", "pixels": "44x44 @2x" },
+              "text": { "points": "22x22", "pixels": "44x44 @2x" }
+            },
+            "45mm_49mm": {
+              "circular": { "points": "38x38", "pixels": "76x76 @2x" },
+              "gauge": { "points": "24x24", "pixels": "48x48 @2x" },
+              "text": { "points": "24x24", "pixels": "48x48 @2x" }
+            },
+            "note": "The system applies a circular mask to each image"
+          },
+          "placeholderSizes": {
+            "38mm": null,
+            "40mm_42mm": { "points": "20x20", "pixels": "40x40 @2x" },
+            "41mm": { "points": "21x21", "pixels": "42x42 @2x" },
+            "44mm": { "points": "22x22", "pixels": "44x44 @2x" },
+            "45mm_49mm": { "points": "24x24", "pixels": "48x48 @2x" }
+          },
+          "typography": {
+            "style": "Rounded",
+            "weight": "Semibold",
+            "sizes": {
+              "40mm": "10 pt",
+              "41mm": "10.5 pt",
+              "44mm": "11 pt",
+              "45mm_49mm": "12 pt"
+            }
+          }
+        },
+        {
+          "familyName": "inline",
+          "description": "Inline layouts include utilitarian small and large layouts for text-based complications.",
+          "subTypes": [
+            {
+              "subTypeName": "Utilitarian Small",
+              "description": "Rectangular area in the corner of watch faces like Chronograph and Simple",
+              "supportedWatchFaces": ["Chronograph", "Simple"],
+              "layouts": [
+                {
+                  "layoutName": "Flat",
+                  "description": "Flat text-based layout"
+                },
+                {
+                  "layoutName": "Ring image",
+                  "description": "Image with circular ring"
+                },
+                {
+                  "layoutName": "Ring text",
+                  "description": "Text with circular ring"
+                },
+                {
+                  "layoutName": "Square",
+                  "description": "Square-shaped layout"
+                }
+              ],
+              "imageSizes": {
+                "38mm": {
+                  "flat": { "points": "9-21x9", "pixels": "18-42x18 @2x" },
+                  "ring": { "points": "14x14", "pixels": "28x28 @2x" },
+                  "square": { "points": "20x20", "pixels": "40x40 @2x" }
+                },
+                "40mm_42mm": {
+                  "flat": { "points": "10-22x10", "pixels": "20-44x20 @2x" },
+                  "ring": { "points": "14x14", "pixels": "28x28 @2x" },
+                  "square": { "points": "22x22", "pixels": "44x44 @2x" }
+                },
+                "41mm": {
+                  "flat": { "points": "10.5-23.5x21", "pixels": "21-47x21 @2x" },
+                  "ring": { "points": "15x15", "pixels": "30x30 @2x" },
+                  "square": { "points": "23.5x23.5", "pixels": "47x47 @2x" }
+                },
+                "44mm": {
+                  "flat": null,
+                  "ring": { "points": "16x16", "pixels": "32x32 @2x" },
+                  "square": { "points": "25x25", "pixels": "50x50 @2x" }
+                }
+              }
+            },
+            {
+              "subTypeName": "Utilitarian Large",
+              "description": "Text-based layout that spans the bottom of watch faces like Utility or Motion. Supports an interface icon on the leading side.",
+              "supportedWatchFaces": ["Utility", "Motion"],
+              "layouts": [
+                {
+                  "layoutName": "Large flat",
+                  "description": "Wide text-based layout with optional leading icon"
+                }
+              ],
+              "imageSizes": {
+                "38mm": { "flat": { "points": "9-21x9", "pixels": "18-42x18 @2x" } },
+                "40mm_42mm": { "flat": { "points": "10-22x10", "pixels": "20-44x20 @2x" } },
+                "41mm": { "flat": { "points": "10.5-23.5x10.5", "pixels": "21-47x21 @2x" } },
+                "44mm": null
+              }
+            }
+          ]
+        },
+        {
+          "familyName": "rectangular",
+          "description": "Rectangular layouts display full-color images, text, a gauge, and optional title in a large rectangular region. Works well for showing details about values or processes that change over time.",
+          "supportsMulticolorText": true,
+          "smartStackSupport": {
+            "description": "Starting with watchOS 10, rectangular layouts may display in the Smart Stack",
+            "optimizations": [
+              "Supply background color or content that communicates information or aids in recognition",
+              "Use intents to specify relevancy for appropriate timing",
+              "Create custom layouts optimized for the Smart Stack"
+            ],
+            "developerReference": "WidgetFamily.accessoryRectangular"
+          },
+          "layouts": [
+            {
+              "layoutName": "Standard body",
+              "description": "Standard text body with optional icon"
+            },
+            {
+              "layoutName": "Text gauge",
+              "description": "Text content with horizontal gauge"
+            },
+            {
+              "layoutName": "Large image",
+              "description": "Large image with optional title",
+              "variants": ["with title", "without title"],
+              "cornerRadius": "4 points (automatic)"
+            }
+          ],
+          "useCases": [
+            "Heart rate graphs showing 24-hour values",
+            "Charts and diagrams",
+            "Information-rich visualizations"
+          ],
+          "designGuidance": {
+            "contrast": "Use high-contrast colors for primary content",
+            "secondary": "Use lower-contrast gray for graph lines and labels",
+            "goal": "Make data easy to understand at a glance"
+          },
+          "imageSizes": {
+            "40mm": {
+              "largeImageWithTitle": { "points": "150x47", "pixels": "300x94 @2x" },
+              "largeImageWithoutTitle": { "points": "162x69", "pixels": "324x138 @2x" },
+              "standardBody": { "points": "12x12", "pixels": "24x24 @2x" },
+              "textGauge": { "points": "12x12", "pixels": "24x24 @2x" }
+            },
+            "41mm": {
+              "largeImageWithTitle": { "points": "159x50", "pixels": "318x100 @2x" },
+              "largeImageWithoutTitle": { "points": "171.5x73", "pixels": "343x146 @2x" },
+              "standardBody": { "points": "12.5x12.5", "pixels": "25x25 @2x" },
+              "textGauge": { "points": "12.5x12.5", "pixels": "25x25 @2x" }
+            },
+            "44mm": {
+              "largeImageWithTitle": { "points": "171x54", "pixels": "342x108 @2x" },
+              "largeImageWithoutTitle": { "points": "184x78", "pixels": "368x156 @2x" },
+              "standardBody": { "points": "13.5x13.5", "pixels": "27x27 @2x" },
+              "textGauge": { "points": "13.5x13.5", "pixels": "27x27 @2x" }
+            },
+            "45mm_49mm": {
+              "largeImageWithTitle": { "points": "178.5x56", "pixels": "357x112 @2x" },
+              "largeImageWithoutTitle": { "points": "193x82", "pixels": "386x164 @2x" },
+              "standardBody": { "points": "14.5x14.5", "pixels": "29x29 @2x" },
+              "textGauge": { "points": "14.5x14.5", "pixels": "29x29 @2x" }
+            }
+          },
+          "typography": {
+            "style": "Rounded",
+            "weight": "Medium",
+            "sizes": {
+              "40mm": "16.5 pt",
+              "41mm": "17.5 pt",
+              "44mm": "18 pt",
+              "45mm_49mm": "19.5 pt"
+            }
+          }
+        }
+      ],
+      "legacyTemplates": {
+        "description": "Legacy templates define nongraphic complication styles that do not take on a wearer's selected color. Use for watchOS versions before watchOS 9.",
+        "developerGuidance": "Continue to implement the ClockKit complication data source protocol (CLKComplicationDataSource) to support earlier versions of watchOS.",
+        "templates": [
+          {
+            "templateName": "Circular Small",
+            "description": "Displays a small image or a few characters of text in the corner of watch faces like Color",
+            "supportedWatchFaces": ["Color"],
+            "layouts": [
+              { "name": "Ring image", "description": "Image with surrounding ring" },
+              { "name": "Ring text", "description": "Text with surrounding ring" },
+              { "name": "Simple image", "description": "Simple centered image" },
+              { "name": "Simple text", "description": "Simple centered text" },
+              { "name": "Stack image", "description": "Stacked image layout" },
+              { "name": "Stack text", "description": "Stacked text layout" }
+            ],
+            "imageSizes": {
+              "38mm": {
+                "ring": { "points": "20x20", "pixels": "40x40 @2x" },
+                "simple": { "points": "16x16", "pixels": "32x32 @2x" },
+                "stack": { "points": "16x7", "pixels": "32x14 @2x", "note": "width is maximum" },
+                "placeholder": { "points": "16x16", "pixels": "32x32 @2x" }
+              },
+              "40mm_42mm": {
+                "ring": { "points": "22x22", "pixels": "44x44 @2x" },
+                "simple": { "points": "18x18", "pixels": "36x36 @2x" },
+                "stack": { "points": "17x8", "pixels": "34x16 @2x", "note": "width is maximum" },
+                "placeholder": { "points": "18x18", "pixels": "36x36 @2x" }
+              },
+              "41mm": {
+                "ring": { "points": "23.5x23.5", "pixels": "47x47 @2x" },
+                "simple": { "points": "19x19", "pixels": "38x38 @2x" },
+                "stack": { "points": "18x8.5", "pixels": "36x17 @2x", "note": "width is maximum" },
+                "placeholder": { "points": "19x19", "pixels": "38x38 @2x" }
+              },
+              "44mm": {
+                "ring": { "points": "24x24", "pixels": "48x48 @2x" },
+                "simple": { "points": "20x20", "pixels": "40x40 @2x" },
+                "stack": { "points": "19x9", "pixels": "38x18 @2x", "note": "width is maximum" },
+                "placeholder": { "points": "20x20", "pixels": "40x40 @2x" }
+              }
+            }
+          },
+          {
+            "templateName": "Modular Small",
+            "description": "Displays two stacked rows with icon and content, circular graph, or single larger item. Appears in bottom row of Modular watch face.",
+            "supportedWatchFaces": ["Modular"],
+            "layouts": [
+              { "name": "Columns text", "description": "Two columns of text" },
+              { "name": "Ring image", "description": "Image with surrounding ring" },
+              { "name": "Ring text", "description": "Text with surrounding ring" },
+              { "name": "Simple image", "description": "Simple centered image" },
+              { "name": "Simple text", "description": "Simple centered text" },
+              { "name": "Stack image", "description": "Stacked image layout" },
+              { "name": "Stack text", "description": "Stacked text layout" }
+            ],
+            "imageSizes": {
+              "38mm": {
+                "ring": { "points": "18x18", "pixels": "36x36 @2x" },
+                "simple": { "points": "26x26", "pixels": "52x52 @2x" },
+                "stack": { "points": "26x14", "pixels": "52x28 @2x", "note": "width is maximum" },
+                "placeholder": { "points": "26x26", "pixels": "52x52 @2x" }
+              },
+              "40mm_42mm": {
+                "ring": { "points": "19x19", "pixels": "38x38 @2x" },
+                "simple": { "points": "29x29", "pixels": "58x58 @2x" },
+                "stack": { "points": "29x15", "pixels": "58x30 @2x", "note": "width is maximum" },
+                "placeholder": { "points": "29x29", "pixels": "58x58 @2x" }
+              },
+              "41mm": {
+                "ring": { "points": "20x20", "pixels": "40x40 @2x" },
+                "simple": { "points": "30.5x30.5", "pixels": "61x61 @2x" },
+                "stack": { "points": "30.5x16", "pixels": "61x32 @2x", "note": "width is maximum" },
+                "placeholder": { "points": "30.5x30.5", "pixels": "61x61 @2x" }
+              },
+              "44mm": {
+                "ring": { "points": "21x21", "pixels": "42x42 @2x" },
+                "simple": { "points": "32x32", "pixels": "64x64 @2x" },
+                "stack": { "points": "32x17", "pixels": "64x34 @2x", "note": "width is maximum" },
+                "placeholder": { "points": "32x32", "pixels": "64x64 @2x" }
+              }
+            }
+          },
+          {
+            "templateName": "Modular Large",
+            "description": "Large canvas for displaying up to three rows of content. Appears in the center of Modular watch face.",
+            "supportedWatchFaces": ["Modular"],
+            "layouts": [
+              { "name": "Columns", "description": "Multi-column layout" },
+              { "name": "Standard body", "description": "Standard text body" },
+              { "name": "Table", "description": "Table-style layout" },
+              { "name": "Tall body", "description": "Tall text body" }
+            ],
+            "imageSizes": {
+              "38mm": { "iconRange": { "points": "11-32x11", "pixels": "22-64x22 @2x" } },
+              "40mm_42mm": { "iconRange": { "points": "12-37x12", "pixels": "24-74x24 @2x" } },
+              "41mm": { "iconRange": { "points": "12.5-39x12.5", "pixels": "25-78x25 @2x" } },
+              "44mm": { "iconRange": { "points": "14-42x14", "pixels": "28-84x28 @2x" } }
+            }
+          },
+          {
+            "templateName": "Extra Large",
+            "description": "Displays larger text and images on X-Large watch faces",
+            "supportedWatchFaces": ["X-Large"],
+            "layouts": [
+              { "name": "Ring image", "description": "Large image with surrounding ring" },
+              { "name": "Ring text", "description": "Large text with surrounding ring" },
+              { "name": "Simple image", "description": "Simple large centered image" },
+              { "name": "Simple text", "description": "Simple large centered text" },
+              { "name": "Stack image", "description": "Stacked large image layout" },
+              { "name": "Stack text", "description": "Stacked large text layout" }
+            ],
+            "imageSizes": {
+              "38mm": {
+                "ring": { "points": "63x63", "pixels": "126x126 @2x" },
+                "simple": { "points": "91x91", "pixels": "182x182 @2x" },
+                "stack": { "points": "78x42", "pixels": "156x84 @2x", "note": "width is maximum" },
+                "placeholder": { "points": "91x91", "pixels": "182x182 @2x" }
+              },
+              "40mm_42mm": {
+                "ring": { "points": "66.5x66.5", "pixels": "133x133 @2x" },
+                "simple": { "points": "101.5x101.5", "pixels": "203x203 @2x" },
+                "stack": { "points": "87x45", "pixels": "174x90 @2x", "note": "width is maximum" },
+                "placeholder": { "points": "101.5x101.5", "pixels": "203x203 @2x" }
+              },
+              "41mm": {
+                "ring": { "points": "70.5x70.5", "pixels": "141x141 @2x" },
+                "simple": { "points": "107.5x107.5", "pixels": "215x215 @2x" },
+                "stack": { "points": "92x47.5", "pixels": "184x95 @2x", "note": "width is maximum" },
+                "placeholder": { "points": "107.5x107.5", "pixels": "215x215 @2x" }
+              },
+              "44mm": {
+                "ring": { "points": "73x73", "pixels": "146x146 @2x" },
+                "simple": { "points": "112x112", "pixels": "224x224 @2x" },
+                "stack": { "points": "96x51", "pixels": "192x102 @2x", "note": "width is maximum" },
+                "placeholder": { "points": "112x112", "pixels": "224x224 @2x" }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "accessoryWidgets": {
+      "overview": "WidgetKit allows you to extend the reach of your app to the Lock Screen on iPhone and iPad, and to the Smart Stack on Apple Watch as accessory widgets. Accessory widgets also appear as watch complications on Apple Watch.",
+      "benefits": [
+        "Display app's most relevant, glanceable content in highly visible contexts",
+        "Let people quickly access your app for more details",
+        "Share code between iOS and watchOS apps",
+        "Create watch complications and Lock Screen widgets simultaneously"
+      ],
+      "widgetKitAdvantages": [
+        "Update existing widgets code to support accessory widgets",
+        "Offer WidgetKit complications for watchOS app",
+        "Replace ClockKit complications",
+        "Share more code between iOS and watchOS apps",
+        "Add support for iOS or watchOS in addition to platforms already supported"
+      ],
+      "lockScreenWidgets": {
+        "platforms": ["iPhone", "iPad"],
+        "description": "Accessory widgets appear on the Lock Screen providing glanceable information"
+      },
+      "smartStackWidgets": {
+        "platform": "watchOS",
+        "minimumVersion": "watchOS 10",
+        "description": "Rectangular complications can appear in the Smart Stack on Apple Watch"
+      },
+      "migrationNotes": {
+        "important": "As soon as you offer a widget-based complication, the system stops calling ClockKit APIs. The system may still wake your data source for migration requests.",
+        "recommendation": "Plan to migrate existing ClockKit complications to WidgetKit as described in Migrating ClockKit complications to WidgetKit"
+      },
+      "relatedComponents": [
+        {
+          "name": "AccessoryWidgetGroup",
+          "type": "struct",
+          "description": "A view type that has a label at the top and three content views masked with a circle or rounded square"
+        },
+        {
+          "name": "AccessoryWidgetGroupStyle",
+          "type": "struct",
+          "description": "The style for an AccessoryWidgetGroup view"
+        }
+      ]
+    },
+    "designBestPractices": {
+      "contentStrategy": [
+        {
+          "practice": "Identify essential, dynamic content",
+          "description": "Display relevant information that always feels up to date. A static complication that doesn't display meaningful data may be less likely to remain in a prominent position.",
+          "importance": "critical"
+        },
+        {
+          "practice": "Support all complication families when possible",
+          "description": "Supporting more families means complications are available on more watch faces. If you can't display useful information, provide an image representing your app (like your app icon) that lets people launch your app.",
+          "importance": "high"
+        },
+        {
+          "practice": "Create multiple complications for each family",
+          "description": "Helps take advantage of shareable watch faces and lets people configure a watch face centered on an app they love.",
+          "example": "A triathlon training app could offer three circular complications (swimming, biking, running), each deep-linking to segment-specific areas"
+        },
+        {
+          "practice": "Define different deep links for each complication",
+          "description": "Each complication should open your app to the most relevant area. If all complications open the same area, they seem less useful.",
+          "importance": "high"
+        }
+      ],
+      "privacyConsiderations": {
+        "alwaysOnDisplay": "With Always-On Retina display, information might be visible to people other than the wearer",
+        "recommendation": "Help people prevent potentially sensitive information from being visible to others",
+        "reference": "See Always On guidelines"
+      },
+      "timelineManagement": {
+        "description": "You provide complication data as a timeline where each entry has a value specifying when to display data",
+        "limitations": [
+          "Limited number of timeline updates per day",
+          "System stores limited number of timeline entries per app"
+        ],
+        "examples": [
+          {
+            "app": "Meeting app",
+            "behavior": "Display upcoming meeting information an hour before the meeting starts"
+          },
+          {
+            "app": "Weather app",
+            "behavior": "Display forecast information at the time those conditions are expected to occur"
+          }
+        ],
+        "developerReference": "See Migrating ClockKit complications to WidgetKit"
+      },
+      "gaugeStyles": {
+        "description": "Choose ring or gauge style based on the data you need to display",
+        "styles": [
+          {
+            "name": "Closed",
+            "useCase": "Values that are a percentage of a whole",
+            "example": "Battery gauge"
+          },
+          {
+            "name": "Open",
+            "useCase": "When minimum and maximum values are arbitrary or don't represent a percentage",
+            "example": "Speed indicator"
+          },
+          {
+            "name": "Segmented",
+            "useCase": "Values within app-defined range that can convey rapid value changes",
+            "example": "Noise complication"
+          }
+        ]
+      },
+      "tintedModeDesign": {
+        "description": "In tinted mode, the system applies a solid color to text, gauges, and images, and desaturates full-color images",
+        "guidelines": [
+          "Avoid using color as the only way to communicate important information",
+          "When necessary, provide an alternative tinted-mode version of full-color images",
+          "Recognize that people might prefer tinted mode for complications"
+        ],
+        "developerReference": "See WidgetRenderingMode",
+        "legacyNote": "For legacy templates, tinted mode applies only to graphic complications"
+      },
+      "visualDesign": {
+        "lineWidth": {
+          "recommendation": "Generally use line widths of two points or greater",
+          "reason": "Thinner lines can be difficult to see at a glance, especially when wearer is in motion",
+          "guidance": "Use line weights that suit the size and complexity of the image"
+        },
+        "placeholderImages": {
+          "purpose": "Displayed when there's no other content to display",
+          "useCases": [
+            "When people first install your app (while system checks for localized placeholder)",
+            "In the carousel from which people select complications"
+          ],
+          "note": "Placeholder image sizes may not match the size of actual images for that complication",
+          "developerReference": "See placeholder(in:)"
+        }
+      }
+    },
+    "implementationGuidance": {
+      "newAppDevelopment": {
+        "title": "Create a new app that offers widgets and watch complications",
+        "recommendation": "Support iOS and watchOS and offer widgets and complications right from the start to create shared code base and reduce costly code changes later",
+        "steps": [
+          "Open Xcode and create a new project",
+          "Choose watchOS app template and select Watch App with New Companion iOS App",
+          "Add a new watchOS widget extension target to your project",
+          "Add a new iOS widget extension target to your project",
+          "Add code for iOS and watchOS apps, create iOS widgets (including Lock Screen) and watchOS complications using SwiftUI views and WidgetKit"
+        ],
+        "references": [
+          "Creating a widget extension",
+          "SwiftUI documentation",
+          "watchOS apps documentation"
+        ]
+      },
+      "existingIOSApp": {
+        "title": "Add accessory widgets to existing iOS App",
+        "guidance": "Adding accessory widgets works like supporting any other widget size",
+        "ifNoWidgets": "Add a widget extension to your app and support accessory widgets from the start",
+        "additionalConsideration": "Consider adding support for watchOS with WidgetKit complications by adding a watchOS app target and watchOS widget extension target",
+        "references": [
+          "Supporting additional widget sizes",
+          "Creating a widget extension"
+        ]
+      },
+      "existingWatchOSApp": {
+        "title": "Add WidgetKit complications to existing watchOS app",
+        "ifNoComplications": "Add a watchOS widget extension to your project in Xcode and create complications with WidgetKit",
+        "ifHasClockKit": {
+          "guidance": "Continue to use ClockKit to support watchOS 8 and earlier",
+          "migration": "Plan to migrate existing ClockKit complications to WidgetKit",
+          "important": "As soon as you offer a widget-based complication, the system stops calling ClockKit APIs"
+        },
+        "additionalConsideration": "Consider adding iOS support by adding an iOS app target if watchOS app doesn't have iOS companion app"
+      }
+    },
+    "platformSupport": {
+      "supported": ["watchOS"],
+      "notSupported": ["iOS", "iPadOS", "macOS", "tvOS", "visionOS"],
+      "note": "Complications are specific to watchOS, but accessory widgets extend to Lock Screen on iOS/iPadOS"
+    },
+    "appleWatchSizes": {
+      "current": [
+        { "size": "40mm", "series": "SE (2nd gen)" },
+        { "size": "41mm", "series": "Series 7, 8, 9, 10" },
+        { "size": "44mm", "series": "SE (2nd gen)" },
+        { "size": "45mm", "series": "Series 7, 8, 9, 10" },
+        { "size": "49mm", "series": "Ultra, Ultra 2" }
+      ],
+      "legacy": [
+        { "size": "38mm", "series": "Series 1, 2, 3" },
+        { "size": "42mm", "series": "Series 1, 2, 3" }
+      ],
+      "note": "45mm and 49mm share the same image specifications in most cases"
+    },
+    "relatedResources": {
+      "developerDocumentation": [
+        "WidgetKit",
+        "Migrating ClockKit complications to WidgetKit",
+        "Creating a widget extension",
+        "Supporting additional widget sizes",
+        "WidgetRenderingMode",
+        "WidgetFamily.accessoryRectangular",
+        "CLKComplicationDataSource",
+        "placeholder(in:)"
+      ],
+      "videos": [
+        {
+          "title": "Design widgets for the Smart Stack on Apple Watch",
+          "session": "WWDC23 Session 10309"
+        },
+        {
+          "title": "Go further with Complications in WidgetKit",
+          "session": "WWDC22 Session 10051"
+        },
+        {
+          "title": "Complications and widgets: Reloaded",
+          "session": "WWDC22 Session 10050"
+        },
+        {
+          "title": "Bring widgets to new places",
+          "session": "WWDC23 Session 10027"
+        }
+      ],
+      "relatedGuidelines": [
+        "Watch faces",
+        "Always On",
+        "Widgets"
+      ]
+    },
+    "changeLog": [
+      {
+        "date": "2023-10-24",
+        "changes": "Replaced links to deprecated ClockKit documentation with links to WidgetKit documentation"
+      },
+      {
+        "date": "2023-06-05",
+        "changes": "Updated guidance for rectangular complications to support them as widgets in the Smart Stack"
+      },
+      {
+        "date": "2022-09-14",
+        "changes": "Added specifications for Apple Watch Ultra"
+      }
+    ]
+  },
+  "extractedKnowledge": {
+    "keyTerms": [
+      {
+        "term": "Complication",
+        "definition": "A display element on the watch face that shows timely, relevant information that people can view each time they raise their wrist",
+        "occurrences": 50
+      },
+      {
+        "term": "Accessory Widget",
+        "definition": "Widget that appears on the Lock Screen on iPhone/iPad and as watch complications on Apple Watch",
+        "occurrences": 15
+      },
+      {
+        "term": "WidgetKit",
+        "definition": "Apple framework for creating widgets and watch complications using SwiftUI",
+        "occurrences": 20
+      },
+      {
+        "term": "ClockKit",
+        "definition": "Legacy framework for creating watch complications, deprecated in favor of WidgetKit",
+        "occurrences": 8
+      },
+      {
+        "term": "Smart Stack",
+        "definition": "A scrollable stack of widgets on Apple Watch (watchOS 10+) that can display rectangular complications",
+        "occurrences": 6
+      },
+      {
+        "term": "Tinted Mode",
+        "definition": "A display mode where the system applies a solid color to text, gauges, and images based on wearer's selected color",
+        "occurrences": 5
+      },
+      {
+        "term": "Timeline",
+        "definition": "The data structure for providing complication data with time-based entries",
+        "occurrences": 4
+      },
+      {
+        "term": "Gauge",
+        "definition": "A visual element that represents numerical values, available in closed, open, and segmented styles",
+        "occurrences": 15
+      }
+    ],
+    "keyFindings": [
+      "Prefer using WidgetKit for watchOS 9+ complications; ClockKit is deprecated",
+      "Supporting more complication families increases availability across watch faces",
+      "Each complication should have a unique deep link to the most relevant app area",
+      "Always-On Retina display requires privacy considerations for sensitive information",
+      "Line widths should generally be 2 points or greater for visibility",
+      "Rectangular complications can appear in Smart Stack starting with watchOS 10",
+      "Tinted mode requires alternative image versions if full-color images don't desaturate well",
+      "When a widget-based complication is offered, ClockKit APIs stop being called"
+    ],
+    "technicalSpecifications": {
+      "minimumWatchOSForWidgetKit": "watchOS 9",
+      "minimumWatchOSForSmartStack": "watchOS 10",
+      "imageScale": "@2x for all Apple Watch displays",
+      "circularMask": "Applied automatically to circular complication images",
+      "rectangularCornerRadius": "4 points applied automatically to large images"
+    },
+    "designDecisions": [
+      {
+        "decision": "Use rounded font style with medium or semibold weight for complication text",
+        "rationale": "Matches Apple's design language and ensures readability at small sizes"
+      },
+      {
+        "decision": "Provide placeholder images for each complication",
+        "rationale": "Ensures good appearance in complication picker and during initial app installation"
+      },
+      {
+        "decision": "Support multiple complications per family",
+        "rationale": "Enables shareable watch faces and user customization around your app"
+      },
+      {
+        "decision": "Use high-contrast colors for primary content in rectangular complications",
+        "rationale": "Makes data easy to understand at a glance"
+      }
+    ]
+  }
+}

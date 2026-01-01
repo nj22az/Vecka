@@ -2,7 +2,8 @@
 //  DailyNotesView.swift
 //  Vecka
 //
-//  Apple-style per-day notes: multiple entries per day with a focused editor.
+//  情報デザイン (Jōhō Dezain) Daily Notes
+//  Simple, direct note creation with time logging
 //
 
 import SwiftUI
@@ -15,12 +16,10 @@ struct DailyNotesView: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.colorScheme) private var colorScheme
 
     @Query private var dayNotes: [DailyNote]
 
-    @State private var isPresentingNewNote = false
-    @State private var editingNote: DailyNote?
+    @State private var isCreating = false
     @State private var didAppear = false
 
     init(selectedDate: Date, isModal: Bool = true, startCreating: Bool = false) {
@@ -28,7 +27,7 @@ struct DailyNotesView: View {
         self.isModal = isModal
         self.startCreating = startCreating
 
-        let day = Calendar.current.startOfDay(for: selectedDate)
+        let day = Calendar.iso8601.startOfDay(for: selectedDate)
         _dayNotes = Query(
             filter: #Predicate<DailyNote> { note in
                 note.day == day
@@ -39,383 +38,149 @@ struct DailyNotesView: View {
     }
 
     var body: some View {
-        List {
-            if let holidayRow = holidayRow {
-                Section {
-                    holidayRow
-                }
-                .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16))
-            }
+        ScrollView {
+            VStack(spacing: JohoDimensions.spacingLG) {
+                // Page Header
+                HStack(alignment: .top) {
+                    JohoPageHeader(
+                        title: selectedDate.formatted(.dateTime.weekday(.wide)),
+                        badge: "NOTES",
+                        subtitle: selectedDate.formatted(date: .long, time: .omitted)
+                    )
 
-            if !dayNotes.isEmpty {
-                Section {
-                    ForEach(dayNotes) { note in
+                    Spacer()
+
+                    if isModal {
                         Button {
-                            editingNote = note
+                            dismiss()
                         } label: {
-                            NoteRow(note: note)
-                        }
-                        .buttonStyle(.plain)
-                        .contextMenu {
-                            Button(Localization.editNote, systemImage: "pencil") {
-                                editingNote = note
-                            }
-                            Button(role: .destructive) {
-                                delete(note)
-                            } label: {
-                                Label(Localization.delete, systemImage: "trash")
-                            }
-                        }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                            Button(role: .destructive) {
-                                delete(note)
-                            } label: {
-                                Label(Localization.delete, systemImage: "trash")
-                            }
+                            JohoActionButton(icon: "xmark")
                         }
                     }
                 }
-            }
-        }
-        .listStyle(.insetGrouped)
-        .navigationTitle(selectedDate.formatted(date: .abbreviated, time: .omitted))
-        .navigationBarTitleDisplayMode(.inline)
-        .background(AppColors.background)
-        .toolbar {
-            if isModal {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button(Localization.done) { dismiss() }
-                        .fontWeight(.semibold)
-                }
-            }
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.top, JohoDimensions.spacingSM)
+                .safeAreaPadding(.top)
 
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    isPresentingNewNote = true
-                } label: {
-                    Image(systemName: "square.and.pencil")
+                // Holidays for this day
+                if let holidays = holidaysForDay, !holidays.isEmpty {
+                    JohoSectionBox(title: "HOLIDAYS", zone: .holidays, icon: "star.fill") {
+                        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                            ForEach(holidays, id: \.id) { holiday in
+                                HStack(spacing: JohoDimensions.spacingSM) {
+                                    Image(systemName: holiday.symbolName ?? "flag.fill")
+                                        .font(.system(size: 14, weight: .bold))
+                                        .foregroundStyle(holiday.isRedDay ? JohoColors.pink : JohoColors.cyan)
+
+                                    Text(holiday.displayTitle)
+                                        .font(JohoFont.body)
+                                        .foregroundStyle(JohoColors.black)
+
+                                    Spacer()
+
+                                    if holiday.isRedDay {
+                                        JohoPill(text: "RED DAY", style: .colored(JohoColors.pink), size: .small)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingLG)
                 }
-                .accessibilityLabel(Localization.addNote)
+
+                // Add Note Button
+                if !isCreating {
+                    Button {
+                        withAnimation(AnimationConstants.quickSpring) {
+                            isCreating = true
+                        }
+                    } label: {
+                        HStack(spacing: JohoDimensions.spacingSM) {
+                            Image(systemName: "plus")
+                                .font(.system(size: 16, weight: .bold))
+                            Text("Add Note")
+                                .font(JohoFont.button)
+                        }
+                        .foregroundStyle(JohoColors.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, JohoDimensions.spacingMD)
+                        .background(JohoColors.black)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+                }
+
+                // Inline Note Editor (Create only - edit/delete in month card)
+                if isCreating {
+                    JohoNoteEditor(
+                        day: selectedDate,
+                        onSave: { content in
+                            createNote(content: content)
+                            withAnimation(AnimationConstants.quickSpring) {
+                                isCreating = false
+                            }
+                        },
+                        onCancel: {
+                            withAnimation(AnimationConstants.quickSpring) {
+                                isCreating = false
+                            }
+                        }
+                    )
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+                }
+
+                // Existing Notes (display only - edit/delete in month card)
+                if !dayNotes.isEmpty {
+                    VStack(spacing: JohoDimensions.spacingSM) {
+                        ForEach(dayNotes) { note in
+                            JohoNoteCard(note: note)
+                        }
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+                }
+
+                // Empty state
+                if dayNotes.isEmpty && !isCreating {
+                    JohoEmptyState(
+                        title: "No Notes",
+                        message: "Tap 'Add Note' to create your first note for this day.",
+                        icon: "note.text",
+                        zone: .notes
+                    )
+                    .padding(.top, JohoDimensions.spacingXL)
+                }
             }
+            .padding(.bottom, JohoDimensions.spacingXL)
         }
-        .sheet(isPresented: $isPresentingNewNote) {
-            NavigationStack {
-                NoteEditorView(
-                    mode: .new(day: Calendar.current.startOfDay(for: selectedDate))
-                )
-            }
-        }
-        .sheet(item: $editingNote) { note in
-            NavigationStack {
-                NoteEditorView(mode: .edit(note: note))
-            }
-        }
+        .johoBackground()
+        .navigationBarHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
         .onAppear {
             guard !didAppear else { return }
             didAppear = true
             if startCreating {
-                isPresentingNewNote = true
+                withAnimation(AnimationConstants.quickSpring) {
+                    isCreating = true
+                }
             }
         }
     }
 
-    private var holidayRow: AnyView? {
-        let day = Calendar.current.startOfDay(for: selectedDate)
-        let holidays = HolidayManager.shared.holidayCache[day] ?? []
-        guard !holidays.isEmpty else { return nil }
+    private var holidaysForDay: [HolidayCacheItem]? {
+        let day = Calendar.iso8601.startOfDay(for: selectedDate)
+        return HolidayManager.shared.holidayCache[day]
+    }
 
-        return AnyView(
-            VStack(alignment: .leading, spacing: 10) {
-                ForEach(holidays) { holiday in
-                    HStack(spacing: 12) {
-                        Image(systemName: holiday.symbolName ?? (holiday.isRedDay ? "flag.fill" : "flag"))
-                            .symbolRenderingMode(.hierarchical)
-                            .foregroundStyle(holiday.isRedDay ? .red : AppColors.accentBlue)
+    private func createNote(content: String) {
+        guard !content.isEmpty else { return }
 
-                        Text(holiday.displayTitle)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.primary)
-
-                        Spacer()
-                    }
-                }
-            }
+        let note = DailyNote(
+            date: Date(),
+            content: content,
+            scheduledAt: nil
         )
-    }
-
-    private func delete(_ note: DailyNote) {
-        modelContext.delete(note)
-        do {
-            try modelContext.save()
-        } catch {
-            Log.w("Failed to delete note: \(error.localizedDescription)")
-        }
-    }
-}
-
-private struct NoteRow: View {
-    let note: DailyNote
-
-    var body: some View {
-        let (title, subtitle) = titleAndSubtitle(from: note.content)
-        let timeSource = note.scheduledAt ?? note.date
-
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 10) {
-                Text(timeSource.formatted(date: .omitted, time: .shortened))
-                    .font(.caption2.weight(.medium))
-                    .foregroundStyle(.secondary)
-                    .monospacedDigit()
-
-                Spacer()
-
-                if note.pinnedToDashboard == true {
-                    Image(systemName: "pin.fill")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                }
-
-                if let color = note.color {
-                    Circle()
-                        .fill(colorForName(color))
-                        .frame(width: 8, height: 8)
-                }
-            }
-
-            HStack(spacing: 8) {
-                Image(systemName: note.symbolName ?? NoteSymbolCatalog.defaultSymbol)
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(.secondary)
-
-                Text(title)
-                    .font(.body.weight(.semibold))
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
-
-                Spacer(minLength: 0)
-            }
-
-            if let subtitle, !subtitle.isEmpty {
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-            }
-        }
-        .padding(.vertical, 4)
-    }
-
-    private func colorForName(_ name: String) -> Color {
-        switch name {
-        case "red": return .red
-        case "blue": return .blue
-        case "green": return .green
-        case "orange": return .orange
-        case "purple": return .purple
-        case "yellow": return .yellow
-        default: return AppColors.accentBlue
-        }
-    }
-
-    private func titleAndSubtitle(from raw: String) -> (String, String?) {
-        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return ("", nil) }
-
-        if let newlineIndex = trimmed.firstIndex(where: \.isNewline) {
-            let firstLine = String(trimmed[..<newlineIndex])
-            let remainder = String(trimmed[trimmed.index(after: newlineIndex)...])
-                .replacingOccurrences(of: "\n", with: " ")
-                .trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-            return (firstLine, remainder.isEmpty ? nil : remainder)
-        }
-
-        let maxTitleLength = 80
-        guard trimmed.count > maxTitleLength else {
-            return (trimmed, nil)
-        }
-
-        let hardSplitIndex = trimmed.index(trimmed.startIndex, offsetBy: maxTitleLength)
-        let prefix = trimmed[..<hardSplitIndex]
-        let wordBoundaryIndex = prefix.lastIndex(where: { $0.isWhitespace })
-
-        let splitIndex: String.Index
-        if let wordBoundaryIndex, trimmed.distance(from: trimmed.startIndex, to: wordBoundaryIndex) >= 40 {
-            splitIndex = wordBoundaryIndex
-        } else {
-            splitIndex = hardSplitIndex
-        }
-
-        let title = String(trimmed[..<splitIndex]).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        let subtitle = String(trimmed[splitIndex...]).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        return (title, subtitle.isEmpty ? nil : subtitle)
-    }
-}
-
-private struct NoteEditorView: View {
-    enum Mode {
-        case new(day: Date)
-        case edit(note: DailyNote)
-    }
-
-    let mode: Mode
-
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.modelContext) private var modelContext
-
-    @State private var text: String = ""
-    @State private var selectedColor: String? = nil
-    @State private var selectedSymbolName: String? = nil
-    @State private var isPinnedToDashboard = false
-    @State private var isAllDay = true
-    @State private var scheduledDay = Date()
-    @State private var scheduledTime = Date()
-    @State private var showDetails = false
-    @FocusState private var isFocused: Bool
-    @State private var showDeleteConfirmation = false
-
-    var body: some View {
-        ZStack(alignment: .topLeading) {
-            AppColors.background.ignoresSafeArea()
-
-            TextEditor(text: $text)
-                .focused($isFocused)
-                .scrollContentBackground(.hidden)
-                .background(AppColors.background)
-                .font(.body)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-
-            if text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                Text(Localization.notesPlaceholder)
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 18)
-                    .padding(.vertical, 16)
-                    .allowsHitTesting(false)
-            }
-        }
-        .navigationTitle(title)
-        .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            hydrate()
-            isFocused = true
-        }
-        .sheet(isPresented: $showDetails) {
-            NavigationStack {
-                NoteDetailsView(
-                    day: $scheduledDay,
-                    pinnedToDashboard: $isPinnedToDashboard,
-                    allDay: $isAllDay,
-                    time: $scheduledTime,
-                    color: $selectedColor,
-                    symbolName: $selectedSymbolName,
-                    isEditing: isEditing,
-                    onRequestDelete: {
-                        showDeleteConfirmation = true
-                    }
-                )
-            }
-        }
-        .alert(Localization.delete, isPresented: $showDeleteConfirmation) {
-            Button(Localization.delete, role: .destructive) {
-                deleteIfEditing()
-                dismiss()
-            }
-            Button(Localization.cancel, role: .cancel) {}
-        } message: {
-            Text(Localization.deleteNoteConfirmation)
-        }
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button(Localization.cancel) { dismiss() }
-            }
-
-            ToolbarItem(placement: .confirmationAction) {
-                Button(Localization.save) {
-                    save()
-                    dismiss()
-                }
-                .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-            }
-
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    showDetails = true
-                } label: {
-                    Image(systemName: "info.circle")
-                }
-                .accessibilityLabel(Localization.noteDetails)
-            }
-        }
-    }
-
-    private var isEditing: Bool {
-        if case .edit = mode { return true }
-        return false
-    }
-
-    private var title: String {
-        switch mode {
-        case .new:
-            return Localization.createNote
-        case .edit:
-            return Localization.editNote
-        }
-    }
-
-    private func hydrate() {
-        switch mode {
-        case .new(let day):
-            text = ""
-            selectedColor = nil
-            selectedSymbolName = nil
-            isPinnedToDashboard = false
-            isAllDay = true
-            scheduledDay = day
-            scheduledTime = defaultTime(for: day)
-        case .edit(let note):
-            text = note.content
-            selectedColor = note.color
-            selectedSymbolName = note.symbolName
-            isPinnedToDashboard = note.pinnedToDashboard ?? false
-            if let scheduledAt = note.scheduledAt {
-                isAllDay = false
-                scheduledDay = Calendar.current.startOfDay(for: scheduledAt)
-                scheduledTime = scheduledAt
-            } else {
-                isAllDay = true
-                scheduledDay = note.day
-                scheduledTime = defaultTime(for: note.day)
-            }
-        }
-    }
-
-    private func save() {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-
-        switch mode {
-        case .new:
-            let now = Date()
-            let note = DailyNote(
-                date: now,
-                content: trimmed,
-                color: selectedColor,
-                symbolName: selectedSymbolName
-            )
-            note.day = scheduledDay
-            note.pinnedToDashboard = isPinnedToDashboard
-            note.scheduledAt = isAllDay ? nil : combine(day: scheduledDay, time: scheduledTime)
-            modelContext.insert(note)
-
-        case .edit(let note):
-            note.content = trimmed
-            note.color = selectedColor
-            note.symbolName = selectedSymbolName
-            note.lastModified = Date()
-            note.pinnedToDashboard = isPinnedToDashboard
-            note.day = scheduledDay
-            note.scheduledAt = isAllDay ? nil : combine(day: scheduledDay, time: scheduledTime)
-        }
+        note.day = Calendar.iso8601.startOfDay(for: selectedDate)
+        modelContext.insert(note)
 
         do {
             try modelContext.save()
@@ -423,163 +188,490 @@ private struct NoteEditorView: View {
             Log.w("Failed to save note: \(error.localizedDescription)")
         }
     }
+}
 
-    private func deleteIfEditing() {
-        guard case .edit(let note) = mode else { return }
-        modelContext.delete(note)
-        try? modelContext.save()
+// MARK: - 情報デザイン Note Card (Display only - edit/delete in month card)
+
+private struct JohoNoteCard: View {
+    let note: DailyNote
+
+    // Category color from note, or default yellow
+    private var categoryColor: Color {
+        if let hex = note.color {
+            return Color(hex: hex)
+        }
+        return SpecialDayType.note.accentColor
     }
 
-    private func defaultTime(for day: Date) -> Date {
-        let calendar = Calendar.current
-        return calendar.date(bySettingHour: 9, minute: 0, second: 0, of: day) ?? day
+    // Priority symbol (情報デザイン マルバツ)
+    private var prioritySymbol: String? {
+        guard let priority = note.priority else { return nil }
+        switch priority {
+        case "high": return "◎"
+        case "low": return "△"
+        default: return nil  // Normal priority doesn't need symbol
+        }
     }
 
-    private func combine(day: Date, time: Date) -> Date {
-        let calendar = Calendar.current
+    var body: some View {
+        HStack(spacing: JohoDimensions.spacingMD) {
+            // Category color indicator
+            Circle()
+                .fill(categoryColor)
+                .frame(width: 12, height: 12)
+                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+
+            // Priority symbol if high or low
+            if let symbol = prioritySymbol {
+                Text(symbol)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(JohoColors.black)
+            }
+
+            // Note content
+            Text(note.content)
+                .font(JohoFont.body)
+                .foregroundStyle(JohoColors.black)
+                .lineLimit(2)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            // Time badge if scheduled
+            if let scheduledAt = note.scheduledAt {
+                Text(scheduledAt.formatted(date: .omitted, time: .shortened))
+                    .font(JohoFont.caption)
+                    .foregroundStyle(JohoColors.black.opacity(0.6))
+            }
+        }
+        .padding(JohoDimensions.spacingMD)
+        .background(JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+        )
+    }
+}
+
+// MARK: - 情報デザイン Note Editor (Create only - edit/delete in month card)
+
+private struct JohoNoteEditor: View {
+    let day: Date
+    let onSave: (String) -> Void
+    let onCancel: () -> Void
+
+    @State private var text: String = ""
+    @FocusState private var isFocused: Bool
+
+    // Note accent color (cream/yellow from design system)
+    private let accentColor = SpecialDayType.note.accentColor
+
+    private var canSave: Bool {
+        !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    var body: some View {
+        VStack(spacing: JohoDimensions.spacingMD) {
+            // Header with Cancel/Save buttons (情報デザイン style - outside card)
+            HStack {
+                Button(action: onCancel) {
+                    Text("Cancel")
+                        .font(JohoFont.body)
+                        .foregroundStyle(JohoColors.black)
+                        .padding(.horizontal, JohoDimensions.spacingMD)
+                        .padding(.vertical, JohoDimensions.spacingMD)
+                        .background(JohoColors.white)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                        )
+                }
+
+                Spacer()
+
+                Button {
+                    onSave(text.trimmingCharacters(in: .whitespacesAndNewlines))
+                    HapticManager.notification(.success)
+                } label: {
+                    Text("Save")
+                        .font(JohoFont.body.bold())
+                        .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                        .padding(.horizontal, JohoDimensions.spacingLG)
+                        .padding(.vertical, JohoDimensions.spacingMD)
+                        .background(canSave ? accentColor : JohoColors.white)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                        )
+                }
+                .disabled(!canSave)
+            }
+
+            // Main content card
+            VStack(spacing: JohoDimensions.spacingLG) {
+                // Title with type indicator (情報デザイン)
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    Circle()
+                        .fill(accentColor)
+                        .frame(width: 20, height: 20)
+                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+                    Text("New Note")
+                        .font(JohoFont.displaySmall)
+                        .foregroundStyle(JohoColors.black)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                // Note icon
+                ZStack {
+                    Circle()
+                        .fill(accentColor.opacity(0.2))
+                        .frame(width: 60, height: 60)
+                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+
+                    Image(systemName: "note.text")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundStyle(accentColor)
+                }
+
+                // Note content field
+                VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                    JohoPill(text: "NOTE", style: .whiteOnBlack, size: .small)
+
+                    ZStack(alignment: .topLeading) {
+                        TextEditor(text: $text)
+                            .focused($isFocused)
+                            .scrollContentBackground(.hidden)
+                            .font(JohoFont.body)
+                            .foregroundStyle(JohoColors.black)
+                            .frame(minHeight: 100)
+
+                        if text.isEmpty {
+                            Text("What's on your mind?")
+                                .font(JohoFont.body)
+                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                                .padding(.top, 8)
+                                .padding(.leading, 4)
+                                .allowsHitTesting(false)
+                        }
+                    }
+                    .padding(JohoDimensions.spacingSM)
+                    .background(JohoColors.white)
+                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                    .overlay(
+                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                    )
+                }
+            }
+            .padding(JohoDimensions.spacingLG)
+            .background(JohoColors.white)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+            )
+        }
+        .onAppear {
+            isFocused = true
+        }
+    }
+}
+
+// MARK: - 情報デザイン Note Editor Sheet (Standalone - like Event editor)
+
+/// Standalone note editor sheet matching the Event editor pattern
+/// Used when creating notes from the Star page add menu
+/// Features based on 情報デザイン LATCH method: Time, Category, Hierarchy (priority)
+struct JohoNoteEditorSheet: View {
+    let selectedDate: Date
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+
+    @State private var text: String = ""
+    @FocusState private var isFocused: Bool
+
+    // Time scheduling
+    @State private var hasTime: Bool = false
+    @State private var selectedTime: Date = Date()
+
+    // Priority (情報デザイン hierarchy: ◎ ○ △)
+    @State private var priority: NotePriority = .normal
+
+    // Category color tag
+    @State private var categoryColor: String = "ECC94B"  // Default yellow (note color)
+
+    // Note accent color (cream/yellow from design system)
+    private let accentColor = SpecialDayType.note.accentColor
+
+    // Category color palette (semantic colors)
+    private let categoryColors: [(name: String, hex: String)] = [
+        ("Note", "ECC94B"),      // Yellow - default
+        ("Work", "A5F3FC"),      // Cyan - events/tasks
+        ("Personal", "E9D5FF"),  // Purple - people
+        ("Urgent", "FECDD3"),    // Pink - important
+        ("Money", "BBF7D0"),     // Green - financial
+        ("Travel", "FED7AA")     // Orange - trips
+    ]
+
+    private var canSave: Bool {
+        !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var selectedCategoryColor: Color {
+        Color(hex: categoryColor)
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: JohoDimensions.spacingLG) {
+                // Header with Cancel/Save buttons (情報デザイン style)
+                HStack {
+                    Button { dismiss() } label: {
+                        Text("Cancel")
+                            .font(JohoFont.body)
+                            .foregroundStyle(JohoColors.black)
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+                            .padding(.vertical, JohoDimensions.spacingMD)
+                            .background(JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            )
+                    }
+
+                    Spacer()
+
+                    Button {
+                        saveNote()
+                        dismiss()
+                    } label: {
+                        Text("Save")
+                            .font(JohoFont.body.bold())
+                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                            .padding(.horizontal, JohoDimensions.spacingLG)
+                            .padding(.vertical, JohoDimensions.spacingMD)
+                            .background(canSave ? accentColor : JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            )
+                    }
+                    .disabled(!canSave)
+                }
+                .padding(.top, JohoDimensions.spacingLG)
+
+                // Main content card
+                VStack(spacing: JohoDimensions.spacingLG) {
+                    // Title with type indicator (情報デザイン)
+                    HStack(spacing: JohoDimensions.spacingSM) {
+                        Circle()
+                            .fill(selectedCategoryColor)
+                            .frame(width: 20, height: 20)
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+                        Text("New Note")
+                            .font(JohoFont.displaySmall)
+                            .foregroundStyle(JohoColors.black)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    // Note icon with category color
+                    ZStack {
+                        Circle()
+                            .fill(selectedCategoryColor.opacity(0.2))
+                            .frame(width: 60, height: 60)
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+
+                        Image(systemName: "note.text")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundStyle(selectedCategoryColor)
+                    }
+
+                    // Note content field
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "NOTE", style: .whiteOnBlack, size: .small)
+
+                        ZStack(alignment: .topLeading) {
+                            TextEditor(text: $text)
+                                .focused($isFocused)
+                                .scrollContentBackground(.hidden)
+                                .font(JohoFont.body)
+                                .foregroundStyle(JohoColors.black)
+                                .frame(minHeight: 100)
+
+                            if text.isEmpty {
+                                Text("What's on your mind?")
+                                    .font(JohoFont.body)
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                                    .padding(.top, 8)
+                                    .padding(.leading, 4)
+                                    .allowsHitTesting(false)
+                            }
+                        }
+                        .padding(JohoDimensions.spacingSM)
+                        .background(JohoColors.white)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                        )
+                    }
+
+                    // Category color picker (情報デザイン LATCH: Category)
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "CATEGORY", style: .whiteOnBlack, size: .small)
+
+                        HStack(spacing: 10) {
+                            ForEach(categoryColors, id: \.hex) { color in
+                                Button {
+                                    categoryColor = color.hex
+                                    HapticManager.selection()
+                                } label: {
+                                    Circle()
+                                        .fill(Color(hex: color.hex))
+                                        .frame(width: 36, height: 36)
+                                        .overlay(
+                                            Circle()
+                                                .stroke(JohoColors.black, lineWidth: categoryColor == color.hex ? 3 : 1.5)
+                                        )
+                                }
+                            }
+                        }
+                    }
+
+                    // Priority picker (情報デザイン LATCH: Hierarchy using マルバツ symbols)
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "PRIORITY", style: .whiteOnBlack, size: .small)
+
+                        HStack(spacing: JohoDimensions.spacingMD) {
+                            ForEach(NotePriority.allCases, id: \.self) { p in
+                                Button {
+                                    priority = p
+                                    HapticManager.selection()
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        Text(p.symbol)
+                                            .font(.system(size: 16, weight: .bold))
+                                        Text(p.label)
+                                            .font(JohoFont.bodySmall)
+                                    }
+                                    .foregroundStyle(priority == p ? JohoColors.white : JohoColors.black)
+                                    .padding(.horizontal, JohoDimensions.spacingMD)
+                                    .padding(.vertical, JohoDimensions.spacingSM)
+                                    .background(priority == p ? JohoColors.black : JohoColors.white)
+                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                    .overlay(
+                                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Time section (情報デザイン LATCH: Time)
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        HStack {
+                            JohoPill(text: "TIME", style: .whiteOnBlack, size: .small)
+                            Spacer()
+                            JohoToggle(isOn: $hasTime, accentColor: accentColor)
+                        }
+
+                        if hasTime {
+                            HStack {
+                                DatePicker("", selection: $selectedTime, displayedComponents: .hourAndMinute)
+                                    .labelsHidden()
+                                    .tint(accentColor)
+                                Spacer()
+                            }
+                        }
+                    }
+                }
+                .padding(JohoDimensions.spacingLG)
+                .background(JohoColors.white)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                )
+            }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.bottom, JohoDimensions.spacingXL)
+        }
+        .johoBackground()
+        .onAppear {
+            isFocused = true
+            // Set initial time to now
+            selectedTime = combineDayAndTime(day: selectedDate, time: Date())
+        }
+    }
+
+    // NOTE: JohoToggle is now in JohoDesignSystem.swift
+
+    private func combineDayAndTime(day: Date, time: Date) -> Date {
+        let calendar = Calendar.iso8601
         let timeComponents = calendar.dateComponents([.hour, .minute], from: time)
         return calendar.date(
-            bySettingHour: timeComponents.hour ?? 0,
+            bySettingHour: timeComponents.hour ?? 9,
             minute: timeComponents.minute ?? 0,
             second: 0,
             of: day
         ) ?? day
     }
+
+    private func saveNote() {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        let note = DailyNote(
+            date: Date(),
+            content: trimmed,
+            scheduledAt: hasTime ? selectedTime : nil
+        )
+        note.day = Calendar.iso8601.startOfDay(for: selectedDate)
+        // Store priority and category color in the note
+        note.priority = priority.rawValue
+        note.color = categoryColor
+        modelContext.insert(note)
+
+        do {
+            try modelContext.save()
+            HapticManager.notification(.success)
+        } catch {
+            Log.w("Failed to save note: \(error.localizedDescription)")
+        }
+    }
 }
 
-private struct NoteDetailsView: View {
-    @Binding var day: Date
-    @Binding var pinnedToDashboard: Bool
-    @Binding var allDay: Bool
-    @Binding var time: Date
-    @Binding var color: String?
-    @Binding var symbolName: String?
-    let isEditing: Bool
-    let onRequestDelete: () -> Void
+// MARK: - Note Priority (情報デザイン マルバツ hierarchy)
 
-    @Environment(\.dismiss) private var dismiss
+enum NotePriority: String, CaseIterable {
+    case high = "high"
+    case normal = "normal"
+    case low = "low"
 
-    var body: some View {
-        let calendar = Calendar.current
-        let dayBinding = Binding<Date>(
-            get: { day },
-            set: { newValue in
-                day = calendar.startOfDay(for: newValue)
-            }
-        )
-
-        Form {
-            Section {
-                DatePicker(Localization.noteDate, selection: dayBinding, displayedComponents: [.date])
-
-                Toggle(Localization.noteAllDay, isOn: $allDay)
-
-                if !allDay {
-                    DatePicker(Localization.noteTime, selection: $time, displayedComponents: [.hourAndMinute])
-                }
-            } header: {
-                Text(Localization.noteSchedule)
-            }
-
-            Section {
-                NavigationLink {
-                    NoteTagColorPickerView(selectedColor: $color)
-                } label: {
-                    HStack(spacing: 12) {
-                        Circle()
-                            .fill(colorSwatch)
-                            .frame(width: 14, height: 14)
-
-                        Text("Tag")
-                            .foregroundStyle(.primary)
-
-                        Spacer()
-
-                        Text(colorLabel)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-
-                NavigationLink {
-                    NoteIconPickerView(selection: $symbolName)
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: symbolName ?? NoteSymbolCatalog.defaultSymbol)
-                            .symbolRenderingMode(.hierarchical)
-                            .foregroundStyle(.secondary)
-                            .frame(width: 28, alignment: .center)
-
-                        Text("Icon")
-                            .foregroundStyle(.primary)
-
-                        Spacer()
-
-                        Text(symbolLabel)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-            } header: {
-                Text("Appearance")
-            }
-
-            Section {
-                Toggle(Localization.notePinnedToDashboard, isOn: $pinnedToDashboard)
-                    .tint(AppColors.accentBlue)
-            } header: {
-                Text(Localization.noteDashboard)
-            } footer: {
-                Text(Localization.notePinnedHint)
-            }
-
-            if isEditing {
-                Section {
-                    Button(role: .destructive) {
-                        dismiss()
-                        onRequestDelete()
-                    } label: {
-                        Text("Delete Note")
-                    }
-                }
-            }
-        }
-        .navigationTitle(Localization.noteDetails)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-                Button(Localization.done) { dismiss() }
-                    .fontWeight(.semibold)
-            }
+    var symbol: String {
+        switch self {
+        case .high: return "◎"    // Primary - most important
+        case .normal: return "○"  // Secondary - standard
+        case .low: return "△"     // Tertiary - optional
         }
     }
 
-    private var colorLabel: String {
-        guard let color, let noteColor = NoteColor(rawValue: color) else { return Localization.none }
-        return noteColor.accessibilityLabel
-    }
-
-    private var colorSwatch: Color {
-        guard let color, let noteColor = NoteColor(rawValue: color) else { return .secondary.opacity(0.25) }
-        return noteColor.color
-    }
-
-    private var symbolLabel: String {
-        guard let symbolName else { return Localization.none }
-        return NoteSymbolCatalog.label(for: symbolName)
+    var label: String {
+        switch self {
+        case .high: return "High"
+        case .normal: return "Normal"
+        case .low: return "Low"
+        }
     }
 }
 
 #Preview {
-    Group {
-        if let container = try? ModelContainer(
-            for: DailyNote.self,
-            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
-        ) {
-            NavigationStack {
-                DailyNotesView(selectedDate: Date(), isModal: true)
-            }
-            .modelContainer(container)
-        } else {
-            Text("Preview unavailable")
-        }
+    NavigationStack {
+        DailyNotesView(selectedDate: Date(), isModal: true)
+            .modelContainer(for: DailyNote.self, inMemory: true)
     }
 }

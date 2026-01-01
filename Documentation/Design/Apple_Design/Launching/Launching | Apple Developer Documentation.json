@@ -1,0 +1,1938 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "Launching | Apple Developer Documentation",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": null,
+      "pageCount": 1,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "launching",
+        "launch screen",
+        "onboarding",
+        "iOS",
+        "iPadOS",
+        "macOS",
+        "tvOS",
+        "visionOS",
+        "watchOS",
+        "Apple Human Interface Guidelines",
+        "app launch",
+        "splash screen"
+      ],
+      "summary": "Apple Developer Documentation page providing Human Interface Guidelines for app launching experiences. The document covers best practices for launch screens, platform-specific considerations for iOS, iPadOS, tvOS, and visionOS, and guidance on creating streamlined launch experiences that help users start using apps immediately.",
+      "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+      "legalLinks": [
+        "Terms of Use",
+        "Privacy Policy",
+        "Agreements and Guidelines"
+      ],
+      "feedbackUrl": "Feedback Assistant"
+    },
+    "pages": [
+      {
+        "pageNumber": 1,
+        "dimensions": {
+          "width": 1275,
+          "height": 4950,
+          "unit": "pixels (estimated)"
+        },
+        "orientation": "portrait",
+        "backgroundColor": "#FFFFFF",
+        "layout": {
+          "type": "multi-column",
+          "columns": 3,
+          "margins": {
+            "top": 60,
+            "right": 80,
+            "bottom": 100,
+            "left": 80
+          },
+          "headerPresent": true,
+          "footerPresent": true
+        },
+        "elements": [
+          {
+            "elementId": "page1-header-navigation-primary",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 0,
+              "width": 1275,
+              "height": 50
+            },
+            "zIndex": 100,
+            "content": {
+              "navigationType": "primary-header",
+              "items": [
+                {
+                  "label": "Developer",
+                  "type": "logo-link",
+                  "icon": "Apple logo"
+                },
+                {
+                  "label": "News",
+                  "type": "nav-link"
+                },
+                {
+                  "label": "Discover",
+                  "type": "nav-link"
+                },
+                {
+                  "label": "Design",
+                  "type": "nav-link",
+                  "state": "current"
+                },
+                {
+                  "label": "Develop",
+                  "type": "nav-link"
+                },
+                {
+                  "label": "Distribute",
+                  "type": "nav-link"
+                },
+                {
+                  "label": "Support",
+                  "type": "nav-link"
+                },
+                {
+                  "label": "Account",
+                  "type": "nav-link"
+                },
+                {
+                  "label": "Search",
+                  "type": "icon-button",
+                  "icon": "magnifying glass"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-header-navigation-secondary",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 50,
+              "width": 1275,
+              "height": 40
+            },
+            "zIndex": 99,
+            "content": {
+              "navigationType": "secondary-header",
+              "breadcrumb": [
+                {
+                  "label": "Apple logo",
+                  "type": "icon"
+                },
+                {
+                  "label": "|",
+                  "type": "separator"
+                },
+                {
+                  "label": "Design",
+                  "type": "breadcrumb-link"
+                }
+              ],
+              "tabs": [
+                {
+                  "label": "Overview",
+                  "type": "tab-link"
+                },
+                {
+                  "label": "What's New",
+                  "type": "tab-link"
+                },
+                {
+                  "label": "Get Started",
+                  "type": "tab-link"
+                },
+                {
+                  "label": "Guidelines",
+                  "type": "tab-link",
+                  "state": "current"
+                },
+                {
+                  "label": "Resources",
+                  "type": "tab-link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-breadcrumb",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 80,
+              "y": 110,
+              "width": 300,
+              "height": 20
+            },
+            "zIndex": 50,
+            "content": {
+              "navigationType": "breadcrumb",
+              "items": [
+                {
+                  "label": "Developer",
+                  "type": "link"
+                },
+                {
+                  "label": "Documentation",
+                  "type": "link"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-language-selector",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 1100,
+              "y": 110,
+              "width": 80,
+              "height": 20
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "English",
+              "type": "language-selector",
+              "hasDropdown": true
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-main-title",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 80,
+              "y": 150,
+              "width": 500,
+              "height": 60
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Launching",
+              "level": 1,
+              "fontWeight": "bold",
+              "fontSize": "48px (estimated)",
+              "fontFamily": "SF Pro Display",
+              "textColor": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-subtitle",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 80,
+              "y": 220,
+              "width": 500,
+              "height": 60
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "A streamlined launch experience helps people start using your app or game immediately.",
+              "fontSize": "18px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#666666",
+              "fontStyle": "regular"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-hero-image",
+            "elementType": "image",
+            "boundingBox": {
+              "x": 80,
+              "y": 290,
+              "width": 500,
+              "height": 280
+            },
+            "zIndex": 40,
+            "content": {
+              "imageType": "illustration",
+              "description": "Abstract hero illustration showing layered rectangular shapes representing app screens or windows in a stylized, minimalist design. The shapes are arranged in a cascading pattern suggesting depth and the launch/transition experience. Colors include soft blues, purples, and warm tones with subtle gradients, creating a modern Apple design aesthetic.",
+              "subjects": [
+                "abstract rectangles",
+                "layered screens",
+                "geometric shapes"
+              ],
+              "composition": "Centered composition with overlapping rectangular forms creating depth through layering and subtle shadows",
+              "colorPalette": [
+                "soft blue",
+                "lavender purple",
+                "warm peach/coral",
+                "white",
+                "light gray"
+              ],
+              "mood": "Modern, clean, professional",
+              "technicalDetails": "Vector illustration with gradient fills and subtle shadows",
+              "textInImage": [],
+              "contextualRelevance": "Visual representation of the app launching concept, showing layered screens transitioning or loading"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-main-title",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-supported-platforms-sidebar",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 620,
+              "y": 150,
+              "width": 200,
+              "height": 200
+            },
+            "zIndex": 50,
+            "content": {
+              "title": "Supported platforms",
+              "platformIcons": [
+                {
+                  "platform": "iOS",
+                  "icon": "iPhone icon"
+                },
+                {
+                  "platform": "iPadOS",
+                  "icon": "iPad icon"
+                },
+                {
+                  "platform": "macOS",
+                  "icon": "Mac icon"
+                },
+                {
+                  "platform": "tvOS",
+                  "icon": "Apple TV icon"
+                },
+                {
+                  "platform": "visionOS",
+                  "icon": "Vision Pro icon"
+                },
+                {
+                  "platform": "watchOS",
+                  "icon": "Apple Watch icon"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-toc-sidebar",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 620,
+              "y": 360,
+              "width": 200,
+              "height": 150
+            },
+            "zIndex": 50,
+            "content": {
+              "navigationType": "table-of-contents",
+              "items": [
+                {
+                  "label": "Launching",
+                  "level": 1,
+                  "state": "current"
+                },
+                {
+                  "label": "Best practices",
+                  "level": 2
+                },
+                {
+                  "label": "Launch screens",
+                  "level": 2
+                },
+                {
+                  "label": "Platform considerations",
+                  "level": 2
+                },
+                {
+                  "label": "Resources",
+                  "level": 2
+                },
+                {
+                  "label": "Change log",
+                  "level": 2
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-intro-paragraph",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 80,
+              "y": 590,
+              "width": 500,
+              "height": 100
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Launching begins when someone opens your app or game, includes an initial download, and ends when the first screen is ready. After launching completes, you might offer an onboarding experience, which can give people a high-level view of your app or game.",
+              "fontSize": "16px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#333333",
+              "links": [
+                {
+                  "text": "onboarding",
+                  "type": "internal-link",
+                  "destination": "onboarding documentation"
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practices-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 80,
+              "y": 710,
+              "width": 500,
+              "height": 40
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Best practices",
+              "level": 2,
+              "fontWeight": "bold",
+              "fontSize": "28px (estimated)",
+              "fontFamily": "SF Pro Display",
+              "textColor": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-best-practice-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 80,
+              "y": 760,
+              "width": 500,
+              "height": 60
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Launch instantly. People want to start interacting with your app or game right away, and sometimes they don't want to wait more than a couple of seconds.",
+              "fontSize": "16px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#333333",
+              "emphasis": [
+                {
+                  "text": "Launch instantly.",
+                  "style": "bold"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-best-practices-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-best-practice-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 80,
+              "y": 830,
+              "width": 500,
+              "height": 100
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "If the platform requires it, provide a launch screen. In iOS, iPadOS, and tvOS, the system displays your launch screen the moment your app or game starts and quickly replaces it with your first screen, giving people the impression that your experience is fast and responsive. For guidance, see Launch screens. macOS, visionOS, and watchOS don't require launch screens.",
+              "fontSize": "16px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#333333",
+              "emphasis": [
+                {
+                  "text": "If the platform requires it, provide a launch screen.",
+                  "style": "bold"
+                }
+              ],
+              "links": [
+                {
+                  "text": "Launch screens",
+                  "type": "internal-link",
+                  "destination": "#launch-screens"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-best-practices-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-best-practice-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 80,
+              "y": 940,
+              "width": 500,
+              "height": 120
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "If you need a splash screen, consider displaying it at the beginning of your onboarding flow. A splash screen is a beautiful graphic that succinctly communicates branding and other information you need to provide. If you don't provide an onboarding experience, you might display your splash screen as soon as launching completes.",
+              "fontSize": "16px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#333333",
+              "emphasis": [
+                {
+                  "text": "If you need a splash screen, consider displaying it at the beginning of your onboarding flow.",
+                  "style": "bold"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-best-practices-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-best-practice-4",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 80,
+              "y": 1070,
+              "width": 500,
+              "height": 120
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Restore the previous state when your app restarts so people can continue where they left off. Avoid making people retrace steps to reach their previous location in your app or game. Restore granular details of the previous state as much as possible. For example, scroll the view to people's most recent position, and display windows in the same state and location in which people left them.",
+              "fontSize": "16px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#333333",
+              "emphasis": [
+                {
+                  "text": "Restore the previous state when your app restarts so people can continue where they left off.",
+                  "style": "bold"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-best-practices-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-launch-screens-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 80,
+              "y": 1210,
+              "width": 500,
+              "height": 40
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Launch screens",
+              "level": 2,
+              "fontWeight": "bold",
+              "fontSize": "28px (estimated)",
+              "fontFamily": "SF Pro Display",
+              "textColor": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-launch-screens-applicability",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 80,
+              "y": 1260,
+              "width": 500,
+              "height": 25
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Not applicable for macOS, visionOS, or watchOS.",
+              "fontSize": "14px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#666666",
+              "fontStyle": "italic"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-launch-screens-heading",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-launch-screen-practice-1",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 80,
+              "y": 1295,
+              "width": 500,
+              "height": 100
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Downplay the launch experience. A launch screen isn't part of an onboarding experience or a splash screen, and it isn't an opportunity for artistic expression. A launch screen's sole function is to enhance the perception of your experience as quick to launch and immediately ready to use.",
+              "fontSize": "16px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#333333",
+              "emphasis": [
+                {
+                  "text": "Downplay the launch experience.",
+                  "style": "bold"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-launch-screens-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-launch-screen-practice-2",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 80,
+              "y": 1405,
+              "width": 500,
+              "height": 140
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Design a launch screen that's nearly identical to the first screen of your app or game. If you include elements that look different when launching completes, people may experience an unpleasant flash between the launch screen and your first screen. If your app or game displays a solid color before transitioning to the first screen, create a launch screen that displays only that solid color. Also make sure that your launch screen matches the device's current orientation and appearance mode.",
+              "fontSize": "16px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#333333",
+              "emphasis": [
+                {
+                  "text": "Design a launch screen that's nearly identical to the first screen of your app or game.",
+                  "style": "bold"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-launch-screens-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-launch-screen-practice-3",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 80,
+              "y": 1555,
+              "width": 500,
+              "height": 80
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Avoid including text on your launch screen, even if your first screen displays text. Because the content in a launch screen doesn't change, any text you display won't be localized.",
+              "fontSize": "16px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#333333",
+              "emphasis": [
+                {
+                  "text": "Avoid including text on your launch screen, even if your first screen displays text.",
+                  "style": "bold"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-launch-screens-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-launch-screen-practice-4",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 80,
+              "y": 1645,
+              "width": 500,
+              "height": 80
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Don't advertise. The launch screen isn't a branding opportunity. Avoid creating a screen that looks like a splash screen or an \"About\" window, and don't include logos or other branding elements unless they're a fixed part of your app's first screen.",
+              "fontSize": "16px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#333333",
+              "emphasis": [
+                {
+                  "text": "Don't advertise.",
+                  "style": "bold"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-launch-screens-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-platform-considerations-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 80,
+              "y": 1745,
+              "width": 500,
+              "height": 40
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Platform considerations",
+              "level": 2,
+              "fontWeight": "bold",
+              "fontSize": "28px (estimated)",
+              "fontFamily": "SF Pro Display",
+              "textColor": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-platform-no-considerations",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 80,
+              "y": 1795,
+              "width": 500,
+              "height": 25
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "No additional considerations for macOS or watchOS.",
+              "fontSize": "14px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#666666",
+              "fontStyle": "italic"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-platform-considerations-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-ios-ipados-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 80,
+              "y": 1840,
+              "width": 500,
+              "height": 35
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "iOS, iPadOS",
+              "level": 3,
+              "fontWeight": "semibold",
+              "fontSize": "22px (estimated)",
+              "fontFamily": "SF Pro Display",
+              "textColor": "#000000"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-platform-considerations-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-ios-ipados-content",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 80,
+              "y": 1885,
+              "width": 500,
+              "height": 120
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Launch in the appropriate orientation. If your app or game supports both portrait and landscape modes, launch using the device's current orientation. If your interface only runs in one orientation, launch in that orientation and let people rotate the device if necessary. Ensure a landscape-only interface responds correctly, regardless of whether people enter landscape orientation by rotating the device left or right. For guidance, see Layout.",
+              "fontSize": "16px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#333333",
+              "emphasis": [
+                {
+                  "text": "Launch in the appropriate orientation.",
+                  "style": "bold"
+                }
+              ],
+              "links": [
+                {
+                  "text": "Layout",
+                  "type": "internal-link",
+                  "destination": "Layout documentation"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-ios-ipados-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-tvos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 80,
+              "y": 2025,
+              "width": 500,
+              "height": 35
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "tvOS",
+              "level": 3,
+              "fontWeight": "semibold",
+              "fontSize": "22px (estimated)",
+              "fontFamily": "SF Pro Display",
+              "textColor": "#000000"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-platform-considerations-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-tvos-note",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 80,
+              "y": 2070,
+              "width": 500,
+              "height": 60
+            },
+            "zIndex": 50,
+            "content": {
+              "type": "note",
+              "label": "Note",
+              "text": "Unlike the layered images throughout much of a tvOS app, the launch screen is static.",
+              "fontSize": "14px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#666666",
+              "backgroundColor": "#F5F5F7",
+              "links": [
+                {
+                  "text": "layered images",
+                  "type": "internal-link",
+                  "destination": "layered images documentation"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-tvos-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-tvos-content",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 80,
+              "y": 2140,
+              "width": 500,
+              "height": 100
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "In a live-viewing app, consider automatically starting playback soon after people start the app. People come to your app to watch TV, so you might want to start playing new or recently viewed live content after a few seconds of inactivity. For guidance, see Live-viewing apps.",
+              "fontSize": "16px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#333333",
+              "emphasis": [
+                {
+                  "text": "In a live-viewing app, consider automatically starting playback soon after people start the app.",
+                  "style": "bold"
+                }
+              ],
+              "links": [
+                {
+                  "text": "Live-viewing apps",
+                  "type": "internal-link",
+                  "destination": "Live-viewing apps documentation"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-tvos-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-visionos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 80,
+              "y": 2260,
+              "width": 500,
+              "height": 35
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "visionOS",
+              "level": 3,
+              "fontWeight": "semibold",
+              "fontSize": "22px (estimated)",
+              "fontFamily": "SF Pro Display",
+              "textColor": "#000000"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-platform-considerations-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-visionos-content",
+            "elementType": "paragraph",
+            "boundingBox": {
+              "x": 80,
+              "y": 2305,
+              "width": 500,
+              "height": 140
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Consider launching in the Shared Space even if your app is fully immersive. Opening a window in the Shared Space lets you provide more context about your app or game while giving it time to load, and it also lets you present a control that people can use to open your fully immersive experience. In general, people appreciate being able to choose when to transition to a Full Space, especially if they're currently running other apps in the Shared Space. For guidance, see Immersive experiences.",
+              "fontSize": "16px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#333333",
+              "emphasis": [
+                {
+                  "text": "Consider launching in the Shared Space even if your app is fully immersive.",
+                  "style": "bold"
+                }
+              ],
+              "links": [
+                {
+                  "text": "Immersive experiences",
+                  "type": "internal-link",
+                  "destination": "Immersive experiences documentation"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-visionos-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-resources-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 80,
+              "y": 2465,
+              "width": 500,
+              "height": 40
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Resources",
+              "level": 2,
+              "fontWeight": "bold",
+              "fontSize": "28px (estimated)",
+              "fontFamily": "SF Pro Display",
+              "textColor": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-resources-related-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 80,
+              "y": 2515,
+              "width": 500,
+              "height": 30
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Related",
+              "level": 3,
+              "fontWeight": "semibold",
+              "fontSize": "18px (estimated)",
+              "fontFamily": "SF Pro Display",
+              "textColor": "#000000"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-resources-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-resources-related-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 80,
+              "y": 2550,
+              "width": 500,
+              "height": 60
+            },
+            "zIndex": 50,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Onboarding",
+                  "type": "link",
+                  "destination": "Onboarding documentation"
+                },
+                {
+                  "text": "Loading",
+                  "type": "link",
+                  "destination": "Loading documentation"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-resources-related-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-resources-dev-docs-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 80,
+              "y": 2620,
+              "width": 500,
+              "height": 30
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Developer documentation",
+              "level": 3,
+              "fontWeight": "semibold",
+              "fontSize": "18px (estimated)",
+              "fontFamily": "SF Pro Display",
+              "textColor": "#000000"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-resources-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-resources-dev-docs-links",
+            "elementType": "list",
+            "boundingBox": {
+              "x": 80,
+              "y": 2655,
+              "width": 500,
+              "height": 60
+            },
+            "zIndex": 50,
+            "content": {
+              "listType": "unordered",
+              "items": [
+                {
+                  "text": "Specifying your app's launch screen",
+                  "type": "link",
+                  "destination": "Xcode documentation",
+                  "annotation": "— Xcode"
+                },
+                {
+                  "text": "Responding to the launch of your app",
+                  "type": "link",
+                  "destination": "UIKit documentation",
+                  "annotation": "— UIKit"
+                }
+              ]
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-resources-dev-docs-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-resources-videos-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 80,
+              "y": 2725,
+              "width": 500,
+              "height": 30
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Videos",
+              "level": 3,
+              "fontWeight": "semibold",
+              "fontSize": "18px (estimated)",
+              "fontFamily": "SF Pro Display",
+              "textColor": "#000000"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-resources-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-video-thumbnail-1",
+            "elementType": "image",
+            "boundingBox": {
+              "x": 80,
+              "y": 2760,
+              "width": 180,
+              "height": 120
+            },
+            "zIndex": 40,
+            "content": {
+              "imageType": "screenshot",
+              "description": "Video thumbnail showing 'Optimizing App Launch' WWDC session. The thumbnail displays '10:2 days' indicator suggesting video duration or timing. Dark background with Apple presentation styling.",
+              "subjects": [
+                "WWDC video thumbnail",
+                "app launch optimization"
+              ],
+              "composition": "Rectangular video thumbnail with play button overlay",
+              "colorPalette": [
+                "dark blue",
+                "black",
+                "white text"
+              ],
+              "mood": "Professional, technical",
+              "technicalDetails": "WWDC session video thumbnail",
+              "textInImage": [
+                "10:2 days"
+              ],
+              "contextualRelevance": "Links to Apple WWDC video about optimizing app launch performance"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-video-caption-1",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-video-caption-1",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": 80,
+              "y": 2885,
+              "width": 180,
+              "height": 25
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Optimizing App Launch",
+              "fontSize": "14px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#333333"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-video-thumbnail-1",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-video-thumbnail-2",
+            "elementType": "image",
+            "boundingBox": {
+              "x": 280,
+              "y": 2760,
+              "width": 180,
+              "height": 120
+            },
+            "zIndex": 40,
+            "content": {
+              "imageType": "screenshot",
+              "description": "Video thumbnail showing 'Love at First Launch' WWDC session. Dark background with stylized heart icon or graphic suggesting the emotional connection of first impressions. Apple presentation styling.",
+              "subjects": [
+                "WWDC video thumbnail",
+                "first launch experience"
+              ],
+              "composition": "Rectangular video thumbnail with play button overlay",
+              "colorPalette": [
+                "dark purple/magenta",
+                "black",
+                "white"
+              ],
+              "mood": "Professional, engaging",
+              "technicalDetails": "WWDC session video thumbnail",
+              "textInImage": [],
+              "contextualRelevance": "Links to Apple WWDC video about creating great first launch experiences"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-video-caption-2",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-video-caption-2",
+            "elementType": "caption",
+            "boundingBox": {
+              "x": 280,
+              "y": 2885,
+              "width": 180,
+              "height": 25
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Love at First Launch",
+              "fontSize": "14px (estimated)",
+              "fontFamily": "SF Pro Text",
+              "textColor": "#333333"
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-video-thumbnail-2",
+                "relationshipType": "caption-for"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-changelog-heading",
+            "elementType": "heading",
+            "boundingBox": {
+              "x": 80,
+              "y": 2940,
+              "width": 500,
+              "height": 40
+            },
+            "zIndex": 50,
+            "content": {
+              "text": "Change log",
+              "level": 2,
+              "fontWeight": "bold",
+              "fontSize": "28px (estimated)",
+              "fontFamily": "SF Pro Display",
+              "textColor": "#000000"
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-changelog-table",
+            "elementType": "table",
+            "boundingBox": {
+              "x": 80,
+              "y": 2990,
+              "width": 500,
+              "height": 100
+            },
+            "zIndex": 50,
+            "content": {
+              "tableTitle": null,
+              "columnCount": 2,
+              "rowCount": 3,
+              "headers": [
+                "Date",
+                "Changes"
+              ],
+              "rows": [
+                {
+                  "rowIndex": 0,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "Date",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Changes",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": true,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 1,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "June 10, 2024",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Added guidance on displaying a splash screen.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "rowIndex": 2,
+                  "cells": [
+                    {
+                      "columnIndex": 0,
+                      "content": "June 21, 2023",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    },
+                    {
+                      "columnIndex": 1,
+                      "content": "Updated to include guidance for visionOS.",
+                      "colspan": 1,
+                      "rowspan": 1,
+                      "formatting": {
+                        "bold": false,
+                        "alignment": "left"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tableSummary": "Change log showing two updates to the Launching documentation: splash screen guidance added in June 2024, and visionOS guidance added in June 2023."
+            },
+            "relationships": [
+              {
+                "relatedElementId": "page1-changelog-heading",
+                "relationshipType": "grouped-with"
+              }
+            ]
+          },
+          {
+            "elementId": "page1-footer-navigation",
+            "elementType": "navigation",
+            "boundingBox": {
+              "x": 0,
+              "y": 3150,
+              "width": 1275,
+              "height": 600
+            },
+            "zIndex": 30,
+            "content": {
+              "navigationType": "footer",
+              "backgroundColor": "#F5F5F7",
+              "columns": [
+                {
+                  "heading": "Platforms",
+                  "items": [
+                    "iOS",
+                    "iPadOS",
+                    "macOS",
+                    "tvOS",
+                    "visionOS",
+                    "watchOS"
+                  ]
+                },
+                {
+                  "heading": "Tools",
+                  "items": [
+                    "Swift",
+                    "SwiftUI",
+                    "Swift Playground",
+                    "TestFlight",
+                    "Xcode",
+                    "Xcode Cloud",
+                    "SF Symbols"
+                  ]
+                },
+                {
+                  "heading": "Topics & Technologies",
+                  "items": [
+                    "Accessibility",
+                    "Accessories",
+                    "App Extension",
+                    "App Store",
+                    "Audio & Video",
+                    "Augmented Reality",
+                    "Design",
+                    "Distribution",
+                    "Education",
+                    "Fonts",
+                    "Games",
+                    "Health & Fitness",
+                    "In-App Purchase",
+                    "Localization",
+                    "Maps & Location",
+                    "Machine Learning & AI",
+                    "Open Source",
+                    "Security",
+                    "Safari & Web"
+                  ]
+                },
+                {
+                  "heading": "Resources",
+                  "items": [
+                    "Documentation",
+                    "Tutorials",
+                    "Downloads",
+                    "Forums",
+                    "Videos"
+                  ]
+                },
+                {
+                  "heading": "Support",
+                  "items": [
+                    "Support Articles",
+                    "Contact Us",
+                    "Bug Reporting",
+                    "System Status"
+                  ]
+                },
+                {
+                  "heading": "Account",
+                  "items": [
+                    "Apple Developer",
+                    "App Store Connect",
+                    "Certificates, IDs, & Profiles",
+                    "Feedback Assistant"
+                  ]
+                },
+                {
+                  "heading": "Programs",
+                  "items": [
+                    "Apple Developer Program",
+                    "Apple Developer Enterprise Program",
+                    "App Store Small Business Program",
+                    "MFi Program",
+                    "News Partner Program",
+                    "Video Partner Program",
+                    "Security Bounty Program",
+                    "Security Research Device Program"
+                  ]
+                },
+                {
+                  "heading": "Events",
+                  "items": [
+                    "Meet with Apple",
+                    "Apple Developer Centers",
+                    "App Store Awards",
+                    "Apple Design Awards",
+                    "Apple Developer Academies",
+                    "WWDC"
+                  ]
+                }
+              ]
+            },
+            "relationships": []
+          },
+          {
+            "elementId": "page1-footer-legal",
+            "elementType": "annotation",
+            "boundingBox": {
+              "x": 0,
+              "y": 3750,
+              "width": 1275,
+              "height": 50
+            },
+            "zIndex": 30,
+            "content": {
+              "text": "To submit feedback on documentation, visit Feedback Assistant.",
+              "legalText": "Copyright 2025 Apple Inc. All rights reserved.",
+              "links": [
+                {
+                  "text": "Feedback Assistant",
+                  "type": "external-link"
+                },
+                {
+                  "text": "Terms of Use",
+                  "type": "legal-link"
+                },
+                {
+                  "text": "Privacy Policy",
+                  "type": "legal-link"
+                },
+                {
+                  "text": "Agreements and Guidelines",
+                  "type": "legal-link"
+                }
+              ],
+              "appearanceToggle": {
+                "options": [
+                  "Light",
+                  "Dark",
+                  "Auto"
+                ],
+                "description": "Theme/appearance mode toggle for the documentation website"
+              }
+            },
+            "relationships": []
+          }
+        ],
+        "readingOrder": [
+          "page1-header-navigation-primary",
+          "page1-header-navigation-secondary",
+          "page1-breadcrumb",
+          "page1-language-selector",
+          "page1-main-title",
+          "page1-subtitle",
+          "page1-hero-image",
+          "page1-supported-platforms-sidebar",
+          "page1-toc-sidebar",
+          "page1-intro-paragraph",
+          "page1-best-practices-heading",
+          "page1-best-practice-1",
+          "page1-best-practice-2",
+          "page1-best-practice-3",
+          "page1-best-practice-4",
+          "page1-launch-screens-heading",
+          "page1-launch-screens-applicability",
+          "page1-launch-screen-practice-1",
+          "page1-launch-screen-practice-2",
+          "page1-launch-screen-practice-3",
+          "page1-launch-screen-practice-4",
+          "page1-platform-considerations-heading",
+          "page1-platform-no-considerations",
+          "page1-ios-ipados-heading",
+          "page1-ios-ipados-content",
+          "page1-tvos-heading",
+          "page1-tvos-note",
+          "page1-tvos-content",
+          "page1-visionos-heading",
+          "page1-visionos-content",
+          "page1-resources-heading",
+          "page1-resources-related-heading",
+          "page1-resources-related-links",
+          "page1-resources-dev-docs-heading",
+          "page1-resources-dev-docs-links",
+          "page1-resources-videos-heading",
+          "page1-video-thumbnail-1",
+          "page1-video-caption-1",
+          "page1-video-thumbnail-2",
+          "page1-video-caption-2",
+          "page1-changelog-heading",
+          "page1-changelog-table",
+          "page1-footer-navigation",
+          "page1-footer-legal"
+        ],
+        "pageSummary": "Apple Human Interface Guidelines documentation page for 'Launching'. Provides comprehensive guidance on creating streamlined app launch experiences across all Apple platforms (iOS, iPadOS, macOS, tvOS, visionOS, watchOS). Covers best practices for instant launching, launch screens vs splash screens, state restoration, and platform-specific considerations including orientation handling on iOS/iPadOS, static launch screens on tvOS, and Shared Space launching on visionOS."
+      }
+    ],
+    "crossPageElements": {
+      "tableOfContents": {
+        "present": true,
+        "entries": [
+          {
+            "title": "Launching",
+            "level": 1
+          },
+          {
+            "title": "Best practices",
+            "level": 2
+          },
+          {
+            "title": "Launch screens",
+            "level": 2
+          },
+          {
+            "title": "Platform considerations",
+            "level": 2
+          },
+          {
+            "title": "Resources",
+            "level": 2
+          },
+          {
+            "title": "Change log",
+            "level": 2
+          }
+        ]
+      },
+      "runningHeaders": "Developer Documentation - Design - Guidelines",
+      "runningFooters": "Apple Developer footer with platform links, tools, resources, support, and legal information",
+      "pageNumbers": {
+        "present": false,
+        "format": null
+      }
+    },
+    "semanticStructure": {
+      "sections": [
+        {
+          "sectionId": "intro",
+          "title": "Introduction",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Defines launching as the experience from app open through first screen ready, introduces onboarding as a follow-up experience."
+        },
+        {
+          "sectionId": "best-practices",
+          "title": "Best practices",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Four key best practices: launch instantly, provide platform-required launch screens, consider splash screens for onboarding, and restore previous state on restart."
+        },
+        {
+          "sectionId": "launch-screens",
+          "title": "Launch screens",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Guidance specific to launch screens (not applicable to macOS, visionOS, watchOS): downplay the experience, match first screen design, avoid text, and don't advertise."
+        },
+        {
+          "sectionId": "platform-considerations",
+          "title": "Platform considerations",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "ios-ipados",
+              "title": "iOS, iPadOS",
+              "summary": "Launch in appropriate orientation based on device state and supported orientations."
+            },
+            {
+              "sectionId": "tvos",
+              "title": "tvOS",
+              "summary": "Launch screens are static (unlike layered images); live-viewing apps should consider auto-playing content."
+            },
+            {
+              "sectionId": "visionos",
+              "title": "visionOS",
+              "summary": "Consider launching in Shared Space even for fully immersive apps to provide context and user control over transition to Full Space."
+            }
+          ],
+          "summary": "Platform-specific launching guidance for iOS/iPadOS (orientation), tvOS (static screens, auto-play), and visionOS (Shared Space launching)."
+        },
+        {
+          "sectionId": "resources",
+          "title": "Resources",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [
+            {
+              "sectionId": "related",
+              "title": "Related",
+              "summary": "Links to Onboarding and Loading documentation."
+            },
+            {
+              "sectionId": "developer-documentation",
+              "title": "Developer documentation",
+              "summary": "Links to Xcode and UIKit documentation for launch screen implementation."
+            },
+            {
+              "sectionId": "videos",
+              "title": "Videos",
+              "summary": "Two WWDC videos: 'Optimizing App Launch' and 'Love at First Launch'."
+            }
+          ],
+          "summary": "Collection of related resources including HIG documentation, developer documentation for Xcode and UIKit, and WWDC session videos."
+        },
+        {
+          "sectionId": "changelog",
+          "title": "Change log",
+          "startPage": 1,
+          "endPage": 1,
+          "subsections": [],
+          "summary": "Document revision history: June 2024 added splash screen guidance, June 2023 added visionOS guidance."
+        }
+      ],
+      "documentFlow": "The document follows Apple's standard HIG documentation structure: introduction with hero image and platform support indicators, followed by best practices as general guidance, then specific launch screen guidelines, platform-specific considerations organized by operating system, resource links for further learning, and finally a change log showing document revisions."
+    },
+    "extractedKnowledge": {
+      "keyTerms": [
+        {
+          "term": "Launching",
+          "definition": "The experience that begins when someone opens your app or game, includes an initial download, and ends when the first screen is ready.",
+          "occurrences": 5
+        },
+        {
+          "term": "Launch screen",
+          "definition": "A static screen displayed by the system the moment an app starts, quickly replaced by the first screen to give the impression of fast and responsive experience. Required on iOS, iPadOS, and tvOS; not required on macOS, visionOS, or watchOS.",
+          "occurrences": 15
+        },
+        {
+          "term": "Splash screen",
+          "definition": "A beautiful graphic that succinctly communicates branding and other information, typically displayed at the beginning of an onboarding flow or after launching completes.",
+          "occurrences": 5
+        },
+        {
+          "term": "Onboarding",
+          "definition": "An experience offered after launching completes that gives people a high-level view of the app or game.",
+          "occurrences": 4
+        },
+        {
+          "term": "Shared Space",
+          "definition": "A visionOS environment where multiple apps can run together, as opposed to a Full Space which is fully immersive.",
+          "occurrences": 3
+        },
+        {
+          "term": "Full Space",
+          "definition": "A visionOS environment for fully immersive experiences where only one app runs.",
+          "occurrences": 2
+        },
+        {
+          "term": "Layered images",
+          "definition": "Dynamic, parallax-enabled images used throughout tvOS apps, in contrast to static launch screens.",
+          "occurrences": 1
+        },
+        {
+          "term": "State restoration",
+          "definition": "The practice of restoring the previous app state when restarting so users can continue where they left off.",
+          "occurrences": 2
+        }
+      ],
+      "keyFindings": [
+        "Launch screens serve only to enhance perception of quick launch; they are not for branding, artistic expression, or onboarding.",
+        "Launch screens should be nearly identical to the first screen of the app to avoid visual flash during transition.",
+        "Text should be avoided on launch screens because launch screen content cannot be localized.",
+        "Apps should restore granular previous state details including scroll position and window states.",
+        "On visionOS, even fully immersive apps should consider launching in Shared Space to give users control over when to enter Full Space.",
+        "On tvOS, launch screens are static unlike the layered images used elsewhere in the app.",
+        "Live-viewing tvOS apps should consider auto-starting playback after a few seconds of inactivity.",
+        "iOS/iPadOS apps should launch in the device's current orientation when supporting both portrait and landscape.",
+        "Splash screens (for branding) are distinct from launch screens and should be shown during onboarding, not as the launch screen itself."
+      ],
+      "technicalSpecifications": {
+        "supportedPlatforms": [
+          "iOS",
+          "iPadOS",
+          "macOS",
+          "tvOS",
+          "visionOS",
+          "watchOS"
+        ],
+        "launchScreenRequirements": {
+          "required": [
+            "iOS",
+            "iPadOS",
+            "tvOS"
+          ],
+          "notRequired": [
+            "macOS",
+            "visionOS",
+            "watchOS"
+          ]
+        },
+        "relatedFrameworks": [
+          "UIKit",
+          "Xcode"
+        ],
+        "relatedAPIs": [
+          "Specifying your app's launch screen (Xcode)",
+          "Responding to the launch of your app (UIKit)"
+        ]
+      },
+      "designDecisions": [
+        {
+          "decision": "Launch screen design should match first screen",
+          "rationale": "Prevents unpleasant visual flash between launch screen and first screen"
+        },
+        {
+          "decision": "No text on launch screens",
+          "rationale": "Launch screen content cannot be changed or localized"
+        },
+        {
+          "decision": "No branding elements on launch screens",
+          "rationale": "Launch screens are not branding opportunities; branding belongs in splash screens during onboarding"
+        },
+        {
+          "decision": "Consider Shared Space launch for visionOS immersive apps",
+          "rationale": "Allows loading time, provides context, and lets users choose when to enter Full Space"
+        },
+        {
+          "decision": "Auto-play content on tvOS live-viewing apps",
+          "rationale": "Users come to watch TV; starting playback matches user intent"
+        }
+      ]
+    }
+  },
+  "verbatimTextContent": {
+    "mainTitle": "Launching",
+    "subtitle": "A streamlined launch experience helps people start using your app or game immediately.",
+    "introductionParagraph": "Launching begins when someone opens your app or game, includes an initial download, and ends when the first screen is ready. After launching completes, you might offer an onboarding experience, which can give people a high-level view of your app or game.",
+    "bestPracticesSection": {
+      "heading": "Best practices",
+      "practices": [
+        {
+          "leadSentence": "Launch instantly.",
+          "fullText": "Launch instantly. People want to start interacting with your app or game right away, and sometimes they don't want to wait more than a couple of seconds."
+        },
+        {
+          "leadSentence": "If the platform requires it, provide a launch screen.",
+          "fullText": "If the platform requires it, provide a launch screen. In iOS, iPadOS, and tvOS, the system displays your launch screen the moment your app or game starts and quickly replaces it with your first screen, giving people the impression that your experience is fast and responsive. For guidance, see Launch screens. macOS, visionOS, and watchOS don't require launch screens."
+        },
+        {
+          "leadSentence": "If you need a splash screen, consider displaying it at the beginning of your onboarding flow.",
+          "fullText": "If you need a splash screen, consider displaying it at the beginning of your onboarding flow. A splash screen is a beautiful graphic that succinctly communicates branding and other information you need to provide. If you don't provide an onboarding experience, you might display your splash screen as soon as launching completes."
+        },
+        {
+          "leadSentence": "Restore the previous state when your app restarts so people can continue where they left off.",
+          "fullText": "Restore the previous state when your app restarts so people can continue where they left off. Avoid making people retrace steps to reach their previous location in your app or game. Restore granular details of the previous state as much as possible. For example, scroll the view to people's most recent position, and display windows in the same state and location in which people left them."
+        }
+      ]
+    },
+    "launchScreensSection": {
+      "heading": "Launch screens",
+      "applicabilityNote": "Not applicable for macOS, visionOS, or watchOS.",
+      "guidelines": [
+        {
+          "leadSentence": "Downplay the launch experience.",
+          "fullText": "Downplay the launch experience. A launch screen isn't part of an onboarding experience or a splash screen, and it isn't an opportunity for artistic expression. A launch screen's sole function is to enhance the perception of your experience as quick to launch and immediately ready to use."
+        },
+        {
+          "leadSentence": "Design a launch screen that's nearly identical to the first screen of your app or game.",
+          "fullText": "Design a launch screen that's nearly identical to the first screen of your app or game. If you include elements that look different when launching completes, people may experience an unpleasant flash between the launch screen and your first screen. If your app or game displays a solid color before transitioning to the first screen, create a launch screen that displays only that solid color. Also make sure that your launch screen matches the device's current orientation and appearance mode."
+        },
+        {
+          "leadSentence": "Avoid including text on your launch screen, even if your first screen displays text.",
+          "fullText": "Avoid including text on your launch screen, even if your first screen displays text. Because the content in a launch screen doesn't change, any text you display won't be localized."
+        },
+        {
+          "leadSentence": "Don't advertise.",
+          "fullText": "Don't advertise. The launch screen isn't a branding opportunity. Avoid creating a screen that looks like a splash screen or an \"About\" window, and don't include logos or other branding elements unless they're a fixed part of your app's first screen."
+        }
+      ]
+    },
+    "platformConsiderationsSection": {
+      "heading": "Platform considerations",
+      "generalNote": "No additional considerations for macOS or watchOS.",
+      "platforms": {
+        "iOSiPadOS": {
+          "heading": "iOS, iPadOS",
+          "content": {
+            "leadSentence": "Launch in the appropriate orientation.",
+            "fullText": "Launch in the appropriate orientation. If your app or game supports both portrait and landscape modes, launch using the device's current orientation. If your interface only runs in one orientation, launch in that orientation and let people rotate the device if necessary. Ensure a landscape-only interface responds correctly, regardless of whether people enter landscape orientation by rotating the device left or right. For guidance, see Layout."
+          }
+        },
+        "tvOS": {
+          "heading": "tvOS",
+          "note": {
+            "label": "Note",
+            "text": "Unlike the layered images throughout much of a tvOS app, the launch screen is static."
+          },
+          "content": {
+            "leadSentence": "In a live-viewing app, consider automatically starting playback soon after people start the app.",
+            "fullText": "In a live-viewing app, consider automatically starting playback soon after people start the app. People come to your app to watch TV, so you might want to start playing new or recently viewed live content after a few seconds of inactivity. For guidance, see Live-viewing apps."
+          }
+        },
+        "visionOS": {
+          "heading": "visionOS",
+          "content": {
+            "leadSentence": "Consider launching in the Shared Space even if your app is fully immersive.",
+            "fullText": "Consider launching in the Shared Space even if your app is fully immersive. Opening a window in the Shared Space lets you provide more context about your app or game while giving it time to load, and it also lets you present a control that people can use to open your fully immersive experience. In general, people appreciate being able to choose when to transition to a Full Space, especially if they're currently running other apps in the Shared Space. For guidance, see Immersive experiences."
+          }
+        }
+      }
+    },
+    "resourcesSection": {
+      "heading": "Resources",
+      "related": {
+        "heading": "Related",
+        "links": [
+          "Onboarding",
+          "Loading"
+        ]
+      },
+      "developerDocumentation": {
+        "heading": "Developer documentation",
+        "links": [
+          {
+            "title": "Specifying your app's launch screen",
+            "framework": "Xcode"
+          },
+          {
+            "title": "Responding to the launch of your app",
+            "framework": "UIKit"
+          }
+        ]
+      },
+      "videos": {
+        "heading": "Videos",
+        "items": [
+          "Optimizing App Launch",
+          "Love at First Launch"
+        ]
+      }
+    },
+    "changeLogSection": {
+      "heading": "Change log",
+      "entries": [
+        {
+          "date": "June 10, 2024",
+          "changes": "Added guidance on displaying a splash screen."
+        },
+        {
+          "date": "June 21, 2023",
+          "changes": "Updated to include guidance for visionOS."
+        }
+      ]
+    },
+    "footerText": {
+      "feedbackPrompt": "To submit feedback on documentation, visit Feedback Assistant.",
+      "copyright": "Copyright 2025 Apple Inc. All rights reserved.",
+      "legalLinks": [
+        "Terms of Use",
+        "Privacy Policy",
+        "Agreements and Guidelines"
+      ],
+      "themeOptions": [
+        "Light",
+        "Dark",
+        "Auto"
+      ]
+    }
+  }
+}

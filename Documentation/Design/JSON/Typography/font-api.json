@@ -1,0 +1,1337 @@
+{
+  "documentAnalysis": {
+    "metadata": {
+      "title": "SwiftUI Font API and Typography Guidelines",
+      "author": "Apple Inc.",
+      "creationDate": null,
+      "modificationDate": "2025-12-16",
+      "pageCount": 4,
+      "documentType": "technical",
+      "primaryLanguage": "en",
+      "keywords": [
+        "Font",
+        "SwiftUI",
+        "Typography",
+        "Dynamic Type",
+        "Text Styles",
+        "Custom Fonts",
+        "SF Pro",
+        "New York",
+        "Accessibility",
+        "Widget"
+      ],
+      "summary": "Comprehensive documentation covering the SwiftUI Font API structure, system font text styles, custom font integration with Dynamic Type support, font modifiers for styling, and platform-specific typography specifications including tracking values and accessibility considerations."
+    },
+    "sources": [
+      {
+        "documentTitle": "Font | Apple Developer Documentation",
+        "documentType": "API Reference",
+        "focus": "SwiftUI Font struct API, methods, and properties"
+      },
+      {
+        "documentTitle": "Typography | Apple Developer Documentation",
+        "documentType": "Human Interface Guidelines",
+        "focus": "Typography best practices, Dynamic Type specifications, platform considerations"
+      }
+    ],
+    "fontAPI": {
+      "overview": {
+        "structName": "Font",
+        "framework": "SwiftUI",
+        "description": "An environment-dependent font. The system resolves a font's value at the time it uses the font in a given environment because Font is a late-binding token.",
+        "availability": {
+          "iOS": "13.0+",
+          "iPadOS": "13.0+",
+          "macOS": "10.15+",
+          "Mac Catalyst": "13.0+",
+          "tvOS": "13.0+",
+          "visionOS": "1.0+",
+          "watchOS": "6.0+"
+        },
+        "declaration": "@frozen struct Font",
+        "conformsTo": [
+          "Equatable",
+          "Hashable",
+          "Sendable",
+          "SendableMetatype"
+        ]
+      },
+      "standardFonts": {
+        "description": "Static properties providing access to system text styles that automatically adapt to Dynamic Type settings",
+        "textStyles": [
+          {
+            "name": "extraLargeTitle2",
+            "staticProperty": "static let extraLargeTitle2: Font",
+            "description": "Create a font with the second level extra large title text style.",
+            "useCase": "Wide, editorial-style layouts in visionOS",
+            "hierarchyLevel": 1,
+            "notes": "Introduced for visionOS"
+          },
+          {
+            "name": "extraLargeTitle",
+            "staticProperty": "static let extraLargeTitle: Font",
+            "description": "Create a font with the extra large title text style.",
+            "useCase": "Wide, editorial-style layouts in visionOS",
+            "hierarchyLevel": 2,
+            "notes": "Introduced for visionOS"
+          },
+          {
+            "name": "largeTitle",
+            "staticProperty": "static let largeTitle: Font",
+            "description": "A font with the large title text style.",
+            "useCase": "Primary screen titles, navigation bar large titles",
+            "hierarchyLevel": 3
+          },
+          {
+            "name": "title",
+            "staticProperty": "static let title: Font",
+            "description": "A font with the title text style.",
+            "useCase": "Section headings, primary titles",
+            "hierarchyLevel": 4,
+            "aliases": ["title1"]
+          },
+          {
+            "name": "title2",
+            "staticProperty": "static let title2: Font",
+            "description": "Create a font for second level hierarchical headings.",
+            "useCase": "Secondary headings, subsection titles",
+            "hierarchyLevel": 5
+          },
+          {
+            "name": "title3",
+            "staticProperty": "static let title3: Font",
+            "description": "Create a font for third level hierarchical headings.",
+            "useCase": "Tertiary headings, group labels",
+            "hierarchyLevel": 6
+          },
+          {
+            "name": "headline",
+            "staticProperty": "static let headline: Font",
+            "description": "A font with the headline text style.",
+            "useCase": "Emphasis within body content, list row titles",
+            "hierarchyLevel": 7,
+            "defaultWeight": "Semibold"
+          },
+          {
+            "name": "subheadline",
+            "staticProperty": "static let subheadline: Font",
+            "description": "A font with the subheadline text style.",
+            "useCase": "Secondary information, metadata",
+            "hierarchyLevel": 8
+          },
+          {
+            "name": "body",
+            "staticProperty": "static let body: Font",
+            "description": "A font with the body text style.",
+            "useCase": "Primary content text, paragraphs, default text",
+            "hierarchyLevel": 9,
+            "isDefault": true
+          },
+          {
+            "name": "callout",
+            "staticProperty": "static let callout: Font",
+            "description": "A font with the callout text style.",
+            "useCase": "Highlighted information, callout boxes",
+            "hierarchyLevel": 10
+          },
+          {
+            "name": "caption",
+            "staticProperty": "static let caption: Font",
+            "description": "A font with the caption text style.",
+            "useCase": "Image captions, supplementary text",
+            "hierarchyLevel": 11,
+            "aliases": ["caption1"]
+          },
+          {
+            "name": "caption2",
+            "staticProperty": "static let caption2: Font",
+            "description": "Create a font with the alternate caption text style.",
+            "useCase": "Secondary captions, fine print",
+            "hierarchyLevel": 12
+          },
+          {
+            "name": "footnote",
+            "staticProperty": "static let footnote: Font",
+            "description": "A font with the footnote text style.",
+            "useCase": "Footnotes, legal text, timestamps",
+            "hierarchyLevel": 13
+          }
+        ],
+        "typeProperty": {
+          "name": "default",
+          "declaration": "static var `default`: Font",
+          "description": "The effective SwiftUI font used in any given environment."
+        }
+      },
+      "systemFonts": {
+        "description": "Methods for creating system fonts with specific styles, sizes, weights, and designs",
+        "methods": [
+          {
+            "name": "system(_:design:weight:)",
+            "declaration": "static func system(_ style: Font.TextStyle, design: Font.Design? = nil, weight: Font.Weight? = nil) -> Font",
+            "description": "Gets a system font that uses the specified style, design, and weight.",
+            "parameters": [
+              {
+                "name": "style",
+                "type": "Font.TextStyle",
+                "description": "The text style to use (e.g., .body, .title)"
+              },
+              {
+                "name": "design",
+                "type": "Font.Design?",
+                "description": "Optional font design (default, serif, rounded, monospaced)",
+                "defaultValue": "nil"
+              },
+              {
+                "name": "weight",
+                "type": "Font.Weight?",
+                "description": "Optional font weight",
+                "defaultValue": "nil"
+              }
+            ],
+            "returns": "Font",
+            "example": "Text(\"Hello\").font(.system(.body, design: .rounded, weight: .medium))",
+            "recommended": true
+          },
+          {
+            "name": "system(size:weight:design:)",
+            "declaration": "static func system(size: CGFloat, weight: Font.Weight? = nil, design: Font.Design? = nil) -> Font",
+            "description": "Specifies a system font to use, along with the style, weight, and any design parameters you want applied to the text.",
+            "parameters": [
+              {
+                "name": "size",
+                "type": "CGFloat",
+                "description": "The point size of the font"
+              },
+              {
+                "name": "weight",
+                "type": "Font.Weight?",
+                "description": "Optional font weight",
+                "defaultValue": "nil"
+              },
+              {
+                "name": "design",
+                "type": "Font.Design?",
+                "description": "Optional font design",
+                "defaultValue": "nil"
+              }
+            ],
+            "returns": "Font",
+            "example": "Text(\"Hello\").font(.system(size: 17, weight: .semibold, design: .default))",
+            "caution": "Does not automatically scale with Dynamic Type; prefer text style-based methods when possible"
+          }
+        ],
+        "deprecatedMethods": [
+          {
+            "name": "system(_:design:)",
+            "declaration": "static func system(_ style: Font.TextStyle, design: Font.Design) -> Font",
+            "description": "Gets a system font with the given text style and design.",
+            "status": "Deprecated",
+            "replacement": "system(_:design:weight:)"
+          },
+          {
+            "name": "system(size:weight:design:) [non-optional]",
+            "declaration": "static func system(size: CGFloat, weight: Font.Weight, design: Font.Design) -> Font",
+            "description": "Specifies a system font to use, along with the style, weight, and any design parameters you want applied to the text.",
+            "status": "Deprecated",
+            "replacement": "system(size:weight:design:) with optional parameters"
+          }
+        ]
+      },
+      "fontDesign": {
+        "enumName": "Font.Design",
+        "description": "A design to use for fonts. Use Font.Design constants to access system fonts - do not embed system fonts in your app.",
+        "cases": [
+          {
+            "name": "default",
+            "description": "The default system font design (SF Pro on most platforms, SF Compact on watchOS)",
+            "fontFamily": "San Francisco (SF Pro/SF Compact)",
+            "useCase": "General UI text, most application content"
+          },
+          {
+            "name": "serif",
+            "description": "A serif font design",
+            "fontFamily": "New York",
+            "useCase": "Reading content, editorial layouts, distinguished typography"
+          },
+          {
+            "name": "rounded",
+            "description": "A rounded font design",
+            "fontFamily": "SF Pro Rounded / SF Compact Rounded",
+            "useCase": "Friendly, approachable UI, soft or rounded UI elements"
+          },
+          {
+            "name": "monospaced",
+            "description": "A monospaced font design",
+            "fontFamily": "SF Mono",
+            "useCase": "Code display, tabular data, technical content"
+          }
+        ],
+        "developerNote": "You can use the constants defined in Font.Design to access all system fonts - don't embed system fonts in your app or game."
+      },
+      "fontTextStyle": {
+        "enumName": "Font.TextStyle",
+        "description": "A dynamic text style to use for fonts. Text styles support Dynamic Type and scale with user preferences.",
+        "cases": [
+          "extraLargeTitle2",
+          "extraLargeTitle",
+          "largeTitle",
+          "title",
+          "title2",
+          "title3",
+          "headline",
+          "subheadline",
+          "body",
+          "callout",
+          "caption",
+          "caption2",
+          "footnote"
+        ],
+        "keyBenefit": "Automatic Dynamic Type support and accessibility scaling"
+      },
+      "fontWeight": {
+        "structName": "Font.Weight",
+        "description": "A weight to use for fonts.",
+        "weights": [
+          {
+            "name": "ultraLight",
+            "description": "Ultra light weight",
+            "accessibilityNote": "Avoid for small text; difficult to read"
+          },
+          {
+            "name": "thin",
+            "description": "Thin weight",
+            "accessibilityNote": "Avoid for small text; difficult to read"
+          },
+          {
+            "name": "light",
+            "description": "Light weight",
+            "accessibilityNote": "Avoid for small text; can be difficult to see"
+          },
+          {
+            "name": "regular",
+            "description": "Regular/normal weight",
+            "recommended": true
+          },
+          {
+            "name": "medium",
+            "description": "Medium weight",
+            "recommended": true
+          },
+          {
+            "name": "semibold",
+            "description": "Semibold weight",
+            "recommended": true
+          },
+          {
+            "name": "bold",
+            "description": "Bold weight",
+            "recommended": true
+          },
+          {
+            "name": "heavy",
+            "description": "Heavy weight"
+          },
+          {
+            "name": "black",
+            "description": "Black weight"
+          }
+        ],
+        "recommendation": "Prefer Regular, Medium, Semibold, or Bold font weights. Avoid Ultralight, Thin, and Light font weights, which can be difficult to see, especially when text is small."
+      },
+      "fontWidth": {
+        "structName": "Font.Width",
+        "description": "A width to use for fonts that have multiple widths.",
+        "widths": [
+          {
+            "name": "compressed",
+            "description": "Most condensed width"
+          },
+          {
+            "name": "condensed",
+            "description": "Condensed width"
+          },
+          {
+            "name": "standard",
+            "description": "Standard/normal width"
+          },
+          {
+            "name": "expanded",
+            "description": "Expanded width"
+          }
+        ],
+        "note": "Only SF fonts support multiple widths (Condensed and Expanded)"
+      },
+      "fontLeading": {
+        "enumName": "Font.Leading",
+        "description": "A line spacing adjustment that you can apply to a font.",
+        "cases": [
+          {
+            "name": "standard",
+            "description": "Standard line spacing"
+          },
+          {
+            "name": "tight",
+            "description": "Reduced line spacing",
+            "useCase": "Height-constrained areas, list rows",
+            "caution": "Avoid for three or more lines of text"
+          },
+          {
+            "name": "loose",
+            "description": "Increased line spacing",
+            "useCase": "Wide columns, long passages, improved readability"
+          }
+        ]
+      },
+      "customFonts": {
+        "description": "Methods for creating custom fonts that integrate with Dynamic Type",
+        "methods": [
+          {
+            "name": "custom(_:size:)",
+            "declaration": "static func custom(_ name: String, size: CGFloat) -> Font",
+            "description": "Create a custom font with the given name and size that scales with the body text style.",
+            "parameters": [
+              {
+                "name": "name",
+                "type": "String",
+                "description": "The PostScript name of the font"
+              },
+              {
+                "name": "size",
+                "type": "CGFloat",
+                "description": "The base point size of the font"
+              }
+            ],
+            "returns": "Font",
+            "dynamicTypeSupport": "Scales relative to body text style",
+            "example": "Text(\"Custom\").font(.custom(\"Helvetica Neue\", size: 17))",
+            "recommended": true
+          },
+          {
+            "name": "custom(_:size:relativeTo:)",
+            "declaration": "static func custom(_ name: String, size: CGFloat, relativeTo textStyle: Font.TextStyle) -> Font",
+            "description": "Create a custom font with the given name and size that scales relative to the given textStyle.",
+            "parameters": [
+              {
+                "name": "name",
+                "type": "String",
+                "description": "The PostScript name of the font"
+              },
+              {
+                "name": "size",
+                "type": "CGFloat",
+                "description": "The base point size of the font"
+              },
+              {
+                "name": "textStyle",
+                "type": "Font.TextStyle",
+                "description": "The text style to scale relative to"
+              }
+            ],
+            "returns": "Font",
+            "dynamicTypeSupport": "Scales relative to specified text style",
+            "example": "Text(\"Title\").font(.custom(\"Georgia\", size: 24, relativeTo: .title))",
+            "recommended": true
+          },
+          {
+            "name": "custom(_:fixedSize:)",
+            "declaration": "static func custom(_ name: String, fixedSize: CGFloat) -> Font",
+            "description": "Create a custom font with the given name and a fixed size that does not scale with Dynamic Type.",
+            "parameters": [
+              {
+                "name": "name",
+                "type": "String",
+                "description": "The PostScript name of the font"
+              },
+              {
+                "name": "fixedSize",
+                "type": "CGFloat",
+                "description": "The fixed point size that will not scale"
+              }
+            ],
+            "returns": "Font",
+            "dynamicTypeSupport": "None - fixed size",
+            "example": "Text(\"Fixed\").font(.custom(\"Courier\", fixedSize: 12))",
+            "caution": "Use sparingly; does not respect user accessibility preferences"
+          },
+          {
+            "name": "init(CTFont)",
+            "declaration": "init(_ font: CTFont)",
+            "description": "Creates a custom font from a platform font instance.",
+            "parameters": [
+              {
+                "name": "font",
+                "type": "CTFont",
+                "description": "A Core Text font instance"
+              }
+            ],
+            "useCase": "Advanced font customization using Core Text"
+          }
+        ],
+        "customFontIntegration": {
+          "steps": [
+            "1. Add font files (.ttf or .otf) to your Xcode project",
+            "2. Ensure font files are included in the app target",
+            "3. Add font filenames to Info.plist under 'Fonts provided by application' (UIAppFonts)",
+            "4. Use the font's PostScript name in Font.custom()",
+            "5. Test with Dynamic Type enabled to verify scaling"
+          ],
+          "articleReference": "Applying custom fonts to text",
+          "accessibilityRequirement": "Custom fonts must implement Dynamic Type behaviors and respond to Bold Text accessibility feature"
+        }
+      },
+      "fontModifiers": {
+        "description": "Instance methods for modifying fonts",
+        "stylingMethods": [
+          {
+            "name": "bold()",
+            "declaration": "func bold() -> Font",
+            "description": "Adds bold or emphasized styling to the font.",
+            "returns": "Font",
+            "example": "Text(\"Bold\").font(.body.bold())"
+          },
+          {
+            "name": "bold(_:)",
+            "declaration": "func bold(_ isActive: Bool) -> Font",
+            "description": "Adds or removes bold or emphasized styling on the font.",
+            "parameters": [
+              {
+                "name": "isActive",
+                "type": "Bool",
+                "description": "Whether to apply bold styling"
+              }
+            ],
+            "returns": "Font"
+          },
+          {
+            "name": "italic()",
+            "declaration": "func italic() -> Font",
+            "description": "Adds italics to the font.",
+            "returns": "Font",
+            "example": "Text(\"Italic\").font(.body.italic())"
+          },
+          {
+            "name": "italic(_:)",
+            "declaration": "func italic(_ isActive: Bool) -> Font",
+            "description": "Adds/removes italics on the font.",
+            "parameters": [
+              {
+                "name": "isActive",
+                "type": "Bool",
+                "description": "Whether to apply italic styling"
+              }
+            ],
+            "returns": "Font"
+          },
+          {
+            "name": "monospaced()",
+            "declaration": "func monospaced() -> Font",
+            "description": "Returns a fixed-width font from the same family as the base font.",
+            "returns": "Font"
+          },
+          {
+            "name": "monospaced(_:)",
+            "declaration": "func monospaced(_ isActive: Bool) -> Font",
+            "description": "Returns a font adding or removing fixed-width design from the same family as the base font.",
+            "returns": "Font"
+          },
+          {
+            "name": "monospacedDigit()",
+            "declaration": "func monospacedDigit() -> Font",
+            "description": "Returns a modified font that uses fixed-width digits, while leaving other characters proportionally spaced.",
+            "returns": "Font",
+            "useCase": "Tabular numbers, timers, counters"
+          },
+          {
+            "name": "weight(_:)",
+            "declaration": "func weight(_ weight: Font.Weight) -> Font",
+            "description": "Sets the weight of the font.",
+            "parameters": [
+              {
+                "name": "weight",
+                "type": "Font.Weight",
+                "description": "The weight to apply"
+              }
+            ],
+            "returns": "Font",
+            "example": "Text(\"Semibold\").font(.body.weight(.semibold))"
+          },
+          {
+            "name": "width(_:)",
+            "declaration": "func width(_ width: Font.Width) -> Font",
+            "description": "Sets the width of the font.",
+            "parameters": [
+              {
+                "name": "width",
+                "type": "Font.Width",
+                "description": "The width to apply"
+              }
+            ],
+            "returns": "Font"
+          },
+          {
+            "name": "leading(_:)",
+            "declaration": "func leading(_ leading: Font.Leading) -> Font",
+            "description": "Adjusts the line spacing of a font.",
+            "parameters": [
+              {
+                "name": "leading",
+                "type": "Font.Leading",
+                "description": "The leading adjustment to apply"
+              }
+            ],
+            "returns": "Font"
+          }
+        ],
+        "smallCapsMethods": [
+          {
+            "name": "smallCaps()",
+            "declaration": "func smallCaps() -> Font",
+            "description": "Adjusts the font to enable all small capitals.",
+            "returns": "Font"
+          },
+          {
+            "name": "smallCaps(_:)",
+            "declaration": "func smallCaps(_ isActive: Bool) -> Font",
+            "description": "Adjusts the font to enable/disable all small capitals.",
+            "returns": "Font"
+          },
+          {
+            "name": "lowercaseSmallCaps()",
+            "declaration": "func lowercaseSmallCaps() -> Font",
+            "description": "Adjusts the font to enable lowercase small capitals.",
+            "returns": "Font"
+          },
+          {
+            "name": "lowercaseSmallCaps(_:)",
+            "declaration": "func lowercaseSmallCaps(_ isActive: Bool) -> Font",
+            "description": "Adjusts the font to enable/disable lowercase small capitals.",
+            "returns": "Font"
+          },
+          {
+            "name": "uppercaseSmallCaps()",
+            "declaration": "func uppercaseSmallCaps() -> Font",
+            "description": "Adjusts the font to enable uppercase small capitals.",
+            "returns": "Font"
+          },
+          {
+            "name": "uppercaseSmallCaps(_:)",
+            "declaration": "func uppercaseSmallCaps(_ isActive: Bool) -> Font",
+            "description": "Adjusts the font to enable/disable uppercase small capitals.",
+            "returns": "Font"
+          }
+        ],
+        "sizingMethods": [
+          {
+            "name": "pointSize(_:)",
+            "declaration": "func pointSize(_ size: CGFloat) -> Font",
+            "description": "Sets the point size of the font explicitly.",
+            "returns": "Font"
+          },
+          {
+            "name": "scaled(by:)",
+            "declaration": "func scaled(by scale: CGFloat) -> Font",
+            "description": "Scales the point size of the font.",
+            "parameters": [
+              {
+                "name": "scale",
+                "type": "CGFloat",
+                "description": "The scale factor to apply"
+              }
+            ],
+            "returns": "Font"
+          }
+        ],
+        "resolutionMethods": [
+          {
+            "name": "resolve(in:)",
+            "declaration": "func resolve(in context: Font.Context) -> Font.Resolved",
+            "description": "Evaluates this font to a resolved font given the current context.",
+            "returns": "Font.Resolved"
+          }
+        ]
+      },
+      "viewModifiers": {
+        "description": "View modifiers for applying fonts and font properties",
+        "modifiers": [
+          {
+            "name": "font(_:)",
+            "declaration": "func font(_ font: Font?) -> some View",
+            "description": "Sets the default font for text in this view.",
+            "example": "Text(\"Hello\").font(.title)"
+          },
+          {
+            "name": "fontDesign(_:)",
+            "declaration": "func fontDesign(_ design: Font.Design?) -> some View",
+            "description": "Sets the font design of the text in this view.",
+            "example": "Text(\"Rounded\").fontDesign(.rounded)"
+          },
+          {
+            "name": "fontWeight(_:)",
+            "declaration": "func fontWeight(_ weight: Font.Weight?) -> some View",
+            "description": "Sets the font weight of the text in this view.",
+            "example": "Text(\"Bold\").fontWeight(.bold)"
+          },
+          {
+            "name": "fontWidth(_:)",
+            "declaration": "func fontWidth(_ width: Font.Width?) -> some View",
+            "description": "Sets the font width of the text in this view.",
+            "example": "Text(\"Condensed\").fontWidth(.condensed)"
+          }
+        ],
+        "environmentKey": {
+          "name": "font",
+          "declaration": "var font: Font?",
+          "description": "The default font of this environment."
+        }
+      },
+      "supportingTypes": {
+        "context": {
+          "name": "Font.Context",
+          "description": "Information used to resolve a font."
+        },
+        "resolved": {
+          "name": "Font.Resolved",
+          "description": "A concrete font value."
+        }
+      }
+    },
+    "dynamicTypeSpecifications": {
+      "description": "Platform-specific Dynamic Type size specifications for text styles",
+      "platforms": {
+        "iOS_iPadOS": {
+          "systemFont": "SF Pro",
+          "alternativeFont": "New York (NY)",
+          "supportsDynamicType": true,
+          "defaultSize": "17pt",
+          "minimumSize": "11pt",
+          "dynamicTypeSizes": {
+            "xSmall": {
+              "largeTitle": { "weight": "Regular", "size": 31, "leading": 38, "emphasizedWeight": "Bold" },
+              "title1": { "weight": "Regular", "size": 25, "leading": 31, "emphasizedWeight": "Bold" },
+              "title2": { "weight": "Regular", "size": 19, "leading": 24, "emphasizedWeight": "Bold" },
+              "title3": { "weight": "Regular", "size": 17, "leading": 22, "emphasizedWeight": "Semibold" },
+              "headline": { "weight": "Semibold", "size": 14, "leading": 19, "emphasizedWeight": "Semibold" },
+              "body": { "weight": "Regular", "size": 14, "leading": 19, "emphasizedWeight": "Semibold" },
+              "callout": { "weight": "Regular", "size": 13, "leading": 18, "emphasizedWeight": "Semibold" },
+              "subheadline": { "weight": "Regular", "size": 12, "leading": 16, "emphasizedWeight": "Semibold" },
+              "footnote": { "weight": "Regular", "size": 12, "leading": 16, "emphasizedWeight": "Semibold" },
+              "caption1": { "weight": "Regular", "size": 11, "leading": 13, "emphasizedWeight": "Semibold" },
+              "caption2": { "weight": "Regular", "size": 11, "leading": 13, "emphasizedWeight": "Semibold" }
+            },
+            "large_default": {
+              "description": "Default Dynamic Type size",
+              "note": "Values scale proportionally between xSmall and accessibility sizes"
+            },
+            "accessibilitySizes": {
+              "AX1": {
+                "largeTitle": { "weight": "Regular", "size": 44, "leading": 52, "emphasizedWeight": "Bold" },
+                "title1": { "weight": "Regular", "size": 38, "leading": 46, "emphasizedWeight": "Bold" },
+                "title2": { "weight": "Regular", "size": 34, "leading": 41, "emphasizedWeight": "Bold" },
+                "title3": { "weight": "Regular", "size": 31, "leading": 38, "emphasizedWeight": "Semibold" },
+                "headline": { "weight": "Semibold", "size": 28, "leading": 34, "emphasizedWeight": "Semibold" },
+                "body": { "weight": "Regular", "size": 28, "leading": 34, "emphasizedWeight": "Semibold" },
+                "callout": { "weight": "Regular", "size": 26, "leading": 32, "emphasizedWeight": "Semibold" },
+                "subheadline": { "weight": "Regular", "size": 25, "leading": 31, "emphasizedWeight": "Semibold" },
+                "footnote": { "weight": "Regular", "size": 23, "leading": 29, "emphasizedWeight": "Semibold" },
+                "caption1": { "weight": "Regular", "size": 22, "leading": 28, "emphasizedWeight": "Semibold" },
+                "caption2": { "weight": "Regular", "size": 20, "leading": 25, "emphasizedWeight": "Semibold" }
+              },
+              "availableSizes": ["AX1", "AX2", "AX3", "AX4", "AX5"]
+            }
+          }
+        },
+        "macOS": {
+          "systemFont": "SF Pro",
+          "alternativeFont": "New York (via Mac Catalyst)",
+          "supportsDynamicType": false,
+          "defaultSize": "13pt",
+          "minimumSize": "10pt",
+          "builtInTextStyles": {
+            "largeTitle": { "weight": "Regular", "size": 26, "lineHeight": 32, "emphasizedWeight": "Bold" },
+            "title1": { "weight": "Regular", "size": 22, "lineHeight": 26, "emphasizedWeight": "Bold" },
+            "title2": { "weight": "Regular", "size": 17, "lineHeight": 22, "emphasizedWeight": "Bold" },
+            "title3": { "weight": "Regular", "size": 15, "lineHeight": 20, "emphasizedWeight": "Semibold" },
+            "headline": { "weight": "Bold", "size": 13, "lineHeight": 16, "emphasizedWeight": "Heavy" },
+            "body": { "weight": "Regular", "size": 13, "lineHeight": 16, "emphasizedWeight": "Semibold" },
+            "callout": { "weight": "Regular", "size": 12, "lineHeight": 15, "emphasizedWeight": "Semibold" },
+            "subheadline": { "weight": "Regular", "size": 11, "lineHeight": 14, "emphasizedWeight": "Semibold" },
+            "footnote": { "weight": "Regular", "size": 10, "lineHeight": 13, "emphasizedWeight": "Semibold" },
+            "caption1": { "weight": "Regular", "size": 10, "lineHeight": 13, "emphasizedWeight": "Medium" },
+            "caption2": { "weight": "Medium", "size": 10, "lineHeight": 13, "emphasizedWeight": "Semibold" }
+          },
+          "dynamicFontVariants": [
+            { "variant": "Control content", "api": "controlContentFont(ofSize:)" },
+            { "variant": "Label", "api": "labelFont(ofSize:)" },
+            { "variant": "Menu", "api": "menuFont(ofSize:)" },
+            { "variant": "Menu bar", "api": "menuBarFont(ofSize:)" },
+            { "variant": "Message", "api": "messageFont(ofSize:)" },
+            { "variant": "Palette", "api": "paletteFont(ofSize:)" },
+            { "variant": "Title", "api": "titleBarFont(ofSize:)" },
+            { "variant": "Tool tips", "api": "toolTipsFont(ofSize:)" },
+            { "variant": "Document text (user)", "api": "userFont(ofSize:)" },
+            { "variant": "Monospaced document text", "api": "userFixedPitchFont(ofSize:)" },
+            { "variant": "Bold system font", "api": "boldSystemFont(ofSize:)" },
+            { "variant": "System font", "api": "systemFont(ofSize:)" }
+          ]
+        },
+        "tvOS": {
+          "systemFont": "SF Pro",
+          "alternativeFont": "New York (NY)",
+          "supportsDynamicType": true,
+          "defaultSize": "29pt",
+          "minimumSize": "23pt",
+          "builtInTextStyles": {
+            "title1": { "weight": "Medium", "size": 76, "leading": 96, "emphasizedWeight": "Bold" },
+            "title2": { "weight": "Medium", "size": 57, "leading": 66, "emphasizedWeight": "Bold" },
+            "title3": { "weight": "Medium", "size": 48, "leading": 56, "emphasizedWeight": "Bold" },
+            "headline": { "weight": "Medium", "size": 38, "leading": 46, "emphasizedWeight": "Bold" },
+            "subtitle1": { "weight": "Regular", "size": 38, "leading": 46, "emphasizedWeight": "Medium" },
+            "callout": { "weight": "Medium", "size": 31, "leading": 38, "emphasizedWeight": "Bold" },
+            "body": { "weight": "Medium", "size": 29, "leading": 36, "emphasizedWeight": "Bold" },
+            "caption1": { "weight": "Medium", "size": 25, "leading": 32, "emphasizedWeight": "Bold" },
+            "caption2": { "weight": "Medium", "size": 23, "leading": 30, "emphasizedWeight": "Bold" }
+          }
+        },
+        "visionOS": {
+          "systemFont": "SF Pro",
+          "alternativeFont": "New York (must specify type styles)",
+          "supportsDynamicType": true,
+          "defaultSize": "17pt",
+          "minimumSize": "12pt",
+          "specialFeatures": [
+            "Uses bolder versions of Dynamic Type body and title styles",
+            "Introduces Extra Large Title 1 and Extra Large Title 2 for wide, editorial-style layouts",
+            "Supports vibrancy for hierarchy in text and symbols"
+          ],
+          "textGuidance": [
+            "In general, prefer 2D text - 3D text can be difficult to read",
+            "Maximize contrast between text and background",
+            "Consider making text bold when not on a background",
+            "Use billboarding to keep text facing the user"
+          ]
+        },
+        "watchOS": {
+          "systemFont": "SF Compact",
+          "alternativeFont": "New York (NY)",
+          "complicationFont": "SF Compact Rounded",
+          "supportsDynamicType": true,
+          "defaultSize": "16pt",
+          "minimumSize": "12pt",
+          "dynamicTypeSizes": {
+            "xSmall": {
+              "largeTitle": { "weight": "Regular", "size": 30, "leading": 32.5, "emphasizedWeight": "Bold" },
+              "title1": { "weight": "Regular", "size": 28, "leading": 30.5, "emphasizedWeight": "Semibold" },
+              "title2": { "weight": "Regular", "size": 24, "leading": 26.5, "emphasizedWeight": "Semibold" },
+              "title3": { "weight": "Regular", "size": 17, "leading": 19.5, "emphasizedWeight": "Semibold" },
+              "headline": { "weight": "Semibold", "size": 14, "leading": 16.5, "emphasizedWeight": "Semibold" },
+              "body": { "weight": "Regular", "size": 14, "leading": 16.5, "emphasizedWeight": "Semibold" },
+              "caption1": { "weight": "Regular", "size": 13, "leading": 15.5, "emphasizedWeight": "Semibold" },
+              "caption2": { "weight": "Regular", "size": 12, "leading": 14.5, "emphasizedWeight": "Semibold" },
+              "footnote1": { "weight": "Regular", "size": 11, "leading": 13.5, "emphasizedWeight": "Semibold" },
+              "footnote2": { "weight": "Regular", "size": 10, "leading": 12.5, "emphasizedWeight": "Semibold" }
+            },
+            "accessibilitySizes": {
+              "AX1": {
+                "largeTitle": { "weight": "Regular", "size": 44, "leading": 46.5, "emphasizedWeight": "Bold" },
+                "title1": { "weight": "Regular", "size": 42, "leading": 44.5, "emphasizedWeight": "Semibold" },
+                "title2": { "weight": "Regular", "size": 34, "leading": 41, "emphasizedWeight": "Semibold" },
+                "title3": { "weight": "Regular", "size": 24, "leading": 26.5, "emphasizedWeight": "Semibold" },
+                "headline": { "weight": "Semibold", "size": 21, "leading": 23.5, "emphasizedWeight": "Semibold" },
+                "body": { "weight": "Regular", "size": 21, "leading": 23.5, "emphasizedWeight": "Semibold" },
+                "caption1": { "weight": "Regular", "size": 18, "leading": 20.5, "emphasizedWeight": "Semibold" },
+                "caption2": { "weight": "Regular", "size": 17, "leading": 19.5, "emphasizedWeight": "Semibold" },
+                "footnote1": { "weight": "Regular", "size": 16, "leading": 18.5, "emphasizedWeight": "Semibold" },
+                "footnote2": { "weight": "Regular", "size": 15, "leading": 17.5, "emphasizedWeight": "Semibold" }
+              },
+              "availableSizes": ["AX1", "AX2", "AX3"]
+            }
+          }
+        }
+      }
+    },
+    "systemFonts": {
+      "sanFrancisco": {
+        "familyName": "San Francisco",
+        "type": "Sans-serif",
+        "variants": [
+          {
+            "name": "SF Pro",
+            "platforms": ["iOS", "iPadOS", "macOS", "tvOS", "visionOS"],
+            "useCase": "System font for most platforms"
+          },
+          {
+            "name": "SF Compact",
+            "platforms": ["watchOS"],
+            "useCase": "System font for watchOS, optimized for small displays"
+          },
+          {
+            "name": "SF Mono",
+            "platforms": ["all"],
+            "useCase": "Monospaced text, code display"
+          },
+          {
+            "name": "SF Arabic",
+            "platforms": ["all"],
+            "useCase": "Arabic script support"
+          },
+          {
+            "name": "SF Armenian",
+            "platforms": ["all"],
+            "useCase": "Armenian script support"
+          },
+          {
+            "name": "SF Georgian",
+            "platforms": ["all"],
+            "useCase": "Georgian script support"
+          },
+          {
+            "name": "SF Hebrew",
+            "platforms": ["all"],
+            "useCase": "Hebrew script support"
+          }
+        ],
+        "roundedVariants": [
+          "SF Pro Rounded",
+          "SF Compact Rounded",
+          "SF Arabic Rounded",
+          "SF Armenian Rounded",
+          "SF Georgian Rounded",
+          "SF Hebrew Rounded"
+        ],
+        "roundedUseCase": "Coordinate text with soft or rounded UI elements, provide alternative typographic voice",
+        "weights": ["Ultralight", "Thin", "Light", "Regular", "Medium", "Semibold", "Bold", "Heavy", "Black"],
+        "widths": ["Condensed", "Standard", "Expanded"],
+        "format": "Variable font",
+        "features": [
+          "Dynamic optical sizes - merge discrete optical sizes and weights into continuous design",
+          "System interpolates each glyph to produce structure precisely adapted to point size",
+          "SF Symbols use equivalent weights for precise matching with adjacent text"
+        ]
+      },
+      "newYork": {
+        "familyName": "New York",
+        "abbreviation": "NY",
+        "type": "Serif",
+        "description": "Designed to work well by itself and alongside SF fonts",
+        "platforms": {
+          "iOS_iPadOS": "Available",
+          "macOS": "Available via Mac Catalyst",
+          "tvOS": "Available",
+          "visionOS": "Available (must specify type styles)",
+          "watchOS": "Available"
+        },
+        "accessVia": "Font.Design.serif",
+        "format": "Variable font"
+      },
+      "variableFontFeatures": {
+        "description": "Variable font format combines different font styles in one file and supports interpolation between styles",
+        "opticalSizing": "Adjustment of typographic designs to fit different sizes",
+        "dynamicOpticalSizes": "System fonts support dynamic optical sizes that merge discrete optical sizes (Text, Display) and weights into continuous design",
+        "note": "Don't need discrete optical sizes unless working with design tools that don't support variable font features"
+      },
+      "downloadUrl": "https://developer.apple.com/fonts/"
+    },
+    "widgetBestPractices": {
+      "description": "Typography best practices specific to widget development",
+      "fontRecommendations": [
+        {
+          "guideline": "Use system text styles",
+          "reason": "Automatic Dynamic Type support and platform-appropriate sizing",
+          "implementation": ".font(.headline) or .font(.body)"
+        },
+        {
+          "guideline": "Prefer SF Compact Rounded for complications",
+          "reason": "watchOS uses SF Compact Rounded in complications for consistency",
+          "platform": "watchOS"
+        },
+        {
+          "guideline": "Use .monospacedDigit() for numbers that change",
+          "reason": "Prevents layout shifts when displaying timers, counters, or updating numbers",
+          "implementation": ".font(.body.monospacedDigit())"
+        },
+        {
+          "guideline": "Avoid fixed font sizes when possible",
+          "reason": "Fixed sizes don't respect Dynamic Type preferences",
+          "alternative": "Use .custom(name, size:, relativeTo:) for custom fonts"
+        }
+      ],
+      "sizeConsiderations": {
+        "small": {
+          "recommendedStyles": ["headline", "subheadline", "caption"],
+          "notes": "Limited space; prioritize essential information"
+        },
+        "medium": {
+          "recommendedStyles": ["title3", "headline", "body", "caption"],
+          "notes": "Balance between information density and readability"
+        },
+        "large": {
+          "recommendedStyles": ["title", "title2", "title3", "headline", "body", "caption"],
+          "notes": "More room for hierarchy; can use multiple text styles"
+        }
+      },
+      "accessibilityInWidgets": [
+        "Widgets should respect Dynamic Type settings",
+        "Ensure minimum tap targets of 44pt even with larger text",
+        "Test with largest accessibility text sizes enabled",
+        "Consider layout adaptations for larger text (stacked vs inline)"
+      ],
+      "performanceTips": [
+        "System fonts are optimized and cached; prefer over custom fonts",
+        "Avoid complex font modifications in frequently updating widgets",
+        "Use semantic text styles for automatic optimization"
+      ]
+    },
+    "bestPractices": {
+      "legibility": [
+        {
+          "guideline": "Follow recommended default and minimum text sizes for each platform",
+          "platforms": {
+            "iOS_iPadOS": { "default": "17pt", "minimum": "11pt" },
+            "macOS": { "default": "13pt", "minimum": "10pt" },
+            "tvOS": { "default": "29pt", "minimum": "23pt" },
+            "visionOS": { "default": "17pt", "minimum": "12pt" },
+            "watchOS": { "default": "16pt", "minimum": "12pt" }
+          }
+        },
+        {
+          "guideline": "Avoid light font weights",
+          "reason": "Ultralight, Thin, and Light weights can be difficult to see, especially when text is small",
+          "recommended": ["Regular", "Medium", "Semibold", "Bold"]
+        },
+        {
+          "guideline": "If using a custom font with thin weight, aim for larger than recommended sizes"
+        },
+        {
+          "guideline": "Test legibility in different contexts",
+          "actions": ["Test on each platform", "Consider different viewing distances", "Check various lighting conditions"]
+        },
+        {
+          "guideline": "Use typefaces designed for optimized legibility when needed",
+          "example": "System fonts (SF Pro, SF Compact)"
+        }
+      ],
+      "hierarchy": [
+        {
+          "guideline": "Use text styles to form typographic hierarchy expressing different levels of importance"
+        },
+        {
+          "guideline": "Adjust font weight, size, and color to emphasize important information"
+        },
+        {
+          "guideline": "Maintain relative hierarchy and visual distinction when users adjust text sizes"
+        },
+        {
+          "guideline": "Minimize the number of typefaces",
+          "reason": "Mixing too many typefaces obscures information hierarchy and hinders readability"
+        },
+        {
+          "guideline": "Prioritize important content when responding to text-size changes",
+          "note": "Not all content needs to scale equally"
+        }
+      ],
+      "dynamicType": [
+        {
+          "guideline": "Consider using built-in text styles for Dynamic Type support"
+        },
+        {
+          "guideline": "Make sure app layout adapts to all font sizes",
+          "testing": "Turn on Larger Accessibility Text Sizes in Settings"
+        },
+        {
+          "guideline": "Increase size of meaningful interface icons as font size increases",
+          "note": "SF Symbols scale automatically with Dynamic Type"
+        },
+        {
+          "guideline": "Keep text truncation to minimum as font size increases"
+        },
+        {
+          "guideline": "Consider adjusting layout at large font sizes",
+          "techniques": ["Use stacked layouts", "Reduce columns", "Check isAccessibilityCategory"]
+        },
+        {
+          "guideline": "Maintain consistent information hierarchy regardless of font size"
+        }
+      ],
+      "customFonts": [
+        {
+          "guideline": "Ensure custom fonts are legible at various viewing distances and conditions"
+        },
+        {
+          "guideline": "Follow recommended minimum font sizes for custom fonts"
+        },
+        {
+          "guideline": "Implement accessibility features for custom fonts",
+          "requirements": ["Dynamic Type support", "Bold Text response"],
+          "reference": "Applying custom fonts to text"
+        },
+        {
+          "guideline": "Use .custom(_:size:relativeTo:) to scale custom fonts with Dynamic Type"
+        }
+      ],
+      "leadingAdjustment": [
+        {
+          "scenario": "Wide columns or long passages",
+          "recommendation": "Loose leading",
+          "reason": "Makes it easier to keep place while moving between lines"
+        },
+        {
+          "scenario": "Height-constrained areas (list rows)",
+          "recommendation": "Tight leading",
+          "reason": "Helps text fit well"
+        },
+        {
+          "scenario": "Three or more lines of text",
+          "recommendation": "Avoid tight leading",
+          "reason": "Readability concerns even in constrained areas"
+        }
+      ]
+    },
+    "trackingValues": {
+      "description": "The system font dynamically adjusts tracking (letter-spacing) at every point size. These values are for interface mockups.",
+      "note": "Not all apps express tracking values as 1/1000 em",
+      "platforms": {
+        "iOS_iPadOS_visionOS": {
+          "fonts": ["SF Pro", "SF Pro Rounded", "New York"],
+          "sampleValues": [
+            { "size": 6, "tracking_em": 41, "tracking_pt": 0.24 },
+            { "size": 10, "tracking_em": 12, "tracking_pt": 0.12 },
+            { "size": 12, "tracking_em": 0, "tracking_pt": 0.0 },
+            { "size": 14, "tracking_em": -11, "tracking_pt": -0.15 },
+            { "size": 17, "tracking_em": -26, "tracking_pt": -0.43 },
+            { "size": 24, "tracking_em": 3, "tracking_pt": 0.07 },
+            { "size": 34, "tracking_em": 12, "tracking_pt": 0.40 },
+            { "size": 48, "tracking_em": 8, "tracking_pt": 0.35 },
+            { "size": 72, "tracking_em": 2, "tracking_pt": 0.14 },
+            { "size": 96, "tracking_em": 0, "tracking_pt": 0 }
+          ],
+          "resolution": "144 ppi for @2x, 216 ppi for @3x designs"
+        },
+        "macOS": {
+          "fonts": ["SF Pro", "SF Pro Rounded", "New York"],
+          "note": "Same tracking values as iOS/iPadOS/visionOS",
+          "resolution": "144 ppi for @2x designs"
+        },
+        "tvOS": {
+          "fonts": ["SF Pro", "SF Pro Rounded", "New York"],
+          "note": "Same tracking values as iOS/iPadOS/visionOS",
+          "resolution": "144 ppi for @2x designs"
+        },
+        "watchOS": {
+          "fonts": ["SF Compact", "SF Compact Rounded"],
+          "note": "Different tracking values optimized for SF Compact",
+          "sampleValues": [
+            { "size": 6, "tracking_em": 50, "tracking_pt": 0.29 },
+            { "size": 12, "tracking_em": 20, "tracking_pt": 0.23 },
+            { "size": 16, "tracking_em": 0, "tracking_pt": 0.0 },
+            { "size": 20, "tracking_em": 0, "tracking_pt": 0.0 },
+            { "size": 36, "tracking_em": -20, "tracking_pt": -0.69 },
+            { "size": 48, "tracking_em": -20, "tracking_pt": -0.96 },
+            { "size": 72, "tracking_em": -24, "tracking_pt": -1.69 },
+            { "size": 96, "tracking_em": -28, "tracking_pt": -2.62 }
+          ],
+          "resolution": "144 ppi for @2x designs"
+        }
+      }
+    },
+    "sfSymbolsIntegration": {
+      "description": "SF Symbols provides a comprehensive library of symbols that integrate seamlessly with the San Francisco system font",
+      "features": [
+        "Automatically aligns with text in all weights and sizes",
+        "Precise weight matching between symbols and adjacent text",
+        "Scales automatically with Dynamic Type size changes"
+      ],
+      "useCase": "Convey concepts or depict objects, especially within text"
+    },
+    "emphasizedTextStyles": {
+      "description": "Display emphasized variants of system text styles using symbolic traits",
+      "swiftUI": "Use the bold() modifier",
+      "uiKit": "Use traitBold in UIFontDescriptor API",
+      "emphasizedWeights": {
+        "description": "Emphasized weights can be medium, semibold, bold, or heavy depending on the base text style",
+        "examples": {
+          "largeTitle": { "normal": "Regular", "emphasized": "Bold" },
+          "title1": { "normal": "Regular", "emphasized": "Bold" },
+          "headline": { "normal": "Semibold/Bold", "emphasized": "Heavy" },
+          "body": { "normal": "Regular", "emphasized": "Semibold" },
+          "caption1": { "normal": "Regular", "emphasized": "Medium/Semibold" }
+        }
+      }
+    },
+    "codeExamples": {
+      "basicUsage": [
+        {
+          "description": "Using standard text styles",
+          "code": "Text(\"Title\").font(.title)\nText(\"Body text\").font(.body)\nText(\"Caption\").font(.caption)"
+        },
+        {
+          "description": "Using system font with design and weight",
+          "code": "Text(\"Rounded\").font(.system(.body, design: .rounded, weight: .medium))"
+        },
+        {
+          "description": "Using system font with specific size",
+          "code": "Text(\"Custom size\").font(.system(size: 20, weight: .semibold, design: .default))"
+        }
+      ],
+      "customFonts": [
+        {
+          "description": "Custom font scaling with body",
+          "code": "Text(\"Custom\").font(.custom(\"Helvetica Neue\", size: 17))"
+        },
+        {
+          "description": "Custom font scaling relative to specific style",
+          "code": "Text(\"Title\").font(.custom(\"Georgia\", size: 24, relativeTo: .title))"
+        },
+        {
+          "description": "Custom font with fixed size (no scaling)",
+          "code": "Text(\"Fixed\").font(.custom(\"Courier\", fixedSize: 12))"
+        }
+      ],
+      "modifiers": [
+        {
+          "description": "Chaining font modifiers",
+          "code": "Text(\"Styled\").font(.body.bold().italic())"
+        },
+        {
+          "description": "Using monospacedDigit for numbers",
+          "code": "Text(\"\\(count)\").font(.body.monospacedDigit())"
+        },
+        {
+          "description": "Adjusting weight",
+          "code": "Text(\"Weighted\").font(.body.weight(.semibold))"
+        },
+        {
+          "description": "Adjusting leading",
+          "code": "Text(\"Multiple lines\\nof text\").font(.body.leading(.loose))"
+        }
+      ],
+      "viewModifiers": [
+        {
+          "description": "Using fontWeight view modifier",
+          "code": "Text(\"Bold\").fontWeight(.bold)"
+        },
+        {
+          "description": "Using fontDesign view modifier",
+          "code": "Text(\"Serif\").fontDesign(.serif)"
+        },
+        {
+          "description": "Applying font to container",
+          "code": "VStack {\n    Text(\"Title\")\n    Text(\"Subtitle\")\n}.font(.headline)"
+        }
+      ],
+      "widgetSpecific": [
+        {
+          "description": "Widget with appropriate text styles",
+          "code": "VStack(alignment: .leading) {\n    Text(\"Week 52\")\n        .font(.headline)\n    Text(\"December 2025\")\n        .font(.subheadline)\n        .foregroundStyle(.secondary)\n}"
+        },
+        {
+          "description": "Timer with monospaced digits",
+          "code": "Text(timerInterval: event.date...event.endDate)\n    .font(.body.monospacedDigit())"
+        }
+      ]
+    },
+    "relatedAPIs": {
+      "swiftUI": [
+        {
+          "name": "func font(Font?) -> some View",
+          "description": "Sets the default font for text in this view"
+        },
+        {
+          "name": "func fontDesign(Font.Design?) -> some View",
+          "description": "Sets the font design of the text in this view"
+        },
+        {
+          "name": "func fontWeight(Font.Weight?) -> some View",
+          "description": "Sets the font weight of the text in this view"
+        },
+        {
+          "name": "func fontWidth(Font.Width?) -> some View",
+          "description": "Sets the font width of the text in this view"
+        },
+        {
+          "name": "var font: Font?",
+          "description": "The default font environment value"
+        }
+      ],
+      "uiKit": [
+        {
+          "name": "UIFont",
+          "description": "UIKit font class"
+        },
+        {
+          "name": "UIFontDescriptor",
+          "description": "Font descriptor for advanced font customization"
+        },
+        {
+          "name": "numberOfLines",
+          "description": "Property to prevent text truncation in labels"
+        },
+        {
+          "name": "isAccessibilityCategory",
+          "description": "Check if current content size category is an accessibility category"
+        }
+      ],
+      "appKit": {
+        "reference": "Fonts - AppKit documentation"
+      },
+      "references": [
+        {
+          "title": "Applying custom fonts to text",
+          "description": "Article on adding and using custom fonts with Dynamic Type"
+        },
+        {
+          "title": "Text input and output - SwiftUI",
+          "description": "SwiftUI text documentation"
+        },
+        {
+          "title": "Text display and fonts - UIKit",
+          "description": "UIKit text and fonts documentation"
+        },
+        {
+          "title": "Fonts for Apple platforms",
+          "description": "Download SF and NY fonts"
+        },
+        {
+          "title": "SF Symbols",
+          "description": "Symbol library documentation"
+        }
+      ],
+      "videos": [
+        {
+          "title": "Get started with Dynamic Type",
+          "description": "WWDC session on implementing Dynamic Type"
+        },
+        {
+          "title": "Meet the expanded San Francisco font family",
+          "description": "WWDC session on SF font variants"
+        },
+        {
+          "title": "The details of UI typography",
+          "description": "WWDC session on typography best practices"
+        }
+      ]
+    },
+    "changeLog": [
+      {
+        "date": "2025-12-16",
+        "changes": "Added emphasized weights to the Dynamic Type style specifications for each platform"
+      },
+      {
+        "date": "2025-03-07",
+        "changes": "Expanded guidance for Dynamic Type"
+      },
+      {
+        "date": "2024-06-10",
+        "changes": "Added guidance for using Apple's Unity plug-ins to support Dynamic Type in Unity-based games and enhanced guidance on billboarding in visionOS"
+      },
+      {
+        "date": "2023-09-12",
+        "changes": "Added artwork illustrating system font weights and clarified tvOS specification table descriptions"
+      },
+      {
+        "date": "2023-06-21",
+        "changes": "Updated to include guidance for visionOS"
+      }
+    ]
+  }
+}
