@@ -80,62 +80,24 @@ struct JohoExpenseEditorSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Floating header with Cancel/Save buttons (情報デザイン style)
-            HStack {
-                Button { dismiss() } label: {
-                    Text("Cancel")
-                        .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
-                        .padding(.horizontal, JohoDimensions.spacingMD)
-                        .padding(.vertical, JohoDimensions.spacingMD)
-                        .background(JohoColors.white)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                        )
-                }
-
-                Spacer()
-
-                Button {
+            // 情報デザイン: Standard editor header with back button, icon zone, title
+            JohoEditorHeader(
+                icon: SpecialDayType.expense.defaultIcon,
+                accentColor: SpecialDayType.expense.accentColor,
+                title: "NEW EXPENSE",
+                subtitle: "Set amount & details",
+                canSave: canSave,
+                onBack: { dismiss() },
+                onSave: {
                     saveExpense()
                     dismiss()
-                } label: {
-                    Text("Save")
-                        .font(JohoFont.body.bold())
-                        .foregroundStyle(canSave ? JohoColors.black : JohoColors.black.opacity(0.4))
-                        .padding(.horizontal, JohoDimensions.spacingLG)
-                        .padding(.vertical, JohoDimensions.spacingMD)
-                        .background(canSave ? accentColor : JohoColors.white)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                        )
                 }
-                .disabled(!canSave)
-            }
-            .padding(.horizontal, JohoDimensions.spacingLG)
-            .padding(.vertical, JohoDimensions.spacingMD)
-            .background(JohoColors.background)
+            )
 
             // Scrollable content
             ScrollView {
                 // Main content card
                 VStack(spacing: JohoDimensions.spacingLG) {
-                    // Title with type indicator (情報デザイン)
-                    HStack(spacing: JohoDimensions.spacingSM) {
-                        Circle()
-                            .fill(solidAccent)
-                            .frame(width: 20, height: 20)
-                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
-                        Text("New Expense")
-                            .font(JohoFont.displaySmall)
-                            .foregroundStyle(JohoColors.black)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
                     // Expense icon - 情報デザイン compartmentalized style
                     ZStack {
                         Circle()

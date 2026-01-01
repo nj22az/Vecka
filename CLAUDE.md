@@ -273,6 +273,140 @@ JohoPill(text: "Red Day", ...)  // NO! Use item.type.code
 - `CalendarGridView.swift` - Day cell indicators (7pt)
 - `JohoDesignSystem.swift` - Colors, SectionZone backgrounds
 
+### Star Page Bento Design (SpecialDaysListView)
+
+The Star Page (☆) displays all special days using **compartmentalized bento rows** with colored backgrounds. NO white boxes inside colored sections - the section color IS the row background.
+
+**The 7 Special Day Types:**
+
+| Type | Code | Accent Color | Hex | Section Background | Light Tint |
+|------|------|--------------|-----|-------------------|------------|
+| **Holiday** | HOL | Red | `#E53E3E` | `JohoColors.redLight` | `#FECACA` |
+| **Observance** | OBS | Orange | `#ED8936` | Orange 20% | `rgba(237,137,54,0.2)` |
+| **Event** | EVT | Purple | `#805AD5` | Purple 20% | `rgba(128,90,213,0.2)` |
+| **Birthday** | BDY | Pink | `#D53F8C` | `JohoColors.pinkLight` | `#FED7E2` |
+| **Note** | NTE | Yellow | `#ECC94B` | Yellow 30% | `rgba(236,201,75,0.3)` |
+| **Trip** | TRP | Blue | `#3182CE` | Blue 20% | `rgba(49,130,206,0.2)` |
+| **Expense** | EXP | Green | `#38A169` | Green 30% | `rgba(56,161,105,0.3)` |
+
+**Bento Row Structure (3 compartments with walls):**
+
+```
+┌─────┬──────────────────────────────┬─────────────────┐
+│ ●🔒 │ Title Text                   │ SWE │ HOL │
+├─────┼──────────────────────────────┼─────────────────┤
+│LEFT │ CENTER                       │ RIGHT           │
+│28pt │ flexible                     │ 80pt            │
+└─────┴──────────────────────────────┴─────────────────┘
+  │         │                              │
+  │         │                              └── Country + Type pills
+  │         └── Item title (black text)
+  └── Type indicator circle + lock (if system)
+```
+
+**Compartment Walls (vertical dividers):**
+- 1.5pt black vertical lines between compartments
+- Creates visual separation like OTC medicine packaging
+- Ensures alignment across all rows
+
+```swift
+// ✅ CORRECT - Bento row with colored background and compartment walls
+HStack(spacing: 0) {
+    // LEFT COMPARTMENT (28pt)
+    HStack(spacing: 4) {
+        typeIndicatorDot(for: item.type)  // Filled circle
+        if !canEdit {
+            Image(systemName: "lock.fill")
+                .font(.system(size: 8))
+                .foregroundStyle(JohoColors.black.opacity(0.4))
+        }
+    }
+    .frame(width: 28)
+
+    // WALL (divider)
+    Rectangle()
+        .fill(JohoColors.black)
+        .frame(width: 1.5)
+
+    // CENTER COMPARTMENT (flexible)
+    Text(item.title)
+        .font(JohoFont.bodySmall)
+        .foregroundStyle(JohoColors.black)
+        .padding(.horizontal, 8)
+
+    Spacer()
+
+    // WALL (divider)
+    Rectangle()
+        .fill(JohoColors.black)
+        .frame(width: 1.5)
+
+    // RIGHT COMPARTMENT (80pt)
+    HStack(spacing: 4) {
+        CountryPill(region: item.region)
+        JohoPill(text: item.type.code, style: .coloredInverted(...))
+    }
+    .frame(width: 80)
+}
+.padding(.vertical, 8)
+.background(zone.background)  // Section color IS the row background
+.clipShape(Squircle(cornerRadius: 8))
+.overlay(Squircle(...).stroke(JohoColors.black, lineWidth: 1.5))
+
+// ❌ WRONG - White box inside colored section
+.background(JohoColors.white)  // NO! Use zone.background
+```
+
+**Swipe Actions for Data Management:**
+
+| Direction | Action | Color | Availability |
+|-----------|--------|-------|--------------|
+| ← Swipe LEFT | Delete | Red `#E53935` | User-created entries only |
+| → Swipe RIGHT | Edit | Cyan `#A5F3FC` | User-created entries only |
+
+System holidays (lock icon) have NO swipe actions - they are read-only.
+
+```swift
+.swipeActions(edge: .trailing, allowsFullSwipe: canEdit) {
+    if canEdit {
+        Button(role: .destructive) { deleteRow(item) } label: {
+            Label("DELETE", systemImage: "trash")
+        }
+    }
+}
+.swipeActions(edge: .leading, allowsFullSwipe: false) {
+    if canEdit {
+        Button { openEditor(item) } label: {
+            Label("EDIT", systemImage: "pencil")
+        }
+        .tint(JohoColors.cyan)
+    }
+}
+```
+
+**Section Box Structure:**
+
+```
+┌─────────────────────────────────────────────────────┐
+│ [HOLIDAYS] ★                                        │ ← Header (black pill + icon)
+├─────────────────────────────────────────────────────┤
+│ ┌─────┬───────────────────────────┬───────────────┐ │
+│ │ ●   │ New Year's Day            │ SWE │ HOL │   │ │ ← Bento row
+│ └─────┴───────────────────────────┴───────────────┘ │
+│ ┌─────┬───────────────────────────┬───────────────┐ │
+│ │ ●🔒 │ Christmas Day             │ USA │ HOL │   │ │ ← System (locked)
+│ └─────┴───────────────────────────┴───────────────┘ │
+└─────────────────────────────────────────────────────┘
+  └── Light red background (#FECACA)
+```
+
+**Expandable Detail (tap row to expand):**
+
+When a row is tapped, it expands to show additional details:
+- Notes/description
+- Date information
+- Edit/Delete action buttons (for user entries)
+
 ### Typography
 
 Font: **SF Pro Rounded** (`.design(.rounded)`)
@@ -462,64 +596,115 @@ HStack(spacing: 0) {
 - Data/stats in right compartment, left-aligned
 - Fixed height for consistent grid appearance
 
-**Editor Sheet (Star Page / Add Entry Pattern):**
+**Editor Sheet Header Pattern (情報デザイン):**
 
-ALL entry creation sheets (Holiday, Observance, Event, Birthday, Note) MUST follow this consistent 情報デザイン pattern:
+ALL editor sheets MUST use the consistent header pattern from Star Page month detail view:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ [◀] [Icon] TITLE TEXT                              [Save]  │
+│            Subtitle text                                    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Header Components:**
+
+| Component | Size | Specifications |
+|-----------|------|----------------|
+| Back button | 44×44pt | `chevron.left`, white background, thin border (1pt) |
+| Icon zone | 52×52pt | Type icon (24pt bold), light tint background, medium border (2pt) |
+| Title | Headline font | UPPERCASE, black text |
+| Subtitle | Caption font | 0.7 opacity black text |
+| Save button | Auto | Accent color when valid, white when invalid |
+
+**Type Icons (from SpecialDayType.defaultIcon):**
+
+| Type | Code | Icon | Accent Color | Light Background |
+|------|------|------|--------------|------------------|
+| Holiday | HOL | `star.fill` | `#E53E3E` (Red) | Red 20% opacity |
+| Observance | OBS | `sparkles` | `#ED8936` (Orange) | Orange 20% opacity |
+| Event | EVT | `calendar.badge.clock` | `#805AD5` (Purple) | Purple 20% opacity |
+| Birthday | BDY | `birthday.cake.fill` | `#D53F8C` (Pink) | Pink 20% opacity |
+| Note | NTE | `note.text` | `#ECC94B` (Yellow) | Yellow 20% opacity |
+| Trip | TRP | `airplane` | `#3182CE` (Blue) | Blue 20% opacity |
+| Expense | EXP | `dollarsign.circle.fill` | `#38A169` (Green) | Green 20% opacity |
+
+**Standard Header Implementation:**
 
 ```swift
-// Structure: Cancel/Save OUTSIDE card, content INSIDE card
-VStack(spacing: JohoDimensions.spacingMD) {
-    // Header with Cancel/Save buttons (OUTSIDE main card)
-    HStack {
-        Button(action: onCancel) {
-            Text("Cancel")
-                .font(JohoFont.body)
-                .foregroundStyle(JohoColors.black)
-                .padding(.horizontal, JohoDimensions.spacingMD)
-                .padding(.vertical, JohoDimensions.spacingMD)
-                .background(JohoColors.white)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                .overlay(Squircle(...).stroke(JohoColors.black, lineWidth: 1.5))
-        }
-        Spacer()
-        Button(action: onSave) {
-            Text("Save")
-                .font(JohoFont.body.bold())
-                .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
-                .padding(.horizontal, JohoDimensions.spacingLG)
-                .padding(.vertical, JohoDimensions.spacingMD)
-                .background(canSave ? accentColor : JohoColors.white)  // Accent when saveable
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                .overlay(Squircle(...).stroke(JohoColors.black, lineWidth: 1.5))
-        }
-        .disabled(!canSave)
+// Use JohoEditorHeader for all editor sheets
+JohoEditorHeader(
+    icon: type.defaultIcon,           // SF Symbol from SpecialDayType
+    accentColor: type.accentColor,    // Semantic color
+    title: "NEW HOLIDAY",             // UPPERCASE
+    subtitle: "Set date & details",   // Descriptive text
+    canSave: !name.isEmpty,           // Validation state
+    onBack: { dismiss() },
+    onSave: { saveAndDismiss() }
+)
+```
+
+**Full Header Code Pattern:**
+
+```swift
+HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
+    // Back button (44×44)
+    Button { dismiss() } label: {
+        Image(systemName: "chevron.left")
+            .font(.system(size: 16, weight: .bold))
+            .foregroundStyle(JohoColors.black)
+            .frame(width: 44, height: 44)
+            .background(JohoColors.white)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+            .overlay(Squircle(...).stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
     }
 
-    // Main content card
+    // Icon zone (52×52)
+    Image(systemName: type.defaultIcon)
+        .font(.system(size: 24, weight: .bold))
+        .foregroundStyle(type.accentColor)
+        .frame(width: 52, height: 52)
+        .background(type.accentColor.opacity(0.2))
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(Squircle(...).stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium))
+
+    // Title area
+    VStack(alignment: .leading, spacing: 2) {
+        Text("NEW HOLIDAY")
+            .font(JohoFont.headline)
+            .foregroundStyle(JohoColors.black)
+        Text("Set date & details")
+            .font(JohoFont.caption)
+            .foregroundStyle(JohoColors.black.opacity(0.7))
+    }
+
+    Spacer()
+
+    // Save button
+    Button { onSave() } label: {
+        Text("Save")
+            .font(JohoFont.body.bold())
+            .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.vertical, JohoDimensions.spacingMD)
+            .background(canSave ? type.accentColor : JohoColors.white)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+            .overlay(Squircle(...).stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium))
+    }
+    .disabled(!canSave)
+}
+.padding(.horizontal, JohoDimensions.spacingLG)
+.padding(.vertical, JohoDimensions.spacingMD)
+.background(JohoColors.background)
+```
+
+**Editor Content Card:**
+
+Below the header, the scrollable content card contains form fields:
+
+```swift
+ScrollView {
     VStack(spacing: JohoDimensions.spacingLG) {
-        // Title with type indicator circle
-        HStack(spacing: JohoDimensions.spacingSM) {
-            Circle()
-                .fill(accentColor)  // Red=HOL, Orange=OBS, Purple=EVT, Pink=BDY, Yellow=NTE
-                .frame(width: 20, height: 20)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
-            Text("New Holiday")  // Title matches type
-                .font(JohoFont.displaySmall)
-                .foregroundStyle(JohoColors.black)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-
-        // Icon avatar
-        ZStack {
-            Circle()
-                .fill(accentColor.opacity(0.2))
-                .frame(width: 80, height: 80)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
-            Image(systemName: "star.fill")
-                .font(.system(size: 32, weight: .bold))
-                .foregroundStyle(accentColor)
-        }
-
         // Form fields with JohoPill labels
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
             JohoPill(text: "FIELD NAME", style: .whiteOnBlack, size: .small)
@@ -535,7 +720,7 @@ VStack(spacing: JohoDimensions.spacingMD) {
         HStack {
             JohoPill(text: "OPTION", style: .whiteOnBlack, size: .small)
             Spacer()
-            johoToggle(isOn: $optionEnabled)  // Custom toggle with accent color
+            johoToggle(isOn: $optionEnabled, accentColor: type.accentColor)
         }
     }
     .padding(JohoDimensions.spacingLG)
@@ -543,21 +728,12 @@ VStack(spacing: JohoDimensions.spacingMD) {
     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
     .overlay(Squircle(...).stroke(JohoColors.black, lineWidth: 3))
 }
-```
-
-**Entry Type Accent Colors:**
-| Type | Color | Hex | Code |
-|------|-------|-----|------|
-| Holiday | Red | `#E53E3E` | HOL |
-| Observance | Orange | `#ED8936` | OBS |
-| Event | Purple | `#805AD5` | EVT |
-| Birthday | Pink | `#D53F8C` | BDY |
-| Note | Yellow | `#ECC94B` | NTE |
 
 **Editor Requirements:**
-- Cancel button: White background, black border, black text
-- Save button: Accent color background when valid, white background when invalid
-- Type indicator: Filled circle with accent color + black border
+- Header OUTSIDE scrollable content (fixed at top)
+- Back button: 44×44pt minimum touch target
+- Icon zone: Uses type's `defaultIcon` and `accentColor`
+- Save button: Accent color background when valid, white when invalid
 - All form fields: White background + black border + JohoPill label
 - Toggles: Custom 情報デザイン toggle (not iOS default)
 - Year numbers: Use `String(year)` never `"\(year)"` to avoid locale spacing

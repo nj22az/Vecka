@@ -548,64 +548,26 @@ struct CustomCountdownDialog: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Floating header with Cancel/Save buttons
-            HStack {
-                Button { dismiss() } label: {
-                    Text("Cancel")
-                        .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
-                        .padding(.horizontal, JohoDimensions.spacingMD)
-                        .padding(.vertical, JohoDimensions.spacingMD)
-                        .background(JohoColors.white)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                        )
-                }
-
-                Spacer()
-
-                Button {
+            // 情報デザイン Editor Header (uses SpecialDayType.event icon)
+            JohoEditorHeader(
+                icon: SpecialDayType.event.defaultIcon,
+                accentColor: eventColor,
+                title: "NEW EVENT",
+                subtitle: "Set date & details",
+                canSave: canSave,
+                onBack: { dismiss() },
+                onSave: {
                     saveCustomCountdown()
                     selectedCountdown = .custom
                     onSave()
                     dismiss()
-                } label: {
-                    Text("Save")
-                        .font(JohoFont.body.bold())
-                        .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
-                        .padding(.horizontal, JohoDimensions.spacingLG)
-                        .padding(.vertical, JohoDimensions.spacingMD)
-                        .background(canSave ? eventColor : JohoColors.white)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                        )
                 }
-                .disabled(!canSave)
-            }
-            .padding(.horizontal, JohoDimensions.spacingLG)
-            .padding(.vertical, JohoDimensions.spacingMD)
-            .background(JohoColors.background)
+            )
 
             // Scrollable content
             ScrollView {
                 // Main content card
                 VStack(spacing: JohoDimensions.spacingLG) {
-                    // Title with type indicator - 情報デザイン: Filled circle with BLACK border
-                    HStack(spacing: JohoDimensions.spacingSM) {
-                        Circle()
-                            .fill(eventColor)
-                            .frame(width: 20, height: 20)
-                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
-                        Text("New Event")
-                            .font(JohoFont.displaySmall)
-                            .foregroundStyle(JohoColors.black)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
                     // Icon & Color row
                     HStack(spacing: JohoDimensions.spacingMD) {
                         // Icon selector

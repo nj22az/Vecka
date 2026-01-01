@@ -2,8 +2,8 @@
 //  AppSidebar.swift
 //  Vecka
 //
-//  3x3 Icon Grid Sidebar - iOS 26 Liquid Glass Design
-//  Native .glassEffect() with colored circle backgrounds
+//  3x3 Icon Grid Sidebar - 情報デザイン Design
+//  Solid colors + black borders (NO glass effects)
 //
 
 import SwiftUI
@@ -55,7 +55,6 @@ enum SidebarSelection: String, Hashable, Identifiable, CaseIterable {
 
 struct AppSidebar: View {
     @Binding var selection: SidebarSelection?
-    @Namespace private var sidebarNamespace
 
     private let columns = [
         GridItem(.flexible(), spacing: 16),
@@ -78,8 +77,7 @@ struct AppSidebar: View {
                     ForEach(SidebarSelection.allCases) { item in
                         SidebarIconButton(
                             item: item,
-                            isSelected: selection == item,
-                            namespace: sidebarNamespace
+                            isSelected: selection == item
                         ) {
                             withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                                 selection = item
@@ -109,37 +107,36 @@ struct AppSidebar: View {
     }
 }
 
-// MARK: - Sidebar Icon Button with Liquid Glass
+// MARK: - Sidebar Icon Button (情報デザイン: Solid colors + borders, NO glass)
 
 struct SidebarIconButton: View {
     let item: SidebarSelection
     let isSelected: Bool
-    let namespace: Namespace.ID
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             VStack(spacing: 8) {
-                // Icon with colored circle background when selected
+                // 情報デザイン: Solid colored circle + black border (NO glassEffect)
                 ZStack {
                     Circle()
-                        .fill(isSelected ? item.accentColor : Color.clear)
+                        .fill(isSelected ? item.accentColor : JohoColors.inputBackground)
                         .frame(width: 52, height: 52)
 
                     Image(systemName: item.icon)
                         .font(.system(size: 22, weight: isSelected ? .bold : .medium))
-                        .foregroundStyle(isSelected ? .white : .secondary)
+                        .foregroundStyle(isSelected ? .white : JohoColors.black.opacity(0.6))
                         .frame(width: 52, height: 52)
                 }
-                .if(isSelected) { view in
-                    view.glassEffect(.regular.interactive(), in: .circle)
-                }
-                .glassEffectID(item.id, in: namespace)
+                .overlay(
+                    Circle()
+                        .stroke(isSelected ? JohoColors.black : JohoColors.black.opacity(0.2), lineWidth: isSelected ? 2 : 1)
+                )
 
                 // Label
                 Text(item.label)
                     .font(.caption)
-                    .foregroundStyle(isSelected ? .primary : .secondary)
+                    .foregroundStyle(isSelected ? JohoColors.black : JohoColors.black.opacity(0.6))
                     .lineLimit(1)
             }
         }

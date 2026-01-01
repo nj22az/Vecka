@@ -50,28 +50,32 @@ enum JohoColors {
 // Each feature gets a distinct pastel background + BLACK border
 
 enum SectionZone {
-    case calendar   // Cyan - cool, organized
-    case notes      // Yellow - attention, ideas
-    case expenses   // Green - money, growth
-    case trips      // Orange - energy, adventure
-    case holidays   // RED - celebration, holidays
-    case birthdays  // PINK - birthdays (from Contacts)
-    case contacts   // Cream - people, warmth
-    case countdowns // Orange - urgency, timers
-    case warning    // Orange - alerts
+    case calendar    // Cyan - cool, organized (legacy)
+    case notes       // Yellow - attention, ideas
+    case expenses    // Green - money, growth
+    case trips       // Blue - travel, adventure
+    case holidays    // RED - celebration, holidays
+    case observances // Orange - observances
+    case birthdays   // PINK - birthdays (from Contacts)
+    case contacts    // Cream - people, warmth
+    case events      // Purple - personal events/countdowns
+    case countdowns  // Purple (alias for events)
+    case warning     // Orange - alerts
 
-    /// 情報デザイン: Bento box backgrounds use LIGHT TINTS so colored indicator circles are visible
+    /// 情報デザイン: ALL bento boxes use 20% opacity of their accent color
+    /// This matches the Events style which looks best - consistent across all types
     var background: Color {
         switch self {
-        case .calendar: return JohoColors.cyan.opacity(0.3)
-        case .notes: return JohoColors.yellow.opacity(0.3)
-        case .expenses: return JohoColors.green.opacity(0.3)
-        case .trips: return JohoColors.orange.opacity(0.3)
-        case .holidays: return JohoColors.redLight       // Light red so RED circles visible
-        case .birthdays: return JohoColors.pinkLight     // Light pink so PINK circles visible
-        case .contacts: return JohoColors.cream
-        case .countdowns: return JohoColors.orange.opacity(0.3)
-        case .warning: return JohoColors.orange.opacity(0.3)
+        case .calendar: return Color(hex: "A5F3FC").opacity(0.4)    // Cyan (needs more for visibility)
+        case .notes: return Color(hex: "ECC94B").opacity(0.25)      // Yellow NTE
+        case .expenses: return Color(hex: "38A169").opacity(0.2)    // Green EXP
+        case .trips: return Color(hex: "3182CE").opacity(0.2)       // Blue TRP
+        case .holidays: return Color(hex: "E53E3E").opacity(0.2)    // Red HOL
+        case .observances: return Color(hex: "ED8936").opacity(0.2) // Orange OBS
+        case .birthdays: return Color(hex: "D53F8C").opacity(0.2)   // Pink BDY
+        case .contacts: return Color(hex: "805AD5").opacity(0.2)    // Purple
+        case .events, .countdowns: return Color(hex: "805AD5").opacity(0.2) // Purple EVT
+        case .warning: return Color(hex: "ED8936").opacity(0.2)     // Orange
         }
     }
 
@@ -694,6 +698,82 @@ struct JohoPageHeader: View {
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
                 .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
         )
+    }
+}
+
+// MARK: - Editor Header (情報デザイン: Consistent header for all editor sheets)
+// Pattern: [Back] [Icon Zone] Title/Subtitle [Save]
+// Matches Star Page month detail view header pattern
+
+struct JohoEditorHeader: View {
+    let icon: String              // SF Symbol from SpecialDayType.defaultIcon
+    let accentColor: Color        // From SpecialDayType.accentColor
+    let title: String             // e.g., "NEW EVENT" (UPPERCASE)
+    let subtitle: String          // e.g., "Set date & details"
+    let canSave: Bool             // Validation state for Save button
+    let onBack: () -> Void
+    let onSave: () -> Void
+
+    var body: some View {
+        HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
+            // Back button (44×44pt)
+            Button(action: onBack) {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(JohoColors.black)
+                    .frame(width: 44, height: 44)
+                    .background(JohoColors.white)
+                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                    .overlay(
+                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                    )
+            }
+
+            // Icon zone (52×52pt)
+            Image(systemName: icon)
+                .font(.system(size: 24, weight: .bold))
+                .foregroundStyle(accentColor)
+                .frame(width: 52, height: 52)
+                .background(accentColor.opacity(0.2))
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                )
+
+            // Title area
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(JohoFont.headline)
+                    .foregroundStyle(JohoColors.black)
+
+                Text(subtitle)
+                    .font(JohoFont.caption)
+                    .foregroundStyle(JohoColors.black.opacity(0.7))
+            }
+
+            Spacer()
+
+            // Save button
+            Button(action: onSave) {
+                Text("Save")
+                    .font(JohoFont.body.bold())
+                    .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+                    .padding(.vertical, JohoDimensions.spacingMD)
+                    .background(canSave ? accentColor : JohoColors.white)
+                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                    .overlay(
+                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                    )
+            }
+            .disabled(!canSave)
+        }
+        .padding(.horizontal, JohoDimensions.spacingLG)
+        .padding(.vertical, JohoDimensions.spacingMD)
+        .background(JohoColors.background)
     }
 }
 

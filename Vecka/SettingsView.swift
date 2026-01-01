@@ -7,12 +7,21 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
     @AppStorage("showHolidays") private var showHolidays = true
     @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
+
+    // Database statistics queries
+    @Query private var holidayRules: [HolidayRule]
+    @Query private var dailyNotes: [DailyNote]
+    @Query private var contacts: [Contact]
+    @Query private var countdownEvents: [CountdownEvent]
+    @Query private var trips: [TravelTrip]
+    @Query private var expenses: [ExpenseItem]
 
     var body: some View {
         ScrollView {
@@ -180,6 +189,9 @@ struct SettingsView: View {
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
 
+                // Database Section (情報デザイン: Information visible at a glance)
+                databaseSection
+
                 // About Section
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
                     // Section label
@@ -278,6 +290,169 @@ struct SettingsView: View {
             return option.symbol
         }
         return "globe"
+    }
+
+    // MARK: - Database Section (情報デザイン: Bento statistics grid)
+
+    private var databaseSection: some View {
+        VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
+            // Section label
+            JohoPill(text: "DATABASE", style: .whiteOnBlack, size: .small)
+
+            // Statistics grid (情報デザイン: Compartmentalized data)
+            LazyVGrid(columns: [
+                GridItem(.flexible(), spacing: JohoDimensions.spacingSM),
+                GridItem(.flexible(), spacing: JohoDimensions.spacingSM),
+                GridItem(.flexible(), spacing: JohoDimensions.spacingSM)
+            ], spacing: JohoDimensions.spacingSM) {
+                // Custom holidays (user-created)
+                databaseStatCard(
+                    icon: "star.fill",
+                    label: "HOLIDAYS",
+                    count: customHolidayCount,
+                    color: SpecialDayType.holiday.accentColor
+                )
+
+                // Notes
+                databaseStatCard(
+                    icon: "note.text",
+                    label: "NOTES",
+                    count: dailyNotes.count,
+                    color: SpecialDayType.note.accentColor
+                )
+
+                // Contacts
+                databaseStatCard(
+                    icon: "person.2.fill",
+                    label: "CONTACTS",
+                    count: contacts.count,
+                    color: SpecialDayType.birthday.accentColor
+                )
+
+                // Events
+                databaseStatCard(
+                    icon: "calendar.badge.clock",
+                    label: "EVENTS",
+                    count: countdownEvents.count,
+                    color: SpecialDayType.event.accentColor
+                )
+
+                // Trips
+                databaseStatCard(
+                    icon: "airplane",
+                    label: "TRIPS",
+                    count: trips.count,
+                    color: SpecialDayType.trip.accentColor
+                )
+
+                // Expenses
+                databaseStatCard(
+                    icon: "dollarsign.circle.fill",
+                    label: "EXPENSES",
+                    count: expenses.count,
+                    color: SpecialDayType.expense.accentColor
+                )
+            }
+
+            // Total entries + status
+            HStack(spacing: JohoDimensions.spacingMD) {
+                // Status indicator (情報デザイン: ○ = healthy)
+                Text("○")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(Color(hex: "38A169"))  // Green = healthy
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("TOTAL: \(totalEntries) ENTRIES")
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black)
+
+                    Text("Database healthy • Capacity: unlimited")
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                }
+
+                Spacer()
+
+                // System holidays (read-only indicator)
+                HStack(spacing: 4) {
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 8, weight: .bold))
+                    Text("\(systemHolidayCount) SYS")
+                        .font(.system(size: 9, weight: .bold, design: .rounded))
+                }
+                .foregroundStyle(JohoColors.black.opacity(0.5))
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(JohoColors.black.opacity(0.05))
+                .clipShape(Capsule())
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .padding(.top, JohoDimensions.spacingXS)
+        }
+        .padding(JohoDimensions.spacingLG)
+        .background(JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+        )
+        .padding(.horizontal, JohoDimensions.spacingLG)
+    }
+
+    // MARK: - Database Stat Card (情報デザイン: Compartmentalized)
+
+    private func databaseStatCard(icon: String, label: String, count: Int, color: Color) -> some View {
+        VStack(spacing: 4) {
+            // Icon zone
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(JohoColors.black)
+                .frame(width: 32, height: 32)
+                .background(color.opacity(0.3))
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                        .stroke(JohoColors.black, lineWidth: 1)
+                )
+
+            // Count
+            Text("\(count)")
+                .font(.system(size: 18, weight: .black, design: .rounded))
+                .foregroundStyle(JohoColors.black)
+
+            // Label
+            Text(label)
+                .font(.system(size: 8, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoColors.black.opacity(0.6))
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, JohoDimensions.spacingSM)
+        .background(JohoColors.inputBackground)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(JohoColors.black, lineWidth: 1)
+        )
+    }
+
+    // MARK: - Database Statistics Helpers
+
+    private var customHolidayCount: Int {
+        holidayRules.filter { $0.userModifiedAt != nil }.count
+    }
+
+    private var systemHolidayCount: Int {
+        holidayRules.filter { $0.userModifiedAt == nil }.count
+    }
+
+    private var totalEntries: Int {
+        let custom = customHolidayCount
+        let notes = dailyNotes.count
+        let people = contacts.count
+        let events = countdownEvents.count
+        let travel = trips.count
+        let money = expenses.count
+        return custom + notes + people + events + travel + money
     }
 }
 

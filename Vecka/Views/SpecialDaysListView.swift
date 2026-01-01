@@ -93,6 +93,35 @@ enum SpecialDayType: String, CaseIterable {
     }
 }
 
+// MARK: - Birthday Display Text (情報デザイン: Intelligent messaging for age 0)
+
+/// Returns display text for birthday row metadata - handles age 0 as "born" message
+private func birthdayDisplayText(age: Int, date: Date) -> String {
+    let isPast = Calendar.current.startOfDay(for: date) < Calendar.current.startOfDay(for: Date())
+    let isToday = Calendar.current.isDateInToday(date)
+
+    if age == 0 {
+        return isToday ? "BORN TODAY" : (isPast ? "WAS BORN" : "WILL BE BORN")
+    } else {
+        let tense = isToday ? "TURNS" : (isPast ? "TURNED" : "TURNS")
+        return "\(tense) \(age)"
+    }
+}
+
+/// Returns expanded display text for birthday card - includes time context
+private func birthdayExpandedDisplayText(age: Int, date: Date, daysUntil: Int) -> String {
+    let isPast = Calendar.current.startOfDay(for: date) < Calendar.current.startOfDay(for: Date())
+    let isToday = Calendar.current.isDateInToday(date)
+    let timeText = isToday ? "TODAY" : (isPast ? "\(abs(daysUntil))D AGO" : "IN \(daysUntil)D")
+
+    if age == 0 {
+        return isToday ? "BORN ON THIS DAY" : (isPast ? "WAS BORN · \(timeText)" : "WILL BE BORN · \(timeText)")
+    } else {
+        let tense = isToday ? "TURNS" : (isPast ? "TURNED" : "TURNS")
+        return "\(tense) \(age) · \(timeText)"
+    }
+}
+
 // MARK: - Month Theme (情報デザイン: Seasonal colors & icons)
 
 struct MonthTheme {
@@ -304,6 +333,16 @@ struct SpecialDaysListView: View {
     // Undo functionality
     @State private var deletedSpecialDay: DeletedSpecialDay?
     @State private var showUndoToast = false
+
+    // Type-specific editors
+    @State private var editingEvent: CountdownEvent?
+    @State private var editingContact: Contact?  // For BDY (birthday)
+    @State private var editingNote: DailyNote?
+    @State private var editingTrip: TravelTrip?
+    @State private var editingExpense: ExpenseItem?
+
+    // Item expansion state (情報デザイン: tap to show details)
+    @State private var expandedItemID: String?
 
     private var years: [Int] {
         let current = Calendar.current.component(.year, from: Date())
@@ -566,22 +605,30 @@ struct SpecialDaysListView: View {
     // MARK: - Body
 
     var body: some View {
+        mainContent
+            .sheet(isPresented: $isPresentingNewSpecialDay) { newSpecialDaySheet }
+            .sheet(item: $editingSpecialDay) { specialDay in editSpecialDaySheet(specialDay) }
+            .sheet(item: $editingContact) { contact in contactEditorSheet(contact) }
+            .sheet(item: $editingExpense) { expense in expenseEditorSheet(expense) }
+            .sheet(item: $editingNote) { note in noteEditorSheet(note) }
+            .sheet(item: $editingTrip) { trip in tripEditorSheet(trip) }
+            .sheet(item: $editingEvent) { _ in eventEditorSheet() }
+            .overlay(alignment: .bottom) { undoToastOverlay }
+    }
+
+    // MARK: - Main Content
+
+    private var mainContent: some View {
         ScrollView {
             VStack(spacing: JohoDimensions.spacingLG) {
-                // Header with year picker (always visible)
                 headerWithYearPicker
-
-                // Content: Month grid or month detail
                 if !showHolidays {
                     disabledState
                 } else if let month = selectedMonth {
-                    // Month detail view
                     monthDetailView(for: month)
                 } else {
-                    // Month grid
                     monthGrid
                 }
-
                 Spacer(minLength: JohoDimensions.spacingXL)
             }
             .padding(.bottom, JohoDimensions.spacingXL)
@@ -603,45 +650,82 @@ struct SpecialDaysListView: View {
         .onChange(of: selectedMonth) { _, newMonth in
             isInMonthDetail = newMonth != nil
         }
-        .sheet(isPresented: $isPresentingNewSpecialDay) {
-            JohoSpecialDayEditorSheet(
-                mode: .create,
-                type: newSpecialDayType,
-                defaultRegion: defaultNewRegion,
-                onSave: { name, date, symbol, iconColor, notes, region in
-                    createSpecialDay(type: newSpecialDayType, name: name, date: date, symbol: symbol, iconColor: iconColor, notes: notes, region: region)
-                }
-            )
-            .presentationCornerRadius(20)
-        }
-        .sheet(item: $editingSpecialDay) { specialDay in
-            JohoSpecialDayEditorSheet(
-                mode: .edit(
-                    name: specialDay.name,
-                    date: specialDay.date,
-                    symbol: specialDay.symbolName ?? specialDay.type.defaultIcon,
-                    iconColor: specialDay.iconColor,
-                    notes: specialDay.notes,
-                    region: specialDay.region
-                ),
-                type: specialDay.type,
-                defaultRegion: specialDay.region,
-                onSave: { name, date, symbol, iconColor, notes, region in
-                    updateSpecialDay(ruleID: specialDay.ruleID, type: specialDay.type, name: name, date: date, symbol: symbol, iconColor: iconColor, notes: notes, region: region)
-                }
-            )
-            .presentationCornerRadius(20)
-        }
-        .overlay(alignment: .bottom) {
-            if showUndoToast {
-                JohoUndoToast(
-                    message: "Deleted \"\(deletedSpecialDay?.name ?? "item")\"",
-                    onUndo: undoDelete,
-                    onDismiss: { withAnimation { showUndoToast = false } }
-                )
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-                .padding(.bottom, 100)
+    }
+
+    // MARK: - Sheet Views (broken out to reduce body complexity)
+
+    private var newSpecialDaySheet: some View {
+        JohoSpecialDayEditorSheet(
+            mode: .create,
+            type: newSpecialDayType,
+            defaultRegion: defaultNewRegion,
+            onSave: { name, date, symbol, iconColor, notes, region in
+                createSpecialDay(type: newSpecialDayType, name: name, date: date, symbol: symbol, iconColor: iconColor, notes: notes, region: region)
             }
+        )
+        .presentationCornerRadius(20)
+    }
+
+    private func editSpecialDaySheet(_ specialDay: EditingSpecialDay) -> some View {
+        JohoSpecialDayEditorSheet(
+            mode: .edit(
+                name: specialDay.name,
+                date: specialDay.date,
+                symbol: specialDay.symbolName ?? specialDay.type.defaultIcon,
+                iconColor: specialDay.iconColor,
+                notes: specialDay.notes,
+                region: specialDay.region
+            ),
+            type: specialDay.type,
+            defaultRegion: specialDay.region,
+            onSave: { name, date, symbol, iconColor, notes, region in
+                updateSpecialDay(ruleID: specialDay.ruleID, type: specialDay.type, name: name, date: date, symbol: symbol, iconColor: iconColor, notes: notes, region: region)
+            }
+        )
+        .presentationCornerRadius(20)
+    }
+
+    private func contactEditorSheet(_ contact: Contact) -> some View {
+        JohoContactEditorSheet(mode: .birthday, existingContact: contact)
+            .presentationCornerRadius(20)
+    }
+
+    private func expenseEditorSheet(_ expense: ExpenseItem) -> some View {
+        ExpenseEntryView(existingExpense: expense)
+            .presentationCornerRadius(20)
+    }
+
+    private func noteEditorSheet(_ note: DailyNote) -> some View {
+        NavigationStack {
+            DailyNotesView(selectedDate: note.day, isModal: true)
+        }
+        .presentationCornerRadius(20)
+    }
+
+    private func tripEditorSheet(_ trip: TravelTrip) -> some View {
+        NavigationStack {
+            TripDetailView(trip: trip)
+        }
+        .presentationCornerRadius(20)
+    }
+
+    private func eventEditorSheet() -> some View {
+        NavigationStack {
+            CountdownListView()
+        }
+        .presentationCornerRadius(20)
+    }
+
+    @ViewBuilder
+    private var undoToastOverlay: some View {
+        if showUndoToast {
+            JohoUndoToast(
+                message: "Deleted \"\(deletedSpecialDay?.name ?? "item")\"",
+                onUndo: undoDelete,
+                onDismiss: { withAnimation { showUndoToast = false } }
+            )
+            .transition(.move(edge: .bottom).combined(with: .opacity))
+            .padding(.bottom, 100)
         }
     }
 
@@ -711,19 +795,22 @@ struct SpecialDaysListView: View {
                             .foregroundStyle(JohoColors.black.opacity(0.7))
                     } else {
                         Text("Special Days")
-                            .font(JohoFont.displaySmall)
+                            .font(JohoFont.headline)  // Smaller font to prevent truncation
                             .foregroundStyle(JohoColors.black)
                             .lineLimit(1)
+                            .minimumScaleFactor(0.8)
 
                         // 情報デザイン: Compact subtitle that doesn't truncate on iPhone
                         Text(compactSubtitle)
                             .font(JohoFont.caption)
                             .foregroundStyle(JohoColors.black.opacity(0.7))
                             .lineLimit(2)
+                            .minimumScaleFactor(0.7)
                     }
                 }
+                .layoutPriority(1)  // Prioritize title over year picker
 
-                Spacer()
+                Spacer(minLength: 8)
 
                 // Year picker (only show when not in month detail for cleaner look)
                 if selectedMonth == nil {
@@ -777,6 +864,47 @@ struct SpecialDaysListView: View {
                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
                             .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
                     )
+
+                    // 情報デザイン: Add button with entry type menu
+                    Menu {
+                        Button {
+                            newSpecialDayType = .holiday
+                            isPresentingNewSpecialDay = true
+                        } label: {
+                            Label("Holiday", systemImage: "flag.fill")
+                        }
+                        Button {
+                            newSpecialDayType = .observance
+                            isPresentingNewSpecialDay = true
+                        } label: {
+                            Label("Observance", systemImage: "leaf.fill")
+                        }
+                        Button {
+                            newSpecialDayType = .event
+                            isPresentingNewSpecialDay = true
+                        } label: {
+                            Label("Event", systemImage: "calendar.badge.clock")
+                        }
+                        Button {
+                            newSpecialDayType = .birthday
+                            isPresentingNewSpecialDay = true
+                        } label: {
+                            Label("Birthday", systemImage: "birthday.cake.fill")
+                        }
+                        Button {
+                            newSpecialDayType = .note
+                            isPresentingNewSpecialDay = true
+                        } label: {
+                            Label("Note", systemImage: "note.text")
+                        }
+                    } label: {
+                        Image(systemName: "plus")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(JohoColors.white)
+                            .frame(width: 44, height: 44)
+                            .background(JohoColors.black)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                    }
                 }
             }
         }
@@ -952,7 +1080,11 @@ struct SpecialDaysListView: View {
                         CollapsibleSpecialDayCard(
                             dayCard: dayCard,
                             isExpanded: expandedDays.contains(dayCard.id),
-                            onToggle: { toggleExpand(dayCard) }
+                            onToggle: { toggleExpand(dayCard) },
+                            isEditable: isEditable,
+                            deleteRow: deleteRow,
+                            openEditor: openEditor,
+                            expandedItemID: $expandedItemID
                         )
                     }
                 }
@@ -1010,6 +1142,14 @@ struct CollapsibleSpecialDayCard: View {
     let dayCard: DayCardData
     let isExpanded: Bool
     let onToggle: () -> Void
+
+    // Closures for data management (passed from parent)
+    let isEditable: (SpecialDayRow) -> Bool
+    let deleteRow: (SpecialDayRow) -> Void
+    let openEditor: (SpecialDayRow) -> Void
+
+    // Item expansion state (情報デザイン: tap row to show details)
+    @Binding var expandedItemID: String?
 
     private let calendar = Calendar.iso8601
 
@@ -1190,27 +1330,27 @@ struct CollapsibleSpecialDayCard: View {
                 )
             }
 
-            // Observances section (orange tint)
+            // Observances section (orange tint - matches type color)
             if !observances.isEmpty {
                 specialDaySection(
                     title: "Observances",
                     items: observances,
-                    zone: .countdowns,  // Orange for observances
+                    zone: .observances,
                     icon: "sparkles"
                 )
             }
 
-            // Events section (cyan background)
+            // Events section (purple tint - matches type color)
             if !events.isEmpty {
                 specialDaySection(
                     title: "Events",
                     items: events,
-                    zone: .calendar,
+                    zone: .events,
                     icon: "calendar.badge.clock"
                 )
             }
 
-            // Birthdays section (pink tint - separate zone from holidays)
+            // Birthdays section (pink tint - matches type color)
             if !birthdays.isEmpty {
                 specialDaySection(
                     title: "Birthdays",
@@ -1220,7 +1360,7 @@ struct CollapsibleSpecialDayCard: View {
                 )
             }
 
-            // Notes section (yellow tint)
+            // Notes section (yellow tint - matches type color)
             if !notes.isEmpty {
                 specialDaySection(
                     title: "Notes",
@@ -1230,17 +1370,17 @@ struct CollapsibleSpecialDayCard: View {
                 )
             }
 
-            // Trips section (blue tint)
+            // Trips section (blue tint - matches type color)
             if !tripsForDay.isEmpty {
                 specialDaySection(
                     title: "Trips",
                     items: tripsForDay,
-                    zone: .calendar,  // Blue for travel
+                    zone: .trips,
                     icon: "airplane"
                 )
             }
 
-            // Expenses section (green tint)
+            // Expenses section (green tint - matches type color)
             if !expensesForDay.isEmpty {
                 specialDaySection(
                     title: "Expenses",
@@ -1253,62 +1393,235 @@ struct CollapsibleSpecialDayCard: View {
         .padding(.horizontal, JohoDimensions.spacingMD)
     }
 
-    // MARK: - Section Box
+    // MARK: - Section Box (情報デザイン: Bento with compartmentalized header)
 
     @ViewBuilder
     private func specialDaySection(title: String, items: [SpecialDayRow], zone: SectionZone, icon: String) -> some View {
-        JohoSectionBox(title: title, zone: zone, icon: icon) {
-            VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
-                ForEach(items) { item in
-                    specialDayItemRow(item)
+        VStack(alignment: .leading, spacing: 0) {
+            // Section header (情報デザイン: Bento with icon in RIGHT compartment)
+            HStack(spacing: 0) {
+                // LEFT: Title pill
+                JohoPill(text: title.uppercased(), style: .whiteOnBlack, size: .small)
+                    .padding(.leading, JohoDimensions.spacingMD)
+
+                Spacer()
+
+                // WALL (vertical divider)
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(width: 1.5)
+                    .frame(maxHeight: .infinity)
+
+                // RIGHT: Icon compartment
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(JohoColors.black)
+                    .frame(width: 40)
+                    .frame(maxHeight: .infinity)
+            }
+            .frame(height: 32)
+            .background(zone.background.opacity(0.5))  // Slightly darker header
+
+            // Horizontal divider between header and items
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(height: 1.5)
+
+            // Items in VStack for pixel-perfect 情報デザイン layout
+            VStack(spacing: 0) {
+                ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                    specialDayItemRow(item, zone: zone)
+
+                    // Divider between items (not after last)
+                    if index < items.count - 1 {
+                        Rectangle()
+                            .fill(JohoColors.black.opacity(0.3))
+                            .frame(height: 1)
+                            .padding(.horizontal, 6)
+                    }
                 }
+            }
+            .padding(.vertical, 4)
+        }
+        .background(zone.background)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+        )
+    }
+
+    // MARK: - Item Row (情報デザイン Bento: Compartmentalized with walls)
+    //
+    // 情報デザイン BENTO LAYOUT - Compartments with vertical dividers (walls)
+    // ┌─────┬─────────────────────────────────┬─────────────────┐
+    // │ ●🔒 ┃ New Year's Day                  ┃ [SWE] [HOL]     │
+    // └─────┴─────────────────────────────────┴─────────────────┘
+    //  LEFT │           CENTER                │      RIGHT
+    //  32pt │          flexible               │      84pt
+    //
+    // Tap → Expand details
+    // Swipe LEFT → Delete (red)
+    // Swipe RIGHT → Edit (cyan)
+
+    @ViewBuilder
+    private func specialDayItemRow(_ item: SpecialDayRow, zone: SectionZone) -> some View {
+        let canEdit = isEditable(item)
+        let isExpanded = expandedItemID == item.id
+
+        VStack(spacing: 0) {
+            // MAIN ROW (情報デザイン Bento with compartment walls)
+            HStack(spacing: 0) {
+                // LEFT COMPARTMENT: Type indicator + lock (fixed 32pt, centered)
+                HStack(alignment: .center, spacing: 3) {
+                    typeIndicatorDot(for: item.type)
+                    if !canEdit {
+                        Image(systemName: "lock.fill")
+                            .font(.system(size: 7, weight: .bold))
+                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                    }
+                }
+                .frame(width: 32, alignment: .center)
+                .frame(maxHeight: .infinity)
+
+                // WALL (vertical divider) - must have maxHeight to expand
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(width: 1.5)
+                    .frame(maxHeight: .infinity)
+
+                // CENTER COMPARTMENT: Title + metadata (flexible)
+                HStack(spacing: JohoDimensions.spacingXS) {
+                    Text(item.title)
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(JohoColors.black)
+                        .lineLimit(1)
+
+                    Spacer(minLength: 4)
+
+                    // Metadata: age or countdown (情報デザイン: intelligent messaging)
+                    if item.type == .birthday, let age = item.turningAge {
+                        // 情報デザイン: Age 0 means birth year - show contextual message
+                        Text(birthdayDisplayText(age: age, date: item.date))
+                            .font(.system(size: 9, weight: .bold, design: .monospaced))
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                    } else if item.isCountdown && item.type == .event {
+                        let daysText = item.daysUntil == 0 ? "TODAY" :
+                                      item.daysUntil == 1 ? "IN 1D" :
+                                      "IN \(item.daysUntil)D"
+                        Text(daysText)
+                            .font(.system(size: 9, weight: .bold, design: .monospaced))
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                    }
+                }
+                .padding(.horizontal, 8)
+                .frame(maxHeight: .infinity)
+
+                // WALL (vertical divider) - must have maxHeight to expand
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(width: 1.5)
+                    .frame(maxHeight: .infinity)
+
+                // RIGHT COMPARTMENT: Pills (fixed 84pt, centered)
+                // 情報デザイン: ALL types show their code pill for consistency
+                HStack(spacing: 4) {
+                    if item.hasCountryPill {
+                        CountryPill(region: item.region)
+                    }
+                    JohoPill(text: item.type.code, style: .coloredInverted(item.type.accentColor), size: .small)
+                }
+                .frame(width: 84, alignment: .center)
+                .frame(maxHeight: .infinity)
+            }
+            .frame(minHeight: 36)
+
+            // EXPANDED DETAILS (情報デザイン: tap to reveal)
+            if isExpanded {
+                // Horizontal divider
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 1.5)
+
+                // Details area
+                VStack(alignment: .leading, spacing: 6) {
+                    // Notes/description if available
+                    if let notes = item.notes, !notes.isEmpty {
+                        Text(notes)
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
+                            .foregroundStyle(JohoColors.black.opacity(0.8))
+                            .lineLimit(2)
+                    }
+
+                    // Date info
+                    HStack(spacing: 8) {
+                        Image(systemName: "calendar")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                        Text(formatDate(item.date))
+                            .font(.system(size: 11, weight: .medium, design: .monospaced))
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                        Spacer()
+
+                        // Edit button (for user entries)
+                        if canEdit {
+                            Button {
+                                openEditor(item)
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "pencil")
+                                    Text("EDIT")
+                                }
+                                .font(.system(size: 10, weight: .bold, design: .rounded))
+                                .foregroundStyle(JohoColors.black)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(JohoColors.cyan)
+                                .clipShape(Capsule())
+                                .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 8)
+            }
+        }
+        // 情報デザイン: NO separate container - rows flow within section
+        // The section provides the background, rows just have compartments
+        .contentShape(Rectangle())
+        .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                expandedItemID = isExpanded ? nil : item.id
+            }
+        }
+        // 情報デザイン: Context menu for Edit/Delete (long-press)
+        // Clean UI - no swipe clutter, just long-press for actions
+        .contextMenu {
+            if canEdit {
+                Button {
+                    openEditor(item)
+                } label: {
+                    Label("Edit", systemImage: "pencil")
+                }
+
+                Button(role: .destructive) {
+                    deleteRow(item)
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+            } else {
+                // System entry - show info only
+                Text("System entry (read-only)")
             }
         }
     }
 
-    // MARK: - Item Row (情報デザイン: Icon + Title + Country Pill)
-
-    @ViewBuilder
-    private func specialDayItemRow(_ item: SpecialDayRow) -> some View {
-        HStack(spacing: JohoDimensions.spacingSM) {
-            // Type indicator dot
-            typeIndicatorDot(for: item.type)
-
-            // Title
-            Text(item.title)
-                .font(JohoFont.bodySmall)
-                .foregroundStyle(JohoColors.black)
-                .lineLimit(2)
-
-            Spacer()
-
-            // Birthday age or countdown (intelligent tense)
-            if item.type == .birthday, let age = item.turningAge {
-                let isPast = Calendar.current.startOfDay(for: item.date) < Calendar.current.startOfDay(for: Date())
-                let isToday = Calendar.current.isDateInToday(item.date)
-                let tense = isToday ? "TURNS" : (isPast ? "TURNED" : "TURNS")
-                Text("\(tense) \(age)")
-                    .font(.system(size: 9, weight: .medium, design: .monospaced))
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
-            } else if item.isCountdown && item.type == .event {
-                let daysText = item.daysUntil == 0 ? "TODAY" :
-                              item.daysUntil == 1 ? "IN 1D" :
-                              "IN \(item.daysUntil)D"
-                Text(daysText)
-                    .font(.system(size: 9, weight: .medium, design: .monospaced))
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
-            }
-
-            // Country pill (for holidays/observances)
-            if item.hasCountryPill {
-                CountryPill(region: item.region)
-            }
-
-            // Type code pill (情報デザイン: inverted - colored bg, white text, black border)
-            if item.type == .holiday {
-                JohoPill(text: item.type.code, style: .coloredInverted(item.type.accentColor), size: .small)
-            }
-        }
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMM yyyy"
+        return formatter.string(from: date)
     }
 
     // MARK: - Type Indicator Dot (情報デザイン: Accent-colored circles with BLACK borders)
@@ -1435,13 +1748,10 @@ extension SpecialDaysListView {
                     .padding(.vertical, 8)
 
                     // Metadata row (monospace for technical data) - intelligent tense
+                    // 情報デザイン: Age 0 = birth year, show contextual "born on this day" message
                     if row.type == .birthday, let age = row.turningAge {
                         Rectangle().fill(JohoColors.black.opacity(0.1)).frame(height: 1)
-                        let isPast = Calendar.current.startOfDay(for: row.date) < Calendar.current.startOfDay(for: Date())
-                        let isToday = Calendar.current.isDateInToday(row.date)
-                        let tense = isToday ? "TURNS" : (isPast ? "TURNED" : "TURNS")
-                        let timeText = isToday ? "TODAY" : (isPast ? "\(abs(row.daysUntil))D AGO" : "IN \(row.daysUntil)D")
-                        Text("\(tense) \(age) · \(timeText)")
+                        Text(birthdayExpandedDisplayText(age: age, date: row.date, daysUntil: row.daysUntil))
                             .font(.system(size: 9, weight: .medium, design: .monospaced))
                             .foregroundStyle(JohoColors.black.opacity(0.5))
                             .padding(.vertical, 6)
@@ -1690,6 +2000,123 @@ extension SpecialDaysListView {
         }
     }
 
+    // MARK: - Editability Check
+
+    /// Determines if a SpecialDayRow can be edited/deleted
+    /// System holidays (isCustom=false) are read-only
+    private func isEditable(_ row: SpecialDayRow) -> Bool {
+        switch row.type {
+        case .holiday, .observance:
+            return row.isCustom  // Only user-created holidays/observances
+        case .event, .birthday, .note, .trip, .expense:
+            return true  // Always editable
+        }
+    }
+
+    // MARK: - Edit Handler
+
+    /// Opens the appropriate editor sheet based on entry type
+    private func openEditor(for row: SpecialDayRow) {
+        switch row.type {
+        case .holiday, .observance:
+            // Use existing editingSpecialDay mechanism
+            editingSpecialDay = EditingSpecialDay(
+                id: row.id,
+                ruleID: row.ruleID,
+                name: row.title,
+                date: row.date,
+                type: row.type,
+                symbolName: row.symbolName,
+                iconColor: row.iconColor,
+                notes: row.notes,
+                region: row.region
+            )
+
+        case .event:
+            // Fetch CountdownEvent by ruleID
+            let ruleId = row.ruleID
+            let descriptor = FetchDescriptor<CountdownEvent>(predicate: #Predicate<CountdownEvent> { $0.id == ruleId })
+            editingEvent = try? modelContext.fetch(descriptor).first
+
+        case .birthday:
+            // Fetch Contact by UUID
+            if let uuid = UUID(uuidString: row.ruleID) {
+                let descriptor = FetchDescriptor<Contact>(predicate: #Predicate<Contact> { $0.id == uuid })
+                editingContact = try? modelContext.fetch(descriptor).first
+            }
+
+        case .note:
+            // Fetch DailyNote by date
+            let targetDate = row.date
+            let descriptor = FetchDescriptor<DailyNote>(predicate: #Predicate<DailyNote> { $0.day == targetDate })
+            editingNote = try? modelContext.fetch(descriptor).first
+
+        case .trip:
+            if let uuid = UUID(uuidString: row.ruleID) {
+                let descriptor = FetchDescriptor<TravelTrip>(predicate: #Predicate<TravelTrip> { $0.id == uuid })
+                editingTrip = try? modelContext.fetch(descriptor).first
+            }
+
+        case .expense:
+            if let uuid = UUID(uuidString: row.ruleID) {
+                let descriptor = FetchDescriptor<ExpenseItem>(predicate: #Predicate<ExpenseItem> { $0.id == uuid })
+                editingExpense = try? modelContext.fetch(descriptor).first
+            }
+        }
+    }
+
+    // MARK: - Delete Handler
+
+    /// Deletes a row based on its type
+    private func deleteRow(_ row: SpecialDayRow) {
+        switch row.type {
+        case .holiday, .observance, .event:
+            // Use existing deleteWithUndo for these types
+            deleteWithUndo(row: row)
+
+        case .birthday:
+            // Delete the contact
+            if let uuid = UUID(uuidString: row.ruleID) {
+                let descriptor = FetchDescriptor<Contact>(predicate: #Predicate<Contact> { $0.id == uuid })
+                if let contact = try? modelContext.fetch(descriptor).first {
+                    modelContext.delete(contact)
+                    try? modelContext.save()
+                    HapticManager.notification(.success)
+                }
+            }
+
+        case .note:
+            // Delete the note by date
+            let targetDate = row.date
+            let descriptor = FetchDescriptor<DailyNote>(predicate: #Predicate<DailyNote> { $0.day == targetDate })
+            if let note = try? modelContext.fetch(descriptor).first {
+                modelContext.delete(note)
+                try? modelContext.save()
+                HapticManager.notification(.success)
+            }
+
+        case .trip:
+            if let uuid = UUID(uuidString: row.ruleID) {
+                let descriptor = FetchDescriptor<TravelTrip>(predicate: #Predicate<TravelTrip> { $0.id == uuid })
+                if let trip = try? modelContext.fetch(descriptor).first {
+                    modelContext.delete(trip)
+                    try? modelContext.save()
+                    HapticManager.notification(.success)
+                }
+            }
+
+        case .expense:
+            if let uuid = UUID(uuidString: row.ruleID) {
+                let descriptor = FetchDescriptor<ExpenseItem>(predicate: #Predicate<ExpenseItem> { $0.id == uuid })
+                if let expense = try? modelContext.fetch(descriptor).first {
+                    modelContext.delete(expense)
+                    try? modelContext.save()
+                    HapticManager.notification(.success)
+                }
+            }
+        }
+    }
+
     private func deleteWithUndo(row: SpecialDayRow) {
         deletedSpecialDay = DeletedSpecialDay(
             ruleID: row.ruleID,
@@ -1854,6 +2281,16 @@ struct JohoSpecialDayEditorSheet: View {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
+    // 情報デザイン Header: Title based on type and mode
+    private var headerTitle: String {
+        let typeName = String(type.title.dropLast()).uppercased()  // "HOLIDAY", "OBSERVANCE", etc.
+        return isEditing ? "EDIT \(typeName)" : "NEW \(typeName)"
+    }
+
+    private var headerSubtitle: String {
+        isEditing ? "Update details" : "Set date & details"
+    }
+
     private var iconBackgroundColor: Color {
         if let hex = selectedIconColor {
             return Color(hex: hex)
@@ -1915,25 +2352,15 @@ struct JohoSpecialDayEditorSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Floating header with Cancel/Save buttons
-            HStack {
-                Button { dismiss() } label: {
-                    Text("Cancel")
-                        .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
-                        .padding(.horizontal, JohoDimensions.spacingMD)
-                        .padding(.vertical, JohoDimensions.spacingMD)
-                        .background(JohoColors.white)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                        )
-                }
-
-                Spacer()
-
-                Button {
+            // 情報デザイン: Standard editor header with back button, icon zone, title
+            JohoEditorHeader(
+                icon: type.defaultIcon,
+                accentColor: type.accentColor,
+                title: headerTitle,
+                subtitle: headerSubtitle,
+                canSave: canSave,
+                onBack: { dismiss() },
+                onSave: {
                     let notesValue = notes.trimmingCharacters(in: .whitespacesAndNewlines)
                     onSave(
                         name.trimmingCharacters(in: .whitespacesAndNewlines),
@@ -1944,41 +2371,13 @@ struct JohoSpecialDayEditorSheet: View {
                         selectedRegion
                     )
                     dismiss()
-                } label: {
-                    Text("Save")
-                        .font(JohoFont.body.bold())
-                        .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
-                        .padding(.horizontal, JohoDimensions.spacingLG)
-                        .padding(.vertical, JohoDimensions.spacingMD)
-                        .background(canSave ? type.accentColor : JohoColors.white)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                        )
                 }
-                .disabled(!canSave)
-            }
-            .padding(.horizontal, JohoDimensions.spacingLG)
-            .padding(.vertical, JohoDimensions.spacingMD)
-            .background(JohoColors.background)
+            )
 
             // Scrollable content
             ScrollView {
                 // Main content card
                 VStack(spacing: JohoDimensions.spacingLG) {
-                    // Title with type indicator - 情報デザイン: Filled circle with BLACK border
-                    HStack(spacing: JohoDimensions.spacingSM) {
-                        Circle()
-                            .fill(type.accentColor)
-                            .frame(width: 20, height: 20)
-                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
-                        Text(isEditing ? "Edit \(type.title.dropLast())" : "New \(type.title.dropLast())")
-                            .font(JohoFont.displaySmall)
-                            .foregroundStyle(JohoColors.black)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
                     // Icon & Color row
                     HStack(spacing: JohoDimensions.spacingMD) {
                         // Icon selector

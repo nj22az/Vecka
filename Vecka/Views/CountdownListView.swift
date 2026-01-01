@@ -2,59 +2,36 @@
 //  CountdownListView.swift
 //  Vecka
 //
-//  Countdown management view with 情報デザイン (Jōhō Dezain) styling
+//  Events management view with 情報デザイン (Jōhō Dezain) bento styling
+//  Uses purple EVT color scheme from design system
+//  All events are custom - no predefined events
 //
 
 import SwiftUI
 
 struct CountdownListView: View {
     @State private var customCountdowns: [CustomCountdown] = []
-    @State private var favorites: [SavedCountdown] = []
-    @State private var showAddCountdown = false
-    @State private var selectedCountdown: CountdownType = .newYear
+    @State private var showAddEvent = false
+    @State private var selectedCountdown: CountdownType = .custom
 
-    // State for new countdown dialog
-    @State private var newCountdownName: String = ""
-    @State private var newCountdownDate: Date = Date()
-    @State private var newCountdownIsAnnual: Bool = false
+    // State for new event dialog
+    @State private var newEventName: String = ""
+    @State private var newEventDate: Date = Date()
+    @State private var newEventIsAnnual: Bool = false
 
     var body: some View {
         ScrollView {
             VStack(spacing: JohoDimensions.spacingLG) {
-                // Page header with inline actions (情報デザイン)
-                HStack(alignment: .top) {
-                    JohoPageHeader(
-                        title: "Countdowns",
-                        badge: "EVENTS",
-                        subtitle: "\(totalCountdowns) countdown\(totalCountdowns == 1 ? "" : "s")"
-                    )
+                // 情報デザイン: Page header in white container
+                headerSection
 
-                    Spacer()
-
-                    Button {
-                        showAddCountdown = true
-                    } label: {
-                        JohoActionButton(icon: "plus")
-                    }
-                }
-                .padding(.horizontal, JohoDimensions.spacingLG)
-                .padding(.top, JohoDimensions.spacingLG)
-
-                // Next Up Section
-                if let nextCountdown = nextUpcomingCountdown {
-                    nextUpSection(nextCountdown)
+                // Next Up Section (hero event) - only custom events
+                if let nextEvent = nextUpcomingEvent {
+                    nextUpSection(nextEvent)
                 }
 
-                // Favorites Section
-                if !favorites.isEmpty {
-                    favoritesSection
-                }
-
-                // Predefined Events Section
-                predefinedSection
-
-                // Custom Events Section
-                customEventsSection
+                // All Events Bento Section (custom only)
+                eventsSection
 
                 Spacer(minLength: JohoDimensions.spacingXL)
             }
@@ -64,54 +41,73 @@ struct CountdownListView: View {
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {
             loadCustomCountdowns()
-            loadFavorites()
         }
-        .sheet(isPresented: $showAddCountdown) {
+        .sheet(isPresented: $showAddEvent) {
             NavigationStack {
                 CustomCountdownDialog(
-                    name: $newCountdownName,
-                    date: $newCountdownDate,
-                    isAnnual: $newCountdownIsAnnual,
+                    name: $newEventName,
+                    date: $newEventDate,
+                    isAnnual: $newEventIsAnnual,
                     selectedCountdown: $selectedCountdown,
                     onSave: {
                         loadCustomCountdowns()
-                        loadFavorites()
-                        // Reset dialog state for next time
-                        newCountdownName = ""
-                        newCountdownDate = Date()
-                        newCountdownIsAnnual = false
+                        newEventName = ""
+                        newEventDate = Date()
+                        newEventIsAnnual = false
                     }
                 )
             }
-            .presentationCornerRadius(16)  // 情報デザイン: Standard container radius
+            .presentationCornerRadius(16)
         }
+    }
+
+    // MARK: - Header Section
+
+    private var headerSection: some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                JohoPill(text: "EVT", style: .coloredInverted(JohoColors.eventPurple), size: .large)
+
+                Text("Events")
+                    .font(JohoFont.displayMedium)
+                    .foregroundStyle(JohoColors.black)
+
+                Text("\(customCountdowns.count) event\(customCountdowns.count == 1 ? "" : "s")")
+                    .font(JohoFont.body)
+                    .foregroundStyle(JohoColors.black.opacity(0.7))
+            }
+
+            Spacer()
+
+            Button {
+                showAddEvent = true
+            } label: {
+                JohoActionButton(icon: "plus")
+            }
+        }
+        .padding(JohoDimensions.spacingLG)
+        .background(JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+        )
+        .padding(.horizontal, JohoDimensions.spacingLG)
+        .padding(.top, JohoDimensions.spacingLG)
     }
 
     // MARK: - Computed Properties
 
-    private var totalCountdowns: Int {
-        CountdownType.allCases.filter { $0 != .custom }.count + customCountdowns.count
-    }
-
-    private var nextUpcomingCountdown: (name: String, icon: String, days: Int, date: Date)? {
+    private var nextUpcomingEvent: (name: String, icon: String, days: Int, date: Date)? {
+        let currentYear = Calendar.iso8601.component(.year, from: Date())
         var allEvents: [(name: String, icon: String, days: Int, date: Date)] = []
 
-        // Add predefined
-        for type in CountdownType.allCases where type != .custom {
-            let target = type.targetDate
-            let days = daysUntil(target)
-            if days >= 0 {
-                allEvents.append((type.displayName, type.icon, days, target))
-            }
-        }
-
-        // Add custom
-        let currentYear = Calendar.iso8601.component(.year, from: Date())
+        // Only custom events - no predefined
         for custom in customCountdowns {
             if let target = custom.computeTargetDate(for: currentYear) {
                 let days = daysUntil(target)
                 if days >= 0 {
-                    allEvents.append((custom.name, custom.iconName ?? "calendar.badge.plus", days, target))
+                    allEvents.append((custom.name, custom.iconName ?? "calendar.badge.clock", days, target))
                 }
             }
         }
@@ -124,252 +120,301 @@ struct CountdownListView: View {
         return calendar.dateComponents([.day], from: calendar.startOfDay(for: Date()), to: calendar.startOfDay(for: date)).day ?? 0
     }
 
-    // MARK: - Next Up Section
+    // MARK: - Next Up Section (Hero Card - matches Star page CollapsibleSpecialDayCard)
 
     @ViewBuilder
-    private func nextUpSection(_ countdown: (name: String, icon: String, days: Int, date: Date)) -> some View {
-        VStack(spacing: JohoDimensions.spacingMD) {
-            HStack {
-                JohoPill(text: "NEXT UP", style: .whiteOnBlack, size: .medium)
-                Spacer()
-            }
-            .padding(.horizontal, JohoDimensions.spacingLG)
+    private func nextUpSection(_ event: (name: String, icon: String, days: Int, date: Date)) -> some View {
+        VStack(spacing: 0) {
+            // 情報デザイン: Bento header with icon in RIGHT compartment
+            HStack(spacing: 0) {
+                JohoPill(text: "NEXT UP", style: .whiteOnBlack, size: .small)
+                    .padding(.leading, JohoDimensions.spacingMD)
 
-            JohoCard {
-                HStack(spacing: JohoDimensions.spacingMD) {
-                    // 情報デザイン: Orange for countdowns/timers
-                    ZStack {
-                        Circle()
-                            .fill(JohoColors.orange.opacity(0.2))
-                            .frame(width: 56, height: 56)
-
-                        Image(systemName: countdown.icon)
-                            .font(.system(size: 24, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.orange)
-                    }
-
-                    VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
-                        Text(countdown.name)
-                            .font(JohoFont.headline)
-                            .foregroundStyle(JohoColors.black)
-
-                        Text(countdown.date.formatted(.dateTime.month(.wide).day().year()))
-                            .font(JohoFont.bodySmall)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
-                    }
-
-                    Spacer()
-
-                    // Days counter
-                    VStack(spacing: 2) {
-                        Text("\(countdown.days)")
-                            .font(JohoFont.displayMedium)
-                            .foregroundStyle(JohoColors.black)
-
-                        Text(countdown.days == 1 ? "DAY" : "DAYS")
-                            .font(JohoFont.label)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
-                    }
-                }
-            }
-            .padding(.horizontal, JohoDimensions.spacingLG)
-        }
-    }
-
-    // MARK: - Favorites Section
-
-    private var favoritesSection: some View {
-        VStack(spacing: JohoDimensions.spacingMD) {
-            HStack {
-                JohoPill(text: "FAVORITES", style: .whiteOnBlack, size: .medium)
-                Spacer()
-                Text("\(favorites.count) saved")
-                    .font(JohoFont.bodySmall)
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
-            }
-            .padding(.horizontal, JohoDimensions.spacingLG)
-
-            VStack(spacing: JohoDimensions.spacingSM) {
-                ForEach(favorites) { fav in
-                    countdownRow(
-                        name: fav.displayName,
-                        icon: fav.icon,
-                        days: daysUntilFavorite(fav),
-                        isFavorite: true,
-                        onToggleFavorite: { toggleFavorite(fav) }
-                    )
-                }
-            }
-            .padding(.horizontal, JohoDimensions.spacingLG)
-        }
-    }
-
-    private func daysUntilFavorite(_ fav: SavedCountdown) -> Int {
-        if fav.type == .custom, let custom = fav.custom {
-            let currentYear = Calendar.iso8601.component(.year, from: Date())
-            if let target = custom.computeTargetDate(for: currentYear) {
-                return daysUntil(target)
-            }
-            return 0
-        } else {
-            return daysUntil(fav.type.targetDate)
-        }
-    }
-
-    // MARK: - Predefined Section
-
-    private var predefinedSection: some View {
-        VStack(spacing: JohoDimensions.spacingMD) {
-            HStack {
-                JohoPill(text: "PREDEFINED", style: .whiteOnBlack, size: .medium)
-                Spacer()
-            }
-            .padding(.horizontal, JohoDimensions.spacingLG)
-
-            VStack(spacing: JohoDimensions.spacingSM) {
-                ForEach(CountdownType.allCases.filter { $0 != .custom }, id: \.self) { type in
-                    let isFav = favorites.contains(where: { $0.type == type && $0.custom == nil })
-                    countdownRow(
-                        name: type.displayName,
-                        icon: type.icon,
-                        days: daysUntil(type.targetDate),
-                        isFavorite: isFav,
-                        onToggleFavorite: {
-                            toggleFavorite(SavedCountdown(type: type, custom: nil))
-                        }
-                    )
-                }
-            }
-            .padding(.horizontal, JohoDimensions.spacingLG)
-        }
-    }
-
-    // MARK: - Custom Events Section
-
-    private var customEventsSection: some View {
-        VStack(spacing: JohoDimensions.spacingMD) {
-            HStack {
-                JohoPill(text: "CUSTOM EVENTS", style: .whiteOnBlack, size: .medium)
                 Spacer()
 
-                Button {
-                    showAddCountdown = true
-                } label: {
-                    HStack(spacing: JohoDimensions.spacingXS) {
-                        Image(systemName: "plus")
-                            .font(.system(size: 12, weight: .bold, design: .rounded))
-                        Text("Add")
-                            .font(JohoFont.label)
-                    }
-                    .foregroundStyle(JohoColors.orange)  // 情報デザイン: Orange for countdowns
-                }
+                // WALL (vertical divider)
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(width: 1.5)
+                    .frame(maxHeight: .infinity)
+
+                // RIGHT: Event icon compartment
+                Image(systemName: "calendar.badge.clock")
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+                    .frame(width: 40)
+                    .frame(maxHeight: .infinity)
             }
-            .padding(.horizontal, JohoDimensions.spacingLG)
+            .frame(height: 32)
+            .background(JohoColors.purple.opacity(0.7))  // Light purple header (情報デザイン bento)
 
-            if customCountdowns.isEmpty {
-                JohoEmptyState(
-                    title: "No Custom Events",
-                    message: "Create your own countdown events",
-                    icon: "calendar.badge.plus",
-                    zone: .countdowns
-                )
-                .padding(.horizontal, JohoDimensions.spacingLG)
-            } else {
-                VStack(spacing: JohoDimensions.spacingSM) {
-                    let currentYear = Calendar.iso8601.component(.year, from: Date())
-                    ForEach(customCountdowns, id: \.self) { custom in
-                        let target = custom.computeTargetDate(for: currentYear) ?? Date()
-                        let days = daysUntil(target)
-                        let isFav = favorites.contains(where: { $0.type == .custom && $0.custom == custom })
+            // Horizontal divider
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(height: 1.5)
 
-                        countdownRow(
-                            name: custom.name,
-                            icon: custom.iconName ?? "calendar.badge.plus",
-                            days: days,
-                            isFavorite: isFav,
-                            isCustom: true,
-                            onToggleFavorite: {
-                                toggleFavorite(SavedCountdown(type: .custom, custom: custom))
-                            },
-                            onDelete: {
-                                deleteCustom(custom)
-                            }
-                        )
-                    }
+            // Hero content (matches Star page item row style)
+            HStack(spacing: 0) {
+                // LEFT: Type indicator (32pt)
+                HStack(alignment: .center, spacing: 3) {
+                    JohoIndicatorCircle(color: JohoColors.eventPurple, size: .medium)
                 }
-                .padding(.horizontal, JohoDimensions.spacingLG)
-            }
-        }
-    }
+                .frame(width: 32, alignment: .center)
+                .frame(maxHeight: .infinity)
 
-    // MARK: - Countdown Row
+                // WALL
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(width: 1.5)
+                    .frame(maxHeight: .infinity)
 
-    @ViewBuilder
-    private func countdownRow(
-        name: String,
-        icon: String,
-        days: Int,
-        isFavorite: Bool,
-        isCustom: Bool = false,
-        onToggleFavorite: @escaping () -> Void,
-        onDelete: (() -> Void)? = nil
-    ) -> some View {
-        JohoCard {
-            HStack(spacing: JohoDimensions.spacingMD) {
-                // 情報デザイン: Orange icon zone for countdowns
-                ZStack {
-                    Circle()
-                        .fill(JohoColors.orange.opacity(0.15))
-                        .frame(width: 44, height: 44)
-
-                    Image(systemName: icon)
-                        .font(.system(size: 18, weight: .semibold, design: .rounded))
-                        .foregroundStyle(JohoColors.orange)
-                }
-
-                // Name and days
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(name)
-                        .font(JohoFont.body)
+                // CENTER: Name and date
+                VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
+                    Text(event.name)
+                        .font(JohoFont.headline)
                         .foregroundStyle(JohoColors.black)
 
-                    Text(daysText(days))
+                    Text(event.date.formatted(.dateTime.month(.wide).day().year()))
                         .font(JohoFont.bodySmall)
                         .foregroundStyle(JohoColors.black.opacity(0.6))
                 }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
-                Spacer()
+                // WALL
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(width: 1.5)
+                    .frame(maxHeight: .infinity)
 
-                // Favorite button - 情報デザイン: Orange when active
-                Button(action: onToggleFavorite) {
-                    Image(systemName: isFavorite ? "star.fill" : "star")
-                        .font(.system(size: 18, weight: .medium, design: .rounded))
-                        .foregroundStyle(isFavorite ? JohoColors.orange : JohoColors.black.opacity(0.3))
-                        .frame(width: 44, height: 44)  // 情報デザイン: 44pt min touch target
-                }
-                .buttonStyle(.plain)
+                // RIGHT: Days counter compartment (84pt like Star page)
+                // 情報デザイン: Intelligent messaging - "TODAY" not "0 DAYS"
+                VStack(spacing: 2) {
+                    if event.days == 0 {
+                        Text("TODAY")
+                            .font(JohoFont.headline)
+                            .foregroundStyle(JohoColors.black)
+                    } else {
+                        Text("\(event.days)")
+                            .font(JohoFont.displayMedium)
+                            .foregroundStyle(JohoColors.black)
 
-                // Delete button for custom events
-                if isCustom, let onDelete = onDelete {
-                    Button(action: onDelete) {
-                        Image(systemName: "trash")
-                            .font(.system(size: 16, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.red.opacity(0.6))
-                            .frame(width: 44, height: 44)  // 情報デザイン: 44pt min touch target
+                        Text(event.days == 1 ? "DAY" : "DAYS")
+                            .font(JohoFont.label)
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
                     }
-                    .buttonStyle(.plain)
+                }
+                .frame(width: 84)
+                .frame(maxHeight: .infinity)
+            }
+            .frame(height: 72)
+        }
+        .background(JohoColors.purple)  // Light purple (情報デザイン bento - matches HOLIDAYS style)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+        )
+        .padding(.horizontal, JohoDimensions.spacingLG)
+    }
+
+    // MARK: - Events Section (All Custom)
+
+    private var eventsSection: some View {
+        eventBentoSection(
+            title: "Events",
+            icon: "calendar.badge.clock",
+            showAddButton: true,
+            onAdd: { showAddEvent = true }
+        ) {
+            if customCountdowns.isEmpty {
+                // Empty state row
+                HStack(spacing: 0) {
+                    Spacer()
+                    VStack(spacing: JohoDimensions.spacingSM) {
+                        Image(systemName: "calendar.badge.plus")
+                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black.opacity(0.4))
+
+                        Text("No Events")
+                            .font(JohoFont.bodySmall)
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                        Text("Tap + to create your first event")
+                            .font(JohoFont.caption)
+                            .foregroundStyle(JohoColors.black.opacity(0.4))
+                    }
+                    .padding(JohoDimensions.spacingLG)
+                    Spacer()
+                }
+            } else {
+                let currentYear = Calendar.iso8601.component(.year, from: Date())
+                ForEach(Array(customCountdowns.enumerated()), id: \.element) { index, custom in
+                    let target = custom.computeTargetDate(for: currentYear) ?? Date()
+                    let days = daysUntil(target)
+
+                    eventBentoRow(
+                        name: custom.name,
+                        days: days,
+                        onDelete: {
+                            deleteCustom(custom)
+                        }
+                    )
+
+                    // Divider between items (not after last) - matches Star page
+                    if index < customCountdowns.count - 1 {
+                        Rectangle()
+                            .fill(JohoColors.black.opacity(0.3))
+                            .frame(height: 1)
+                            .padding(.horizontal, 6)
+                    }
                 }
             }
         }
+        .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
-    private func daysText(_ days: Int) -> String {
-        if days == 0 {
-            return "Today"
-        } else if days == 1 {
-            return "Tomorrow"
-        } else {
-            return "\(days) days"
+    // MARK: - Bento Section Container (matches Star page specialDaySection)
+
+    @ViewBuilder
+    private func eventBentoSection<Content: View>(
+        title: String,
+        icon: String,
+        showAddButton: Bool = false,
+        onAdd: (() -> Void)? = nil,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Section header (情報デザイン: Bento with icon in RIGHT compartment)
+            HStack(spacing: 0) {
+                // LEFT: Title pill
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    JohoPill(text: title.uppercased(), style: .whiteOnBlack, size: .small)
+
+                    if showAddButton, let onAdd = onAdd {
+                        Spacer()
+                        Button(action: onAdd) {
+                            HStack(spacing: JohoDimensions.spacingXS) {
+                                Image(systemName: "plus")
+                                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                                Text("Add")
+                                    .font(JohoFont.label)
+                            }
+                            .foregroundStyle(JohoColors.eventPurple)
+                        }
+                    }
+                }
+                .padding(.leading, JohoDimensions.spacingMD)
+                .padding(.trailing, showAddButton ? JohoDimensions.spacingMD : 0)
+
+                if !showAddButton {
+                    Spacer()
+                }
+
+                // WALL (vertical divider)
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(width: 1.5)
+                    .frame(maxHeight: .infinity)
+
+                // RIGHT: Icon compartment
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(JohoColors.black)
+                    .frame(width: 40)
+                    .frame(maxHeight: .infinity)
+            }
+            .frame(height: 32)
+            .background(JohoColors.purple.opacity(0.7))  // Light purple header (情報デザイン bento)
+
+            // Horizontal divider between header and items
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(height: 1.5)
+
+            // Items in VStack for pixel-perfect 情報デザイン layout
+            VStack(spacing: 0) {
+                content()
+            }
+            .padding(.vertical, 4)
+        }
+        .background(JohoColors.purple)  // Light purple (情報デザイン bento - like HOLIDAYS uses redLight)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+        )
+    }
+
+    // MARK: - Event Bento Row (matches Star page specialDayItemRow)
+    //
+    // 情報デザイン BENTO LAYOUT - Compartments with vertical dividers (walls)
+    // ┌─────┬─────────────────────────────────┬─────────────────┐
+    // │  ●  ┃ Event Name                      ┃ [EVT]           │
+    // └─────┴─────────────────────────────────┴─────────────────┘
+    //  LEFT │           CENTER                │      RIGHT
+    //  32pt │          flexible               │      64pt
+
+    @ViewBuilder
+    private func eventBentoRow(
+        name: String,
+        days: Int,
+        onDelete: @escaping () -> Void
+    ) -> some View {
+        HStack(spacing: 0) {
+            // LEFT COMPARTMENT: Type indicator (fixed 32pt, centered)
+            HStack(alignment: .center, spacing: 3) {
+                JohoIndicatorCircle(color: JohoColors.eventPurple, size: .small)
+            }
+            .frame(width: 32, alignment: .center)
+            .frame(maxHeight: .infinity)
+
+            // WALL (vertical divider)
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(width: 1.5)
+                .frame(maxHeight: .infinity)
+
+            // CENTER COMPARTMENT: Name + countdown (flexible)
+            HStack(spacing: JohoDimensions.spacingXS) {
+                Text(name)
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(JohoColors.black)
+                    .lineLimit(1)
+
+                Spacer(minLength: 4)
+
+                // Countdown text (like Star page birthday age display)
+                let daysLabel = days == 0 ? "TODAY" :
+                               days == 1 ? "IN 1D" :
+                               "IN \(days)D"
+                Text(daysLabel)
+                    .font(.system(size: 9, weight: .bold, design: .monospaced))
+                    .foregroundStyle(JohoColors.black.opacity(0.6))
+            }
+            .padding(.horizontal, 8)
+            .frame(maxHeight: .infinity)
+
+            // WALL (vertical divider)
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(width: 1.5)
+                .frame(maxHeight: .infinity)
+
+            // RIGHT COMPARTMENT: Type pill (fixed 64pt, centered)
+            HStack(spacing: 4) {
+                // Type code pill (matches Star page)
+                JohoPill(text: "EVT", style: .coloredInverted(JohoColors.eventPurple), size: .small)
+            }
+            .frame(width: 64, alignment: .center)
+            .frame(maxHeight: .infinity)
+        }
+        .frame(minHeight: 36)  // Match Star page row height
+        .contentShape(Rectangle())
+        .contextMenu {
+            Button(role: .destructive, action: onDelete) {
+                Label("Delete", systemImage: "trash")
+            }
         }
     }
 
@@ -382,41 +427,11 @@ struct CountdownListView: View {
         }
     }
 
-    private func loadFavorites() {
-        if let data = UserDefaults.standard.data(forKey: "favoriteCountdowns"),
-           let favs = try? JSONDecoder().decode([SavedCountdown].self, from: data) {
-            favorites = Array(favs.prefix(4))
-        }
-    }
-
-    private func saveFavorites() {
-        let trimmed = Array(favorites.prefix(4))
-        if let data = try? JSONEncoder().encode(trimmed) {
-            UserDefaults.standard.set(data, forKey: "favoriteCountdowns")
-        }
-    }
-
-    private func toggleFavorite(_ item: SavedCountdown) {
-        if let idx = favorites.firstIndex(of: item) {
-            favorites.remove(at: idx)
-        } else {
-            if favorites.count >= 4 {
-                favorites.removeFirst()
-            }
-            favorites.append(item)
-        }
-        saveFavorites()
-        HapticManager.selection()
-    }
-
     private func deleteCustom(_ custom: CustomCountdown) {
         customCountdowns.removeAll { $0 == custom }
         if let data = try? JSONEncoder().encode(customCountdowns) {
             UserDefaults.standard.set(data, forKey: "customCountdowns")
         }
-        // Remove from favorites too
-        favorites.removeAll { $0.type == .custom && $0.custom == custom }
-        saveFavorites()
         HapticManager.notification(.warning)
     }
 }

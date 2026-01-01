@@ -14,18 +14,10 @@ struct VeckaApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @State private var navigationManager = NavigationManager()
 
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-                .environment(navigationManager)
-            .onOpenURL { url in
-                handleWidgetURL(url)
-            }
-            .onAppear {
-                Log.i("App launched. System language: \(LanguageManager.shared.currentLanguageCode)")
-            }
-        }
-        .modelContainer(for: [
+    /// CloudKit-enabled ModelContainer for iCloud sync across devices
+    /// Requires: iCloud capability + CloudKit container in Xcode project settings
+    var sharedModelContainer: ModelContainer = {
+        let schema = Schema([
             DailyNote.self,
             HolidayRule.self,
             CalendarRule.self,
@@ -63,6 +55,39 @@ struct VeckaApp: App {
             // Workspace widgets (draggable/resizable widget system)
             WorkspaceWidget.self
         ])
+
+        let modelConfiguration = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: false,
+            cloudKitDatabase: .automatic  // Enable CloudKit sync
+        )
+
+        do {
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+        } catch {
+            // Fallback to local-only if CloudKit fails (e.g., no iCloud account)
+            Log.e("CloudKit ModelContainer failed: \(error). Falling back to local storage.")
+            let localConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+            do {
+                return try ModelContainer(for: schema, configurations: [localConfig])
+            } catch {
+                fatalError("Could not create ModelContainer: \(error)")
+            }
+        }
+    }()
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .environment(navigationManager)
+            .onOpenURL { url in
+                handleWidgetURL(url)
+            }
+            .onAppear {
+                Log.i("App launched. System language: \(LanguageManager.shared.currentLanguageCode)")
+            }
+        }
+        .modelContainer(sharedModelContainer)
     }
     
     

@@ -16,37 +16,19 @@ struct PhoneLibraryView: View {
     @Query private var trips: [TravelTrip]
     @Query private var expenses: [ExpenseItem]
     @Query private var contacts: [Contact]
+    @Query private var customCountdowns: [CountdownEvent]
 
     var body: some View {
         ScrollView {
             VStack(spacing: JohoDimensions.spacingLG) {
-                // Page header with badge (情報デザイン: WHITE container)
-                JohoPageHeader(
-                    title: Localization.library,
-                    badge: "LIBRARY"
-                )
-                .padding(.horizontal, JohoDimensions.spacingLG)
-                .padding(.top, JohoDimensions.spacingSM)
+                // 情報デザイン: Compartmentalized header (iPad ContactListView pattern)
+                libraryHeader
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+                    .padding(.top, JohoDimensions.spacingSM)
 
-                // Notes Section
+                // 情報デザイン: All entry types accessible from iPhone Library
                 VStack(spacing: JohoDimensions.spacingSM) {
-                    NavigationLink {
-                        NotesListView()
-                    } label: {
-                        JohoListRow(
-                            title: Localization.notes,
-                            subtitle: notesSubtitle,
-                            icon: "note.text",
-                            zone: .notes,
-                            badge: notes.isEmpty ? nil : "\(notes.count)"
-                        )
-                    }
-                    .buttonStyle(.plain)
-                }
-                .padding(.horizontal, JohoDimensions.spacingLG)
-
-                // Special Days Section (Holidays, Observances, Events, Trips, Expenses)
-                VStack(spacing: JohoDimensions.spacingSM) {
+                    // Special Days (Holidays, Observances, etc.)
                     NavigationLink {
                         SpecialDaysListView(isInMonthDetail: .constant(false))
                     } label: {
@@ -59,11 +41,22 @@ struct PhoneLibraryView: View {
                         )
                     }
                     .buttonStyle(.plain)
-                }
-                .padding(.horizontal, JohoDimensions.spacingLG)
 
-                // Contacts Section
-                VStack(spacing: JohoDimensions.spacingSM) {
+                    // Notes
+                    NavigationLink {
+                        NotesListView()
+                    } label: {
+                        JohoListRow(
+                            title: Localization.notes,
+                            subtitle: notesSubtitle,
+                            icon: "note.text",
+                            zone: .notes,
+                            badge: notes.isEmpty ? nil : "\(notes.count)"
+                        )
+                    }
+                    .buttonStyle(.plain)
+
+                    // Contacts
                     NavigationLink {
                         ContactListView()
                     } label: {
@@ -76,6 +69,48 @@ struct PhoneLibraryView: View {
                         )
                     }
                     .buttonStyle(.plain)
+
+                    // Events (Countdowns)
+                    NavigationLink {
+                        CountdownListView()
+                    } label: {
+                        JohoListRow(
+                            title: "Events",
+                            subtitle: eventsSubtitle,
+                            icon: "calendar.badge.clock",
+                            zone: .events,
+                            badge: nil  // Custom countdowns stored in UserDefaults
+                        )
+                    }
+                    .buttonStyle(.plain)
+
+                    // Trips
+                    NavigationLink {
+                        TripListView()
+                    } label: {
+                        JohoListRow(
+                            title: Localization.trips,
+                            subtitle: tripsSubtitle,
+                            icon: "airplane",
+                            zone: .trips,
+                            badge: trips.isEmpty ? nil : "\(trips.count)"
+                        )
+                    }
+                    .buttonStyle(.plain)
+
+                    // Expenses
+                    NavigationLink {
+                        ExpenseListView()
+                    } label: {
+                        JohoListRow(
+                            title: Localization.expenses,
+                            subtitle: expensesSubtitle,
+                            icon: "dollarsign.circle",
+                            zone: .expenses,
+                            badge: expenses.isEmpty ? nil : "\(expenses.count)"
+                        )
+                    }
+                    .buttonStyle(.plain)
                 }
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.bottom, JohoDimensions.spacingXL)
@@ -83,6 +118,51 @@ struct PhoneLibraryView: View {
         }
         .johoBackground()
         .johoNavigation(title: "")
+    }
+
+    // MARK: - Header (情報デザイン: Compartmentalized like iPad ContactListView)
+
+    private var libraryHeader: some View {
+        HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
+            // Icon zone (gold/yellow for Library - matches sidebar accent)
+            Image(systemName: "books.vertical.fill")
+                .font(.system(size: 24, weight: .bold))
+                .foregroundStyle(JohoColors.black)
+                .frame(width: 52, height: 52)
+                .background(Color(hex: "FFD700"))  // Gold - Library accent
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                )
+
+            // Title and stats zone
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Library")
+                    .font(JohoFont.displaySmall)
+                    .foregroundStyle(JohoColors.black)
+
+                Text(librarySubtitle)
+                    .font(JohoFont.caption)
+                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+            }
+
+            Spacer()
+        }
+        .padding(JohoDimensions.spacingMD)
+        .background(JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+        )
+    }
+
+    private var librarySubtitle: String {
+        let totalItems = notes.count + contacts.count + trips.count + expenses.count + holidays.count
+        return "\(totalItems) items across \(6) categories"
     }
 
     // MARK: - Computed Properties
@@ -117,6 +197,26 @@ struct PhoneLibraryView: View {
             return "\(contacts.count) contacts"
         }
     }
+
+    private var eventsSubtitle: String {
+        return "Custom countdowns & events"
+    }
+
+    private var tripsSubtitle: String {
+        if trips.isEmpty {
+            return "Track your travels"
+        } else {
+            return trips.count == 1 ? "1 trip" : "\(trips.count) trips"
+        }
+    }
+
+    private var expensesSubtitle: String {
+        if expenses.isEmpty {
+            return "Track your spending"
+        } else {
+            return expenses.count == 1 ? "1 expense" : "\(expenses.count) expenses"
+        }
+    }
 }
 
 #Preview {
@@ -127,7 +227,8 @@ struct PhoneLibraryView: View {
                 HolidayRule.self,
                 TravelTrip.self,
                 ExpenseItem.self,
-                Contact.self
+                Contact.self,
+                CountdownEvent.self
             ])
     }
 }
