@@ -1594,6 +1594,27 @@ extension SpecialDaysListView {
     // MARK: - Data Operations
 
     private func createSpecialDay(type: SpecialDayType, name: String, date: Date, symbol: String, iconColor: String?, notes: String?, region: String) {
+        // Events are stored as CountdownEvent, not HolidayRule
+        if type == .event {
+            let event = CountdownEvent(
+                title: name,
+                targetDate: date,
+                icon: symbol,
+                colorHex: iconColor.map { "#\($0)" } ?? "#805AD5",
+                isSystem: false
+            )
+            modelContext.insert(event)
+            do {
+                try modelContext.save()
+                HapticManager.notification(.success)
+            } catch {
+                Log.w("Failed to create event: \(error.localizedDescription)")
+                HapticManager.notification(.error)
+            }
+            return
+        }
+
+        // Holidays and observances are stored as HolidayRule
         let calendar = Calendar.current
         let month = calendar.component(.month, from: date)
         let day = calendar.component(.day, from: date)
@@ -1624,6 +1645,27 @@ extension SpecialDaysListView {
     }
 
     private func updateSpecialDay(ruleID: String, type: SpecialDayType, name: String, date: Date, symbol: String, iconColor: String?, notes: String?, region: String) {
+        // Events are stored as CountdownEvent
+        if type == .event {
+            do {
+                let descriptor = FetchDescriptor<CountdownEvent>(predicate: #Predicate<CountdownEvent> { $0.id == ruleID })
+                if let event = try modelContext.fetch(descriptor).first {
+                    event.title = name
+                    event.targetDate = date
+                    event.icon = symbol
+                    event.colorHex = iconColor.map { "#\($0)" } ?? "#805AD5"
+
+                    try modelContext.save()
+                    HapticManager.notification(.success)
+                }
+            } catch {
+                Log.w("Failed to update event: \(error.localizedDescription)")
+                HapticManager.notification(.error)
+            }
+            return
+        }
+
+        // Holidays and observances are stored as HolidayRule
         do {
             let descriptor = FetchDescriptor<HolidayRule>(predicate: #Predicate<HolidayRule> { $0.id == ruleID })
             if let rule = try modelContext.fetch(descriptor).first {
@@ -1661,6 +1703,33 @@ extension SpecialDaysListView {
         )
 
         let ruleId = row.ruleID
+
+        // Events are stored as CountdownEvent
+        if row.type == .event {
+            do {
+                let descriptor = FetchDescriptor<CountdownEvent>(predicate: #Predicate<CountdownEvent> { $0.id == ruleId })
+                if let event = try modelContext.fetch(descriptor).first {
+                    modelContext.delete(event)
+                    try modelContext.save()
+                    HapticManager.notification(.warning)
+
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        showUndoToast = true
+                    }
+
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                        withAnimation {
+                            showUndoToast = false
+                        }
+                    }
+                }
+            } catch {
+                Log.w("Failed to delete event: \(error.localizedDescription)")
+            }
+            return
+        }
+
+        // Holidays and observances are stored as HolidayRule
         do {
             let descriptor = FetchDescriptor<HolidayRule>(predicate: #Predicate<HolidayRule> { $0.id == ruleId })
             if let rule = try modelContext.fetch(descriptor).first {
