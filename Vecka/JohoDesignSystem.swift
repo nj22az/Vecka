@@ -253,7 +253,9 @@ struct JohoPill: View {
         case .blackOnWhite: return JohoColors.black
         case .whiteOnBlack: return JohoColors.white
         case .colored(let color): return color  // 情報デザイン: Colored text on white
-        case .coloredInverted: return JohoColors.white
+        case .coloredInverted(let color):
+            // 情報デザイン: Black text on light backgrounds (yellow), white on dark
+            return color == JohoColors.yellow ? JohoColors.black : JohoColors.white
         }
     }
 

@@ -118,7 +118,7 @@ JohoPill(text: "TODAY", style: .colored(JohoColors.yellow), size: .small)
 
 | Pill Type | Style | Background | Text | Border |
 |-----------|-------|------------|------|--------|
-| **TODAY** | `.coloredInverted(JohoColors.yellow)` | Yellow | White | Black |
+| **TODAY** | `.coloredInverted(JohoColors.yellow)` | Yellow | **Black** | Black |
 | **HOL** | `.coloredInverted(red)` | Red | White | Black |
 | **OBS** | `.coloredInverted(orange)` | Orange | White | Black |
 | **EVT** | `.coloredInverted(purple)` | Purple | White | Black |
