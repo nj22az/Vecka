@@ -247,6 +247,7 @@ struct JohoPill: View {
         case whiteOnBlack   // Black pill, white text (most common)
         case colored(Color) // 情報デザイン: WHITE pill, colored border, colored text (NOT inverted!)
         case coloredInverted(Color) // Inverted: Colored bg, white text (use sparingly)
+        case muted          // Gray background, muted text - for past dates (YESTERDAY, X DAYS AGO)
     }
 
     enum PillSize {
@@ -295,6 +296,7 @@ struct JohoPill: View {
         case .coloredInverted(let color):
             // 情報デザイン: Black text on light backgrounds (yellow), white on dark
             return color == JohoColors.yellow ? JohoColors.black : JohoColors.white
+        case .muted: return JohoColors.black.opacity(0.6)  // Muted text for past dates
         }
     }
 
@@ -318,6 +320,11 @@ struct JohoPill: View {
             Capsule()
                 .fill(color)
                 .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1.5))
+        case .muted:
+            // Muted gray for past dates (YESTERDAY, X DAYS AGO)
+            Capsule()
+                .fill(JohoColors.black.opacity(0.1))
+                .overlay(Capsule().stroke(JohoColors.black.opacity(0.3), lineWidth: 1.5))
         }
     }
 }

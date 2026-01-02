@@ -278,6 +278,64 @@ struct SpecialDayRow: Identifiable {
     var hasCountryPill: Bool {
         CountryColorScheme.scheme(for: region) != nil
     }
+
+    /// Whether this is a system holiday (vs user-created)
+    var isSystem: Bool {
+        !isCustom
+    }
+}
+
+/// Consolidated holiday: Groups same-date holidays from multiple regions into one row
+/// 情報デザイン: Same semantic holiday (same date + type) = ONE row with multiple country pills
+///
+/// Example: January 1st holidays consolidate regardless of localized names:
+/// - Sweden: "Nyårsdagen" + USA: "New Year's Day" + Vietnam: "Tết Dương lịch"
+/// → ONE row showing device-locale name with [SWE][❄️] [USA][🎆] [VN][🎊]
+struct ConsolidatedHoliday: Identifiable {
+    let id: String                      // "holiday-1704067200" (date timestamp)
+    let date: Date
+    let type: SpecialDayType            // .holiday
+    let regions: [String]               // ["SE", "US", "VN"]
+    let names: [String: String]         // ["SE": "Nyårsdagen", "US": "New Year's Day", "VN": "Tết Dương lịch"]
+    let icons: [String: String]         // ["SE": "snowflake", "US": "fireworks", "VN": "sparkles"]
+    let isSystemHoliday: Bool           // All source rows are system holidays
+
+    /// Get the best display name for the current locale
+    /// 情報デザイン: Show the user's locale name, fallback to English, then first available
+    func displayName(for locale: Locale) -> String {
+        // 1. Try device locale region (e.g., "SE" for Swedish)
+        if let regionCode = locale.region?.identifier,
+           let localeName = names[regionCode] {
+            return localeName
+        }
+
+        // 2. Try English name (US)
+        if let englishName = names["US"] {
+            return englishName
+        }
+
+        // 3. Fallback to first available name
+        return names.values.first ?? "Holiday"
+    }
+
+    /// Create from a group of same-DATE holidays (not same-name)
+    /// 情報デザイン: Semantic grouping - same date + same type = same holiday
+    static func from(holidays: [SpecialDayRow]) -> ConsolidatedHoliday? {
+        guard let first = holidays.first else { return nil }
+
+        return ConsolidatedHoliday(
+            id: "holiday-\(first.date.timeIntervalSince1970)",
+            date: first.date,
+            type: .holiday,
+            regions: holidays.map { $0.region },
+            names: Dictionary(uniqueKeysWithValues: holidays.map { ($0.region, $0.title) }),
+            icons: Dictionary(uniqueKeysWithValues: holidays.compactMap { holiday in
+                let icon = holiday.symbolName ?? SpecialDayType.holiday.defaultIcon
+                return (holiday.region, icon)
+            }),
+            isSystemHoliday: holidays.allSatisfy { $0.isSystem }
+        )
+    }
 }
 
 fileprivate struct EditingSpecialDay: Identifiable {
@@ -1171,11 +1229,29 @@ struct CollapsibleSpecialDayCard: View {
     // Item expansion state (情報デザイン: tap row to show details)
     @Binding var expandedItemID: String?
 
+    // Locale for displaying localized holiday names (情報デザイン: show user's locale name)
+    @Environment(\.locale) private var locale
+
     private let calendar = Calendar.iso8601
 
     // Group items by type
     private var holidays: [SpecialDayRow] {
         dayCard.items.filter { $0.type == .holiday }
+    }
+
+    /// Consolidated holidays: Groups same-name holidays into single rows with multiple country pills
+    private var consolidatedHolidays: [ConsolidatedHoliday] {
+        let holidays = dayCard.items.filter { $0.type == .holiday }
+        guard !holidays.isEmpty else { return [] }
+
+        // 情報デザイン: Group by DATE, not by title
+        // Same date + same type = same semantic holiday (regardless of localized name)
+        // All items in dayCard are already for the same date, so consolidate ALL holidays
+        // into one row with multiple country pills
+        if let consolidated = ConsolidatedHoliday.from(holidays: holidays) {
+            return [consolidated]
+        }
+        return []
     }
     private var observances: [SpecialDayRow] {
         dayCard.items.filter { $0.type == .observance }
@@ -1198,6 +1274,29 @@ struct CollapsibleSpecialDayCard: View {
 
     private var isToday: Bool {
         calendar.isDateInToday(dayCard.date)
+    }
+
+    /// Days from today (negative = past, positive = future)
+    private var daysFromToday: Int {
+        let today = calendar.startOfDay(for: Date())
+        let target = calendar.startOfDay(for: dayCard.date)
+        return calendar.dateComponents([.day], from: today, to: target).day ?? 0
+    }
+
+    /// Date status pill for the day header (情報デザイン: Shows temporal context)
+    @ViewBuilder
+    private var dateStatusPill: some View {
+        if daysFromToday == 0 {
+            // TODAY - Yellow inverted pill
+            JohoPill(text: "TODAY", style: .coloredInverted(JohoColors.yellow), size: .small)
+        } else if daysFromToday == -1 {
+            // YESTERDAY - Muted gray pill
+            JohoPill(text: "YESTERDAY", style: .muted, size: .small)
+        } else if daysFromToday < -1 {
+            // X DAYS AGO - Muted gray pill
+            JohoPill(text: "\(abs(daysFromToday)) DAYS AGO", style: .muted, size: .small)
+        }
+        // Future dates: no status pill shown
     }
 
     var body: some View {
@@ -1242,10 +1341,8 @@ struct CollapsibleSpecialDayCard: View {
 
                 // Status indicators
                 HStack(spacing: JohoDimensions.spacingXS) {
-                    // Today pill (情報デザイン: inverted - yellow bg, white text, black border)
-                    if isToday {
-                        JohoPill(text: "TODAY", style: .coloredInverted(JohoColors.yellow), size: .small)
-                    }
+                    // Date status pill (情報デザイン: TODAY, YESTERDAY, or X DAYS AGO)
+                    dateStatusPill
 
                     // Content indicator dots (when collapsed)
                     if !isExpanded {
@@ -1340,11 +1437,11 @@ struct CollapsibleSpecialDayCard: View {
     @ViewBuilder
     private var expandedContent: some View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-            // Holidays section (pink background)
-            if !holidays.isEmpty {
-                specialDaySection(
+            // Holidays section (pink background) - uses consolidated view
+            if !consolidatedHolidays.isEmpty {
+                consolidatedHolidaySection(
                     title: "Holidays",
-                    items: holidays,
+                    items: consolidatedHolidays,
                     zone: .holidays,
                     icon: "star.fill"
                 )
@@ -1471,6 +1568,142 @@ struct CollapsibleSpecialDayCard: View {
         )
     }
 
+    // MARK: - Consolidated Holiday Section (情報デザイン: Same-name holidays merged)
+    //
+    // Consolidates same-name holidays from different countries into ONE row
+    // ┌─────┬───────────────────────────────────────┬─────────────────────────────┐
+    // │ ●   ┃ New Year's Day                        ┃ [SWE][❄️] [USA][🎆]         │
+    // └─────┴───────────────────────────────────────┴─────────────────────────────┘
+    //  LEFT │           CENTER                      │      RIGHT (multi-country)
+
+    @ViewBuilder
+    private func consolidatedHolidaySection(title: String, items: [ConsolidatedHoliday], zone: SectionZone, icon: String) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Section header (情報デザイン: Bento with icon in RIGHT compartment)
+            HStack(spacing: 0) {
+                // LEFT: Title pill
+                JohoPill(text: title.uppercased(), style: .whiteOnBlack, size: .small)
+                    .padding(.leading, JohoDimensions.spacingMD)
+
+                Spacer()
+
+                // WALL (vertical divider)
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(width: 1.5)
+                    .frame(maxHeight: .infinity)
+
+                // RIGHT: Icon compartment
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(JohoColors.black)
+                    .frame(width: 40)
+                    .frame(maxHeight: .infinity)
+            }
+            .frame(height: 32)
+            .background(zone.background.opacity(0.5))  // Slightly darker header
+
+            // Horizontal divider between header and items
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(height: 1.5)
+
+            // Items in VStack for pixel-perfect 情報デザイン layout
+            VStack(spacing: 0) {
+                ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                    consolidatedHolidayRow(item, zone: zone)
+
+                    // Divider between items (not after last)
+                    if index < items.count - 1 {
+                        Rectangle()
+                            .fill(JohoColors.black.opacity(0.3))
+                            .frame(height: 1)
+                            .padding(.horizontal, 6)
+                    }
+                }
+            }
+            .padding(.vertical, 4)
+        }
+        .background(zone.background)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+        )
+    }
+
+    // MARK: - Consolidated Holiday Row (情報デザイン: Multiple countries, one name)
+    //
+    // Each country keeps its own icon (user decision: Show ALL icons)
+    // ┌─────┬───────────────────────────────────────┬─────────────────────────────┐
+    // │ ●   ┃ New Year's Day                        ┃ [SWE][❄️] [USA][🎆]         │
+    // └─────┴───────────────────────────────────────┴─────────────────────────────┘
+
+    @ViewBuilder
+    private func consolidatedHolidayRow(_ item: ConsolidatedHoliday, zone: SectionZone) -> some View {
+        HStack(spacing: 0) {
+            // LEFT COMPARTMENT: Type indicator (fixed 32pt, centered)
+            HStack(alignment: .center, spacing: 3) {
+                typeIndicatorDot(for: item.type)
+                if item.isSystemHoliday {
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 7, weight: .bold))
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                }
+            }
+            .frame(width: 32, alignment: .center)
+            .frame(maxHeight: .infinity)
+
+            // WALL (vertical divider)
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(width: 1.5)
+                .frame(maxHeight: .infinity)
+
+            // CENTER COMPARTMENT: Holiday name (flexible)
+            // 情報デザイン: Display locale-appropriate name (Swedish user sees "Nyårsdagen", English sees "New Year's Day")
+            Text(item.displayName(for: locale))
+                .font(JohoFont.bodySmall)
+                .foregroundStyle(JohoColors.black)
+                .lineLimit(1)
+                .padding(.horizontal, 8)
+                .frame(maxHeight: .infinity, alignment: .leading)
+
+            Spacer(minLength: 4)
+
+            // WALL (vertical divider)
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(width: 1.5)
+                .frame(maxHeight: .infinity)
+
+            // RIGHT COMPARTMENT: Country pills + icons (情報デザイン: Show ALL icons)
+            // Each country paired with its decoration icon
+            HStack(spacing: 6) {
+                ForEach(item.regions, id: \.self) { region in
+                    HStack(spacing: 3) {
+                        CountryPill(region: region)
+
+                        // Each country keeps its own icon
+                        if let icon = item.icons[region] {
+                            Image(systemName: icon)
+                                .font(.system(size: 12, weight: .bold, design: .rounded))
+                                .foregroundStyle(item.type.accentColor)
+                                .frame(width: 20, height: 20)
+                                .background(item.type.accentColor.opacity(0.15))
+                                .clipShape(Squircle(cornerRadius: 5))
+                                .overlay(Squircle(cornerRadius: 5).stroke(JohoColors.black, lineWidth: 1))
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, 6)
+            .frame(maxHeight: .infinity)
+        }
+        .frame(minHeight: 36)
+        .contentShape(Rectangle())
+    }
+
     // MARK: - Item Row (情報デザイン Bento: Compartmentalized with walls)
     //
     // 情報デザイン BENTO LAYOUT - Compartments with vertical dividers (walls)
@@ -1519,17 +1752,11 @@ struct CollapsibleSpecialDayCard: View {
 
                     Spacer(minLength: 4)
 
-                    // Metadata: age or countdown (情報デザイン: intelligent messaging)
+                    // Metadata: age for birthdays (情報デザイン: intelligent messaging)
+                    // Note: Countdown removed - temporal status now shown in day header
                     if item.type == .birthday, let age = item.turningAge {
                         // 情報デザイン: Age 0 means birth year - show contextual message
                         Text(birthdayDisplayText(age: age, date: item.date))
-                            .font(.system(size: 9, weight: .bold, design: .monospaced))
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
-                    } else if item.isCountdown && item.type == .event {
-                        let daysText = item.daysUntil == 0 ? "TODAY" :
-                                      item.daysUntil == 1 ? "IN 1D" :
-                                      "IN \(item.daysUntil)D"
-                        Text(daysText)
                             .font(.system(size: 9, weight: .bold, design: .monospaced))
                             .foregroundStyle(JohoColors.black.opacity(0.6))
                     }
