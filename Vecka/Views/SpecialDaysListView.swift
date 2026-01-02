@@ -2583,238 +2583,254 @@ struct JohoSpecialDayEditorSheet: View {
     }
 
     var body: some View {
-        VStack(spacing: JohoDimensions.spacingMD) {  // 12pt gap between header and content
-            // 情報デザイン: Standard editor header with back button, icon zone, title
-            JohoEditorHeader(
-                icon: type.defaultIcon,
-                accentColor: type.accentColor,
-                lightBackground: type.lightBackground,
-                title: headerTitle,
-                subtitle: headerSubtitle,
-                canSave: canSave,
-                onBack: { dismiss() },
-                onSave: {
-                    let notesValue = notes.trimmingCharacters(in: .whitespacesAndNewlines)
-                    onSave(
-                        name.trimmingCharacters(in: .whitespacesAndNewlines),
-                        selectedDate,
-                        selectedSymbol,
-                        nil,  // 情報デザイン: Use type's fixed color, no custom colors
-                        notesValue.isEmpty ? nil : notesValue,
-                        selectedRegion
-                    )
-                    dismiss()
-                }
-            )
+        // 情報デザイン: UNIFIED BENTO PILLBOX - entire editor is one compartmentalized box
+        VStack(spacing: 0) {
+            Spacer().frame(height: JohoDimensions.spacingLG)
 
-            // Scrollable content
-            ScrollView {
-                // Main content card
-                VStack(spacing: JohoDimensions.spacingLG) {
-                    // Icon selector (情報デザイン: matches header pattern - accent on light bg)
-                    Button {
-                        showingIconPicker = true
-                        HapticManager.selection()
-                    } label: {
-                        HStack(spacing: JohoDimensions.spacingMD) {
-                            Image(systemName: selectedSymbol)
-                                .font(.system(size: 28, weight: .bold))
-                                .foregroundStyle(type.accentColor)  // Type's accent color
-                                .frame(width: 56, height: 56)
-                                .background(type.lightBackground)   // Type's light bg
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                                .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                                )
+            // UNIFIED BENTO CONTAINER
+            VStack(spacing: 0) {
+                // ═══════════════════════════════════════════════════════════════
+                // HEADER ROW: [<] | [icon] Title/Subtitle | [Save]
+                // ═══════════════════════════════════════════════════════════════
+                HStack(spacing: 0) {
+                    // LEFT: Back button (44pt)
+                    Button { dismiss() } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(JohoColors.black)
+                            .frame(width: 44, height: 44)
+                    }
 
-                            Text("Tap to change icon")
-                                .font(JohoFont.caption)
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // CENTER: Icon + Title/Subtitle
+                    HStack(spacing: JohoDimensions.spacingSM) {
+                        // Type icon in colored box
+                        Image(systemName: type.defaultIcon)
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(type.accentColor)
+                            .frame(width: 36, height: 36)
+                            .background(type.lightBackground)
+                            .clipShape(Squircle(cornerRadius: 8))
+                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(headerTitle)
+                                .font(.system(size: 16, weight: .black, design: .rounded))
+                                .foregroundStyle(JohoColors.black)
+                            Text(headerSubtitle)
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
                                 .foregroundStyle(JohoColors.black.opacity(0.6))
-
-                            Spacer()
-
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .semibold))
-                                .foregroundStyle(JohoColors.black.opacity(0.4))
                         }
+
+                        Spacer()
                     }
-                    .buttonStyle(.plain)
+                    .padding(.horizontal, JohoDimensions.spacingSM)
+                    .frame(maxHeight: .infinity)
 
-                    // Name field
-                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                        JohoPill(text: "NAME", style: .whiteOnBlack, size: .small)
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
 
-                        TextField(type == .holiday ? "e.g., Christmas" : "e.g., Birthday", text: $name)
-                            .font(JohoFont.headline)
+                    // RIGHT: Save button (72pt)
+                    Button {
+                        let notesValue = notes.trimmingCharacters(in: .whitespacesAndNewlines)
+                        onSave(
+                            name.trimmingCharacters(in: .whitespacesAndNewlines),
+                            selectedDate,
+                            selectedSymbol,
+                            nil,  // 情報デザイン: Use type's fixed color, no custom colors
+                            notesValue.isEmpty ? nil : notesValue,
+                            selectedRegion
+                        )
+                        dismiss()
+                    } label: {
+                        Text("Save")
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                            .frame(width: 56, height: 32)
+                            .background(canSave ? type.accentColor : JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: 8))
+                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+                    }
+                    .disabled(!canSave)
+                    .frame(width: 72)
+                    .frame(maxHeight: .infinity)
+                }
+                .frame(height: 56)
+                .background(type.accentColor.opacity(0.7))  // 情報デザイン: Darker header like Month Page sections
+
+                // Thick divider after header
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 1.5)
+
+                // ═══════════════════════════════════════════════════════════════
+                // NAME ROW: [●] | Name text field
+                // ═══════════════════════════════════════════════════════════════
+                HStack(spacing: 0) {
+                    // LEFT: Type indicator dot (40pt)
+                    Circle()
+                        .fill(type.accentColor)
+                        .frame(width: 10, height: 10)
+                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                        .frame(width: 40)
+                        .frame(maxHeight: .infinity)
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // CENTER: Name field (full width)
+                    TextField(type == .holiday ? "Holiday name" : "Observance name", text: $name)
+                        .font(JohoFont.body)
+                        .foregroundStyle(JohoColors.black)
+                        .padding(.horizontal, JohoDimensions.spacingMD)
+                        .frame(maxHeight: .infinity)
+                }
+                .frame(height: 48)
+                .background(type.lightBackground)
+
+                // 情報デザイン: Row divider (solid black)
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 1.5)
+
+                // ═══════════════════════════════════════════════════════════════
+                // DATE ROW: [📅] | Year | Month | Day (compartmentalized)
+                // ═══════════════════════════════════════════════════════════════
+                HStack(spacing: 0) {
+                    // LEFT: Calendar icon (40pt)
+                    Image(systemName: "calendar")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(JohoColors.black)
+                        .frame(width: 40)
+                        .frame(maxHeight: .infinity)
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // YEAR compartment
+                    Menu {
+                        ForEach(yearRange, id: \.self) { year in
+                            Button { selectedYear = year } label: { Text(String(year)) }
+                        }
+                    } label: {
+                        Text(String(selectedYear))
+                            .font(.system(size: 14, weight: .bold, design: .monospaced))
                             .foregroundStyle(JohoColors.black)
-                            .padding(JohoDimensions.spacingMD)
-                            .background(JohoColors.white)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                            )
+                            .frame(maxWidth: .infinity)
+                            .frame(maxHeight: .infinity)
                     }
 
-                    // Date picker (compact) - 情報デザイン: Year, Month, Day in row
-                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                        JohoPill(text: "DATE", style: .whiteOnBlack, size: .small)
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
 
-                        HStack(spacing: JohoDimensions.spacingSM) {
-                            // Year
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("YEAR")
-                                    .font(.system(size: 10, weight: .bold))
-                                    .foregroundStyle(JohoColors.black.opacity(0.6))
-
-                                Menu {
-                                    ForEach(yearRange, id: \.self) { year in
-                                        Button { selectedYear = year } label: {
-                                            Text(String(year))
-                                        }
-                                    }
-                                } label: {
-                                    Text(String(selectedYear))
-                                        .font(JohoFont.body)
-                                        .monospacedDigit()
-                                        .foregroundStyle(JohoColors.black)
-                                        .padding(JohoDimensions.spacingSM)
-                                        .frame(width: 70)
-                                        .background(JohoColors.white)
-                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                        .overlay(
-                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                                        )
-                                }
-                            }
-
-                            // Month
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("MONTH")
-                                    .font(.system(size: 10, weight: .bold))
-                                    .foregroundStyle(JohoColors.black.opacity(0.6))
-
-                                Menu {
-                                    ForEach(1...12, id: \.self) { month in
-                                        Button { selectedMonth = month } label: {
-                                            Text(monthName(month))
-                                        }
-                                    }
-                                } label: {
-                                    Text(monthName(selectedMonth))
-                                        .font(JohoFont.body)
-                                        .foregroundStyle(JohoColors.black)
-                                        .padding(JohoDimensions.spacingSM)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .background(JohoColors.white)
-                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                        .overlay(
-                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                                        )
-                                }
-                            }
-
-                            // Day
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("DAY")
-                                    .font(.system(size: 10, weight: .bold))
-                                    .foregroundStyle(JohoColors.black.opacity(0.6))
-
-                                Menu {
-                                    ForEach(1...daysInMonth(selectedMonth, year: selectedYear), id: \.self) { day in
-                                        Button { selectedDay = day } label: {
-                                            Text("\(day)")
-                                        }
-                                    }
-                                } label: {
-                                    Text("\(selectedDay)")
-                                        .font(JohoFont.body)
-                                        .monospacedDigit()
-                                        .foregroundStyle(JohoColors.black)
-                                        .padding(JohoDimensions.spacingSM)
-                                        .frame(width: 50)
-                                        .background(JohoColors.white)
-                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                        .overlay(
-                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                                        )
-                                }
-                            }
+                    // MONTH compartment
+                    Menu {
+                        ForEach(1...12, id: \.self) { month in
+                            Button { selectedMonth = month } label: { Text(monthName(month)) }
                         }
-                    }
-
-                    // Notes field (optional)
-                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                        JohoPill(text: "NOTES (OPTIONAL)", style: .whiteOnBlack, size: .small)
-
-                        TextEditor(text: $notes)
-                            .font(JohoFont.body)
+                    } label: {
+                        Text(monthName(selectedMonth))
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.black)
-                            .frame(height: 80)
-                            .scrollContentBackground(.hidden)  // 情報デザイン: Hide system background for white
-                            .padding(JohoDimensions.spacingSM)
-                            .background(JohoColors.white)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                            )
+                            .frame(maxWidth: .infinity)
+                            .frame(maxHeight: .infinity)
                     }
 
-                    // Region selector (for holidays only)
-                    if type == .holiday {
-                        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                            JohoPill(text: "REGION", style: .whiteOnBlack, size: .small)
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
 
-                            Menu {
-                                Button { selectedRegion = "SE" } label: {
-                                    Text("Sweden (SE)")
-                                }
-                                Button { selectedRegion = "US" } label: {
-                                    Text("United States (US)")
-                                }
-                                Button { selectedRegion = "INTL" } label: {
-                                    Text("International")
-                                }
-                            } label: {
-                                HStack {
-                                    Text(regionDisplayName(selectedRegion))
-                                        .font(JohoFont.body)
-                                        .foregroundStyle(JohoColors.black)
-                                    Spacer()
-                                    Image(systemName: "chevron.down")
-                                        .font(.system(size: 12, weight: .bold))
-                                        .foregroundStyle(JohoColors.black.opacity(0.5))
-                                }
-                                .padding(JohoDimensions.spacingMD)
-                                .background(JohoColors.white)
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                                .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                                )
-                            }
+                    // DAY compartment
+                    Menu {
+                        ForEach(1...daysInMonth(selectedMonth, year: selectedYear), id: \.self) { day in
+                            Button { selectedDay = day } label: { Text("\(day)") }
                         }
+                    } label: {
+                        Text("\(selectedDay)")
+                            .font(.system(size: 14, weight: .bold, design: .monospaced))
+                            .foregroundStyle(JohoColors.black)
+                            .frame(width: 44)
+                            .frame(maxHeight: .infinity)
                     }
                 }
-                .padding(JohoDimensions.spacingLG)
-                .background(JohoColors.white)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
-                )
+                .frame(height: 48)
+                .background(type.lightBackground)
 
-                Spacer(minLength: JohoDimensions.spacingXL)
+                // 情報デザイン: Row divider (solid black)
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 1.5)
+
+                // ═══════════════════════════════════════════════════════════════
+                // ICON PICKER ROW: [icon] | Tap to change icon [>]
+                // ═══════════════════════════════════════════════════════════════
+                Button {
+                    showingIconPicker = true
+                    HapticManager.selection()
+                } label: {
+                    HStack(spacing: 0) {
+                        // LEFT: Current icon (40pt)
+                        Image(systemName: selectedSymbol)
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundStyle(type.accentColor)
+                            .frame(width: 40)
+                            .frame(maxHeight: .infinity)
+
+                        // WALL
+                        Rectangle()
+                            .fill(JohoColors.black)
+                            .frame(width: 1.5)
+                            .frame(maxHeight: .infinity)
+
+                        // CENTER: Hint text
+                        Text("Tap to change icon")
+                            .font(JohoFont.caption)
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .padding(.leading, JohoDimensions.spacingMD)
+
+                        Spacer()
+
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(JohoColors.black.opacity(0.4))
+                            .padding(.trailing, JohoDimensions.spacingMD)
+                    }
+                    .frame(height: 48)
+                    .background(type.lightBackground)
+                }
+                .buttonStyle(.plain)
             }
+            .background(JohoColors.white)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+            )
             .padding(.horizontal, JohoDimensions.spacingLG)
-            .padding(.bottom, JohoDimensions.spacingXL)
+
+            Spacer()
         }
         .johoBackground()
+        .navigationBarHidden(true)
         .sheet(isPresented: $showingIconPicker) {
             JohoIconPickerSheet(
                 selectedSymbol: $selectedSymbol,
@@ -2850,7 +2866,7 @@ struct JohoSpecialDayEditorSheet: View {
 
 // MARK: - Icon Picker Sheet (情報デザイン)
 
-private struct JohoIconPickerSheet: View {
+struct JohoIconPickerSheet: View {
     @Binding var selectedSymbol: String
     let accentColor: Color
     let lightBackground: Color

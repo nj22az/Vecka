@@ -422,201 +422,423 @@ struct JohoTripEditorSheet: View {
 
     @State private var name: String = ""
     @State private var destination: String = ""
-    @State private var startDate: Date
-    @State private var endDate: Date
+    @State private var startYear: Int
+    @State private var startMonth: Int
+    @State private var startDay: Int
+    @State private var endYear: Int
+    @State private var endMonth: Int
+    @State private var endDay: Int
     @State private var tripType: TripType = .business
 
-    // Trip accent color - ORANGE from design system
-    private let accentColor = Color(hex: "FED7AA")  // Orange for trips
+    private let calendar = Calendar.current
+
+    // 情報デザイン: Trips ALWAYS use blue color scheme
+    private var tripAccentColor: Color { SpecialDayType.trip.accentColor }
+    private var tripLightBackground: Color { SpecialDayType.trip.lightBackground }
 
     private var canSave: Bool {
         !destination.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
+    private var startDate: Date {
+        let components = DateComponents(year: startYear, month: startMonth, day: startDay)
+        return calendar.date(from: components) ?? Date()
+    }
+
+    private var endDate: Date {
+        let components = DateComponents(year: endYear, month: endMonth, day: endDay)
+        return calendar.date(from: components) ?? Date()
+    }
+
+    private var yearRange: [Int] {
+        let current = calendar.component(.year, from: Date())
+        return Array((current - 10)...(current + 10))
+    }
+
     init(selectedDate: Date = Date()) {
         self.selectedDate = selectedDate
-        _startDate = State(initialValue: selectedDate)
-        _endDate = State(initialValue: Calendar.iso8601.date(byAdding: .day, value: 7, to: selectedDate) ?? selectedDate)
+        let calendar = Calendar.current
+        let endDateDefault = calendar.date(byAdding: .day, value: 7, to: selectedDate) ?? selectedDate
+
+        _startYear = State(initialValue: calendar.component(.year, from: selectedDate))
+        _startMonth = State(initialValue: calendar.component(.month, from: selectedDate))
+        _startDay = State(initialValue: calendar.component(.day, from: selectedDate))
+        _endYear = State(initialValue: calendar.component(.year, from: endDateDefault))
+        _endMonth = State(initialValue: calendar.component(.month, from: endDateDefault))
+        _endDay = State(initialValue: calendar.component(.day, from: endDateDefault))
     }
 
     var body: some View {
-        VStack(spacing: JohoDimensions.spacingMD) {  // 12pt gap between header and content
-            // 情報デザイン: Standard editor header with back button, icon zone, title
-            JohoEditorHeader(
-                icon: SpecialDayType.trip.defaultIcon,
-                accentColor: SpecialDayType.trip.accentColor,
-                lightBackground: SpecialDayType.trip.lightBackground,
-                title: "NEW TRIP",
-                subtitle: "Set destination & dates",
-                canSave: canSave,
-                onBack: { dismiss() },
-                onSave: {
-                    saveTrip()
-                    dismiss()
-                }
-            )
+        // 情報デザイン: UNIFIED BENTO PILLBOX - entire editor is one compartmentalized box
+        VStack(spacing: 0) {
+            Spacer().frame(height: JohoDimensions.spacingLG)
 
-            // Scrollable content
-            ScrollView {
-                // Main content card
-                VStack(spacing: JohoDimensions.spacingLG) {
-                    // Trip icon - 情報デザイン compartmentalized style
-                    ZStack {
-                        Circle()
-                            .fill(accentColor)
-                            .frame(width: 64, height: 64)
-                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 2.5))
+            // UNIFIED BENTO CONTAINER
+            VStack(spacing: 0) {
+                // ═══════════════════════════════════════════════════════════════
+                // HEADER ROW: [<] | [icon] Title/Subtitle | [Save]
+                // ═══════════════════════════════════════════════════════════════
+                HStack(spacing: 0) {
+                    // LEFT: Back button (44pt)
+                    Button { dismiss() } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(JohoColors.black)
+                            .frame(width: 44, height: 44)
+                    }
 
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // CENTER: Icon + Title/Subtitle
+                    HStack(spacing: JohoDimensions.spacingSM) {
+                        // Type icon in colored box
                         Image(systemName: "airplane.departure")
-                            .font(.system(size: 26, weight: .bold))
-                            .foregroundStyle(JohoColors.black)
-                    }
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(tripAccentColor)
+                            .frame(width: 36, height: 36)
+                            .background(tripLightBackground)
+                            .clipShape(Squircle(cornerRadius: 8))
+                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
 
-                    // Destination field
-                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                        JohoPill(text: "DESTINATION", style: .whiteOnBlack, size: .small)
-
-                        TextField("Where are you going?", text: $destination)
-                            .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black)
-                            .padding(JohoDimensions.spacingMD)
-                            .background(JohoColors.white)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                            )
-                    }
-
-                    // Trip name field (optional)
-                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                        JohoPill(text: "NAME", style: .whiteOnBlack, size: .small)
-
-                        TextField("Trip name (optional)", text: $name)
-                            .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black)
-                            .padding(JohoDimensions.spacingMD)
-                            .background(JohoColors.white)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                            )
-                    }
-
-                    // Date range - 情報デザイン styled date buttons
-                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                        JohoPill(text: "DATES", style: .whiteOnBlack, size: .small)
-
-                        HStack(spacing: JohoDimensions.spacingMD) {
-                            // Start date - 情報デザイン button style
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("FROM")
-                                    .font(.system(size: 10, weight: .black, design: .rounded))
-                                    .foregroundStyle(JohoColors.black.opacity(0.6))
-
-                                johoDateButton(date: $startDate)
-                            }
-
-                            Image(systemName: "arrow.right")
-                                .font(.system(size: 16, weight: .bold))
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("NEW TRIP")
+                                .font(.system(size: 16, weight: .black, design: .rounded))
                                 .foregroundStyle(JohoColors.black)
-
-                            // End date - 情報デザイン button style
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("TO")
-                                    .font(.system(size: 10, weight: .black, design: .rounded))
-                                    .foregroundStyle(JohoColors.black.opacity(0.6))
-
-                                johoDateButton(date: $endDate, minDate: startDate)
-                            }
+                            Text("Set destination & dates")
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
+                                .foregroundStyle(JohoColors.black.opacity(0.6))
                         }
+
+                        Spacer()
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingSM)
+                    .frame(maxHeight: .infinity)
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // RIGHT: Save button (72pt)
+                    Button {
+                        saveTrip()
+                        dismiss()
+                    } label: {
+                        Text("Save")
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                            .frame(width: 56, height: 32)
+                            .background(canSave ? tripAccentColor : JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: 8))
+                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+                    }
+                    .disabled(!canSave)
+                    .frame(width: 72)
+                    .frame(maxHeight: .infinity)
+                }
+                .frame(height: 56)
+                .background(tripAccentColor.opacity(0.7))  // 情報デザイン: Darker header like Month Page sections
+
+                // Thick divider after header
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 1.5)
+
+                // ═══════════════════════════════════════════════════════════════
+                // DESTINATION ROW: [📍] | Destination text field
+                // ═══════════════════════════════════════════════════════════════
+                HStack(spacing: 0) {
+                    // LEFT: Location icon (40pt)
+                    Image(systemName: "location.fill")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(tripAccentColor)
+                        .frame(width: 40)
+                        .frame(maxHeight: .infinity)
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // CENTER: Destination field
+                    TextField("Where are you going?", text: $destination)
+                        .font(JohoFont.body)
+                        .foregroundStyle(JohoColors.black)
+                        .padding(.horizontal, JohoDimensions.spacingMD)
+                        .frame(maxHeight: .infinity)
+                }
+                .frame(height: 48)
+                .background(tripLightBackground)
+
+                // Row divider
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 1.5)
+
+                // ═══════════════════════════════════════════════════════════════
+                // NAME ROW: [●] | Trip name (optional)
+                // ═══════════════════════════════════════════════════════════════
+                HStack(spacing: 0) {
+                    // LEFT: Type indicator dot (40pt)
+                    Circle()
+                        .fill(tripAccentColor)
+                        .frame(width: 10, height: 10)
+                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                        .frame(width: 40)
+                        .frame(maxHeight: .infinity)
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // CENTER: Name field (optional)
+                    TextField("Trip name (optional)", text: $name)
+                        .font(JohoFont.body)
+                        .foregroundStyle(JohoColors.black)
+                        .padding(.horizontal, JohoDimensions.spacingMD)
+                        .frame(maxHeight: .infinity)
+                }
+                .frame(height: 48)
+                .background(tripLightBackground)
+
+                // Row divider
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 1.5)
+
+                // ═══════════════════════════════════════════════════════════════
+                // START DATE ROW: [📅] | Year | Month | Day (compartmentalized)
+                // ═══════════════════════════════════════════════════════════════
+                HStack(spacing: 0) {
+                    // LEFT: Calendar icon (40pt)
+                    Image(systemName: "calendar")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(JohoColors.black)
+                        .frame(width: 40)
+                        .frame(maxHeight: .infinity)
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // YEAR compartment
+                    Menu {
+                        ForEach(yearRange, id: \.self) { year in
+                            Button { startYear = year } label: { Text(String(year)) }
+                        }
+                    } label: {
+                        Text(String(startYear))
+                            .font(.system(size: 14, weight: .bold, design: .monospaced))
+                            .foregroundStyle(JohoColors.black)
+                            .frame(maxWidth: .infinity)
+                            .frame(maxHeight: .infinity)
                     }
 
-                    // Trip type picker - 情報デザイン segmented style
-                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                        JohoPill(text: "TYPE", style: .whiteOnBlack, size: .small)
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
 
-                        HStack(spacing: 0) {
-                            ForEach(Array([TripType.business, TripType.personal, TripType.mixed].enumerated()), id: \.element) { index, type in
-                                Button {
-                                    tripType = type
-                                    HapticManager.selection()
-                                } label: {
-                                    Text(type.rawValue.uppercased())
-                                        .font(.system(size: 12, weight: .bold, design: .rounded))
-                                        .foregroundStyle(tripType == type ? JohoColors.black : JohoColors.black.opacity(0.6))
-                                        .frame(maxWidth: .infinity)
-                                        .padding(.vertical, JohoDimensions.spacingMD)
-                                        .background(tripType == type ? accentColor : JohoColors.white)
-                                }
-
-                                if index < 2 {
-                                    Rectangle()
-                                        .fill(JohoColors.black)
-                                        .frame(width: JohoDimensions.borderMedium)
-                                }
-                            }
+                    // MONTH compartment
+                    Menu {
+                        ForEach(1...12, id: \.self) { month in
+                            Button { startMonth = month } label: { Text(monthName(month)) }
                         }
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                        )
+                    } label: {
+                        Text(monthName(startMonth))
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
+                            .frame(maxWidth: .infinity)
+                            .frame(maxHeight: .infinity)
+                    }
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // DAY compartment
+                    Menu {
+                        ForEach(1...daysInMonth(startMonth, year: startYear), id: \.self) { day in
+                            Button { startDay = day } label: { Text("\(day)") }
+                        }
+                    } label: {
+                        Text("\(startDay)")
+                            .font(.system(size: 14, weight: .bold, design: .monospaced))
+                            .foregroundStyle(JohoColors.black)
+                            .frame(width: 44)
+                            .frame(maxHeight: .infinity)
                     }
                 }
-                .padding(JohoDimensions.spacingLG)
-                .background(JohoColors.white)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
-                )
+                .frame(height: 48)
+                .background(tripLightBackground)
+
+                // Row divider
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 1.5)
+
+                // ═══════════════════════════════════════════════════════════════
+                // END DATE ROW: [📅] | Year | Month | Day (compartmentalized)
+                // ═══════════════════════════════════════════════════════════════
+                HStack(spacing: 0) {
+                    // LEFT: Calendar icon (40pt)
+                    Image(systemName: "calendar")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(JohoColors.black)
+                        .frame(width: 40)
+                        .frame(maxHeight: .infinity)
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // YEAR compartment
+                    Menu {
+                        ForEach(yearRange, id: \.self) { year in
+                            Button { endYear = year } label: { Text(String(year)) }
+                        }
+                    } label: {
+                        Text(String(endYear))
+                            .font(.system(size: 14, weight: .bold, design: .monospaced))
+                            .foregroundStyle(JohoColors.black)
+                            .frame(maxWidth: .infinity)
+                            .frame(maxHeight: .infinity)
+                    }
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // MONTH compartment
+                    Menu {
+                        ForEach(1...12, id: \.self) { month in
+                            Button { endMonth = month } label: { Text(monthName(month)) }
+                        }
+                    } label: {
+                        Text(monthName(endMonth))
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
+                            .frame(maxWidth: .infinity)
+                            .frame(maxHeight: .infinity)
+                    }
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // DAY compartment
+                    Menu {
+                        ForEach(1...daysInMonth(endMonth, year: endYear), id: \.self) { day in
+                            Button { endDay = day } label: { Text("\(day)") }
+                        }
+                    } label: {
+                        Text("\(endDay)")
+                            .font(.system(size: 14, weight: .bold, design: .monospaced))
+                            .foregroundStyle(JohoColors.black)
+                            .frame(width: 44)
+                            .frame(maxHeight: .infinity)
+                    }
+                }
+                .frame(height: 48)
+                .background(tripLightBackground)
+
+                // Row divider
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 1.5)
+
+                // ═══════════════════════════════════════════════════════════════
+                // TYPE ROW: [icon] | Business | Personal | Mixed (segmented)
+                // ═══════════════════════════════════════════════════════════════
+                HStack(spacing: 0) {
+                    // LEFT: Type icon (40pt)
+                    Image(systemName: "briefcase.fill")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(tripAccentColor)
+                        .frame(width: 40)
+                        .frame(maxHeight: .infinity)
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // CENTER: Segmented type picker
+                    HStack(spacing: 0) {
+                        ForEach(Array([TripType.business, TripType.personal, TripType.mixed].enumerated()), id: \.element) { index, type in
+                            Button {
+                                tripType = type
+                                HapticManager.selection()
+                            } label: {
+                                Text(type.rawValue.uppercased())
+                                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                                    .foregroundStyle(tripType == type ? JohoColors.white : JohoColors.black.opacity(0.6))
+                                    .frame(maxWidth: .infinity)
+                                    .frame(maxHeight: .infinity)
+                                    .background(tripType == type ? tripAccentColor : Color.clear)
+                            }
+
+                            if index < 2 {
+                                Rectangle()
+                                    .fill(JohoColors.black)
+                                    .frame(width: 1.5)
+                                    .frame(maxHeight: .infinity)
+                            }
+                        }
+                    }
+                }
+                .frame(height: 48)
+                .background(tripLightBackground)
             }
+            .background(JohoColors.white)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+            )
             .padding(.horizontal, JohoDimensions.spacingLG)
-            .padding(.bottom, JohoDimensions.spacingXL)
+
+            Spacer()
         }
         .johoBackground()
+        .navigationBarHidden(true)
     }
 
-    // 情報デザイン date button with black border and high contrast
-    @ViewBuilder
-    private func johoDateButton(date: Binding<Date>, minDate: Date? = nil) -> some View {
-        let dateRange: PartialRangeFrom<Date> = (minDate ?? Date.distantPast)...
+    private func monthName(_ month: Int) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM"
+        let components = DateComponents(year: 2024, month: month, day: 1)
+        let tempDate = calendar.date(from: components) ?? Date()
+        return formatter.string(from: tempDate)
+    }
 
-        HStack(spacing: 8) {
-            Image(systemName: "calendar")
-                .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(JohoColors.black)
-
-            // Display the date as black text on white background for readability
-            Text(date.wrappedValue.formatted(.dateTime.month(.abbreviated).day().year()))
-                .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
-
-            // Hidden date picker that opens on tap
-            DatePicker("", selection: date, in: dateRange, displayedComponents: .date)
-                .labelsHidden()
-                .datePickerStyle(.compact)
-                .scaleEffect(x: 0.01, y: 0.01)
-                .frame(width: 1, height: 1)
-                .clipped()
+    private func daysInMonth(_ month: Int, year: Int) -> Int {
+        let components = DateComponents(year: year, month: month, day: 1)
+        guard let tempDate = calendar.date(from: components),
+              let range = calendar.range(of: .day, in: .month, for: tempDate) else {
+            return 31
         }
-        .padding(.horizontal, JohoDimensions.spacingMD)
-        .padding(.vertical, JohoDimensions.spacingSM)
-        .background(JohoColors.white)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-        )
-        .overlay(
-            // Invisible tap area that triggers the hidden DatePicker
-            DatePicker("", selection: date, in: dateRange, displayedComponents: .date)
-                .labelsHidden()
-                .datePickerStyle(.compact)
-                .colorMultiply(.clear)
-        )
+        return range.count
     }
 
     private func saveTrip() {

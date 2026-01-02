@@ -23,7 +23,8 @@ struct JohoExpenseEditorSheet: View {
     @State private var description: String = ""
     @State private var merchant: String = ""
     @State private var selectedCategory: ExpenseCategory?
-    @FocusState private var isFocused: Bool
+    @State private var showingIconPicker = false
+    @State private var selectedSymbol: String = "dollarsign.circle.fill"
 
     // Date selection (情報デザイン: Year, Month, Day)
     @State private var selectedYear: Int
@@ -36,9 +37,11 @@ struct JohoExpenseEditorSheet: View {
     // Base Currency
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
 
-    // Expense accent color - GREEN from design system
-    private let accentColor = Color(hex: "BBF7D0")  // Light green for expenses
-    private let solidAccent = Color(hex: "38A169")  // Solid green
+    // 情報デザイン: Expenses ALWAYS use green color scheme
+    private var expenseAccentColor: Color { SpecialDayType.expense.accentColor }
+    private var expenseLightBackground: Color { SpecialDayType.expense.lightBackground }
+
+    private let calendar = Calendar.current
 
     private var canSave: Bool {
         guard let amountValue = Double(amount.replacingOccurrences(of: ",", with: ".")) else {
@@ -48,26 +51,13 @@ struct JohoExpenseEditorSheet: View {
     }
 
     private var selectedDate: Date {
-        let calendar = Calendar.current
-        return calendar.date(from: DateComponents(year: selectedYear, month: selectedMonth, day: selectedDay)) ?? initialDate
+        let components = DateComponents(year: selectedYear, month: selectedMonth, day: selectedDay)
+        return calendar.date(from: components) ?? initialDate
     }
 
     private var yearRange: [Int] {
-        let current = Calendar.current.component(.year, from: Date())
+        let current = calendar.component(.year, from: Date())
         return Array((current - 10)...(current + 10))
-    }
-
-    private func daysInMonth(_ month: Int, year: Int) -> Int {
-        let calendar = Calendar.current
-        let date = calendar.date(from: DateComponents(year: year, month: month, day: 1)) ?? Date()
-        return calendar.range(of: .day, in: .month, for: date)?.count ?? 31
-    }
-
-    private func monthName(_ month: Int) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM"
-        let date = Calendar.current.date(from: DateComponents(year: 2024, month: month, day: 1)) ?? Date()
-        return formatter.string(from: date)
     }
 
     init(selectedDate: Date = Date()) {
@@ -79,136 +69,270 @@ struct JohoExpenseEditorSheet: View {
     }
 
     var body: some View {
-        VStack(spacing: JohoDimensions.spacingMD) {  // 12pt gap between header and content
-            // 情報デザイン: Standard editor header with back button, icon zone, title
-            JohoEditorHeader(
-                icon: SpecialDayType.expense.defaultIcon,
-                accentColor: SpecialDayType.expense.accentColor,
-                lightBackground: SpecialDayType.expense.lightBackground,
-                title: "NEW EXPENSE",
-                subtitle: "Set amount & details",
-                canSave: canSave,
-                onBack: { dismiss() },
-                onSave: {
-                    saveExpense()
-                    dismiss()
-                }
-            )
+        // 情報デザイン: UNIFIED BENTO PILLBOX - entire editor is one compartmentalized box
+        VStack(spacing: 0) {
+            Spacer().frame(height: JohoDimensions.spacingLG)
 
-            // Scrollable content
-            ScrollView {
-                // Main content card
-                VStack(spacing: JohoDimensions.spacingLG) {
-                    // Expense icon - 情報デザイン compartmentalized style
-                    ZStack {
-                        Circle()
-                            .fill(accentColor)
-                            .frame(width: 64, height: 64)
-                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 2.5))
-
-                        Image(systemName: "banknote.fill")
-                            .font(.system(size: 26, weight: .bold))
+            // UNIFIED BENTO CONTAINER
+            VStack(spacing: 0) {
+                // ═══════════════════════════════════════════════════════════════
+                // HEADER ROW: [<] | [icon] Title/Subtitle | [Save]
+                // ═══════════════════════════════════════════════════════════════
+                HStack(spacing: 0) {
+                    // LEFT: Back button (44pt)
+                    Button { dismiss() } label: {
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(JohoColors.black)
+                            .frame(width: 44, height: 44)
                     }
 
-                    // Amount field - 情報デザイン prominent display
-                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                        JohoPill(text: "AMOUNT", style: .whiteOnBlack, size: .small)
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
 
-                        HStack(spacing: JohoDimensions.spacingSM) {
-                            // Amount input with currency symbol
-                            HStack(spacing: 4) {
-                                TextField("0", text: $amount)
-                                    .font(.system(size: 28, weight: .bold, design: .monospaced))
-                                    .keyboardType(.decimalPad)
-                                    .foregroundStyle(JohoColors.black)
-                                    .focused($isFocused)
-                                    .multilineTextAlignment(.trailing)
-                            }
-                            .padding(JohoDimensions.spacingMD)
-                            .frame(maxWidth: .infinity)
-                            .background(JohoColors.white)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                            )
+                    // CENTER: Icon + Title/Subtitle
+                    HStack(spacing: JohoDimensions.spacingSM) {
+                        // Type icon in colored box
+                        Image(systemName: "dollarsign.circle.fill")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(expenseAccentColor)
+                            .frame(width: 36, height: 36)
+                            .background(expenseLightBackground)
+                            .clipShape(Squircle(cornerRadius: 8))
+                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
 
-                            // Currency picker - 情報デザイン styled
-                            Menu {
-                                ForEach(CurrencyDefinition.defaultCurrencies) { curr in
-                                    Button(curr.code) {
-                                        currency = curr.code
-                                    }
-                                }
-                            } label: {
-                                Text(currency)
-                                    .font(.system(size: 16, weight: .bold, design: .monospaced))
-                                    .foregroundStyle(JohoColors.black)
-                                    .frame(width: 70)
-                                    .padding(.vertical, JohoDimensions.spacingMD)
-                                    .background(accentColor)
-                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                                    .overlay(
-                                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                                    )
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("NEW EXPENSE")
+                                .font(.system(size: 16, weight: .black, design: .rounded))
+                                .foregroundStyle(JohoColors.black)
+                            Text("Set amount & details")
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
+                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                        }
+
+                        Spacer()
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingSM)
+                    .frame(maxHeight: .infinity)
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // RIGHT: Save button (72pt)
+                    Button {
+                        saveExpense()
+                        dismiss()
+                    } label: {
+                        Text("Save")
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                            .frame(width: 56, height: 32)
+                            .background(canSave ? expenseAccentColor : JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: 8))
+                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+                    }
+                    .disabled(!canSave)
+                    .frame(width: 72)
+                    .frame(maxHeight: .infinity)
+                }
+                .frame(height: 56)
+                .background(expenseAccentColor.opacity(0.7))  // 情報デザイン: Darker header like Event editor
+
+                // Thick divider after header
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 1.5)
+
+                // ═══════════════════════════════════════════════════════════════
+                // DESCRIPTION ROW: [●] | Expense description
+                // ═══════════════════════════════════════════════════════════════
+                HStack(spacing: 0) {
+                    // LEFT: Type indicator dot (40pt)
+                    Circle()
+                        .fill(expenseAccentColor)
+                        .frame(width: 10, height: 10)
+                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                        .frame(width: 40)
+                        .frame(maxHeight: .infinity)
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // CENTER: Description field
+                    TextField("Expense description", text: $description)
+                        .font(JohoFont.body)
+                        .foregroundStyle(JohoColors.black)
+                        .padding(.horizontal, JohoDimensions.spacingMD)
+                        .frame(maxHeight: .infinity)
+                }
+                .frame(height: 48)
+                .background(expenseLightBackground)
+
+                // 情報デザイン: Row divider (solid black)
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 1.5)
+
+                // ═══════════════════════════════════════════════════════════════
+                // AMOUNT ROW: [$] | Amount | Currency
+                // ═══════════════════════════════════════════════════════════════
+                HStack(spacing: 0) {
+                    // LEFT: Dollar sign icon (40pt)
+                    Image(systemName: "dollarsign")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(JohoColors.black)
+                        .frame(width: 40)
+                        .frame(maxHeight: .infinity)
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // CENTER: Amount field
+                    TextField("0.00", text: $amount)
+                        .font(.system(size: 18, weight: .bold, design: .monospaced))
+                        .keyboardType(.decimalPad)
+                        .foregroundStyle(JohoColors.black)
+                        .multilineTextAlignment(.trailing)
+                        .padding(.horizontal, JohoDimensions.spacingMD)
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // RIGHT: Currency picker (80pt)
+                    Menu {
+                        ForEach(CurrencyDefinition.defaultCurrencies) { curr in
+                            Button(curr.code) {
+                                currency = curr.code
                             }
                         }
-                    }
-
-                    // Description field
-                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                        JohoPill(text: "DESCRIPTION", style: .whiteOnBlack, size: .small)
-
-                        TextField("What did you pay for?", text: $description)
-                            .font(JohoFont.body)
+                    } label: {
+                        Text(currency)
+                            .font(.system(size: 14, weight: .bold, design: .monospaced))
                             .foregroundStyle(JohoColors.black)
-                            .padding(JohoDimensions.spacingMD)
-                            .background(JohoColors.white)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                            )
+                            .frame(width: 80)
+                            .frame(maxHeight: .infinity)
                     }
+                }
+                .frame(height: 48)
+                .background(expenseLightBackground)
 
-                    // Merchant field (optional)
-                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                        JohoPill(text: "MERCHANT", style: .whiteOnBlack, size: .small)
+                // 情報デザイン: Row divider (solid black)
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 1.5)
 
-                        TextField("Store name (optional)", text: $merchant)
-                            .font(JohoFont.body)
+                // ═══════════════════════════════════════════════════════════════
+                // DATE ROW: [📅] | Year | Month | Day (compartmentalized)
+                // ═══════════════════════════════════════════════════════════════
+                HStack(spacing: 0) {
+                    // LEFT: Calendar icon (40pt)
+                    Image(systemName: "calendar")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(JohoColors.black)
+                        .frame(width: 40)
+                        .frame(maxHeight: .infinity)
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // YEAR compartment
+                    Menu {
+                        ForEach(yearRange, id: \.self) { year in
+                            Button { selectedYear = year } label: { Text(String(year)) }
+                        }
+                    } label: {
+                        Text(String(selectedYear))
+                            .font(.system(size: 14, weight: .bold, design: .monospaced))
                             .foregroundStyle(JohoColors.black)
-                            .padding(JohoDimensions.spacingMD)
-                            .background(JohoColors.white)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                            )
+                            .frame(maxWidth: .infinity)
+                            .frame(maxHeight: .infinity)
                     }
 
-                    // Category picker - 情報デザイン grid with icons only
-                    if !categories.isEmpty {
-                        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                            HStack {
-                                JohoPill(text: "CATEGORY", style: .whiteOnBlack, size: .small)
-                                Spacer()
-                                if let cat = selectedCategory {
-                                    Text(cat.name.uppercased())
-                                        .font(.system(size: 10, weight: .bold, design: .rounded))
-                                        .foregroundStyle(JohoColors.black.opacity(0.6))
-                                }
-                            }
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
 
-                            // Grid layout - 4 columns, responsive
-                            LazyVGrid(columns: [
-                                GridItem(.flexible()),
-                                GridItem(.flexible()),
-                                GridItem(.flexible()),
-                                GridItem(.flexible())
-                            ], spacing: JohoDimensions.spacingSM) {
+                    // MONTH compartment
+                    Menu {
+                        ForEach(1...12, id: \.self) { month in
+                            Button { selectedMonth = month } label: { Text(monthName(month)) }
+                        }
+                    } label: {
+                        Text(monthName(selectedMonth))
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
+                            .frame(maxWidth: .infinity)
+                            .frame(maxHeight: .infinity)
+                    }
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // DAY compartment
+                    Menu {
+                        ForEach(1...daysInMonth(selectedMonth, year: selectedYear), id: \.self) { day in
+                            Button { selectedDay = day } label: { Text("\(day)") }
+                        }
+                    } label: {
+                        Text("\(selectedDay)")
+                            .font(.system(size: 14, weight: .bold, design: .monospaced))
+                            .foregroundStyle(JohoColors.black)
+                            .frame(width: 44)
+                            .frame(maxHeight: .infinity)
+                    }
+                }
+                .frame(height: 48)
+                .background(expenseLightBackground)
+
+                // 情報デザイン: Row divider (solid black)
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 1.5)
+
+                // ═══════════════════════════════════════════════════════════════
+                // CATEGORY ROW: [📁] | Category selector
+                // ═══════════════════════════════════════════════════════════════
+                if !categories.isEmpty {
+                    HStack(spacing: 0) {
+                        // LEFT: Folder icon (40pt)
+                        Image(systemName: "folder.fill")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(JohoColors.black)
+                            .frame(width: 40)
+                            .frame(maxHeight: .infinity)
+
+                        // WALL
+                        Rectangle()
+                            .fill(JohoColors.black)
+                            .frame(width: 1.5)
+                            .frame(maxHeight: .infinity)
+
+                        // CENTER: Category display/picker
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: JohoDimensions.spacingSM) {
                                 // None option
                                 categoryButton(nil, isSelected: selectedCategory == nil)
 
@@ -216,139 +340,148 @@ struct JohoExpenseEditorSheet: View {
                                     categoryButton(category, isSelected: selectedCategory?.id == category.id)
                                 }
                             }
+                            .padding(.horizontal, JohoDimensions.spacingMD)
                         }
+                        .frame(maxHeight: .infinity)
                     }
+                    .frame(height: 48)
+                    .background(expenseLightBackground)
 
-                    // Date picker (情報デザイン: Year, Month, Day)
-                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                        JohoPill(text: "DATE", style: .whiteOnBlack, size: .small)
-
-                        HStack(spacing: JohoDimensions.spacingSM) {
-                            // Year
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("YEAR")
-                                    .font(.system(size: 10, weight: .bold))
-                                    .foregroundStyle(JohoColors.black.opacity(0.6))
-
-                                Menu {
-                                    ForEach(yearRange, id: \.self) { year in
-                                        Button { selectedYear = year } label: {
-                                            Text(String(year))
-                                        }
-                                    }
-                                } label: {
-                                    Text(String(selectedYear))
-                                        .font(JohoFont.body)
-                                        .monospacedDigit()
-                                        .foregroundStyle(JohoColors.black)
-                                        .padding(JohoDimensions.spacingSM)
-                                        .frame(width: 70)
-                                        .background(JohoColors.white)
-                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                        .overlay(
-                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                                        )
-                                }
-                            }
-
-                            // Month
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("MONTH")
-                                    .font(.system(size: 10, weight: .bold))
-                                    .foregroundStyle(JohoColors.black.opacity(0.6))
-
-                                Menu {
-                                    ForEach(1...12, id: \.self) { month in
-                                        Button { selectedMonth = month } label: {
-                                            Text(monthName(month))
-                                        }
-                                    }
-                                } label: {
-                                    Text(monthName(selectedMonth))
-                                        .font(JohoFont.body)
-                                        .foregroundStyle(JohoColors.black)
-                                        .padding(JohoDimensions.spacingSM)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .background(JohoColors.white)
-                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                        .overlay(
-                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                                        )
-                                }
-                            }
-
-                            // Day
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("DAY")
-                                    .font(.system(size: 10, weight: .bold))
-                                    .foregroundStyle(JohoColors.black.opacity(0.6))
-
-                                Menu {
-                                    ForEach(1...daysInMonth(selectedMonth, year: selectedYear), id: \.self) { day in
-                                        Button { selectedDay = day } label: {
-                                            Text("\(day)")
-                                        }
-                                    }
-                                } label: {
-                                    Text("\(selectedDay)")
-                                        .font(JohoFont.body)
-                                        .monospacedDigit()
-                                        .foregroundStyle(JohoColors.black)
-                                        .padding(JohoDimensions.spacingSM)
-                                        .frame(width: 50)
-                                        .background(JohoColors.white)
-                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                        .overlay(
-                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                                        )
-                                }
-                            }
-                        }
-                    }
+                    // 情報デザイン: Row divider (solid black)
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(height: 1.5)
                 }
-                .padding(JohoDimensions.spacingLG)
-                .background(JohoColors.white)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
-                )
+
+                // ═══════════════════════════════════════════════════════════════
+                // MERCHANT ROW (OPTIONAL): [🏪] | Store name
+                // ═══════════════════════════════════════════════════════════════
+                HStack(spacing: 0) {
+                    // LEFT: Store icon (40pt)
+                    Image(systemName: "storefront.fill")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .frame(width: 40)
+                        .frame(maxHeight: .infinity)
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // CENTER: Merchant field (optional)
+                    TextField("Store name (optional)", text: $merchant)
+                        .font(JohoFont.caption)
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .padding(.horizontal, JohoDimensions.spacingMD)
+                        .frame(maxHeight: .infinity)
+                }
+                .frame(height: 48)
+                .background(expenseLightBackground.opacity(0.5))
+
+                // 情報デザイン: Row divider (solid black)
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 1.5)
+
+                // ═══════════════════════════════════════════════════════════════
+                // ICON PICKER ROW: [icon] | Tap to change icon [>]
+                // ═══════════════════════════════════════════════════════════════
+                Button {
+                    showingIconPicker = true
+                    HapticManager.selection()
+                } label: {
+                    HStack(spacing: 0) {
+                        // LEFT: Current icon (40pt)
+                        Image(systemName: selectedSymbol)
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundStyle(expenseAccentColor)
+                            .frame(width: 40)
+                            .frame(maxHeight: .infinity)
+
+                        // WALL
+                        Rectangle()
+                            .fill(JohoColors.black)
+                            .frame(width: 1.5)
+                            .frame(maxHeight: .infinity)
+
+                        // CENTER: Hint text
+                        Text("Tap to change icon")
+                            .font(JohoFont.caption)
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .padding(.leading, JohoDimensions.spacingMD)
+
+                        Spacer()
+
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(JohoColors.black.opacity(0.4))
+                            .padding(.trailing, JohoDimensions.spacingMD)
+                    }
+                    .frame(height: 48)
+                    .background(expenseLightBackground)
+                }
+                .buttonStyle(.plain)
             }
+            .background(JohoColors.white)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+            )
             .padding(.horizontal, JohoDimensions.spacingLG)
-            .padding(.bottom, JohoDimensions.spacingXL)
+
+            Spacer()
         }
         .johoBackground()
+        .navigationBarHidden(true)
         .onAppear {
             currency = baseCurrency
-            // Don't auto-focus - let user tap to interact
+        }
+        .sheet(isPresented: $showingIconPicker) {
+            JohoIconPickerSheet(
+                selectedSymbol: $selectedSymbol,
+                accentColor: expenseAccentColor,
+                lightBackground: expenseLightBackground
+            )
         }
     }
 
-    // 情報デザイン category button - icon only with color fill
+    private func monthName(_ month: Int) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM"
+        let components = DateComponents(year: 2024, month: month, day: 1)
+        let tempDate = calendar.date(from: components) ?? Date()
+        return formatter.string(from: tempDate)
+    }
+
+    private func daysInMonth(_ month: Int, year: Int) -> Int {
+        let components = DateComponents(year: year, month: month, day: 1)
+        guard let tempDate = calendar.date(from: components),
+              let range = calendar.range(of: .day, in: .month, for: tempDate) else {
+            return 31
+        }
+        return range.count
+    }
+
+    // 情報デザイン category button - compact icon-only pill for horizontal scroll
     @ViewBuilder
     private func categoryButton(_ category: ExpenseCategory?, isSelected: Bool) -> some View {
         Button {
             selectedCategory = category
             HapticManager.selection()
         } label: {
-            ZStack {
-                // Background circle
-                Circle()
-                    .fill(isSelected ? (category?.color ?? JohoColors.black) : JohoColors.white)
-                    .frame(width: 48, height: 48)
-                    .overlay(
-                        Circle()
-                            .stroke(category?.color ?? JohoColors.black, lineWidth: isSelected ? 3 : 2)
-                    )
-
-                // Icon
-                Image(systemName: category?.iconName ?? "minus")
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(isSelected ? JohoColors.white : (category?.color ?? JohoColors.black))
-            }
+            Image(systemName: category?.iconName ?? "minus")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(isSelected ? JohoColors.white : (category?.color ?? JohoColors.black))
+                .frame(width: 32, height: 32)
+                .background(isSelected ? (category?.color ?? JohoColors.black) : JohoColors.white)
+                .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .stroke(category?.color ?? JohoColors.black, lineWidth: isSelected ? 2.5 : 1.5)
+                )
         }
         .buttonStyle(.plain)
     }
