@@ -2544,6 +2544,19 @@ struct JohoSpecialDayEditorSheet: View {
         isEditing ? "Update details" : "Set date & details"
     }
 
+    /// 情報デザイン: Proper placeholder text for each type
+    private var namePlaceholder: String {
+        switch type {
+        case .holiday: return "Holiday name"
+        case .observance: return "Observance name"
+        case .event: return "Event name"
+        case .birthday: return "Name"
+        case .note: return "Note title"
+        case .trip: return "Trip name"
+        case .expense: return "Expense description"
+        }
+    }
+
     private var selectedDate: Date {
         let calendar = Calendar.current
         return calendar.date(from: DateComponents(year: selectedYear, month: selectedMonth, day: selectedDay)) ?? Date()
@@ -2690,7 +2703,7 @@ struct JohoSpecialDayEditorSheet: View {
                         .frame(maxHeight: .infinity)
 
                     // CENTER: Name field (full width)
-                    TextField(type == .holiday ? "Holiday name" : "Observance name", text: $name)
+                    TextField(namePlaceholder, text: $name)
                         .font(JohoFont.body)
                         .foregroundStyle(JohoColors.black)
                         .padding(.horizontal, JohoDimensions.spacingMD)
