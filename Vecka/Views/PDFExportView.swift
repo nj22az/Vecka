@@ -265,7 +265,7 @@ struct PDFExportView: View {
                                             }
                                         }
                                     }
-                                    .padding(Spacing.small)
+                                    .padding(JohoDimensions.spacingSM)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .background(Color.secondary.opacity(0.05))
                                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
@@ -303,7 +303,7 @@ struct PDFExportView: View {
                         HStack {
                             if isExporting {
                                 ProgressView()
-                                    .padding(.trailing, Spacing.small)
+                                    .padding(.trailing, JohoDimensions.spacingSM)
                             }
                             Label(isExporting ? "Generating PDF..." : "Export as PDF", systemImage: "doc.fill")
                         }

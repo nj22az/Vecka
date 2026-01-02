@@ -425,7 +425,7 @@ private struct NotePreviewRow: View {
             }
 
             HStack(spacing: JohoDimensions.spacingSM) {
-                Image(systemName: note.symbolName ?? NoteSymbolCatalog.defaultSymbol)
+                Image(systemName: note.symbolName ?? "note.text")
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(JohoColors.black)
 
@@ -523,7 +523,7 @@ private struct PinnedCountdownRow: View {
         let badgeText = countdownBadgeText(days: daysRemaining)
 
         HStack(spacing: JohoDimensions.spacingSM) {
-            Image(systemName: note.symbolName ?? NoteSymbolCatalog.defaultSymbol)
+            Image(systemName: note.symbolName ?? "note.text")
                 .font(.system(size: 20, weight: .bold))
                 .foregroundStyle(JohoColors.black)
                 .frame(width: 32, alignment: .center)

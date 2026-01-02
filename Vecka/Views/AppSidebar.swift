@@ -64,43 +64,48 @@ struct AppSidebar: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
-            // Header with Liquid Glass
+            // Header (情報デザイン: Black text on white)
             Text("WeekGrid")
-                .font(.title2.weight(.bold))
-                .foregroundStyle(.primary)
-                .padding(.horizontal, Spacing.large)
-                .padding(.top, Spacing.medium)
+                .font(JohoFont.headline)
+                .foregroundStyle(JohoColors.black)
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.top, JohoDimensions.spacingMD)
 
-            // 3x3 Icon Grid with GlassEffectContainer
-            GlassEffectContainer(spacing: 16) {
-                LazyVGrid(columns: columns, spacing: 20) {
-                    ForEach(SidebarSelection.allCases) { item in
-                        SidebarIconButton(
-                            item: item,
-                            isSelected: selection == item
-                        ) {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                                selection = item
-                            }
+            // 3x3 Icon Grid (情報デザイン: Solid white container, black border)
+            LazyVGrid(columns: columns, spacing: 20) {
+                ForEach(SidebarSelection.allCases) { item in
+                    SidebarIconButton(
+                        item: item,
+                        isSelected: selection == item
+                    ) {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            selection = item
                         }
                     }
                 }
             }
-            .padding(.horizontal, Spacing.medium)
+            .padding(JohoDimensions.spacingMD)
+            .background(JohoColors.white)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+            )
+            .padding(.horizontal, JohoDimensions.spacingMD)
 
             Spacer()
 
-            // Footer
+            // Footer (情報デザイン: Black text with opacity)
             VStack(spacing: 4) {
                 Text("WeekGrid")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(JohoFont.caption)
+                    .foregroundStyle(JohoColors.black.opacity(0.7))
                 Text("© 2025 The Office of Nils Johansson")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                    .font(JohoFont.labelSmall)
+                    .foregroundStyle(JohoColors.black.opacity(0.5))
             }
             .frame(maxWidth: .infinity)
-            .padding(.bottom, Spacing.medium)
+            .padding(.bottom, JohoDimensions.spacingMD)
         }
         .background(JohoColors.white)
         .navigationBarHidden(true)

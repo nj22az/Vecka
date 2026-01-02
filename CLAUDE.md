@@ -100,31 +100,71 @@ HStack(spacing: 4) {
 
 **Why?** Inverted pills obscure the indicator symbol (●, ○, ◆). The symbol's meaning is lost when white-on-color.
 
-### Status Pills (TODAY, HOL, Type Codes)
+### Status Pills (TODAY Only)
 
-**Status pills WITHOUT indicator symbols** use the inverted pattern:
-- **Background**: Semantic accent color (yellow for TODAY, red for HOL, etc.)
-- **Text**: White
+The **TODAY** pill uses the inverted pattern for maximum visibility:
+- **Background**: Yellow (semantic "now" color)
+- **Text**: Black (for readability on yellow)
 - **Border**: Black (1.5pt)
 
 ```swift
-// ✅ CORRECT - Status pills use .coloredInverted()
+// ✅ CORRECT - TODAY pill uses .coloredInverted()
 JohoPill(text: "TODAY", style: .coloredInverted(JohoColors.yellow), size: .small)
-JohoPill(text: "HOL", style: .coloredInverted(item.type.accentColor), size: .small)
-
-// ❌ WRONG - Status pills should NOT use .colored() (hard to read)
-JohoPill(text: "TODAY", style: .colored(JohoColors.yellow), size: .small)
 ```
 
 | Pill Type | Style | Background | Text | Border |
 |-----------|-------|------------|------|--------|
 | **TODAY** | `.coloredInverted(JohoColors.yellow)` | Yellow | **Black** | Black |
-| **HOL** | `.coloredInverted(red)` | Red | White | Black |
-| **OBS** | `.coloredInverted(orange)` | Orange | White | Black |
-| **EVT** | `.coloredInverted(purple)` | Purple | White | Black |
-| **BDY** | `.coloredInverted(pink)` | Pink | White | Black |
 
-**Rule:** If the pill has NO indicator symbol (●, ○), use `.coloredInverted()` for high visibility.
+### Type Codes (Legend/Selector Only)
+
+Type codes (HOL, OBS, EVT, BDY, NTE, TRP, EXP) are **ONLY shown in legends and selectors**, never in bento rows. Type is already indicated in rows by:
+- Colored indicator circle (●) with semantic color
+- Section context (HOLIDAYS, EVENTS, etc.)
+- Accent color throughout bento box
+
+**Where type codes ARE shown:**
+- `IconStripSidebar.swift` legend popover (~lines 263-269)
+- `SpecialDaysListView.swift` AddEntrySelector (~lines 2743-2758)
+
+```swift
+// ✅ CORRECT - Type codes in legend/selector ONLY
+JohoPill(text: item.type.code, style: .coloredInverted(item.type.accentColor), size: .small)
+```
+
+### Decoration Icons (User-Selected)
+
+Users can select custom icons to "decorate" their entries. These icons are ALWAYS displayed in the bento row RIGHT compartment.
+
+| Layer | Purpose | Location |
+|-------|---------|----------|
+| **Type Icon** | Fixed per entry type | Section headers, editor headers |
+| **Decoration Icon** | User personality/context | Bento row right compartment |
+
+```swift
+// ✅ CORRECT - Decoration icon in RIGHT COMPARTMENT (replaces type code pill)
+HStack(spacing: 4) {
+    if item.hasCountryPill {
+        CountryPill(region: item.region)
+    }
+    // Decoration icon - ALWAYS shown (custom or default type icon)
+    Image(systemName: item.symbolName ?? item.type.defaultIcon)
+        .font(.system(size: 14, weight: .bold, design: .rounded))
+        .foregroundStyle(item.type.accentColor)
+        .frame(width: 24, height: 24)
+        .background(item.type.accentColor.opacity(0.15))
+        .clipShape(Squircle(cornerRadius: 6))
+        .overlay(Squircle(cornerRadius: 6).stroke(JohoColors.black, lineWidth: 1))
+}
+.frame(width: 72, alignment: .center)
+```
+
+**Decoration Icon Styling:**
+- Size: 14pt bold, SF Pro Rounded
+- Color: Entry type's accent color
+- Frame: 24×24pt
+- Background: Accent color at 15% opacity
+- Border: 6pt squircle, black 1pt stroke
 
 ### Country Color Pills (Not Emoji Flags)
 
@@ -258,19 +298,25 @@ Circle()
     .frame(width: 10, height: 10)
 ```
 
-**Database-Driven Type Codes:**
-Use `SpecialDayType.code` property for 3-letter codes (HOL, OBS, EVT, BDY, NTE, TRP, EXP).
-```swift
-// ✅ CORRECT - Use type.code for pills
-JohoPill(text: item.type.code, style: .colored(item.type.accentColor), size: .small)
+**Database-Driven Type Properties:**
+Use `SpecialDayType` properties for consistent type handling:
+- `.code` - 3-letter code (HOL, OBS, etc.) - for legends/selectors only
+- `.accentColor` - Semantic color for indicators and icons
+- `.defaultIcon` - Default SF Symbol for the type
 
-// ❌ WRONG - Hardcoded strings
-JohoPill(text: "Red Day", ...)  // NO! Use item.type.code
+```swift
+// ✅ CORRECT - Type code in legend/selector ONLY
+JohoPill(text: item.type.code, style: .coloredInverted(item.type.accentColor), size: .small)
+
+// ✅ CORRECT - Decoration icon in bento rows
+Image(systemName: item.symbolName ?? item.type.defaultIcon)
+    .foregroundStyle(item.type.accentColor)
 ```
 
 **Files implementing this system:**
-- `SpecialDaysListView.swift` - Type codes, indicators, sections
+- `SpecialDaysListView.swift` - Indicators, sections, decoration icons
 - `CalendarGridView.swift` - Day cell indicators (7pt)
+- `CountdownListView.swift` - Event decoration icons
 - `JohoDesignSystem.swift` - Colors, SectionZone backgrounds
 
 ### Star Page Bento Design (SpecialDaysListView)
@@ -293,13 +339,13 @@ The Star Page (☆) displays all special days using **compartmentalized bento ro
 
 ```
 ┌─────┬──────────────────────────────┬─────────────────┐
-│ ●🔒 │ Title Text                   │ SWE │ HOL │
+│ ●🔒 │ Title Text                   │ SWE │ [⭐]│
 ├─────┼──────────────────────────────┼─────────────────┤
 │LEFT │ CENTER                       │ RIGHT           │
-│28pt │ flexible                     │ 80pt            │
+│28pt │ flexible                     │ 72pt            │
 └─────┴──────────────────────────────┴─────────────────┘
   │         │                              │
-  │         │                              └── Country + Type pills
+  │         │                              └── Country pill + Decoration icon
   │         └── Item title (black text)
   └── Type indicator circle + lock (if system)
 ```
@@ -341,12 +387,21 @@ HStack(spacing: 0) {
         .fill(JohoColors.black)
         .frame(width: 1.5)
 
-    // RIGHT COMPARTMENT (80pt)
+    // RIGHT COMPARTMENT (72pt) - Country pill + Decoration icon
     HStack(spacing: 4) {
-        CountryPill(region: item.region)
-        JohoPill(text: item.type.code, style: .coloredInverted(...))
+        if item.hasCountryPill {
+            CountryPill(region: item.region)
+        }
+        // Decoration icon (custom or default type icon)
+        Image(systemName: item.symbolName ?? item.type.defaultIcon)
+            .font(.system(size: 14, weight: .bold, design: .rounded))
+            .foregroundStyle(item.type.accentColor)
+            .frame(width: 24, height: 24)
+            .background(item.type.accentColor.opacity(0.15))
+            .clipShape(Squircle(cornerRadius: 6))
+            .overlay(Squircle(cornerRadius: 6).stroke(JohoColors.black, lineWidth: 1))
     }
-    .frame(width: 80)
+    .frame(width: 72)
 }
 .padding(.vertical, 8)
 .background(zone.background)  // Section color IS the row background
@@ -391,14 +446,16 @@ System holidays (lock icon) have NO swipe actions - they are read-only.
 │ [HOLIDAYS] ★                                        │ ← Header (black pill + icon)
 ├─────────────────────────────────────────────────────┤
 │ ┌─────┬───────────────────────────┬───────────────┐ │
-│ │ ●   │ New Year's Day            │ SWE │ HOL │   │ │ ← Bento row
+│ │ ●   │ New Year's Day            │ SWE │ [🎄]│   │ │ ← Bento row (decoration icon)
 │ └─────┴───────────────────────────┴───────────────┘ │
 │ ┌─────┬───────────────────────────┬───────────────┐ │
-│ │ ●🔒 │ Christmas Day             │ USA │ HOL │   │ │ ← System (locked)
+│ │ ●🔒 │ Christmas Day             │ USA │ [🎅]│   │ │ ← System (locked, default icon)
 │ └─────┴───────────────────────────┴───────────────┘ │
 └─────────────────────────────────────────────────────┘
   └── Light red background (#FECACA)
 ```
+
+**Note:** `[icon]` represents the decoration icon compartment - a 24×24pt squircle with the user's chosen icon or the default type icon.
 
 **Expandable Detail (tap row to expand):**
 

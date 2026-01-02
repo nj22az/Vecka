@@ -40,7 +40,7 @@ struct SimplePDFExportView: View {
                         .font(.caption)
                         .foregroundStyle(.tertiary)
                 }
-                .padding(.top, Spacing.extraLarge)
+                .padding(.top, JohoDimensions.spacingXL)
 
                 Spacer()
 
@@ -65,7 +65,7 @@ struct SimplePDFExportView: View {
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
                 .disabled(isGenerating)
-                .padding(.bottom, Spacing.extraLarge)
+                .padding(.bottom, JohoDimensions.spacingXL)
             }
             .navigationTitle("Export PDF")
             .navigationBarTitleDisplayMode(.inline)

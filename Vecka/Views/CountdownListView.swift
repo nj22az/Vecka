@@ -149,8 +149,8 @@ struct CountdownListView: View {
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
-                // RIGHT: Event icon compartment
-                Image(systemName: "calendar.badge.clock")
+                // RIGHT: Event icon compartment (uses actual event icon)
+                Image(systemName: event.icon)
                     .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
                     .frame(width: 40)
@@ -267,6 +267,7 @@ struct CountdownListView: View {
                     eventBentoRow(
                         name: custom.name,
                         days: days,
+                        icon: custom.iconName,
                         onDelete: {
                             deleteCustom(custom)
                         }
@@ -361,15 +362,16 @@ struct CountdownListView: View {
     //
     // 情報デザイン BENTO LAYOUT - Compartments with vertical dividers (walls)
     // ┌─────┬─────────────────────────────────┬─────────────────┐
-    // │  ●  ┃ Event Name                      ┃ [EVT]           │
+    // │  ●  ┃ Event Name                      ┃ [icon]          │
     // └─────┴─────────────────────────────────┴─────────────────┘
     //  LEFT │           CENTER                │      RIGHT
-    //  32pt │          flexible               │      64pt
+    //  32pt │          flexible               │      48pt
 
     @ViewBuilder
     private func eventBentoRow(
         name: String,
         days: Int,
+        icon: String?,
         onDelete: @escaping () -> Void
     ) -> some View {
         HStack(spacing: 0) {
@@ -412,12 +414,18 @@ struct CountdownListView: View {
                 .frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
-            // RIGHT COMPARTMENT: Type pill (fixed 64pt, centered)
+            // RIGHT COMPARTMENT: Decoration icon (fixed 48pt, centered)
+            // 情報デザイン: Decoration icon ALWAYS shown (user decision)
             HStack(spacing: 4) {
-                // Type code pill (matches Star page)
-                JohoPill(text: "EVT", style: .coloredInverted(JohoColors.eventPurple), size: .small)
+                Image(systemName: icon ?? "calendar.badge.clock")
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.eventPurple)
+                    .frame(width: 24, height: 24)
+                    .background(JohoColors.eventPurple.opacity(0.15))
+                    .clipShape(Squircle(cornerRadius: 6))
+                    .overlay(Squircle(cornerRadius: 6).stroke(JohoColors.black, lineWidth: 1))
             }
-            .frame(width: 64, alignment: .center)
+            .frame(width: 48, alignment: .center)
             .frame(maxHeight: .infinity)
         }
         .frame(minHeight: 36)  // Match Star page row height

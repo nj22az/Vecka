@@ -839,40 +839,17 @@ final class UIAccessibilityTests: XCTestCase {
         XCTAssertNotNil(Typography.caption1)
     }
 
-    func testAppColorsExist() {
-        // Verify key color tokens exist
-        XCTAssertNotNil(AppColors.background)
-        XCTAssertNotNil(AppColors.surface)
-        XCTAssertNotNil(AppColors.accentBlue)
-        XCTAssertNotNil(AppColors.textPrimary)
-        XCTAssertNotNil(AppColors.textSecondary)
-    }
-
-    func testSlateColorsExist() {
-        // Verify SlateColors tokens exist
-        XCTAssertNotNil(SlateColors.deepSlate)
-        XCTAssertNotNil(SlateColors.mediumSlate)
-        XCTAssertNotNil(SlateColors.primaryText)
-        XCTAssertNotNil(SlateColors.secondaryText)
-        XCTAssertNotNil(SlateColors.sundayBlue)
-    }
-
-    func testPlanetaryColorsExist() {
-        // Verify all 7 planetary colors exist
-        XCTAssertNotNil(AppColors.mondayMoon)
-        XCTAssertNotNil(AppColors.tuesdayFire)
-        XCTAssertNotNil(AppColors.wednesdayWater)
-        XCTAssertNotNil(AppColors.thursdayWood)
-        XCTAssertNotNil(AppColors.fridayMetal)
-        XCTAssertNotNil(AppColors.saturdayEarth)
-        XCTAssertNotNil(AppColors.sundaySun)
-    }
-
-    func testColorForDayReturnsValidColor() {
-        let today = Date()
-        let color = AppColors.colorForDay(today)
-
-        XCTAssertNotNil(color, "colorForDay should return a valid color")
+    func testJohoColorsExist() {
+        // Verify 情報デザイン color tokens exist
+        XCTAssertNotNil(JohoColors.black)
+        XCTAssertNotNil(JohoColors.white)
+        XCTAssertNotNil(JohoColors.background)
+        XCTAssertNotNil(JohoColors.yellow)
+        XCTAssertNotNil(JohoColors.cyan)
+        XCTAssertNotNil(JohoColors.red)
+        XCTAssertNotNil(JohoColors.pink)
+        XCTAssertNotNil(JohoColors.orange)
+        XCTAssertNotNil(JohoColors.green)
     }
 
     func testMinimumTapTargetSize() {

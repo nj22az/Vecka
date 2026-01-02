@@ -50,10 +50,6 @@ enum AppInitializer {
             Log.w("AppInitializer: Failed to initialize expense system: \(error)")
         }
 
-        // Initialize business rules engine
-        RuleEngine.shared.seedDefaultRules(context: context)
-        Log.i("AppInitializer: Business rules initialized")
-
         // Initialize configuration system (database-driven architecture)
         ConfigurationManager.shared.seedDefaultConfiguration(context: context)
         Log.i("AppInitializer: Configuration system initialized")

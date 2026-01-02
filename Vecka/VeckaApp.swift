@@ -38,10 +38,6 @@ struct VeckaApp: App {
             ContactSocialProfile.self,
             ContactURL.self,
             ContactRelation.self,
-            // Business Rules models
-            ExpensePolicy.self,
-            ApprovalWorkflow.self,
-            ReimbursementRate.self,
             // Configuration models (database-driven architecture)
             AppConfiguration.self,
             ValidationRule.self,
@@ -52,8 +48,6 @@ struct VeckaApp: App {
             IconCatalogItem.self,
             // Location
             SavedLocation.self,
-            // Workspace widgets (draggable/resizable widget system)
-            WorkspaceWidget.self
         ])
 
         let modelConfiguration = ModelConfiguration(

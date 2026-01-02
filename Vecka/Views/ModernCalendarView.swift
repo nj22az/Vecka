@@ -28,68 +28,7 @@ struct ModernCalendarView: View {
     @Query private var trips: [TravelTrip]
     @Query private var contacts: [Contact]  // For birthday indicators
     @Query private var countdownEvents: [CountdownEvent]  // For event indicators
-    @Query(sort: \WorkspaceWidget.zIndex) private var workspaceWidgets: [WorkspaceWidget]
     private var holidayManager = HolidayManager.shared
-
-    /// Check if widgets need repacking (have gaps that could be collapsed)
-    private var widgetsNeedRepack: Bool {
-        guard workspaceWidgets.count > 1 else { return false }
-
-        // Get effective columns (use reasonable default for iPad)
-        let columns = 4
-
-        // Build occupied grid
-        var occupiedGrid: [[Bool]] = Array(
-            repeating: Array(repeating: false, count: columns),
-            count: 100
-        )
-
-        // Sort widgets like autoPackWidgets does
-        let sortedWidgets = workspaceWidgets.sorted { w1, w2 in
-            if w1.gridY != w2.gridY { return w1.gridY < w2.gridY }
-            return w1.gridX < w2.gridX
-        }
-
-        // Check if any widget would move during repack
-        for widget in sortedWidgets {
-            // Find where this widget WOULD go if repacked
-            var bestX = 0
-            var bestY = 0
-            outer: for y in 0..<100 {
-                for x in 0...(columns - widget.columns) {
-                    var canPlace = true
-                    for row in y..<min(y + widget.rows, 100) {
-                        for col in x..<min(x + widget.columns, columns) {
-                            if occupiedGrid[row][col] {
-                                canPlace = false
-                                break
-                            }
-                        }
-                        if !canPlace { break }
-                    }
-                    if canPlace {
-                        bestX = x
-                        bestY = y
-                        break outer
-                    }
-                }
-            }
-
-            // Would widget move?
-            if bestX != widget.gridX || bestY != widget.gridY {
-                return true
-            }
-
-            // Mark position as occupied for next widget
-            for row in bestY..<min(bestY + widget.rows, 100) {
-                for col in bestX..<min(bestX + widget.columns, columns) {
-                    occupiedGrid[row][col] = true
-                }
-            }
-        }
-
-        return false
-    }
 
     private var noteColors: [Date: String] {
         var dict: [Date: String] = [:]
@@ -154,8 +93,36 @@ struct ModernCalendarView: View {
     // Week Detail sheet (iPhone only)
     @State private var showWeekDetailSheet = false
 
+    // Day Detail sheet (long-press on calendar day)
+    @State private var showDayDetailSheet = false
+    @State private var dayDetailDay: CalendarDay?
+    @State private var dayDetailDataCheck: DayDataCheck?
+
     // Context-aware add sheets (triggered from sidebar +)
     @State private var showExpenseEditor = false
+
+    // MARK: - Helper for sidebar add action (extracted for type checking)
+    private var sidebarAddAction: (() -> Void)? {
+        guard shouldShowAddButton else { return nil }
+        return {
+            switch sidebarSelection {
+            case .contacts:
+                showContactMenu = true
+            case .specialDays:
+                showSpecialDayMenu = true
+            default:
+                break
+            }
+        }
+    }
+
+    private var sidebarExportAction: (() -> Void)? {
+        guard sidebarSelection == .calendar else { return nil }
+        return {
+            pdfExportContext = .summary
+            showPDFExport = true
+        }
+    }
     @State private var showTripEditor = false
     @State private var showContactEditor = false
     @State private var showObservanceEditor = false
@@ -244,28 +211,11 @@ struct ModernCalendarView: View {
                 HStack(spacing: 0) {
                     IconStripSidebar(
                         selection: $sidebarSelection,
-                        onAdd: shouldShowAddButton ? {
-                            // Context-aware add action based on current selection
-                            switch sidebarSelection {
-                            case .tools:
-                                NotificationCenter.default.post(name: .addWidgetRequested, object: nil)
-                            case .contacts:
-                                showContactMenu = true
-                            case .specialDays:
-                                showSpecialDayMenu = true  // Show add menu when in month detail
-                            default:
-                                break
-                            }
-                        } : nil,
+                        onAdd: sidebarAddAction,
                         addButtonColor: addButtonColor,
-                        showRepackButton: sidebarSelection == .tools && widgetsNeedRepack,
-                        onRepack: {
-                            NotificationCenter.default.post(name: .repackWidgetsRequested, object: nil)
-                        },
-                        onExport: sidebarSelection == .calendar ? {
-                            pdfExportContext = .summary
-                            showPDFExport = true
-                        } : nil
+                        showRepackButton: false,
+                        onRepack: nil,
+                        onExport: sidebarExportAction
                     )
 
                     // Main content area (full width - week details moved to Star page)
@@ -349,6 +299,12 @@ struct ModernCalendarView: View {
             .presentationDetents([.medium, .large], selection: $dayNotesDetent)
             .presentationDragIndicator(.visible)
             .presentationCornerRadius(20)
+        }
+        // 情報デザイン: Day Detail Sheet (long-press on calendar day)
+        .sheet(isPresented: $showDayDetailSheet) {
+            if let day = dayDetailDay {
+                DayDetailSheet(day: day, dataCheck: dayDetailDataCheck)
+            }
         }
         .sheet(isPresented: $showPDFExport) {
             SimplePDFExportView(exportContext: pdfExportContext)
@@ -559,6 +515,7 @@ struct ModernCalendarView: View {
                         selectedDay: selectedDay,
                         onDayTap: handleDayTap,
                         onWeekTap: handleWeekTap,
+                        onDayLongPress: handleDayLongPress,
                         hasDataForDay: hasDataForDay
                     )
                     .id("\(currentMonth.month)-\(currentMonth.year)-\(contacts.count)-\(notes.count)-\(countdownEvents.count)")
@@ -922,6 +879,13 @@ struct ModernCalendarView: View {
                 }
             }
         }
+    }
+
+    /// 情報デザイン: Long-press opens day detail sheet
+    private func handleDayLongPress(_ day: CalendarDay) {
+        dayDetailDay = day
+        dayDetailDataCheck = hasDataForDay(day.date)
+        showDayDetailSheet = true
     }
 
 

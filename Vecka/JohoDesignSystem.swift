@@ -8,6 +8,41 @@
 
 import SwiftUI
 
+// MARK: - Hex Color Extension
+
+extension Color {
+    /// Thread-safe hex color initialization with proper error handling
+    init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+
+        guard Scanner(string: hex).scanHexInt64(&int) else {
+            self.init(.sRGB, red: 0, green: 0, blue: 0, opacity: 1)
+            return
+        }
+
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: // RGB (24-bit)
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB (32-bit)
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (255, 0, 0, 0)
+        }
+
+        self.init(
+            .sRGB,
+            red: Double(min(255, max(0, r))) / 255.0,
+            green: Double(min(255, max(0, g))) / 255.0,
+            blue: Double(min(255, max(0, b))) / 255.0,
+            opacity: Double(min(255, max(0, a))) / 255.0
+        )
+    }
+}
+
 // MARK: - Core Colors (Like Muhi/Rohto Packaging)
 
 enum JohoColors {

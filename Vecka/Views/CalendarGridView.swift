@@ -16,6 +16,8 @@ struct CalendarGridView: View {
     let selectedDay: CalendarDay? // Added for selection styling
     let onDayTap: (CalendarDay) -> Void
     let onWeekTap: (CalendarWeek) -> Void
+    /// 情報デザイン: Long-press callback for day detail sheet
+    let onDayLongPress: ((CalendarDay) -> Void)?
     /// 情報デザイン: Data check callback for showing colored indicators
     /// Returns which special day types exist for a given date
     let hasDataForDay: ((Date) -> DayDataCheck)?
@@ -26,6 +28,7 @@ struct CalendarGridView: View {
         selectedDay: CalendarDay?,
         onDayTap: @escaping (CalendarDay) -> Void,
         onWeekTap: @escaping (CalendarWeek) -> Void,
+        onDayLongPress: ((CalendarDay) -> Void)? = nil,
         hasDataForDay: ((Date) -> DayDataCheck)? = nil
     ) {
         self.month = month
@@ -33,6 +36,7 @@ struct CalendarGridView: View {
         self.selectedDay = selectedDay
         self.onDayTap = onDayTap
         self.onWeekTap = onWeekTap
+        self.onDayLongPress = onDayLongPress
         self.hasDataForDay = hasDataForDay
     }
 }
@@ -203,65 +207,9 @@ extension CalendarGridView {
                         .foregroundStyle(dayTextColor(for: day, isSelected: isSelected))
                         .monospacedDigit()
 
-                    // 情報デザイン: Unified colored circles with BLACK borders
-                    HStack(spacing: 3) {
-                        // Holiday indicator - RED (HOL)
-                        if day.isHoliday || dataCheck?.hasHoliday == true {
-                            Circle()
-                                .fill(JohoColors.red)
-                                .frame(width: 7, height: 7)
-                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
-                        }
-
-                        // Observance indicator - ORANGE (OBS)
-                        if dataCheck?.hasObservance == true {
-                            Circle()
-                                .fill(JohoColors.orange)
-                                .frame(width: 7, height: 7)
-                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
-                        }
-
-                        // Event indicator - PURPLE (EVT)
-                        if dataCheck?.hasEvent == true {
-                            Circle()
-                                .fill(JohoColors.eventPurple)
-                                .frame(width: 7, height: 7)
-                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
-                        }
-
-                        // Birthday indicator - PINK (BDY)
-                        if dataCheck?.hasBirthday == true {
-                            Circle()
-                                .fill(JohoColors.pink)
-                                .frame(width: 7, height: 7)
-                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
-                        }
-
-                        // Note indicator - YELLOW (NTE)
-                        if dataCheck?.hasNote == true {
-                            Circle()
-                                .fill(JohoColors.yellow)
-                                .frame(width: 7, height: 7)
-                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
-                        }
-
-                        // Trip indicator - BLUE (TRP)
-                        if dataCheck?.hasTrip == true {
-                            Circle()
-                                .fill(JohoColors.tripBlue)
-                                .frame(width: 7, height: 7)
-                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
-                        }
-
-                        // Expense indicator - GREEN (EXP)
-                        if dataCheck?.hasExpense == true {
-                            Circle()
-                                .fill(JohoColors.green)
-                                .frame(width: 7, height: 7)
-                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
-                        }
-                    }
-                    .frame(height: 8)
+                    // 情報デザイン: Priority-filtered indicators (max 3 + overflow)
+                    // Priority: HOL > BDY > OBS > EVT > NTE > TRP > EXP
+                    priorityIndicators(for: day, dataCheck: dataCheck)
                 }
             }
             .frame(maxWidth: .infinity)
@@ -270,8 +218,15 @@ extension CalendarGridView {
             .opacity(day.isInCurrentMonth ? 1.0 : 0.4) // Dim out-of-month days
         }
         .buttonStyle(.plain)
+        .simultaneousGesture(
+            LongPressGesture(minimumDuration: 0.5)
+                .onEnded { _ in
+                    HapticManager.impact(.medium)
+                    onDayLongPress?(day)
+                }
+        )
         .accessibilityLabel(accessibilityLabel(for: day))
-        .accessibilityHint((day.noteColor != nil || day.holidayName != nil) ? "Has details" : "Double tap to select")
+        .accessibilityHint((day.noteColor != nil || day.holidayName != nil) ? "Long press for details, tap to select" : "Double tap to select")
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
@@ -297,6 +252,82 @@ extension CalendarGridView {
         }
         // All other days = black text for maximum contrast
         return JohoColors.black
+    }
+
+    // MARK: - Priority Indicators (情報デザイン)
+
+    /// Returns max 3 indicators + overflow badge based on priority
+    /// Priority order: HOL > BDY > OBS > EVT > NTE > TRP > EXP
+    @ViewBuilder
+    private func priorityIndicators(for day: CalendarDay, dataCheck: DayDataCheck?) -> some View {
+        let indicators = collectIndicators(for: day, dataCheck: dataCheck)
+        let displayIndicators = Array(indicators.prefix(3))
+        let overflow = indicators.count - 3
+
+        HStack(spacing: 3) {
+            ForEach(displayIndicators, id: \.self) { color in
+                Circle()
+                    .fill(color)
+                    .frame(width: 7, height: 7)
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+            }
+
+            // Overflow badge when >3 indicators
+            if overflow > 0 {
+                Text("+\(overflow)")
+                    .font(.system(size: 6, weight: .black, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+                    .padding(.horizontal, 2)
+                    .padding(.vertical, 1)
+                    .background(JohoColors.white)
+                    .clipShape(Capsule())
+                    .overlay(Capsule().stroke(JohoColors.black, lineWidth: 0.5))
+            }
+        }
+        .frame(height: 8)
+    }
+
+    /// Collects indicator colors in priority order
+    /// Priority: HOL > BDY > OBS > EVT > NTE > TRP > EXP
+    private func collectIndicators(for day: CalendarDay, dataCheck: DayDataCheck?) -> [Color] {
+        var indicators: [Color] = []
+
+        // 1. Holiday - RED (highest priority)
+        if day.isHoliday || dataCheck?.hasHoliday == true {
+            indicators.append(JohoColors.red)
+        }
+
+        // 2. Birthday - PINK
+        if dataCheck?.hasBirthday == true {
+            indicators.append(JohoColors.pink)
+        }
+
+        // 3. Observance - ORANGE
+        if dataCheck?.hasObservance == true {
+            indicators.append(JohoColors.orange)
+        }
+
+        // 4. Event - PURPLE
+        if dataCheck?.hasEvent == true {
+            indicators.append(JohoColors.eventPurple)
+        }
+
+        // 5. Note - YELLOW
+        if dataCheck?.hasNote == true {
+            indicators.append(JohoColors.yellow)
+        }
+
+        // 6. Trip - BLUE
+        if dataCheck?.hasTrip == true {
+            indicators.append(JohoColors.tripBlue)
+        }
+
+        // 7. Expense - GREEN (lowest priority)
+        if dataCheck?.hasExpense == true {
+            indicators.append(JohoColors.green)
+        }
+
+        return indicators
     }
 
     // MARK: - Helper Methods

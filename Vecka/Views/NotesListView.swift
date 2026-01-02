@@ -313,7 +313,7 @@ private struct PinnedNoteRow: View {
         HStack(spacing: JohoDimensions.spacingMD) {
             // Note symbol in yellow squircle
             JohoIconBadge(
-                icon: note.symbolName ?? NoteSymbolCatalog.defaultSymbol,
+                icon: note.symbolName ?? "note.text",
                 zone: .notes,
                 size: 40
             )
