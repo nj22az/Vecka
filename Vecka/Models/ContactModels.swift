@@ -55,6 +55,9 @@ final class Contact {
     // Image
     var imageData: Data?
 
+    /// Symbol decoration for contact avatar (SF Symbol name)
+    var symbolName: String?
+
     // Relations
     var relations: [ContactRelation]
 

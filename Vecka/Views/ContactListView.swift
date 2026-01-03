@@ -355,83 +355,170 @@ struct ContactListView: View {
         .frame(minHeight: 300)
     }
 
-    // MARK: - Contact List Content (情報デザイン: Clean grouped list with right index)
+    // MARK: - Contact List Content (情報デザイン: Clean grouped list with letter picker)
+
+    @State private var selectedLetter: String?
+    @State private var showingLetterPicker = false
 
     private var contactsListContent: some View {
-        HStack(spacing: 0) {
-            // Main list area
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
-                        ForEach(sortedSections, id: \.self) { section in
-                            Section {
-                                ForEach(groupedContacts[section] ?? []) { contact in
-                                    Button {
-                                        selectedContact = contact
-                                    } label: {
-                                        compactContactRow(for: contact)
-                                    }
-                                    .buttonStyle(.plain)
-                                    .contextMenu {
-                                        Button { selectedContact = contact } label: {
-                                            Label("View", systemImage: "person.fill")
+        VStack(spacing: 0) {
+            // Letter picker toggle row (情報デザイン: bento compartment)
+            letterPickerToggle
+
+            // Horizontal divider
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(height: 1)
+
+            // Main content: list or letter picker
+            if showingLetterPicker {
+                // Letter grid picker (情報デザイン: A-Z grid)
+                letterPickerGrid
+            } else {
+                // Contact list
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+                            ForEach(sortedSections, id: \.self) { section in
+                                Section {
+                                    ForEach(groupedContacts[section] ?? []) { contact in
+                                        Button {
+                                            selectedContact = contact
+                                        } label: {
+                                            compactContactRow(for: contact)
                                         }
-                                        Button { editingContact = contact } label: {
-                                            Label("Edit", systemImage: "pencil")
-                                        }
-                                        if let phone = contact.phoneNumbers.first {
-                                            Button {
-                                                if let url = URL(string: "tel:\(phone.value)") {
-                                                    UIApplication.shared.open(url)
+                                        .buttonStyle(.plain)
+                                        .contextMenu {
+                                            Button { selectedContact = contact } label: {
+                                                Label("View", systemImage: "person.fill")
+                                            }
+                                            Button { editingContact = contact } label: {
+                                                Label("Edit", systemImage: "pencil")
+                                            }
+                                            if let phone = contact.phoneNumbers.first {
+                                                Button {
+                                                    if let url = URL(string: "tel:\(phone.value)") {
+                                                        UIApplication.shared.open(url)
+                                                    }
+                                                } label: {
+                                                    Label("Call", systemImage: "phone.fill")
                                                 }
-                                            } label: {
-                                                Label("Call", systemImage: "phone.fill")
+                                            }
+                                            Divider()
+                                            Button(role: .destructive) { deleteContact(contact) } label: {
+                                                Label("Delete", systemImage: "trash")
                                             }
                                         }
-                                        Divider()
-                                        Button(role: .destructive) { deleteContact(contact) } label: {
-                                            Label("Delete", systemImage: "trash")
+                                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                            Button(role: .destructive) { deleteContact(contact) } label: {
+                                                Label("Delete", systemImage: "trash")
+                                            }
+                                        }
+                                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                                            Button { editingContact = contact } label: {
+                                                Label("Edit", systemImage: "pencil")
+                                            }
+                                            .tint(JohoColors.cyan)
                                         }
                                     }
+                                } header: {
+                                    sectionHeader(letter: section)
+                                        .id(section)
                                 }
-                            } header: {
-                                sectionHeader(letter: section)
-                                    .id(section)
                             }
                         }
                     }
-                }
-                .onChange(of: selectedLetter) { _, letter in
-                    if let letter = letter {
-                        withAnimation {
-                            proxy.scrollTo(letter, anchor: .top)
+                    .onChange(of: selectedLetter) { _, letter in
+                        if let letter = letter {
+                            withAnimation {
+                                proxy.scrollTo(letter, anchor: .top)
+                            }
+                            selectedLetter = nil
+                            showingLetterPicker = false
                         }
-                        selectedLetter = nil
                     }
                 }
             }
-
-            // Right alphabet index (情報デザイン: minimal vertical strip)
-            VStack(spacing: 1) {
-                ForEach(sortedSections, id: \.self) { letter in
-                    Button {
-                        selectedLetter = letter
-                        HapticManager.selection()
-                    } label: {
-                        Text(letter)
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
-                            .frame(width: 18, height: 16)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .padding(.vertical, JohoDimensions.spacingSM)
-            .padding(.trailing, 4)
         }
     }
 
-    @State private var selectedLetter: String?
+    // MARK: - Letter Picker Toggle (情報デザイン: Expandable header)
+
+    private var letterPickerToggle: some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                showingLetterPicker.toggle()
+            }
+            HapticManager.selection()
+        } label: {
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Current section indicator
+                if let firstSection = sortedSections.first {
+                    Text(firstSection)
+                        .font(.system(size: 16, weight: .black, design: .rounded))
+                        .foregroundStyle(JohoColors.white)
+                        .frame(width: 28, height: 28)
+                        .background(JohoColors.black)
+                        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                }
+
+                Text(showingLetterPicker ? "SELECT LETTER" : "A-Z INDEX")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.black.opacity(0.7))
+
+                Spacer()
+
+                // Toggle indicator
+                Image(systemName: showingLetterPicker ? "chevron.up" : "chevron.down")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(JohoColors.black)
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Letter Picker Grid (情報デザイン: A-Z bento grid)
+
+    private var letterPickerGrid: some View {
+        let allLetters = ["#"] + (65...90).map { String(UnicodeScalar($0)) }  // # + A-Z
+        let columns = [
+            GridItem(.flexible(), spacing: 4),
+            GridItem(.flexible(), spacing: 4),
+            GridItem(.flexible(), spacing: 4),
+            GridItem(.flexible(), spacing: 4)
+        ]
+
+        return ScrollView {
+            LazyVGrid(columns: columns, spacing: 4) {
+                ForEach(allLetters, id: \.self) { letter in
+                    let hasContacts = sortedSections.contains(letter)
+                    Button {
+                        if hasContacts {
+                            selectedLetter = letter
+                            HapticManager.selection()
+                        }
+                    } label: {
+                        Text(letter)
+                            .font(.system(size: 18, weight: hasContacts ? .bold : .medium, design: .rounded))
+                            .foregroundStyle(hasContacts ? JohoColors.black : JohoColors.black.opacity(0.25))
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 44)
+                            .background(hasContacts ? JohoColors.white : JohoColors.black.opacity(0.03))
+                            .clipShape(Squircle(cornerRadius: 8))
+                            .overlay(
+                                Squircle(cornerRadius: 8)
+                                    .stroke(hasContacts ? JohoColors.black : JohoColors.black.opacity(0.1), lineWidth: hasContacts ? 1.5 : 0.5)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(!hasContacts)
+                }
+            }
+            .padding(JohoDimensions.spacingMD)
+        }
+    }
 
     // MARK: - Section Header (情報デザイン: Clean letter header)
 
@@ -621,34 +708,52 @@ struct JohoContactAvatar: View {
         size >= 80 ? JohoDimensions.borderThick : JohoDimensions.borderMedium
     }
 
+    private var decorationBadgeSize: CGFloat {
+        size * 0.35
+    }
+
     var body: some View {
-        Group {
-            if let imageData = contact.imageData, let uiImage = UIImage(data: imageData) {
-                // Photo available - circular frame with black border
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .scaledToFill()
+        ZStack(alignment: .bottomTrailing) {
+            Group {
+                if let imageData = contact.imageData, let uiImage = UIImage(data: imageData) {
+                    // Photo available - circular frame with black border
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: size, height: size)
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(JohoColors.black, lineWidth: borderWidth)
+                        )
+                } else {
+                    // No photo - show initials with Warm Brown background
+                    ZStack {
+                        Circle()
+                            .fill(accentColor)
+
+                        Text(contact.initials.isEmpty ? "?" : contact.initials)
+                            .font(.system(size: fontSize, weight: .black, design: .rounded))
+                            .foregroundStyle(JohoColors.white)
+                    }
                     .frame(width: size, height: size)
-                    .clipShape(Circle())
                     .overlay(
                         Circle()
                             .stroke(JohoColors.black, lineWidth: borderWidth)
                     )
-            } else {
-                // No photo - show initials with purple background
-                ZStack {
-                    Circle()
-                        .fill(accentColor)
-
-                    Text(contact.initials.isEmpty ? "?" : contact.initials)
-                        .font(.system(size: fontSize, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.white)
                 }
-                .frame(width: size, height: size)
-                .overlay(
-                    Circle()
-                        .stroke(JohoColors.black, lineWidth: borderWidth)
-                )
+            }
+
+            // Symbol decoration badge (情報デザイン: bottom-right overlay)
+            if let symbolName = contact.symbolName, symbolName != "person.fill" {
+                Image(systemName: symbolName)
+                    .font(.system(size: decorationBadgeSize * 0.5, weight: .bold))
+                    .foregroundStyle(accentColor)
+                    .frame(width: decorationBadgeSize, height: decorationBadgeSize)
+                    .background(JohoColors.white)
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                    .offset(x: 2, y: 2)
             }
         }
     }

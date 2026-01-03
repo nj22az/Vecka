@@ -94,6 +94,8 @@ enum JohoWidget {
                 return large
             case .systemExtraLarge:
                 return extraLarge
+            case .accessoryCircular, .accessoryRectangular, .accessoryInline:
+                return small  // Accessory widgets use smallest sizing
             @unknown default:
                 return medium
             }
@@ -164,6 +166,8 @@ enum JohoWidget {
                 return large
             case .systemExtraLarge:
                 return extraLarge
+            case .accessoryCircular, .accessoryRectangular, .accessoryInline:
+                return small  // Accessory widgets use smallest font sizes
             @unknown default:
                 return medium
             }
@@ -202,6 +206,8 @@ enum JohoWidget {
                 return large
             case .systemExtraLarge:
                 return extraLarge
+            case .accessoryCircular, .accessoryRectangular, .accessoryInline:
+                return small  // Accessory widgets use smallest spacing
             @unknown default:
                 return medium
             }
@@ -235,6 +241,8 @@ enum JohoWidget {
                 return large
             case .systemExtraLarge:
                 return extraLarge
+            case .accessoryCircular, .accessoryRectangular, .accessoryInline:
+                return small  // Accessory widgets use smallest corner radii
             @unknown default:
                 return medium
             }
@@ -266,6 +274,8 @@ enum JohoWidget {
                 return large
             case .systemExtraLarge:
                 return extraLarge
+            case .accessoryCircular, .accessoryRectangular, .accessoryInline:
+                return small  // Accessory widgets use smallest cell dimensions
             @unknown default:
                 return medium
             }

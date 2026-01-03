@@ -22,8 +22,8 @@ struct ContactDetailView: View {
     @State private var showingVCardShare = false
     @State private var vcardURL: URL?
 
-    // 情報デザイン accent color for contacts (purple)
-    private let accentColor = Color(hex: "805AD5")
+    // 情報デザイン accent color for contacts (Warm Brown)
+    private var accentColor: Color { PageHeaderColor.contacts.accent }
 
     init(contact: Contact) {
         self.contact = contact
@@ -141,12 +141,12 @@ struct ContactDetailView: View {
             .padding(.vertical, JohoDimensions.spacingLG)
             .padding(.horizontal, JohoDimensions.spacingMD)
             .frame(maxWidth: .infinity)
-            .background(accentColor.opacity(0.1))
+            .background(PageHeaderColor.contacts.lightBackground)
 
-            // Thin separator line
+            // Separator line (情報デザイン: solid black)
             Rectangle()
-                .fill(JohoColors.black.opacity(0.2))
-                .frame(height: 1)
+                .fill(JohoColors.black)
+                .frame(height: 1.5)
 
             // Action buttons row - softer pill-style buttons
             HStack(spacing: JohoDimensions.spacingSM) {
@@ -617,7 +617,14 @@ enum JohoContactEditorMode {
     var accentColor: Color {
         switch self {
         case .birthday: return SpecialDayType.birthday.accentColor
-        case .contact: return Color(hex: "805AD5")  // Purple - people & contacts
+        case .contact: return PageHeaderColor.contacts.accent  // Warm Brown 情報デザイン
+        }
+    }
+
+    var lightBackground: Color {
+        switch self {
+        case .birthday: return SpecialDayType.birthday.lightBackground
+        case .contact: return PageHeaderColor.contacts.lightBackground
         }
     }
 }
@@ -666,14 +673,9 @@ struct JohoContactEditorSheet: View {
 
     private let calendar = Calendar.current
 
-    // 情報デザイン: Birthday mode uses pink, Contact mode uses purple
-    private var accentColor: Color {
-        mode == .birthday ? SpecialDayType.birthday.accentColor : Color(hex: "805AD5")
-    }
-
-    private var lightBackground: Color {
-        mode == .birthday ? SpecialDayType.birthday.lightBackground : Color(hex: "E9D8FD")
-    }
+    // 情報デザイン: Use mode's colors (Birthday = pink, Contact = warm brown)
+    private var accentColor: Color { mode.accentColor }
+    private var lightBackground: Color { mode.lightBackground }
 
     private var isEditing: Bool { existingContact != nil }
 
@@ -703,7 +705,7 @@ struct JohoContactEditorSheet: View {
             _email = State(initialValue: contact.emailAddresses.first?.value ?? "")
             _notes = State(initialValue: contact.note ?? "")
             _selectedImageData = State(initialValue: contact.imageData)
-            _selectedSymbol = State(initialValue: "person.fill")
+            _selectedSymbol = State(initialValue: contact.symbolName ?? (mode == .birthday ? "birthday.cake.fill" : "person.fill"))
 
             // Address - get first postal address if available
             let firstAddress = contact.postalAddresses.first
@@ -840,6 +842,9 @@ struct JohoContactEditorSheet: View {
                             }
                         }
                     }
+
+                    // Symbol decoration picker (情報デザイン compliant)
+                    symbolDecorationPicker
 
                     // Name fields - clean and centered
                     VStack(spacing: JohoDimensions.spacingSM) {
@@ -1077,6 +1082,55 @@ struct JohoContactEditorSheet: View {
         }
     }
 
+    // MARK: - Symbol Decoration Picker
+    /// 情報デザイン compliant symbol picker for contact avatars
+    private var symbolDecorationPicker: some View {
+        Button {
+            showingIconPicker = true
+            HapticManager.selection()
+        } label: {
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Current symbol preview (matches header icon zone pattern)
+                Image(systemName: selectedSymbol)
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(accentColor)
+                    .frame(width: 36, height: 36)
+                    .background(lightBackground)
+                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                    .overlay(
+                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                            .stroke(JohoColors.black, lineWidth: 1.5)
+                    )
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("DECORATION")
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                    Text("Tap to change icon")
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(JohoColors.black.opacity(0.3))
+            }
+            .padding(JohoDimensions.spacingMD)
+            .background(JohoColors.white)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                    .stroke(JohoColors.black.opacity(0.15), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .sheet(isPresented: $showingIconPicker) {
+            ContactSymbolPicker(selectedSymbol: $selectedSymbol, accentColor: accentColor, lightBackground: lightBackground)
+        }
+    }
+
     // Elegant minimal text field
     @ViewBuilder
     private func elegantTextField(icon: String, placeholder: String, text: Binding<String>) -> some View {
@@ -1166,6 +1220,7 @@ struct JohoContactEditorSheet: View {
             existingContact.birthdayKnown = birthdayKnown  // Save N/A status
             existingContact.note = trimmedNotes.isEmpty ? nil : trimmedNotes
             existingContact.imageData = selectedImageData  // Save photo (circular)
+            existingContact.symbolName = selectedSymbol  // Save decoration symbol
             existingContact.modifiedAt = Date()
         } else {
             // Create the contact
@@ -1187,6 +1242,9 @@ struct JohoContactEditorSheet: View {
 
             // Set photo if provided (displayed in circular frame)
             contact.imageData = selectedImageData
+
+            // Set decoration symbol
+            contact.symbolName = selectedSymbol
 
             // Save to SwiftData
             modelContext.insert(contact)
@@ -1398,5 +1456,112 @@ private struct CircularMaskOverlay: View {
                 .stroke(Color.white, lineWidth: 2)
                 .frame(width: cropSize, height: cropSize)
         }
+    }
+}
+
+// MARK: - Contact Symbol Picker (情報デザイン Compliant)
+
+/// Symbol picker for contact avatar decorations
+/// Selected state: Accent color icon on light background (NOT inverted)
+/// Unselected state: Black icon on white background
+private struct ContactSymbolPicker: View {
+    @Binding var selectedSymbol: String
+    let accentColor: Color
+    let lightBackground: Color
+    @Environment(\.dismiss) private var dismiss
+
+    // Symbol categories for contacts (person-focused)
+    private let symbolCategories: [(name: String, symbols: [String])] = [
+        ("PEOPLE", ["person.fill", "person.2.fill", "person.3.fill", "figure.stand", "heart.circle.fill", "hand.raised.fill", "hand.wave.fill"]),
+        ("MARU-BATSU", ["circle", "circle.fill", "xmark", "triangle", "triangle.fill", "square", "square.fill", "diamond", "diamond.fill", "star.fill"]),
+        ("EVENTS", ["birthday.cake.fill", "gift.fill", "party.popper.fill", "balloon.fill", "heart.fill", "sparkles", "bell.fill"]),
+        ("WORK", ["briefcase.fill", "building.2.fill", "phone.fill", "envelope.fill", "laptopcomputer", "network"]),
+        ("NATURE", ["leaf.fill", "sun.max.fill", "moon.fill", "cloud.sun.fill", "flame.fill", "drop.fill", "camera.macro"]),
+    ]
+
+    private let columns = [GridItem(.adaptive(minimum: 52), spacing: JohoDimensions.spacingSM)]
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: JohoDimensions.spacingLG) {
+                // Header
+                HStack {
+                    Button { dismiss() } label: {
+                        Text("Cancel")
+                            .font(JohoFont.body)
+                            .foregroundStyle(JohoColors.black)
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+                            .padding(.vertical, JohoDimensions.spacingSM)
+                            .background(JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                    .stroke(JohoColors.black, lineWidth: 1.5)
+                            )
+                    }
+
+                    Spacer()
+
+                    Text("DECORATION")
+                        .font(.system(size: 16, weight: .black, design: .rounded))
+                        .foregroundStyle(JohoColors.black)
+
+                    Spacer()
+
+                    Button { dismiss() } label: {
+                        Text("Done")
+                            .font(JohoFont.body.bold())
+                            .foregroundStyle(JohoColors.white)
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+                            .padding(.vertical, JohoDimensions.spacingSM)
+                            .background(accentColor)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                    .stroke(JohoColors.black, lineWidth: 1.5)
+                            )
+                    }
+                }
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.top, JohoDimensions.spacingMD)
+
+                // Symbol categories
+                ForEach(symbolCategories, id: \.name) { category in
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        // Category header
+                        Text(category.name)
+                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .padding(.horizontal, JohoDimensions.spacingLG)
+
+                        // Symbol grid
+                        LazyVGrid(columns: columns, spacing: JohoDimensions.spacingSM) {
+                            ForEach(category.symbols, id: \.self) { symbol in
+                                Button {
+                                    selectedSymbol = symbol
+                                    HapticManager.selection()
+                                } label: {
+                                    let isSelected = selectedSymbol == symbol
+                                    Image(systemName: symbol)
+                                        .font(.system(size: 22, weight: .bold))
+                                        .foregroundStyle(isSelected ? accentColor : JohoColors.black)
+                                        .frame(width: 52, height: 52)
+                                        .background(isSelected ? lightBackground : JohoColors.white)
+                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                                        .overlay(
+                                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                                .stroke(JohoColors.black, lineWidth: isSelected ? 2 : 1)
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(.horizontal, JohoDimensions.spacingLG)
+                    }
+                }
+            }
+            .padding(.bottom, JohoDimensions.spacingXL)
+        }
+        .background(JohoColors.white)
     }
 }
