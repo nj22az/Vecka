@@ -28,6 +28,12 @@ struct DashboardView: View {
         return allTrips.filter { Calendar.iso8601.startOfDay(for: $0.endDate) >= today }
     }
 
+    // Computed stats for stats row
+    private var notesCount: Int { allNotes.count }
+    private var expensesCount: Int { getThisMonthExpenses().count }
+    private var tripsCount: Int { activeTrips.count }
+    private var holidaysCount: Int { getUpcomingHolidays(limit: 10).count }
+
     var body: some View {
         GeometryReader { geometry in
             let isLandscape = geometry.size.width > geometry.size.height
@@ -36,7 +42,7 @@ struct DashboardView: View {
                 VStack(spacing: JohoDimensions.spacingMD) {
                     // 情報デザイン: Bento-style page header (Golden Standard Pattern)
                     toolsPageHeader
-                        .padding(.horizontal, JohoDimensions.spacingMD)
+                        .padding(.horizontal, JohoDimensions.spacingLG)
                         .padding(.top, JohoDimensions.spacingSM)
 
                     if isLandscape {
@@ -48,22 +54,20 @@ struct DashboardView: View {
             }
             .scrollContentBackground(.hidden)
         }
-        .background(JohoColors.background)
+        .johoBackground()
     }
 
-    // MARK: - Tools Page Header (情報デザイン: Golden Standard Pattern)
+    // MARK: - Tools Page Header (情報デザイン: Golden Standard Pattern from Star Page)
 
     private var toolsPageHeader: some View {
-        let cardCount = 7  // Dashboard cards count
-
-        return VStack(spacing: 0) {
-            // MAIN ROW: Icon + Title | WALL | Stats
+        VStack(spacing: 0) {
+            // TOP ROW: Icon + Title | WALL | Widget count
             HStack(spacing: 0) {
                 // LEFT COMPARTMENT: Icon + Title
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone with Tools accent color (Teal)
                     Image(systemName: "wrench.and.screwdriver")
-                        .font(.system(size: 20, weight: .bold))
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundStyle(PageHeaderColor.tools.accent)
                         .frame(width: 40, height: 40)
                         .background(PageHeaderColor.tools.lightBackground)
@@ -81,30 +85,82 @@ struct DashboardView: View {
                 .padding(.vertical, JohoDimensions.spacingSM)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-                // VERTICAL WALL
+                // VERTICAL WALL (separator)
                 Rectangle()
                     .fill(JohoColors.black)
                     .frame(width: 1.5)
 
-                // RIGHT COMPARTMENT: Card count stat
+                // RIGHT COMPARTMENT: Widget count
                 HStack(spacing: 4) {
-                    Text("\(cardCount)")
-                        .font(JohoFont.bodySmall.bold())
+                    Text("7")
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .monospacedDigit()
                         .foregroundStyle(JohoColors.black)
                     Text("WIDGETS")
                         .font(JohoFont.labelSmall)
                         .foregroundStyle(JohoColors.black.opacity(0.7))
                 }
-                .padding(.horizontal, JohoDimensions.spacingMD)
+                .frame(width: 100)
             }
-            .frame(minHeight: 56)
+            .frame(height: 56)
+
+            // HORIZONTAL DIVIDER
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(height: 1.5)
+
+            // STATS ROW (full width) - shows colored indicators like Star Page
+            HStack(spacing: JohoDimensions.spacingMD) {
+                statsRow
+                Spacer()
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
         }
         .background(JohoColors.white)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
         )
+    }
+
+    // MARK: - Stats Row (情報デザイン: Colored indicators like Star Page)
+
+    private var statsRow: some View {
+        HStack(spacing: JohoDimensions.spacingMD) {
+            if notesCount > 0 {
+                statIndicator(count: notesCount, color: JohoColors.yellow, label: "notes")
+            }
+            if expensesCount > 0 {
+                statIndicator(count: expensesCount, color: JohoColors.green, label: "expenses")
+            }
+            if tripsCount > 0 {
+                statIndicator(count: tripsCount, color: JohoColors.orange, label: "trips")
+            }
+            if holidaysCount > 0 {
+                statIndicator(count: holidaysCount, color: JohoColors.pink, label: "holidays")
+            }
+
+            if notesCount == 0 && expensesCount == 0 && tripsCount == 0 && holidaysCount == 0 {
+                Text("Your dashboard at a glance")
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(JohoColors.black.opacity(0.6))
+            }
+        }
+    }
+
+    private func statIndicator(count: Int, color: Color, label: String) -> some View {
+        HStack(spacing: 4) {
+            Circle()
+                .fill(color)
+                .frame(width: 8, height: 8)
+                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+            Text("\(count)")
+                .font(JohoFont.labelSmall)
+                .foregroundStyle(JohoColors.black)
+        }
+        .accessibilityLabel("\(count) \(label)")
     }
 
     // MARK: - Landscape Layout (3 columns)
@@ -186,7 +242,7 @@ struct DashboardView: View {
         .padding(spacing)
     }
 
-    // MARK: - Today Card
+    // MARK: - Today Card (情報デザイン: Yellow = NOW/Present)
 
     private var todayCard: some View {
         let today = Date()
@@ -195,20 +251,20 @@ struct DashboardView: View {
         let weekday = today.formatted(.dateTime.weekday(.wide)).uppercased()
         let monthYear = today.formatted(.dateTime.month(.wide).year())
 
-        return DashboardCard(title: "TODAY", icon: "sun.max.fill", accentColor: JohoColors.yellow) {
+        return DashboardCard(title: "TODAY", icon: "sun.max.fill", zone: .notes) {
             HStack(spacing: JohoDimensions.spacingLG) {
-                // Large day number
+                // Large day number - 情報デザイン: Hero display size
                 Text("\(dayNumber)")
-                    .font(.system(size: 64, weight: .black, design: .rounded))
+                    .font(JohoFont.displayLarge)
                     .foregroundStyle(JohoColors.black)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(weekday)
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .font(JohoFont.headline)
                         .foregroundStyle(JohoColors.black)
 
                     Text(monthYear)
-                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .font(JohoFont.bodySmall)
                         .foregroundStyle(JohoColors.black.opacity(0.7))
                 }
 
@@ -217,27 +273,27 @@ struct DashboardView: View {
         }
     }
 
-    // MARK: - Week Info Card
+    // MARK: - Week Info Card (情報デザイン: Cyan = Scheduled Time)
 
     private var weekInfoCard: some View {
         let weekNumber = WeekCalculator.shared.weekNumber(for: Date())
         let daysLeft = daysLeftInWeek()
 
-        return DashboardCard(title: "WEEK", icon: "calendar.badge.clock", accentColor: JohoColors.cyan) {
+        return DashboardCard(title: "WEEK", icon: "calendar.badge.clock", zone: .calendar) {
             VStack(spacing: JohoDimensions.spacingSM) {
                 Text("W\(weekNumber)")
-                    .font(.system(size: 48, weight: .black, design: .rounded))
+                    .font(JohoFont.displayMedium)
                     .foregroundStyle(JohoColors.black)
 
                 Text("\(daysLeft) days left")
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .font(JohoFont.caption)
                     .foregroundStyle(JohoColors.black.opacity(0.6))
             }
             .frame(maxWidth: .infinity)
         }
     }
 
-    // MARK: - Year Progress Card
+    // MARK: - Year Progress Card (情報デザイン: Green = Money/Growth)
 
     private var yearProgressCard: some View {
         let calendar = Calendar.iso8601
@@ -249,43 +305,48 @@ struct DashboardView: View {
         let daysPassed = calendar.dateComponents([.day], from: startOfYear, to: today).day!
         let progress = Double(daysPassed) / Double(totalDays)
 
-        return DashboardCard(title: "YEAR", icon: "chart.bar.fill", accentColor: JohoColors.green) {
+        return DashboardCard(title: "YEAR", icon: "chart.bar.fill", zone: .expenses) {
             VStack(spacing: JohoDimensions.spacingSM) {
                 Text("\(Int(progress * 100))%")
-                    .font(.system(size: 32, weight: .black, design: .rounded))
+                    .font(JohoFont.displaySmall)
                     .foregroundStyle(JohoColors.black)
 
-                // Progress bar
+                // Progress bar - 情報デザイン: Squircle with black border
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 4)
+                        Squircle(cornerRadius: 4)
                             .fill(JohoColors.black.opacity(0.1))
-                            .frame(height: 8)
+                            .frame(height: 10)
 
-                        RoundedRectangle(cornerRadius: 4)
+                        Squircle(cornerRadius: 4)
                             .fill(JohoColors.green)
-                            .frame(width: geo.size.width * progress, height: 8)
+                            .frame(width: geo.size.width * progress, height: 10)
                     }
+                    .overlay(
+                        Squircle(cornerRadius: 4)
+                            .stroke(JohoColors.black, lineWidth: 1)
+                            .frame(height: 10)
+                    )
                 }
-                .frame(height: 8)
+                .frame(height: 10)
 
-                Text("\(totalDays - daysPassed) days left in \(year)")
-                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                Text("\(totalDays - daysPassed) days left in \(String(year))")
+                    .font(JohoFont.caption)
                     .foregroundStyle(JohoColors.black.opacity(0.6))
             }
             .frame(maxWidth: .infinity)
         }
     }
 
-    // MARK: - Upcoming Holidays Card
+    // MARK: - Upcoming Holidays Card (情報デザイン: Pink = Special Days)
 
     private var upcomingHolidaysCard: some View {
         let upcomingHolidays = getUpcomingHolidays(limit: 3)
 
-        return DashboardCard(title: "HOLIDAYS", icon: "star.fill", accentColor: JohoColors.pink) {
+        return DashboardCard(title: "HOLIDAYS", icon: "star.fill", zone: .holidays) {
             if upcomingHolidays.isEmpty {
                 Text("No upcoming holidays")
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .font(JohoFont.caption)
                     .foregroundStyle(JohoColors.black.opacity(0.5))
                     .frame(maxWidth: .infinity)
             } else {
@@ -295,14 +356,14 @@ struct DashboardView: View {
                             JohoIndicatorCircle(color: JohoColors.red, size: .small)
 
                             Text(holiday.name)
-                                .font(.system(size: 13, weight: .medium, design: .rounded))
+                                .font(JohoFont.bodySmall)
                                 .foregroundStyle(JohoColors.black)
                                 .lineLimit(1)
 
                             Spacer()
 
                             Text(daysUntilText(holiday.date))
-                                .font(.system(size: 11, weight: .bold, design: .rounded))
+                                .font(JohoFont.labelSmall)
                                 .foregroundStyle(JohoColors.black.opacity(0.6))
                         }
                     }
@@ -311,33 +372,33 @@ struct DashboardView: View {
         }
     }
 
-    // MARK: - Countdowns Card
+    // MARK: - Countdowns Card (情報デザイン: Purple = Events/Countdowns)
 
     private var countdownsCard: some View {
         let countdowns = getUpcomingCountdowns(limit: 3)
 
-        return DashboardCard(title: "COUNTDOWNS", icon: "timer", accentColor: JohoColors.orange) {
+        return DashboardCard(title: "COUNTDOWNS", icon: "timer", zone: .events) {
             if countdowns.isEmpty {
                 Text("No countdowns set")
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .font(JohoFont.caption)
                     .foregroundStyle(JohoColors.black.opacity(0.5))
                     .frame(maxWidth: .infinity)
             } else {
                 VStack(spacing: JohoDimensions.spacingSM) {
                     ForEach(countdowns, id: \.name) { countdown in
                         HStack {
-                            JohoIndicatorCircle(color: JohoColors.orange, size: .small)
+                            JohoIndicatorCircle(color: JohoColors.eventPurple, size: .small)
 
                             Text(countdown.name)
-                                .font(.system(size: 13, weight: .medium, design: .rounded))
+                                .font(JohoFont.bodySmall)
                                 .foregroundStyle(JohoColors.black)
                                 .lineLimit(1)
 
                             Spacer()
 
                             Text("\(countdown.days)d")
-                                .font(.system(size: 11, weight: .bold, design: .rounded))
-                                .foregroundStyle(JohoColors.orange)
+                                .font(JohoFont.labelSmall)
+                                .foregroundStyle(JohoColors.eventPurple)
                         }
                     }
                 }
@@ -345,15 +406,15 @@ struct DashboardView: View {
         }
     }
 
-    // MARK: - Recent Notes Card
+    // MARK: - Recent Notes Card (情報デザイン: Cream = Personal/Notes)
 
     private var recentNotesCard: some View {
         let recentNotes = Array(allNotes.prefix(3))
 
-        return DashboardCard(title: "NOTES", icon: "note.text", accentColor: JohoColors.cream) {
+        return DashboardCard(title: "NOTES", icon: "note.text", zone: .notes) {
             if recentNotes.isEmpty {
                 Text("No notes yet")
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .font(JohoFont.caption)
                     .foregroundStyle(JohoColors.black.opacity(0.5))
                     .frame(maxWidth: .infinity)
             } else {
@@ -363,14 +424,14 @@ struct DashboardView: View {
                             JohoIndicatorCircle(color: JohoColors.yellow, size: .small)
 
                             Text(note.content.prefix(30) + (note.content.count > 30 ? "..." : ""))
-                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .font(JohoFont.caption)
                                 .foregroundStyle(JohoColors.black)
                                 .lineLimit(1)
 
                             Spacer()
 
                             Text(note.date.formatted(.dateTime.month(.abbreviated).day()))
-                                .font(.system(size: 10, weight: .medium, design: .rounded))
+                                .font(JohoFont.labelSmall)
                                 .foregroundStyle(JohoColors.black.opacity(0.5))
                         }
                     }
@@ -379,31 +440,31 @@ struct DashboardView: View {
         }
     }
 
-    // MARK: - Expense Summary Card
+    // MARK: - Expense Summary Card (情報デザイン: Green = Money/Expenses)
 
     private var expenseSummaryCard: some View {
         let thisMonth = getThisMonthExpenses()
         let total = thisMonth.reduce(0) { $0 + $1.amount }
 
-        return DashboardCard(title: "EXPENSES", icon: "dollarsign.circle", accentColor: JohoColors.green) {
+        return DashboardCard(title: "EXPENSES", icon: "dollarsign.circle", zone: .expenses) {
             VStack(spacing: JohoDimensions.spacingSM) {
                 Text(formatCurrency(total))
-                    .font(.system(size: 28, weight: .black, design: .rounded))
+                    .font(JohoFont.displaySmall)
                     .foregroundStyle(JohoColors.black)
 
                 Text("this month")
-                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                    .font(JohoFont.caption)
                     .foregroundStyle(JohoColors.black.opacity(0.6))
 
                 Text("\(thisMonth.count) transaction\(thisMonth.count == 1 ? "" : "s")")
-                    .font(.system(size: 10, weight: .medium, design: .rounded))
+                    .font(JohoFont.labelSmall)
                     .foregroundStyle(JohoColors.black.opacity(0.5))
             }
             .frame(maxWidth: .infinity)
         }
     }
 
-    // MARK: - Active Trip Card
+    // MARK: - Active Trip Card (情報デザイン: Orange = Movement/Trips)
 
     private var activeTripCard: some View {
         guard let trip = activeTrips.first else {
@@ -413,29 +474,33 @@ struct DashboardView: View {
         let daysLeft = Calendar.iso8601.dateComponents([.day], from: Date(), to: trip.endDate).day ?? 0
 
         return AnyView(
-            DashboardCard(title: "ACTIVE TRIP", icon: "airplane", accentColor: JohoColors.orange) {
+            DashboardCard(title: "ACTIVE TRIP", icon: "airplane", zone: .trips) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(trip.tripName)
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .font(JohoFont.body)
                             .foregroundStyle(JohoColors.black)
 
                         Text(trip.destination)
-                            .font(.system(size: 12, weight: .medium, design: .rounded))
+                            .font(JohoFont.caption)
                             .foregroundStyle(JohoColors.black.opacity(0.7))
                     }
 
                     Spacer()
 
-                    VStack {
+                    // Days left badge - 情報デザイン: Black badge with white text
+                    VStack(spacing: 2) {
                         Text("\(max(0, daysLeft))")
-                            .font(.system(size: 24, weight: .black, design: .rounded))
-                            .foregroundStyle(JohoColors.orange)
+                            .font(JohoFont.displaySmall)
+                            .foregroundStyle(JohoColors.white)
 
-                        Text("days left")
-                            .font(.system(size: 10, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                        Text("days")
+                            .font(JohoFont.labelSmall)
+                            .foregroundStyle(JohoColors.white.opacity(0.8))
                     }
+                    .frame(width: 56, height: 56)
+                    .background(JohoColors.black)
+                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 }
             }
         )
@@ -513,27 +578,27 @@ struct DashboardView: View {
     }
 }
 
-// MARK: - Dashboard Card Component
+// MARK: - Dashboard Card Component (情報デザイン: Bento compartment style)
 
 private struct DashboardCard<Content: View>: View {
     let title: String
     let icon: String
-    let accentColor: Color
+    let zone: SectionZone
     @ViewBuilder let content: Content
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Header with icon zone
+            // Header with icon zone - 情報デザイン: Colored icon in zone background
             HStack(spacing: JohoDimensions.spacingSM) {
-                // Icon zone - 情報デザイン: Colored icon zone
+                // Icon zone - uses SectionZone background for proper semantic color
                 Image(systemName: icon)
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
                     .frame(width: 28, height: 28)
-                    .background(accentColor.opacity(0.3))
-                    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                    .background(zone.background)
+                    .clipShape(Squircle(cornerRadius: 6))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        Squircle(cornerRadius: 6)
                             .stroke(JohoColors.black, lineWidth: 1)
                     )
 
@@ -547,7 +612,7 @@ private struct DashboardCard<Content: View>: View {
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
 
-            // Divider
+            // Divider - 情報デザイン: Black border between compartments
             Rectangle()
                 .fill(JohoColors.black)
                 .frame(height: 1.5)
@@ -557,9 +622,9 @@ private struct DashboardCard<Content: View>: View {
                 .padding(JohoDimensions.spacingMD)
         }
         .background(JohoColors.white)
-        .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous))
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
-            RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous)
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
                 .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
         )
     }

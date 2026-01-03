@@ -24,6 +24,8 @@
 	<string>WeekGrid needs access to your contacts to import and sync contact information for easy management within the app.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>WeekGrid uses the camera to scan QR codes for quickly importing contact information.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>WeekGrid uses photos for contact profile pictures, letting you personalize your contacts with custom images.</string>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>WeekGrid shows your calendar events alongside the weekly view, helping you see your schedule at a glance.</string>
 	</dict>

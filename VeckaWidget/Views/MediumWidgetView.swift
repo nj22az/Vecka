@@ -3,8 +3,8 @@
 //  VeckaWidget
 //
 //  情報デザイン (Jōhō Dezain) Medium Widget
-//  Two-column bento: Week info | Calendar strip
-//  Philosophy: Compartmentalized information at a glance
+//  Clean two-column bento: Week/Today | Calendar Strip
+//  Philosophy: Essential info with visual clarity
 //
 
 import SwiftUI
@@ -12,6 +12,7 @@ import WidgetKit
 
 struct VeckaMediumWidgetView: View {
     let entry: VeckaWidgetEntry
+    private let family: WidgetFamily = .systemMedium
 
     private let calendar: Calendar = {
         var cal = Calendar(identifier: .iso8601)
@@ -20,6 +21,8 @@ struct VeckaMediumWidgetView: View {
         cal.locale = .autoupdatingCurrent
         return cal
     }()
+
+    private let holidayEngine = WidgetHolidayEngine()
 
     // MARK: - Computed Properties
 
@@ -44,103 +47,170 @@ struct VeckaMediumWidgetView: View {
         calendar.component(.day, from: entry.date)
     }
 
+    private var weekdayShort: String {
+        entry.date.formatted(.dateTime.weekday(.abbreviated).locale(.autoupdatingCurrent)).uppercased()
+    }
+
     private var weekdaySymbols: [String] {
         let symbols = calendar.veryShortWeekdaySymbols
         return Array(symbols[1...]) + [symbols[0]]  // Monday first
     }
 
-    private let holidayEngine = WidgetHolidayEngine()
+    private var isRedDay: Bool {
+        entry.todaysHolidays.first?.isRedDay ?? false
+    }
+
+    private var isSunday: Bool {
+        calendar.component(.weekday, from: entry.date) == 1
+    }
+
+    // MARK: - Sizing
+
+    private var borders: JohoWidget.Borders.Weights {
+        JohoWidget.Borders.weights(for: family)
+    }
+
+    private var corners: JohoWidget.Corners.Radii {
+        JohoWidget.Corners.radii(for: family)
+    }
+
+    private var spacing: JohoWidget.Spacing.Grid {
+        JohoWidget.Spacing.grid(for: family)
+    }
 
     // MARK: - Body
 
     var body: some View {
         HStack(spacing: 0) {
-            // LEFT COMPARTMENT: Week Info
+            // ═══════════════════════════════════════════════
+            // LEFT: Week + Today Hero
+            // ═══════════════════════════════════════════════
             leftCompartment
                 .frame(width: 100)
 
-            // VERTICAL WALL (bento divider)
+            // VERTICAL WALL
             Rectangle()
                 .fill(JohoWidget.Colors.border)
-                .frame(width: 2)
+                .frame(width: borders.container)
 
-            // RIGHT COMPARTMENT: Calendar Strip
+            // ═══════════════════════════════════════════════
+            // RIGHT: Calendar Strip
+            // ═══════════════════════════════════════════════
             rightCompartment
         }
         .widgetURL(URL(string: "vecka://week/\(entry.weekNumber)/\(entry.year)"))
         .containerBackground(for: .widget) {
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
+            RoundedRectangle(cornerRadius: corners.widget, style: .continuous)
                 .fill(JohoWidget.Colors.content)
+                .overlay(
+                    RoundedRectangle(cornerRadius: corners.widget, style: .continuous)
+                        .stroke(JohoWidget.Colors.border, lineWidth: borders.widget)
+                )
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Week \(entry.weekNumber), \(monthYear)")
     }
 
-    // MARK: - Left Compartment
+    // MARK: - Left Compartment (Week + Today)
 
     private var leftCompartment: some View {
-        VStack(spacing: 6) {
-            // Week badge (hero)
-            Text("W\(entry.weekNumber)")
-                .font(.system(size: 18, weight: .black, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.textInverted)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(JohoWidget.Colors.border)
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-
-            // Day number
-            Text("\(dayOfMonth)")
-                .font(.system(size: 36, weight: .heavy, design: .rounded))
-                .foregroundStyle(dayColor)
-
-            // Month year
-            Text(monthYear)
-                .font(.system(size: 10, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
-
-            // Holiday indicator (if any)
-            if let holiday = entry.todaysHolidays.first {
-                HStack(spacing: 4) {
-                    Circle()
-                        .fill(holiday.isRedDay ? JohoWidget.Colors.alert : JohoWidget.Colors.event)
-                        .frame(width: 6, height: 6)
-                    Text(holiday.displayName)
-                        .font(.system(size: 9, weight: .semibold, design: .rounded))
-                        .foregroundStyle(JohoWidget.Colors.text.opacity(0.7))
-                        .lineLimit(1)
-                }
-                .padding(.horizontal, 8)
+        VStack(spacing: 0) {
+            // Week badge (hero - 黒に白)
+            VStack(spacing: 2) {
+                Text("\(entry.weekNumber)")
+                    .font(.system(size: 32, weight: .black, design: .rounded))
+                    .foregroundStyle(JohoWidget.Colors.textInverted)
+                Text("WEEK")
+                    .font(.system(size: 9, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoWidget.Colors.textInverted.opacity(0.7))
             }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, spacing.md)
+            .background(JohoWidget.Colors.border)
+
+            // Thin divider
+            Rectangle()
+                .fill(JohoWidget.Colors.border)
+                .frame(height: 1)
+
+            // Today info (day + weekday)
+            VStack(spacing: 2) {
+                Text("\(dayOfMonth)")
+                    .font(.system(size: 28, weight: .heavy, design: .rounded))
+                    .foregroundStyle(dayColor)
+
+                Text(weekdayShort)
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(centerBackground)
+
+            // Holiday/Month footer
+            Rectangle()
+                .fill(JohoWidget.Colors.border)
+                .frame(height: 1)
+
+            Group {
+                if let holiday = entry.todaysHolidays.first {
+                    HStack(spacing: 4) {
+                        Circle()
+                            .fill(holiday.isRedDay ? JohoWidget.Colors.alert : JohoWidget.Colors.event)
+                            .frame(width: 6, height: 6)
+                            .overlay(Circle().stroke(JohoWidget.Colors.border, lineWidth: 0.5))
+
+                        Text(holiday.displayName)
+                            .font(.system(size: 9, weight: .semibold, design: .rounded))
+                            .foregroundStyle(JohoWidget.Colors.text)
+                            .lineLimit(1)
+                    }
+                } else {
+                    Text(monthYear)
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 28)
+            .padding(.horizontal, spacing.sm)
         }
-        .frame(maxHeight: .infinity)
-        .padding(.vertical, 12)
+        .background(JohoWidget.Colors.content)
     }
 
-    // MARK: - Right Compartment
+    // MARK: - Right Compartment (Calendar Strip)
 
     private var rightCompartment: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 0) {
             // Weekday headers
             HStack(spacing: 0) {
                 ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { index, symbol in
                     Text(symbol)
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
                         .foregroundStyle(weekdayColor(for: index))
                         .frame(maxWidth: .infinity)
                 }
             }
+            .padding(.horizontal, spacing.sm)
+            .padding(.top, spacing.sm)
+            .padding(.bottom, spacing.xs)
+
+            // Thin divider
+            Rectangle()
+                .fill(JohoWidget.Colors.border.opacity(0.3))
+                .frame(height: 1)
+                .padding(.horizontal, spacing.sm)
 
             // Day cells
-            HStack(spacing: 3) {
+            HStack(spacing: 4) {
                 ForEach(Array(weekDays.enumerated()), id: \.offset) { index, date in
                     dayCell(date: date, dayIndex: index)
                 }
             }
+            .padding(.horizontal, spacing.sm)
+            .padding(.vertical, spacing.sm)
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 12)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(JohoWidget.Colors.content)
     }
 
     // MARK: - Day Cell
@@ -154,34 +224,35 @@ struct VeckaMediumWidgetView: View {
         let isSunday = dayIndex == 6
         let hasEvent = !holidays.isEmpty
 
-        VStack(spacing: 2) {
+        VStack(spacing: 3) {
             Text("\(dayNumber)")
-                .font(.system(size: 14, weight: isToday ? .bold : .medium, design: .rounded))
+                .font(.system(size: 16, weight: isToday ? .bold : .medium, design: .rounded))
                 .foregroundStyle(cellTextColor(isToday: isToday, isRedDay: isRedDay, isSunday: isSunday))
 
-            // Event indicator dot
+            // Event indicator
             if hasEvent {
                 Circle()
-                    .fill(isRedDay ? JohoWidget.Colors.holiday : JohoWidget.Colors.event)
-                    .frame(width: 4, height: 4)
+                    .fill(isRedDay ? JohoWidget.Colors.alert : JohoWidget.Colors.event)
+                    .frame(width: 5, height: 5)
+                    .overlay(Circle().stroke(JohoWidget.Colors.border, lineWidth: 0.5))
             } else {
-                Spacer().frame(height: 4)
+                Spacer().frame(height: 5)
             }
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 38)
+        .frame(height: 50)
         .background(cellBackground(isToday: isToday, isRedDay: isRedDay, isSunday: isSunday))
-        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .stroke(JohoWidget.Colors.border, lineWidth: isToday ? 2 : 0.5)
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(JohoWidget.Colors.border, lineWidth: isToday ? borders.selected : borders.cell)
         )
     }
 
     // MARK: - Styling Helpers
 
     private func weekdayColor(for index: Int) -> Color {
-        index == 6 ? JohoWidget.Colors.alert : JohoWidget.Colors.text.opacity(0.5)
+        index == 6 ? JohoWidget.Colors.alert : JohoWidget.Colors.text.opacity(0.6)
     }
 
     private func cellTextColor(isToday: Bool, isRedDay: Bool, isSunday: Bool) -> Color {
@@ -199,10 +270,14 @@ struct VeckaMediumWidgetView: View {
     }
 
     private var dayColor: Color {
-        let isRedDay = entry.todaysHolidays.first?.isRedDay ?? false
-        let isSunday = calendar.component(.weekday, from: entry.date) == 1
         if isRedDay { return JohoWidget.Colors.alert }
         if isSunday { return JohoWidget.Colors.alert }
         return JohoWidget.Colors.text
+    }
+
+    private var centerBackground: Color {
+        if isRedDay { return JohoWidget.Colors.holiday.opacity(0.15) }
+        if isSunday { return JohoWidget.Colors.alert.opacity(0.08) }
+        return JohoWidget.Colors.content
     }
 }

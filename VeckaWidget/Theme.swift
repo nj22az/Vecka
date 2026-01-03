@@ -191,10 +191,11 @@ enum JohoWidget {
             let xl: CGFloat     // Screen margins
         }
 
-        static let small = Grid(xs: 2, sm: 4, md: 6, lg: 8, xl: 10)
-        static let medium = Grid(xs: 2, sm: 4, md: 8, lg: 10, xl: 12)
-        static let large = Grid(xs: 3, sm: 6, md: 10, lg: 12, xl: 14)
-        static let extraLarge = Grid(xs: 4, sm: 8, md: 12, lg: 16, xl: 20)
+        // Reduced padding for tighter bento compartments
+        static let small = Grid(xs: 1, sm: 2, md: 4, lg: 6, xl: 8)
+        static let medium = Grid(xs: 2, sm: 3, md: 6, lg: 8, xl: 10)
+        static let large = Grid(xs: 2, sm: 4, md: 6, lg: 8, xl: 10)
+        static let extraLarge = Grid(xs: 3, sm: 6, md: 8, lg: 10, xl: 12)
 
         static func grid(for family: WidgetFamily) -> Grid {
             switch family {

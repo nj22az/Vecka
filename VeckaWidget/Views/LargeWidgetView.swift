@@ -3,7 +3,8 @@
 //  VeckaWidget
 //
 //  情報デザイン (Jōhō Dezain) Large Widget
-//  Full month calendar with header and upcoming holidays
+//  Three-zone bento: Header | Calendar Grid | Footer
+//  Philosophy: Full month at a glance with clear compartmentalization
 //
 
 import SwiftUI
@@ -82,43 +83,45 @@ struct VeckaLargeWidgetView: View {
 
     // MARK: - Sizing
 
-    private var typo: JohoWidget.Typography.Scale {
-        JohoWidget.Typography.scale(for: family)
-    }
-
-    private var spacing: JohoWidget.Spacing.Grid {
-        JohoWidget.Spacing.grid(for: family)
+    private var borders: JohoWidget.Borders.Weights {
+        JohoWidget.Borders.weights(for: family)
     }
 
     private var corners: JohoWidget.Corners.Radii {
         JohoWidget.Corners.radii(for: family)
     }
 
-    private var borders: JohoWidget.Borders.Weights {
-        JohoWidget.Borders.weights(for: family)
+    private var spacing: JohoWidget.Spacing.Grid {
+        JohoWidget.Spacing.grid(for: family)
     }
 
     // MARK: - Body
 
     var body: some View {
         VStack(spacing: 0) {
-            // HEADER COMPARTMENT
+            // ═══════════════════════════════════════════════
+            // HEADER COMPARTMENT: Month + Week Badge
+            // ═══════════════════════════════════════════════
             headerCompartment
 
-            // HORIZONTAL DIVIDER
+            // HORIZONTAL WALL
             Rectangle()
                 .fill(JohoWidget.Colors.border)
                 .frame(height: borders.container)
 
-            // CALENDAR COMPARTMENT
+            // ═══════════════════════════════════════════════
+            // CALENDAR COMPARTMENT: Full Month Grid
+            // ═══════════════════════════════════════════════
             calendarCompartment
 
-            // HORIZONTAL DIVIDER
+            // HORIZONTAL WALL
             Rectangle()
                 .fill(JohoWidget.Colors.border)
                 .frame(height: borders.row)
 
-            // FOOTER COMPARTMENT (Upcoming)
+            // ═══════════════════════════════════════════════
+            // FOOTER COMPARTMENT: Upcoming Holiday
+            // ═══════════════════════════════════════════════
             footerCompartment
         }
         .widgetURL(URL(string: "vecka://week/\(entry.weekNumber)/\(entry.year)"))
@@ -134,76 +137,84 @@ struct VeckaLargeWidgetView: View {
         .accessibilityLabel(accessibilityLabel)
     }
 
-    // MARK: - Header
+    // MARK: - Header Compartment
 
     private var headerCompartment: some View {
         HStack(alignment: .center) {
-            // Month Year
+            // Month Year (hero text)
             Text(monthYear)
-                .font(JohoWidget.Typography.font(typo.headline, weight: .heavy))
+                .font(.system(size: 18, weight: .heavy, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text)
 
             Spacer()
 
-            // Week badge
+            // Week badge (黒に白 - white on black)
             Text("W\(entry.weekNumber)")
-                .font(JohoWidget.Typography.font(typo.label, weight: .black))
+                .font(.system(size: 13, weight: .black, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.textInverted)
-                .padding(.horizontal, spacing.lg)
-                .padding(.vertical, spacing.sm)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
                 .background(JohoWidget.Colors.border)
-                .clipShape(RoundedRectangle(cornerRadius: corners.card, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
-        .padding(.horizontal, spacing.xl)
+        .padding(.horizontal, spacing.lg)
         .padding(.vertical, spacing.md)
         .background(JohoWidget.Colors.content)
     }
 
-    // MARK: - Calendar Grid
+    // MARK: - Calendar Compartment
 
     private var calendarCompartment: some View {
-        VStack(spacing: spacing.sm) {
+        VStack(spacing: spacing.xs) {
             // Weekday headers with W column
             HStack(spacing: 0) {
                 Text("W")
-                    .font(JohoWidget.Typography.font(typo.micro, weight: .bold))
-                    .foregroundStyle(JohoWidget.Colors.text.opacity(0.5))
-                    .frame(width: 28)
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoWidget.Colors.text.opacity(0.4))
+                    .frame(width: 26)
 
                 ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { index, symbol in
                     Text(symbol)
-                        .font(JohoWidget.Typography.font(typo.micro, weight: .bold))
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
                         .foregroundStyle(weekdayColor(for: index))
                         .frame(maxWidth: .infinity)
                 }
             }
+            .padding(.horizontal, spacing.md)
+            .padding(.top, spacing.sm)
+
+            // Divider under headers
+            Rectangle()
+                .fill(JohoWidget.Colors.border.opacity(0.3))
+                .frame(height: 1)
+                .padding(.horizontal, spacing.md)
 
             // Calendar rows
             ForEach(Array(weeksInMonth.enumerated()), id: \.offset) { weekIndex, week in
                 HStack(spacing: 0) {
-                    // Week number
+                    // Week number column
                     Text("\(weekNumber(for: weekIndex))")
-                        .font(JohoWidget.Typography.font(typo.micro, weight: .bold))
-                        .foregroundStyle(JohoWidget.Colors.text.opacity(0.5))
-                        .frame(width: 28)
+                        .font(.system(size: 9, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.text.opacity(0.4))
+                        .frame(width: 26)
 
                     ForEach(0..<7, id: \.self) { dayIndex in
                         if let day = week[dayIndex] {
                             dayCell(day: day, dayIndex: dayIndex)
                         } else {
-                            Color.clear.frame(maxWidth: .infinity, minHeight: 32)
+                            Color.clear.frame(maxWidth: .infinity, minHeight: 36)
                         }
                     }
                 }
             }
+            .padding(.horizontal, spacing.md)
+            .padding(.bottom, spacing.sm)
         }
-        .padding(.horizontal, spacing.lg)
-        .padding(.vertical, spacing.md)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(JohoWidget.Colors.content)
     }
 
-    // MARK: - Footer
+    // MARK: - Footer Compartment
 
     private var footerCompartment: some View {
         Group {
@@ -211,15 +222,12 @@ struct VeckaLargeWidgetView: View {
                 HStack(spacing: spacing.sm) {
                     // Type indicator
                     Circle()
-                        .fill(upcoming.holiday.isRedDay ? JohoWidget.Colors.holiday : JohoWidget.Colors.event)
+                        .fill(upcoming.holiday.isRedDay ? JohoWidget.Colors.alert : JohoWidget.Colors.event)
                         .frame(width: 8, height: 8)
-                        .overlay(
-                            Circle()
-                                .stroke(JohoWidget.Colors.border, lineWidth: 0.5)
-                        )
+                        .overlay(Circle().stroke(JohoWidget.Colors.border, lineWidth: 1))
 
                     Text(upcoming.holiday.displayName)
-                        .font(JohoWidget.Typography.font(typo.caption, weight: .semibold))
+                        .font(.system(size: 12, weight: .semibold, design: .rounded))
                         .foregroundStyle(JohoWidget.Colors.text)
                         .lineLimit(1)
 
@@ -227,25 +235,28 @@ struct VeckaLargeWidgetView: View {
 
                     // Days until badge
                     Text(daysUntilText(upcoming.daysUntil))
-                        .font(JohoWidget.Typography.font(typo.micro, weight: .bold))
-                        .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
-                        .padding(.horizontal, spacing.md)
-                        .padding(.vertical, spacing.xs)
-                        .background(JohoWidget.Colors.now.opacity(0.3))
-                        .clipShape(RoundedRectangle(cornerRadius: corners.pill, style: .continuous))
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.text)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(JohoWidget.Colors.now)
+                        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                .stroke(JohoWidget.Colors.border, lineWidth: 1)
+                        )
                 }
-                .padding(.horizontal, spacing.xl)
-                .padding(.vertical, spacing.md)
             } else {
                 HStack {
                     Text("No upcoming holidays")
-                        .font(JohoWidget.Typography.font(typo.caption, weight: .medium))
-                        .foregroundStyle(JohoWidget.Colors.text.opacity(0.5))
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.text.opacity(0.4))
+                    Spacer()
                 }
-                .padding(.horizontal, spacing.xl)
-                .padding(.vertical, spacing.md)
             }
         }
+        .padding(.horizontal, spacing.lg)
+        .padding(.vertical, spacing.md)
         .frame(maxWidth: .infinity)
         .background(JohoWidget.Colors.content)
     }
@@ -263,20 +274,21 @@ struct VeckaLargeWidgetView: View {
 
         VStack(spacing: 1) {
             Text("\(day)")
-                .font(JohoWidget.Typography.font(typo.caption, weight: isToday ? .bold : .medium))
+                .font(.system(size: 13, weight: isToday ? .bold : .medium, design: .rounded))
                 .foregroundStyle(cellTextColor(isToday: isToday, isRedDay: isRedDay, isSunday: isSunday))
 
             if hasEvent {
                 Circle()
-                    .fill(isRedDay ? JohoWidget.Colors.holiday : JohoWidget.Colors.event)
+                    .fill(isRedDay ? JohoWidget.Colors.alert : JohoWidget.Colors.event)
                     .frame(width: 5, height: 5)
+                    .overlay(Circle().stroke(JohoWidget.Colors.border, lineWidth: 0.5))
             }
         }
-        .frame(maxWidth: .infinity, minHeight: 32)
+        .frame(maxWidth: .infinity, minHeight: 36)
         .background(cellBackground(isToday: isToday, isRedDay: isRedDay, isSunday: isSunday))
-        .clipShape(RoundedRectangle(cornerRadius: corners.cell, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: corners.cell, style: .continuous)
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
                 .stroke(JohoWidget.Colors.border, lineWidth: isToday ? borders.selected : borders.cell)
         )
     }
@@ -284,27 +296,27 @@ struct VeckaLargeWidgetView: View {
     // MARK: - Helper Functions
 
     private func weekdayColor(for index: Int) -> Color {
-        index == 6 ? JohoWidget.Colors.sunday : JohoWidget.Colors.text.opacity(0.7)
+        index == 6 ? JohoWidget.Colors.alert : JohoWidget.Colors.text.opacity(0.6)
     }
 
     private func cellTextColor(isToday: Bool, isRedDay: Bool, isSunday: Bool) -> Color {
         if isToday { return JohoWidget.Colors.text }
         if isRedDay { return JohoWidget.Colors.alert }
-        if isSunday { return JohoWidget.Colors.sunday }
+        if isSunday { return JohoWidget.Colors.alert }
         return JohoWidget.Colors.text
     }
 
     private func cellBackground(isToday: Bool, isRedDay: Bool, isSunday: Bool) -> Color {
         if isToday { return JohoWidget.Colors.now }
         if isRedDay { return JohoWidget.Colors.holiday.opacity(0.15) }
-        if isSunday { return JohoWidget.Colors.sunday.opacity(0.08) }
+        if isSunday { return JohoWidget.Colors.alert.opacity(0.08) }
         return JohoWidget.Colors.content
     }
 
     private func daysUntilText(_ days: Int) -> String {
         switch days {
         case 1: return "Tomorrow"
-        default: return "in \(days)d"
+        default: return "in \(days) days"
         }
     }
 

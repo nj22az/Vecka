@@ -116,12 +116,9 @@ struct ModernCalendarView: View {
         }
     }
 
+    // Export action removed - share functionality not ready yet
     private var sidebarExportAction: (() -> Void)? {
-        guard sidebarSelection == .calendar else { return nil }
-        return {
-            pdfExportContext = .summary
-            showPDFExport = true
-        }
+        return nil
     }
     @State private var showTripEditor = false
     @State private var showContactEditor = false
@@ -463,6 +460,17 @@ struct ModernCalendarView: View {
             }
             .presentationCornerRadius(20)
         }
+        .sheet(isPresented: $showMonthPicker) {
+            MonthPickerSheet(
+                initialMonth: displayMonth,
+                initialYear: selectedYear
+            ) { newMonth, newYear in
+                displayMonth = newMonth
+                selectedYear = newYear
+            }
+            .presentationDetents([.medium, .large])
+            .presentationCornerRadius(20)
+        }
         .onAppear {
             AppInitializer.initialize(context: modelContext)
             updateLunarConfig()
@@ -511,6 +519,7 @@ struct ModernCalendarView: View {
                     .padding(.horizontal, screenMargin)
 
                 // Calendar Grid in WHITE container with thick black border
+                // 情報デザイン: No swipe gesture - use month picker in header instead
                 JohoCalendarContainer {
                     CalendarGridView(
                         month: currentMonth,
@@ -524,12 +533,6 @@ struct ModernCalendarView: View {
                     .id("\(currentMonth.month)-\(currentMonth.year)-\(contacts.count)-\(notes.count)-\(countdownEvents.count)")
                 }
                 .padding(.horizontal, screenMargin)
-                .gesture(
-                    DragGesture(minimumDistance: 30)
-                        .onEnded { value in
-                            handleSwipe(translation: value.translation)
-                        }
-                )
 
                 // Day Dashboard (shows on iPad below calendar, hidden on iPhone when week panel visible)
                 if isPad || selectedWeek == nil {
@@ -561,53 +564,6 @@ struct ModernCalendarView: View {
         .scrollBounceBehavior(.basedOnSize)
         .johoBackground()
     }
-
-    // MARK: - Action Menu Button
-
-    private var actionMenuButton: some View {
-        Menu {
-            // Export options
-            Menu {
-                    Button {
-                        pdfExportContext = .day(selectedDay?.date ?? selectedDate)
-                        showPDFExport = true
-                    } label: {
-                        Label(Localization.exportDay, systemImage: "calendar.day.timeline.left")
-                    }
-
-                    Button {
-                        let week = Calendar.iso8601.component(.weekOfYear, from: selectedDate)
-                        pdfExportContext = .week(weekNumber: week, year: currentMonth.year)
-                        showPDFExport = true
-                    } label: {
-                        Label(Localization.exportWeek, systemImage: "calendar")
-                    }
-
-                    Button {
-                        pdfExportContext = .month(month: displayMonth, year: selectedYear)
-                        showPDFExport = true
-                    } label: {
-                        Label(Localization.exportMonth, systemImage: "calendar.badge.clock")
-                    }
-            } label: {
-                Label(Localization.export, systemImage: "square.and.arrow.up")
-            }
-        } label: {
-            JohoActionButton(icon: "square.and.arrow.up")
-        }
-        .accessibilityLabel(Localization.menu)
-        .sheet(isPresented: $showMonthPicker) {
-            MonthPickerSheet(
-                initialMonth: displayMonth,
-                initialYear: selectedYear
-            ) { newMonth, newYear in
-                displayMonth = newMonth
-                selectedYear = newYear
-            }
-            .presentationDetents([.medium, .large])
-        }
-    }
-    
 
     // MARK: - Toolbar
 
@@ -680,6 +636,7 @@ struct ModernCalendarView: View {
         let dayNumber = Calendar.iso8601.component(.day, from: today)
         let weekday = today.formatted(.dateTime.weekday(.abbreviated)).uppercased()
         let weekNumber = Calendar.iso8601.component(.weekOfYear, from: today)
+        let isViewingToday = Calendar.iso8601.isDate(selectedDate, inSameDayAs: today)
 
         return VStack(spacing: 0) {
             // MAIN ROW: Icon + Title | WALL | Month Picker
@@ -688,7 +645,7 @@ struct ModernCalendarView: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone with Calendar accent color (Deep Indigo)
                     Image(systemName: "calendar")
-                        .font(.system(size: 20, weight: .bold))
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundStyle(PageHeaderColor.calendar.accent)
                         .frame(width: 40, height: 40)
                         .background(PageHeaderColor.calendar.lightBackground)
@@ -723,39 +680,54 @@ struct ModernCalendarView: View {
                 .fill(JohoColors.black)
                 .frame(height: 1.5)
 
-            // TODAY ROW: Today info + Week badge
+            // TODAY ROW: Today info + Go to Today button + Week badge
             HStack(spacing: JohoDimensions.spacingSM) {
-                // Today indicator (tappable)
-                Button(action: jumpToToday) {
-                    HStack(spacing: JohoDimensions.spacingXS) {
-                        // Day number
-                        Text("\(dayNumber)")
-                            .font(JohoFont.displaySmall)
-                            .foregroundStyle(JohoColors.black)
+                // Today info display
+                HStack(spacing: JohoDimensions.spacingXS) {
+                    // Day number
+                    Text("\(dayNumber)")
+                        .font(JohoFont.displaySmall)
+                        .foregroundStyle(JohoColors.black)
 
-                        // Weekday
-                        Text(weekday)
-                            .font(JohoFont.bodySmall)
-                            .foregroundStyle(JohoColors.black.opacity(0.7))
-                    }
+                    // Weekday
+                    Text(weekday)
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.7))
                 }
-                .buttonStyle(.plain)
 
                 Spacer()
 
-                // Week badge
-                HStack(spacing: 4) {
-                    Text("W\(weekNumber)")
-                        .font(JohoFont.labelSmall)
-                        .foregroundStyle(JohoColors.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(JohoColors.black)
-                        .clipShape(Capsule())
+                // 情報デザイン: Go to Today button (Yellow = NOW/Present)
+                // Only show when not viewing today
+                if !isViewingToday {
+                    Button(action: jumpToToday) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "arrow.uturn.backward")
+                                .font(.system(size: 12, weight: .bold, design: .rounded))
+                            Text("TODAY")
+                                .font(JohoFont.labelSmall)
+                        }
+                        .foregroundStyle(JohoColors.black)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(JohoColors.yellow)
+                        .clipShape(Squircle(cornerRadius: 6))
+                        .overlay(
+                            Squircle(cornerRadius: 6)
+                                .stroke(JohoColors.black, lineWidth: 1.5)
+                        )
+                    }
+                    .buttonStyle(.plain)
                 }
 
-                // Action menu
-                actionMenuButton
+                // Week badge
+                Text("W\(weekNumber)")
+                    .font(JohoFont.labelSmall)
+                    .foregroundStyle(JohoColors.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(JohoColors.black)
+                    .clipShape(Capsule())
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
@@ -966,14 +938,6 @@ struct ModernCalendarView: View {
     }
 
     // MARK: - Actions
-
-    private func handleSwipe(translation: CGSize) {
-        if translation.width > 50 {
-            navigateToPreviousMonth()
-        } else if translation.width < -50 {
-            navigateToNextMonth()
-        }
-    }
 
     private func navigateToPreviousMonth() {
         withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
