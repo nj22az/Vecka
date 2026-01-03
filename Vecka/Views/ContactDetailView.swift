@@ -19,7 +19,6 @@ struct ContactDetailView: View {
     let contact: Contact
 
     @State private var showingEditor = false
-    @State private var showingQRCode = false
     @State private var showingVCardShare = false
     @State private var vcardURL: URL?
 
@@ -33,11 +32,8 @@ struct ContactDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: JohoDimensions.spacingLG) {
-                // Hero avatar section (circular photo, 情報デザイン bento style)
+                // Hero profile section (horizontal bento: photo left, info right, actions bottom)
                 heroAvatarSection
-
-                // Quick action buttons (情報デザイン: white bg with colored icons)
-                quickActionsSection
 
                 // Phone section
                 if !contact.phoneNumbers.isEmpty {
@@ -85,9 +81,6 @@ struct ContactDetailView: View {
             JohoContactEditorSheet(mode: .contact, existingContact: contact)
                 .presentationCornerRadius(20)
         }
-        .sheet(isPresented: $showingQRCode) {
-            QRCodeView(contact: contact)
-        }
         .sheet(isPresented: $showingVCardShare) {
             if let url = vcardURL {
                 ShareSheet(url: url)
@@ -95,28 +88,109 @@ struct ContactDetailView: View {
         }
     }
 
-    // MARK: - Hero Avatar Section (情報デザイン: White card with circular photo)
+    // MARK: - Hero Profile Section (Japanese-inspired centered layout with 情報デザイン borders)
 
     private var heroAvatarSection: some View {
-        VStack(spacing: JohoDimensions.spacingMD) {
-            // Circular avatar (like iOS Contacts)
-            JohoContactAvatar(contact: contact, size: 100)
+        VStack(spacing: 0) {
+            // Top section: Centered photo and name (soft purple gradient background)
+            VStack(spacing: JohoDimensions.spacingMD) {
+                // Large centered avatar with soft shadow
+                JohoContactAvatar(contact: contact, size: 100)
+                    .shadow(color: JohoColors.black.opacity(0.15), radius: 8, y: 4)
 
-            // Name
-            Text(contact.displayName)
-                .font(JohoFont.displayMedium)
-                .foregroundStyle(JohoColors.black)
-                .multilineTextAlignment(.center)
+                // Name - large and prominent
+                Text(contact.displayName)
+                    .font(.system(size: 22, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+                    .multilineTextAlignment(.center)
 
-            // Organization (if any)
-            if let org = contact.organizationName, !org.isEmpty {
-                Text(org)
-                    .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                // Organization subtitle (if any)
+                if let org = contact.organizationName, !org.isEmpty {
+                    Text(org)
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                }
+
+                // Contact info hints row
+                HStack(spacing: JohoDimensions.spacingLG) {
+                    if let phone = contact.phoneNumbers.first {
+                        HStack(spacing: 4) {
+                            Image(systemName: "phone.fill")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundStyle(accentColor)
+                            Text(phone.value)
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
+                                .foregroundStyle(JohoColors.black.opacity(0.7))
+                        }
+                    }
+
+                    if let email = contact.emailAddresses.first {
+                        HStack(spacing: 4) {
+                            Image(systemName: "envelope.fill")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundStyle(accentColor)
+                            Text(email.value)
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
+                                .foregroundStyle(JohoColors.black.opacity(0.7))
+                                .lineLimit(1)
+                        }
+                    }
+                }
+                .padding(.top, 4)
             }
+            .padding(.vertical, JohoDimensions.spacingLG)
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .frame(maxWidth: .infinity)
+            .background(accentColor.opacity(0.1))
+
+            // Thin separator line
+            Rectangle()
+                .fill(JohoColors.black.opacity(0.2))
+                .frame(height: 1)
+
+            // Action buttons row - softer pill-style buttons
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Call button
+                if let phone = contact.phoneNumbers.first {
+                    profileActionButton(
+                        icon: "phone.fill",
+                        label: "CALL",
+                        color: JohoColors.green
+                    ) {
+                        if let url = URL(string: "tel:\(phone.value)") {
+                            UIApplication.shared.open(url)
+                        }
+                    }
+                }
+
+                // Message button
+                if let phone = contact.phoneNumbers.first {
+                    profileActionButton(
+                        icon: "message.fill",
+                        label: "MESSAGE",
+                        color: JohoColors.cyan
+                    ) {
+                        if let url = URL(string: "sms:\(phone.value)") {
+                            UIApplication.shared.open(url)
+                        }
+                    }
+                }
+
+                // Email button
+                if let email = contact.emailAddresses.first {
+                    profileActionButton(
+                        icon: "envelope.fill",
+                        label: "EMAIL",
+                        color: accentColor
+                    ) {
+                        if let url = URL(string: "mailto:\(email.value)") {
+                            UIApplication.shared.open(url)
+                        }
+                    }
+                }
+            }
+            .padding(JohoDimensions.spacingMD)
         }
-        .frame(maxWidth: .infinity)
-        .padding(JohoDimensions.spacingLG)
         .background(JohoColors.white)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
@@ -125,81 +199,37 @@ struct ContactDetailView: View {
         )
     }
 
-    // MARK: - Quick Actions Section (情報デザイン: white card with action buttons)
-
-    private var quickActionsSection: some View {
-        HStack(spacing: JohoDimensions.spacingMD) {
-            // Call button
-            if let phone = contact.phoneNumbers.first {
-                johoQuickActionButton(
-                    icon: "phone.fill",
-                    label: "CALL",
-                    color: JohoColors.green
-                ) {
-                    if let url = URL(string: "tel:\(phone.value)") {
-                        UIApplication.shared.open(url)
-                    }
-                }
-            }
-
-            // Message button
-            if let phone = contact.phoneNumbers.first {
-                johoQuickActionButton(
-                    icon: "message.fill",
-                    label: "MESSAGE",
-                    color: JohoColors.cyan
-                ) {
-                    if let url = URL(string: "sms:\(phone.value)") {
-                        UIApplication.shared.open(url)
-                    }
-                }
-            }
-
-            // Email button
-            if let email = contact.emailAddresses.first {
-                johoQuickActionButton(
-                    icon: "envelope.fill",
-                    label: "EMAIL",
-                    color: accentColor
-                ) {
-                    if let url = URL(string: "mailto:\(email.value)") {
-                        UIApplication.shared.open(url)
-                    }
-                }
-            }
-        }
-        .padding(JohoDimensions.spacingMD)
-        .background(JohoColors.white)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-        )
-    }
-
+    /// Soft pill-style action button for profile card
     @ViewBuilder
-    private func johoQuickActionButton(icon: String, label: String, color: Color, action: @escaping () -> Void) -> some View {
+    private func profileActionButton(icon: String, label: String, color: Color, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            VStack(spacing: JohoDimensions.spacingXS) {
-                // Icon with white background, colored border (情報デザイン compliant)
+            HStack(spacing: 6) {
                 Image(systemName: icon)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.system(size: 14, weight: .bold))
                     .foregroundStyle(color)
-                    .frame(width: 48, height: 48)
-                    .background(JohoColors.white)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                    )
 
                 Text(label)
                     .font(.system(size: 10, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
             }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .background(color.opacity(0.12))
+            .clipShape(Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(color.opacity(0.3), lineWidth: 1)
+            )
         }
         .buttonStyle(.plain)
-        .frame(maxWidth: .infinity)
+    }
+
+    // Removed quickActionsSection - now integrated into heroAvatarSection
+
+    private func formatBirthday(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, yyyy"
+        return formatter.string(from: date)
     }
 
     // MARK: - Phone Section (情報デザイン: white card with header pill)
@@ -353,14 +383,6 @@ struct ContactDetailView: View {
     private var shareActionsSection: some View {
         johoDetailSection(title: "SHARE", icon: "square.and.arrow.up") {
             VStack(spacing: JohoDimensions.spacingSM) {
-                // QR Code
-                Button {
-                    showingQRCode = true
-                } label: {
-                    johoActionRow(icon: "qrcode", title: "Share as QR Code")
-                }
-                .buttonStyle(.plain)
-
                 // vCard
                 Button {
                     generateAndShareVCard()
@@ -616,8 +638,14 @@ struct JohoContactEditorSheet: View {
     @State private var email: String
     @State private var notes: String
 
+    // Address fields
+    @State private var street: String
+    @State private var city: String
+    @State private var postalCode: String
+
     // Birthday fields
     @State private var hasBirthday: Bool
+    @State private var birthdayKnown: Bool  // True = known, False = N/A (won't show in Star page)
     @State private var selectedYear: Int
     @State private var selectedMonth: Int
     @State private var selectedDay: Int
@@ -625,6 +653,12 @@ struct JohoContactEditorSheet: View {
     // Photo picker (circular avatar like iOS Contacts)
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var selectedImageData: Data?
+
+    // Image cropper state
+    @State private var showImageCropper = false
+    @State private var tempCropImage: UIImage?
+    @State private var cropScale: CGFloat = 1.0
+    @State private var cropOffset: CGSize = .zero
 
     // Icon picker
     @State private var selectedSymbol: String
@@ -671,6 +705,14 @@ struct JohoContactEditorSheet: View {
             _selectedImageData = State(initialValue: contact.imageData)
             _selectedSymbol = State(initialValue: "person.fill")
 
+            // Address - get first postal address if available
+            let firstAddress = contact.postalAddresses.first
+            _street = State(initialValue: firstAddress?.street ?? "")
+            _city = State(initialValue: firstAddress?.city ?? "")
+            _postalCode = State(initialValue: firstAddress?.postalCode ?? "")
+
+            // Birthday with N/A support
+            _birthdayKnown = State(initialValue: contact.birthdayKnown)
             if let birthday = contact.birthday {
                 _hasBirthday = State(initialValue: true)
                 _selectedYear = State(initialValue: calendar.component(.year, from: birthday))
@@ -689,73 +731,39 @@ struct JohoContactEditorSheet: View {
             _phone = State(initialValue: "")
             _email = State(initialValue: "")
             _notes = State(initialValue: "")
+            _street = State(initialValue: "")
+            _city = State(initialValue: "")
+            _postalCode = State(initialValue: "")
             _selectedImageData = State(initialValue: nil)
             _selectedYear = State(initialValue: 1990)
             _selectedMonth = State(initialValue: calendar.component(.month, from: now))
             _selectedDay = State(initialValue: calendar.component(.day, from: now))
             _selectedSymbol = State(initialValue: mode == .birthday ? "birthday.cake.fill" : "person.fill")
-            // Birthday mode starts with birthday enabled
+            // Birthday mode starts with birthday enabled and known
             _hasBirthday = State(initialValue: mode == .birthday)
+            _birthdayKnown = State(initialValue: true)  // Default: birthday is known if provided
         }
     }
 
     var body: some View {
-        // 情報デザイン: UNIFIED BENTO PILLBOX - entire editor is one compartmentalized box
-        VStack(spacing: 0) {
-            Spacer().frame(height: JohoDimensions.spacingLG)
-
-            // UNIFIED BENTO CONTAINER
+        // Elegant minimal profile-style editor (Lala Kudo inspired)
+        ScrollView {
             VStack(spacing: 0) {
-                // ═══════════════════════════════════════════════════════════════
-                // HEADER ROW: [<] | [icon] Title/Subtitle | [Save]
-                // ═══════════════════════════════════════════════════════════════
-                HStack(spacing: 0) {
-                    // LEFT: Back button (44pt)
+                // Floating action buttons at top
+                HStack {
                     Button { dismiss() } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .bold))
+                        Text("Cancel")
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
                             .foregroundStyle(JohoColors.black)
-                            .frame(width: 44, height: 44)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                            .background(JohoColors.white)
+                            .clipShape(Capsule())
+                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1.5))
                     }
 
-                    // WALL
-                    Rectangle()
-                        .fill(JohoColors.black)
-                        .frame(width: 1.5)
-                        .frame(maxHeight: .infinity)
+                    Spacer()
 
-                    // CENTER: Icon + Title/Subtitle
-                    HStack(spacing: JohoDimensions.spacingSM) {
-                        // Type icon in colored box
-                        Image(systemName: mode.icon)
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(accentColor)
-                            .frame(width: 36, height: 36)
-                            .background(lightBackground)
-                            .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(isEditing ? "EDIT CONTACT" : mode.title.uppercased())
-                                .font(.system(size: 16, weight: .black, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
-                            Text(mode == .birthday ? "Track someone's birthday" : "Save contact details")
-                                .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.black.opacity(0.6))
-                        }
-
-                        Spacer()
-                    }
-                    .padding(.horizontal, JohoDimensions.spacingSM)
-                    .frame(maxHeight: .infinity)
-
-                    // WALL
-                    Rectangle()
-                        .fill(JohoColors.black)
-                        .frame(width: 1.5)
-                        .frame(maxHeight: .infinity)
-
-                    // RIGHT: Save button (72pt)
                     Button {
                         saveContact()
                         dismiss()
@@ -763,199 +771,327 @@ struct JohoContactEditorSheet: View {
                         Text("Save")
                             .font(.system(size: 14, weight: .bold, design: .rounded))
                             .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
-                            .frame(width: 56, height: 32)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
                             .background(canSave ? accentColor : JohoColors.white)
-                            .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+                            .clipShape(Capsule())
+                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1.5))
                     }
                     .disabled(!canSave)
-                    .frame(width: 72)
-                    .frame(maxHeight: .infinity)
                 }
-                .frame(height: 56)
-                .background(accentColor.opacity(0.7))  // 情報デザイン: Darker header
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.top, JohoDimensions.spacingMD)
+                .padding(.bottom, JohoDimensions.spacingLG)
 
-                // Thick divider after header
-                Rectangle()
-                    .fill(JohoColors.black)
-                    .frame(height: 1.5)
+                // Main profile card
+                VStack(spacing: JohoDimensions.spacingLG) {
+                    // Centered photo section
+                    VStack(spacing: JohoDimensions.spacingMD) {
+                        PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                            ZStack {
+                                if let imageData = selectedImageData, let uiImage = UIImage(data: imageData) {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 120, height: 120)
+                                        .clipShape(Circle())
+                                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+                                } else {
+                                    // Elegant placeholder
+                                    Circle()
+                                        .fill(JohoColors.black.opacity(0.05))
+                                        .frame(width: 120, height: 120)
+                                        .overlay(
+                                            VStack(spacing: 4) {
+                                                Image(systemName: "camera.fill")
+                                                    .font(.system(size: 28, weight: .medium))
+                                                    .foregroundStyle(JohoColors.black.opacity(0.3))
+                                                Text("Add Photo")
+                                                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                                                    .foregroundStyle(JohoColors.black.opacity(0.4))
+                                            }
+                                        )
+                                        .overlay(Circle().stroke(JohoColors.black.opacity(0.2), lineWidth: 1.5))
+                                }
 
-                // ═══════════════════════════════════════════════════════════════
-                // NAME ROW: [●] | First + Last name (no BDY pill - redundant in editor)
-                // ═══════════════════════════════════════════════════════════════
-                HStack(spacing: 0) {
-                    // LEFT: Type indicator dot (40pt)
-                    Circle()
-                        .fill(accentColor)
-                        .frame(width: 10, height: 10)
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
-                        .frame(width: 40)
-                        .frame(maxHeight: .infinity)
+                                // Small type indicator circle
+                                Circle()
+                                    .fill(accentColor)
+                                    .frame(width: 12, height: 12)
+                                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                                    .offset(x: 48, y: 48)
+                            }
+                        }
+                        .onChange(of: selectedPhotoItem) { _, newItem in
+                            Task { @MainActor in
+                                guard let item = newItem else { return }
+                                do {
+                                    if let data = try await item.loadTransferable(type: Data.self),
+                                       let image = UIImage(data: data) {
+                                        // Show cropper instead of directly setting
+                                        tempCropImage = image
+                                        cropScale = 1.0
+                                        cropOffset = .zero
+                                        showImageCropper = true
+                                    }
+                                } catch {
+                                    Log.e("Failed to load photo: \(error)")
+                                }
+                            }
+                        }
+                    }
 
-                    // WALL
+                    // Name fields - clean and centered
+                    VStack(spacing: JohoDimensions.spacingSM) {
+                        TextField("First Name", text: $firstName)
+                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
+                            .multilineTextAlignment(.center)
+
+                        TextField("Last Name", text: $lastName)
+                            .font(.system(size: 18, weight: .medium, design: .rounded))
+                            .foregroundStyle(JohoColors.black.opacity(0.7))
+                            .multilineTextAlignment(.center)
+                    }
+
+                    // Thin separator
                     Rectangle()
-                        .fill(JohoColors.black)
-                        .frame(width: 1.5)
-                        .frame(maxHeight: .infinity)
+                        .fill(JohoColors.black.opacity(0.1))
+                        .frame(height: 1)
+                        .padding(.horizontal, 40)
 
-                    // CENTER: Name fields side-by-side
-                    HStack(spacing: JohoDimensions.spacingSM) {
-                        TextField("First name", text: $firstName)
-                            .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black)
+                    // Form fields - minimal style
+                    VStack(spacing: JohoDimensions.spacingMD) {
+                        // Company
+                        elegantTextField(
+                            icon: "building.2",
+                            placeholder: "Company",
+                            text: $company
+                        )
 
-                        Text("|")
-                            .foregroundStyle(JohoColors.black.opacity(0.3))
+                        // Phone
+                        elegantTextField(
+                            icon: "phone",
+                            placeholder: "Phone",
+                            text: $phone
+                        )
+                        .keyboardType(.phonePad)
 
-                        TextField("Last name", text: $lastName)
-                            .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black)
+                        // Email
+                        elegantTextField(
+                            icon: "envelope",
+                            placeholder: "Email",
+                            text: $email
+                        )
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+
+                        // Address section (Lala Kudo: grouped elegantly)
+                        VStack(spacing: JohoDimensions.spacingSM) {
+                            elegantTextField(
+                                icon: "mappin",
+                                placeholder: "Street Address",
+                                text: $street
+                            )
+
+                            HStack(spacing: JohoDimensions.spacingSM) {
+                                // City
+                                HStack(spacing: JohoDimensions.spacingSM) {
+                                    TextField("City", text: $city)
+                                        .font(.system(size: 15, weight: .medium, design: .rounded))
+                                        .foregroundStyle(JohoColors.black)
+                                }
+                                .padding(.horizontal, JohoDimensions.spacingMD)
+                                .padding(.vertical, JohoDimensions.spacingSM)
+                                .frame(maxWidth: .infinity)
+
+                                // Postal code
+                                HStack(spacing: JohoDimensions.spacingSM) {
+                                    TextField("Postal Code", text: $postalCode)
+                                        .font(.system(size: 15, weight: .medium, design: .rounded))
+                                        .foregroundStyle(JohoColors.black)
+                                        .keyboardType(.numbersAndPunctuation)
+                                }
+                                .padding(.horizontal, JohoDimensions.spacingMD)
+                                .padding(.vertical, JohoDimensions.spacingSM)
+                                .frame(width: 120)
+                            }
+                            .padding(.leading, 32) // Align with icon
+                        }
+
+                        // Birthday section with N/A option (情報デザイン: data hygiene)
+                        VStack(spacing: JohoDimensions.spacingSM) {
+                            // Birthday toggle row
+                            HStack(spacing: JohoDimensions.spacingSM) {
+                                Image(systemName: "birthday.cake")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundStyle(birthdayKnown ? SpecialDayType.birthday.accentColor : JohoColors.black.opacity(0.4))
+                                    .frame(width: 24)
+
+                                // Three-state toggle: Has birthday / No birthday yet / N/A
+                                HStack(spacing: 6) {
+                                    // Has birthday
+                                    Button {
+                                        hasBirthday = true
+                                        birthdayKnown = true
+                                    } label: {
+                                        Text("HAS")
+                                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                                            .foregroundStyle(hasBirthday && birthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.5))
+                                            .padding(.horizontal, 10)
+                                            .padding(.vertical, 6)
+                                            .background(hasBirthday && birthdayKnown ? SpecialDayType.birthday.accentColor : JohoColors.black.opacity(0.05))
+                                            .clipShape(Capsule())
+                                    }
+
+                                    // Not entered yet (default)
+                                    Button {
+                                        hasBirthday = false
+                                        birthdayKnown = true
+                                    } label: {
+                                        Text("NONE")
+                                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                                            .foregroundStyle(!hasBirthday && birthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.5))
+                                            .padding(.horizontal, 10)
+                                            .padding(.vertical, 6)
+                                            .background(!hasBirthday && birthdayKnown ? JohoColors.black : JohoColors.black.opacity(0.05))
+                                            .clipShape(Capsule())
+                                    }
+
+                                    // N/A - explicitly unknown (won't show in Star page)
+                                    Button {
+                                        hasBirthday = false
+                                        birthdayKnown = false
+                                    } label: {
+                                        Text("N/A")
+                                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                                            .foregroundStyle(!birthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.5))
+                                            .padding(.horizontal, 10)
+                                            .padding(.vertical, 6)
+                                            .background(!birthdayKnown ? JohoColors.red : JohoColors.black.opacity(0.05))
+                                            .clipShape(Capsule())
+                                    }
+                                }
+
+                                Spacer()
+                            }
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+
+                            // Birthday date picker (only shown when HAS is selected)
+                            if hasBirthday && birthdayKnown {
+                                HStack(spacing: 8) {
+                                    // Year
+                                    Menu {
+                                        ForEach(yearRange, id: \.self) { year in
+                                            Button { selectedYear = year } label: { Text(String(year)) }
+                                        }
+                                    } label: {
+                                        Text(String(selectedYear))
+                                            .font(.system(size: 15, weight: .medium, design: .rounded))
+                                            .foregroundStyle(JohoColors.black)
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 8)
+                                            .background(JohoColors.black.opacity(0.05))
+                                            .clipShape(Capsule())
+                                    }
+
+                                    // Month
+                                    Menu {
+                                        ForEach(1...12, id: \.self) { month in
+                                            Button { selectedMonth = month } label: { Text(monthName(month)) }
+                                        }
+                                    } label: {
+                                        Text(monthName(selectedMonth))
+                                            .font(.system(size: 15, weight: .medium, design: .rounded))
+                                            .foregroundStyle(JohoColors.black)
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 8)
+                                            .background(JohoColors.black.opacity(0.05))
+                                            .clipShape(Capsule())
+                                    }
+
+                                    // Day
+                                    Menu {
+                                        ForEach(1...daysInMonth(selectedMonth, year: selectedYear), id: \.self) { day in
+                                            Button { selectedDay = day } label: { Text("\(day)") }
+                                        }
+                                    } label: {
+                                        Text("\(selectedDay)")
+                                            .font(.system(size: 15, weight: .medium, design: .rounded))
+                                            .foregroundStyle(JohoColors.black)
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 8)
+                                            .background(JohoColors.black.opacity(0.05))
+                                            .clipShape(Capsule())
+                                    }
+
+                                    Spacer()
+                                }
+                                .padding(.leading, 32)  // Align with icon
+                                .padding(.horizontal, JohoDimensions.spacingMD)
+                            }
+
+                            // N/A explanation
+                            if !birthdayKnown {
+                                Text("N/A = Birthday unknown. Won't appear in Star page.")
+                                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                                    .foregroundStyle(JohoColors.black.opacity(0.4))
+                                    .padding(.leading, 32)
+                                    .padding(.horizontal, JohoDimensions.spacingMD)
+                            }
+                        }
                     }
                     .padding(.horizontal, JohoDimensions.spacingMD)
-                    .frame(maxHeight: .infinity)
                 }
-                .frame(height: 48)
-                .background(lightBackground)
+                .padding(.vertical, JohoDimensions.spacingLG)
+                .background(JohoColors.white)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                )
+                .padding(.horizontal, JohoDimensions.spacingLG)
 
-                // 情報デザイン: Row divider (solid black)
-                Rectangle()
-                    .fill(JohoColors.black)
-                    .frame(height: 1.5)
-
-                // ═══════════════════════════════════════════════════════════════
-                // BIRTHDAY ROW: [🎂] | Year | Month | Day (compartmentalized)
-                // ═══════════════════════════════════════════════════════════════
-                HStack(spacing: 0) {
-                    // LEFT: Birthday cake icon (40pt)
-                    Image(systemName: "birthday.cake")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(JohoColors.black)
-                        .frame(width: 40)
-                        .frame(maxHeight: .infinity)
-
-                    // WALL
-                    Rectangle()
-                        .fill(JohoColors.black)
-                        .frame(width: 1.5)
-                        .frame(maxHeight: .infinity)
-
-                    // YEAR compartment
-                    Menu {
-                        ForEach(yearRange, id: \.self) { year in
-                            Button { selectedYear = year } label: { Text(String(year)) }
-                        }
-                    } label: {
-                        Text(String(selectedYear))
-                            .font(.system(size: 14, weight: .bold, design: .monospaced))
-                            .foregroundStyle(JohoColors.black)
-                            .frame(maxWidth: .infinity)
-                            .frame(maxHeight: .infinity)
-                    }
-
-                    // WALL
-                    Rectangle()
-                        .fill(JohoColors.black)
-                        .frame(width: 1.5)
-                        .frame(maxHeight: .infinity)
-
-                    // MONTH compartment
-                    Menu {
-                        ForEach(1...12, id: \.self) { month in
-                            Button { selectedMonth = month } label: { Text(monthName(month)) }
-                        }
-                    } label: {
-                        Text(monthName(selectedMonth))
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
-                            .frame(maxWidth: .infinity)
-                            .frame(maxHeight: .infinity)
-                    }
-
-                    // WALL
-                    Rectangle()
-                        .fill(JohoColors.black)
-                        .frame(width: 1.5)
-                        .frame(maxHeight: .infinity)
-
-                    // DAY compartment
-                    Menu {
-                        ForEach(1...daysInMonth(selectedMonth, year: selectedYear), id: \.self) { day in
-                            Button { selectedDay = day } label: { Text("\(day)") }
-                        }
-                    } label: {
-                        Text("\(selectedDay)")
-                            .font(.system(size: 14, weight: .bold, design: .monospaced))
-                            .foregroundStyle(JohoColors.black)
-                            .frame(width: 44)
-                            .frame(maxHeight: .infinity)
-                    }
-                }
-                .frame(height: 48)
-                .background(lightBackground)
-
-                // 情報デザイン: Row divider (solid black)
-                Rectangle()
-                    .fill(JohoColors.black)
-                    .frame(height: 1.5)
-
-                // ═══════════════════════════════════════════════════════════════
-                // ICON PICKER ROW: [icon] | Tap to change icon [>]
-                // ═══════════════════════════════════════════════════════════════
-                Button {
-                    showingIconPicker = true
-                    HapticManager.selection()
-                } label: {
-                    HStack(spacing: 0) {
-                        // LEFT: Current icon (40pt)
-                        Image(systemName: selectedSymbol)
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundStyle(accentColor)
-                            .frame(width: 40)
-                            .frame(maxHeight: .infinity)
-
-                        // WALL
-                        Rectangle()
-                            .fill(JohoColors.black)
-                            .frame(width: 1.5)
-                            .frame(maxHeight: .infinity)
-
-                        // CENTER: Hint text
-                        Text("Tap to change icon")
-                            .font(JohoFont.caption)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
-                            .padding(.leading, JohoDimensions.spacingMD)
-
-                        Spacer()
-
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(JohoColors.black.opacity(0.4))
-                            .padding(.trailing, JohoDimensions.spacingMD)
-                    }
-                    .frame(height: 48)
-                    .background(lightBackground)
-                }
-                .buttonStyle(.plain)
+                Spacer().frame(height: 40)
             }
-            .background(JohoColors.white)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
-            )
-            .padding(.horizontal, JohoDimensions.spacingLG)
-
-            Spacer()
         }
         .johoBackground()
         .navigationBarHidden(true)
-        .sheet(isPresented: $showingIconPicker) {
-            JohoIconPickerSheet(
-                selectedSymbol: $selectedSymbol,
-                accentColor: accentColor,
-                lightBackground: lightBackground
-            )
+        .fullScreenCover(isPresented: $showImageCropper) {
+            if let image = tempCropImage {
+                CircularImageCropperView(
+                    image: image,
+                    scale: $cropScale,
+                    offset: $cropOffset,
+                    onCancel: {
+                        showImageCropper = false
+                        tempCropImage = nil
+                    },
+                    onDone: { croppedImage in
+                        selectedImageData = croppedImage.jpegData(compressionQuality: 0.8)
+                        showImageCropper = false
+                        tempCropImage = nil
+                    }
+                )
+            }
         }
+    }
+
+    // Elegant minimal text field
+    @ViewBuilder
+    private func elegantTextField(icon: String, placeholder: String, text: Binding<String>) -> some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundStyle(JohoColors.black.opacity(0.4))
+                .frame(width: 24)
+
+            TextField(placeholder, text: text)
+                .font(.system(size: 15, weight: .medium, design: .rounded))
+                .foregroundStyle(JohoColors.black)
+        }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
     }
 
     // MARK: - Helper Functions
@@ -982,7 +1118,7 @@ struct JohoContactEditorSheet: View {
     private func saveContact() {
         // Create birthday date if enabled (with actual year for age calculation)
         var birthdayDate: Date? = nil
-        if hasBirthday {
+        if hasBirthday && birthdayKnown {
             let calendar = Calendar.current
             birthdayDate = calendar.date(from: DateComponents(year: selectedYear, month: selectedMonth, day: selectedDay))
         }
@@ -1001,6 +1137,20 @@ struct JohoContactEditorSheet: View {
             emailAddresses.append(ContactEmailAddress(label: "home", value: trimmedEmail))
         }
 
+        // Create postal address if any address field is provided
+        var postalAddresses: [ContactPostalAddress] = []
+        let trimmedStreet = street.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedCity = city.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedPostalCode = postalCode.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedStreet.isEmpty || !trimmedCity.isEmpty || !trimmedPostalCode.isEmpty {
+            postalAddresses.append(ContactPostalAddress(
+                label: "home",
+                street: trimmedStreet,
+                city: trimmedCity,
+                postalCode: trimmedPostalCode
+            ))
+        }
+
         // Notes
         let trimmedNotes = notes.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -1011,7 +1161,9 @@ struct JohoContactEditorSheet: View {
             existingContact.organizationName = company.trimmingCharacters(in: .whitespaces).isEmpty ? nil : company.trimmingCharacters(in: .whitespaces)
             existingContact.phoneNumbers = phoneNumbers
             existingContact.emailAddresses = emailAddresses
+            existingContact.postalAddresses = postalAddresses
             existingContact.birthday = birthdayDate
+            existingContact.birthdayKnown = birthdayKnown  // Save N/A status
             existingContact.note = trimmedNotes.isEmpty ? nil : trimmedNotes
             existingContact.imageData = selectedImageData  // Save photo (circular)
             existingContact.modifiedAt = Date()
@@ -1023,7 +1175,9 @@ struct JohoContactEditorSheet: View {
                 organizationName: company.trimmingCharacters(in: .whitespaces).isEmpty ? nil : company.trimmingCharacters(in: .whitespaces),
                 phoneNumbers: phoneNumbers,
                 emailAddresses: emailAddresses,
-                birthday: birthdayDate
+                postalAddresses: postalAddresses,
+                birthday: birthdayDate,
+                birthdayKnown: birthdayKnown
             )
 
             // Set notes if provided
@@ -1047,3 +1201,202 @@ struct JohoContactEditorSheet: View {
 
 /// Convenience alias for birthday-focused editor (from Special Days page)
 typealias JohoBirthdayEditorSheet = JohoContactEditorSheet
+
+// MARK: - Circular Image Cropper
+
+/// Full-screen image cropper with pinch-to-zoom and drag-to-pan
+struct CircularImageCropperView: View {
+    let image: UIImage
+    @Binding var scale: CGFloat
+    @Binding var offset: CGSize
+    let onCancel: () -> Void
+    let onDone: (UIImage) -> Void
+
+    // Gesture state
+    @State private var lastScale: CGFloat = 1.0
+    @State private var lastOffset: CGSize = .zero
+
+    private let cropSize: CGFloat = 280
+    private let minScale: CGFloat = 0.5
+    private let maxScale: CGFloat = 4.0
+
+    var body: some View {
+        ZStack {
+            // Dark background
+            Color.black.ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                // Top bar with Cancel/Done
+                HStack {
+                    Button(action: onCancel) {
+                        Text("Cancel")
+                            .font(.system(size: 16, weight: .medium, design: .rounded))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                    }
+
+                    Spacer()
+
+                    Text("Move and Scale")
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
+                        .foregroundStyle(.white)
+
+                    Spacer()
+
+                    Button(action: cropAndSave) {
+                        Text("Done")
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .foregroundStyle(.yellow)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 10)
+                    }
+                }
+                .padding(.top, 8)
+                .padding(.horizontal, 8)
+
+                Spacer()
+
+                // Crop area
+                ZStack {
+                    // The image (can be zoomed/panned)
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .scaleEffect(scale)
+                        .offset(offset)
+                        .frame(width: cropSize, height: cropSize)
+                        .clipped()
+
+                    // Circular mask overlay
+                    CircularMaskOverlay(cropSize: cropSize)
+                }
+                .frame(width: cropSize, height: cropSize)
+                .gesture(dragGesture)
+                .gesture(magnificationGesture)
+
+                Spacer()
+
+                // Hint text
+                Text("Pinch to zoom • Drag to move")
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.6))
+                    .padding(.bottom, 40)
+            }
+        }
+    }
+
+    // MARK: - Gestures
+
+    private var dragGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                offset = CGSize(
+                    width: lastOffset.width + value.translation.width,
+                    height: lastOffset.height + value.translation.height
+                )
+            }
+            .onEnded { _ in
+                lastOffset = offset
+                constrainOffset()
+            }
+    }
+
+    private var magnificationGesture: some Gesture {
+        MagnificationGesture()
+            .onChanged { value in
+                let newScale = lastScale * value
+                scale = min(max(newScale, minScale), maxScale)
+            }
+            .onEnded { _ in
+                lastScale = scale
+                constrainOffset()
+            }
+    }
+
+    private func constrainOffset() {
+        // Keep image within reasonable bounds
+        let maxOffset = cropSize * scale / 2
+        withAnimation(.easeOut(duration: 0.2)) {
+            offset.width = min(max(offset.width, -maxOffset), maxOffset)
+            offset.height = min(max(offset.height, -maxOffset), maxOffset)
+            lastOffset = offset
+        }
+    }
+
+    // MARK: - Crop and Save
+
+    private func cropAndSave() {
+        let croppedImage = cropImage()
+        onDone(croppedImage)
+    }
+
+    private func cropImage() -> UIImage {
+        let outputSize: CGFloat = 400 // Output image size
+
+        // Calculate the crop rect
+        let imageSize = image.size
+        let scaledImageSize = CGSize(
+            width: imageSize.width * scale,
+            height: imageSize.height * scale
+        )
+
+        // Center of the crop area in image coordinates
+        let centerX = scaledImageSize.width / 2 - offset.width * (imageSize.width / cropSize)
+        let centerY = scaledImageSize.height / 2 - offset.height * (imageSize.height / cropSize)
+
+        // The visible portion of the image
+        let visibleSize = imageSize.width / scale * (cropSize / cropSize)
+        let cropRect = CGRect(
+            x: (centerX / scale) - (visibleSize / 2),
+            y: (centerY / scale) - (visibleSize / 2),
+            width: visibleSize,
+            height: visibleSize
+        )
+
+        // Render the cropped circular image
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: outputSize, height: outputSize))
+        return renderer.image { context in
+            // Clip to circle
+            let circlePath = UIBezierPath(ovalIn: CGRect(x: 0, y: 0, width: outputSize, height: outputSize))
+            circlePath.addClip()
+
+            // Draw the image scaled and positioned
+            let drawRect = CGRect(
+                x: -cropRect.origin.x * (outputSize / visibleSize),
+                y: -cropRect.origin.y * (outputSize / visibleSize),
+                width: imageSize.width * (outputSize / visibleSize),
+                height: imageSize.height * (outputSize / visibleSize)
+            )
+            image.draw(in: drawRect)
+        }
+    }
+}
+
+// MARK: - Circular Mask Overlay
+
+private struct CircularMaskOverlay: View {
+    let cropSize: CGFloat
+
+    var body: some View {
+        ZStack {
+            // Semi-transparent overlay with circular hole
+            Rectangle()
+                .fill(Color.black.opacity(0.5))
+                .mask(
+                    ZStack {
+                        Rectangle()
+                        Circle()
+                            .frame(width: cropSize, height: cropSize)
+                            .blendMode(.destinationOut)
+                    }
+                    .compositingGroup()
+                )
+
+            // Circle border
+            Circle()
+                .stroke(Color.white, lineWidth: 2)
+                .frame(width: cropSize, height: cropSize)
+        }
+    }
+}

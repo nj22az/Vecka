@@ -47,24 +47,64 @@ class ContactsManager {
         let request = CNContactFetchRequest(keysToFetch: keys)
 
         var importedCount = 0
+        var importedContacts: [Contact] = []
 
         try contactStore.enumerateContacts(with: request) { cnContact, _ in
             let contact = self.convertToContact(cnContact)
             modelContext.insert(contact)
+            importedContacts.append(contact)
             importedCount += 1
         }
 
         try modelContext.save()
+
+        // Scan for duplicates after import (non-blocking)
+        if importedCount > 0 {
+            await scanForDuplicatesAfterImport(modelContext: modelContext)
+        }
+
         return importedCount
     }
 
     /// Imports selected contacts from iOS Contacts
-    func importContacts(_ cnContacts: [CNContact], to modelContext: ModelContext) throws {
+    /// Note: Contacts from picker may have minimal data, so we re-fetch with all keys
+    func importContacts(_ cnContacts: [CNContact], to modelContext: ModelContext) async throws {
         for cnContact in cnContacts {
-            let contact = convertToContact(cnContact)
+            // Re-fetch the contact with all our required keys to get full data including images
+            let fullContact: CNContact
+            do {
+                fullContact = try contactStore.unifiedContact(
+                    withIdentifier: cnContact.identifier,
+                    keysToFetch: Self.contactKeys
+                )
+            } catch {
+                // Fall back to the original contact if re-fetch fails
+                fullContact = cnContact
+            }
+
+            let contact = convertToContact(fullContact)
             modelContext.insert(contact)
         }
         try modelContext.save()
+
+        // Scan for duplicates after import (non-blocking)
+        if !cnContacts.isEmpty {
+            await scanForDuplicatesAfterImport(modelContext: modelContext)
+        }
+    }
+
+    // MARK: - Duplicate Detection Integration
+
+    /// Scan for duplicates after import
+    private func scanForDuplicatesAfterImport(modelContext: ModelContext) async {
+        // Fetch all contacts for comparison
+        let descriptor = FetchDescriptor<Contact>(sortBy: [SortDescriptor(\.familyName)])
+        guard let allContacts = try? modelContext.fetch(descriptor) else { return }
+
+        await DuplicateContactManager.shared.scanForDuplicates(
+            contacts: allContacts,
+            modelContext: modelContext
+        )
     }
 
     /// Fetches all iOS contacts for picker
@@ -243,14 +283,14 @@ class ContactsManager {
             )
         }
 
-        // Note
-        if !cnContact.note.isEmpty {
-            contact.note = cnContact.note
-        }
+        // Note - skipped because CNContactNoteKey requires special entitlement
+        // that is not available to third-party apps
 
-        // Image
+        // Image - prefer full image, fall back to thumbnail
         if let imageData = cnContact.imageData {
             contact.imageData = imageData
+        } else if let thumbnailData = cnContact.thumbnailImageData {
+            contact.imageData = thumbnailData
         }
 
         // Store CN identifier for sync
@@ -299,6 +339,8 @@ class ContactsManager {
     }
 
     // MARK: - Contact Keys
+    // Note: CNContactNoteKey requires special entitlement (com.apple.developer.contacts.notes)
+    // which is not available to third-party apps, so we exclude it to avoid "Unauthorized Keys" error
 
     private static let contactKeys: [CNKeyDescriptor] = [
         CNContactGivenNameKey as CNKeyDescriptor,
@@ -317,8 +359,9 @@ class ContactsManager {
         CNContactDatesKey as CNKeyDescriptor,
         CNContactUrlAddressesKey as CNKeyDescriptor,
         CNContactSocialProfilesKey as CNKeyDescriptor,
-        CNContactNoteKey as CNKeyDescriptor,
+        // CNContactNoteKey - REMOVED: requires special entitlement not available to third-party apps
         CNContactImageDataKey as CNKeyDescriptor,
+        CNContactThumbnailImageDataKey as CNKeyDescriptor,  // Add thumbnail for faster loading
         CNContactIdentifierKey as CNKeyDescriptor
     ]
 }

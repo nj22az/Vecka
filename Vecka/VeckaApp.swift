@@ -38,6 +38,8 @@ struct VeckaApp: App {
             ContactSocialProfile.self,
             ContactURL.self,
             ContactRelation.self,
+            // Duplicate contact detection
+            DuplicateSuggestion.self,
             // Configuration models (database-driven architecture)
             AppConfiguration.self,
             ValidationRule.self,

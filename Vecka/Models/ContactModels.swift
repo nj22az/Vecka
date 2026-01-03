@@ -37,6 +37,10 @@ final class Contact {
 
     // Dates
     var birthday: Date?
+    /// True = birthday is known, False = explicitly marked as N/A (won't show in Star page)
+    /// When nil or true with a birthday date, contact appears in Star page birthdays
+    /// Default is true for SwiftData migration of existing records
+    var birthdayKnown: Bool = true
     var dates: [ContactDate]
 
     // Social profiles
@@ -65,7 +69,8 @@ final class Contact {
         phoneNumbers: [ContactPhoneNumber] = [],
         emailAddresses: [ContactEmailAddress] = [],
         postalAddresses: [ContactPostalAddress] = [],
-        birthday: Date? = nil
+        birthday: Date? = nil,
+        birthdayKnown: Bool = true
     ) {
         self.id = UUID()
         self.createdAt = Date()
@@ -78,6 +83,7 @@ final class Contact {
         self.emailAddresses = emailAddresses
         self.postalAddresses = postalAddresses
         self.birthday = birthday
+        self.birthdayKnown = birthdayKnown
         self.dates = []
         self.socialProfiles = []
         self.urlAddresses = []
@@ -99,6 +105,12 @@ final class Contact {
         let first = givenName.first.map(String.init) ?? ""
         let last = familyName.first.map(String.init) ?? ""
         return (first + last).uppercased()
+    }
+
+    /// Returns true if this contact has a birthday that should appear in the Star page
+    /// Only shows when birthdayKnown is true AND birthday date exists
+    var hasBirthdayForStarPage: Bool {
+        birthdayKnown && birthday != nil
     }
 }
 

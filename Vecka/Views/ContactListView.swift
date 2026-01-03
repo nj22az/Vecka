@@ -22,9 +22,15 @@ struct ContactListView: View {
     @State private var showingImportSheet = false
     @State private var showingContactPicker = false
     @State private var selectedContact: Contact?
+    @State private var editingContact: Contact?
+    @State private var showingDuplicateReview = false
+    @State private var duplicateSuggestionCount = 0
 
-    // 情報デザイン accent color for Contacts (purple)
-    private let accentColor = Color(hex: "805AD5")
+    // Duplicate detection manager
+    private let duplicateManager = DuplicateContactManager.shared
+
+    // 情報デザイン accent color for Contacts (Warm Brown - from PageHeaderColor)
+    private var accentColor: Color { PageHeaderColor.contacts.accent }
 
     // Stats for header subtitle
     private var contactsWithPhone: Int {
@@ -64,121 +70,65 @@ struct ContactListView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: JohoDimensions.spacingLG) {
+            VStack(spacing: JohoDimensions.spacingMD) {
                 // 情報デザイン Header (like Special Days page)
                 contactsHeader
                     .padding(.horizontal, JohoDimensions.spacingLG)
                     .padding(.top, JohoDimensions.spacingSM)
 
-                // Search field (情報デザイン inline style with thick border)
-                HStack(spacing: JohoDimensions.spacingSM) {
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(JohoColors.black)
+                // Duplicate suggestion banner (情報デザイン: non-aggressive warning)
+                if duplicateSuggestionCount > 0 {
+                    DuplicateSuggestionBanner(suggestionCount: duplicateSuggestionCount) {
+                        showingDuplicateReview = true
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+                }
 
-                    TextField("Search contacts", text: $searchText)
-                        .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
+                // MAIN CONTENT CONTAINER (情報デザイン: All content in white container)
+                VStack(spacing: 0) {
+                    // Search field row
+                    HStack(spacing: JohoDimensions.spacingSM) {
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(JohoColors.black)
 
-                    if !searchText.isEmpty {
-                        Button {
-                            searchText = ""
-                        } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundStyle(JohoColors.black)
+                        TextField("Search contacts", text: $searchText)
+                            .font(JohoFont.body)
+                            .foregroundStyle(JohoColors.black)
+
+                        if !searchText.isEmpty {
+                            Button {
+                                searchText = ""
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 16, weight: .bold))
+                                    .foregroundStyle(JohoColors.black)
+                            }
                         }
                     }
+                    .padding(JohoDimensions.spacingMD)
+
+                    // Horizontal divider
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(height: 1.5)
+
+                    // Content area
+                    if contacts.isEmpty {
+                        // Empty state (情報デザイン compliant)
+                        contactsEmptyState
+                    } else {
+                        // Contact list
+                        contactsListContent
+                    }
                 }
-                .padding(JohoDimensions.spacingMD)
                 .background(JohoColors.white)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
                 .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
-
-                if contacts.isEmpty {
-                    // Empty state
-                    JohoEmptyState(
-                        title: "No Contacts",
-                        message: "Import from your address book or add contacts manually",
-                        icon: "person.3.fill",
-                        zone: .contacts
-                    )
-                    .padding(.top, JohoDimensions.spacingXL)
-
-                    Button {
-                        showingImportSheet = true
-                    } label: {
-                        JohoListRow(
-                            title: "Import from Address Book",
-                            icon: "square.and.arrow.down",
-                            zone: .contacts,
-                            showChevron: true
-                        )
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.horizontal, JohoDimensions.spacingLG)
-                } else {
-                    // Grouped contacts by section letter
-                    ForEach(sortedSections, id: \.self) { section in
-                        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                            // Section header pill (情報デザイン)
-                            JohoPill(text: section, style: .whiteOnBlack, size: .medium)
-                                .padding(.horizontal, JohoDimensions.spacingLG)
-
-                            // Contact rows in this section
-                            VStack(spacing: JohoDimensions.spacingSM) {
-                                ForEach(groupedContacts[section] ?? []) { contact in
-                                    Button {
-                                        selectedContact = contact
-                                    } label: {
-                                        JohoContactRow(contact: contact)
-                                    }
-                                    .buttonStyle(.plain)
-                                    .contextMenu {
-                                        Button {
-                                            selectedContact = contact
-                                        } label: {
-                                            Label("View", systemImage: "person.fill")
-                                        }
-
-                                        if let phone = contact.phoneNumbers.first {
-                                            Button {
-                                                if let url = URL(string: "tel:\(phone.value)") {
-                                                    UIApplication.shared.open(url)
-                                                }
-                                            } label: {
-                                                Label("Call", systemImage: "phone.fill")
-                                            }
-                                        }
-
-                                        if let email = contact.emailAddresses.first {
-                                            Button {
-                                                if let url = URL(string: "mailto:\(email.value)") {
-                                                    UIApplication.shared.open(url)
-                                                }
-                                            } label: {
-                                                Label("Email", systemImage: "envelope.fill")
-                                            }
-                                        }
-
-                                        Divider()
-
-                                        Button(role: .destructive) {
-                                            deleteContact(contact)
-                                        } label: {
-                                            Label("Delete", systemImage: "trash")
-                                        }
-                                    }
-                                }
-                            }
-                            .padding(.horizontal, JohoDimensions.spacingLG)
-                        }
-                    }
-                }
             }
             .padding(.bottom, JohoDimensions.spacingLG)
         }
@@ -196,62 +146,436 @@ struct ContactListView: View {
                 ContactDetailView(contact: contact)
             }
         }
-    }
-
-    // MARK: - 情報デザイン Header (like Special Days)
-
-    private var contactsHeader: some View {
-        HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
-            // Icon zone (情報デザイン: purple for contacts)
-            Image(systemName: "person.2.fill")
-                .font(.system(size: 24, weight: .bold))
-                .foregroundStyle(JohoColors.white)
-                .frame(width: 52, height: 52)
-                .background(accentColor)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                )
-
-            // Title and stats
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Contacts")
-                    .font(JohoFont.displaySmall)
-                    .foregroundStyle(JohoColors.black)
-                    .lineLimit(1)
-
-                // Stats subtitle (情報デザイン: compact info)
-                Text(contactsSubtitle)
-                    .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.7))
-                    .lineLimit(1)
-            }
-
-            Spacer()
-
-            // Import from address book button (情報デザイン: squircle button)
-            Button {
-                showingImportSheet = true
-            } label: {
-                Image(systemName: "square.and.arrow.down")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(accentColor)
-                    .frame(width: 44, height: 44)
-                    .background(JohoColors.white)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                    )
+        .sheet(item: $editingContact) { contact in
+            JohoContactEditorSheet(mode: .contact, existingContact: contact)
+                .presentationCornerRadius(20)
+        }
+        .sheet(isPresented: $showingDuplicateReview) {
+            DuplicateReviewSheet()
+                .onDisappear {
+                    loadDuplicateSuggestions()
+                }
+        }
+        .onAppear {
+            loadDuplicateSuggestions()
+        }
+        .onChange(of: contacts.count) { _, _ in
+            // Rescan when contacts change
+            Task {
+                await duplicateManager.scanForDuplicates(contacts: contacts, modelContext: modelContext)
+                loadDuplicateSuggestions()
             }
         }
-        .padding(JohoDimensions.spacingMD)
+    }
+
+    // MARK: - Duplicate Detection
+
+    private func loadDuplicateSuggestions() {
+        let suggestions = duplicateManager.loadPendingSuggestions(modelContext: modelContext)
+        duplicateSuggestionCount = suggestions.count
+    }
+
+    // MARK: - Contacts Page Header (情報デザイン: Golden Standard Pattern)
+
+    private var contactsHeader: some View {
+        VStack(spacing: 0) {
+            // MAIN ROW: Icon + Title | WALL | Import button
+            HStack(spacing: 0) {
+                // LEFT COMPARTMENT: Icon + Title
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    // Icon zone with Contacts accent color (Warm Brown)
+                    Image(systemName: "person.2.fill")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(PageHeaderColor.contacts.accent)
+                        .frame(width: 40, height: 40)
+                        .background(PageHeaderColor.contacts.lightBackground)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(JohoColors.black, lineWidth: 1.5)
+                        )
+
+                    Text("CONTACTS")
+                        .font(JohoFont.headline)
+                        .foregroundStyle(JohoColors.black)
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                // VERTICAL WALL
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(width: 1.5)
+
+                // RIGHT COMPARTMENT: Import button
+                Button {
+                    showingImportSheet = true
+                } label: {
+                    Image(systemName: "square.and.arrow.down")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(PageHeaderColor.contacts.accent)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, JohoDimensions.spacingSM)
+            }
+            .frame(minHeight: 56)
+
+            // HORIZONTAL DIVIDER
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(height: 1.5)
+
+            // STATS ROW: Contact counts with indicators
+            HStack(spacing: JohoDimensions.spacingMD) {
+                // Total contacts
+                HStack(spacing: 4) {
+                    JohoIndicatorCircle(color: PageHeaderColor.contacts.accent, size: .small)
+                    Text("\(contacts.count)")
+                        .font(JohoFont.labelSmall.bold())
+                        .foregroundStyle(JohoColors.black)
+                    Text("total")
+                        .font(JohoFont.labelSmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                }
+
+                if contactsWithPhone > 0 {
+                    HStack(spacing: 4) {
+                        Image(systemName: "phone.fill")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                        Text("\(contactsWithPhone)")
+                            .font(JohoFont.labelSmall)
+                            .foregroundStyle(JohoColors.black.opacity(0.7))
+                    }
+                }
+
+                if contactsWithBirthday > 0 {
+                    HStack(spacing: 4) {
+                        Image(systemName: "gift.fill")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(SpecialDayType.birthday.accentColor)
+                        Text("\(contactsWithBirthday)")
+                            .font(JohoFont.labelSmall)
+                            .foregroundStyle(JohoColors.black.opacity(0.7))
+                    }
+                }
+
+                Spacer()
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+        }
         .background(JohoColors.white)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
                 .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+        )
+    }
+
+    // MARK: - Empty State (情報デザイン: Black text in white container)
+
+    private var contactsEmptyState: some View {
+        VStack(spacing: JohoDimensions.spacingLG) {
+            Spacer()
+                .frame(height: JohoDimensions.spacingXL)
+
+            // Icon in bordered box
+            Image(systemName: "person.2.fill")
+                .font(.system(size: 40, weight: .bold))
+                .foregroundStyle(accentColor)
+                .frame(width: 80, height: 80)
+                .background(PageHeaderColor.contacts.lightBackground)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                        .stroke(JohoColors.black, lineWidth: 2)
+                )
+
+            // Title and subtitle (BLACK text)
+            VStack(spacing: JohoDimensions.spacingSM) {
+                Text("NO CONTACTS")
+                    .font(JohoFont.headline)
+                    .foregroundStyle(JohoColors.black)
+
+                Text("Import from your address book or add contacts manually")
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                    .multilineTextAlignment(.center)
+            }
+
+            // Import button (情報デザイン: bento row style with clear compartments)
+            Button {
+                showingImportSheet = true
+            } label: {
+                HStack(spacing: 0) {
+                    // LEFT COMPARTMENT: Icon zone
+                    Image(systemName: "square.and.arrow.down")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundStyle(accentColor)
+                        .frame(width: 56, height: 56)
+                        .background(PageHeaderColor.contacts.lightBackground)
+
+                    // VERTICAL WALL (full height)
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+
+                    // RIGHT COMPARTMENT: Label
+                    Text("IMPORT FROM ADDRESS BOOK")
+                        .font(JohoFont.bodySmall.bold())
+                        .foregroundStyle(JohoColors.black)
+                        .padding(.horizontal, JohoDimensions.spacingMD)
+
+                    Spacer()
+
+                    // Chevron
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(JohoColors.black)
+                        .padding(.trailing, JohoDimensions.spacingMD)
+                }
+                .frame(height: 56)
+                .background(JohoColors.white)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                        .stroke(JohoColors.black, lineWidth: 2)
+                )
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, JohoDimensions.spacingMD)
+
+            Spacer()
+                .frame(height: JohoDimensions.spacingXL)
+        }
+        .frame(minHeight: 300)
+    }
+
+    // MARK: - Contact List Content (情報デザイン: Clean grouped list with right index)
+
+    private var contactsListContent: some View {
+        HStack(spacing: 0) {
+            // Main list area
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+                        ForEach(sortedSections, id: \.self) { section in
+                            Section {
+                                ForEach(groupedContacts[section] ?? []) { contact in
+                                    Button {
+                                        selectedContact = contact
+                                    } label: {
+                                        compactContactRow(for: contact)
+                                    }
+                                    .buttonStyle(.plain)
+                                    .contextMenu {
+                                        Button { selectedContact = contact } label: {
+                                            Label("View", systemImage: "person.fill")
+                                        }
+                                        Button { editingContact = contact } label: {
+                                            Label("Edit", systemImage: "pencil")
+                                        }
+                                        if let phone = contact.phoneNumbers.first {
+                                            Button {
+                                                if let url = URL(string: "tel:\(phone.value)") {
+                                                    UIApplication.shared.open(url)
+                                                }
+                                            } label: {
+                                                Label("Call", systemImage: "phone.fill")
+                                            }
+                                        }
+                                        Divider()
+                                        Button(role: .destructive) { deleteContact(contact) } label: {
+                                            Label("Delete", systemImage: "trash")
+                                        }
+                                    }
+                                }
+                            } header: {
+                                sectionHeader(letter: section)
+                                    .id(section)
+                            }
+                        }
+                    }
+                }
+                .onChange(of: selectedLetter) { _, letter in
+                    if let letter = letter {
+                        withAnimation {
+                            proxy.scrollTo(letter, anchor: .top)
+                        }
+                        selectedLetter = nil
+                    }
+                }
+            }
+
+            // Right alphabet index (情報デザイン: minimal vertical strip)
+            VStack(spacing: 1) {
+                ForEach(sortedSections, id: \.self) { letter in
+                    Button {
+                        selectedLetter = letter
+                        HapticManager.selection()
+                    } label: {
+                        Text(letter)
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
+                            .frame(width: 18, height: 16)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .padding(.trailing, 4)
+        }
+    }
+
+    @State private var selectedLetter: String?
+
+    // MARK: - Section Header (情報デザイン: Clean letter header)
+
+    private func sectionHeader(letter: String) -> some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            Text(letter)
+                .font(.system(size: 13, weight: .black, design: .rounded))
+                .foregroundStyle(JohoColors.white)
+                .frame(width: 24, height: 24)
+                .background(JohoColors.black)
+                .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+
+            Rectangle()
+                .fill(JohoColors.black.opacity(0.2))
+                .frame(height: 1)
+        }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingXS)
+        .background(JohoColors.white)
+    }
+
+    // MARK: - Compact Contact Row (情報デザイン: Minimal, clean)
+
+    private func compactContactRow(for contact: Contact) -> some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            // Avatar (small)
+            JohoContactAvatar(contact: contact, size: 40)
+
+            // Name and org
+            VStack(alignment: .leading, spacing: 2) {
+                Text(contact.displayName)
+                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+                    .lineLimit(1)
+
+                if let org = contact.organizationName, !org.isEmpty {
+                    Text(org)
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .lineLimit(1)
+                }
+            }
+
+            Spacer()
+
+            // Data indicators (small circles - 情報デザイン)
+            HStack(spacing: 4) {
+                if !contact.phoneNumbers.isEmpty {
+                    dataIndicator(icon: "phone.fill", color: accentColor)
+                }
+                if !contact.emailAddresses.isEmpty {
+                    dataIndicator(icon: "envelope.fill", color: accentColor)
+                }
+                if !contact.postalAddresses.isEmpty {
+                    dataIndicator(icon: "mappin", color: JohoColors.orange)
+                }
+                if contact.hasBirthdayForStarPage {
+                    dataIndicator(icon: "gift.fill", color: SpecialDayType.birthday.accentColor)
+                }
+            }
+
+            Image(systemName: "chevron.right")
+                .font(.system(size: 10, weight: .bold))
+                .foregroundStyle(JohoColors.black.opacity(0.3))
+        }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
+    }
+
+    // MARK: - Data Indicator (情報デザイン: Small colored dot)
+
+    private func dataIndicator(icon: String, color: Color) -> some View {
+        Image(systemName: icon)
+            .font(.system(size: 8, weight: .bold))
+            .foregroundStyle(color)
+            .frame(width: 16, height: 16)
+            .background(color.opacity(0.15))
+            .clipShape(Circle())
+    }
+
+    // MARK: - Contact Row (情報デザイン: Bento style with compartments)
+
+    private func contactRow(for contact: Contact) -> some View {
+        HStack(spacing: 0) {
+            // LEFT: Avatar compartment
+            JohoContactAvatar(contact: contact, size: 44)
+                .padding(.horizontal, JohoDimensions.spacingSM)
+
+            // WALL
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(width: 1.5)
+                .padding(.vertical, JohoDimensions.spacingSM)
+
+            // CENTER: Name and info
+            VStack(alignment: .leading, spacing: 2) {
+                Text(contact.displayName)
+                    .font(JohoFont.body.bold())
+                    .foregroundStyle(JohoColors.black)
+                    .lineLimit(1)
+
+                if let org = contact.organizationName, !org.isEmpty {
+                    Text(org)
+                        .font(JohoFont.labelSmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .lineLimit(1)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+
+            Spacer()
+
+            // RIGHT: Quick info indicators
+            HStack(spacing: 4) {
+                if !contact.phoneNumbers.isEmpty {
+                    Image(systemName: "phone.fill")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(accentColor)
+                }
+                if !contact.emailAddresses.isEmpty {
+                    Image(systemName: "envelope.fill")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(accentColor)
+                }
+                if contact.birthday != nil {
+                    Image(systemName: "gift.fill")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(SpecialDayType.birthday.accentColor)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+
+            // Chevron
+            Image(systemName: "chevron.right")
+                .font(.system(size: 12, weight: .bold))
+                .foregroundStyle(JohoColors.black.opacity(0.5))
+                .padding(.trailing, JohoDimensions.spacingSM)
+        }
+        .frame(height: 56)
+        .background(JohoColors.inputBackground)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(JohoColors.black, lineWidth: 1.5)
         )
     }
 
@@ -280,13 +604,13 @@ struct ContactListView: View {
 // MARK: - 情報デザイン Circular Contact Avatar (iOS Contacts style)
 
 /// Circular contact avatar with photo or initials - like iOS Contacts
-/// Uses 情報デザイン styling: black border, purple accent for initials
+/// Uses 情報デザイン styling: black border, Warm Brown accent for initials
 struct JohoContactAvatar: View {
     let contact: Contact
     var size: CGFloat = 56
 
-    // 情報デザイン accent color for contacts (purple)
-    private let accentColor = Color(hex: "805AD5")
+    // 情報デザイン accent color for contacts (Warm Brown)
+    private var accentColor: Color { PageHeaderColor.contacts.accent }
 
     private var fontSize: CGFloat {
         size * 0.4
@@ -335,8 +659,8 @@ struct JohoContactAvatar: View {
 struct JohoContactRow: View {
     let contact: Contact
 
-    // 情報デザイン accent color for contacts (purple)
-    private let accentColor = Color(hex: "805AD5")
+    // 情報デザイン accent color for contacts (Warm Brown)
+    private var accentColor: Color { PageHeaderColor.contacts.accent }
 
     private var primaryPhone: String? {
         contact.phoneNumbers.first?.value
@@ -426,156 +750,203 @@ struct ContactImportView: View {
     @State private var importMessage: String?
     @State private var showingIOSContactPicker = false
 
+    // 情報デザイン accent color for Contacts (Warm Brown)
+    private var accentColor: Color { PageHeaderColor.contacts.accent }
+
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: JohoDimensions.spacingLG) {
-                    // Page header
-                    JohoPageHeader(
-                        title: "Import Contacts",
-                        badge: "IMPORT"
-                    )
-                    .padding(.horizontal, JohoDimensions.spacingLG)
-                    .padding(.top, JohoDimensions.spacingLG)
+                VStack(spacing: JohoDimensions.spacingMD) {
+                    // Header with Close button (情報デザイン: floating buttons outside card)
+                    HStack {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Text("Close")
+                                .font(JohoFont.body)
+                                .foregroundStyle(JohoColors.black)
+                                .padding(.horizontal, JohoDimensions.spacingMD)
+                                .padding(.vertical, JohoDimensions.spacingMD)
+                                .background(JohoColors.white)
+                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                .overlay(
+                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                        .stroke(JohoColors.black, lineWidth: 1.5)
+                                )
+                        }
+                        .buttonStyle(.plain)
 
-                    // Import options section
-                    JohoSectionBox(
-                        title: "Import Options",
-                        zone: .contacts,
-                        icon: "square.and.arrow.down"
-                    ) {
+                        Spacer()
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+                    .padding(.top, JohoDimensions.spacingSM)
+
+                    // MAIN CONTENT CARD (情報デザイン: All content in WHITE container)
+                    VStack(spacing: 0) {
+                        // Title with icon indicator
+                        HStack(spacing: JohoDimensions.spacingSM) {
+                            // Icon zone
+                            Image(systemName: "square.and.arrow.down")
+                                .font(.system(size: 20, weight: .bold))
+                                .foregroundStyle(accentColor)
+                                .frame(width: 40, height: 40)
+                                .background(PageHeaderColor.contacts.lightBackground)
+                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                .overlay(
+                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                        .stroke(JohoColors.black, lineWidth: 1.5)
+                                )
+
+                            Text("IMPORT CONTACTS")
+                                .font(JohoFont.headline)
+                                .foregroundStyle(JohoColors.black)
+
+                            Spacer()
+                        }
+                        .padding(JohoDimensions.spacingMD)
+
+                        // Horizontal divider
+                        Rectangle()
+                            .fill(JohoColors.black)
+                            .frame(height: 1.5)
+
+                        // Import options (情報デザイン: bento rows)
                         VStack(spacing: JohoDimensions.spacingSM) {
+                            // Import All option
                             Button {
                                 importAllContacts()
                             } label: {
-                                HStack(spacing: JohoDimensions.spacingMD) {
-                                    JohoIconBadge(icon: "person.2.fill", zone: .contacts, size: 40)
-
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text("Import All Contacts")
-                                            .font(JohoFont.body)
-                                            .foregroundStyle(JohoColors.black)
-
-                                        Text("From your address book")
-                                            .font(JohoFont.bodySmall)
-                                            .foregroundStyle(JohoColors.black.opacity(0.6))
-                                    }
-
-                                    Spacer()
-
-                                    Image(systemName: "chevron.right")
-                                        .font(.system(size: 14, weight: .bold))
-                                        .foregroundStyle(JohoColors.black)
-                                }
-                                .padding(JohoDimensions.spacingMD)
-                                .background(JohoColors.white)
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                                .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                importOptionRow(
+                                    icon: "person.2.fill",
+                                    title: "Import All Contacts",
+                                    subtitle: "From your address book"
                                 )
                             }
                             .buttonStyle(.plain)
                             .disabled(isImporting || contactsManager.authorizationStatus != .authorized)
                             .opacity((isImporting || contactsManager.authorizationStatus != .authorized) ? 0.5 : 1.0)
 
+                            // Select Contacts option
                             Button {
                                 showingIOSContactPicker = true
                             } label: {
-                                HStack(spacing: JohoDimensions.spacingMD) {
-                                    JohoIconBadge(icon: "person.badge.plus", zone: .contacts, size: 40)
-
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text("Select Contacts to Import")
-                                            .font(JohoFont.body)
-                                            .foregroundStyle(JohoColors.black)
-
-                                        Text("Choose specific contacts")
-                                            .font(JohoFont.bodySmall)
-                                            .foregroundStyle(JohoColors.black.opacity(0.6))
-                                    }
-
-                                    Spacer()
-
-                                    Image(systemName: "chevron.right")
-                                        .font(.system(size: 14, weight: .bold))
-                                        .foregroundStyle(JohoColors.black)
-                                }
-                                .padding(JohoDimensions.spacingMD)
-                                .background(JohoColors.white)
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                                .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                importOptionRow(
+                                    icon: "person.badge.plus",
+                                    title: "Select Contacts",
+                                    subtitle: "Choose specific contacts"
                                 )
                             }
                             .buttonStyle(.plain)
                             .disabled(isImporting || contactsManager.authorizationStatus != .authorized)
                             .opacity((isImporting || contactsManager.authorizationStatus != .authorized) ? 0.5 : 1.0)
                         }
-                    }
-                    .padding(.horizontal, JohoDimensions.spacingLG)
+                        .padding(JohoDimensions.spacingMD)
 
-                    // Permission request if needed
-                    if contactsManager.authorizationStatus != .authorized {
-                        JohoSectionBox(
-                            title: "Permission Required",
-                            zone: .warning,
-                            icon: "exclamationmark.triangle.fill"
-                        ) {
+                        // Permission warning if needed
+                        if contactsManager.authorizationStatus != .authorized {
+                            // Divider
+                            Rectangle()
+                                .fill(JohoColors.black)
+                                .frame(height: 1.5)
+
+                            // Warning section (情報デザイン: white background with warning indicator)
                             VStack(spacing: JohoDimensions.spacingMD) {
-                                Text("Contacts access is required to import from your address book.")
-                                    .font(JohoFont.body)
-                                    .foregroundStyle(JohoColors.black)
+                                HStack(spacing: JohoDimensions.spacingSM) {
+                                    // Warning icon
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .font(.system(size: 16, weight: .bold))
+                                        .foregroundStyle(JohoColors.red)
+                                        .frame(width: 32, height: 32)
+                                        .background(JohoColors.redLight)
+                                        .clipShape(Circle())
+                                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
 
+                                    JohoPill(text: "PERMISSION REQUIRED", style: .whiteOnBlack, size: .small)
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
+
+                                Text("Contacts access is required to import from your address book.")
+                                    .font(JohoFont.bodySmall)
+                                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                                // Grant permission button
                                 Button {
                                     requestPermission()
                                 } label: {
-                                    JohoListRow(
-                                        title: "Grant Contacts Permission",
-                                        icon: "person.badge.key",
-                                        zone: .warning,
-                                        showChevron: true
+                                    HStack(spacing: 0) {
+                                        // Icon zone
+                                        Image(systemName: "person.badge.key")
+                                            .font(.system(size: 16, weight: .bold))
+                                            .foregroundStyle(JohoColors.red)
+                                            .frame(width: 44, height: 44)
+                                            .background(JohoColors.redLight)
+
+                                        // Wall
+                                        Rectangle()
+                                            .fill(JohoColors.black)
+                                            .frame(width: 1.5)
+
+                                        // Label
+                                        Text("GRANT PERMISSION")
+                                            .font(JohoFont.bodySmall.bold())
+                                            .foregroundStyle(JohoColors.black)
+                                            .padding(.horizontal, JohoDimensions.spacingMD)
+
+                                        Spacer()
+
+                                        // Chevron
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 14, weight: .bold))
+                                            .foregroundStyle(JohoColors.black)
+                                            .padding(.trailing, JohoDimensions.spacingMD)
+                                    }
+                                    .frame(height: 48)
+                                    .background(JohoColors.white)
+                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                                    .overlay(
+                                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                            .stroke(JohoColors.black, lineWidth: 1.5)
                                     )
                                 }
                                 .buttonStyle(.plain)
                             }
+                            .padding(JohoDimensions.spacingMD)
                         }
-                        .padding(.horizontal, JohoDimensions.spacingLG)
-                    }
 
-                    // Status message
-                    if let message = importMessage {
-                        JohoSectionBox(
-                            title: "Status",
-                            zone: .contacts,
-                            icon: "checkmark.circle.fill"
-                        ) {
-                            Text(message)
-                                .font(JohoFont.body)
-                                .foregroundStyle(JohoColors.black)
+                        // Status message if available
+                        if let message = importMessage {
+                            // Divider
+                            Rectangle()
+                                .fill(JohoColors.black)
+                                .frame(height: 1.5)
+
+                            HStack(spacing: JohoDimensions.spacingSM) {
+                                Image(systemName: message.contains("Success") ? "checkmark.circle.fill" : "info.circle.fill")
+                                    .font(.system(size: 16, weight: .bold))
+                                    .foregroundStyle(message.contains("Success") ? JohoColors.green : accentColor)
+
+                                Text(message)
+                                    .font(JohoFont.bodySmall)
+                                    .foregroundStyle(JohoColors.black)
+
+                                Spacer()
+                            }
+                            .padding(JohoDimensions.spacingMD)
                         }
-                        .padding(.horizontal, JohoDimensions.spacingLG)
                     }
+                    .background(JohoColors.white)
+                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+                    .overlay(
+                        Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                    )
+                    .padding(.horizontal, JohoDimensions.spacingLG)
                 }
                 .padding(.bottom, JohoDimensions.spacingLG)
             }
             .johoBackground()
             .toolbar(.hidden, for: .navigationBar)
-            .safeAreaInset(edge: .top) {
-                // Inline header with close button (情報デザイン)
-                HStack {
-                    Button {
-                        dismiss()
-                    } label: {
-                        JohoActionButton(icon: "xmark")
-                    }
-
-                    Spacer()
-                }
-                .padding(.horizontal, JohoDimensions.spacingLG)
-                .padding(.top, JohoDimensions.spacingSM)
-            }
             .overlay {
                 if isImporting {
                     VStack(spacing: JohoDimensions.spacingMD) {
@@ -597,6 +968,57 @@ struct ContactImportView: View {
                 }
             }
         }
+    }
+
+    // MARK: - Import Option Row (情報デザイン: Bento style)
+
+    private func importOptionRow(icon: String, title: String, subtitle: String) -> some View {
+        HStack(spacing: 0) {
+            // Icon zone
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(accentColor)
+                .frame(width: 44, height: 44)
+                .background(PageHeaderColor.contacts.lightBackground)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                        .stroke(JohoColors.black, lineWidth: 1.5)
+                )
+
+            // Wall
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(width: 1.5)
+                .padding(.vertical, JohoDimensions.spacingSM)
+
+            // Text content
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(JohoFont.body.bold())
+                    .foregroundStyle(JohoColors.black)
+
+                Text(subtitle)
+                    .font(JohoFont.labelSmall)
+                    .foregroundStyle(JohoColors.black.opacity(0.6))
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+
+            Spacer()
+
+            // Chevron
+            Image(systemName: "chevron.right")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(JohoColors.black)
+                .padding(.trailing, JohoDimensions.spacingSM)
+        }
+        .frame(height: 56)
+        .background(JohoColors.inputBackground)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(JohoColors.black, lineWidth: 1.5)
+        )
     }
 
     private func requestPermission() {
@@ -643,7 +1065,7 @@ struct ContactImportView: View {
 
         Task {
             do {
-                try contactsManager.importContacts(cnContacts, to: modelContext)
+                try await contactsManager.importContacts(cnContacts, to: modelContext)
                 await MainActor.run {
                     importMessage = "Successfully imported \(cnContacts.count) contacts"
                     isImporting = false
@@ -701,8 +1123,8 @@ struct JohoAddContactSheet: View {
     let onSelectContact: () -> Void
     let onSelectBirthday: () -> Void
 
-    // 情報デザイン accent color for contacts (purple)
-    private let contactColor = Color(hex: "805AD5")
+    // 情報デザイン accent color for contacts (Warm Brown)
+    private var contactColor: Color { PageHeaderColor.contacts.accent }
     private let birthdayColor = SpecialDayType.birthday.accentColor
 
     var body: some View {
