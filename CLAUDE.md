@@ -12,15 +12,28 @@ This file provides guidance to Claude Code when working with this repository.
 
 ---
 
-## Quick Reference
+## ⚠️ MANDATORY: Read Before Working
 
-| Task | Reference |
-|------|-----------|
-| **UI work** | See `.claude/design-system.md` |
-| **Architecture** | See `.claude/architecture.md` |
-| **Build** | `./build.sh build` |
-| **Test** | `./build.sh test` |
-| **Clean** | `./build.sh clean` |
+**You MUST read the relevant documentation file BEFORE making changes:**
+
+| Task | Action |
+|------|--------|
+| **Any UI/View changes** | READ `.claude/design-system.md` FIRST |
+| **Architecture/Model changes** | READ `.claude/architecture.md` FIRST |
+| **Adding new components** | READ `.claude/COMPONENT_GLOSSARY.md` FIRST |
+| **Symbol/icon decisions** | READ `.claude/japanese-symbol-language.md` FIRST |
+
+**Do not skip this step.** The design system is strict and violations are bugs.
+
+---
+
+## Build Commands
+
+| Command | Purpose |
+|---------|---------|
+| `./build.sh build` | Debug build |
+| `./build.sh test` | Run tests |
+| `./build.sh clean` | Clean artifacts |
 
 ---
 
@@ -165,9 +178,14 @@ Before committing UI code:
 
 ---
 
-## Additional Documentation
+## Documentation Files (in `.claude/`)
 
-- `.claude/design-system.md` - Complete 情報デザイン specification
-- `.claude/architecture.md` - Code patterns and technical details
-- `JohoDesignSystem.swift` - Design system components
-- `TODO_VECKA_FEATURES.md` - Feature roadmap
+| File | Contains | Read when |
+|------|----------|-----------|
+| `design-system.md` | Full 情報デザイン spec, colors, borders, patterns | ANY UI work |
+| `architecture.md` | Manager pattern, SwiftData models, data flow | Model/service changes |
+| `COMPONENT_GLOSSARY.md` | Existing UI components and their usage | Adding/modifying views |
+| `japanese-symbol-language.md` | マルバツ symbols, priority markers, icons | Icon/symbol choices |
+| `WORKING_WITH_CLAUDE.md` | Collaboration patterns for this project | Reference |
+
+Also see: `JohoDesignSystem.swift` (code), `TODO_VECKA_FEATURES.md` (roadmap)
