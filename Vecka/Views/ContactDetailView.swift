@@ -749,33 +749,33 @@ struct JohoContactEditorSheet: View {
         // Elegant minimal profile-style editor (Lala Kudo inspired)
         ScrollView {
             VStack(spacing: 0) {
-                // Floating action buttons at top
+                // Floating action buttons at top - ○/× (maru-batsu)
                 HStack {
+                    // × Cancel
                     Button { dismiss() } label: {
-                        Text("Cancel")
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                        Text(JohoSymbols.batsu)  // ×
+                            .font(.system(size: 20, weight: .bold))
                             .foregroundStyle(JohoColors.black)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 10)
+                            .frame(width: 44, height: 44)
                             .background(JohoColors.white)
-                            .clipShape(Capsule())
-                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1.5))
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(JohoColors.black, lineWidth: 1.5))
                     }
 
                     Spacer()
 
+                    // ○ Confirm
                     Button {
                         saveContact()
                         dismiss()
                     } label: {
-                        Text("Save")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                        Text(JohoSymbols.maru)  // ○
+                            .font(.system(size: 26, weight: .bold))
                             .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 10)
+                            .frame(width: 44, height: 44)
                             .background(canSave ? accentColor : JohoColors.white)
-                            .clipShape(Capsule())
-                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1.5))
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(JohoColors.black, lineWidth: 1.5))
                     }
                     .disabled(!canSave)
                 }

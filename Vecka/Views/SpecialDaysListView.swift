@@ -807,194 +807,198 @@ struct SpecialDaysListView: View {
         }
     }
 
-    // MARK: - Header with Year Picker (情報デザイン: Compact)
+    // MARK: - Header with Year Picker (情報デザイン: Bento Compartments)
 
     private var headerWithYearPicker: some View {
         let theme: MonthTheme? = selectedMonth.map { MonthTheme.theme(for: $0) }
         let monthRows = selectedMonth.map { rowsForMonth($0) } ?? []
 
-        return VStack(spacing: JohoDimensions.spacingMD) {
-            HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
-                // Back button when in month detail
-                if selectedMonth != nil {
-                    Button {
-                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
-                            selectedMonth = nil
-                        }
-                        HapticManager.selection()
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(JohoColors.black)
-                            .frame(width: 44, height: 44)
-                            .background(JohoColors.inputBackground)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
-                            )
-                    }
-                }
-
-                // Icon zone - star for main view, month icon for detail
-                if let theme = theme {
-                    Image(systemName: theme.icon)
-                        .font(.system(size: 24, weight: .bold))
-                        .foregroundStyle(theme.accentColor)
-                        .frame(width: 52, height: 52)
-                        .background(theme.lightBackground)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                        )
-                } else {
-                    Image(systemName: "star.fill")
-                        .font(.system(size: 24, weight: .bold))
-                        .foregroundStyle(JohoColors.black)
-                        .frame(width: 52, height: 52)
-                        .background(Color(hex: "FFD700"))  // Gold star
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-                        )
-                }
-
-                VStack(alignment: .leading, spacing: 2) {
-                    if let theme = theme {
-                        // Month detail: show "JANUARY 2025" (year is read-only here)
-                        Text(verbatim: "\(theme.name.uppercased()) \(String(selectedYear))")
-                            .font(JohoFont.displaySmall)
-                            .foregroundStyle(JohoColors.black)
-
-                        Text("\(monthRows.count) special days")
-                            .font(JohoFont.caption)
-                            .foregroundStyle(JohoColors.black.opacity(0.7))
-                    } else {
-                        Text("Special Days")
-                            .font(JohoFont.headline)  // Smaller font to prevent truncation
-                            .foregroundStyle(JohoColors.black)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
-
-                        // 情報デザイン: Compact subtitle that doesn't truncate on iPhone
-                        Text(compactSubtitle)
-                            .font(JohoFont.caption)
-                            .foregroundStyle(JohoColors.black.opacity(0.7))
-                            .lineLimit(2)
-                            .minimumScaleFactor(0.7)
-                    }
-                }
-                .layoutPriority(1)  // Prioritize title over year picker
-
-                Spacer(minLength: 8)
-
-                // Year picker (only show when not in month detail for cleaner look)
-                if selectedMonth == nil {
-                    HStack(spacing: 0) {
+        return VStack(spacing: 0) {
+            // TOP ROW: Back button (if needed) + Icon + Title | WALL | Year Picker
+            HStack(spacing: 0) {
+                // LEFT COMPARTMENT: Navigation + Icon + Title
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    // Back button when in month detail
+                    if selectedMonth != nil {
                         Button {
-                            withAnimation(.easeInOut(duration: 0.15)) { selectedYear -= 1 }
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                selectedMonth = nil
+                            }
                             HapticManager.selection()
                         } label: {
                             Image(systemName: "chevron.left")
-                                .font(.system(size: 12, weight: .bold))
+                                .font(.system(size: 14, weight: .bold))
                                 .foregroundStyle(JohoColors.black)
-                                .frame(width: 44, height: 44)
-                                .contentShape(Rectangle())
-                        }
-
-                        Menu {
-                            ForEach(years, id: \.self) { year in
-                                Button {
-                                    withAnimation { selectedYear = year }
-                                } label: {
-                                    HStack {
-                                        Text(verbatim: "\(year)")
-                                        if year == selectedYear {
-                                            Image(systemName: "checkmark")
-                                        }
-                                    }
-                                }
-                            }
-                        } label: {
-                            Text(verbatim: "\(selectedYear)")
-                                .font(JohoFont.headline)
-                                .monospacedDigit()
-                                .foregroundStyle(JohoColors.black)
-                                .frame(width: 56)
-                        }
-
-                        Button {
-                            withAnimation(.easeInOut(duration: 0.15)) { selectedYear += 1 }
-                            HapticManager.selection()
-                        } label: {
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 12, weight: .bold))
-                                .foregroundStyle(JohoColors.black)
-                                .frame(width: 44, height: 44)
-                                .contentShape(Rectangle())
+                                .frame(width: 32, height: 32)
+                                .background(JohoColors.inputBackground)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
                         }
                     }
-                    .background(JohoColors.inputBackground)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
-                    )
 
-                    // 情報デザイン: Add button with entry type menu
-                    Menu {
-                        Button {
-                            newSpecialDayType = .holiday
-                            isPresentingNewSpecialDay = true
-                        } label: {
-                            Label("Holiday", systemImage: "flag.fill")
-                        }
-                        Button {
-                            newSpecialDayType = .observance
-                            isPresentingNewSpecialDay = true
-                        } label: {
-                            Label("Observance", systemImage: "leaf.fill")
-                        }
-                        Button {
-                            newSpecialDayType = .event
-                            isPresentingNewSpecialDay = true
-                        } label: {
-                            Label("Event", systemImage: "calendar.badge.clock")
-                        }
-                        Button {
-                            newSpecialDayType = .birthday
-                            isPresentingNewSpecialDay = true
-                        } label: {
-                            Label("Birthday", systemImage: "birthday.cake.fill")
-                        }
-                        Button {
-                            newSpecialDayType = .note
-                            isPresentingNewSpecialDay = true
-                        } label: {
-                            Label("Note", systemImage: "note.text")
-                        }
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(JohoColors.white)
-                            .frame(width: 44, height: 44)
-                            .background(JohoColors.black)
+                    // Icon zone - star for main view, month icon for detail
+                    if let theme = theme {
+                        Image(systemName: theme.icon)
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundStyle(theme.accentColor)
+                            .frame(width: 40, height: 40)
+                            .background(theme.lightBackground)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                    .stroke(JohoColors.black, lineWidth: 1.5)
+                            )
+                    } else {
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundStyle(PageHeaderColor.specialDays.accent)
+                            .frame(width: 40, height: 40)
+                            .background(PageHeaderColor.specialDays.lightBackground)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                    .stroke(JohoColors.black, lineWidth: 1.5)
+                            )
+                    }
+
+                    // Title
+                    if let theme = theme {
+                        Text(verbatim: "\(theme.name.uppercased())")
+                            .font(JohoFont.headline)
+                            .foregroundStyle(JohoColors.black)
+                    } else {
+                        Text("SPECIAL DAYS")
+                            .font(JohoFont.headline)
+                            .foregroundStyle(JohoColors.black)
                     }
                 }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                // VERTICAL WALL (separator)
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(width: 1.5)
+
+                // RIGHT COMPARTMENT: Year Picker
+                if selectedMonth == nil {
+                    bentoYearPicker
+                } else {
+                    // Show year when in month detail (read-only)
+                    Text(String(selectedYear))
+                        .font(JohoFont.headline)
+                        .monospacedDigit()
+                        .foregroundStyle(JohoColors.black)
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
+                        .frame(width: 100)
+                }
             }
+            .frame(height: 56)
+
+            // HORIZONTAL DIVIDER
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(height: 1.5)
+
+            // STATS ROW (full width)
+            HStack(spacing: JohoDimensions.spacingSM) {
+                if let _ = theme {
+                    Text("\(monthRows.count) special days")
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                } else {
+                    bentoStatsRow
+                }
+                Spacer()
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
         }
-        .padding(JohoDimensions.spacingLG)
         .background(JohoColors.white)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(JohoColors.black, lineWidth: 2)
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
         .padding(.top, JohoDimensions.spacingSM)
+    }
+
+    // MARK: - Bento Year Picker (Simple Stepper Layout)
+
+    private var bentoYearPicker: some View {
+        HStack(spacing: 4) {
+            // Decrement button
+            Button {
+                withAnimation(.easeInOut(duration: 0.15)) { selectedYear -= 1 }
+                HapticManager.selection()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(JohoColors.black)
+                    .frame(width: 24, height: 44)
+                    .contentShape(Rectangle())
+            }
+
+            // Year text - plain text, no Menu wrapper
+            Text(String(selectedYear))
+                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(JohoColors.black)
+                .fixedSize()
+
+            // Increment button
+            Button {
+                withAnimation(.easeInOut(duration: 0.15)) { selectedYear += 1 }
+                HapticManager.selection()
+            } label: {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(JohoColors.black)
+                    .frame(width: 24, height: 44)
+                    .contentShape(Rectangle())
+            }
+        }
+    }
+
+    // MARK: - Bento Stats Row
+
+    private var bentoStatsRow: some View {
+        HStack(spacing: JohoDimensions.spacingMD) {
+            // Show colored circles with counts for each type
+            if holidayCount > 0 {
+                statIndicator(count: holidayCount, color: SpecialDayType.holiday.accentColor)
+            }
+            if observanceCount > 0 {
+                statIndicator(count: observanceCount, color: SpecialDayType.observance.accentColor)
+            }
+            if eventCount > 0 {
+                statIndicator(count: eventCount, color: SpecialDayType.event.accentColor)
+            }
+            if birthdayCount > 0 {
+                statIndicator(count: birthdayCount, color: SpecialDayType.birthday.accentColor)
+            }
+
+            if holidayCount == 0 && observanceCount == 0 && eventCount == 0 && birthdayCount == 0 {
+                Text("No special days yet")
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(JohoColors.black.opacity(0.5))
+            }
+        }
+    }
+
+    private func statIndicator(count: Int, color: Color) -> some View {
+        HStack(spacing: 4) {
+            Circle()
+                .fill(color)
+                .frame(width: 8, height: 8)
+                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+            Text("\(count)")
+                .font(JohoFont.labelSmall)
+                .foregroundStyle(JohoColors.black)
+        }
     }
 
     // MARK: - Month Grid (情報デザイン: 12 Month Flipcards in 3-Column Bento)

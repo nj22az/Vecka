@@ -14,6 +14,7 @@ struct SettingsView: View {
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
     @AppStorage("showHolidays") private var showHolidays = true
     @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
+    @AppStorage("appBackgroundColor") private var appBackgroundColor = "black"
 
     // Database statistics queries
     @Query private var holidayRules: [HolidayRule]
@@ -26,13 +27,10 @@ struct SettingsView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: JohoDimensions.spacingLG) {
-                // Page Header (情報デザイン: WHITE container)
-                JohoPageHeader(
-                    title: Localization.settings,
-                    badge: "SETTINGS"
-                )
-                .padding(.horizontal, JohoDimensions.spacingLG)
-                .padding(.top, JohoDimensions.spacingSM)
+                // 情報デザイン: Bento-style page header (Golden Standard Pattern)
+                settingsPageHeader
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+                    .padding(.top, JohoDimensions.spacingSM)
 
                 // Calendar Section (Show Holidays + Region)
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
@@ -189,6 +187,68 @@ struct SettingsView: View {
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
 
+                // Display Section (AMOLED-friendly background options)
+                VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
+                    JohoPill(text: "DISPLAY", style: .whiteOnBlack, size: .small)
+
+                    // Background color picker
+                    VStack(spacing: JohoDimensions.spacingSM) {
+                        HStack(spacing: JohoDimensions.spacingMD) {
+                            // Icon zone
+                            Image(systemName: "circle.lefthalf.filled")
+                                .font(.system(size: 20, weight: .bold))
+                                .foregroundStyle(JohoColors.black)
+                                .frame(width: 44, height: 44)
+                                .background(PageHeaderColor.settings.lightBackground)
+                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                .overlay(
+                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                                )
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Background Color")
+                                    .font(JohoFont.headline)
+                                    .foregroundStyle(JohoColors.black)
+
+                                Text(selectedBackgroundOption.displayName)
+                                    .font(JohoFont.body)
+                                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                            }
+
+                            Spacer()
+                        }
+                        .padding(JohoDimensions.spacingMD)
+                        .background(JohoColors.white)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                        )
+
+                        // Color options grid
+                        HStack(spacing: JohoDimensions.spacingSM) {
+                            ForEach(AppBackgroundOption.allCases) { option in
+                                backgroundOptionButton(option)
+                            }
+                        }
+                    }
+
+                    // Footer text
+                    Text("True Black saves battery on OLED displays by turning off pixels completely.")
+                        .font(JohoFont.caption)
+                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                        .padding(.horizontal, JohoDimensions.spacingSM)
+                }
+                .padding(JohoDimensions.spacingLG)
+                .background(JohoColors.white)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                )
+                .padding(.horizontal, JohoDimensions.spacingLG)
+
                 // Database Section (情報デザイン: Information visible at a glance)
                 databaseSection
 
@@ -290,6 +350,114 @@ struct SettingsView: View {
             return option.symbol
         }
         return "globe"
+    }
+
+    // MARK: - Settings Page Header (情報デザイン: Golden Standard Pattern)
+
+    private var settingsPageHeader: some View {
+        VStack(spacing: 0) {
+            // MAIN ROW: Icon + Title | WALL | Version
+            HStack(spacing: 0) {
+                // LEFT COMPARTMENT: Icon + Title
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    // Icon zone with Settings accent color (Slate Blue)
+                    Image(systemName: "gearshape.fill")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(PageHeaderColor.settings.accent)
+                        .frame(width: 40, height: 40)
+                        .background(PageHeaderColor.settings.lightBackground)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(JohoColors.black, lineWidth: 1.5)
+                        )
+
+                    Text("SETTINGS")
+                        .font(JohoFont.headline)
+                        .foregroundStyle(JohoColors.black)
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                // VERTICAL WALL
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(width: 1.5)
+
+                // RIGHT COMPARTMENT: App version
+                VStack(spacing: 0) {
+                    Text("v1.0")
+                        .font(JohoFont.bodySmall.bold())
+                        .foregroundStyle(JohoColors.black)
+                    Text("WeekGrid")
+                        .font(JohoFont.labelSmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+            }
+            .frame(minHeight: 56)
+        }
+        .background(JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+        )
+    }
+
+    // MARK: - Background Color Helpers
+
+    private var selectedBackgroundOption: AppBackgroundOption {
+        AppBackgroundOption(rawValue: appBackgroundColor) ?? .trueBlack
+    }
+
+    @ViewBuilder
+    private func backgroundOptionButton(_ option: AppBackgroundOption) -> some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                appBackgroundColor = option.rawValue
+            }
+            HapticManager.selection()
+        } label: {
+            VStack(spacing: 4) {
+                // Color preview circle
+                Circle()
+                    .fill(option.color)
+                    .frame(width: 32, height: 32)
+                    .overlay(
+                        Circle()
+                            .stroke(
+                                selectedBackgroundOption == option ? JohoColors.black : JohoColors.black.opacity(0.3),
+                                lineWidth: selectedBackgroundOption == option ? 2.5 : 1.5
+                            )
+                    )
+                    .overlay {
+                        if selectedBackgroundOption == option {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundStyle(JohoColors.white)
+                        }
+                    }
+
+                // Label
+                Text(option == .trueBlack ? "BLACK" : option == .darkNavy ? "NAVY" : "SOFT")
+                    .font(.system(size: 9, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .background(selectedBackgroundOption == option ? JohoColors.yellow.opacity(0.3) : JohoColors.white)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                    .stroke(
+                        selectedBackgroundOption == option ? JohoColors.black : JohoColors.black.opacity(0.3),
+                        lineWidth: selectedBackgroundOption == option ? 2 : 1
+                    )
+            )
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Database Section (情報デザイン: Bento statistics grid)

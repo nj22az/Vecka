@@ -144,14 +144,6 @@ struct ModernCalendarView: View {
     @State private var columnVisibility: NavigationSplitViewVisibility = .automatic
     @State private var sidebarSelection: SidebarSelection? = .calendar
 
-    private enum PhoneTab: Hashable {
-        case calendar
-        case library
-        case settings
-    }
-
-    @State private var phoneTab: PhoneTab = .calendar
-
     @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
 
     @State private var lunarConfig: LunarConfig?
@@ -204,6 +196,78 @@ struct ModernCalendarView: View {
         }
     }
 
+    // MARK: - iPhone Layout (Icon Strip Dock)
+
+    private var iPhoneLayout: some View {
+        VStack(spacing: 0) {
+            // Content area
+            Group {
+                switch sidebarSelection {
+                case .calendar, .none:
+                    NavigationStack {
+                        calendarDetailView
+                            .navigationBarHidden(true)
+                            .toolbar(.hidden, for: .navigationBar)
+                    }
+                case .tools:
+                    NavigationStack {
+                        DashboardView()
+                            .navigationBarHidden(true)
+                            .toolbar(.hidden, for: .navigationBar)
+                    }
+                case .contacts:
+                    NavigationStack {
+                        ContactListView()
+                            .johoBackground()
+                            .johoNavigation()
+                    }
+                case .specialDays:
+                    NavigationStack {
+                        SpecialDaysListView(isInMonthDetail: $isInSpecialDaysMonthDetail)
+                            .johoBackground()
+                            .johoNavigation()
+                    }
+                case .settings:
+                    NavigationStack {
+                        SettingsView()
+                            .johoBackground()
+                            .johoNavigation()
+                    }
+                }
+            }
+            .frame(maxHeight: .infinity)
+
+            // Bottom dock
+            IconStripDock(
+                selection: $sidebarSelection,
+                onAdd: iPhoneDockAddAction,
+                addButtonColor: addButtonColor
+            )
+        }
+        .johoBackground()
+        .onAppear {
+            // Initialize sidebarSelection for iPhone if nil
+            if sidebarSelection == nil {
+                sidebarSelection = .calendar
+            }
+        }
+    }
+
+    /// Add action for iPhone dock (context-aware)
+    private var iPhoneDockAddAction: (() -> Void)? {
+        guard shouldShowAddButton else { return nil }
+        return {
+            switch sidebarSelection {
+            case .contacts:
+                showContactMenu = true
+            case .specialDays:
+                showSpecialDayMenu = true
+            default:
+                break
+            }
+        }
+    }
+
     var body: some View {
         Group {
             if isPad {
@@ -224,38 +288,8 @@ struct ModernCalendarView: View {
                 }
                 .johoBackground()
             } else {
-                // iPhone: Tab bar navigation with full-width calendar
-                TabView(selection: $phoneTab) {
-                    // Calendar Tab - NO navigation bar, content goes to top
-                    NavigationStack {
-                        calendarDetailView
-                            .navigationBarHidden(true)
-                            .toolbar(.hidden, for: .navigationBar)
-                    }
-                    .tabItem {
-                        Label(Localization.calendar, systemImage: "calendar")
-                    }
-                    .tag(PhoneTab.calendar)
-
-                    // Library Tab
-                    NavigationStack {
-                        PhoneLibraryView()
-                    }
-                    .tabItem {
-                        Label(Localization.library, systemImage: "books.vertical")
-                    }
-                    .tag(PhoneTab.library)
-
-                    // Settings Tab
-                    NavigationStack {
-                        SettingsView()
-                    }
-                    .tabItem {
-                        Label(Localization.settings, systemImage: "gearshape")
-                    }
-                    .tag(PhoneTab.settings)
-                }
-                .tint(JohoColors.cyan)
+                // iPhone: Icon strip dock navigation (情報デザイン)
+                iPhoneLayout
             }
         }
         // Week Detail Sheet (iPhone only - slides up when week tapped)
@@ -337,13 +371,6 @@ struct ModernCalendarView: View {
                     showContactMenu = false
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         contactEditorMode = .contact
-                        showContactEditor = true
-                    }
-                },
-                onSelectBirthday: {
-                    showContactMenu = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        contactEditorMode = .birthday
                         showContactEditor = true
                     }
                 }
@@ -470,9 +497,6 @@ struct ModernCalendarView: View {
             withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
                 selectedDate = newDate
                 sidebarSelection = .calendar
-                if !isPad {
-                    phoneTab = .calendar
-                }
             }
         }
     }
@@ -482,30 +506,9 @@ struct ModernCalendarView: View {
     private var calendarDetailView: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: JohoDimensions.spacingMD) {
-                // TODAY Banner - at the VERY TOP (no dead space)
-                JohoTodayBanner(
-                    date: Date(),
-                    weekNumber: Calendar.iso8601.component(.weekOfYear, from: Date()),
-                    onTapToday: jumpToToday
-                )
-                .padding(.horizontal, screenMargin)
-
-                // Month Selector + Action Menu
-                HStack {
-                    JohoMonthSelector(
-                        monthName: monthTitle,
-                        year: currentMonth.year,
-                        onPrevious: navigateToPreviousMonth,
-                        onNext: navigateToNextMonth,
-                        onTap: { showMonthPicker = true }
-                    )
-
-                    Spacer()
-
-                    // Action menu button
-                    actionMenuButton
-                }
-                .padding(.horizontal, screenMargin)
+                // 情報デザイン: Bento-style page header (Golden Standard Pattern)
+                calendarPageHeader
+                    .padding(.horizontal, screenMargin)
 
                 // Calendar Grid in WHITE container with thick black border
                 JohoCalendarContainer {
@@ -667,6 +670,138 @@ struct ModernCalendarView: View {
             return monthName.capitalized(with: locale)
         }
         return monthName
+    }
+
+    // MARK: - Calendar Page Header (情報デザイン: Golden Standard Pattern)
+
+    /// Bento-style page header matching Star Page pattern
+    private var calendarPageHeader: some View {
+        let today = Date()
+        let dayNumber = Calendar.iso8601.component(.day, from: today)
+        let weekday = today.formatted(.dateTime.weekday(.abbreviated)).uppercased()
+        let weekNumber = Calendar.iso8601.component(.weekOfYear, from: today)
+
+        return VStack(spacing: 0) {
+            // MAIN ROW: Icon + Title | WALL | Month Picker
+            HStack(spacing: 0) {
+                // LEFT COMPARTMENT: Icon + Title
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    // Icon zone with Calendar accent color (Deep Indigo)
+                    Image(systemName: "calendar")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(PageHeaderColor.calendar.accent)
+                        .frame(width: 40, height: 40)
+                        .background(PageHeaderColor.calendar.lightBackground)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(JohoColors.black, lineWidth: 1.5)
+                        )
+
+                    // Title
+                    Text("CALENDAR")
+                        .font(JohoFont.headline)
+                        .foregroundStyle(JohoColors.black)
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                // VERTICAL WALL
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(width: 1.5)
+
+                // RIGHT COMPARTMENT: Month/Year Picker
+                calendarMonthPicker
+                    .padding(.horizontal, JohoDimensions.spacingSM)
+            }
+            .frame(minHeight: 56)
+
+            // HORIZONTAL DIVIDER
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(height: 1.5)
+
+            // TODAY ROW: Today info + Week badge
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Today indicator (tappable)
+                Button(action: jumpToToday) {
+                    HStack(spacing: JohoDimensions.spacingXS) {
+                        // Day number
+                        Text("\(dayNumber)")
+                            .font(JohoFont.displaySmall)
+                            .foregroundStyle(JohoColors.black)
+
+                        // Weekday
+                        Text(weekday)
+                            .font(JohoFont.bodySmall)
+                            .foregroundStyle(JohoColors.black.opacity(0.7))
+                    }
+                }
+                .buttonStyle(.plain)
+
+                Spacer()
+
+                // Week badge
+                HStack(spacing: 4) {
+                    Text("W\(weekNumber)")
+                        .font(JohoFont.labelSmall)
+                        .foregroundStyle(JohoColors.white)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(JohoColors.black)
+                        .clipShape(Capsule())
+                }
+
+                // Action menu
+                actionMenuButton
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+        }
+        .background(JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+        )
+    }
+
+    /// Month picker for Calendar header (< January 2026 >)
+    private var calendarMonthPicker: some View {
+        HStack(spacing: 4) {
+            Button { navigateToPreviousMonth() } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(JohoColors.black)
+                    .frame(width: 24, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
+            Button { showMonthPicker = true } label: {
+                VStack(spacing: 0) {
+                    Text(monthTitle)
+                        .font(JohoFont.bodySmall.bold())
+                        .foregroundStyle(JohoColors.black)
+                    Text(String(currentMonth.year))
+                        .font(JohoFont.labelSmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                        .monospacedDigit()
+                }
+            }
+            .buttonStyle(.plain)
+
+            Button { navigateToNextMonth() } label: {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(JohoColors.black)
+                    .frame(width: 24, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+        }
     }
 
     // MARK: - Notes Helpers

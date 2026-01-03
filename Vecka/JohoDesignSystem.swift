@@ -81,6 +81,79 @@ enum JohoColors {
     static let deleteAction = Color(hex: "E53E3E")     // Red for delete actions
 }
 
+// MARK: - Page Header Colors (情報デザイン: Unique colors for page headers)
+// These are DISTINCT from entry type colors - used for page/section identity
+
+enum PageHeaderColor {
+    case calendar      // Deep Indigo - time, structure
+    case specialDays   // Rich Amber - celebration, golden
+    case tools         // Teal - active, productivity
+    case contacts      // Warm Brown - personal, human
+    case settings      // Slate Blue - system, configuration
+
+    /// Primary accent color for page headers (used in icon backgrounds, badges)
+    var accent: Color {
+        switch self {
+        case .calendar:     return Color(hex: "4338CA")  // Deep Indigo
+        case .specialDays:  return Color(hex: "D97706")  // Rich Amber
+        case .tools:        return Color(hex: "0D9488")  // Teal
+        case .contacts:     return Color(hex: "78350F")  // Warm Brown
+        case .settings:     return Color(hex: "475569")  // Slate Blue
+        }
+    }
+
+    /// Light tint for header backgrounds (20% opacity of accent)
+    var lightBackground: Color {
+        switch self {
+        case .calendar:     return Color(hex: "4338CA").opacity(0.15)
+        case .specialDays:  return Color(hex: "D97706").opacity(0.15)
+        case .tools:        return Color(hex: "0D9488").opacity(0.15)
+        case .contacts:     return Color(hex: "78350F").opacity(0.15)
+        case .settings:     return Color(hex: "475569").opacity(0.15)
+        }
+    }
+
+    /// Text color on this header (always high contrast)
+    var textColor: Color {
+        JohoColors.black
+    }
+}
+
+// MARK: - App Background Options (AMOLED-friendly)
+// User can choose background color for battery savings on OLED screens
+
+enum AppBackgroundOption: String, CaseIterable, Identifiable {
+    case trueBlack = "black"       // #000000 - Maximum AMOLED savings
+    case darkNavy = "darkNavy"     // #1A1A2E - Current warm dark (legacy)
+    case nearBlack = "nearBlack"   // #0A0A0F - Slightly warmer than pure black
+
+    var id: String { rawValue }
+
+    var color: Color {
+        switch self {
+        case .trueBlack:  return Color(hex: "000000")
+        case .darkNavy:   return Color(hex: "1A1A2E")
+        case .nearBlack:  return Color(hex: "0A0A0F")
+        }
+    }
+
+    var displayName: String {
+        switch self {
+        case .trueBlack:  return "True Black (AMOLED)"
+        case .darkNavy:   return "Dark Navy"
+        case .nearBlack:  return "Near Black"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .trueBlack:  return "Maximum battery savings on OLED"
+        case .darkNavy:   return "Warm dark blue (original)"
+        case .nearBlack:  return "Softer than pure black"
+        }
+    }
+}
+
 // MARK: - Section Zones (色分け)
 // Each feature gets a distinct pastel background + BLACK border
 
@@ -759,10 +832,10 @@ struct JohoEditorHeader: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
-            // Back button (44×44pt)
+            // Cancel button (44×44pt) - × (batsu) = Cancel in Japanese UI
             Button(action: onBack) {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 16, weight: .bold))
+                Text(JohoSymbols.batsu)  // ×
+                    .font(.system(size: 22, weight: .bold))
                     .foregroundStyle(JohoColors.black)
                     .frame(width: 44, height: 44)
                     .background(JohoColors.white)
@@ -798,13 +871,12 @@ struct JohoEditorHeader: View {
 
             Spacer()
 
-            // Save button
+            // Confirm button (44×44pt) - ○ (maru) = Confirm in Japanese UI
             Button(action: onSave) {
-                Text("Save")
-                    .font(JohoFont.body.bold())
+                Text(JohoSymbols.maru)  // ○
+                    .font(.system(size: 28, weight: .bold))
                     .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
-                    .padding(.horizontal, JohoDimensions.spacingLG)
-                    .padding(.vertical, JohoDimensions.spacingMD)
+                    .frame(width: 44, height: 44)
                     .background(canSave ? accentColor : JohoColors.white)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
@@ -1051,10 +1123,12 @@ struct JohoEmptyState: View {
 // MARK: - View Extensions
 
 extension View {
-    /// Apply dark Joho background
+    /// Apply dark Joho background (respects user's AMOLED preference)
     func johoBackground() -> some View {
-        self
-            .background(JohoColors.background)
+        let savedOption = UserDefaults.standard.string(forKey: "appBackgroundColor") ?? "black"
+        let option = AppBackgroundOption(rawValue: savedOption) ?? .trueBlack
+        return self
+            .background(option.color)
             .scrollContentBackground(.hidden)
     }
 

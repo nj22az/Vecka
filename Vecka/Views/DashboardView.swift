@@ -33,15 +33,78 @@ struct DashboardView: View {
             let isLandscape = geometry.size.width > geometry.size.height
 
             ScrollView {
-                if isLandscape {
-                    landscapeLayout(geometry: geometry)
-                } else {
-                    portraitLayout(geometry: geometry)
+                VStack(spacing: JohoDimensions.spacingMD) {
+                    // 情報デザイン: Bento-style page header (Golden Standard Pattern)
+                    toolsPageHeader
+                        .padding(.horizontal, JohoDimensions.spacingMD)
+                        .padding(.top, JohoDimensions.spacingSM)
+
+                    if isLandscape {
+                        landscapeLayout(geometry: geometry)
+                    } else {
+                        portraitLayout(geometry: geometry)
+                    }
                 }
             }
             .scrollContentBackground(.hidden)
         }
         .background(JohoColors.background)
+    }
+
+    // MARK: - Tools Page Header (情報デザイン: Golden Standard Pattern)
+
+    private var toolsPageHeader: some View {
+        let cardCount = 7  // Dashboard cards count
+
+        return VStack(spacing: 0) {
+            // MAIN ROW: Icon + Title | WALL | Stats
+            HStack(spacing: 0) {
+                // LEFT COMPARTMENT: Icon + Title
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    // Icon zone with Tools accent color (Teal)
+                    Image(systemName: "wrench.and.screwdriver")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(PageHeaderColor.tools.accent)
+                        .frame(width: 40, height: 40)
+                        .background(PageHeaderColor.tools.lightBackground)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(JohoColors.black, lineWidth: 1.5)
+                        )
+
+                    Text("TOOLS")
+                        .font(JohoFont.headline)
+                        .foregroundStyle(JohoColors.black)
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                // VERTICAL WALL
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(width: 1.5)
+
+                // RIGHT COMPARTMENT: Card count stat
+                HStack(spacing: 4) {
+                    Text("\(cardCount)")
+                        .font(JohoFont.bodySmall.bold())
+                        .foregroundStyle(JohoColors.black)
+                    Text("WIDGETS")
+                        .font(JohoFont.labelSmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+            }
+            .frame(minHeight: 56)
+        }
+        .background(JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+        )
     }
 
     // MARK: - Landscape Layout (3 columns)

@@ -462,11 +462,41 @@ class ConfigurationManager {
         // Icon Catalog
         seedIconCatalog(context: context)
 
+        // Duplicate Contact Detection Algorithm Parameters
+        seedDuplicateDetectionParameters(context: context)
+
         do {
             try context.save()
             Log.i("ConfigurationManager: Default configuration seeded successfully")
         } catch {
             Log.e("ConfigurationManager: Failed to seed configuration: \(error)")
+        }
+    }
+
+    private func seedDuplicateDetectionParameters(context: ModelContext) {
+        let algorithmName = "duplicate_contact_detection"
+
+        let parameters: [(name: String, value: Double, type: String, description: String)] = [
+            ("email", 40, "weight", "Score weight for matching email address"),
+            ("phone", 35, "weight", "Score weight for matching phone number"),
+            ("full_name", 25, "weight", "Score weight for exact name match"),
+            ("fuzzy_name", 15, "weight", "Score weight for fuzzy name match"),
+            ("birthday", 20, "weight", "Score weight for matching birthday"),
+            ("organization", 10, "weight", "Score weight for matching organization"),
+            ("threshold", 50, "constant", "Minimum score to flag as duplicate"),
+            ("fuzzy_similarity_threshold", 0.8, "constant", "Minimum Levenshtein similarity (0.0-1.0)"),
+            ("phone_suffix_min_length", 7, "constant", "Minimum phone digits for suffix matching")
+        ]
+
+        for param in parameters {
+            let algorithmParam = AlgorithmParameter(
+                algorithmName: algorithmName,
+                parameterName: param.name,
+                parameterValue: param.value,
+                parameterType: param.type,
+                algorithmDescription: param.description
+            )
+            context.insert(algorithmParam)
         }
     }
 

@@ -453,63 +453,64 @@ struct ContactListView: View {
         .background(JohoColors.white)
     }
 
-    // MARK: - Compact Contact Row (情報デザイン: Minimal, clean)
+    // MARK: - Kudo-Style Contact Row (情報デザイン: Photo + Name | Birthday | Chevron)
 
     private func compactContactRow(for contact: Contact) -> some View {
-        HStack(spacing: JohoDimensions.spacingSM) {
-            // Avatar (small)
-            JohoContactAvatar(contact: contact, size: 40)
+        HStack(spacing: 0) {
+            // PHOTO COMPARTMENT (48pt)
+            JohoContactAvatar(contact: contact, size: 48)
+                .padding(.trailing, JohoDimensions.spacingSM)
 
-            // Name and org
+            // NAME COMPARTMENT (flexible)
             VStack(alignment: .leading, spacing: 2) {
                 Text(contact.displayName)
-                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    .font(.system(size: 16, weight: .medium, design: .rounded))
                     .foregroundStyle(JohoColors.black)
                     .lineLimit(1)
 
+                // Alias/Organization as subtitle
                 if let org = contact.organizationName, !org.isEmpty {
                     Text(org)
                         .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
                         .lineLimit(1)
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-            Spacer()
+            // BIRTHDAY COMPARTMENT (64pt) - Kudo-style
+            birthdayCompartment(for: contact)
+                .frame(width: 64)
 
-            // Data indicators (small circles - 情報デザイン)
-            HStack(spacing: 4) {
-                if !contact.phoneNumbers.isEmpty {
-                    dataIndicator(icon: "phone.fill", color: accentColor)
-                }
-                if !contact.emailAddresses.isEmpty {
-                    dataIndicator(icon: "envelope.fill", color: accentColor)
-                }
-                if !contact.postalAddresses.isEmpty {
-                    dataIndicator(icon: "mappin", color: JohoColors.orange)
-                }
-                if contact.hasBirthdayForStarPage {
-                    dataIndicator(icon: "gift.fill", color: SpecialDayType.birthday.accentColor)
-                }
-            }
-
+            // CHEVRON COMPARTMENT (24pt)
             Image(systemName: "chevron.right")
-                .font(.system(size: 10, weight: .bold))
-                .foregroundStyle(JohoColors.black.opacity(0.3))
+                .font(.system(size: 12, weight: .bold))
+                .foregroundStyle(JohoColors.black.opacity(0.4))
+                .frame(width: 24)
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
-        .padding(.vertical, JohoDimensions.spacingSM)
+        .frame(height: 64)
     }
 
-    // MARK: - Data Indicator (情報デザイン: Small colored dot)
+    // MARK: - Birthday Compartment (Kudo-style: Date + Cake icon)
 
-    private func dataIndicator(icon: String, color: Color) -> some View {
-        Image(systemName: icon)
-            .font(.system(size: 8, weight: .bold))
-            .foregroundStyle(color)
-            .frame(width: 16, height: 16)
-            .background(color.opacity(0.15))
-            .clipShape(Circle())
+    @ViewBuilder
+    private func birthdayCompartment(for contact: Contact) -> some View {
+        if let birthday = contact.birthday, contact.hasBirthdayForStarPage {
+            VStack(spacing: 2) {
+                Text(birthday.formatted(.dateTime.month(.abbreviated).day()))
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+
+                Image(systemName: "birthday.cake.fill")
+                    .font(.system(size: 14))
+                    .foregroundStyle(SpecialDayType.birthday.accentColor)
+            }
+        } else {
+            Text("—")
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(JohoColors.black.opacity(0.3))
+        }
     }
 
     // MARK: - Contact Row (情報デザイン: Bento style with compartments)
@@ -867,7 +868,7 @@ struct ContactImportView: View {
 
                                 Text("Contacts access is required to import from your address book.")
                                     .font(JohoFont.bodySmall)
-                                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                                    .foregroundStyle(JohoColors.red)
                                     .frame(maxWidth: .infinity, alignment: .leading)
 
                                 // Grant permission button
@@ -974,7 +975,7 @@ struct ContactImportView: View {
 
     private func importOptionRow(icon: String, title: String, subtitle: String) -> some View {
         HStack(spacing: 0) {
-            // Icon zone
+            // Icon zone (with left padding for breathing room)
             Image(systemName: icon)
                 .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(accentColor)
@@ -985,12 +986,13 @@ struct ContactImportView: View {
                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
                         .stroke(JohoColors.black, lineWidth: 1.5)
                 )
+                .padding(.leading, JohoDimensions.spacingSM)
 
-            // Wall
+            // Wall (full height, no vertical padding)
             Rectangle()
                 .fill(JohoColors.black)
                 .frame(width: 1.5)
-                .padding(.vertical, JohoDimensions.spacingSM)
+                .padding(.leading, JohoDimensions.spacingSM)
 
             // Text content
             VStack(alignment: .leading, spacing: 2) {
@@ -1002,7 +1004,7 @@ struct ContactImportView: View {
                     .font(JohoFont.labelSmall)
                     .foregroundStyle(JohoColors.black.opacity(0.6))
             }
-            .padding(.horizontal, JohoDimensions.spacingSM)
+            .padding(.horizontal, JohoDimensions.spacingMD)
 
             Spacer()
 
@@ -1010,7 +1012,7 @@ struct ContactImportView: View {
             Image(systemName: "chevron.right")
                 .font(.system(size: 14, weight: .bold))
                 .foregroundStyle(JohoColors.black)
-                .padding(.trailing, JohoDimensions.spacingSM)
+                .padding(.trailing, JohoDimensions.spacingMD)
         }
         .frame(height: 56)
         .background(JohoColors.inputBackground)
@@ -1115,17 +1117,15 @@ struct IOSContactPickerView: UIViewControllerRepresentable {
     }
 }
 
-// MARK: - 情報デザイン Add Contact Sheet (Birthday vs Contact picker)
+// MARK: - 情報デザイン Add Contact Sheet
 
-/// 情報デザイン compliant sheet for choosing to add a Contact or Birthday
+/// 情報デザイン compliant sheet for adding a Contact (Birthday is part of Contact)
 struct JohoAddContactSheet: View {
     @Environment(\.dismiss) private var dismiss
     let onSelectContact: () -> Void
-    let onSelectBirthday: () -> Void
 
     // 情報デザイン accent color for contacts (Warm Brown)
     private var contactColor: Color { PageHeaderColor.contacts.accent }
-    private let birthdayColor = SpecialDayType.birthday.accentColor
 
     var body: some View {
         VStack(spacing: 0) {
@@ -1155,7 +1155,7 @@ struct JohoAddContactSheet: View {
 
             // Entry list with thick BLACK borders between rows
             VStack(spacing: 0) {
-                // Contact option
+                // Contact option (Birthday is part of Contact - set in editor)
                 Button {
                     HapticManager.selection()
                     onSelectContact()
@@ -1166,26 +1166,6 @@ struct JohoAddContactSheet: View {
                         label: "CONTACT",
                         meta: "PERSON",
                         color: contactColor
-                    )
-                }
-                .buttonStyle(.plain)
-
-                // Thick BLACK divider
-                Rectangle()
-                    .fill(JohoColors.black)
-                    .frame(height: JohoDimensions.borderMedium)
-
-                // Birthday option
-                Button {
-                    HapticManager.selection()
-                    onSelectBirthday()
-                } label: {
-                    johoInputRow(
-                        icon: "birthday.cake.fill",
-                        code: "BDY",
-                        label: "BIRTHDAY",
-                        meta: "CONTACT",
-                        color: birthdayColor
                     )
                 }
                 .buttonStyle(.plain)
@@ -1201,7 +1181,7 @@ struct JohoAddContactSheet: View {
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, JohoDimensions.spacingLG)
         .frame(maxWidth: .infinity)
-        .presentationDetents([.height(200)])
+        .presentationDetents([.height(160)])
         .presentationDragIndicator(.hidden)
         .presentationBackground(.clear)
     }
