@@ -24,9 +24,9 @@ struct IconStripDock: View {
     private let iconSize: CGFloat = 22
     private let activeBarHeight: CGFloat = 4
 
-    // Dock items - main navigation sections
+    // Dock items - main navigation sections (情報デザイン: Landing first)
     private let dockItems: [SidebarSelection] = [
-        .calendar, .tools, .contacts, .specialDays, .settings
+        .landing, .calendar, .tools, .contacts, .specialDays, .settings
     ]
 
     var body: some View {
@@ -131,7 +131,7 @@ struct IconStripDock: View {
 
 #Preview("Icon Strip Dock - All States") {
     VStack(spacing: 20) {
-        ForEach([SidebarSelection.calendar, .tools, .specialDays, .settings], id: \.self) { selected in
+        ForEach([SidebarSelection.landing, .calendar, .tools, .contacts, .specialDays, .settings], id: \.self) { selected in
             IconStripDock(selection: .constant(selected))
         }
     }

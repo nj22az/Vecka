@@ -259,16 +259,8 @@ struct SettingsView: View {
 
                     // App info card
                     HStack(spacing: JohoDimensions.spacingMD) {
-                        // App Icon
-                        Image("VeckaAboutIcon")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 64, height: 64)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
-                            )
+                        // Geometric Mascot (情報デザイン compliant)
+                        GeometricMascotView(size: 64)
 
                         VStack(alignment: .leading, spacing: 4) {
                             Text("WeekGrid")

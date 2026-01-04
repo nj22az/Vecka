@@ -85,6 +85,7 @@ enum JohoColors {
 // These are DISTINCT from entry type colors - used for page/section identity
 
 enum PageHeaderColor {
+    case landing       // Warm Amber - today, now, present (情報デザイン: NOW semantic)
     case calendar      // Deep Indigo - time, structure
     case specialDays   // Rich Amber - celebration, golden
     case tools         // Teal - active, productivity
@@ -94,6 +95,7 @@ enum PageHeaderColor {
     /// Primary accent color for page headers (used in icon backgrounds, badges)
     var accent: Color {
         switch self {
+        case .landing:      return Color(hex: "F59E0B")  // Warm Amber
         case .calendar:     return Color(hex: "4338CA")  // Deep Indigo
         case .specialDays:  return Color(hex: "D97706")  // Rich Amber
         case .tools:        return Color(hex: "0D9488")  // Teal
@@ -105,6 +107,7 @@ enum PageHeaderColor {
     /// Light tint for header backgrounds (20% opacity of accent)
     var lightBackground: Color {
         switch self {
+        case .landing:      return Color(hex: "F59E0B").opacity(0.15)
         case .calendar:     return Color(hex: "4338CA").opacity(0.15)
         case .specialDays:  return Color(hex: "D97706").opacity(0.15)
         case .tools:        return Color(hex: "0D9488").opacity(0.15)

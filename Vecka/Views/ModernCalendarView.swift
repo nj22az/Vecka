@@ -18,6 +18,8 @@ struct ModernCalendarView: View {
     @State private var selectedDay: CalendarDay?
     @State private var selectedYear: Int = Calendar.iso8601.component(.year, from: Date())
     @State private var displayMonth: Int = Calendar.iso8601.component(.month, from: Date())
+    @State private var isNavigatingMonth = false  // Prevents onChange race conditions
+    @State private var isLegendExpanded = false   // 情報デザイン: Expandable legend row
 
     // Managers
     @Environment(\.modelContext) private var modelContext
@@ -34,15 +36,86 @@ struct ModernCalendarView: View {
         var dict: [Date: String] = [:]
         // Sort notes by date so later notes overwrite earlier ones (showing latest color)
         let sortedNotes = notes.sorted { $0.date < $1.date }
-        
+
         for note in sortedNotes {
             dict[note.day] = note.color ?? "default"
         }
         return dict
     }
 
-    // Layout
-    private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
+    // MARK: - Legend Data (情報デザイン)
+
+    /// Legend item representing an indicator type present in the current month
+    struct LegendItem: Identifiable {
+        let id = UUID()
+        let type: String
+        let label: String
+        let color: Color
+    }
+
+    /// Collects indicator types present in the current month view
+    /// Priority order: HOL > BDY > OBS > EVT > NTE > TRP > EXP
+    private var presentIndicators: [LegendItem] {
+        var items: [LegendItem] = []
+        var foundTypes: Set<String> = []
+
+        // Scan all days in current month
+        let monthDays = currentMonth.weeks.flatMap { $0.days }
+
+        for day in monthDays {
+            // Only check days actually in current month
+            guard day.isInCurrentMonth else { continue }
+
+            let dataCheck = hasDataForDay(day.date)
+
+            // 1. Holiday - RED (highest priority)
+            if dataCheck.hasHoliday && !foundTypes.contains("HOL") {
+                items.append(LegendItem(type: "HOL", label: "Holiday", color: JohoColors.red))
+                foundTypes.insert("HOL")
+            }
+
+            // 2. Birthday - PINK
+            if dataCheck.hasBirthday && !foundTypes.contains("BDY") {
+                items.append(LegendItem(type: "BDY", label: "Birthday", color: JohoColors.pink))
+                foundTypes.insert("BDY")
+            }
+
+            // 3. Observance - ORANGE
+            if dataCheck.hasObservance && !foundTypes.contains("OBS") {
+                items.append(LegendItem(type: "OBS", label: "Observance", color: JohoColors.orange))
+                foundTypes.insert("OBS")
+            }
+
+            // 4. Event - PURPLE
+            if dataCheck.hasEvent && !foundTypes.contains("EVT") {
+                items.append(LegendItem(type: "EVT", label: "Event", color: JohoColors.eventPurple))
+                foundTypes.insert("EVT")
+            }
+
+            // 5. Note - YELLOW
+            if dataCheck.hasNote && !foundTypes.contains("NTE") {
+                items.append(LegendItem(type: "NTE", label: "Note", color: JohoColors.yellow))
+                foundTypes.insert("NTE")
+            }
+
+            // 6. Trip - BLUE
+            if dataCheck.hasTrip && !foundTypes.contains("TRP") {
+                items.append(LegendItem(type: "TRP", label: "Trip", color: JohoColors.tripBlue))
+                foundTypes.insert("TRP")
+            }
+
+            // 7. Expense - GREEN (lowest priority)
+            if dataCheck.hasExpense && !foundTypes.contains("EXP") {
+                items.append(LegendItem(type: "EXP", label: "Expense", color: JohoColors.green))
+                foundTypes.insert("EXP")
+            }
+
+            // Early exit if all 7 types found
+            if foundTypes.count == 7 { break }
+        }
+
+        return items
+    }
 
     /// Smart add button - show for Tools, Contacts, and Star page (always visible)
     private var shouldShowAddButton: Bool {
@@ -68,12 +141,8 @@ struct ModernCalendarView: View {
         }
     }
 
-    // HIG-compliant margins (Ref: Layout | Apple Developer Documentation)
-    // iPhone (Compact): 16pt standard
-    // iPad (Regular): 24pt standard for grid layouts
-    private var screenMargin: CGFloat {
-        isPad ? 24 : 16
-    }
+    // 情報デザイン: Unified margins across all devices (iPhone golden standard)
+    private var screenMargin: CGFloat { 16 }
 
     // Day Notes sheet (Apple Calendar-style bottom sheet)
     @State private var showDayNotesSheet = false
@@ -94,7 +163,7 @@ struct ModernCalendarView: View {
     @State private var showWeekDetailSheet = false
 
     // Day Detail sheet (long-press on calendar day)
-    @State private var showDayDetailSheet = false
+    // Note: Day detail sheet is controlled via .sheet(item: $dayDetailDay)
     @State private var dayDetailDay: CalendarDay?
     @State private var dayDetailDataCheck: DayDataCheck?
 
@@ -139,7 +208,7 @@ struct ModernCalendarView: View {
     // NavigationSplitView column visibility
     // .automatic lets the system decide based on device orientation and size
     @State private var columnVisibility: NavigationSplitViewVisibility = .automatic
-    @State private var sidebarSelection: SidebarSelection? = .calendar
+    @State private var sidebarSelection: SidebarSelection? = .landing  // 情報デザイン: Landing page first
 
     @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
 
@@ -153,6 +222,16 @@ struct ModernCalendarView: View {
     private var detailView: some View {
         if let selection = sidebarSelection {
             switch selection {
+            case .landing:
+                NavigationStack {
+                    LandingPageView(onNavigate: { page in
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            sidebarSelection = page
+                        }
+                    })
+                    .navigationBarHidden(true)
+                    .toolbar(.hidden, for: .navigationBar)
+                }
             case .tools:
                 NavigationStack {
                     DashboardView()
@@ -200,7 +279,17 @@ struct ModernCalendarView: View {
             // Content area
             Group {
                 switch sidebarSelection {
-                case .calendar, .none:
+                case .landing, .none:
+                    NavigationStack {
+                        LandingPageView(onNavigate: { page in
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                sidebarSelection = page
+                            }
+                        })
+                        .navigationBarHidden(true)
+                        .toolbar(.hidden, for: .navigationBar)
+                    }
+                case .calendar:
                     NavigationStack {
                         calendarDetailView
                             .navigationBarHidden(true)
@@ -267,26 +356,32 @@ struct ModernCalendarView: View {
 
     var body: some View {
         Group {
-            if isPad {
-                // iPad: 3-column layout - Sidebar | Content | Week Detail
-                HStack(spacing: 0) {
-                    IconStripSidebar(
-                        selection: $sidebarSelection,
-                        onAdd: sidebarAddAction,
-                        addButtonColor: addButtonColor,
-                        showRepackButton: false,
-                        onRepack: nil,
-                        onExport: sidebarExportAction
-                    )
-
-                    // Main content area (full width - week details moved to Star page)
+            // Both iPad and iPhone: Bottom dock navigation (情報デザイン)
+            // User preference: unified design across devices
+            VStack(spacing: 0) {
+                // Content area with swipe navigation
+                SwipeNavigationContainer(selection: $sidebarSelection) { _ in
                     detailView
-                        .frame(maxWidth: .infinity)
                 }
-                .johoBackground()
-            } else {
-                // iPhone: Icon strip dock navigation (情報デザイン)
-                iPhoneLayout
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                // 情報デザイン: Thick black border between content and dock
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 2)
+
+                // Bottom dock (same on iPad and iPhone)
+                IconStripDock(
+                    selection: $sidebarSelection,
+                    onAdd: iPhoneDockAddAction,
+                    addButtonColor: addButtonColor
+                )
+            }
+            .johoBackground()
+            .onAppear {
+                if sidebarSelection == nil {
+                    sidebarSelection = .landing
+                }
             }
         }
         // Week Detail Sheet (iPhone only - slides up when week tapped)
@@ -330,12 +425,11 @@ struct ModernCalendarView: View {
             .presentationDetents([.medium, .large], selection: $dayNotesDetent)
             .presentationDragIndicator(.visible)
             .presentationCornerRadius(20)
+            .presentationBackground(JohoColors.background)  // 情報デザイン: BLACK sheet background for AMOLED
         }
         // 情報デザイン: Day Detail Sheet (long-press on calendar day)
-        .sheet(isPresented: $showDayDetailSheet) {
-            if let day = dayDetailDay {
-                DayDetailSheet(day: day, dataCheck: dayDetailDataCheck)
-            }
+        .sheet(item: $dayDetailDay) { day in
+            DayDetailSheet(day: day, dataCheck: dayDetailDataCheck)
         }
         .sheet(isPresented: $showPDFExport) {
             SimplePDFExportView(exportContext: pdfExportContext)
@@ -465,8 +559,11 @@ struct ModernCalendarView: View {
                 initialMonth: displayMonth,
                 initialYear: selectedYear
             ) { newMonth, newYear in
+                // Update currentMonth FIRST so onChange handlers see correct state
+                currentMonth = CalendarMonth(year: newYear, month: newMonth, noteColors: noteColors)
                 displayMonth = newMonth
                 selectedYear = newYear
+                updateSelectedWeekAndDay()
             }
             .presentationDetents([.medium, .large])
             .presentationCornerRadius(20)
@@ -494,11 +591,9 @@ struct ModernCalendarView: View {
             // Force calendar grid to update when events change
             updateMonthFromDate()
         }
-        .onChange(of: displayMonth) { _, newMonth in
-            handleMonthChange(month: newMonth, year: selectedYear)
-        }
+        // Note: Month navigation is handled directly by navigateToPreviousMonth/navigateToNextMonth
+        // and MonthPickerSheet callback. Only year change triggers holiday recalculation.
         .onChange(of: selectedYear) { _, newYear in
-            handleMonthChange(month: displayMonth, year: newYear)
             holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: newYear)
         }
         .onChange(of: navigationManager.targetDate) { _, newDate in
@@ -534,8 +629,15 @@ struct ModernCalendarView: View {
                 }
                 .padding(.horizontal, screenMargin)
 
-                // Day Dashboard (shows on iPad below calendar, hidden on iPhone when week panel visible)
-                if isPad || selectedWeek == nil {
+                // 情報デザイン: Expandable legend showing indicator types on current month
+                if !presentIndicators.isEmpty {
+                    calendarLegend
+                        .padding(.horizontal, screenMargin)
+                        .padding(.top, JohoDimensions.spacingSM)
+                }
+
+                // 情報デザイン: Day Dashboard shows when no week selected (unified behavior)
+                if selectedWeek == nil {
                     let dashboardDate = Calendar.iso8601.startOfDay(for: selectedDay?.date ?? selectedDate)
                     DayDashboardView(
                         date: dashboardDate,
@@ -563,6 +665,89 @@ struct ModernCalendarView: View {
         }
         .scrollBounceBehavior(.basedOnSize)
         .johoBackground()
+    }
+
+    // MARK: - Calendar Legend (情報デザイン)
+
+    /// Expandable legend row showing indicator types present in current month
+    private var calendarLegend: some View {
+        VStack(spacing: 0) {
+            // Header row - tappable to expand/collapse
+            Button {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    isLegendExpanded.toggle()
+                }
+                HapticManager.selection()
+            } label: {
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    // Icon zone - list bullet in cyan squircle
+                    Image(systemName: "list.bullet")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black)
+                        .frame(width: 24, height: 24)
+                        .background(JohoColors.cyan.opacity(0.3))
+                        .clipShape(Squircle(cornerRadius: 5))
+                        .overlay(Squircle(cornerRadius: 5).stroke(JohoColors.black, lineWidth: 1))
+
+                    Text("LEGEND")
+                        .font(.system(size: 12, weight: .black, design: .rounded))
+                        .tracking(1)
+                        .foregroundStyle(JohoColors.black)
+
+                    Image(systemName: isLegendExpanded ? "chevron.down" : "chevron.right")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                    Spacer()
+
+                    // Count badge showing number of indicator types
+                    if !presentIndicators.isEmpty {
+                        Text("\(presentIndicators.count)")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                    }
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+            }
+            .buttonStyle(.plain)
+
+            // Expanded content - shows indicator types with colors
+            if isLegendExpanded && !presentIndicators.isEmpty {
+                Rectangle()
+                    .fill(JohoColors.black.opacity(0.2))
+                    .frame(height: 1)
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+
+                LazyVGrid(columns: [
+                    GridItem(.adaptive(minimum: 100), spacing: JohoDimensions.spacingSM)
+                ], spacing: JohoDimensions.spacingSM) {
+                    ForEach(presentIndicators) { item in
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(item.color)
+                                .frame(width: 10, height: 10)
+                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+
+                            Text(item.label)
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
+                                .foregroundStyle(JohoColors.black)
+                        }
+                    }
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+            }
+        }
+        .background(JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+        )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Legend, \(presentIndicators.count) indicator types")
+        .accessibilityHint(isLegendExpanded ? "Tap to collapse" : "Tap to expand")
     }
 
     // MARK: - Toolbar
@@ -939,24 +1124,91 @@ struct ModernCalendarView: View {
 
     // MARK: - Actions
 
+    // MARK: - Month Navigation (情報デザイン: Clear, Predictable Logic)
+    //
+    // Design Principle: "Same date, different month"
+    // - Jan 15 → Feb 15 (same day)
+    // - Jan 30 → Feb 28 (clamped to valid day)
+    // - Dec 31 → Jan 31 (same day)
+    //
+    // Implementation: selectedDate is the SINGLE SOURCE OF TRUTH.
+    // Navigation updates selectedDate, onChange handlers sync all derived state.
+
     private func navigateToPreviousMonth() {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            if displayMonth == 1 {
-                displayMonth = 12
-                selectedYear -= 1
-            } else {
-                displayMonth -= 1
-            }
-        }
+        selectedDate = calculateMonthOffset(from: selectedDate, months: -1)
     }
 
     private func navigateToNextMonth() {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-            if displayMonth == 12 {
-                displayMonth = 1
-                selectedYear += 1
-            } else {
-                displayMonth += 1
+        selectedDate = calculateMonthOffset(from: selectedDate, months: 1)
+    }
+
+    /// Calculate a date offset by N months, preserving the day number where possible.
+    /// Clamps to the last valid day if the target month has fewer days.
+    ///
+    /// Examples:
+    /// - Jan 15, +1 month → Feb 15
+    /// - Jan 30, +1 month → Feb 28 (or 29 in leap year)
+    /// - Mar 31, -1 month → Feb 28 (or 29 in leap year)
+    /// - Dec 31, +1 month → Jan 31
+    private func calculateMonthOffset(from date: Date, months: Int) -> Date {
+        let calendar = Calendar.iso8601
+
+        // Extract current date components
+        let currentDay = calendar.component(.day, from: date)
+        let currentMonth = calendar.component(.month, from: date)
+        let currentYear = calendar.component(.year, from: date)
+
+        // Calculate target month and year
+        var targetMonth = currentMonth + months
+        var targetYear = currentYear
+
+        // Handle month overflow/underflow
+        while targetMonth > 12 {
+            targetMonth -= 12
+            targetYear += 1
+        }
+        while targetMonth < 1 {
+            targetMonth += 12
+            targetYear -= 1
+        }
+
+        // Find the maximum valid day in the target month
+        var components = DateComponents()
+        components.year = targetYear
+        components.month = targetMonth
+        components.day = 1
+
+        guard let firstOfTargetMonth = calendar.date(from: components),
+              let rangeOfDays = calendar.range(of: .day, in: .month, for: firstOfTargetMonth) else {
+            // Fallback: just add months using Calendar (may shift day unexpectedly)
+            return calendar.date(byAdding: .month, value: months, to: date) ?? date
+        }
+
+        let maxDayInTarget = rangeOfDays.count
+
+        // Clamp the day to valid range
+        let clampedDay = min(currentDay, maxDayInTarget)
+
+        // Build the final date
+        components.day = clampedDay
+        return calendar.date(from: components) ?? date
+    }
+
+    /// Update selected week and day after month navigation
+    private func updateSelectedWeekAndDay() {
+        if let week = selectedWeek {
+            let weekInNewMonth = currentMonth.weeks.contains(where: { $0.weekNumber == week.weekNumber })
+            if !weekInNewMonth {
+                selectedWeek = currentMonth.weeks.first
+                // Pick a day that's actually IN this month (ISO weeks can span months)
+                if let firstWeek = selectedWeek {
+                    let targetMonth = currentMonth.month
+                    let dayInMonth = firstWeek.days.first(where: {
+                        Calendar.iso8601.component(.month, from: $0.date) == targetMonth
+                    }) ?? firstWeek.days.first
+                    selectedDay = dayInMonth
+                    selectedDate = dayInMonth?.date ?? selectedDate
+                }
             }
         }
     }
@@ -982,9 +1234,8 @@ struct ModernCalendarView: View {
 
     /// 情報デザイン: Long-press opens day detail sheet
     private func handleDayLongPress(_ day: CalendarDay) {
-        dayDetailDay = day
         dayDetailDataCheck = hasDataForDay(day.date)
-        showDayDetailSheet = true
+        dayDetailDay = day  // This triggers the sheet to show via .sheet(item:)
     }
 
 
@@ -1001,10 +1252,8 @@ struct ModernCalendarView: View {
             }
         }
 
-        // On iPhone, show week detail as bottom sheet
-        if !isPad {
-            showWeekDetailSheet = true
-        }
+        // 情報デザイン: Show week detail sheet (unified behavior)
+        showWeekDetailSheet = true
     }
 
     private func handleMonthChange(month: Int, year: Int) {
