@@ -244,7 +244,7 @@ struct IconStripButton: View, Equatable {
 
 #Preview("Icon Strip - All States") {
     HStack(spacing: 20) {
-        ForEach([SidebarSelection.calendar, .tools, .settings], id: \.self) { selected in
+        ForEach([SidebarSelection.calendar, .contacts, .settings], id: \.self) { selected in
             IconStripSidebar(selection: .constant(selected))
                 .frame(height: 500)
         }

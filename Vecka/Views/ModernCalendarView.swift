@@ -117,10 +117,10 @@ struct ModernCalendarView: View {
         return items
     }
 
-    /// Smart add button - show for Tools, Contacts, and Star page (always visible)
+    /// Smart add button - show for Contacts and Star page (always visible)
     private var shouldShowAddButton: Bool {
         switch sidebarSelection {
-        case .tools, .contacts, .specialDays:
+        case .contacts, .specialDays:
             return true  // Always show plus button on these pages
         default:
             return false
@@ -130,8 +130,6 @@ struct ModernCalendarView: View {
     /// Add button color - matches page accent colors (情報デザイン)
     private var addButtonColor: Color {
         switch sidebarSelection {
-        case .tools:
-            return JohoColors.cyan       // Tools = Cyan
         case .contacts:
             return JohoColors.pink       // Contacts = Pink
         case .specialDays:
@@ -224,17 +222,7 @@ struct ModernCalendarView: View {
             switch selection {
             case .landing:
                 NavigationStack {
-                    LandingPageView(onNavigate: { page in
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            sidebarSelection = page
-                        }
-                    })
-                    .navigationBarHidden(true)
-                    .toolbar(.hidden, for: .navigationBar)
-                }
-            case .tools:
-                NavigationStack {
-                    DashboardView()
+                    LandingPageView()
                         .navigationBarHidden(true)
                         .toolbar(.hidden, for: .navigationBar)
                 }
@@ -281,23 +269,13 @@ struct ModernCalendarView: View {
                 switch sidebarSelection {
                 case .landing, .none:
                     NavigationStack {
-                        LandingPageView(onNavigate: { page in
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                sidebarSelection = page
-                            }
-                        })
-                        .navigationBarHidden(true)
-                        .toolbar(.hidden, for: .navigationBar)
+                        LandingPageView()
+                            .navigationBarHidden(true)
+                            .toolbar(.hidden, for: .navigationBar)
                     }
                 case .calendar:
                     NavigationStack {
                         calendarDetailView
-                            .navigationBarHidden(true)
-                            .toolbar(.hidden, for: .navigationBar)
-                    }
-                case .tools:
-                    NavigationStack {
-                        DashboardView()
                             .navigationBarHidden(true)
                             .toolbar(.hidden, for: .navigationBar)
                     }

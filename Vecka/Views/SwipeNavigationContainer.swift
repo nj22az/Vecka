@@ -22,9 +22,9 @@ struct SwipeNavigationContainer<Content: View>: View {
     private let swipeThreshold: CGFloat = 50  // Minimum distance to trigger page change
     private let edgeResistance: CGFloat = 0.3 // Damping when at first/last page
 
-    // All pages in swipe order
+    // All pages in swipe order (5 pages - Landing IS the data dashboard)
     private let orderedPages: [SidebarSelection] = [
-        .landing, .calendar, .tools, .contacts, .specialDays, .settings
+        .landing, .calendar, .contacts, .specialDays, .settings
     ]
 
     // MARK: - Computed Properties
