@@ -9,6 +9,99 @@ import SwiftUI
 import SwiftData
 import PhotosUI
 
+// MARK: - Expense Category Groups (情報デザイン: Collapsible sections)
+
+enum ExpenseCategoryGroup: String, CaseIterable, Identifiable {
+    case transportation = "Transportation"
+    case foodDining = "Food & Dining"
+    case accommodation = "Accommodation"
+    case entertainment = "Entertainment"
+    case shopping = "Shopping"
+    case business = "Business"
+    case health = "Health"
+    case other = "Other"
+
+    var id: String { rawValue }
+
+    var icon: String {
+        switch self {
+        case .transportation: return "car.fill"
+        case .foodDining: return "fork.knife"
+        case .accommodation: return "bed.double.fill"
+        case .entertainment: return "ticket.fill"
+        case .shopping: return "bag.fill"
+        case .business: return "briefcase.fill"
+        case .health: return "cross.case.fill"
+        case .other: return "ellipsis.circle.fill"
+        }
+    }
+
+    /// Maps category icon names to groups
+    static func group(for category: ExpenseCategory) -> ExpenseCategoryGroup {
+        let icon = category.iconName.lowercased()
+        let name = category.name.lowercased()
+
+        // Transportation
+        if icon.contains("car") || icon.contains("airplane") || icon.contains("bus") ||
+           icon.contains("train") || icon.contains("tram") || icon.contains("ferry") ||
+           icon.contains("bicycle") || icon.contains("fuelpump") ||
+           name.contains("transport") || name.contains("taxi") || name.contains("uber") ||
+           name.contains("flight") || name.contains("gas") || name.contains("fuel") {
+            return .transportation
+        }
+
+        // Food & Dining
+        if icon.contains("fork") || icon.contains("cup") || icon.contains("takeoutbag") ||
+           icon.contains("wineglass") || icon.contains("mug") ||
+           name.contains("food") || name.contains("restaurant") || name.contains("coffee") ||
+           name.contains("lunch") || name.contains("dinner") || name.contains("breakfast") ||
+           name.contains("meal") || name.contains("grocery") {
+            return .foodDining
+        }
+
+        // Accommodation
+        if icon.contains("bed") || icon.contains("house") || icon.contains("building") ||
+           name.contains("hotel") || name.contains("lodging") || name.contains("airbnb") ||
+           name.contains("accommodation") || name.contains("stay") {
+            return .accommodation
+        }
+
+        // Entertainment
+        if icon.contains("ticket") || icon.contains("film") || icon.contains("music") ||
+           icon.contains("gamecontroller") || icon.contains("theatermasks") ||
+           name.contains("entertainment") || name.contains("movie") || name.contains("concert") ||
+           name.contains("show") || name.contains("event") {
+            return .entertainment
+        }
+
+        // Shopping
+        if icon.contains("bag") || icon.contains("cart") || icon.contains("gift") ||
+           icon.contains("tag") ||
+           name.contains("shopping") || name.contains("store") || name.contains("retail") ||
+           name.contains("clothes") || name.contains("electronics") {
+            return .shopping
+        }
+
+        // Business
+        if icon.contains("briefcase") || icon.contains("doc") || icon.contains("printer") ||
+           icon.contains("phone") || icon.contains("envelope") ||
+           name.contains("business") || name.contains("office") || name.contains("meeting") ||
+           name.contains("conference") || name.contains("subscription") {
+            return .business
+        }
+
+        // Health
+        if icon.contains("cross") || icon.contains("heart") || icon.contains("pill") ||
+           icon.contains("staroflife") ||
+           name.contains("health") || name.contains("medical") || name.contains("pharmacy") ||
+           name.contains("doctor") || name.contains("hospital") {
+            return .health
+        }
+
+        return .other
+    }
+}
+
 // MARK: - 情報デザイン Expense Editor Sheet (Standalone - like Event editor)
 
 /// Standalone expense editor sheet matching the Event editor pattern
@@ -17,6 +110,7 @@ struct JohoExpenseEditorSheet: View {
     let initialDate: Date
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
 
     @State private var amount: String = ""
     @State private var currency: String = "SEK"
@@ -26,6 +120,10 @@ struct JohoExpenseEditorSheet: View {
     @State private var showingIconPicker = false
     @State private var selectedSymbol: String = "dollarsign.circle.fill"
 
+    // Collapsible category groups
+    @State private var expandedGroups: Set<ExpenseCategoryGroup> = []
+    @State private var showingCategoryPicker = false
+
     // Date selection (情報デザイン: Year, Month, Day)
     @State private var selectedYear: Int
     @State private var selectedMonth: Int
@@ -33,6 +131,9 @@ struct JohoExpenseEditorSheet: View {
 
     // Categories
     @Query(sort: \ExpenseCategory.sortOrder) private var categories: [ExpenseCategory]
+
+    /// Dynamic colors for dark mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     // Base Currency
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
@@ -83,13 +184,13 @@ struct JohoExpenseEditorSheet: View {
                     Button { dismiss() } label: {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(width: 44, height: 44)
                     }
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -102,15 +203,15 @@ struct JohoExpenseEditorSheet: View {
                             .frame(width: 36, height: 36)
                             .background(expenseLightBackground)
                             .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+                            .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text("NEW EXPENSE")
                                 .font(.system(size: 16, weight: .black, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                             Text("Set amount & details")
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(0.6))
                         }
 
                         Spacer()
@@ -120,7 +221,7 @@ struct JohoExpenseEditorSheet: View {
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -131,11 +232,11 @@ struct JohoExpenseEditorSheet: View {
                     } label: {
                         Text("Save")
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(0.4))
                             .frame(width: 56, height: 32)
-                            .background(canSave ? expenseAccentColor : JohoColors.white)
+                            .background(canSave ? expenseAccentColor : colors.surface)
                             .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+                            .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
                     }
                     .disabled(!canSave)
                     .frame(width: 72)
@@ -146,7 +247,7 @@ struct JohoExpenseEditorSheet: View {
 
                 // Thick divider after header
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -157,20 +258,20 @@ struct JohoExpenseEditorSheet: View {
                     Circle()
                         .fill(expenseAccentColor)
                         .frame(width: 10, height: 10)
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
                     // CENTER: Description field
                     TextField("Expense description", text: $description)
                         .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .frame(maxHeight: .infinity)
                 }
@@ -179,7 +280,7 @@ struct JohoExpenseEditorSheet: View {
 
                 // 情報デザイン: Row divider (solid black)
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -189,13 +290,13 @@ struct JohoExpenseEditorSheet: View {
                     // LEFT: Dollar sign icon (40pt)
                     Image(systemName: "dollarsign")
                         .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -203,13 +304,13 @@ struct JohoExpenseEditorSheet: View {
                     TextField("0.00", text: $amount)
                         .font(.system(size: 18, weight: .bold, design: .monospaced))
                         .keyboardType(.decimalPad)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .multilineTextAlignment(.trailing)
                         .padding(.horizontal, JohoDimensions.spacingMD)
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -223,7 +324,7 @@ struct JohoExpenseEditorSheet: View {
                     } label: {
                         Text(currency)
                             .font(.system(size: 14, weight: .bold, design: .monospaced))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(width: 80)
                             .frame(maxHeight: .infinity)
                     }
@@ -233,7 +334,7 @@ struct JohoExpenseEditorSheet: View {
 
                 // 情報デザイン: Row divider (solid black)
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -243,13 +344,13 @@ struct JohoExpenseEditorSheet: View {
                     // LEFT: Calendar icon (40pt)
                     Image(systemName: "calendar")
                         .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -261,14 +362,14 @@ struct JohoExpenseEditorSheet: View {
                     } label: {
                         Text(String(selectedYear))
                             .font(.system(size: 14, weight: .bold, design: .monospaced))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
                     }
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -280,14 +381,14 @@ struct JohoExpenseEditorSheet: View {
                     } label: {
                         Text(monthName(selectedMonth))
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
                     }
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -299,7 +400,7 @@ struct JohoExpenseEditorSheet: View {
                     } label: {
                         Text("\(selectedDay)")
                             .font(.system(size: 14, weight: .bold, design: .monospaced))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(width: 44)
                             .frame(maxHeight: .infinity)
                     }
@@ -307,51 +408,79 @@ struct JohoExpenseEditorSheet: View {
                 .frame(height: 48)
                 .background(expenseLightBackground)
 
-                // 情報デザイン: Row divider (solid black)
+                // 情報デザイン: Row divider
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
-                // CATEGORY ROW: [📁] | Category selector
+                // CATEGORY ROW: [📁] | Category selector (tappable - opens picker)
                 // ═══════════════════════════════════════════════════════════════
-                if !categories.isEmpty {
+                Button {
+                    showingCategoryPicker = true
+                    HapticManager.selection()
+                } label: {
                     HStack(spacing: 0) {
                         // LEFT: Folder icon (40pt)
                         Image(systemName: "folder.fill")
                             .font(.system(size: 14, weight: .bold))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(width: 40)
                             .frame(maxHeight: .infinity)
 
                         // WALL
                         Rectangle()
-                            .fill(JohoColors.black)
+                            .fill(colors.border)
                             .frame(width: 1.5)
                             .frame(maxHeight: .infinity)
 
-                        // CENTER: Category display/picker
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: JohoDimensions.spacingSM) {
-                                // None option
-                                categoryButton(nil, isSelected: selectedCategory == nil)
+                        // CENTER: Selected category display
+                        HStack(spacing: JohoDimensions.spacingSM) {
+                            if let category = selectedCategory {
+                                // Show selected category icon + name
+                                Image(systemName: category.iconName)
+                                    .font(.system(size: 16, weight: .bold))
+                                    .foregroundStyle(category.color)
+                                    .frame(width: 28, height: 28)
+                                    .background(category.color.opacity(0.15))
+                                    .clipShape(Circle())
 
-                                ForEach(categories) { category in
-                                    categoryButton(category, isSelected: selectedCategory?.id == category.id)
-                                }
+                                Text(category.name.uppercased())
+                                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                                    .foregroundStyle(colors.primary)
+                            } else {
+                                // No category selected
+                                Image(systemName: "minus")
+                                    .font(.system(size: 16, weight: .bold))
+                                    .foregroundStyle(colors.primary.opacity(0.4))
+                                    .frame(width: 28, height: 28)
+                                    .background(colors.primary.opacity(0.05))
+                                    .clipShape(Circle())
+
+                                Text("SELECT CATEGORY")
+                                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                                    .foregroundStyle(colors.primary.opacity(0.6))
                             }
-                            .padding(.horizontal, JohoDimensions.spacingMD)
+
+                            Spacer()
+
+                            // Chevron indicator
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(colors.primary.opacity(0.4))
                         }
+                        .padding(.horizontal, JohoDimensions.spacingMD)
                         .frame(maxHeight: .infinity)
                     }
                     .frame(height: 48)
                     .background(expenseLightBackground)
-
-                    // 情報デザイン: Row divider (solid black)
-                    Rectangle()
-                        .fill(JohoColors.black)
-                        .frame(height: 1.5)
                 }
+                .buttonStyle(.plain)
+
+                // 情報デザイン: Row divider (solid black)
+                Rectangle()
+                    .fill(colors.border)
+                    .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
                 // MERCHANT ROW (OPTIONAL): [🏪] | Store name
@@ -360,29 +489,29 @@ struct JohoExpenseEditorSheet: View {
                     // LEFT: Store icon (40pt)
                     Image(systemName: "storefront.fill")
                         .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
                     // CENTER: Merchant field (optional)
                     TextField("Store name (optional)", text: $merchant)
                         .font(JohoFont.caption)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .frame(maxHeight: .infinity)
                 }
                 .frame(height: 48)
                 .background(expenseLightBackground.opacity(0.5))
 
-                // 情報デザイン: Row divider (solid black)
+                // 情報デザイン: Row divider
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -402,21 +531,21 @@ struct JohoExpenseEditorSheet: View {
 
                         // WALL
                         Rectangle()
-                            .fill(JohoColors.black)
+                            .fill(colors.border)
                             .frame(width: 1.5)
                             .frame(maxHeight: .infinity)
 
                         // CENTER: Hint text
                         Text("Tap to change icon")
                             .font(JohoFont.caption)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
                             .padding(.leading, JohoDimensions.spacingMD)
 
                         Spacer()
 
                         Image(systemName: "chevron.right")
                             .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(JohoColors.black.opacity(0.4))
+                            .foregroundStyle(colors.primary.opacity(0.4))
                             .padding(.trailing, JohoDimensions.spacingMD)
                     }
                     .frame(height: 48)
@@ -424,11 +553,11 @@ struct JohoExpenseEditorSheet: View {
                 }
                 .buttonStyle(.plain)
             }
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
             )
             .padding(.horizontal, JohoDimensions.spacingLG)
 
@@ -442,6 +571,15 @@ struct JohoExpenseEditorSheet: View {
         .sheet(isPresented: $showingIconPicker) {
             JohoIconPickerSheet(
                 selectedSymbol: $selectedSymbol,
+                accentColor: expenseAccentColor,
+                lightBackground: expenseLightBackground
+            )
+        }
+        .sheet(isPresented: $showingCategoryPicker) {
+            JohoCollapsibleCategoryPicker(
+                categories: categories,
+                selectedCategory: $selectedCategory,
+                expandedGroups: $expandedGroups,
                 accentColor: expenseAccentColor,
                 lightBackground: expenseLightBackground
             )
@@ -465,25 +603,9 @@ struct JohoExpenseEditorSheet: View {
         return range.count
     }
 
-    // 情報デザイン category button - compact icon-only pill for horizontal scroll
-    @ViewBuilder
-    private func categoryButton(_ category: ExpenseCategory?, isSelected: Bool) -> some View {
-        Button {
-            selectedCategory = category
-            HapticManager.selection()
-        } label: {
-            Image(systemName: category?.iconName ?? "minus")
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(isSelected ? JohoColors.white : (category?.color ?? JohoColors.black))
-                .frame(width: 32, height: 32)
-                .background(isSelected ? (category?.color ?? JohoColors.black) : JohoColors.white)
-                .clipShape(Circle())
-                .overlay(
-                    Circle()
-                        .stroke(category?.color ?? JohoColors.black, lineWidth: isSelected ? 2.5 : 1.5)
-                )
-        }
-        .buttonStyle(.plain)
+    /// Groups categories by their expense category group
+    private var groupedCategories: [ExpenseCategoryGroup: [ExpenseCategory]] {
+        Dictionary(grouping: categories) { ExpenseCategoryGroup.group(for: $0) }
     }
 
     private func saveExpense() {
@@ -508,6 +630,258 @@ struct JohoExpenseEditorSheet: View {
         } catch {
             Log.w("Failed to save expense: \(error.localizedDescription)")
         }
+    }
+}
+
+// MARK: - 情報デザイン Collapsible Category Picker Sheet
+
+/// Category picker with collapsible grouped sections
+struct JohoCollapsibleCategoryPicker: View {
+    let categories: [ExpenseCategory]
+    @Binding var selectedCategory: ExpenseCategory?
+    @Binding var expandedGroups: Set<ExpenseCategoryGroup>
+
+    let accentColor: Color
+    let lightBackground: Color
+
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors for dark mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    /// Groups categories by their expense category group
+    private var groupedCategories: [ExpenseCategoryGroup: [ExpenseCategory]] {
+        Dictionary(grouping: categories) { ExpenseCategoryGroup.group(for: $0) }
+    }
+
+    /// Ordered groups that have categories
+    private var orderedGroups: [ExpenseCategoryGroup] {
+        ExpenseCategoryGroup.allCases.filter { groupedCategories[$0] != nil }
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // ═══════════════════════════════════════════════════════════════
+            // HEADER
+            // ═══════════════════════════════════════════════════════════════
+            HStack {
+                // Title
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("CATEGORY")
+                        .font(.system(size: 9, weight: .black, design: .monospaced))
+                        .foregroundStyle(colors.surface)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(accentColor)
+
+                    Text("SELECT TYPE")
+                        .font(.system(size: 18, weight: .black, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                }
+
+                Spacer()
+
+                // Close button
+                Button {
+                    dismiss()
+                    HapticManager.selection()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 14, weight: .black))
+                        .foregroundStyle(colors.primary)
+                        .frame(width: 36, height: 36)
+                        .background(colors.surface)
+                        .clipShape(Squircle(cornerRadius: 8))
+                        .overlay(
+                            Squircle(cornerRadius: 8)
+                                .stroke(colors.border, lineWidth: 3)
+                        )
+                }
+            }
+            .padding(JohoDimensions.spacingLG)
+            .background(colors.surface)
+
+            // Thick divider
+            Rectangle().fill(colors.border).frame(height: 3)
+
+            // ═══════════════════════════════════════════════════════════════
+            // CATEGORY LIST
+            // ═══════════════════════════════════════════════════════════════
+            ScrollView {
+                VStack(spacing: 0) {
+                    // "None" option
+                    noneOption
+
+                    Rectangle().fill(colors.border).frame(height: 1.5)
+
+                    // Grouped sections
+                    ForEach(orderedGroups) { group in
+                        categoryGroupSection(group)
+                    }
+                }
+            }
+        }
+        .background(colors.surface)
+        .presentationCornerRadius(0)
+        .presentationDetents([.medium, .large])
+    }
+
+    // MARK: - None Option
+
+    private var noneOption: some View {
+        Button {
+            selectedCategory = nil
+            HapticManager.selection()
+            dismiss()
+        } label: {
+            HStack(spacing: JohoDimensions.spacingMD) {
+                // Icon
+                Image(systemName: "minus.circle")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(colors.primary.opacity(0.5))
+                    .frame(width: 36, height: 36)
+                    .background(colors.primary.opacity(0.05))
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle()
+                            .stroke(colors.border.opacity(0.3), lineWidth: 1.5)
+                    )
+
+                // Label
+                Text("NO CATEGORY")
+                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary.opacity(0.6))
+
+                Spacer()
+
+                // Selection indicator
+                if selectedCategory == nil {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(accentColor)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.vertical, JohoDimensions.spacingMD)
+            .background(selectedCategory == nil ? accentColor.opacity(0.1) : colors.surface)
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Category Group Section
+
+    private func categoryGroupSection(_ group: ExpenseCategoryGroup) -> some View {
+        let categoriesInGroup = groupedCategories[group] ?? []
+        let isExpanded = expandedGroups.contains(group)
+
+        return VStack(spacing: 0) {
+            // Group header (tappable to expand/collapse)
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    if isExpanded {
+                        expandedGroups.remove(group)
+                    } else {
+                        expandedGroups.insert(group)
+                    }
+                }
+                HapticManager.selection()
+            } label: {
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    // Group icon
+                    Image(systemName: group.icon)
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(colors.surface)
+                        .frame(width: 28, height: 28)
+                        .background(colors.primary)
+                        .clipShape(Squircle(cornerRadius: 6))
+
+                    // Group name
+                    Text(group.rawValue.uppercased())
+                        .font(.system(size: 11, weight: .black, design: .rounded))
+                        .foregroundStyle(colors.surface)
+
+                    // Count badge
+                    Text("(\(categoriesInGroup.count))")
+                        .font(.system(size: 10, weight: .medium, design: .monospaced))
+                        .foregroundStyle(colors.surface.opacity(0.7))
+
+                    Spacer()
+
+                    // Chevron indicator
+                    Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(colors.surface.opacity(0.7))
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+                .background(colors.primary)
+            }
+            .buttonStyle(.plain)
+
+            // Categories (only shown when expanded)
+            if isExpanded {
+                ForEach(categoriesInGroup) { category in
+                    categoryRow(category)
+                }
+            }
+
+            // Bottom divider
+            Rectangle().fill(colors.border).frame(height: 1.5)
+        }
+    }
+
+    // MARK: - Category Row
+
+    private func categoryRow(_ category: ExpenseCategory) -> some View {
+        let isSelected = selectedCategory?.id == category.id
+
+        return Button {
+            selectedCategory = category
+            HapticManager.selection()
+            dismiss()
+        } label: {
+            HStack(spacing: JohoDimensions.spacingMD) {
+                // Category icon
+                Image(systemName: category.iconName)
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundStyle(isSelected ? colors.surface : category.color)
+                    .frame(width: 36, height: 36)
+                    .background(isSelected ? category.color : category.color.opacity(0.15))
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle()
+                            .stroke(category.color, lineWidth: isSelected ? 2.5 : 1.5)
+                    )
+
+                // Category name
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(category.name.uppercased())
+                        .font(.system(size: 13, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+
+                    // Show expense count if any
+                    if let expenses = category.expenses, !expenses.isEmpty {
+                        Text("\(expenses.count) expense\(expenses.count == 1 ? "" : "s")")
+                            .font(.system(size: 10, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.5))
+                    }
+                }
+
+                Spacer()
+
+                // Selection indicator
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(category.color)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .background(isSelected ? category.color.opacity(0.1) : colors.surface)
+        }
+        .buttonStyle(.plain)
     }
 }
 
