@@ -148,7 +148,7 @@ struct JohoUnifiedEntrySheet: View {
     // ═══════════════════════════════════════════════════════════════
 
     var body: some View {
-        // 情報デザイン: UNIFIED BENTO PILLBOX
+        // 情報デザイン: UNIFIED BENTO PILLBOX - white background with black borders
         VStack(spacing: 0) {
             Spacer().frame(height: JohoDimensions.spacingLG)
 
@@ -157,23 +157,23 @@ struct JohoUnifiedEntrySheet: View {
                 headerRow
 
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 typeSelector
 
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // Dynamic content based on type
                 dynamicFields
             }
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
             )
             .padding(.horizontal, JohoDimensions.spacingLG)
 
@@ -188,7 +188,7 @@ struct JohoUnifiedEntrySheet: View {
             JohoIconPickerSheet(
                 selectedSymbol: $noteSymbol,
                 accentColor: selectedType.color,
-                lightBackground: selectedType.lightBackground
+                lightBackground: colors.surface
             )
         }
         .sheet(isPresented: $showingCategoryPicker) {
@@ -197,7 +197,7 @@ struct JohoUnifiedEntrySheet: View {
                 selectedCategory: $selectedCategory,
                 expandedGroups: $expandedGroups,
                 accentColor: selectedType.color,
-                lightBackground: selectedType.lightBackground
+                lightBackground: colors.surface
             )
         }
     }
@@ -212,13 +212,13 @@ struct JohoUnifiedEntrySheet: View {
             Button { dismiss() } label: {
                 Text("×")
                     .font(.system(size: 20, weight: .black, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .frame(width: 44, height: 44)
             }
 
             // WALL
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
@@ -230,15 +230,15 @@ struct JohoUnifiedEntrySheet: View {
                     .frame(width: 36, height: 36)
                     .background(EntryType.entryButtonColor.opacity(0.15))
                     .clipShape(Squircle(cornerRadius: 8))
-                    .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+                    .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("NEW ENTRY")
                         .font(.system(size: 16, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                     Text(selectedType.subtitle)
                         .font(.system(size: 11, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                 }
 
                 Spacer()
@@ -248,7 +248,7 @@ struct JohoUnifiedEntrySheet: View {
 
             // WALL
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
@@ -259,18 +259,18 @@ struct JohoUnifiedEntrySheet: View {
             } label: {
                 Text("○")
                     .font(.system(size: 20, weight: .black, design: .rounded))
-                    .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                    .foregroundStyle(canSave ? JohoColors.white : colors.primary.opacity(0.4))
                     .frame(width: 44, height: 44)
-                    .background(canSave ? selectedType.color : JohoColors.white)
+                    .background(canSave ? selectedType.color : colors.surface)
                     .clipShape(Squircle(cornerRadius: 8))
-                    .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+                    .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
             }
             .disabled(!canSave)
             .padding(.horizontal, 8)
             .frame(maxHeight: .infinity)
         }
         .frame(height: 56)
-        .background(selectedType.headerBackground)
+        .background(colors.surface)
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -292,16 +292,17 @@ struct JohoUnifiedEntrySheet: View {
                         Text(type.displayName)
                             .font(.system(size: 11, weight: .black, design: .rounded))
                     }
-                    .foregroundStyle(selectedType == type ? JohoColors.white : JohoColors.black)
+                    // 情報デザイン: white text on color when selected, colored icon on white when not
+                    .foregroundStyle(selectedType == type ? JohoColors.white : type.color)
                     .frame(maxWidth: .infinity)
                     .frame(height: 40)
-                    .background(selectedType == type ? type.color : type.lightBackground)
+                    .background(selectedType == type ? type.color : colors.surface)
                 }
                 .buttonStyle(.plain)
 
                 if type != EntryType.allCases.last {
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                 }
             }
@@ -331,38 +332,38 @@ struct JohoUnifiedEntrySheet: View {
 
     private var noteFields: some View {
         VStack(spacing: 0) {
-            // Content row
+            // Content row - 情報デザイン: white background, not colored
             fieldRow(
                 icon: "pencil",
-                iconColor: JohoColors.black,
+                iconColor: selectedType.color,
                 content: {
                     TextField("Note content", text: $noteContent, axis: .vertical)
                         .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .lineLimit(3...6)
                         .padding(.horizontal, JohoDimensions.spacingMD)
                 },
-                background: selectedType.lightBackground,
+                background: colors.surface,
                 minHeight: 72
             )
 
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+            Rectangle().fill(colors.border).frame(height: 1.5)
 
             // Date row
             dateRow(
                 year: $selectedYear,
                 month: $selectedMonth,
                 day: $selectedDay,
-                background: selectedType.lightBackground
+                background: colors.surface
             )
 
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+            Rectangle().fill(colors.border).frame(height: 1.5)
 
             // Icon picker row
             iconPickerRow(
                 currentIcon: noteSymbol,
                 accentColor: selectedType.color,
-                background: selectedType.lightBackground.opacity(0.5)
+                background: colors.surface
             )
         }
     }
@@ -373,20 +374,20 @@ struct JohoUnifiedEntrySheet: View {
 
     private var tripFields: some View {
         VStack(spacing: 0) {
-            // Trip name row
+            // Trip name row - 情報デザイン: white background
             fieldRow(
                 icon: "tag.fill",
-                iconColor: JohoColors.black,
+                iconColor: selectedType.color,
                 content: {
                     TextField("Trip name", text: $tripName)
                         .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .padding(.horizontal, JohoDimensions.spacingMD)
                 },
-                background: selectedType.lightBackground
+                background: colors.surface
             )
 
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+            Rectangle().fill(colors.border).frame(height: 1.5)
 
             // Destination row
             fieldRow(
@@ -395,23 +396,23 @@ struct JohoUnifiedEntrySheet: View {
                 content: {
                     TextField("Destination", text: $tripDestination)
                         .font(.system(size: 16, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .padding(.horizontal, JohoDimensions.spacingMD)
                 },
-                background: selectedType.lightBackground
+                background: colors.surface
             )
 
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+            Rectangle().fill(colors.border).frame(height: 1.5)
 
             // Start date row
             HStack(spacing: 0) {
                 Text("FROM")
                     .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(0.6))
                     .frame(width: 44)
                     .frame(maxHeight: .infinity)
 
-                Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
+                Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
                 datePickerCells(
                     year: $tripStartYear,
@@ -420,19 +421,19 @@ struct JohoUnifiedEntrySheet: View {
                 )
             }
             .frame(height: 44)
-            .background(selectedType.lightBackground)
+            .background(colors.surface)
 
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+            Rectangle().fill(colors.border).frame(height: 1.5)
 
             // End date row
             HStack(spacing: 0) {
                 Text("TO")
                     .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(0.6))
                     .frame(width: 44)
                     .frame(maxHeight: .infinity)
 
-                Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
+                Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
                 datePickerCells(
                     year: $tripEndYear,
@@ -441,19 +442,19 @@ struct JohoUnifiedEntrySheet: View {
                 )
             }
             .frame(height: 44)
-            .background(selectedType.lightBackground)
+            .background(colors.surface)
 
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+            Rectangle().fill(colors.border).frame(height: 1.5)
 
             // Trip type row
             HStack(spacing: 0) {
                 Image(systemName: "briefcase.fill")
                     .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(selectedType.color)
                     .frame(width: 44)
                     .frame(maxHeight: .infinity)
 
-                Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
+                Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
                 ForEach(TripType.allCases, id: \.self) { type in
                     Button {
@@ -462,7 +463,7 @@ struct JohoUnifiedEntrySheet: View {
                     } label: {
                         Text(type.rawValue.uppercased())
                             .font(.system(size: 11, weight: .bold, design: .rounded))
-                            .foregroundStyle(tripType == type ? JohoColors.white : JohoColors.black)
+                            .foregroundStyle(tripType == type ? JohoColors.white : colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
                             .background(tripType == type ? selectedType.color : Color.clear)
@@ -470,12 +471,12 @@ struct JohoUnifiedEntrySheet: View {
                     .buttonStyle(.plain)
 
                     if type != TripType.allCases.last {
-                        Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
+                        Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
                     }
                 }
             }
             .frame(height: 44)
-            .background(selectedType.lightBackground.opacity(0.5))
+            .background(colors.surface)
         }
     }
 
@@ -485,39 +486,39 @@ struct JohoUnifiedEntrySheet: View {
 
     private var expenseFields: some View {
         VStack(spacing: 0) {
-            // Description row
+            // Description row - 情報デザイン: white background
             fieldRow(
                 icon: "pencil",
                 iconColor: selectedType.color,
                 content: {
                     TextField("Expense description", text: $expenseDescription)
                         .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .padding(.horizontal, JohoDimensions.spacingMD)
                 },
-                background: selectedType.lightBackground
+                background: colors.surface
             )
 
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+            Rectangle().fill(colors.border).frame(height: 1.5)
 
             // Amount row
             HStack(spacing: 0) {
                 Image(systemName: "dollarsign")
                     .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(selectedType.color)
                     .frame(width: 44)
                     .frame(maxHeight: .infinity)
 
-                Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
+                Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
                 TextField("0.00", text: $expenseAmount)
                     .font(.system(size: 18, weight: .bold, design: .monospaced))
                     .keyboardType(.decimalPad)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .multilineTextAlignment(.trailing)
                     .padding(.horizontal, JohoDimensions.spacingMD)
 
-                Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
+                Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
                 Menu {
                     ForEach(CurrencyDefinition.defaultCurrencies) { curr in
@@ -528,25 +529,25 @@ struct JohoUnifiedEntrySheet: View {
                 } label: {
                     Text(expenseCurrency)
                         .font(.system(size: 14, weight: .bold, design: .monospaced))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(width: 72)
                         .frame(maxHeight: .infinity)
                 }
             }
             .frame(height: 48)
-            .background(selectedType.lightBackground)
+            .background(colors.surface)
 
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+            Rectangle().fill(colors.border).frame(height: 1.5)
 
             // Date row
             dateRow(
                 year: $selectedYear,
                 month: $selectedMonth,
                 day: $selectedDay,
-                background: selectedType.lightBackground
+                background: colors.surface
             )
 
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+            Rectangle().fill(colors.border).frame(height: 1.5)
 
             // Category row - tappable to open collapsible picker
             Button {
@@ -556,7 +557,7 @@ struct JohoUnifiedEntrySheet: View {
                 HStack(spacing: 0) {
                     Image(systemName: "folder.fill")
                         .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(colors.primary)
+                        .foregroundStyle(selectedType.color)
                         .frame(width: 44)
                         .frame(maxHeight: .infinity)
 
@@ -601,7 +602,7 @@ struct JohoUnifiedEntrySheet: View {
                     .frame(maxHeight: .infinity)
                 }
                 .frame(height: 48)
-                .background(selectedType.lightBackground)
+                .background(colors.surface)
             }
             .buttonStyle(.plain)
 
@@ -610,14 +611,14 @@ struct JohoUnifiedEntrySheet: View {
             // Merchant row (optional)
             fieldRow(
                 icon: "storefront.fill",
-                iconColor: JohoColors.black.opacity(0.6),
+                iconColor: colors.primary.opacity(0.6),
                 content: {
                     TextField("Store name (optional)", text: $expenseMerchant)
                         .font(JohoFont.caption)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                         .padding(.horizontal, JohoDimensions.spacingMD)
                 },
-                background: selectedType.lightBackground.opacity(0.5)
+                background: colors.surface
             )
         }
     }
@@ -641,7 +642,7 @@ struct JohoUnifiedEntrySheet: View {
                 .frame(maxHeight: .infinity)
 
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
@@ -662,11 +663,11 @@ struct JohoUnifiedEntrySheet: View {
         HStack(spacing: 0) {
             Image(systemName: "calendar")
                 .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(selectedType.color)
                 .frame(width: 44)
                 .frame(maxHeight: .infinity)
 
-            Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
             datePickerCells(year: year, month: month, day: day)
         }
@@ -688,12 +689,12 @@ struct JohoUnifiedEntrySheet: View {
             } label: {
                 Text(String(year.wrappedValue))
                     .font(.system(size: 14, weight: .bold, design: .monospaced))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .frame(maxWidth: .infinity)
                     .frame(maxHeight: .infinity)
             }
 
-            Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
             // Month
             Menu {
@@ -703,12 +704,12 @@ struct JohoUnifiedEntrySheet: View {
             } label: {
                 Text(monthName(month.wrappedValue))
                     .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .frame(maxWidth: .infinity)
                     .frame(maxHeight: .infinity)
             }
 
-            Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
             // Day
             Menu {
@@ -718,7 +719,7 @@ struct JohoUnifiedEntrySheet: View {
             } label: {
                 Text("\(day.wrappedValue)")
                     .font(.system(size: 14, weight: .bold, design: .monospaced))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .frame(width: 44)
                     .frame(maxHeight: .infinity)
             }
@@ -741,18 +742,18 @@ struct JohoUnifiedEntrySheet: View {
                     .frame(width: 44)
                     .frame(maxHeight: .infinity)
 
-                Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
+                Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
                 Text("Tap to change icon")
                     .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(0.6))
                     .padding(.leading, JohoDimensions.spacingMD)
 
                 Spacer()
 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(JohoColors.black.opacity(0.4))
+                    .foregroundStyle(colors.primary.opacity(0.4))
                     .padding(.trailing, JohoDimensions.spacingMD)
             }
             .frame(height: 48)
