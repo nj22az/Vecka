@@ -24,11 +24,21 @@ struct DayDashboardView: View {
     let secondaryDateText: String?
     let onOpenNotes: (_ date: Date) -> Void
     let onOpenExpenses: ((_ date: Date) -> Void)?
+    var onAddEntry: (() -> Void)? = nil  // 情報デザイン: Opens add entry menu
+
+    /// 情報デザイン: Check if day has any content
+    private var hasAnyContent: Bool {
+        !holidays.isEmpty || !notes.isEmpty || !expenses.isEmpty || !trips.isEmpty
+    }
 
     @State private var isExpanded = false
     @State private var isPinnedExpanded = false
 
     @Environment(\.locale) private var locale
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private let previewLimit = 3
     private let pinnedPreviewLimit = 2
@@ -90,20 +100,20 @@ struct DayDashboardView: View {
     // MARK: - Joho Design System Body
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
-                // HEADER - Simplified to avoid redundancy
-                // Only shows TODAY badge (if today) or weekday, plus formatted date
-                JohoPageHeader(
-                    title: formattedDate,
-                    badge: headerBadge,
-                    subtitle: Calendar.current.isDateInToday(date) ? weekdayName : nil
-                )
+        VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
+            // HEADER with + button - 情報デザイン: Day title with add entry action
+            dayHeader
                 .padding(.horizontal, JohoDimensions.spacingLG)
 
-                // HOLIDAYS SECTION
-                if !holidays.isEmpty {
-                    JohoSectionBox(title: "HOLIDAYS", zone: .holidays, icon: "star.fill") {
+            // EMPTY STATE - 情報デザイン: Show when no entries
+            if !hasAnyContent {
+                emptyStateView
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+            }
+
+            // HOLIDAYS SECTION
+            if !holidays.isEmpty {
+                JohoSectionBox(title: "HOLIDAYS", zone: .holidays, icon: "star.fill") {
                         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                             ForEach(holidays.prefix(2)) { holiday in
                                 HStack(spacing: JohoDimensions.spacingSM) {
@@ -256,10 +266,7 @@ struct DayDashboardView: View {
                     }
                     .padding(.horizontal, JohoDimensions.spacingLG)
                 }
-            }
-            .padding(.vertical, JohoDimensions.spacingLG)
         }
-        .johoBackground()
     }
 
     // MARK: - Header Helpers
@@ -324,6 +331,106 @@ struct DayDashboardView: View {
         let days = daysUntil(note.day)
         let daysText = days == 1 ? "1 day left" : "\(days) days left"
         return "\(truncated), \(daysText)"
+    }
+
+    // MARK: - Day Header with + Button (情報デザイン)
+
+    /// 情報デザイン: Compartmentalized header with visual separation
+    /// Layout: [TODAY] │ Date │ [+ ADD]
+    private var dayHeader: some View {
+        HStack(spacing: 0) {
+            // LEFT COMPARTMENT: TODAY/Weekday badge
+            JohoPill(text: headerBadge, style: Calendar.current.isDateInToday(date) ? .coloredInverted(JohoColors.yellow) : .whiteOnBlack, size: .small)
+                .padding(.horizontal, JohoDimensions.spacingSM)
+                .padding(.vertical, JohoDimensions.spacingSM)
+
+            // VERTICAL DIVIDER
+            Rectangle()
+                .fill(colors.border)
+                .frame(width: JohoDimensions.borderMedium)
+                .frame(maxHeight: .infinity)
+
+            // CENTER COMPARTMENT: Formatted date
+            Text(formattedDate)
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+
+            // VERTICAL DIVIDER (only if ADD button exists)
+            if onAddEntry != nil {
+                Rectangle()
+                    .fill(colors.border)
+                    .frame(width: JohoDimensions.borderMedium)
+                    .frame(maxHeight: .infinity)
+            }
+
+            // RIGHT COMPARTMENT: + ADD Button
+            if let onAddEntry {
+                Button {
+                    HapticManager.selection()
+                    onAddEntry()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "plus")
+                            .font(.system(size: 14, weight: .black))
+                        Text("ADD")
+                            .font(.system(size: 12, weight: .black, design: .rounded))
+                            .tracking(0.5)
+                    }
+                    .foregroundStyle(colors.primaryInverted)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(colors.surfaceInverted)
+                    .clipShape(Squircle(cornerRadius: 10))
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, JohoDimensions.spacingSM)
+                .padding(.vertical, JohoDimensions.spacingSM)
+            }
+        }
+        .frame(minHeight: 52)
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
+        )
+    }
+
+    // MARK: - Empty State (情報デザイン)
+
+    private var emptyStateView: some View {
+        // Empty state background: slightly different from surface for visual distinction
+        let emptyBg = colorMode == .dark ? Color(hex: "1A1A1A") : JohoColors.inputBackground
+
+        return VStack(spacing: JohoDimensions.spacingMD) {
+            // Icon
+            Image(systemName: "calendar.badge.plus")
+                .font(.system(size: 32, weight: .bold))
+                .foregroundStyle(colors.primary.opacity(0.3))
+
+            // Text
+            Text("NO ENTRIES")
+                .font(.system(size: 14, weight: .black, design: .rounded))
+                .tracking(1)
+                .foregroundStyle(colors.primary.opacity(0.4))
+
+            // Hint
+            Text("Tap + to add holidays, notes, events, or more")
+                .font(.system(size: 12, weight: .medium, design: .rounded))
+                .foregroundStyle(colors.primary.opacity(0.3))
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, JohoDimensions.spacingXL)
+        .background(emptyBg)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border.opacity(0.2), lineWidth: 1)
+        )
     }
 }
 

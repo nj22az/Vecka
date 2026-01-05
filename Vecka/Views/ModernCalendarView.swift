@@ -25,6 +25,10 @@ struct ModernCalendarView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(NavigationManager.self) private var navigationManager
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
     @Query private var notes: [DailyNote]
     @Query private var expenses: [ExpenseItem]
     @Query private var trips: [TravelTrip]
@@ -200,6 +204,9 @@ struct ModernCalendarView: View {
     @State private var countdownEditorIsAnnual: Bool = false
     @State private var countdownEditorType: CountdownType = .custom
 
+    // 情報デザイン: Unified Entry sheet (Note/Trip/Expense)
+    @State private var showUnifiedEntry = false
+
     // Star page month detail state (for smart + button)
     @State private var isInSpecialDaysMonthDetail = false
 
@@ -301,12 +308,8 @@ struct ModernCalendarView: View {
             }
             .frame(maxHeight: .infinity)
 
-            // Bottom dock
-            IconStripDock(
-                selection: $sidebarSelection,
-                onAdd: iPhoneDockAddAction,
-                addButtonColor: addButtonColor
-            )
+            // Bottom dock (5 navigation items only)
+            IconStripDock(selection: $sidebarSelection)
         }
         .johoBackground()
         .onAppear {
@@ -337,28 +340,30 @@ struct ModernCalendarView: View {
             // Both iPad and iPhone: Bottom dock navigation (情報デザイン)
             // User preference: unified design across devices
             VStack(spacing: 0) {
-                // Content area with swipe navigation
-                SwipeNavigationContainer(selection: $sidebarSelection) { _ in
-                    detailView
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                // Content area (dock-only navigation)
+                detailView
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                // 情報デザイン: Thick black border between content and dock
+                // 情報デザイン: Thick border between content and dock
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 2)
 
-                // Bottom dock (same on iPad and iPhone)
-                IconStripDock(
-                    selection: $sidebarSelection,
-                    onAdd: iPhoneDockAddAction,
-                    addButtonColor: addButtonColor
-                )
+                // Bottom dock (5 navigation items only)
+                IconStripDock(selection: $sidebarSelection)
             }
             .johoBackground()
             .onAppear {
                 if sidebarSelection == nil {
                     sidebarSelection = .landing
+                }
+            }
+            // Handle navigation from Onsen Map tiles
+            .onReceive(NotificationCenter.default.publisher(for: .navigateToPage)) { notification in
+                if let page = notification.object as? SidebarSelection {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        sidebarSelection = page
+                    }
                 }
             }
         }
@@ -424,6 +429,13 @@ struct ModernCalendarView: View {
             ExpenseEntryView()
                 .presentationCornerRadius(20)
         }
+        // 情報デザイン: Unified Entry sheet (Note/Trip/Expense)
+        .sheet(isPresented: $showUnifiedEntry) {
+            JohoUnifiedEntrySheet(selectedDate: selectedDate)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+                .presentationCornerRadius(20)
+        }
         .sheet(isPresented: $showTripEditor) {
             NavigationStack {
                 AddTripView()
@@ -468,47 +480,35 @@ struct ModernCalendarView: View {
             .presentationCornerRadius(20)
         }
         .sheet(isPresented: $showSpecialDayMenu) {
+            // 情報デザイン: Consolidated menu (4 options instead of 7)
             JohoAddSpecialDaySheet(
                 onSelectHoliday: {
+                    // Opens Holiday editor (supports Holiday/Observance type toggle)
                     showSpecialDayMenu = false
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         showHolidayEditor = true
                     }
                 },
-                onSelectObservance: {
+                onSelectEntry: {
+                    // Opens unified Note/Trip/Expense editor
                     showSpecialDayMenu = false
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        showObservanceEditor = true
-                    }
-                },
-                onSelectEvent: {
-                    showSpecialDayMenu = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        showCountdownEditor = true
+                        showUnifiedEntry = true
                     }
                 },
                 onSelectBirthday: {
+                    // Opens Contact editor for birthday entry
                     showSpecialDayMenu = false
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        contactEditorMode = .birthday
                         showContactEditor = true
                     }
                 },
-                onSelectNote: {
+                onSelectCountdown: {
+                    // Opens Event/Countdown editor
                     showSpecialDayMenu = false
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        showNoteEditor = true
-                    }
-                },
-                onSelectTrip: {
-                    showSpecialDayMenu = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        showTripEditor = true
-                    }
-                },
-                onSelectExpense: {
-                    showSpecialDayMenu = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        showExpenseEditor = true
+                        showCountdownEditor = true
                     }
                 }
             )
@@ -607,39 +607,37 @@ struct ModernCalendarView: View {
                 }
                 .padding(.horizontal, screenMargin)
 
-                // 情報デザイン: Expandable legend showing indicator types on current month
-                if !presentIndicators.isEmpty {
-                    calendarLegend
-                        .padding(.horizontal, screenMargin)
-                        .padding(.top, JohoDimensions.spacingSM)
-                }
+                // 情報デザイン: Legend moved to Settings for cleaner calendar view
 
-                // 情報デザイン: Day Dashboard shows when no week selected (unified behavior)
-                if selectedWeek == nil {
-                    let dashboardDate = Calendar.iso8601.startOfDay(for: selectedDay?.date ?? selectedDate)
-                    DayDashboardView(
-                        date: dashboardDate,
-                        notes: notesForDay(dashboardDate),
-                        pinnedNotes: pinnedNotesForDashboard,
-                        holidays: holidayInfo(for: dashboardDate),
-                        expenses: expensesForDay(dashboardDate),
-                        trips: tripsForDay(dashboardDate),
-                        secondaryDateText: lunarDashboardText(for: dashboardDate),
-                        onOpenNotes: { targetDate in
-                            dayNotesDate = targetDate
-                            dayNotesStartCreating = false
-                            dayNotesDetent = .large
-                            showDayNotesSheet = true
-                        },
-                        onOpenExpenses: nil
-                    )
-                    .id(dashboardDate)
-                    .padding(.horizontal, screenMargin)
-                }
+                // 情報デザイン: Day Dashboard ALWAYS shows selected day content
+                let dashboardDate = Calendar.iso8601.startOfDay(for: selectedDay?.date ?? selectedDate)
+                DayDashboardView(
+                    date: dashboardDate,
+                    notes: notesForDay(dashboardDate),
+                    pinnedNotes: pinnedNotesForDashboard,
+                    holidays: holidayInfo(for: dashboardDate),
+                    expenses: expensesForDay(dashboardDate),
+                    trips: tripsForDay(dashboardDate),
+                    secondaryDateText: lunarDashboardText(for: dashboardDate),
+                    onOpenNotes: { targetDate in
+                        dayNotesDate = targetDate
+                        dayNotesStartCreating = false
+                        dayNotesDetent = .large
+                        showDayNotesSheet = true
+                    },
+                    onOpenExpenses: nil,
+                    onAddEntry: {
+                        // 情報デザイン: Opens add entry menu (same as Star page)
+                        noteEditorDate = dashboardDate
+                        countdownEditorDate = dashboardDate
+                        showSpecialDayMenu = true
+                    }
+                )
+                .id(dashboardDate)
+                .padding(.horizontal, screenMargin)
             }
-            .padding(.top, JohoDimensions.spacingSM) // Small top padding after safe area
+            .padding(.top, JohoDimensions.spacingSM) // 情報デザイン: Consistent with all pages
             .padding(.bottom, JohoDimensions.spacingLG)
-            .safeAreaPadding(.top) // Respect status bar
         }
         .scrollBounceBehavior(.basedOnSize)
         .johoBackground()
@@ -661,20 +659,20 @@ struct ModernCalendarView: View {
                     // Icon zone - list bullet in cyan squircle
                     Image(systemName: "list.bullet")
                         .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(width: 24, height: 24)
                         .background(JohoColors.cyan.opacity(0.3))
                         .clipShape(Squircle(cornerRadius: 5))
-                        .overlay(Squircle(cornerRadius: 5).stroke(JohoColors.black, lineWidth: 1))
+                        .overlay(Squircle(cornerRadius: 5).stroke(colors.border, lineWidth: 1))
 
                     Text("LEGEND")
                         .font(.system(size: 12, weight: .black, design: .rounded))
                         .tracking(1)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     Image(systemName: isLegendExpanded ? "chevron.down" : "chevron.right")
                         .font(.system(size: 11, weight: .bold))
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.secondary)
 
                     Spacer()
 
@@ -682,7 +680,7 @@ struct ModernCalendarView: View {
                     if !presentIndicators.isEmpty {
                         Text("\(presentIndicators.count)")
                             .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.secondary)
                     }
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -693,7 +691,7 @@ struct ModernCalendarView: View {
             // Expanded content - shows indicator types with colors
             if isLegendExpanded && !presentIndicators.isEmpty {
                 Rectangle()
-                    .fill(JohoColors.black.opacity(0.2))
+                    .fill(colors.border.opacity(0.2))
                     .frame(height: 1)
                     .padding(.horizontal, JohoDimensions.spacingMD)
 
@@ -705,11 +703,11 @@ struct ModernCalendarView: View {
                             Circle()
                                 .fill(item.color)
                                 .frame(width: 10, height: 10)
-                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                                .overlay(Circle().stroke(colors.border, lineWidth: 1))
 
                             Text(item.label)
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                         }
                     }
                 }
@@ -717,11 +715,11 @@ struct ModernCalendarView: View {
                 .padding(.vertical, JohoDimensions.spacingSM)
             }
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Legend, \(presentIndicators.count) indicator types")
@@ -757,22 +755,22 @@ struct ModernCalendarView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(verbatim: "\(currentMonth.year)")
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.white.opacity(0.6))
+                        .foregroundStyle(colors.primaryInverted.opacity(0.6))
 
                     Text(monthTitle)
                         .font(JohoFont.headline)
-                        .foregroundStyle(JohoColors.white)
+                        .foregroundStyle(colors.primaryInverted)
                 }
 
                 Image(systemName: "chevron.down")
                     .font(JohoFont.labelSmall)
-                    .foregroundStyle(JohoColors.white.opacity(0.7))
+                    .foregroundStyle(colors.primaryInverted.opacity(0.7))
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
-            .background(JohoColors.black)
+            .background(colors.surfaceInverted)
             .clipShape(Capsule())
-            .overlay(Capsule().stroke(JohoColors.white, lineWidth: 1.5))
+            .overlay(Capsule().stroke(colors.primaryInverted, lineWidth: 1.5))
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(monthTitle) \(currentMonth.year)")
@@ -815,13 +813,13 @@ struct ModernCalendarView: View {
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(JohoColors.black, lineWidth: 1.5)
+                                .stroke(colors.border, lineWidth: 1.5)
                         )
 
                     // Title
                     Text("CALENDAR")
                         .font(JohoFont.headline)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
                 .padding(.vertical, JohoDimensions.spacingSM)
@@ -829,7 +827,7 @@ struct ModernCalendarView: View {
 
                 // VERTICAL WALL
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
 
                 // RIGHT COMPARTMENT: Month/Year Picker
@@ -840,7 +838,7 @@ struct ModernCalendarView: View {
 
             // HORIZONTAL DIVIDER
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 1.5)
 
             // TODAY ROW: Today info + Go to Today button + Week badge
@@ -850,12 +848,12 @@ struct ModernCalendarView: View {
                     // Day number
                     Text("\(dayNumber)")
                         .font(JohoFont.displaySmall)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     // Weekday
                     Text(weekday)
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                        .foregroundStyle(colors.secondary)
                 }
 
                 Spacer()
@@ -886,20 +884,20 @@ struct ModernCalendarView: View {
                 // Week badge
                 Text("W\(weekNumber)")
                     .font(JohoFont.labelSmall)
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(JohoColors.black)
+                    .background(colors.surfaceInverted)
                     .clipShape(Capsule())
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
         )
     }
 
@@ -909,7 +907,7 @@ struct ModernCalendarView: View {
             Button { navigateToPreviousMonth() } label: {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .frame(width: 24, height: 44)
                     .contentShape(Rectangle())
             }
@@ -919,10 +917,10 @@ struct ModernCalendarView: View {
                 VStack(spacing: 0) {
                     Text(monthTitle)
                         .font(JohoFont.bodySmall.bold())
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                     Text(String(currentMonth.year))
                         .font(JohoFont.labelSmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                        .foregroundStyle(colors.secondary)
                         .monospacedDigit()
                 }
             }
@@ -931,7 +929,7 @@ struct ModernCalendarView: View {
             Button { navigateToNextMonth() } label: {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .frame(width: 24, height: 44)
                     .contentShape(Rectangle())
             }
@@ -986,11 +984,30 @@ struct ModernCalendarView: View {
         // Check expenses
         check.hasExpense = expenses.contains { Calendar.iso8601.startOfDay(for: $0.date) == day }
 
-        // Check trips (day falls within trip range)
-        check.hasTrip = trips.contains { trip in
+        // Check trips (day falls within trip range) and determine position
+        for trip in trips {
             let tripStart = Calendar.iso8601.startOfDay(for: trip.startDate)
             let tripEnd = Calendar.iso8601.startOfDay(for: trip.endDate)
-            return day >= tripStart && day <= tripEnd
+
+            if day >= tripStart && day <= tripEnd {
+                check.hasTrip = true
+
+                // Determine trip position for edge indicators
+                let isSingleDay = tripStart == tripEnd
+                let isStartDay = day == tripStart
+                let isEndDay = day == tripEnd
+
+                if isSingleDay {
+                    check.tripPosition = .single
+                } else if isStartDay {
+                    check.tripPosition = .start
+                } else if isEndDay {
+                    check.tripPosition = .end
+                } else {
+                    check.tripPosition = .middle
+                }
+                break // Use first matching trip
+            }
         }
 
         // Check birthdays from contacts (match month/day regardless of year)
@@ -1192,20 +1209,13 @@ struct ModernCalendarView: View {
     }
 
     private func handleDayTap(_ day: CalendarDay) {
-        if selectedDay?.id == day.id {
-            // Already selected -> open the day sheet
-            dayNotesDate = day.date
-            dayNotesStartCreating = false
-            dayNotesDetent = .medium
-            showDayNotesSheet = true
-        } else {
-            // Select Day
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                selectedDate = day.date
-                selectedDay = day
-                if let week = currentMonth.weeks.first(where: { $0.days.contains(where: { $0.id == day.id }) }) {
-                    selectedWeek = week
-                }
+        // 情報デザイン: Single tap selects day, shows day content below
+        // Use + button in DayDashboard to add entries
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            selectedDate = day.date
+            selectedDay = day
+            if let week = currentMonth.weeks.first(where: { $0.days.contains(where: { $0.id == day.id }) }) {
+                selectedWeek = week
             }
         }
     }

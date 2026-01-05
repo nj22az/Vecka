@@ -415,9 +415,88 @@ struct SpecialDaysListView: View {
     // Item expansion state (情報デザイン: tap to show details)
     @State private var expandedItemID: String?
 
+    // 情報デザイン: Expandable legend row (same as Calendar page)
+    @State private var isLegendExpanded = false
+
     private var years: [Int] {
         let current = Calendar.current.component(.year, from: Date())
         return Array((current - 20)...(current + 20))
+    }
+
+    // MARK: - Legend Data (情報デザイン)
+
+    /// Legend item representing an indicator type present in the year
+    struct LegendItem: Identifiable {
+        let id = UUID()
+        let type: String
+        let label: String
+        let color: Color
+    }
+
+    /// Collects indicator types present in the selected year
+    /// Priority order: HOL > BDY > OBS > EVT > NTE > TRP > EXP
+    private var presentIndicators: [LegendItem] {
+        var items: [LegendItem] = []
+        let calendar = Calendar.current
+
+        // 1. Holidays - RED
+        let hasHolidays = holidayManager.holidayCache.keys.contains { date in
+            calendar.component(.year, from: date) == selectedYear &&
+            !(holidayManager.holidayCache[date]?.isEmpty ?? true)
+        }
+        if hasHolidays {
+            items.append(LegendItem(type: "HOL", label: "Holiday", color: JohoColors.red))
+        }
+
+        // 2. Birthdays - PINK (from contacts)
+        let hasBirthdays = contacts.contains { $0.birthday != nil }
+        if hasBirthdays {
+            items.append(LegendItem(type: "BDY", label: "Birthday", color: JohoColors.pink))
+        }
+
+        // 3. Observances - ORANGE
+        let hasObservances = holidayManager.holidayCache.keys.contains { date in
+            calendar.component(.year, from: date) == selectedYear &&
+            (holidayManager.holidayCache[date]?.contains { !$0.isRedDay } ?? false)
+        }
+        if hasObservances {
+            items.append(LegendItem(type: "OBS", label: "Observance", color: JohoColors.orange))
+        }
+
+        // 4. Events - PURPLE (countdown events)
+        let hasEvents = countdownEvents.contains { event in
+            calendar.component(.year, from: event.targetDate) == selectedYear
+        }
+        if hasEvents {
+            items.append(LegendItem(type: "EVT", label: "Event", color: JohoColors.eventPurple))
+        }
+
+        // 5. Notes - YELLOW
+        let hasNotes = dailyNotes.contains { note in
+            calendar.component(.year, from: note.date) == selectedYear
+        }
+        if hasNotes {
+            items.append(LegendItem(type: "NTE", label: "Note", color: JohoColors.yellow))
+        }
+
+        // 6. Trips - BLUE
+        let hasTrips = trips.contains { trip in
+            calendar.component(.year, from: trip.startDate) == selectedYear ||
+            calendar.component(.year, from: trip.endDate) == selectedYear
+        }
+        if hasTrips {
+            items.append(LegendItem(type: "TRP", label: "Trip", color: JohoColors.tripBlue))
+        }
+
+        // 7. Expenses - GREEN
+        let hasExpenses = expenses.contains { expense in
+            calendar.component(.year, from: expense.date) == selectedYear
+        }
+        if hasExpenses {
+            items.append(LegendItem(type: "EXP", label: "Expense", color: JohoColors.green))
+        }
+
+        return items
     }
 
     // MARK: - Computed Data
@@ -699,6 +778,12 @@ struct SpecialDaysListView: View {
                     monthDetailView(for: month)
                 } else {
                     monthGrid
+
+                    // 情報デザイン: Expandable legend showing indicator types in current year
+                    if !presentIndicators.isEmpty {
+                        starPageLegend
+                            .padding(.horizontal, JohoDimensions.spacingLG)
+                    }
                 }
                 Spacer(minLength: JohoDimensions.spacingXL)
             }
@@ -771,6 +856,7 @@ struct SpecialDaysListView: View {
             DailyNotesView(selectedDate: note.day, isModal: true)
         }
         .presentationCornerRadius(20)
+        .presentationBackground(JohoColors.white)  // 情報デザイン: WHITE sheet background
     }
 
     private func tripEditorSheet(_ trip: TravelTrip) -> some View {
@@ -1019,6 +1105,88 @@ struct SpecialDaysListView: View {
             }
             .padding(.horizontal, JohoDimensions.spacingLG)
         }
+    }
+
+    // MARK: - Star Page Legend (情報デザイン)
+
+    /// Expandable legend row showing indicator types present in current year
+    private var starPageLegend: some View {
+        VStack(spacing: 0) {
+            // Header row - tappable to expand/collapse
+            Button {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    isLegendExpanded.toggle()
+                }
+                HapticManager.selection()
+            } label: {
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    // Icon zone - list bullet in cyan squircle
+                    Image(systemName: "list.bullet")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black)
+                        .frame(width: 24, height: 24)
+                        .background(JohoColors.cyan.opacity(0.3))
+                        .clipShape(Squircle(cornerRadius: 5))
+                        .overlay(Squircle(cornerRadius: 5).stroke(JohoColors.black, lineWidth: 1))
+
+                    Text("LEGEND")
+                        .font(.system(size: 12, weight: .black, design: .rounded))
+                        .tracking(1)
+                        .foregroundStyle(JohoColors.black)
+
+                    Image(systemName: isLegendExpanded ? "chevron.down" : "chevron.right")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                    Spacer()
+
+                    // Count badge showing number of indicator types
+                    if !presentIndicators.isEmpty {
+                        Text("\(presentIndicators.count)")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                    }
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+            }
+            .buttonStyle(.plain)
+
+            // Expanded content - shows indicator types with colors
+            if isLegendExpanded && !presentIndicators.isEmpty {
+                Rectangle()
+                    .fill(JohoColors.black.opacity(0.2))
+                    .frame(height: 1)
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+
+                LazyVGrid(columns: [
+                    GridItem(.adaptive(minimum: 100), spacing: JohoDimensions.spacingSM)
+                ], spacing: JohoDimensions.spacingSM) {
+                    ForEach(presentIndicators) { item in
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(item.color)
+                                .frame(width: 10, height: 10)
+                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                            Text(item.label)
+                                .font(.system(size: 11, weight: .semibold, design: .rounded))
+                                .foregroundStyle(JohoColors.black)
+                        }
+                    }
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+            }
+        }
+        .background(JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+        )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Legend, \(presentIndicators.count) indicator types")
+        .accessibilityHint(isLegendExpanded ? "Tap to collapse" : "Tap to expand")
     }
 
     // MARK: - Month Flipcard (情報デザイン: Compartmentalized Bento Style)
@@ -2997,88 +3165,110 @@ private struct JohoInputOption: Identifiable {
 
 struct JohoAddSpecialDaySheet: View {
     @Environment(\.dismiss) private var dismiss
-    let onSelectHoliday: () -> Void
-    let onSelectObservance: () -> Void
-    let onSelectEvent: () -> Void
-    var onSelectBirthday: (() -> Void)? = nil
-    var onSelectNote: (() -> Void)? = nil
-    var onSelectTrip: (() -> Void)? = nil
-    var onSelectExpense: (() -> Void)? = nil
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors for dark mode support
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    // Consolidated callbacks (4 options instead of 7)
+    let onSelectHoliday: () -> Void      // Opens Holiday/Observance editor with type toggle
+    let onSelectEntry: () -> Void        // Opens unified Note/Trip/Expense editor
+    let onSelectBirthday: () -> Void     // Opens Contact editor
+    let onSelectCountdown: () -> Void    // Opens Event/Countdown editor
 
     private var options: [JohoInputOption] {
-        var opts: [JohoInputOption] = [
-            JohoInputOption(icon: "star.fill", code: "HOL", label: "HOLIDAY", meta: "OFFICIAL", color: SpecialDayType.holiday.accentColor, action: onSelectHoliday),
-            JohoInputOption(icon: "sparkles", code: "OBS", label: "OBSERVANCE", meta: "NOTABLE", color: SpecialDayType.observance.accentColor, action: onSelectObservance),
-            JohoInputOption(icon: "calendar.badge.clock", code: "EVT", label: "EVENT", meta: "COUNTDOWN", color: SpecialDayType.event.accentColor, action: onSelectEvent),
+        [
+            // HOLIDAY: Official days & observances (merged)
+            JohoInputOption(
+                icon: "star.fill",
+                code: "HOL",
+                label: "HOLIDAY",
+                meta: "OFFICIAL & OBSERVANCE",
+                color: SpecialDayType.holiday.accentColor,
+                action: onSelectHoliday
+            ),
+            // ENTRY: Notes, trips, expenses (merged)
+            JohoInputOption(
+                icon: "square.and.pencil",
+                code: "ENT",
+                label: "ENTRY",
+                meta: "NOTE / TRIP / EXPENSE",
+                color: EntryType.entryButtonColor,
+                action: onSelectEntry
+            ),
+            // BIRTHDAY: Links to Contacts
+            JohoInputOption(
+                icon: "birthday.cake.fill",
+                code: "BDY",
+                label: "BIRTHDAY",
+                meta: "ADD TO CONTACTS",
+                color: SpecialDayType.birthday.accentColor,
+                action: onSelectBirthday
+            ),
+            // COUNTDOWN: Events with countdown timer
+            JohoInputOption(
+                icon: "timer",
+                code: "EVT",
+                label: "COUNTDOWN",
+                meta: "EVENT WITH TIMER",
+                color: SpecialDayType.event.accentColor,
+                action: onSelectCountdown
+            ),
         ]
-
-        if let birthdayAction = onSelectBirthday {
-            opts.append(JohoInputOption(icon: "birthday.cake.fill", code: "BDY", label: "BIRTHDAY", meta: "CONTACT", color: SpecialDayType.birthday.accentColor, action: birthdayAction))
-        }
-        if let noteAction = onSelectNote {
-            opts.append(JohoInputOption(icon: "note.text", code: "NTE", label: "NOTE", meta: "MEMO", color: SpecialDayType.note.accentColor, action: noteAction))
-        }
-        if let tripAction = onSelectTrip {
-            opts.append(JohoInputOption(icon: "airplane", code: "TRP", label: "TRIP", meta: "TRAVEL", color: SpecialDayType.trip.accentColor, action: tripAction))
-        }
-        if let expenseAction = onSelectExpense {
-            opts.append(JohoInputOption(icon: "dollarsign.circle.fill", code: "EXP", label: "EXPENSE", meta: "FINANCE", color: SpecialDayType.expense.accentColor, action: expenseAction))
-        }
-        return opts
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            // 情報デザイン Header - Bold BLACK with thick border
+            // 情報デザイン Header - Inverted colors for contrast
             HStack {
                 Text("ADD ENTRY")
                     .font(.system(size: 14, weight: .black, design: .rounded))
                     .tracking(1.2)
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
 
                 Spacer()
 
                 Button { dismiss() } label: {
                     ZStack {
                         Circle()
-                            .fill(JohoColors.white)
+                            .fill(colors.primaryInverted)
                             .frame(width: 24, height: 24)
                         Image(systemName: "xmark")
                             .font(.system(size: 10, weight: .black))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.surfaceInverted)
                     }
                 }
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, 12)
-            .background(JohoColors.black)
+            .background(colors.surfaceInverted)
 
-            // Entry list with thick BLACK borders between rows
+            // Entry list with borders between rows
             VStack(spacing: 0) {
                 ForEach(Array(options.enumerated()), id: \.element.id) { index, option in
                     Button {
                         HapticManager.selection()
                         option.action()
                     } label: {
-                        JohoCompactInputRow(option: option)
+                        JohoCompactInputRow(option: option, colorMode: colorMode)
                     }
                     .buttonStyle(.plain)
 
-                    // Thick BLACK divider between rows
+                    // Divider between rows
                     if index < options.count - 1 {
                         Rectangle()
-                            .fill(JohoColors.black)
+                            .fill(colors.border)
                             .frame(height: JohoDimensions.borderMedium)
                     }
                 }
             }
             .padding(.vertical, 8)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
         )
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, JohoDimensions.spacingLG)
@@ -3089,25 +3279,29 @@ struct JohoAddSpecialDaySheet: View {
     }
 }
 
-/// 情報デザイン compact row - Bold colors, thick BLACK borders
+/// 情報デザイン compact row - Bold colors, dynamic border colors
 private struct JohoCompactInputRow: View {
     let option: JohoInputOption
+    let colorMode: JohoColorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         HStack(spacing: 12) {
-            // 情報デザイン: Colored circle with BLACK border + Icon
+            // 情報デザイン: Colored circle with border + Icon
             ZStack {
                 Circle()
                     .fill(option.color)
                     .frame(width: 40, height: 40)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium))
+                    .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
 
                 Image(systemName: option.icon)
                     .font(.system(size: 16, weight: .bold))
                     .foregroundStyle(JohoColors.white)
             }
 
-            // Code badge - BLACK border around colored pill
+            // Code badge - border around colored pill
             Text(option.code)
                 .font(.system(size: 10, weight: .black, design: .rounded))
                 .tracking(0.5)
@@ -3118,24 +3312,24 @@ private struct JohoCompactInputRow: View {
                 .clipShape(Squircle(cornerRadius: 4))
                 .overlay(
                     Squircle(cornerRadius: 4)
-                        .stroke(JohoColors.black, lineWidth: 1.5)
+                        .stroke(colors.border, lineWidth: 1.5)
                 )
 
-            // Label - bold rounded for 情報デザイン
+            // Label - bold rounded, dynamic color
             Text(option.label)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
 
             Spacer()
 
-            // Arrow - bold BLACK
+            // Arrow - dynamic color
             Image(systemName: "chevron.right")
                 .font(.system(size: 12, weight: .bold))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, 10)
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 }
 

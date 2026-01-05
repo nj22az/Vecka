@@ -2,8 +2,14 @@
 //  LandingPageView.swift
 //  Vecka
 //
-//  情報デザイン: Today's Data Dashboard - the app's home screen
-//  Combines landing page + data dashboard into one entry point
+//  情報デザイン: ONSEN (温泉) - Home Dashboard
+//
+//  Design principles:
+//  - Follows Star Page golden standard layout
+//  - Bento compartmentalization with wall dividers
+//  - Mascot as small sprite companion (not hero)
+//  - Max 8pt top padding (dark BG barely visible)
+//  - Black text on white backgrounds ALWAYS
 //
 
 import SwiftUI
@@ -11,6 +17,13 @@ import SwiftData
 
 struct LandingPageView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    // Personalized title (情報デザイン: User can customize their landing page)
+    @AppStorage("customLandingTitle") private var customLandingTitle = ""
 
     // Data queries
     @Query(sort: \DailyNote.date, order: .reverse) private var allNotes: [DailyNote]
@@ -18,81 +31,177 @@ struct LandingPageView: View {
     @Query private var allTrips: [TravelTrip]
     @Query private var contacts: [Contact]
     @Query private var countdownEvents: [CountdownEvent]
+    @Query(sort: \WorldClock.sortOrder) private var worldClocks: [WorldClock]
 
-    // Managers
     private var holidayManager = HolidayManager.shared
-
-    // Random spotlight state
-    @State private var spotlightItem: SpotlightItem?
 
     // MARK: - Computed Properties
 
     private var today: Date { Date() }
+    private var todayStart: Date { Calendar.iso8601.startOfDay(for: today) }
 
     private var weekNumber: Int {
         Calendar.iso8601.component(.weekOfYear, from: today)
-    }
-
-    private var dayNumber: Int {
-        Calendar.iso8601.component(.day, from: today)
-    }
-
-    private var weekday: String {
-        today.formatted(.dateTime.weekday(.abbreviated)).uppercased()
     }
 
     private var year: Int {
         Calendar.iso8601.component(.year, from: today)
     }
 
-    private var activeTrips: [TravelTrip] {
-        let todayStart = Calendar.iso8601.startOfDay(for: today)
-        return allTrips.filter { Calendar.iso8601.startOfDay(for: $0.endDate) >= todayStart }
+    private var weekdayFull: String {
+        today.formatted(.dateTime.weekday(.wide))
     }
 
-    // Stats
-    private var notesCount: Int { allNotes.count }
-    private var expensesCount: Int { getThisMonthExpenses().count }
-    private var tripsCount: Int { activeTrips.count }
-    private var specialDaysCount: Int { getAllUpcomingSpecialDays().count }
+    private var monthName: String {
+        today.formatted(.dateTime.month(.abbreviated))
+    }
 
-    // MARK: - Body
+    /// Personalized landing page title (情報デザイン: User customization)
+    private var displayTitle: String {
+        customLandingTitle.isEmpty ? "ONSEN" : customLandingTitle.uppercased()
+    }
+
+    /// Limit world clocks to max 3
+    private var displayClocks: [WorldClock] {
+        Array(worldClocks.prefix(3))
+    }
+
+    /// Today's items for summary
+    private var todayItems: [TodayItem] {
+        getTodayItems()
+    }
+
+    // MARK: - GLANCE Data (情報デザイン: Contextual information)
+
+    /// Current month theme from Star page
+    private var currentMonthTheme: MonthTheme {
+        let month = Calendar.current.component(.month, from: today)
+        return MonthTheme.theme(for: month)
+    }
+
+    /// Special days count for current month
+    private var specialDaysThisMonth: (holidays: Int, notes: Int) {
+        let calendar = Calendar.current
+        let month = calendar.component(.month, from: today)
+        let year = calendar.component(.year, from: today)
+
+        // Count holidays this month
+        var holidayCount = 0
+        for (date, holidays) in holidayManager.holidayCache {
+            if calendar.component(.month, from: date) == month &&
+               calendar.component(.year, from: date) == year {
+                holidayCount += holidays.count
+            }
+        }
+
+        // Count notes/events this month
+        let noteCount = allNotes.filter { note in
+            calendar.component(.month, from: note.date) == month &&
+            calendar.component(.year, from: note.date) == year
+        }.count
+
+        return (holidayCount, noteCount)
+    }
+
+    /// Next upcoming birthday from contacts
+    private var nextBirthday: (name: String, daysUntil: Int)? {
+        let calendar = Calendar.current
+
+        var closestBirthday: (name: String, daysUntil: Int)?
+
+        for contact in contacts {
+            guard let birthday = contact.birthday else { continue }
+            let birthdayComponents = calendar.dateComponents([.month, .day], from: birthday)
+
+            // Create this year's birthday
+            var thisYearBirthday = DateComponents()
+            thisYearBirthday.year = calendar.component(.year, from: today)
+            thisYearBirthday.month = birthdayComponents.month
+            thisYearBirthday.day = birthdayComponents.day
+
+            guard let birthdayDate = calendar.date(from: thisYearBirthday) else { continue }
+
+            var daysUntil = calendar.dateComponents([.day], from: today, to: birthdayDate).day ?? 0
+
+            // If birthday passed this year, calculate for next year
+            if daysUntil < 0 {
+                thisYearBirthday.year = calendar.component(.year, from: today) + 1
+                if let nextYearBirthday = calendar.date(from: thisYearBirthday) {
+                    daysUntil = calendar.dateComponents([.day], from: today, to: nextYearBirthday).day ?? 365
+                }
+            }
+
+            let firstName = contact.givenName.isEmpty ? contact.familyName : contact.givenName
+
+            if closestBirthday == nil || daysUntil < closestBirthday!.daysUntil {
+                closestBirthday = (firstName, daysUntil)
+            }
+        }
+
+        return closestBirthday
+    }
+
+    /// Database health status
+    private var databaseHealth: (isHealthy: Bool, slotsRemaining: Int) {
+        let totalEntries = allNotes.count + allExpenses.count + allTrips.count + contacts.count + countdownEvents.count
+        let maxSlots = 5000
+        let remaining = maxSlots - totalEntries
+        return (remaining > 100, remaining)
+    }
+
+    // MARK: - Body (Star Page Pattern)
 
     var body: some View {
-        GeometryReader { geometry in
-            ScrollView {
-                VStack(spacing: JohoDimensions.spacingMD) {
-                    // 情報デザイン: Bento-style header with mascot
-                    landingHeader
-                        .padding(.horizontal, JohoDimensions.spacingLG)
-                        .padding(.top, JohoDimensions.spacingSM)
+        ScrollView {
+            VStack(spacing: JohoDimensions.spacingMD) {
+                // PAGE HEADER: Two-row card matching Calendar structure
+                pageHeader
 
-                    // Adaptive data card grid
-                    adaptiveCardGrid(geometry: geometry)
+                // WORLD CLOCKS: Hotel style (if configured)
+                if !displayClocks.isEmpty {
+                    worldClocksCard
                 }
-                .padding(.bottom, JohoDimensions.spacingLG)
+
+                // TODAY: What's happening
+                todayCard
+
+                // GLANCE: Contextual information dashboard (情報デザイン)
+                glanceCard
             }
-            .scrollContentBackground(.hidden)
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .padding(.top, JohoDimensions.spacingSM)
+            .padding(.bottom, JohoDimensions.spacingXL)
         }
+        .scrollContentBackground(.hidden)
         .johoBackground()
-        .onAppear {
-            pickRandomSpotlight()
-        }
     }
 
-    // MARK: - Landing Header (情報デザイン: Bento with mascot)
+    // MARK: - Page Header (Two-Row: Icon+Title | Week+Date - Matches Calendar)
 
-    private var landingHeader: some View {
-        VStack(spacing: 0) {
+    private var pageHeader: some View {
+        let dayNumber = Calendar.iso8601.component(.day, from: today)
+        let weekday = today.formatted(.dateTime.weekday(.abbreviated)).uppercased()
+
+        return VStack(spacing: 0) {
+            // ROW 1: Icon + Title | WALL | Mascot
             HStack(spacing: 0) {
-                // LEFT: Mascot + Title
+                // LEFT COMPARTMENT: Icon + Title
                 HStack(spacing: JohoDimensions.spacingSM) {
-                    // Geometric mascot (情報デザイン compliant)
-                    GeometricMascotView(size: 44, showOuterBorder: false)
+                    // Icon zone with Landing accent color (Warm Amber)
+                    Image(systemName: "house.fill")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(PageHeaderColor.landing.accent)
+                        .frame(width: 40, height: 40)
+                        .background(PageHeaderColor.landing.lightBackground)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(colors.border, lineWidth: 1.5)
+                        )
 
-                    Text("TODAY")
+                    Text(displayTitle)
                         .font(JohoFont.headline)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
                 .padding(.vertical, JohoDimensions.spacingSM)
@@ -100,604 +209,605 @@ struct LandingPageView: View {
 
                 // VERTICAL WALL
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
 
-                // RIGHT: Day + Weekday
-                HStack(spacing: 4) {
+                // RIGHT COMPARTMENT: Animated mascot (情報デザイン)
+                // Happy default with random ♨️ onsen transformation, tap to return
+                JohoMascot(
+                    mood: mascotMood,
+                    size: 44,
+                    borderWidth: 1.5,
+                    showBob: true,
+                    showBlink: true,
+                    autoOnsen: true  // Randomly transforms to ♨️, tap to return
+                )
+                .padding(JohoDimensions.spacingSM)
+            }
+            .frame(minHeight: 56)
+
+            // HORIZONTAL DIVIDER
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            // ROW 2: Date info + Week badge (matches Calendar's Today row)
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Day number + weekday
+                HStack(spacing: JohoDimensions.spacingXS) {
                     Text("\(dayNumber)")
                         .font(JohoFont.displaySmall)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
+
                     Text(weekday)
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                        .foregroundStyle(colors.secondary)
+
+                    Text("•")
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(colors.primary.opacity(0.4))
+
+                    Text(monthName)
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(colors.secondary)
                 }
-                .frame(width: 80)
-            }
-            .frame(height: 56)
 
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
-
-            // Stats row
-            HStack(spacing: JohoDimensions.spacingMD) {
-                statsRow
                 Spacer()
-                // Week badge
+
+                // Week badge (matches Calendar) - inverted for contrast
                 Text("W\(weekNumber)")
                     .font(JohoFont.labelSmall)
-                    .foregroundStyle(JohoColors.white)
-                    .padding(.horizontal, 10)
+                    .foregroundStyle(colors.primaryInverted)
+                    .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(JohoColors.black)
+                    .background(colors.surfaceInverted)
                     .clipShape(Capsule())
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
         )
     }
 
-    // MARK: - Stats Row
-
-    private var statsRow: some View {
-        HStack(spacing: JohoDimensions.spacingMD) {
-            if notesCount > 0 {
-                statIndicator(count: notesCount, color: JohoColors.yellow, label: "notes")
-            }
-            if expensesCount > 0 {
-                statIndicator(count: expensesCount, color: JohoColors.green, label: "expenses")
-            }
-            if tripsCount > 0 {
-                statIndicator(count: tripsCount, color: JohoColors.orange, label: "trips")
-            }
-            if specialDaysCount > 0 {
-                statIndicator(count: specialDaysCount, color: JohoColors.pink, label: "upcoming")
-            }
-
-            if notesCount == 0 && expensesCount == 0 && tripsCount == 0 && specialDaysCount == 0 {
-                Text("Your data at a glance")
-                    .font(JohoFont.bodySmall)
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
-            }
-        }
+    /// Mascot mood - happy default, with occasional ♨️ onsen transformation
+    private var mascotMood: MascotMood {
+        .happy  // Default happy, blushing face - autoOnsen handles ♨️ transformation
     }
 
-    private func statIndicator(count: Int, color: Color, label: String) -> some View {
-        HStack(spacing: 4) {
-            Circle()
-                .fill(color)
-                .frame(width: 8, height: 8)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
-            Text("\(count)")
-                .font(JohoFont.labelSmall)
-                .foregroundStyle(JohoColors.black)
-        }
-        .accessibilityLabel("\(count) \(label)")
-    }
+    // MARK: - World Clocks Card (Hotel Style)
 
-    // MARK: - Adaptive Card Grid
+    private var worldClocksCard: some View {
+        VStack(spacing: 0) {
+            // Header row
+            HStack {
+                Image(systemName: "globe")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
 
-    @ViewBuilder
-    private func adaptiveCardGrid(geometry: GeometryProxy) -> some View {
-        let spacing: CGFloat = JohoDimensions.spacingMD
-        let horizontalPadding: CGFloat = JohoDimensions.spacingLG
-        let availableWidth = geometry.size.width - (horizontalPadding * 2)
-
-        let minCardWidth: CGFloat = 160
-        let maxColumns = max(1, Int(availableWidth / minCardWidth))
-        let columns = min(maxColumns, 3)
-
-        let cardWidth = (availableWidth - (spacing * CGFloat(columns - 1))) / CGFloat(columns)
-
-        VStack(spacing: spacing) {
-            // Row 1: Today (full width hero)
-            todayCard
-                .padding(.horizontal, horizontalPadding)
-
-            // Row 2: Week + Year (+ Spotlight on wide screens)
-            if columns >= 2 {
-                HStack(alignment: .top, spacing: spacing) {
-                    weekInfoCard
-                        .frame(width: cardWidth)
-                    yearProgressCard
-                        .frame(width: cardWidth)
-                    if columns == 3 {
-                        spotlightCard
-                            .frame(width: cardWidth)
-                    }
-                }
-                .padding(.horizontal, horizontalPadding)
-
-                if columns == 2 {
-                    spotlightCard
-                        .padding(.horizontal, horizontalPadding)
-                }
-            } else {
-                VStack(spacing: spacing) {
-                    weekInfoCard
-                    yearProgressCard
-                    spotlightCard
-                }
-                .padding(.horizontal, horizontalPadding)
-            }
-
-            // Row 3: Holidays + Notes (+ Expenses on wide screens)
-            if columns >= 2 {
-                HStack(alignment: .top, spacing: spacing) {
-                    upcomingHolidaysCard
-                        .frame(width: cardWidth)
-                    recentNotesCard
-                        .frame(width: cardWidth)
-                    if columns == 3 {
-                        expenseSummaryCard
-                            .frame(width: cardWidth)
-                    }
-                }
-                .padding(.horizontal, horizontalPadding)
-
-                if columns == 2 {
-                    expenseSummaryCard
-                        .padding(.horizontal, horizontalPadding)
-                }
-            } else {
-                VStack(spacing: spacing) {
-                    upcomingHolidaysCard
-                    recentNotesCard
-                    expenseSummaryCard
-                }
-                .padding(.horizontal, horizontalPadding)
-            }
-
-            // Row 4: Active trip (if any)
-            if !activeTrips.isEmpty {
-                activeTripCard
-                    .padding(.horizontal, horizontalPadding)
-            }
-        }
-    }
-
-    // MARK: - Today Card (情報デザイン: Yellow = NOW)
-
-    private var todayCard: some View {
-        let weekdayFull = today.formatted(.dateTime.weekday(.wide)).uppercased()
-        let monthYear = today.formatted(.dateTime.month(.wide).year())
-
-        return LandingDataCard(title: "TODAY", icon: "sun.max.fill", zone: .notes) {
-            HStack(spacing: JohoDimensions.spacingLG) {
-                Text("\(dayNumber)")
-                    .font(JohoFont.displayLarge)
-                    .foregroundStyle(JohoColors.black)
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(weekdayFull)
-                        .font(JohoFont.headline)
-                        .foregroundStyle(JohoColors.black)
-
-                    Text(monthYear)
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
-                }
+                Text("WORLD")
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .tracking(1.5)
+                    .foregroundStyle(colors.primary)
 
                 Spacer()
-            }
-        }
-    }
 
-    // MARK: - Week Info Card (情報デザイン: Cyan = Scheduled)
-
-    private var weekInfoCard: some View {
-        let daysLeft = daysLeftInWeek()
-
-        return LandingDataCard(title: "WEEK", icon: "calendar.badge.clock", zone: .calendar) {
-            VStack(spacing: JohoDimensions.spacingSM) {
-                Text("W\(weekNumber)")
-                    .font(JohoFont.displayMedium)
-                    .foregroundStyle(JohoColors.black)
-
-                Text("\(daysLeft) days left")
-                    .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
-            }
-            .frame(maxWidth: .infinity)
-        }
-    }
-
-    // MARK: - Year Progress Card (情報デザイン: Green = Growth)
-
-    private var yearProgressCard: some View {
-        let calendar = Calendar.iso8601
-        let startOfYear = calendar.date(from: DateComponents(year: year, month: 1, day: 1))!
-        let endOfYear = calendar.date(from: DateComponents(year: year + 1, month: 1, day: 1))!
-        let totalDays = calendar.dateComponents([.day], from: startOfYear, to: endOfYear).day!
-        let daysPassed = calendar.dateComponents([.day], from: startOfYear, to: today).day!
-        let progress = Double(daysPassed) / Double(totalDays)
-
-        return LandingDataCard(title: "YEAR", icon: "chart.bar.fill", zone: .expenses) {
-            VStack(spacing: JohoDimensions.spacingSM) {
-                Text("\(Int(progress * 100))%")
-                    .font(JohoFont.displaySmall)
-                    .foregroundStyle(JohoColors.black)
-
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        Squircle(cornerRadius: 4)
-                            .fill(JohoColors.black.opacity(0.1))
-                            .frame(height: 10)
-
-                        Squircle(cornerRadius: 4)
-                            .fill(JohoColors.green)
-                            .frame(width: geo.size.width * progress, height: 10)
-                    }
-                    .overlay(
-                        Squircle(cornerRadius: 4)
-                            .stroke(JohoColors.black, lineWidth: 1)
-                            .frame(height: 10)
-                    )
-                }
-                .frame(height: 10)
-
-                Text("\(totalDays - daysPassed) days left")
-                    .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
-            }
-            .frame(maxWidth: .infinity)
-        }
-    }
-
-    // MARK: - Spotlight Card
-
-    private var spotlightCard: some View {
-        LandingDataCard(title: "SPOTLIGHT", icon: "sparkles", zone: .events) {
-            if let item = spotlightItem {
-                VStack(spacing: JohoDimensions.spacingSM) {
-                    Text("\(item.daysUntil)")
-                        .font(JohoFont.displayMedium)
-                        .foregroundStyle(item.color)
-
-                    Text("days until")
-                        .font(JohoFont.labelSmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
-
-                    Text(item.name)
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black)
-                        .multilineTextAlignment(.center)
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    HStack(spacing: 4) {
-                        Circle()
-                            .fill(item.color)
-                            .frame(width: 6, height: 6)
-                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
-                        Text(item.typeLabel)
-                            .font(JohoFont.labelSmall)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
-                    }
-                }
-                .frame(maxWidth: .infinity)
-            } else {
-                VStack(spacing: JohoDimensions.spacingSM) {
-                    Image(systemName: "sparkles")
-                        .font(.system(size: 24, weight: .medium))
-                        .foregroundStyle(JohoColors.black.opacity(0.3))
-
-                    Text("No upcoming events")
-                        .font(JohoFont.caption)
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
-                }
-                .frame(maxWidth: .infinity)
-            }
-        }
-    }
-
-    // MARK: - Upcoming Holidays Card (情報デザイン: Pink = Special)
-
-    private var upcomingHolidaysCard: some View {
-        let upcomingHolidays = getUpcomingHolidays(limit: 3)
-
-        return LandingDataCard(title: "HOLIDAYS", icon: "star.fill", zone: .holidays) {
-            if upcomingHolidays.isEmpty {
-                Text("No upcoming holidays")
-                    .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
-                    .frame(maxWidth: .infinity)
-            } else {
-                VStack(spacing: JohoDimensions.spacingSM) {
-                    ForEach(upcomingHolidays, id: \.name) { holiday in
-                        HStack {
-                            JohoIndicatorCircle(color: JohoColors.red, size: .small)
-
-                            Text(holiday.name)
-                                .font(JohoFont.bodySmall)
-                                .foregroundStyle(JohoColors.black)
-                                .lineLimit(1)
-
-                            Spacer()
-
-                            Text(daysUntilText(holiday.date))
-                                .font(JohoFont.labelSmall)
-                                .foregroundStyle(JohoColors.black.opacity(0.6))
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // MARK: - Recent Notes Card (情報デザイン: Yellow = Notes)
-
-    private var recentNotesCard: some View {
-        let recentNotes = Array(allNotes.prefix(3))
-
-        return LandingDataCard(title: "NOTES", icon: "note.text", zone: .notes) {
-            if recentNotes.isEmpty {
-                Text("No notes yet")
-                    .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
-                    .frame(maxWidth: .infinity)
-            } else {
-                VStack(spacing: JohoDimensions.spacingSM) {
-                    ForEach(recentNotes) { note in
-                        HStack {
-                            JohoIndicatorCircle(color: JohoColors.yellow, size: .small)
-
-                            Text(String(note.content.prefix(25)) + (note.content.count > 25 ? "..." : ""))
-                                .font(JohoFont.caption)
-                                .foregroundStyle(JohoColors.black)
-                                .lineLimit(1)
-
-                            Spacer()
-
-                            Text(note.date.formatted(.dateTime.month(.abbreviated).day()))
-                                .font(JohoFont.labelSmall)
-                                .foregroundStyle(JohoColors.black.opacity(0.5))
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // MARK: - Expense Summary Card (情報デザイン: Green = Money)
-
-    private var expenseSummaryCard: some View {
-        let thisMonth = getThisMonthExpenses()
-        let total = thisMonth.reduce(0) { $0 + $1.amount }
-
-        return LandingDataCard(title: "EXPENSES", icon: "dollarsign.circle", zone: .expenses) {
-            VStack(spacing: JohoDimensions.spacingSM) {
-                Text(formatCurrency(total))
-                    .font(JohoFont.displaySmall)
-                    .foregroundStyle(JohoColors.black)
-
-                Text("this month")
-                    .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
-
-                Text("\(thisMonth.count) transaction\(thisMonth.count == 1 ? "" : "s")")
+                Text("\(displayClocks.count)")
                     .font(JohoFont.labelSmall)
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
+                    .foregroundStyle(colors.secondary)
             }
-            .frame(maxWidth: .infinity)
-        }
-    }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
 
-    // MARK: - Active Trip Card (情報デザイン: Orange = Movement)
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
 
-    private var activeTripCard: some View {
-        guard let trip = activeTrips.first else {
-            return AnyView(EmptyView())
-        }
-
-        let daysLeft = Calendar.iso8601.dateComponents([.day], from: today, to: trip.endDate).day ?? 0
-
-        return AnyView(
-            LandingDataCard(title: "ACTIVE TRIP", icon: "airplane", zone: .trips) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(trip.tripName)
-                            .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black)
-
-                        Text(trip.destination)
-                            .font(JohoFont.caption)
-                            .foregroundStyle(JohoColors.black.opacity(0.7))
+            // Clocks row
+            HStack(spacing: 0) {
+                ForEach(Array(displayClocks.enumerated()), id: \.element.id) { index, clock in
+                    if index > 0 {
+                        // Vertical wall between clocks
+                        Rectangle()
+                            .fill(colors.border)
+                            .frame(width: 1)
                     }
 
-                    Spacer()
-
-                    VStack(spacing: 2) {
-                        Text("\(max(0, daysLeft))")
-                            .font(JohoFont.displaySmall)
-                            .foregroundStyle(JohoColors.white)
-
-                        Text("days")
-                            .font(JohoFont.labelSmall)
-                            .foregroundStyle(JohoColors.white.opacity(0.8))
-                    }
-                    .frame(width: 56, height: 56)
-                    .background(JohoColors.black)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                    worldClockCell(clock)
+                        .frame(maxWidth: .infinity)
                 }
             }
+            .padding(.vertical, JohoDimensions.spacingSM)
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
     }
 
-    // MARK: - Spotlight Item
+    /// Individual clock cell (bento compartment) - 情報デザイン: Analog clock with region colors
+    private func worldClockCell(_ clock: WorldClock) -> some View {
+        let theme = TimezoneTheme.theme(for: clock.timezoneIdentifier)
 
-    private struct SpotlightItem {
-        let name: String
-        let daysUntil: Int
-        let color: Color
-        let typeLabel: String
-    }
+        return VStack(spacing: 4) {
+            // Country code pill (情報デザイン: Region-colored like MonthTheme)
+            Text(clock.countryCode)
+                .font(.system(size: 10, weight: .black, design: .rounded))
+                .foregroundStyle(JohoColors.white)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .background(theme.accentColor)
+                .clipShape(Capsule())
+                .overlay(Capsule().stroke(colors.border, lineWidth: 0.5))
 
-    private func pickRandomSpotlight() {
-        let allSpecialDays = getAllUpcomingSpecialDays()
-        guard !allSpecialDays.isEmpty else {
-            spotlightItem = nil
-            return
-        }
-        spotlightItem = allSpecialDays.randomElement()
-    }
+            // Full city name (情報デザイン: Clear identification)
+            Text(clock.cityName)
+                .font(.system(size: 10, weight: .semibold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
 
-    private func getAllUpcomingSpecialDays() -> [SpotlightItem] {
-        let todayStart = Calendar.iso8601.startOfDay(for: today)
-        let calendar = Calendar.iso8601
-        var items: [SpotlightItem] = []
+            // Analog clock (情報デザイン: Clean station clock style)
+            if let tz = clock.timezone {
+                AnalogClockView(
+                    timezone: tz,
+                    size: 52,
+                    accentColor: theme.accentColor
+                )
+            }
 
-        // Holidays
-        for (date, cachedHolidays) in holidayManager.holidayCache {
-            if date > todayStart {
-                let days = calendar.dateComponents([.day], from: todayStart, to: date).day ?? 0
-                for holiday in cachedHolidays {
-                    let color = holiday.isRedDay ? JohoColors.red : JohoColors.orange
-                    let typeLabel = holiday.isRedDay ? "HOLIDAY" : "OBSERVANCE"
-                    items.append(SpotlightItem(name: holiday.displayTitle, daysUntil: days, color: color, typeLabel: typeLabel))
-                }
+            // Digital time (small, below analog clock)
+            Text(clock.formattedTime)
+                .font(.system(size: 13, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+
+            // Day/Night + offset (情報デザイン: Sun=yellow, Moon=purple)
+            HStack(spacing: 3) {
+                Image(systemName: clock.isDaytime ? "sun.max.fill" : "moon.fill")
+                    .font(.system(size: 8))
+                    .foregroundStyle(clock.isDaytime ? Color(hex: "F39C12") : Color(hex: "6C5CE7"))
+
+                Text(clock.offsetFromLocal)
+                    .font(.system(size: 9, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.secondary)
             }
         }
+        .padding(.horizontal, JohoDimensions.spacingXS)
+    }
 
-        // Birthdays
-        let currentYear = calendar.component(.year, from: todayStart)
-        for contact in contacts {
-            guard let birthday = contact.birthday else { continue }
-            let bMonth = calendar.component(.month, from: birthday)
-            let bDay = calendar.component(.day, from: birthday)
+    // MARK: - Timezone Theme (情報デザイン: Regional colors like MonthTheme)
 
-            for yearOffset in 0...1 {
-                if let nextBirthday = calendar.date(from: DateComponents(year: currentYear + yearOffset, month: bMonth, day: bDay)),
-                   nextBirthday > todayStart {
-                    let days = calendar.dateComponents([.day], from: todayStart, to: nextBirthday).day ?? 0
-                    if days <= 365 {
-                        let name = contact.displayName.isEmpty ? "Birthday" : "\(contact.displayName)'s Birthday"
-                        items.append(SpotlightItem(name: name, daysUntil: days, color: JohoColors.pink, typeLabel: "BIRTHDAY"))
-                        break
+    /// 情報デザイン: Timezone themes with regional colors (like Star page MonthTheme)
+    struct TimezoneTheme {
+        let region: String
+        let accentColor: Color
+        let lightBackground: Color
+
+        /// Regional color themes - warm/cool based on geography
+        static let themes: [String: TimezoneTheme] = [
+            // Asia/Pacific - Warm tones (coral, orange, red)
+            "Asia": TimezoneTheme(region: "Asia", accentColor: Color(hex: "E17055"), lightBackground: Color(hex: "FDECE8")),
+            "Pacific": TimezoneTheme(region: "Pacific", accentColor: Color(hex: "00CEC9"), lightBackground: Color(hex: "E8FFFE")),
+            "Australia": TimezoneTheme(region: "Australia", accentColor: Color(hex: "D35400"), lightBackground: Color(hex: "FDEEE5")),
+
+            // Europe - Cool tones (blue, purple)
+            "Europe": TimezoneTheme(region: "Europe", accentColor: Color(hex: "4A90D9"), lightBackground: Color(hex: "E8F4FD")),
+            "Atlantic": TimezoneTheme(region: "Atlantic", accentColor: Color(hex: "6C5CE7"), lightBackground: Color(hex: "EFECFD")),
+
+            // Americas - Green/teal tones
+            "America": TimezoneTheme(region: "America", accentColor: Color(hex: "00B894"), lightBackground: Color(hex: "E8FDF6")),
+
+            // Africa/Middle East - Warm gold
+            "Africa": TimezoneTheme(region: "Africa", accentColor: Color(hex: "FDCB6E"), lightBackground: Color(hex: "FFF9E8")),
+
+            // Default
+            "default": TimezoneTheme(region: "default", accentColor: Color(hex: "636E72"), lightBackground: Color(hex: "F0F2F3"))
+        ]
+
+        /// Get theme for timezone identifier (e.g., "Asia/Tokyo" → Asia theme)
+        static func theme(for timezoneId: String) -> TimezoneTheme {
+            // Extract region from timezone ID (e.g., "Asia/Tokyo" → "Asia")
+            let region = timezoneId.split(separator: "/").first.map(String.init) ?? "default"
+            return themes[region] ?? themes["default"]!
+        }
+    }
+
+    // MARK: - Today Card
+
+    private var todayCard: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Circle()
+                    .fill(JohoColors.yellow)
+                    .frame(width: 10, height: 10)
+                    .overlay(Circle().stroke(colors.border, lineWidth: 1))
+
+                Text("TODAY")
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .tracking(1.5)
+                    .foregroundStyle(colors.primary)
+
+                Spacer()
+
+                if !todayItems.isEmpty {
+                    Text("\(todayItems.count)")
+                        .font(JohoFont.labelSmall)
+                        .foregroundStyle(colors.secondary)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            // Content
+            if todayItems.isEmpty {
+                Text("Nothing scheduled")
+                    .font(JohoFont.body)
+                    .foregroundStyle(colors.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(JohoDimensions.spacingMD)
+            } else {
+                VStack(spacing: 0) {
+                    ForEach(Array(todayItems.prefix(5).enumerated()), id: \.element.id) { index, item in
+                        if index > 0 {
+                            Rectangle()
+                                .fill(colors.border.opacity(0.2))
+                                .frame(height: 1)
+                                .padding(.horizontal, JohoDimensions.spacingMD)
+                        }
+
+                        todayItemRow(item)
+                    }
+
+                    if todayItems.count > 5 {
+                        Rectangle()
+                            .fill(colors.border.opacity(0.2))
+                            .frame(height: 1)
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+
+                        Text("+\(todayItems.count - 5) more")
+                            .font(JohoFont.labelSmall)
+                            .foregroundStyle(colors.secondary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, JohoDimensions.spacingSM)
                     }
                 }
             }
         }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+        )
+    }
 
-        // Countdown events
-        for event in countdownEvents {
-            let eventDate = calendar.startOfDay(for: event.targetDate)
-            if eventDate > todayStart {
-                let days = calendar.dateComponents([.day], from: todayStart, to: eventDate).day ?? 0
-                items.append(SpotlightItem(name: event.title, daysUntil: days, color: JohoColors.eventPurple, typeLabel: "EVENT"))
-            }
+    /// Today item row
+    private func todayItemRow(_ item: TodayItem) -> some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            // Type indicator
+            Circle()
+                .fill(item.color)
+                .frame(width: 8, height: 8)
+                .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
+
+            // Icon
+            Image(systemName: item.icon)
+                .font(.system(size: 12, weight: .medium, design: .rounded))
+                .foregroundStyle(item.color)
+                .frame(width: 16)
+
+            // Title
+            Text(item.title)
+                .font(JohoFont.bodySmall)
+                .foregroundStyle(colors.primary)
+                .lineLimit(1)
+
+            Spacer()
+
+            // Type badge
+            Text(item.typeBadge)
+                .font(.system(size: 8, weight: .bold, design: .rounded))
+                .foregroundStyle(item.color)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(item.color.opacity(0.15))
+                .clipShape(Capsule())
         }
-
-        // New Year
-        if let newYear = calendar.date(from: DateComponents(year: year + 1, month: 1, day: 1)) {
-            let days = calendar.dateComponents([.day], from: todayStart, to: newYear).day ?? 0
-            items.append(SpotlightItem(name: "New Year \(year + 1)", daysUntil: days, color: JohoColors.cyan, typeLabel: "NEW YEAR"))
-        }
-
-        return items.filter { $0.daysUntil > 0 && $0.daysUntil <= 365 }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
     }
 
-    // MARK: - Helper Functions
+    // MARK: - GLANCE Card (情報デザイン: Star Page Style Dashboard)
 
-    private func daysLeftInWeek() -> Int {
-        let calendar = Calendar.iso8601
-        let weekday = calendar.component(.weekday, from: today)
-        let adjustedWeekday = weekday == 1 ? 7 : weekday - 1
-        return 7 - adjustedWeekday
-    }
+    private var glanceCard: some View {
+        VStack(spacing: 0) {
+            // Header with ※ kome-jirushi (reference/attention mark)
+            HStack {
+                Text("※")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(colors.primary)
 
-    private func getUpcomingHolidays(limit: Int) -> [(name: String, date: Date)] {
-        let todayStart = Calendar.iso8601.startOfDay(for: today)
-        var holidays: [(name: String, date: Date)] = []
-
-        for (date, cachedHolidays) in holidayManager.holidayCache {
-            if date >= todayStart {
-                for holiday in cachedHolidays {
-                    holidays.append((holiday.displayTitle, date))
-                }
-            }
-        }
-
-        return Array(holidays.sorted { $0.date < $1.date }.prefix(limit))
-    }
-
-    private func getThisMonthExpenses() -> [ExpenseItem] {
-        let calendar = Calendar.iso8601
-        let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
-        return allExpenses.filter { $0.date >= startOfMonth }
-    }
-
-    private func daysUntilText(_ date: Date) -> String {
-        let days = Calendar.iso8601.dateComponents([.day], from: today, to: date).day ?? 0
-        if days == 0 { return "Today" }
-        if days == 1 { return "Tomorrow" }
-        return "\(days)d"
-    }
-
-    private func formatCurrency(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = Locale.current.currency?.identifier ?? "USD"
-        return formatter.string(from: NSNumber(value: amount)) ?? "$0"
-    }
-}
-
-// MARK: - Landing Data Card (情報デザイン: Bento compartment)
-
-private struct LandingDataCard<Content: View>: View {
-    let title: String
-    let icon: String
-    let zone: SectionZone
-    @ViewBuilder let content: Content
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Header
-            HStack(spacing: JohoDimensions.spacingSM) {
-                Image(systemName: icon)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
-                    .frame(width: 28, height: 28)
-                    .background(zone.background)
-                    .clipShape(Squircle(cornerRadius: 6))
-                    .overlay(
-                        Squircle(cornerRadius: 6)
-                            .stroke(JohoColors.black, lineWidth: 1)
-                    )
-
-                Text(title)
+                Text("GLANCE")
                     .font(.system(size: 11, weight: .black, design: .rounded))
-                    .tracking(1)
-                    .foregroundStyle(JohoColors.black)
+                    .tracking(1.5)
+                    .foregroundStyle(colors.primary)
 
                 Spacer()
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
 
+            // Divider
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 1.5)
 
-            content
-                .padding(JohoDimensions.spacingMD)
+            // 2x2 Grid - Star Page Style (情報デザイン: Centered icons, light backgrounds)
+            HStack(spacing: JohoDimensions.spacingSM) {
+                VStack(spacing: JohoDimensions.spacingSM) {
+                    // CALENDAR: Week progress
+                    starStyleGlanceTile(
+                        target: .calendar,
+                        icon: "calendar",
+                        label: "W\(weekNumber)",
+                        indicator: todayItems.isEmpty ? nil : "●\(todayItems.count)"
+                    )
+
+                    // CONTACTS: Count + birthday
+                    starStyleGlanceTile(
+                        target: .contacts,
+                        icon: "person.2.fill",
+                        label: "\(contacts.count)",
+                        indicator: nextBirthdayIndicator
+                    )
+                }
+
+                VStack(spacing: JohoDimensions.spacingSM) {
+                    // STAR: Month theme
+                    starStyleGlanceTile(
+                        target: .specialDays,
+                        icon: currentMonthTheme.icon,
+                        label: currentMonthTheme.name.prefix(3).uppercased(),
+                        indicator: specialDaysIndicator,
+                        customIconColor: currentMonthTheme.accentColor,
+                        customBackground: currentMonthTheme.lightBackground
+                    )
+
+                    // SETTINGS: Health
+                    starStyleGlanceTile(
+                        target: .settings,
+                        icon: "gearshape.fill",
+                        label: databaseHealth.isHealthy ? "○" : "△",
+                        indicator: nil
+                    )
+                }
+            }
+            .padding(JohoDimensions.spacingSM)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
     }
+
+    /// Special days indicator using maru-batsu symbols (●/○)
+    private var specialDaysIndicator: String? {
+        let (holidays, notes) = specialDaysThisMonth
+        if holidays == 0 && notes == 0 { return nil }
+        var parts: [String] = []
+        if holidays > 0 { parts.append("●\(holidays)") }
+        if notes > 0 { parts.append("○\(notes)") }
+        return parts.joined(separator: " ")
+    }
+
+    /// Next birthday indicator (情報デザイン: ★ symbol)
+    private var nextBirthdayIndicator: String? {
+        guard let birthday = nextBirthday, birthday.daysUntil <= 14 else { return nil }
+        if birthday.daysUntil == 0 {
+            return "★ today"
+        } else {
+            return "★ \(birthday.daysUntil)d"
+        }
+    }
+
+    /// Star Page Style GLANCE tile - matches month card design EXACTLY
+    /// 情報デザイン: NO visible borders, just pastel background with subtle squircle
+    private func starStyleGlanceTile(
+        target: SidebarSelection,
+        icon: String,
+        label: String,
+        indicator: String?,
+        customIconColor: Color? = nil,
+        customBackground: Color? = nil
+    ) -> some View {
+        // Get colors from PageHeaderColor
+        let pageColor: PageHeaderColor = {
+            switch target {
+            case .landing: return .landing
+            case .calendar: return .calendar
+            case .contacts: return .contacts
+            case .specialDays: return .specialDays
+            case .settings: return .settings
+            }
+        }()
+
+        let iconColor = customIconColor ?? pageColor.accent
+        let bgColor = customBackground ?? pageColor.lightBackground
+
+        return Button {
+            HapticManager.impact(.light)
+            NotificationCenter.default.post(name: .navigateToPage, object: target)
+        } label: {
+            VStack(spacing: 6) {
+                // Large centered icon (Star page style - 32pt)
+                Image(systemName: icon)
+                    .font(.system(size: 32, weight: .bold))
+                    .foregroundStyle(iconColor)
+
+                // Centered label (BLACK, bold, uppercase)
+                Text(label)
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+
+                // Count indicator orbs (Star page style - small)
+                if let indicator = indicator {
+                    Text(indicator)
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                } else {
+                    Text("—")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(JohoColors.black.opacity(0.3))
+                }
+            }
+            .frame(maxWidth: .infinity, minHeight: 100)
+            .background(bgColor)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            // NO BORDER - Star page has no visible borders on cards
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(target.label): \(label)")
+    }
+
+    // MARK: - TodayItem Model
+
+    private struct TodayItem: Identifiable {
+        let id = UUID()
+        let title: String
+        let subtitle: String?
+        let icon: String
+        let color: Color
+        let typeBadge: String
+    }
+
+    // MARK: - Get Today's Items
+
+    private func getTodayItems() -> [TodayItem] {
+        let calendar = Calendar.iso8601
+        var items: [TodayItem] = []
+
+        // 1. Holidays today
+        if let holidays = holidayManager.holidayCache[todayStart] {
+            for holiday in holidays {
+                let color = holiday.isRedDay ? JohoColors.red : JohoColors.orange
+                let badge = holiday.isRedDay ? "HOL" : "OBS"
+                items.append(TodayItem(
+                    title: holiday.displayTitle,
+                    subtitle: nil,
+                    icon: holiday.isRedDay ? "star.fill" : "sparkles",
+                    color: color,
+                    typeBadge: badge
+                ))
+            }
+        }
+
+        // 2. Birthdays today
+        let currentMonth = calendar.component(.month, from: todayStart)
+        let currentDay = calendar.component(.day, from: todayStart)
+
+        for contact in contacts {
+            guard let birthday = contact.birthday else { continue }
+            let bMonth = calendar.component(.month, from: birthday)
+            let bDay = calendar.component(.day, from: birthday)
+
+            if bMonth == currentMonth && bDay == currentDay {
+                let name = contact.displayName.isEmpty ? "Someone" : contact.displayName
+                items.append(TodayItem(
+                    title: "\(name)'s Birthday",
+                    subtitle: nil,
+                    icon: "birthday.cake.fill",
+                    color: JohoColors.pink,
+                    typeBadge: "BDY"
+                ))
+            }
+        }
+
+        // 3. Countdown events today
+        for event in countdownEvents {
+            let eventDate = calendar.startOfDay(for: event.targetDate)
+            if eventDate == todayStart {
+                items.append(TodayItem(
+                    title: event.title,
+                    subtitle: nil,
+                    icon: "calendar.badge.clock",
+                    color: JohoColors.eventPurple,
+                    typeBadge: "EVT"
+                ))
+            }
+        }
+
+        // 4. Notes today
+        for note in allNotes {
+            let noteDate = calendar.startOfDay(for: note.date)
+            if noteDate == todayStart {
+                let preview = String(note.content.prefix(30))
+                items.append(TodayItem(
+                    title: preview + (note.content.count > 30 ? "..." : ""),
+                    subtitle: nil,
+                    icon: "note.text",
+                    color: JohoColors.yellow,
+                    typeBadge: "NTE"
+                ))
+            }
+        }
+
+        // 5. Active trips
+        for trip in allTrips {
+            let tripStart = calendar.startOfDay(for: trip.startDate)
+            let tripEnd = calendar.startOfDay(for: trip.endDate)
+
+            if todayStart >= tripStart && todayStart <= tripEnd {
+                items.append(TodayItem(
+                    title: trip.tripName,
+                    subtitle: nil,
+                    icon: "airplane",
+                    color: JohoColors.orange,
+                    typeBadge: "TRP"
+                ))
+            }
+        }
+
+        // 6. Expenses today
+        for expense in allExpenses {
+            let expenseDate = calendar.startOfDay(for: expense.date)
+            if expenseDate == todayStart {
+                items.append(TodayItem(
+                    title: expense.itemDescription,
+                    subtitle: nil,
+                    icon: "dollarsign.circle.fill",
+                    color: JohoColors.green,
+                    typeBadge: "EXP"
+                ))
+            }
+        }
+
+        return items
+    }
+}
+
+// MARK: - Navigation Notification
+
+extension Notification.Name {
+    static let navigateToPage = Notification.Name("navigateToPage")
 }
 
 // MARK: - Preview
 
-#Preview("Landing Data Dashboard") {
+#Preview("Onsen Landing") {
     LandingPageView()
 }

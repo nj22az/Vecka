@@ -157,6 +157,97 @@ enum AppBackgroundOption: String, CaseIterable, Identifiable {
     }
 }
 
+// MARK: - 情報デザイン Color Scheme (夜間モード - AMOLED Dark Mode)
+// Inverted 情報デザイン for AMOLED screens: WHITE text on BLACK backgrounds
+
+/// 情報デザイン color scheme mode
+/// - `.light`: Classic 情報デザイン - BLACK text on WHITE backgrounds
+/// - `.dark`: Inverted 夜間モード - WHITE text on BLACK backgrounds (AMOLED optimized)
+enum JohoColorMode: String, CaseIterable, Identifiable {
+    case light = "light"   // Classic 情報デザイン
+    case dark = "dark"     // 夜間モード (Night Mode)
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .light: return "Light Mode"
+        case .dark: return "Dark Mode"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .light: return "Classic black on white"
+        case .dark: return "AMOLED optimized, white on black"
+        }
+    }
+}
+
+/// Dynamic colors that adapt to the current color mode
+/// Use `@Environment(\.johoColorMode) var colorMode` then access `JohoScheme.colors(for: colorMode)`
+struct JohoScheme {
+    /// Primary content color (text, icons)
+    let primary: Color
+    /// Secondary content color (subtitles, hints)
+    let secondary: Color
+    /// Surface/container background color
+    let surface: Color
+    /// Border color for containers
+    let border: Color
+    /// Canvas/app background color
+    let canvas: Color
+    /// Inverted surface (for contrast elements)
+    let surfaceInverted: Color
+    /// Inverted primary (text on inverted surface)
+    let primaryInverted: Color
+
+    /// Get the color scheme for a given mode
+    static func colors(for mode: JohoColorMode) -> JohoScheme {
+        switch mode {
+        case .light:
+            return JohoScheme(
+                primary: Color(hex: "000000"),       // Black text
+                secondary: Color(hex: "000000").opacity(0.6),
+                surface: Color(hex: "FFFFFF"),      // White containers
+                border: Color(hex: "000000"),       // Black borders
+                canvas: Color(hex: "1A1A2E"),       // Dark canvas (barely visible)
+                surfaceInverted: Color(hex: "000000"),
+                primaryInverted: Color(hex: "FFFFFF")
+            )
+        case .dark:
+            return JohoScheme(
+                primary: Color(hex: "FFFFFF"),       // White text
+                secondary: Color(hex: "FFFFFF").opacity(0.6),
+                surface: Color(hex: "000000"),      // Pure black containers (AMOLED)
+                border: Color(hex: "FFFFFF"),       // White borders
+                canvas: Color(hex: "000000"),       // Pure black canvas (AMOLED)
+                surfaceInverted: Color(hex: "FFFFFF"),
+                primaryInverted: Color(hex: "000000")
+            )
+        }
+    }
+}
+
+/// Environment key for 情報デザイン color mode
+private struct JohoColorModeKey: EnvironmentKey {
+    static let defaultValue: JohoColorMode = .light
+}
+
+extension EnvironmentValues {
+    var johoColorMode: JohoColorMode {
+        get { self[JohoColorModeKey.self] }
+        set { self[JohoColorModeKey.self] = newValue }
+    }
+}
+
+extension View {
+    /// Apply a specific 情報デザイン color mode to this view and its children
+    func johoColorMode(_ mode: JohoColorMode) -> some View {
+        environment(\.johoColorMode, mode)
+    }
+}
+
 // MARK: - Section Zones (色分け)
 // Each feature gets a distinct pastel background + BLACK border
 
@@ -173,20 +264,20 @@ enum SectionZone {
     case countdowns  // Purple (alias for events)
     case warning     // Orange - alerts
 
-    /// 情報デザイン: ALL bento boxes use 20% opacity of their accent color
-    /// This matches the Events style which looks best - consistent across all types
+    /// 情報デザイン: Semantic background colors (from design-system.md)
+    /// These are the PASTEL versions - no opacity needed
     var background: Color {
         switch self {
-        case .calendar: return Color(hex: "A5F3FC").opacity(0.4)    // Cyan (needs more for visibility)
-        case .notes: return Color(hex: "ECC94B").opacity(0.25)      // Yellow NTE
-        case .expenses: return Color(hex: "38A169").opacity(0.2)    // Green EXP
-        case .trips: return Color(hex: "3182CE").opacity(0.2)       // Blue TRP
-        case .holidays: return Color(hex: "E53E3E").opacity(0.2)    // Red HOL
-        case .observances: return Color(hex: "ED8936").opacity(0.2) // Orange OBS
-        case .birthdays: return Color(hex: "D53F8C").opacity(0.2)   // Pink BDY
-        case .contacts: return Color(hex: "805AD5").opacity(0.2)    // Purple
-        case .events, .countdowns: return Color(hex: "805AD5").opacity(0.2) // Purple EVT
-        case .warning: return Color(hex: "ED8936").opacity(0.2)     // Orange
+        case .calendar: return Color(hex: "A5F3FC")    // Cyan - Events/Calendar
+        case .notes: return Color(hex: "FEF3C7")       // Cream - Notes
+        case .expenses: return Color(hex: "BBF7D0")    // Green - Money
+        case .trips: return Color(hex: "FED7AA")       // Orange - Movement/Travel
+        case .holidays: return Color(hex: "FECDD3")    // Pink - Special Days/Holidays
+        case .observances: return Color(hex: "FED7AA") // Orange - Observances
+        case .birthdays: return Color(hex: "FECDD3")   // Pink - Birthdays
+        case .contacts: return Color(hex: "E9D5FF")    // Purple - People
+        case .events, .countdowns: return Color(hex: "A5F3FC") // Cyan - Events
+        case .warning: return Color(hex: "FED7AA")     // Orange - Alerts
         }
     }
 
@@ -1029,6 +1120,69 @@ struct CountryColorScheme {
                 borderColor: JohoColors.black,
                 code: "VN"
             )
+        case "DE": // Germany: Black pill, yellow text (Schwarz-Rot-Gold)
+            return CountryColorScheme(
+                backgroundColor: Color(hex: "000000"),
+                textColor: Color(hex: "FFCC00"),
+                borderColor: Color(hex: "DD0000"),
+                code: "DE"
+            )
+        case "GB": // United Kingdom: Navy blue pill, white text (Union Jack)
+            return CountryColorScheme(
+                backgroundColor: Color(hex: "012169"),
+                textColor: Color(hex: "FFFFFF"),
+                borderColor: Color(hex: "C8102E"),
+                code: "UK"
+            )
+        case "FR": // France: Blue pill, white text (Tricolore)
+            return CountryColorScheme(
+                backgroundColor: Color(hex: "002395"),
+                textColor: Color(hex: "FFFFFF"),
+                borderColor: Color(hex: "ED2939"),
+                code: "FR"
+            )
+        case "IT": // Italy: Green pill, white text (Il Tricolore)
+            return CountryColorScheme(
+                backgroundColor: Color(hex: "008C45"),
+                textColor: Color(hex: "FFFFFF"),
+                borderColor: Color(hex: "CD212A"),
+                code: "IT"
+            )
+        case "NL": // Netherlands: Orange pill, white text (Oranje)
+            return CountryColorScheme(
+                backgroundColor: Color(hex: "AE1C28"),
+                textColor: Color(hex: "FFFFFF"),
+                borderColor: Color(hex: "21468B"),
+                code: "NL"
+            )
+        case "JP": // Japan: Red pill, white text (Hinomaru)
+            return CountryColorScheme(
+                backgroundColor: Color(hex: "BC002D"),
+                textColor: Color(hex: "FFFFFF"),
+                borderColor: JohoColors.black,
+                code: "JP"
+            )
+        case "HK": // Hong Kong: Red pill, white text (Bauhinia)
+            return CountryColorScheme(
+                backgroundColor: Color(hex: "DE2910"),
+                textColor: Color(hex: "FFFFFF"),
+                borderColor: JohoColors.black,
+                code: "HK"
+            )
+        case "CN": // China: Red pill, yellow text (五星红旗)
+            return CountryColorScheme(
+                backgroundColor: Color(hex: "DE2910"),
+                textColor: Color(hex: "FFDE00"),
+                borderColor: JohoColors.black,
+                code: "CN"
+            )
+        case "TH": // Thailand: Blue pill, white text (ธงไตรรงค์)
+            return CountryColorScheme(
+                backgroundColor: Color(hex: "241D4F"),
+                textColor: Color(hex: "FFFFFF"),
+                borderColor: Color(hex: "A51931"),
+                code: "TH"
+            )
         default:
             return nil
         }
@@ -1484,6 +1638,80 @@ struct JohoActionButton: View {
                 Squircle(cornerRadius: size * 0.3)
                     .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
             )
+    }
+}
+
+// MARK: - Hotel Clock Widget (情報デザイン)
+
+/// Prominent world clock display like hotel reception or airport wall
+/// Used in the Onsen landing page Bento grid
+struct HotelClockWidget: View {
+    let clock: WorldClock
+    var isLarge: Bool = false
+
+    private var timeSize: CGFloat { isLarge ? 48 : 32 }
+    private var codeSize: CGFloat { isLarge ? 12 : 10 }
+
+    var body: some View {
+        VStack(spacing: JohoDimensions.spacingSM) {
+            // City code pill
+            Text(clock.cityCode)
+                .font(.system(size: codeSize, weight: .black, design: .rounded))
+                .foregroundStyle(JohoColors.white)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .background(JohoColors.black)
+                .clipShape(Capsule())
+
+            // Large time display
+            Text(clock.formattedTime)
+                .font(.system(size: timeSize, weight: .bold, design: .monospaced))
+                .foregroundStyle(JohoColors.black)
+                .monospacedDigit()
+
+            // City name
+            Text(clock.cityName.uppercased())
+                .font(.system(size: 9, weight: .bold, design: .rounded))
+                .tracking(0.5)
+                .foregroundStyle(JohoColors.black.opacity(0.7))
+
+            // Offset badge + Day/Night
+            HStack(spacing: 6) {
+                // Offset
+                Text(clock.offsetFromLocal)
+                    .font(.system(size: 9, weight: .bold, design: .rounded))
+                    .foregroundStyle(
+                        clock.offsetFromLocal == "LOCAL"
+                            ? JohoColors.green
+                            : JohoColors.black.opacity(0.6)
+                    )
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(
+                        clock.offsetFromLocal == "LOCAL"
+                            ? JohoColors.green.opacity(0.15)
+                            : JohoColors.black.opacity(0.05)
+                    )
+                    .clipShape(Capsule())
+
+                // Day/Night icon
+                Image(systemName: clock.isDaytime ? "sun.max.fill" : "moon.fill")
+                    .font(.system(size: 10))
+                    .foregroundStyle(
+                        clock.isDaytime
+                            ? JohoColors.yellow
+                            : JohoColors.black.opacity(0.6)
+                    )
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(JohoDimensions.spacingMD)
+        .background(JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+        )
     }
 }
 

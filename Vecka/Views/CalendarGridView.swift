@@ -22,6 +22,12 @@ struct CalendarGridView: View {
     /// Returns which special day types exist for a given date
     let hasDataForDay: ((Date) -> DayDataCheck)?
 
+    // MARK: - Environment for dark mode
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     init(
         month: CalendarMonth,
         selectedWeek: CalendarWeek?,
@@ -43,6 +49,14 @@ struct CalendarGridView: View {
 
 // MARK: - Day Data Check (情報デザイン: Unified special day types)
 
+/// Position of a day within a multi-day trip span
+enum TripDayPosition {
+    case single    // Single-day trip (or isolated day)
+    case start     // First day of multi-day trip [▶
+    case middle    // Middle day of multi-day trip ──
+    case end       // Last day of multi-day trip ◀]
+}
+
 /// Tracks which special day types exist for a calendar day
 struct DayDataCheck {
     var hasHoliday: Bool = false      // RED - HOL
@@ -53,12 +67,13 @@ struct DayDataCheck {
     var hasTrip: Bool = false         // BLUE - TRP
     var hasExpense: Bool = false      // GREEN - EXP
 
+    /// 情報デザイン: Trip span position for edge indicators
+    var tripPosition: TripDayPosition?
+
     static let empty = DayDataCheck()
 }
 
 extension CalendarGridView {
-
-    private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
 
     // HIG: 8 columns (1 for week number + 7 days)
     private var columns: [GridItem] {
@@ -103,13 +118,13 @@ extension CalendarGridView {
 
     @ViewBuilder
     private var headerRow: some View {
-        // Week column header - black background with white text
+        // Week column header - inverted background (black in light, white in dark)
         Text("W")
             .font(JohoFont.label)
-            .foregroundStyle(JohoColors.white)
+            .foregroundStyle(colors.primaryInverted)
             .frame(height: 28)
             .frame(maxWidth: .infinity)
-            .background(JohoColors.black)
+            .background(colors.surfaceInverted)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
             .accessibilityLabel(Localization.weekColumnHeader)
 
@@ -121,16 +136,20 @@ extension CalendarGridView {
 
     private func weekdayHeaderCell(for index: Int) -> some View {
         let isWeekend = index >= 5 // Saturday (5) and Sunday (6)
+        // Dark mode: Slightly lighter background for header contrast
+        let weekdayBg = colorMode == .dark ? Color(hex: "2A2A2A") : Color(hex: "F0F0F0")
+        let weekendBg = isWeekend ? JohoColors.pink.opacity(colorMode == .dark ? 0.4 : 0.3) : weekdayBg
+
         return Text(weekdaySymbol(for: index).uppercased())
             .font(JohoFont.label)
-            .foregroundStyle(JohoColors.black)
+            .foregroundStyle(colors.primary)
             .frame(maxWidth: .infinity)
             .frame(height: 28)
-            .background(isWeekend ? JohoColors.pink.opacity(0.3) : Color(hex: "F0F0F0"))
+            .background(weekendBg)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
             )
             .accessibilityLabel(weekdayName(for: index))
     }
@@ -146,21 +165,21 @@ extension CalendarGridView {
         }) {
             HStack(spacing: 0) {
                 ZStack {
-                    // Background - black squircle like JohoWeekBadge
+                    // Background - inverted squircle (black in light, white in dark)
                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .fill(JohoColors.black)
+                        .fill(colors.surfaceInverted)
 
-                    // Border - white when selected/current, dark otherwise
+                    // Border - highlight when selected/current
                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
                         .stroke(
-                            (week.isCurrentWeek || isSelected) ? JohoColors.white : JohoColors.black.opacity(0.3),
+                            (week.isCurrentWeek || isSelected) ? colors.primaryInverted : colors.surfaceInverted.opacity(0.3),
                             lineWidth: (week.isCurrentWeek || isSelected) ? JohoDimensions.borderMedium : JohoDimensions.borderThin
                         )
 
                     // Week number
                     Text("\(week.weekNumber)")
                         .font(JohoFont.headline)
-                        .foregroundStyle(JohoColors.white)
+                        .foregroundStyle(colors.primaryInverted)
                         .monospacedDigit()
                 }
                 .frame(maxWidth: .infinity)
@@ -168,7 +187,7 @@ extension CalendarGridView {
 
                 // Subtle vertical separator after week number
                 Rectangle()
-                    .fill(JohoColors.white.opacity(0.2))
+                    .fill(colors.primaryInverted.opacity(0.2))
                     .frame(width: 1)
                     .frame(height: cellSize - 8)
                     .padding(.leading, JohoDimensions.spacingXS)
@@ -192,17 +211,17 @@ extension CalendarGridView {
                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
                     .fill(cellBackground(for: day, isSelected: isSelected))
 
-                // Border - thick black border, extra thick for today/selected
+                // Border - dynamic color, extra thick for today/selected
                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
                     .stroke(
-                        JohoColors.black,
+                        cellBorderColor(for: day, isSelected: isSelected),
                         lineWidth: (day.isToday || isSelected) ? JohoDimensions.borderThick : JohoDimensions.borderThin
                     )
 
                 // Day number - bold rounded font
                 VStack(spacing: 2) {
                     Text("\(day.dayNumber)")
-                        .font(isPad ? JohoFont.headline : JohoFont.subheadline)
+                        .font(JohoFont.subheadline) // 情報デザイン: iPhone golden standard
                         .fontWeight(.bold)
                         .foregroundStyle(dayTextColor(for: day, isSelected: isSelected))
                         .monospacedDigit()
@@ -210,6 +229,11 @@ extension CalendarGridView {
                     // 情報デザイン: Priority-filtered indicators (max 3 + overflow)
                     // Priority: HOL > BDY > OBS > EVT > NTE > TRP > EXP
                     priorityIndicators(for: day, dataCheck: dataCheck)
+                }
+
+                // 情報デザイン: Trip span indicator at bottom of cell
+                if let tripPosition = dataCheck?.tripPosition {
+                    tripSpanIndicator(position: tripPosition, isToday: day.isToday)
                 }
             }
             .frame(maxWidth: .infinity)
@@ -230,28 +254,98 @@ extension CalendarGridView {
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
-    // Cell background following Joho style
-    private func cellBackground(for day: CalendarDay, isSelected: Bool) -> Color {
-        // Selected = black background (white text)
-        if isSelected {
-            return JohoColors.black
+    // MARK: - Trip Span Indicator (情報デザイン)
+
+    /// Renders trip span bar at bottom of day cell
+    /// - Start: rounded left edge, extends to right
+    /// - Middle: full width bar
+    /// - End: rounded right edge, extends to left
+    /// - Single: no bar (just regular indicator)
+    @ViewBuilder
+    private func tripSpanIndicator(position: TripDayPosition, isToday: Bool) -> some View {
+        let tripColor = JohoColors.tripBlue
+        let barHeight: CGFloat = 4
+
+        VStack {
+            Spacer()
+
+            switch position {
+            case .single:
+                // Single day trips show no span bar (handled by regular indicators)
+                EmptyView()
+
+            case .start:
+                // Start: rounded left, flat right (extends beyond cell)
+                HStack(spacing: 0) {
+                    Capsule()
+                        .fill(tripColor)
+                        .frame(height: barHeight)
+                }
+                .padding(.leading, 4)
+                .padding(.trailing, -4) // Extend beyond cell edge
+
+            case .middle:
+                // Middle: flat edges, full width
+                Rectangle()
+                    .fill(tripColor)
+                    .frame(height: barHeight)
+                    .padding(.horizontal, -4) // Extend beyond cell edges
+
+            case .end:
+                // End: flat left, rounded right
+                HStack(spacing: 0) {
+                    Capsule()
+                        .fill(tripColor)
+                        .frame(height: barHeight)
+                }
+                .padding(.trailing, 4)
+                .padding(.leading, -4) // Extend beyond cell edge
+            }
         }
-        // Today = yellow background (black text)
+        .padding(.bottom, 2)
+    }
+
+    // Cell background following Joho style
+    // Light mode: white cells, Dark mode: black cells
+    private func cellBackground(for day: CalendarDay, isSelected: Bool) -> Color {
+        // Today = yellow background (always - it's a semantic color)
         if day.isToday {
             return JohoColors.yellow
         }
-        // Default = white background (black text)
-        return JohoColors.white
+        // Selected = inverted from default (black in light, white in dark)
+        if isSelected {
+            return colors.surfaceInverted
+        }
+        // Default = surface color (white in light, black in dark)
+        return colors.surface
     }
 
     // Text color following Joho contrast rules
     private func dayTextColor(for day: CalendarDay, isSelected: Bool) -> Color {
-        // Selected day = white text on black background
-        if isSelected {
-            return JohoColors.white
+        // Today = always black text (yellow background needs black for contrast)
+        if day.isToday {
+            return JohoColors.black
         }
-        // All other days = black text for maximum contrast
-        return JohoColors.black
+        // Selected = inverted text color
+        if isSelected {
+            return colors.primaryInverted
+        }
+        // Default = primary color (black in light, white in dark)
+        return colors.primary
+    }
+
+    // Border color for day cells
+    private func cellBorderColor(for day: CalendarDay, isSelected: Bool) -> Color {
+        // Today = black border (on yellow background)
+        if day.isToday {
+            return JohoColors.black
+        }
+        // Selected = inverted border color
+        if isSelected {
+            return colors.primaryInverted
+        }
+        // Default = border color (black in light, white in dark)
+        return colors.border
     }
 
     // MARK: - Priority Indicators (情報デザイン)
@@ -263,25 +357,27 @@ extension CalendarGridView {
         let indicators = collectIndicators(for: day, dataCheck: dataCheck)
         let displayIndicators = Array(indicators.prefix(3))
         let overflow = indicators.count - 3
+        // Use black stroke on yellow/selected cells, dynamic otherwise
+        let indicatorStroke = day.isToday ? JohoColors.black : colors.border
 
         HStack(spacing: 3) {
             ForEach(displayIndicators, id: \.self) { color in
                 Circle()
                     .fill(color)
                     .frame(width: 7, height: 7)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                    .overlay(Circle().stroke(indicatorStroke, lineWidth: 1))
             }
 
             // Overflow badge when >3 indicators
             if overflow > 0 {
                 Text("+\(overflow)")
                     .font(.system(size: 6, weight: .black, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(day.isToday ? JohoColors.black : colors.primary)
                     .padding(.horizontal, 2)
                     .padding(.vertical, 1)
-                    .background(JohoColors.white)
+                    .background(day.isToday ? JohoColors.white : colors.surface)
                     .clipShape(Capsule())
-                    .overlay(Capsule().stroke(JohoColors.black, lineWidth: 0.5))
+                    .overlay(Capsule().stroke(indicatorStroke, lineWidth: 0.5))
             }
         }
         .frame(height: 8)
@@ -359,13 +455,9 @@ extension CalendarGridView {
 
     // MARK: - Layout Constants
 
-    private var weekColumnWidth: CGFloat {
-        isPad ? 54 : 44
-    }
-
-    private var cellSize: CGFloat {
-        isPad ? 64 : 48
-    }
+    // 情報デザイン: Unified sizing across all devices (iPhone golden standard)
+    private var weekColumnWidth: CGFloat { 44 }
+    private var cellSize: CGFloat { 48 }
 
     private func color(for colorName: String) -> Color {
         switch colorName {
