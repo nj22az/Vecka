@@ -38,10 +38,16 @@ class ContactsManager {
     // MARK: - Import from iOS Contacts
 
     /// Imports all contacts from iOS Contacts app
+    /// 情報デザイン: Deduplication check prevents double imports
     func importAllContacts(to modelContext: ModelContext) async throws -> Int {
         guard authorizationStatus == .authorized else {
             throw ContactsError.notAuthorized
         }
+
+        // Fetch existing contacts to check for duplicates by cnContactIdentifier
+        let existingDescriptor = FetchDescriptor<Contact>()
+        let existingContacts = (try? modelContext.fetch(existingDescriptor)) ?? []
+        let existingIdentifiers = Set(existingContacts.compactMap { $0.cnContactIdentifier })
 
         let keys = Self.contactKeys
         let request = CNContactFetchRequest(keysToFetch: keys)
@@ -50,6 +56,11 @@ class ContactsManager {
         var importedContacts: [Contact] = []
 
         try contactStore.enumerateContacts(with: request) { cnContact, _ in
+            // Skip if already imported (deduplication check)
+            if existingIdentifiers.contains(cnContact.identifier) {
+                return
+            }
+
             let contact = self.convertToContact(cnContact)
             modelContext.insert(contact)
             importedContacts.append(contact)
@@ -68,8 +79,21 @@ class ContactsManager {
 
     /// Imports selected contacts from iOS Contacts
     /// Note: Contacts from picker may have minimal data, so we re-fetch with all keys
+    /// 情報デザイン: Deduplication check prevents double imports
     func importContacts(_ cnContacts: [CNContact], to modelContext: ModelContext) async throws {
+        // Fetch existing contacts to check for duplicates by cnContactIdentifier
+        let existingDescriptor = FetchDescriptor<Contact>()
+        let existingContacts = (try? modelContext.fetch(existingDescriptor)) ?? []
+        let existingIdentifiers = Set(existingContacts.compactMap { $0.cnContactIdentifier })
+
+        var actuallyImported = 0
+
         for cnContact in cnContacts {
+            // Skip if already imported (deduplication check)
+            if existingIdentifiers.contains(cnContact.identifier) {
+                continue
+            }
+
             // Re-fetch the contact with all our required keys to get full data including images
             let fullContact: CNContact
             do {
@@ -84,11 +108,12 @@ class ContactsManager {
 
             let contact = convertToContact(fullContact)
             modelContext.insert(contact)
+            actuallyImported += 1
         }
         try modelContext.save()
 
         // Scan for duplicates after import (non-blocking)
-        if !cnContacts.isEmpty {
+        if actuallyImported > 0 {
             await scanForDuplicatesAfterImport(modelContext: modelContext)
         }
     }

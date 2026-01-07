@@ -42,6 +42,12 @@ struct ContactDetailView: View {
     @State private var editDay: Int = 1
     @State private var editSymbol: String = "person.fill"
     @State private var editImageData: Data? = nil
+    @State private var editGroup: ContactGroup = .other
+
+    // MARK: - Merge Contact
+    @State private var showingMergeContactPicker = false
+    @State private var selectedMergeContact: Contact?
+    @State private var showingMergeSheet = false
 
     // MARK: - Photo Picker
     @State private var selectedPhotoItem: PhotosPickerItem?
@@ -72,6 +78,9 @@ struct ContactDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: JohoDimensions.spacingLG) {
+                // 情報デザイン: Status bar safe zone - prevents content from scrolling under status bar icons
+                Spacer().frame(height: 44)
+
                 // EDIT MODE indicator (情報デザイン: prominent when unlocked)
                 if isEditMode {
                     editModeIndicator
@@ -99,6 +108,9 @@ struct ContactDetailView: View {
                 if isEditMode || contact.birthday != nil {
                     birthdaySection
                 }
+
+                // Group section (情報デザイン: Always visible - defines contact category)
+                groupSection
 
                 // Notes section
                 if isEditMode || (contact.note != nil && !contact.note!.isEmpty) {
@@ -143,6 +155,33 @@ struct ContactDetailView: View {
                     cropImageItem = nil
                 }
             )
+        }
+        .sheet(isPresented: $showingMergeContactPicker) {
+            // Contact picker for manual merge (excludes current contact)
+            ContactPickerSheet(
+                excludeContact: contact,
+                onSelect: { selectedContact in
+                    selectedMergeContact = selectedContact
+                    showingMergeContactPicker = false
+                    // Slight delay to let sheet dismiss before showing merge
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        showingMergeSheet = true
+                    }
+                }
+            )
+        }
+        .sheet(isPresented: $showingMergeSheet) {
+            if let mergeTarget = selectedMergeContact {
+                // Use existing MergeContactSheet with current + selected contact
+                ManualMergeSheet(
+                    contact1: contact,
+                    contact2: mergeTarget,
+                    onMerged: {
+                        // Contact merged - dismiss detail view
+                        dismiss()
+                    }
+                )
+            }
         }
         .onAppear {
             populateEditFields()
@@ -195,32 +234,47 @@ struct ContactDetailView: View {
             editMonth = calendar.component(.month, from: Date())
             editDay = calendar.component(.day, from: Date())
         }
+
+        // Group
+        editGroup = contact.group
     }
 
-    // MARK: - EDIT MODE Indicator (情報デザイン)
+    // MARK: - EDIT MODE Indicator (情報デザイン: Prominent banner with black border)
 
     private var editModeIndicator: some View {
         HStack(spacing: JohoDimensions.spacingSM) {
-            Image(systemName: "pencil.circle.fill")
-                .font(.system(size: 18, weight: .bold))
-                .foregroundStyle(accentColor)
+            // 情報デザイン: Edit icon in colored zone
+            Image(systemName: "pencil")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(JohoColors.white)
+                .frame(width: 28, height: 28)
+                .background(accentColor)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
 
+            // Title pill (情報デザイン: BLACK on WHITE = prominent)
             Text("EDIT MODE")
-                .font(.system(size: 13, weight: .black, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .font(.system(size: 12, weight: .black, design: .rounded))
+                .tracking(0.5)
+                .foregroundStyle(JohoColors.white)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(accentColor)
+                .clipShape(Capsule())
+                .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1.5))
 
             Spacer()
 
-            Text("Tap fields to edit")
-                .font(.system(size: 11, weight: .medium, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.5))
+            Text("Tap → to save")
+                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoColors.black.opacity(0.6))
         }
         .padding(JohoDimensions.spacingMD)
-        .background(accentColor.opacity(0.15))
+        .background(lightBackground)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(accentColor, lineWidth: 2)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
         )
     }
 
@@ -384,7 +438,7 @@ struct ContactDetailView: View {
         )
     }
 
-    /// Soft pill-style action button for profile card
+    /// 情報デザイン: LINE-style action button with solid colors
     @ViewBuilder
     private func profileActionButton(icon: String, label: String, color: Color, action: @escaping () -> Void) -> some View {
         Button(action: action) {
@@ -399,11 +453,11 @@ struct ContactDetailView: View {
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
-            .background(color.opacity(0.12))
+            .background(JohoColors.white)
             .clipShape(Capsule())
             .overlay(
                 Capsule()
-                    .stroke(color.opacity(0.3), lineWidth: 1)
+                    .stroke(JohoColors.black, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -571,14 +625,14 @@ struct ContactDetailView: View {
 
                             Spacer()
 
-                            // Open in Maps
+                            // Open in Maps (情報デザイン: 44pt minimum touch target)
                             Button {
                                 openInMaps(address.formattedAddress)
                             } label: {
                                 Image(systemName: "map.fill")
-                                    .font(.system(size: 14, weight: .bold))
+                                    .font(.system(size: 16, weight: .bold))
                                     .foregroundStyle(JohoColors.orange)
-                                    .frame(width: 36, height: 36)
+                                    .frame(width: 44, height: 44)
                                     .background(JohoColors.white)
                                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                     .overlay(
@@ -608,49 +662,77 @@ struct ContactDetailView: View {
             if isEditMode {
                 // Edit mode: birthday toggle and date picker
                 VStack(spacing: JohoDimensions.spacingSM) {
-                    // HAS / NONE / N/A toggle
-                    HStack(spacing: 6) {
-                        // Has birthday
+                    // 情報デザイン: マルバツ記号 (Maru-Batsu) toggle
+                    // ○ = HAS (positive/yes)  × = NONE (negative/no)  ー = N/A (not applicable)
+                    HStack(spacing: 8) {
+                        // ○ HAS birthday (Maru = positive/yes)
                         Button {
                             editHasBirthday = true
                             editBirthdayKnown = true
                         } label: {
-                            Text("HAS")
-                                .font(.system(size: 11, weight: .bold, design: .rounded))
-                                .foregroundStyle(editHasBirthday && editBirthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.5))
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 8)
-                                .background(editHasBirthday && editBirthdayKnown ? SpecialDayType.birthday.accentColor : JohoColors.black.opacity(0.05))
-                                .clipShape(Capsule())
+                            HStack(spacing: 6) {
+                                Text("○")
+                                    .font(.system(size: 16, weight: .black))
+                                Text("HAS")
+                                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                            }
+                            .foregroundStyle(editHasBirthday && editBirthdayKnown ? JohoColors.white : JohoColors.black)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 10)
+                            .background(editHasBirthday && editBirthdayKnown ? SpecialDayType.birthday.accentColor : JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: 8))
+                            .overlay(
+                                Squircle(cornerRadius: 8)
+                                    .stroke(editHasBirthday && editBirthdayKnown ? JohoColors.black : JohoColors.black.opacity(0.3), lineWidth: editHasBirthday && editBirthdayKnown ? 1.5 : 1)
+                            )
                         }
+                        .buttonStyle(.plain)
 
-                        // Not entered
+                        // × NONE (Batsu = negative/no)
                         Button {
                             editHasBirthday = false
                             editBirthdayKnown = true
                         } label: {
-                            Text("NONE")
-                                .font(.system(size: 11, weight: .bold, design: .rounded))
-                                .foregroundStyle(!editHasBirthday && editBirthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.5))
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 8)
-                                .background(!editHasBirthday && editBirthdayKnown ? JohoColors.black : JohoColors.black.opacity(0.05))
-                                .clipShape(Capsule())
+                            HStack(spacing: 6) {
+                                Text("×")
+                                    .font(.system(size: 16, weight: .black))
+                                Text("NONE")
+                                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                            }
+                            .foregroundStyle(!editHasBirthday && editBirthdayKnown ? JohoColors.white : JohoColors.black)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 10)
+                            .background(!editHasBirthday && editBirthdayKnown ? JohoColors.black : JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: 8))
+                            .overlay(
+                                Squircle(cornerRadius: 8)
+                                    .stroke(JohoColors.black, lineWidth: !editHasBirthday && editBirthdayKnown ? 1.5 : 1)
+                            )
                         }
+                        .buttonStyle(.plain)
 
-                        // N/A - unknown
+                        // ー N/A (Bō = not applicable)
                         Button {
                             editHasBirthday = false
                             editBirthdayKnown = false
                         } label: {
-                            Text("N/A")
-                                .font(.system(size: 11, weight: .bold, design: .rounded))
-                                .foregroundStyle(!editBirthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.5))
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 8)
-                                .background(!editBirthdayKnown ? JohoColors.red : JohoColors.black.opacity(0.05))
-                                .clipShape(Capsule())
+                            HStack(spacing: 6) {
+                                Text("ー")
+                                    .font(.system(size: 16, weight: .black))
+                                Text("N/A")
+                                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                            }
+                            .foregroundStyle(!editBirthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.5))
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 10)
+                            .background(!editBirthdayKnown ? JohoColors.black.opacity(0.4) : JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: 8))
+                            .overlay(
+                                Squircle(cornerRadius: 8)
+                                    .stroke(JohoColors.black.opacity(!editBirthdayKnown ? 0.6 : 0.3), lineWidth: 1)
+                            )
                         }
+                        .buttonStyle(.plain)
 
                         Spacer()
                     }
@@ -721,11 +803,11 @@ struct ContactDetailView: View {
                         )
                     }
 
-                    // N/A explanation
+                    // N/A explanation (情報デザイン: minimum 0.6 opacity)
                     if !editBirthdayKnown {
                         Text("N/A = Birthday unknown. Won't appear in Star page.")
                             .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.4))
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
                             .padding(.horizontal, JohoDimensions.spacingMD)
                     }
                 }
@@ -827,6 +909,78 @@ struct ContactDetailView: View {
         }
     }
 
+    // MARK: - Group Section (情報デザイン: 4-button grid for contact categories)
+
+    private var groupSection: some View {
+        let groupAccentColor = Color(hex: editGroup.color)
+
+        return johoDetailSection(title: "GROUP", icon: "folder.fill", iconColor: groupAccentColor) {
+            if isEditMode {
+                // Edit mode: 4-button grid for group selection
+                let groups = ContactGroup.allCases
+                LazyVGrid(columns: [
+                    GridItem(.flexible(), spacing: 8),
+                    GridItem(.flexible(), spacing: 8),
+                    GridItem(.flexible(), spacing: 8),
+                    GridItem(.flexible(), spacing: 8)
+                ], spacing: 8) {
+                    ForEach(groups, id: \.rawValue) { group in
+                        let isSelected = editGroup == group
+                        let groupColor = Color(hex: group.color)
+
+                        Button {
+                            editGroup = group
+                        } label: {
+                            VStack(spacing: 4) {
+                                // Icon
+                                Image(systemName: group.icon)
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundStyle(isSelected ? JohoColors.black : JohoColors.black.opacity(0.6))
+
+                                // Label
+                                Text(group.localizedName)
+                                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                                    .foregroundStyle(JohoColors.black)
+                                    .lineLimit(1)
+
+                                // Selection indicator
+                                Circle()
+                                    .fill(isSelected ? JohoColors.black : JohoColors.black.opacity(0.2))
+                                    .frame(width: 8, height: 8)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(isSelected ? groupColor : JohoColors.white)
+                            .clipShape(Squircle(cornerRadius: 10))
+                            .overlay(
+                                Squircle(cornerRadius: 10)
+                                    .stroke(JohoColors.black, lineWidth: isSelected ? 2 : 1)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            } else {
+                // View mode: Show current group as a pill
+                let groupColor = Color(hex: contact.group.color)
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    Image(systemName: contact.group.icon)
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(JohoColors.black)
+
+                    Text(contact.group.localizedName)
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black)
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(groupColor)
+                .clipShape(Capsule())
+                .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1.5))
+            }
+        }
+    }
+
     // MARK: - Share Actions Section
 
     private var shareActionsSection: some View {
@@ -847,6 +1001,17 @@ struct ContactDetailView: View {
                     johoActionRow(icon: "person.badge.plus", title: "Export to iOS Contacts")
                 }
                 .buttonStyle(.plain)
+
+                Divider()
+                    .padding(.vertical, 4)
+
+                // Manual Merge (情報デザイン: User-initiated merge for contacts system didn't detect)
+                Button {
+                    showingMergeContactPicker = true
+                } label: {
+                    johoActionRow(icon: "arrow.triangle.merge", title: "Merge with another contact...")
+                }
+                .buttonStyle(.plain)
             }
         }
     }
@@ -863,12 +1028,12 @@ struct ContactDetailView: View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
             // Header row with colored icon zone + title pill (情報デザイン: color in icon zone only)
             HStack(spacing: JohoDimensions.spacingSM) {
-                // Colored icon zone (情報デザイン: semantic color lives here)
+                // Colored icon zone (情報デザイン: solid background)
                 Image(systemName: icon)
                     .font(.system(size: 14, weight: .bold))
                     .foregroundStyle(iconColor)
                     .frame(width: 32, height: 32)
-                    .background(iconColor.opacity(0.15))
+                    .background(JohoColors.inputBackground)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
@@ -896,12 +1061,12 @@ struct ContactDetailView: View {
     private func johoActionRow(icon: String, title: String, color: Color? = nil) -> some View {
         let rowColor = color ?? accentColor
         HStack(spacing: JohoDimensions.spacingMD) {
-            // Colored icon zone (情報デザイン: semantic color in icon zone)
+            // Colored icon zone (情報デザイン: solid background)
             Image(systemName: icon)
                 .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(rowColor)
                 .frame(width: 36, height: 36)
-                .background(rowColor.opacity(0.15))
+                .background(JohoColors.inputBackground)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
@@ -944,14 +1109,14 @@ struct ContactDetailView: View {
 
             Spacer()
 
-            // Action buttons with semantic colors
+            // Action buttons with semantic colors (情報デザイン: 44pt minimum touch targets)
             HStack(spacing: JohoDimensions.spacingSM) {
                 ForEach(Array(actions.enumerated()), id: \.offset) { _, action in
                     Button(action: action.2) {
                         Image(systemName: action.0)
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(action.1)
-                            .frame(width: 36, height: 36)
+                            .frame(width: 44, height: 44)
                             .background(JohoColors.white)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(
@@ -985,9 +1150,9 @@ struct ContactDetailView: View {
                     .clipShape(Circle())
                     .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
             } else {
-                // Placeholder
+                // Placeholder (情報デザイン: solid semantic background)
                 Circle()
-                    .fill(accentColor.opacity(0.15))
+                    .fill(PageHeaderColor.contacts.lightBackground)
                     .frame(width: 100, height: 100)
                     .overlay(
                         Image(systemName: isEditMode ? editSymbol : (contact.symbolName ?? "person.fill"))
@@ -1014,17 +1179,18 @@ struct ContactDetailView: View {
                 dismiss()
             }
         } label: {
+            // 情報デザイン: 44pt minimum touch target
             Image(systemName: isEditMode ? "xmark" : "xmark")
-                .font(.system(size: 16, weight: .bold))
+                .font(.system(size: 18, weight: .bold))
                 .foregroundStyle(JohoColors.black)
-                .frame(width: 36, height: 36)
+                .frame(width: 44, height: 44)
                 .background(JohoColors.white)
                 .clipShape(Circle())
                 .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
         }
     }
 
-    /// Lock/Unlock toggle button (情報デザイン: replaces pencil edit button)
+    /// Lock/Unlock toggle button (情報デザイン: 44pt minimum touch target)
     private var lockUnlockButton: some View {
         Button {
             withAnimation(.easeInOut(duration: 0.2)) {
@@ -1033,9 +1199,9 @@ struct ContactDetailView: View {
             HapticManager.selection()
         } label: {
             Image(systemName: isEditMode ? "lock.open.fill" : "lock.fill")
-                .font(.system(size: 16, weight: .bold))
+                .font(.system(size: 18, weight: .bold))
                 .foregroundStyle(isEditMode ? JohoColors.white : JohoColors.black.opacity(0.6))
-                .frame(width: 36, height: 36)
+                .frame(width: 44, height: 44)
                 .background(isEditMode ? accentColor : JohoColors.white)
                 .clipShape(Circle())
                 .overlay(Circle().stroke(JohoColors.black, lineWidth: isEditMode ? 2.5 : 1.5))
@@ -1119,6 +1285,9 @@ struct ContactDetailView: View {
         // Symbol
         contact.symbolName = editSymbol
 
+        // Group
+        contact.group = editGroup
+
         // Update timestamp
         contact.modifiedAt = Date()
 
@@ -1161,15 +1330,31 @@ struct ContactDetailView: View {
     private func generateAndShareVCard() {
         let vcard = contact.toVCard()
         let tempDir = FileManager.default.temporaryDirectory
-        let filename = "\(contact.displayName).vcf"
+
+        // Sanitize filename: remove characters that are invalid for file systems
+        let sanitizedName = contact.displayName
+            .replacingOccurrences(of: "/", with: "-")
+            .replacingOccurrences(of: ":", with: "-")
+            .replacingOccurrences(of: "\\", with: "-")
+            .replacingOccurrences(of: "?", with: "")
+            .replacingOccurrences(of: "*", with: "")
+            .replacingOccurrences(of: "\"", with: "")
+            .replacingOccurrences(of: "<", with: "")
+            .replacingOccurrences(of: ">", with: "")
+            .replacingOccurrences(of: "|", with: "-")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let filename = (sanitizedName.isEmpty ? "Contact" : sanitizedName) + ".vcf"
         let url = tempDir.appendingPathComponent(filename)
 
         do {
             try vcard.write(to: url, atomically: true, encoding: .utf8)
             vcardURL = url
             showingVCardShare = true
+            HapticManager.selection()  // 情報デザイン: Tactile confirmation
         } catch {
-            print("Failed to create vCard file: \(error)")
+            Log.e("Failed to create vCard file: \(error)")
+            HapticManager.notification(.error)
         }
     }
 
@@ -1402,10 +1587,10 @@ struct JohoContactEditorSheet: View {
                                             VStack(spacing: 4) {
                                                 Image(systemName: "camera.fill")
                                                     .font(.system(size: 28, weight: .medium))
-                                                    .foregroundStyle(JohoColors.black.opacity(0.3))
+                                                    .foregroundStyle(JohoColors.black.opacity(0.6))
                                                 Text("Add Photo")
                                                     .font(.system(size: 11, weight: .medium, design: .rounded))
-                                                    .foregroundStyle(JohoColors.black.opacity(0.4))
+                                                    .foregroundStyle(JohoColors.black.opacity(0.6))
                                             }
                                         )
                                         .overlay(Circle().stroke(JohoColors.black.opacity(0.2), lineWidth: 1.5))
@@ -1631,7 +1816,7 @@ struct JohoContactEditorSheet: View {
                             if !birthdayKnown {
                                 Text("N/A = Birthday unknown. Won't appear in Star page.")
                                     .font(.system(size: 11, weight: .medium, design: .rounded))
-                                    .foregroundStyle(JohoColors.black.opacity(0.4))
+                                    .foregroundStyle(JohoColors.black.opacity(0.6))
                                     .padding(.leading, 32)
                                     .padding(.horizontal, JohoDimensions.spacingMD)
                             }
@@ -1702,14 +1887,14 @@ struct JohoContactEditorSheet: View {
 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(JohoColors.black.opacity(0.3))
+                    .foregroundStyle(JohoColors.black.opacity(0.6))
             }
             .padding(JohoDimensions.spacingMD)
             .background(JohoColors.white)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(JohoColors.black.opacity(0.15), lineWidth: 1)
+                    .stroke(JohoColors.black, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -1724,7 +1909,7 @@ struct JohoContactEditorSheet: View {
         HStack(spacing: JohoDimensions.spacingSM) {
             Image(systemName: icon)
                 .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(JohoColors.black.opacity(0.4))
+                .foregroundStyle(JohoColors.black.opacity(0.6))
                 .frame(width: 24)
 
             TextField(placeholder, text: text)
@@ -1897,7 +2082,7 @@ struct CircularImageCropperView: View {
                 Text("Move and Scale")
                     .font(.system(size: 16, weight: .semibold, design: .rounded))
                     .foregroundStyle(.white)
-                    .padding(.top, 16)
+                    .padding(.top, 8)  // 情報デザイン: Max 8pt top padding
                     .padding(.bottom, 8)
 
                 Spacer()

@@ -25,6 +25,17 @@ struct ContactListView: View {
     @State private var editingContact: Contact?
     @State private var showingDuplicateReview = false
     @State private var duplicateSuggestionCount = 0
+    @State private var isIndexExpanded = false  // 情報デザイン: Collapsible letter index
+    @State private var showingExportSheet = false
+    @State private var exportURL: URL?
+    @State private var isEditMode = false  // 情報デザイン: Edit mode for contact management
+    @State private var selectedForDeletion: Set<UUID> = []  // Multi-select for bulk delete
+
+    // 情報デザイン: Cached computed properties to prevent recalculation on every render
+    @State private var cachedFilteredContacts: [Contact] = []
+    @State private var cachedGroupedContacts: [String: [Contact]] = [:]
+    @State private var cachedAvailableLetters: [String] = []
+    @State private var cachedSortedSections: [String] = []
 
     // Duplicate detection manager
     private let duplicateManager = DuplicateContactManager.shared
@@ -43,29 +54,66 @@ struct ContactListView: View {
         contacts.filter { $0.birthday != nil }.count
     }
 
-    var filteredContacts: [Contact] {
-        if searchText.isEmpty {
-            return contacts
-        }
-        return contacts.filter { contact in
-            contact.displayName.localizedCaseInsensitiveContains(searchText) ||
-            contact.organizationName?.localizedCaseInsensitiveContains(searchText) == true ||
-            contact.emailAddresses.contains { $0.value.localizedCaseInsensitiveContains(searchText) } ||
-            contact.phoneNumbers.contains { $0.value.localizedCaseInsensitiveContains(searchText) }
-        }
-    }
+    // 情報デザイン: Computed properties now return cached values to prevent freezing
+    var filteredContacts: [Contact] { cachedFilteredContacts }
+    var groupedContacts: [String: [Contact]] { cachedGroupedContacts }
+    var sortedSections: [String] { cachedSortedSections }
+    var allAvailableLetters: [String] { cachedAvailableLetters }
 
-    var groupedContacts: [String: [Contact]] {
-        Dictionary(grouping: filteredContacts) { contact in
+    // MARK: - Cache Management (情報デザイン: Memoization for performance)
+
+    /// Rebuilds all contact caches - call when filters or data change
+    private func refreshContactCache() {
+        // Step 1: Build filtered contacts
+        var result = contacts
+
+        // Filter by search text
+        if !searchText.isEmpty {
+            result = result.filter { contact in
+                contact.displayName.localizedCaseInsensitiveContains(searchText) ||
+                contact.organizationName?.localizedCaseInsensitiveContains(searchText) == true ||
+                contact.emailAddresses.contains { $0.value.localizedCaseInsensitiveContains(searchText) } ||
+                contact.phoneNumbers.contains { $0.value.localizedCaseInsensitiveContains(searchText) }
+            }
+        }
+
+        // 情報デザイン: Filter by selected group (Family/Friends/Work/Other)
+        if let group = selectedGroup {
+            result = result.filter { $0.group == group }
+        }
+
+        // 情報デザイン: Filter by selected letter (show one group at a time)
+        if let letter = filterLetter {
+            result = result.filter { contact in
+                let firstLetter = contact.familyName.isEmpty ?
+                    (contact.givenName.isEmpty ? "#" : String(contact.givenName.prefix(1).uppercased())) :
+                    String(contact.familyName.prefix(1).uppercased())
+                return firstLetter.uppercased() == letter
+            }
+        }
+
+        cachedFilteredContacts = result
+
+        // Step 2: Build grouped contacts from filtered
+        let grouped = Dictionary(grouping: result) { contact in
             let firstLetter = contact.familyName.isEmpty ?
                 (contact.givenName.isEmpty ? "#" : String(contact.givenName.prefix(1).uppercased())) :
                 String(contact.familyName.prefix(1).uppercased())
             return firstLetter.uppercased()
         }
-    }
+        cachedGroupedContacts = grouped
 
-    var sortedSections: [String] {
-        groupedContacts.keys.sorted()
+        // Step 3: Build sorted sections
+        cachedSortedSections = grouped.keys.sorted()
+
+        // Step 4: Build all available letters (from unfiltered contacts)
+        let allGrouped = Dictionary(grouping: contacts) { contact in
+            let firstLetter = contact.familyName.isEmpty ?
+                (contact.givenName.isEmpty ? "#" : String(contact.givenName.prefix(1).uppercased())) :
+                String(contact.familyName.prefix(1).uppercased())
+            return firstLetter.uppercased()
+        }
+        cachedAvailableLetters = allGrouped.keys.sorted()
     }
 
     var body: some View {
@@ -86,27 +134,10 @@ struct ContactListView: View {
 
                 // MAIN CONTENT CONTAINER (情報デザイン: All content in white container)
                 VStack(spacing: 0) {
-                    // Search field row
-                    HStack(spacing: JohoDimensions.spacingSM) {
-                        Image(systemName: "magnifyingglass")
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundStyle(JohoColors.black)
-
-                        TextField("Search contacts", text: $searchText)
-                            .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black)
-
-                        if !searchText.isEmpty {
-                            Button {
-                                searchText = ""
-                            } label: {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.system(size: 16, weight: .bold))
-                                    .foregroundStyle(JohoColors.black)
-                            }
-                        }
-                    }
-                    .padding(JohoDimensions.spacingMD)
+                    // Search field row (unified component)
+                    JohoSearchField(text: $searchText, placeholder: "Search contacts")
+                        .padding(.horizontal, JohoDimensions.spacingXS)
+                        .padding(.vertical, JohoDimensions.spacingSM)
 
                     // Horizontal divider
                     Rectangle()
@@ -156,15 +187,37 @@ struct ContactListView: View {
                     loadDuplicateSuggestions()
                 }
         }
+        .sheet(isPresented: $showingExportSheet) {
+            ContactExportSheet(contacts: contacts)
+        }
+        .sheet(isPresented: Binding(
+            get: { exportURL != nil },
+            set: { if !$0 { exportURL = nil } }
+        )) {
+            if let url = exportURL {
+                ShareSheet(url: url)
+            }
+        }
         .onAppear {
             loadDuplicateSuggestions()
+            refreshContactCache()  // 情報デザイン: Initialize cache on appear
         }
         .onChange(of: contacts.count) { _, _ in
             // Rescan when contacts change
+            refreshContactCache()  // 情報デザイン: Rebuild cache when contacts change
             Task {
                 await duplicateManager.scanForDuplicates(contacts: contacts, modelContext: modelContext)
                 loadDuplicateSuggestions()
             }
+        }
+        .onChange(of: searchText) { _, _ in
+            refreshContactCache()  // 情報デザイン: Rebuild cache when search changes
+        }
+        .onChange(of: selectedGroup) { _, _ in
+            refreshContactCache()  // 情報デザイン: Rebuild cache when group filter changes
+        }
+        .onChange(of: filterLetter) { _, _ in
+            refreshContactCache()  // 情報デザイン: Rebuild cache when letter filter changes
         }
     }
 
@@ -208,18 +261,109 @@ struct ContactListView: View {
                     .fill(JohoColors.black)
                     .frame(width: 1.5)
 
-                // RIGHT COMPARTMENT: Import button
-                Button {
-                    showingImportSheet = true
-                } label: {
-                    Image(systemName: "square.and.arrow.down")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(PageHeaderColor.contacts.accent)
-                        .frame(width: 44, height: 44)
-                        .contentShape(Rectangle())
+                // RIGHT COMPARTMENT: Edit mode controls OR Export/Import buttons
+                HStack(spacing: 0) {
+                    if isEditMode {
+                        // Delete selected button (red when items selected)
+                        if !selectedForDeletion.isEmpty {
+                            Button {
+                                deleteSelectedContacts()
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "trash.fill")
+                                        .font(.system(size: 14, weight: .bold))
+                                    Text("\(selectedForDeletion.count)")
+                                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                                }
+                                .foregroundStyle(JohoColors.white)
+                                .frame(height: 32)
+                                .padding(.horizontal, 12)
+                                .background(JohoColors.red)
+                                .clipShape(Squircle(cornerRadius: 8))
+                                .overlay(
+                                    Squircle(cornerRadius: 8)
+                                        .stroke(JohoColors.black, lineWidth: 1.5)
+                                )
+                            }
+                            .buttonStyle(.plain)
+                            .padding(.trailing, 8)
+                        }
+
+                        // Done button
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                isEditMode = false
+                                selectedForDeletion.removeAll()
+                            }
+                        } label: {
+                            Text("Done")
+                                .font(.system(size: 14, weight: .bold, design: .rounded))
+                                .foregroundStyle(JohoColors.white)
+                                .frame(height: 32)
+                                .padding(.horizontal, 12)
+                                .background(PageHeaderColor.contacts.accent)
+                                .clipShape(Squircle(cornerRadius: 8))
+                                .overlay(
+                                    Squircle(cornerRadius: 8)
+                                        .stroke(JohoColors.black, lineWidth: 1.5)
+                                )
+                        }
+                        .buttonStyle(.plain)
+                    } else {
+                        // Edit button
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                isEditMode = true
+                            }
+                        } label: {
+                            Image(systemName: "pencil")
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundStyle(PageHeaderColor.contacts.accent)
+                                .frame(width: 44, height: 44)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(contacts.isEmpty)
+                        .opacity(contacts.isEmpty ? 0.3 : 1.0)
+
+                        // Thin separator (情報デザイン: solid black, reduced height)
+                        Rectangle()
+                            .fill(JohoColors.black)
+                            .frame(width: 0.5)
+                            .padding(.vertical, 8)
+
+                        // Export button
+                        Button {
+                            showingExportSheet = true
+                        } label: {
+                            Image(systemName: "square.and.arrow.up")
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundStyle(PageHeaderColor.contacts.accent)
+                                .frame(width: 44, height: 44)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+
+                        // Thin separator (情報デザイン: solid black, reduced height)
+                        Rectangle()
+                            .fill(JohoColors.black)
+                            .frame(width: 0.5)
+                            .padding(.vertical, 8)
+
+                        // Import button
+                        Button {
+                            showingImportSheet = true
+                        } label: {
+                            Image(systemName: "square.and.arrow.down")
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundStyle(PageHeaderColor.contacts.accent)
+                                .frame(width: 44, height: 44)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
-                .buttonStyle(.plain)
-                .padding(.horizontal, JohoDimensions.spacingSM)
+                .padding(.horizontal, JohoDimensions.spacingXS)
             }
             .frame(minHeight: 56)
 
@@ -357,84 +501,74 @@ struct ContactListView: View {
 
     // MARK: - Contact List Content (情報デザイン: Clean grouped list with letter picker)
 
-    @State private var selectedLetter: String?
-    @State private var showingLetterPicker = false
+    @State private var filterLetter: String?  // 情報デザイン: Filter to show only one letter group
+    @State private var selectedGroup: ContactGroup?  // 情報デザイン: Filter by contact group
 
     private var contactsListContent: some View {
         VStack(spacing: 0) {
-            // Letter picker toggle row (情報デザイン: bento compartment)
-            letterPickerToggle
+            // 情報デザイン: Group filter strip (Family/Friends/Work/Other)
+            groupFilterStrip
+
+            // Thin divider (情報デザイン: solid black, reduced height)
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(height: 0.5)
+
+            // 情報デザイン: Always-visible horizontal letter strip (like iOS Contacts)
+            letterPickerStrip
 
             // Horizontal divider
             Rectangle()
                 .fill(JohoColors.black)
                 .frame(height: 1)
 
-            // Main content: list or letter picker
-            if showingLetterPicker {
-                // Letter grid picker (情報デザイン: A-Z grid)
-                letterPickerGrid
-            } else {
-                // Contact list
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
-                            ForEach(sortedSections, id: \.self) { section in
-                                Section {
-                                    ForEach(groupedContacts[section] ?? []) { contact in
+            // Contact list (情報デザイン: filtered by selected letter)
+            ScrollView {
+                LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+                    ForEach(sortedSections, id: \.self) { section in
+                        Section {
+                            ForEach(groupedContacts[section] ?? []) { contact in
+                                Button {
+                                    selectedContact = contact
+                                } label: {
+                                    compactContactRow(for: contact)
+                                }
+                                .buttonStyle(.plain)
+                                .contextMenu {
+                                    Button { selectedContact = contact } label: {
+                                        Label("View", systemImage: "person.fill")
+                                    }
+                                    Button { editingContact = contact } label: {
+                                        Label("Edit", systemImage: "pencil")
+                                    }
+                                    if let phone = contact.phoneNumbers.first {
                                         Button {
-                                            selectedContact = contact
+                                            if let url = URL(string: "tel:\(phone.value)") {
+                                                UIApplication.shared.open(url)
+                                            }
                                         } label: {
-                                            compactContactRow(for: contact)
-                                        }
-                                        .buttonStyle(.plain)
-                                        .contextMenu {
-                                            Button { selectedContact = contact } label: {
-                                                Label("View", systemImage: "person.fill")
-                                            }
-                                            Button { editingContact = contact } label: {
-                                                Label("Edit", systemImage: "pencil")
-                                            }
-                                            if let phone = contact.phoneNumbers.first {
-                                                Button {
-                                                    if let url = URL(string: "tel:\(phone.value)") {
-                                                        UIApplication.shared.open(url)
-                                                    }
-                                                } label: {
-                                                    Label("Call", systemImage: "phone.fill")
-                                                }
-                                            }
-                                            Divider()
-                                            Button(role: .destructive) { deleteContact(contact) } label: {
-                                                Label("Delete", systemImage: "trash")
-                                            }
-                                        }
-                                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                            Button(role: .destructive) { deleteContact(contact) } label: {
-                                                Label("Delete", systemImage: "trash")
-                                            }
-                                        }
-                                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                                            Button { editingContact = contact } label: {
-                                                Label("Edit", systemImage: "pencil")
-                                            }
-                                            .tint(JohoColors.cyan)
+                                            Label("Call", systemImage: "phone.fill")
                                         }
                                     }
-                                } header: {
-                                    sectionHeader(letter: section)
-                                        .id(section)
+                                    Divider()
+                                    Button(role: .destructive) { deleteContact(contact) } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) { deleteContact(contact) } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                                .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                                    Button { editingContact = contact } label: {
+                                        Label("Edit", systemImage: "pencil")
+                                    }
+                                    .tint(JohoColors.cyan)
                                 }
                             }
-                        }
-                    }
-                    .onChange(of: selectedLetter) { _, letter in
-                        if let letter = letter {
-                            withAnimation {
-                                proxy.scrollTo(letter, anchor: .top)
-                            }
-                            selectedLetter = nil
-                            showingLetterPicker = false
+                        } header: {
+                            sectionHeader(letter: section)
                         }
                     }
                 }
@@ -442,82 +576,222 @@ struct ContactListView: View {
         }
     }
 
-    // MARK: - Letter Picker Toggle (情報デザイン: Expandable header)
+    // MARK: - Group Filter Strip (情報デザイン: Filter by contact group)
 
-    private var letterPickerToggle: some View {
-        Button {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                showingLetterPicker.toggle()
-            }
-            HapticManager.selection()
-        } label: {
-            HStack(spacing: JohoDimensions.spacingSM) {
-                // Current section indicator
-                if let firstSection = sortedSections.first {
-                    Text(firstSection)
-                        .font(.system(size: 16, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.white)
-                        .frame(width: 28, height: 28)
-                        .background(JohoColors.black)
-                        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+    private var groupFilterStrip: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                // "All" button
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        selectedGroup = nil
+                    }
+                    HapticManager.selection()
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "person.3.fill")
+                            .font(.system(size: 10, weight: .bold))
+                        Text("All")
+                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                    }
+                    .foregroundStyle(selectedGroup == nil ? JohoColors.white : JohoColors.black)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(selectedGroup == nil ? accentColor : JohoColors.white)
+                    .clipShape(Capsule())
+                    .overlay(
+                        Capsule()
+                            .stroke(JohoColors.black, lineWidth: selectedGroup == nil ? 2 : 1)
+                    )
                 }
+                .accessibilityLabel("Show all contacts")
 
-                Text(showingLetterPicker ? "SELECT LETTER" : "A-Z INDEX")
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.7))
-
-                Spacer()
-
-                // Toggle indicator
-                Image(systemName: showingLetterPicker ? "chevron.up" : "chevron.down")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(JohoColors.black)
+                // Group buttons
+                ForEach(ContactGroup.allCases, id: \.self) { group in
+                    let count = contacts.filter { $0.group == group }.count
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            if selectedGroup == group {
+                                selectedGroup = nil
+                            } else {
+                                selectedGroup = group
+                            }
+                        }
+                        HapticManager.selection()
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: group.icon)
+                                .font(.system(size: 10, weight: .bold))
+                            Text(group.localizedName)
+                                .font(.system(size: 11, weight: .bold, design: .rounded))
+                            if count > 0 {
+                                Text("(\(count))")
+                                    .font(.system(size: 9, weight: .medium, design: .rounded))
+                                    .foregroundStyle(selectedGroup == group ? JohoColors.white.opacity(0.8) : JohoColors.black.opacity(0.5))
+                            }
+                        }
+                        .foregroundStyle(selectedGroup == group ? JohoColors.white : JohoColors.black)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(selectedGroup == group ? Color(hex: group.color) : JohoColors.white)
+                        .clipShape(Capsule())
+                        .overlay(
+                            Capsule()
+                                .stroke(JohoColors.black, lineWidth: selectedGroup == group ? 2 : 1)
+                        )
+                    }
+                    .accessibilityLabel("Filter by \(group.localizedName)")
+                }
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
         }
-        .buttonStyle(.plain)
     }
 
-    // MARK: - Letter Picker Grid (情報デザイン: A-Z bento grid)
+    // MARK: - Letter Picker (情報デザイン: Collapsible index with "INDEX >" toggle)
 
-    private var letterPickerGrid: some View {
-        let allLetters = ["#"] + (65...90).map { String(UnicodeScalar($0)) }  // # + A-Z
-        let columns = [
-            GridItem(.flexible(), spacing: 4),
-            GridItem(.flexible(), spacing: 4),
-            GridItem(.flexible(), spacing: 4),
-            GridItem(.flexible(), spacing: 4)
-        ]
+    private var letterPickerStrip: some View {
+        let populatedLetters = allAvailableLetters
 
-        return ScrollView {
-            LazyVGrid(columns: columns, spacing: 4) {
-                ForEach(allLetters, id: \.self) { letter in
-                    let hasContacts = sortedSections.contains(letter)
-                    Button {
-                        if hasContacts {
-                            selectedLetter = letter
-                            HapticManager.selection()
+        return VStack(spacing: 0) {
+            // Header row: INDEX > (tap to expand/collapse)
+            Button {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    isIndexExpanded.toggle()
+                }
+                HapticManager.selection()
+            } label: {
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    // Icon zone (情報デザイン: solid semantic background)
+                    Image(systemName: "list.bullet")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black)
+                        .frame(width: 24, height: 24)
+                        .background(PageHeaderColor.contacts.lightBackground)
+                        .clipShape(Squircle(cornerRadius: 5))
+                        .overlay(
+                            Squircle(cornerRadius: 5)
+                                .stroke(JohoColors.black, lineWidth: 1)
+                        )
+
+                    Text("INDEX")
+                        .font(.system(size: 12, weight: .black, design: .rounded))
+                        .tracking(1)
+                        .foregroundStyle(JohoColors.black)
+
+                    // Chevron indicating expand/collapse state
+                    Image(systemName: isIndexExpanded ? "chevron.down" : "chevron.right")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                    Spacer()
+
+                    // Show current filter badge if active
+                    if let letter = filterLetter {
+                        HStack(spacing: 4) {
+                            Text(letter)
+                                .font(.system(size: 12, weight: .black, design: .rounded))
+                            Text("(\(filteredContacts.count))")
+                                .font(.system(size: 10, weight: .bold, design: .rounded))
+                                .foregroundStyle(JohoColors.white.opacity(0.8))
                         }
+                        .foregroundStyle(JohoColors.white)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(accentColor)
+                        .clipShape(Squircle(cornerRadius: 6))
+                        .overlay(
+                            Squircle(cornerRadius: 6)
+                                .stroke(JohoColors.black, lineWidth: 1.5)
+                        )
+
+                        // × clear button
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                filterLetter = nil
+                            }
+                            HapticManager.selection()
+                        } label: {
+                            Text("×")
+                                .font(.system(size: 14, weight: .black))
+                                .foregroundStyle(JohoColors.white)
+                                .frame(width: 28, height: 28)
+                                .background(JohoColors.black)
+                                .clipShape(Circle())
+                        }
+                        .accessibilityLabel("Clear filter")
+                    }
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(isIndexExpanded ? "Collapse index" : "Expand index")
+            .accessibilityHint("Tap to \(isIndexExpanded ? "hide" : "show") letter filter")
+
+            // Expanded: Letter grid (情報デザイン: wrapping grid, no horizontal scroll)
+            if isIndexExpanded {
+                // Thin divider (情報デザイン: solid black, reduced height)
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 0.5)
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+
+                // Letter grid using LazyVGrid for wrapping
+                let columns = Array(repeating: GridItem(.flexible(), spacing: 6), count: min(populatedLetters.count + 1, 10))
+
+                LazyVGrid(columns: columns, spacing: 6) {
+                    // "ALL" button
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            filterLetter = nil
+                        }
+                        HapticManager.selection()
                     } label: {
-                        Text(letter)
-                            .font(.system(size: 18, weight: hasContacts ? .bold : .medium, design: .rounded))
-                            .foregroundStyle(hasContacts ? JohoColors.black : JohoColors.black.opacity(0.25))
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 44)
-                            .background(hasContacts ? JohoColors.white : JohoColors.black.opacity(0.03))
-                            .clipShape(Squircle(cornerRadius: 8))
+                        Text("ALL")
+                            .font(.system(size: 10, weight: .black, design: .rounded))
+                            .foregroundStyle(filterLetter == nil ? JohoColors.white : JohoColors.black)
+                            .frame(minWidth: 32, minHeight: 32)
+                            .background(filterLetter == nil ? accentColor : JohoColors.inputBackground)
+                            .clipShape(Squircle(cornerRadius: 6))
                             .overlay(
-                                Squircle(cornerRadius: 8)
-                                    .stroke(hasContacts ? JohoColors.black : JohoColors.black.opacity(0.1), lineWidth: hasContacts ? 1.5 : 0.5)
+                                Squircle(cornerRadius: 6)
+                                    .stroke(JohoColors.black, lineWidth: filterLetter == nil ? 2 : 1)
                             )
                     }
-                    .buttonStyle(.plain)
-                    .disabled(!hasContacts)
+                    .accessibilityLabel("Show all contacts")
+
+                    // Letter buttons
+                    ForEach(populatedLetters, id: \.self) { letter in
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                if filterLetter == letter {
+                                    filterLetter = nil
+                                } else {
+                                    filterLetter = letter
+                                }
+                            }
+                            HapticManager.selection()
+                        } label: {
+                            Text(letter)
+                                .font(.system(size: 13, weight: .black, design: .rounded))
+                                .foregroundStyle(filterLetter == letter ? JohoColors.white : JohoColors.black)
+                                .frame(minWidth: 32, minHeight: 32)
+                                .background(filterLetter == letter ? accentColor : JohoColors.inputBackground)
+                                .clipShape(Squircle(cornerRadius: 6))
+                                .overlay(
+                                    Squircle(cornerRadius: 6)
+                                        .stroke(JohoColors.black, lineWidth: filterLetter == letter ? 2 : 1)
+                                )
+                        }
+                        .accessibilityLabel("Filter by \(letter)")
+                    }
                 }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
             }
-            .padding(JohoDimensions.spacingMD)
         }
+        .background(JohoColors.white)
     }
 
     // MARK: - Section Header (情報デザイン: Clean letter header)
@@ -531,22 +805,53 @@ struct ContactListView: View {
                 .background(JohoColors.black)
                 .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
 
+            // 情報デザイン: Solid black divider line, reduced height
             Rectangle()
-                .fill(JohoColors.black.opacity(0.2))
-                .frame(height: 1)
+                .fill(JohoColors.black)
+                .frame(height: 0.5)
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, JohoDimensions.spacingXS)
         .background(JohoColors.white)
     }
 
-    // MARK: - Kudo-Style Contact Row (情報デザイン: Photo + Name | Birthday | Chevron)
+    // MARK: - Kudo-Style Contact Row (情報デザイン: Photo + Name + actionable icons)
 
     private func compactContactRow(for contact: Contact) -> some View {
-        HStack(spacing: 0) {
-            // PHOTO COMPARTMENT (48pt)
+        let isSelected = selectedForDeletion.contains(contact.id)
+
+        return HStack(spacing: JohoDimensions.spacingSM) {
+            // EDIT MODE: Selection checkbox (情報デザイン: circle with checkmark)
+            if isEditMode {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.15)) {
+                        if isSelected {
+                            selectedForDeletion.remove(contact.id)
+                        } else {
+                            selectedForDeletion.insert(contact.id)
+                        }
+                    }
+                    HapticManager.selection()
+                } label: {
+                    ZStack {
+                        Circle()
+                            .fill(isSelected ? JohoColors.red : JohoColors.white)
+                            .frame(width: 28, height: 28)
+                        Circle()
+                            .stroke(isSelected ? JohoColors.red : JohoColors.black.opacity(0.4), lineWidth: 2)
+                            .frame(width: 28, height: 28)
+                        if isSelected {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(JohoColors.white)
+                        }
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+
+            // PHOTO COMPARTMENT (48pt) - tap to see details
             JohoContactAvatar(contact: contact, size: 48)
-                .padding(.trailing, JohoDimensions.spacingSM)
 
             // NAME COMPARTMENT (flexible)
             VStack(alignment: .leading, spacing: 2) {
@@ -565,38 +870,46 @@ struct ContactListView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            // BIRTHDAY COMPARTMENT (64pt) - Kudo-style
-            birthdayCompartment(for: contact)
-                .frame(width: 64)
+            // ACTIONABLE CONTACT BUTTONS (情報デザイン: Semantic colors like Star page)
+            // Hide action buttons in edit mode
+            if !isEditMode {
+                HStack(spacing: 10) {
+                    // Birthday indicator (secondary - small pink dot, not actionable)
+                    birthdayIndicator(for: contact)
 
-            // CHEVRON COMPARTMENT (24pt)
-            Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .bold))
-                .foregroundStyle(JohoColors.black.opacity(0.4))
-                .frame(width: 24)
+                    // Message button - Cyan
+                    if let phone = contact.phoneNumbers.first?.value {
+                        JohoContactActionButton(action: .message(phone: phone))
+                    }
+
+                    // Email button - Purple
+                    if let email = contact.emailAddresses.first?.value {
+                        JohoContactActionButton(action: .email(address: email))
+                    }
+
+                    // Phone button - Green
+                    if let phone = contact.phoneNumbers.first?.value {
+                        JohoContactActionButton(action: .call(phone: phone))
+                    }
+                }
+            }
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
         .frame(height: 64)
+        .background(isSelected ? JohoColors.redLight.opacity(0.3) : Color.clear)
     }
 
-    // MARK: - Birthday Compartment (Kudo-style: Date + Cake icon)
+    // MARK: - Birthday Indicator (情報デザイン: Small pink dot)
 
+    /// 情報デザイン: Small birthday dot - details shown in contact detail view
     @ViewBuilder
-    private func birthdayCompartment(for contact: Contact) -> some View {
-        if let birthday = contact.birthday, contact.hasBirthdayForStarPage {
-            VStack(spacing: 2) {
-                Text(birthday.formatted(.dateTime.month(.abbreviated).day()))
-                    .font(.system(size: 11, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
-
-                Image(systemName: "birthday.cake.fill")
-                    .font(.system(size: 14))
-                    .foregroundStyle(SpecialDayType.birthday.accentColor)
-            }
-        } else {
-            Text("—")
-                .font(.system(size: 14, weight: .medium))
-                .foregroundStyle(JohoColors.black.opacity(0.3))
+    private func birthdayIndicator(for contact: Contact) -> some View {
+        if contact.birthday != nil, contact.hasBirthdayForStarPage {
+            // Small pink dot (情報デザイン: Secondary indicator)
+            Circle()
+                .fill(JohoColors.pink)
+                .frame(width: 10, height: 10)
+                .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
         }
     }
 
@@ -644,10 +957,15 @@ struct ContactListView: View {
                         .font(.system(size: 10, weight: .bold))
                         .foregroundStyle(accentColor)
                 }
+                // 情報デザイン: Birthday indicator with Pink pill background
                 if contact.birthday != nil {
                     Image(systemName: "gift.fill")
                         .font(.system(size: 10, weight: .bold))
                         .foregroundStyle(SpecialDayType.birthday.accentColor)
+                        .padding(4)
+                        .background(JohoColors.pink)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
                 }
             }
             .padding(.horizontal, JohoDimensions.spacingSM)
@@ -686,6 +1004,23 @@ struct ContactListView: View {
     private func deleteContact(_ contact: Contact) {
         modelContext.delete(contact)
         try? modelContext.save()
+    }
+
+    private func deleteSelectedContacts() {
+        // Find contacts by ID and delete them
+        let contactsToDelete = contacts.filter { selectedForDeletion.contains($0.id) }
+        for contact in contactsToDelete {
+            modelContext.delete(contact)
+        }
+        try? modelContext.save()
+
+        // Clear selection and exit edit mode
+        selectedForDeletion.removeAll()
+        withAnimation(.easeInOut(duration: 0.2)) {
+            isEditMode = false
+        }
+
+        HapticManager.notification(.success)
     }
 }
 
@@ -807,8 +1142,9 @@ struct JohoContactRow: View {
                         contactInfoPill(icon: "envelope.fill", text: "EMAIL", color: accentColor)
                     }
 
+                    // 情報デザイン: Birthday pill with Pink background
                     if contact.birthday != nil {
-                        contactInfoPill(icon: "gift.fill", text: "BDAY", color: SpecialDayType.birthday.accentColor)
+                        contactInfoPill(icon: "gift.fill", text: "BDAY", color: SpecialDayType.birthday.accentColor, bgColor: JohoColors.pink)
                     }
                 }
             }
@@ -830,7 +1166,8 @@ struct JohoContactRow: View {
     }
 
     @ViewBuilder
-    private func contactInfoPill(icon: String, text: String, color: Color) -> some View {
+    /// 情報デザイン: Info pill with optional background color (default white)
+    private func contactInfoPill(icon: String, text: String, color: Color, bgColor: Color = JohoColors.white) -> some View {
         HStack(spacing: 3) {
             Image(systemName: icon)
                 .font(.system(size: 9, weight: .bold))
@@ -840,9 +1177,9 @@ struct JohoContactRow: View {
         .foregroundStyle(color)
         .padding(.horizontal, 6)
         .padding(.vertical, 3)
-        .background(JohoColors.white)
+        .background(bgColor)
         .clipShape(Capsule())
-        .overlay(Capsule().stroke(color, lineWidth: 1))
+        .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
     }
 }
 
@@ -850,6 +1187,8 @@ struct ContactImportView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
 
+    // Use @State to track authorization - refreshes view when changed
+    @State private var authorizationStatus: CNAuthorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
     private var contactsManager = ContactsManager.shared
 
     @State private var isImporting = false
@@ -858,6 +1197,11 @@ struct ContactImportView: View {
 
     // 情報デザイン accent color for Contacts (Warm Brown)
     private var accentColor: Color { PageHeaderColor.contacts.accent }
+
+    // Computed property for authorization check
+    private var isAuthorized: Bool {
+        authorizationStatus == .authorized
+    }
 
     var body: some View {
         NavigationStack {
@@ -929,8 +1273,8 @@ struct ContactImportView: View {
                                 )
                             }
                             .buttonStyle(.plain)
-                            .disabled(isImporting || contactsManager.authorizationStatus != .authorized)
-                            .opacity((isImporting || contactsManager.authorizationStatus != .authorized) ? 0.5 : 1.0)
+                            .disabled(isImporting || !isAuthorized)
+                            .opacity((isImporting || !isAuthorized) ? 0.5 : 1.0)
 
                             // Select Contacts option
                             Button {
@@ -943,13 +1287,13 @@ struct ContactImportView: View {
                                 )
                             }
                             .buttonStyle(.plain)
-                            .disabled(isImporting || contactsManager.authorizationStatus != .authorized)
-                            .opacity((isImporting || contactsManager.authorizationStatus != .authorized) ? 0.5 : 1.0)
+                            .disabled(isImporting || !isAuthorized)
+                            .opacity((isImporting || !isAuthorized) ? 0.5 : 1.0)
                         }
                         .padding(JohoDimensions.spacingMD)
 
                         // Permission warning if needed
-                        if contactsManager.authorizationStatus != .authorized {
+                        if !isAuthorized {
                             // Divider
                             Rectangle()
                                 .fill(JohoColors.black)
@@ -1132,13 +1476,20 @@ struct ContactImportView: View {
         Task {
             do {
                 let granted = try await contactsManager.requestAccess()
-                if granted {
-                    importMessage = "Permission granted. You can now import contacts."
-                } else {
-                    importMessage = "Permission denied. Please enable in Settings."
+                await MainActor.run {
+                    // Update local state to refresh UI
+                    authorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
+                    if granted {
+                        importMessage = "Permission granted. You can now import contacts."
+                    } else {
+                        importMessage = "Permission denied. Please enable in Settings."
+                    }
                 }
             } catch {
-                importMessage = "Error requesting permission: \(error.localizedDescription)"
+                await MainActor.run {
+                    authorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
+                    importMessage = "Error requesting permission: \(error.localizedDescription)"
+                }
             }
         }
     }
@@ -1212,12 +1563,41 @@ struct IOSContactPickerView: UIViewControllerRepresentable {
             self.onContactsSelected = onContactsSelected
         }
 
+        // IMPORTANT: Only implement the PLURAL version to enable multi-select mode
+        // If the singular version is implemented, the picker uses single-select mode
         func contactPicker(_ picker: CNContactPickerViewController, didSelect contacts: [CNContact]) {
-            onContactsSelected(contacts)
+            // Fetch full contact details (the picker returns partial contacts)
+            let keysToFetch: [CNKeyDescriptor] = [
+                CNContactGivenNameKey as CNKeyDescriptor,
+                CNContactFamilyNameKey as CNKeyDescriptor,
+                CNContactOrganizationNameKey as CNKeyDescriptor,
+                CNContactPhoneNumbersKey as CNKeyDescriptor,
+                CNContactEmailAddressesKey as CNKeyDescriptor,
+                CNContactImageDataKey as CNKeyDescriptor,
+                CNContactThumbnailImageDataKey as CNKeyDescriptor,
+                CNContactBirthdayKey as CNKeyDescriptor,
+                CNContactPostalAddressesKey as CNKeyDescriptor,
+                CNContactNoteKey as CNKeyDescriptor
+            ]
+
+            let store = CNContactStore()
+            var fullContacts: [CNContact] = []
+
+            for contact in contacts {
+                do {
+                    let fullContact = try store.unifiedContact(withIdentifier: contact.identifier, keysToFetch: keysToFetch)
+                    fullContacts.append(fullContact)
+                } catch {
+                    // If we can't fetch full details, use the partial contact
+                    fullContacts.append(contact)
+                }
+            }
+
+            onContactsSelected(fullContacts)
         }
 
         func contactPickerDidCancel(_ picker: CNContactPickerViewController) {
-            // User cancelled
+            // User cancelled - do nothing
         }
     }
 }
