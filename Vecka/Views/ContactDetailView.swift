@@ -353,16 +353,16 @@ struct ContactDetailView: View {
                             .foregroundStyle(JohoColors.black.opacity(0.6))
                     }
 
-                    // Contact info hints row
+                    // Contact info hints row (情報デザイン: solid black for readability)
                     HStack(spacing: JohoDimensions.spacingLG) {
                         if let phone = contact.phoneNumbers.first {
                             HStack(spacing: 4) {
                                 Image(systemName: "phone.fill")
                                     .font(.system(size: 10, weight: .bold))
-                                    .foregroundStyle(accentColor)
+                                    .foregroundStyle(JohoColors.black)
                                 Text(phone.value)
-                                    .font(.system(size: 11, weight: .medium, design: .rounded))
-                                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                                    .foregroundStyle(JohoColors.black)
                             }
                         }
 
@@ -370,10 +370,10 @@ struct ContactDetailView: View {
                             HStack(spacing: 4) {
                                 Image(systemName: "envelope.fill")
                                     .font(.system(size: 10, weight: .bold))
-                                    .foregroundStyle(accentColor)
+                                    .foregroundStyle(JohoColors.black)
                                 Text(email.value)
-                                    .font(.system(size: 11, weight: .medium, design: .rounded))
-                                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                                    .foregroundStyle(JohoColors.black)
                                     .lineLimit(1)
                             }
                         }
