@@ -1,47 +1,42 @@
-/* 情報デザイン (Japanese Information Design) - Star Page Style
+/* Onsen Planner - Custom Design System Website
    ============================================================
-   Matching the app's LandingPageView.swift design exactly:
-   - Light pastel backgrounds (not heavy solid colors)
-   - Minimal/no borders OR thin black borders
-   - Large centered icons
-   - Warm cream background
+   Matching the app's 情報デザイン (Japanese Information Design):
+   - Solid colors (no gradients or opacity on backgrounds)
+   - Black borders always
+   - Squircle corners
    - Rounded typography
-   - Playful but functional
+   - Semantic color system
 */
 
 :root {
-    /* Core Colors - matches JohoColors */
-    --bg-cream: #FFFBF5;
+    /* 情報デザイン CORRECT Colors */
+    /* Canvas is DARK - not cream! */
+    --canvas: #000000;           /* True black for AMOLED */
+    --canvas-navy: #1A1A2E;      /* Alternative warm dark */
     --white: #FFFFFF;
     --black: #000000;
 
-    /* Semantic Colors - Light backgrounds like Star page */
+    /* Semantic Colors (for zones within cards) */
     --yellow: #FFE566;
-    --yellow-light: #FEF9E7;
     --cyan: #A5F3FC;
-    --cyan-light: #ECFEFF;
     --pink: #FECDD3;
-    --pink-light: #FFF1F2;
     --orange: #FED7AA;
-    --orange-light: #FFF7ED;
     --green: #BBF7D0;
-    --green-light: #F0FDF4;
     --purple: #E9D5FF;
-    --purple-light: #FAF5FF;
+    --cream: #FEF3C7;            /* Notes zone only, not background! */
+    --red: #E53935;
 
     /* Spacing */
     --space-xs: 4px;
     --space-sm: 8px;
-    --space-md: 16px;
-    --space-lg: 24px;
-    --space-xl: 32px;
-    --space-2xl: 48px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --space-xl: 20px;
 
     /* Radius (Squircle) */
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 16px;
-    --radius-xl: 20px;
 }
 
 /* Reset */
@@ -57,79 +52,92 @@ html {
 
 body {
     font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: var(--bg-cream);
+    background-color: var(--canvas);  /* DARK canvas - AMOLED friendly */
     color: var(--black);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
 }
 
-/* Page Container */
+/* Page Container - Bento grid like Star Page */
 .page {
-    max-width: 480px;
+    max-width: 420px;
     margin: 0 auto;
-    padding: var(--space-md);
+    padding: var(--space-sm);
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
+    gap: var(--space-sm);
+}
+
+/* Desktop: Wider with 3-column bento grid */
+@media (min-width: 800px) {
+    .page {
+        max-width: 700px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-sm);
+    }
+
+    /* Full-width sections */
+    .header-card,
+    .hero-card,
+    .ad-section,
+    .screenshots-section,
+    .cta-card,
+    .footer {
+        grid-column: span 3;
+    }
+
+    /* 2-column sections */
+    .why-section,
+    .ad-vertical {
+        grid-column: span 2;
+    }
+
+    /* 1-column sections */
+    .audience-card,
+    .design-mention {
+        grid-column: span 1;
+    }
+
+    .updates-section {
+        grid-column: span 3;
+    }
+
+    .coming-section {
+        grid-column: span 3;
+    }
 }
 
 /* ================================
-   MASCOT - Simple Box with Eyes
+   MASCOT SVGs (JohoMascot style)
    ================================ */
-.mascot, .hero-mascot, .cta-mascot, .footer-mascot {
-    background: var(--yellow);
-    border: 2px solid var(--black);
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.mascot-svg,
+.hero-mascot-svg,
+.cta-mascot-svg,
+.footer-mascot-svg {
+    display: block;
+    flex-shrink: 0;
 }
 
-.mascot {
-    width: 40px;
-    height: 36px;
-}
-
-.hero-mascot {
-    width: 72px;
-    height: 64px;
-    border-width: 2.5px;
-    border-radius: var(--radius-md);
+.hero-mascot-container {
     margin: 0 auto var(--space-lg);
 }
 
-.cta-mascot {
-    width: 56px;
-    height: 48px;
+.cta-mascot-container {
     margin: 0 auto var(--space-md);
 }
 
-.footer-mascot {
-    width: 32px;
-    height: 28px;
-    border-width: 1.5px;
-    margin-bottom: var(--space-sm);
-}
-
-.eyes, .eyes-lg, .eyes-md, .eyes-sm {
-    font-weight: 900;
-    color: var(--black);
-    user-select: none;
-}
-
-.eyes { font-size: 11px; letter-spacing: 5px; margin-left: 3px; }
-.eyes-lg { font-size: 20px; letter-spacing: 10px; margin-left: 5px; }
-.eyes-md { font-size: 14px; letter-spacing: 7px; margin-left: 4px; }
-.eyes-sm { font-size: 9px; letter-spacing: 4px; margin-left: 2px; }
-
 /* ================================
-   HEADER CARD (Star Page Style)
+   HEADER CARD
    ================================ */
 .header-card {
     background: var(--white);
     border-radius: var(--radius-lg);
     border: 2px solid var(--black);
     overflow: hidden;
+    /* LINE-inspired: solid offset shadow */
+    box-shadow: 4px 4px 0 0 var(--black);
 }
 
 .header-row {
@@ -181,6 +189,8 @@ body {
     border: 2.5px solid var(--black);
     padding: var(--space-xl);
     text-align: center;
+    /* LINE-inspired: solid offset shadow */
+    box-shadow: 6px 6px 0 0 var(--black);
 }
 
 .hero-title {
@@ -198,26 +208,38 @@ body {
     margin-bottom: var(--space-lg);
 }
 
-.philosophy-card {
-    display: inline-flex;
+/* Design System Card (情報デザイン explanation) */
+.design-system-card {
+    background: var(--yellow-light);
+    border: 1.5px solid var(--black);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    margin-bottom: var(--space-lg);
+    text-align: left;
+}
+
+.ds-header {
+    display: flex;
     align-items: center;
     gap: var(--space-sm);
-    background: var(--bg-cream);
-    padding: var(--space-sm) var(--space-md);
-    border-radius: var(--radius-md);
-    margin-bottom: var(--space-md);
+    margin-bottom: var(--space-sm);
 }
 
-.kome {
+.ds-marker {
     font-size: 14px;
     font-weight: 900;
-    color: var(--black);
-    opacity: 0.5;
 }
 
-.philosophy-text {
-    font-size: 12px;
-    font-weight: 700;
+.ds-title {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+}
+
+.ds-description {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
     color: var(--black);
 }
 
@@ -247,6 +269,7 @@ body {
     padding: 6px 12px;
     border-radius: 20px;
     border: 1.5px solid var(--black);
+    /* No shadow - cleaner like app */
 }
 
 .pill-yellow { background: var(--yellow); }
@@ -255,6 +278,53 @@ body {
 .pill-cyan { background: var(--cyan); }
 .pill-orange { background: var(--orange); }
 .pill-pink { background: var(--pink); }
+
+/* ================================
+   DESIGN PHILOSOPHY SECTION
+   ================================ */
+.philosophy-section {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--black);
+    padding: var(--space-md);
+    box-shadow: 4px 4px 0 0 var(--black);
+}
+
+.philosophy-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+}
+
+.philosophy-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-md) var(--space-sm);
+    background: var(--white);
+    border-radius: var(--radius-md);
+    text-align: center;
+}
+
+.philosophy-icon {
+    width: 28px;
+    height: 28px;
+    color: var(--black);
+}
+
+.philosophy-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--black);
+}
+
+.philosophy-desc {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--black);
+    opacity: 0.6;
+}
 
 /* ================================
    SECTION HEADERS
@@ -286,6 +356,7 @@ body {
     border-radius: var(--radius-lg);
     border: 2px solid var(--black);
     padding: var(--space-md);
+    box-shadow: 4px 4px 0 0 var(--black);
 }
 
 .audience-grid {
@@ -300,7 +371,7 @@ body {
     align-items: center;
     gap: var(--space-xs);
     padding: var(--space-md);
-    background: var(--bg-cream);
+    background: var(--white);
     border-radius: var(--radius-md);
     text-align: center;
 }
@@ -325,6 +396,7 @@ body {
     border-radius: var(--radius-lg);
     border: 2px solid var(--black);
     padding: var(--space-md);
+    box-shadow: 4px 4px 0 0 var(--black);
 }
 
 .bento {
@@ -342,6 +414,8 @@ body {
     border-radius: var(--radius-md);
     padding: var(--space-xs);
     margin-bottom: var(--space-sm);
+    /* LINE-inspired: colored offset shadow for visual interest */
+    box-shadow: 6px 6px 0 0 var(--yellow);
 }
 
 .screenshot {
@@ -383,6 +457,8 @@ body {
     border-radius: var(--radius-md);
     padding: var(--space-xs);
     position: relative;
+    /* LINE-inspired: subtle offset shadow */
+    box-shadow: 4px 4px 0 0 var(--cyan);
 }
 
 .screenshot-label-sm {
@@ -401,13 +477,14 @@ body {
 }
 
 /* ================================
-   HIGHLIGHTS GRID (Star Page Style)
+   HIGHLIGHTS GRID
    ================================ */
 .highlights-section {
     background: var(--white);
     border-radius: var(--radius-lg);
     border: 2px solid var(--black);
     padding: var(--space-md);
+    box-shadow: 4px 4px 0 0 var(--black);
 }
 
 .highlights-grid {
@@ -424,7 +501,8 @@ body {
     padding: var(--space-lg) var(--space-md);
     border-radius: var(--radius-md);
     text-align: center;
-    /* NO BORDER - Star page style */
+    border: 1.5px solid var(--black);
+    box-shadow: 3px 3px 0 0 var(--black);
 }
 
 .highlight-yellow { background: var(--yellow-light); }
@@ -508,6 +586,7 @@ body {
     border: 2.5px solid var(--black);
     padding: var(--space-xl);
     text-align: center;
+    box-shadow: 6px 6px 0 0 var(--black);
 }
 
 .cta-title {
@@ -533,14 +612,23 @@ body {
 }
 
 .tech-pill {
-    font-size: 11px;
-    font-weight: 700;
-    background: var(--bg-cream);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    background: var(--black);
+    color: var(--white);
     padding: 6px 12px;
     border-radius: 20px;
 }
 
-.github-link {
+.social-links {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.social-link {
     display: inline-flex;
     align-items: center;
     gap: var(--space-sm);
@@ -551,20 +639,288 @@ body {
     text-decoration: none;
     font-size: 14px;
     font-weight: 700;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.github-link {
+    box-shadow: 4px 4px 0 0 var(--yellow);
 }
 
 .github-link:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 0 0 var(--yellow);
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 0 var(--yellow);
+}
+
+.github-link:active {
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0 0 var(--yellow);
+}
+
+.linkedin-link {
+    box-shadow: 4px 4px 0 0 var(--cyan);
+}
+
+.linkedin-link:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 0 var(--cyan);
+}
+
+.linkedin-link:active {
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0 0 var(--cyan);
 }
 
 /* ================================
-   FOOTER
+   WHY SECTION - App-style bento tiles (NO borders, just colors)
+   ================================ */
+.why-section {
+    background: var(--white);
+    border: 2px solid var(--black);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+}
+
+.why-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+}
+
+/* App-style tile: NO borders, just colored background */
+.why-card {
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 90px;
+    border-radius: var(--radius-md);
+    text-align: center;
+    /* NO border - matches app's starStyleGlanceTile */
+}
+
+.why-yellow { background: var(--yellow); }
+.why-pink { background: var(--pink); }
+.why-cyan { background: var(--cyan); }
+.why-green { background: var(--green); }
+
+.why-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.why-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.why-quote {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--black);
+    line-height: 1.3;
+}
+
+.why-answer {
+    font-size: 10px;
+    font-weight: 900;
+    color: var(--black);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ================================
+   AUDIENCE LIST - Simple tags (no shadow)
+   ================================ */
+.audience-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+.audience-tag {
+    background: var(--white);
+    border: 1.5px solid var(--black);
+    border-radius: 20px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--black);
+    /* No shadow - cleaner */
+}
+
+/* ================================
+   WHAT'S COMING - App-style bento tiles (NO borders, colored backgrounds)
+   Matches LandingPageView.swift starStyleGlanceTile
+   ================================ */
+.coming-section {
+    background: var(--white);
+    border: 2px solid var(--black);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+}
+
+.coming-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+}
+
+/* App-style tile: NO borders, just colored background + rounded corners */
+.coming-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: var(--space-md) var(--space-sm);
+    min-height: 90px;
+    border-radius: var(--radius-md);
+    /* NO border - matches app exactly */
+}
+
+/* Tile background colors */
+.coming-yellow { background: var(--yellow); }
+.coming-pink { background: var(--pink); }
+.coming-green { background: var(--green); }
+.coming-cyan { background: var(--cyan); }
+.coming-orange { background: var(--orange); }
+.coming-purple { background: var(--purple); }
+
+/* Large colored icon - 32px like app's .font(.system(size: 32, weight: .bold)) */
+.coming-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.coming-icon svg {
+    width: 100%;
+    height: 100%;
+    /* Icons are BLACK on colored background - matches app */
+    fill: var(--black);
+    stroke: none;
+}
+
+/* Label below icon - matches app's .font(.system(size: 12, weight: .black, design: .rounded)) */
+.coming-label {
+    font-size: 10px;
+    font-weight: 900;
+    color: var(--black);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* ================================
+   AD SECTION - Clean card with image
+   ================================ */
+.ad-section {
+    background: var(--white);
+    border: 2px solid var(--black);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.ad-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* ================================
+   DESIGN MENTION - White card (情報デザイン: all text in cards)
+   ================================ */
+.design-mention {
+    background: var(--white);
+    border: 2px solid var(--black);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.design-mention-label {
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--black);
+}
+
+.design-mention-text {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--black);
+    line-height: 1.6;
+    opacity: 0.7;
+}
+
+/* ================================
+   UPDATES - Bento tiles like Star Page
+   ================================ */
+.updates-section {
+    background: var(--white);
+    border: 2px solid var(--black);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+}
+
+.updates-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-sm);
+}
+
+/* Bento tile - no border, colored background */
+.update-tile {
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.update-yellow { background: var(--yellow); }
+.update-cyan { background: var(--cyan); }
+.update-pink { background: var(--pink); }
+.update-green { background: var(--green); }
+.update-orange { background: var(--orange); }
+.update-purple { background: var(--purple); }
+
+.update-date {
+    font-size: 10px;
+    font-weight: 900;
+    color: var(--black);
+    opacity: 0.6;
+    font-variant-numeric: tabular-nums;
+}
+
+.update-text {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--black);
+    line-height: 1.4;
+}
+
+/* ================================
+   FOOTER - White card on dark canvas
    ================================ */
 .footer {
+    background: var(--white);
+    border: 2px solid var(--black);
+    border-radius: var(--radius-md);
     text-align: center;
-    padding: var(--space-lg) 0;
+    padding: var(--space-lg);
+}
+
+.footer-mascot-svg {
+    margin: 0 auto var(--space-sm);
 }
 
 .footer-info {
@@ -609,43 +965,26 @@ body {
 
 .header-card { animation: fadeInUp 0.4s ease-out; }
 .hero-card { animation: fadeInUp 0.4s ease-out 0.1s both; }
-.audience-card { animation: fadeInUp 0.4s ease-out 0.2s both; }
+.ad-section { animation: fadeInUp 0.5s ease-out 0.15s both; }
+.why-section { animation: fadeInUp 0.4s ease-out 0.2s both; }
+.audience-card { animation: fadeInUp 0.4s ease-out 0.25s both; }
 .screenshots-section { animation: fadeInUp 0.4s ease-out 0.3s both; }
-.highlights-section { animation: fadeInUp 0.4s ease-out 0.4s both; }
-.rules-card { animation: fadeInUp 0.4s ease-out 0.5s both; }
-.cta-card { animation: fadeInUp 0.4s ease-out 0.6s both; }
+.coming-section { animation: fadeInUp 0.4s ease-out 0.35s both; }
+.design-mention { animation: fadeInUp 0.4s ease-out 0.4s both; }
+.updates-section { animation: fadeInUp 0.4s ease-out 0.45s both; }
+.cta-card { animation: fadeInUp 0.4s ease-out 0.5s both; }
 
 /* ================================
    RESPONSIVE
    ================================ */
-@media (max-width: 520px) {
-    .page {
-        padding: var(--space-sm);
-    }
 
+/* Small mobile */
+@media (max-width: 400px) {
     .hero-title {
         font-size: 26px;
     }
 
-    .bento {
-        grid-template-columns: 1fr;
-    }
-
-    .bento-main {
-        grid-column: span 1;
-    }
-
-    .bento-side {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--space-sm);
-    }
-
-    .audience-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .rules-grid {
-        grid-template-columns: 1fr;
+    .coming-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
