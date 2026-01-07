@@ -16,30 +16,29 @@ struct DayDetailSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: JohoDimensions.spacingLG) {
-                    // Date header
-                    dateHeader
+        ScrollView {
+            VStack(spacing: JohoDimensions.spacingLG) {
+                // Date header
+                dateHeader
 
-                    // Content sections
-                    if hasAnyContent {
-                        contentSections
-                    } else {
-                        emptyState
-                    }
-
-                    Spacer(minLength: JohoDimensions.spacingXL)
+                // Content sections
+                if hasAnyContent {
+                    contentSections
+                } else {
+                    emptyState
                 }
-                .padding(.horizontal, JohoDimensions.spacingLG)
-                .padding(.top, JohoDimensions.spacingSM)
+
+                Spacer(minLength: JohoDimensions.spacingXL)
             }
-            .johoBackground()
-            .toolbar(.hidden, for: .navigationBar)
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.top, JohoDimensions.spacingMD)
+            .padding(.bottom, JohoDimensions.spacingLG)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(JohoColors.background)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
-        .presentationCornerRadius(16)
+        .presentationCornerRadius(20)
     }
 
     // MARK: - Date Header
@@ -189,6 +188,7 @@ struct DayDetailSheet: View {
     }
 
     // MARK: - Detail Row (Bento Style)
+    // 情報デザイン: BLACK text on WHITE backgrounds. ALWAYS.
 
     @ViewBuilder
     private func detailRow(
@@ -199,20 +199,25 @@ struct DayDetailSheet: View {
         isSystem: Bool
     ) -> some View {
         HStack(spacing: 0) {
-            // LEFT: Type indicator + lock
-            HStack(spacing: 4) {
-                Circle()
-                    .fill(color)
-                    .frame(width: 10, height: 10)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+            // LEFT: Colored accent strip with type indicator
+            ZStack {
+                // Colored background for left section
+                color
 
-                if isSystem {
-                    Image(systemName: "lock.fill")
-                        .font(.system(size: 8))
-                        .foregroundStyle(JohoColors.black.opacity(0.4))
+                VStack(spacing: 4) {
+                    Circle()
+                        .fill(JohoColors.white)
+                        .frame(width: 12, height: 12)
+                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+
+                    if isSystem {
+                        Image(systemName: "lock.fill")
+                            .font(.system(size: 9, weight: .bold))
+                            .foregroundStyle(JohoColors.black.opacity(0.7))
+                    }
                 }
             }
-            .frame(width: 32)
+            .frame(width: 36)
             .frame(maxHeight: .infinity)
 
             // WALL
@@ -221,7 +226,7 @@ struct DayDetailSheet: View {
                 .frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
-            // CENTER: Title and subtitle
+            // CENTER: Title and subtitle (WHITE background, BLACK text)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(JohoFont.bodySmall)
@@ -235,9 +240,10 @@ struct DayDetailSheet: View {
                         .lineLimit(1)
                 }
             }
-            .padding(.horizontal, JohoDimensions.spacingSM)
+            .padding(.horizontal, JohoDimensions.spacingMD)
             .frame(maxWidth: .infinity, alignment: .leading)
             .frame(maxHeight: .infinity)
+            .background(JohoColors.white)
 
             // WALL
             Rectangle()
@@ -245,19 +251,20 @@ struct DayDetailSheet: View {
                 .frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
-            // RIGHT: Decoration icon
+            // RIGHT: Decoration icon with colored background
             Image(systemName: icon)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundStyle(color)
-                .frame(width: 24, height: 24)
-                .background(color.opacity(0.15))
-                .clipShape(Squircle(cornerRadius: 6))
-                .overlay(Squircle(cornerRadius: 6).stroke(JohoColors.black, lineWidth: 1))
-                .frame(width: 48)
+                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoColors.white)
+                .frame(width: 28, height: 28)
+                .background(color)
+                .clipShape(Squircle(cornerRadius: 7))
+                .overlay(Squircle(cornerRadius: 7).stroke(JohoColors.black, lineWidth: 1.5))
+                .frame(width: 52)
                 .frame(maxHeight: .infinity)
+                .background(JohoColors.white)
         }
-        .frame(height: 52)
-        .background(color.opacity(0.15))
+        .frame(height: 56)
+        .background(JohoColors.white)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)

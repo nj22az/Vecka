@@ -1,7 +1,7 @@
-/* Swedish Localization for WeekGrid */
+/* Swedish Localization for Onsen Planner */
 
 /* App */
-"app.name" = "WEEKGRID";
+"app.name" = "ONSEN PLANNER";
 
 /* Common */
 "common.today" = "Idag";
@@ -116,6 +116,15 @@
 "region.sweden" = "Sverige";
 "region.us" = "USA";
 "region.vietnam" = "Vietnam";
+"region.germany" = "Tyskland";
+"region.uk" = "Storbritannien";
+"region.france" = "Frankrike";
+"region.italy" = "Italien";
+"region.netherlands" = "Nederländerna";
+"region.japan" = "Japan";
+"region.hongkong" = "Hongkong";
+"region.china" = "Kina";
+"region.thailand" = "Thailand";
 
 /* Weather - UI Labels */
 "weather.high" = "Max";
@@ -235,7 +244,7 @@
 "pdf.notes" = "Anteckningar";
 "pdf.expenses" = "Utgifter";
 "pdf.week" = "Vecka";
-"pdf.generated_by" = "Genererad av WeekGrid";
+"pdf.generated_by" = "Genererad av Onsen Planner";
 
 /* Contacts */
 "contacts.title" = "Kontakter";

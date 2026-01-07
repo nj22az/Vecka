@@ -18,6 +18,7 @@ struct WeekDetailPanel: View {
     let selectedDay: CalendarDay?
     let notes: [DailyNote]
     let holidays: [HolidayCacheItem]
+    let trips: [TravelTrip]  // 情報デザイン: Trips data for week view
     let onDayTap: (CalendarDay) -> Void
 
     @State private var eventManager = CalendarEventManager()
@@ -45,6 +46,7 @@ struct WeekDetailPanel: View {
                             calendarEvents: eventManager.events(for: day.date),
                             notes: notesFor(day),
                             holidays: holidaysFor(day),
+                            trips: tripsFor(day),  // 情報デザイン: Pass trips for day
                             onTap: { onDayTap(day) },
                             onToggle: { toggleExpand(day) }
                         )
@@ -191,6 +193,17 @@ struct WeekDetailPanel: View {
         }
         return []
     }
+
+    private func tripsFor(_ day: CalendarDay) -> [TravelTrip] {
+        // 情報デザイン: Check if day falls within any trip's date range
+        let calendar = Calendar.iso8601
+        let dayStart = calendar.startOfDay(for: day.date)
+        return trips.filter { trip in
+            let tripStart = calendar.startOfDay(for: trip.startDate)
+            let tripEnd = calendar.startOfDay(for: trip.endDate)
+            return dayStart >= tripStart && dayStart <= tripEnd
+        }
+    }
 }
 
 // MARK: - Week Detail Sheet Content (iPhone)
@@ -201,6 +214,7 @@ struct WeekDetailSheetContent: View {
     let selectedDay: CalendarDay?
     let notes: [DailyNote]
     let holidays: [HolidayCacheItem]
+    let trips: [TravelTrip]  // 情報デザイン: Trips data for week view
     let onDayTap: (CalendarDay) -> Void
 
     @State private var eventManager = CalendarEventManager()
@@ -231,6 +245,7 @@ struct WeekDetailSheetContent: View {
                             calendarEvents: eventManager.events(for: day.date),
                             notes: notesFor(day),
                             holidays: holidaysFor(day),
+                            trips: tripsFor(day),  // 情報デザイン: Pass trips for day
                             onTap: { onDayTap(day) },
                             onToggle: { toggleExpand(day) }
                         )
@@ -277,6 +292,7 @@ struct WeekDetailSheetContent: View {
         for day in week.days {
             let hasContent = !notesFor(day).isEmpty ||
                              !holidaysFor(day).isEmpty ||
+                             !tripsFor(day).isEmpty ||
                              !eventManager.events(for: day.date).isEmpty
             if day.isToday || hasContent || selectedDay?.id == day.id {
                 expandedDays.insert(day.id)
@@ -294,9 +310,31 @@ struct WeekDetailSheetContent: View {
         }
         return []
     }
+
+    private func tripsFor(_ day: CalendarDay) -> [TravelTrip] {
+        // 情報デザイン: Check if day falls within any trip's date range
+        let calendar = Calendar.iso8601
+        let dayStart = calendar.startOfDay(for: day.date)
+        return trips.filter { trip in
+            let tripStart = calendar.startOfDay(for: trip.startDate)
+            let tripEnd = calendar.startOfDay(for: trip.endDate)
+            return dayStart >= tripStart && dayStart <= tripEnd
+        }
+    }
 }
 
-// MARK: - Collapsible Day Card
+// MARK: - Collapsible Day Card (情報デザイン: Star Pages Golden Standard)
+//
+// 情報デザイン BENTO LAYOUT - Matches Star Pages exactly
+// ┌────────────────────────────────────────────────────────────────┐
+// │ [TUE 6]  January 6, 2026              [TODAY] ●●● ▼           │
+// ├────────────────────────────────────────────────────────────────┤
+// │ ┌─────────────────────────────────────────────────────┬──────┐ │
+// │ │ [HOLIDAYS]                                          │  ★   │ │
+// │ ├──────┬──────────────────────────────────────────────┼──────┤ │
+// │ │ ●🔒  │ Epiphany                                     │ [SWE]│ │
+// │ └──────┴──────────────────────────────────────────────┴──────┘ │
+// └────────────────────────────────────────────────────────────────┘
 
 struct CollapsibleDayCard: View {
     let day: CalendarDay
@@ -305,196 +343,398 @@ struct CollapsibleDayCard: View {
     let calendarEvents: [EKEvent]
     let notes: [DailyNote]
     let holidays: [HolidayCacheItem]
+    let trips: [TravelTrip]
     let onTap: () -> Void
     let onToggle: () -> Void
 
+    private let calendar = Calendar.iso8601
+
+    /// 情報デザイン: Filter calendar events to remove holiday duplicates
+    /// EventKit often includes Swedish holidays like "Trettondedag jul" which duplicate
+    /// our HolidayManager entries like "Epiphany"
+    private var filteredCalendarEvents: [EKEvent] {
+        // If no holidays on this day, show all events
+        guard !holidays.isEmpty else { return calendarEvents }
+
+        // Known Swedish/system holiday patterns to filter
+        let holidayPatterns = [
+            "trettondedag", "nyårsdagen", "juldagen", "annandag",
+            "första maj", "nationaldag", "midsommar", "alla helgon",
+            "långfredag", "påsk", "kristi", "pingstdag",
+            "epiphany", "christmas", "new year", "easter",
+            "good friday", "ascension", "whit", "midsummer"
+        ]
+
+        return calendarEvents.filter { event in
+            guard let title = event.title?.lowercased() else { return true }
+
+            // Skip all-day events that match holiday patterns
+            if event.isAllDay {
+                for pattern in holidayPatterns {
+                    if title.contains(pattern) {
+                        return false // Filter out this holiday duplicate
+                    }
+                }
+            }
+            return true
+        }
+    }
+
     private var hasContent: Bool {
-        !calendarEvents.isEmpty || !notes.isEmpty || !holidays.isEmpty
+        !filteredCalendarEvents.isEmpty || !notes.isEmpty || !holidays.isEmpty || !trips.isEmpty
+    }
+
+    /// Days from today (negative = past, positive = future)
+    private var daysFromToday: Int {
+        let today = calendar.startOfDay(for: Date())
+        let target = calendar.startOfDay(for: day.date)
+        return calendar.dateComponents([.day], from: today, to: target).day ?? 0
     }
 
     var body: some View {
-        JohoCard(
-            cornerRadius: JohoDimensions.radiusMedium,
-            borderWidth: (isSelected || day.isToday) ? JohoDimensions.borderThick : JohoDimensions.borderMedium
-        ) {
-            VStack(alignment: .leading, spacing: 0) {
-                // Header row (always visible) - tap to select day
-                Button(action: onTap) {
-                    headerRow
-                }
-                .buttonStyle(.plain)
+        VStack(spacing: 0) {
+            // Header row (always visible)
+            headerRow
 
-                // Expanded content
-                if isExpanded {
-                    expandedContent
-                        .padding(.top, JohoDimensions.spacingSM)
-                }
+            // Expanded content
+            if isExpanded {
+                // Thin divider
+                Rectangle()
+                    .fill(JohoColors.black.opacity(0.15))
+                    .frame(height: 1)
+
+                expandedContent
+                    .padding(.top, JohoDimensions.spacingSM)
+                    .padding(.bottom, JohoDimensions.spacingMD)
             }
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(accessibilityLabel)
+        .background(JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(JohoColors.black, lineWidth: day.isToday ? JohoDimensions.borderThick : JohoDimensions.borderMedium)
+        )
     }
 
-    // MARK: - Header Row (Simplified: [TUE 30] + Date)
+    // MARK: - Header Row (情報デザイン: Star Pages style)
 
     private var headerRow: some View {
-        HStack(spacing: JohoDimensions.spacingSM) {
-            // Combined day badge: [TUE 30]
-            HStack(spacing: 4) {
-                Text(weekdayShort)
-                    .font(JohoFont.labelSmall)
-                Text("\(day.dayNumber)")
-                    .font(JohoFont.headline)
-            }
-            .foregroundStyle(dayBadgeTextColor)
-            .padding(.horizontal, JohoDimensions.spacingSM)
-            .padding(.vertical, JohoDimensions.spacingXS)
-            .background(dayBadgeBackground)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
-            )
+        Button(action: onToggle) {
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Day badge: [TUE 6]
+                dayBadge
 
-            // Full date
-            Text(fullDateText)
-                .font(JohoFont.body)
-                .foregroundStyle(JohoColors.black)
+                // Full date: January 6, 2026 (Star Pages format)
+                Text(fullDateText)
+                    .font(JohoFont.body)
+                    .foregroundStyle(JohoColors.black)
 
-            Spacer()
+                Spacer()
 
-            // Status indicators
-            HStack(spacing: JohoDimensions.spacingXS) {
-                // Today pill (情報デザイン: inverted - yellow bg, white text, black border)
-                if day.isToday {
-                    JohoPill(text: "TODAY", style: .coloredInverted(JohoColors.yellow), size: .small)
-                }
+                // Status indicators
+                HStack(spacing: JohoDimensions.spacingXS) {
+                    // Date status pill (情報デザイン: TODAY, YESTERDAY, or X DAYS AGO)
+                    dateStatusPill
 
-                // Content indicator dots (when collapsed)
-                if !isExpanded && hasContent {
-                    contentIndicatorDots
-                }
+                    // Content indicator dots (when collapsed)
+                    if !isExpanded && hasContent {
+                        contentIndicatorDots
+                    }
 
-                // Expand/collapse chevron - tap to toggle (44pt min touch target)
-                Button(action: onToggle) {
+                    // Expand/collapse chevron
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
                         .font(.system(size: 14, weight: .bold))
                         .foregroundStyle(JohoColors.black)
-                        .frame(width: 44, height: 44)
-                        .contentShape(Rectangle())
+                        .frame(width: 24, height: 24)
                 }
-                .buttonStyle(.plain)
             }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
         }
+        .buttonStyle(.plain)
     }
 
-    // MARK: - Content Indicator Dots (shown when collapsed)
+    // MARK: - Day Badge (情報デザイン: [TUE 6] format)
+
+    private var dayBadge: some View {
+        HStack(spacing: 4) {
+            Text(weekdayShort)
+                .font(JohoFont.labelSmall)
+            Text("\(day.dayNumber)")
+                .font(JohoFont.headline)
+        }
+        .foregroundStyle(day.isToday ? JohoColors.black : JohoColors.black)
+        .padding(.horizontal, JohoDimensions.spacingSM)
+        .padding(.vertical, JohoDimensions.spacingXS)
+        .background(day.isToday ? JohoColors.yellow : JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+        )
+    }
+
+    // MARK: - Date Status Pill (情報デザイン: Temporal context)
+
+    @ViewBuilder
+    private var dateStatusPill: some View {
+        if daysFromToday == 0 {
+            // TODAY - Yellow inverted pill
+            JohoPill(text: "TODAY", style: .coloredInverted(JohoColors.yellow), size: .small)
+        } else if daysFromToday == -1 {
+            // YESTERDAY - Muted gray pill
+            JohoPill(text: "YESTERDAY", style: .muted, size: .small)
+        } else if daysFromToday < -1 {
+            // X DAYS AGO - Muted gray pill
+            JohoPill(text: "\(abs(daysFromToday)) DAYS AGO", style: .muted, size: .small)
+        }
+        // Future dates: no status pill shown
+    }
+
+    // MARK: - Content Indicator Dots (情報デザイン: Colored circles with BLACK borders)
 
     private var contentIndicatorDots: some View {
         HStack(spacing: 3) {
             if !holidays.isEmpty {
                 Circle()
-                    .fill(JohoColors.pink)
+                    .fill(SpecialDayType.holiday.accentColor)
                     .frame(width: 8, height: 8)
                     .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
             }
-            if !calendarEvents.isEmpty {
+            if !filteredCalendarEvents.isEmpty {
                 Circle()
-                    .fill(JohoColors.cyan)
+                    .fill(SpecialDayType.event.accentColor)
                     .frame(width: 8, height: 8)
                     .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
             }
             if !notes.isEmpty {
                 Circle()
-                    .fill(JohoColors.yellow)
+                    .fill(SpecialDayType.note.accentColor)
+                    .frame(width: 8, height: 8)
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+            }
+            if !trips.isEmpty {
+                Circle()
+                    .fill(SpecialDayType.trip.accentColor)
                     .frame(width: 8, height: 8)
                     .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
             }
         }
     }
 
-    // MARK: - Expanded Content
+    // MARK: - Expanded Content (情報デザイン: Bento sections)
 
     @ViewBuilder
     private var expandedContent: some View {
         if hasContent {
             VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                // Holidays
+                // Holidays section (pink background)
                 if !holidays.isEmpty {
-                    JohoSectionBox(title: "Holidays", zone: .holidays, icon: "star.fill") {
-                        VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
-                            ForEach(holidays, id: \.id) { holiday in
-                                EventItemView(
-                                    time: nil,
-                                    title: holiday.displayTitle,
-                                    icon: holiday.symbolName ?? "star.fill",
-                                    isRedDay: holiday.isRedDay
-                                )
-                            }
+                    bentoSection(
+                        title: "Holidays",
+                        icon: "star.fill",
+                        zone: .holidays
+                    ) {
+                        ForEach(holidays, id: \.id) { holiday in
+                            bentoItemRow(
+                                title: holiday.displayTitle,
+                                type: .holiday,
+                                isSystem: true,
+                                region: holiday.region
+                            )
                         }
                     }
                 }
 
-                // Calendar events
-                if !calendarEvents.isEmpty {
-                    JohoSectionBox(title: "Events", zone: .calendar, icon: "calendar") {
-                        VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
-                            ForEach(calendarEvents, id: \.eventIdentifier) { event in
-                                EventItemView(
-                                    time: formatTime(event.startDate),
-                                    title: event.title ?? "Event",
-                                    icon: "calendar"
-                                )
-                            }
+                // Calendar events section (purple/cyan) - filtered to remove holiday duplicates
+                if !filteredCalendarEvents.isEmpty {
+                    bentoSection(
+                        title: "Events",
+                        icon: "calendar.badge.clock",
+                        zone: .calendar
+                    ) {
+                        ForEach(filteredCalendarEvents, id: \.eventIdentifier) { event in
+                            bentoItemRow(
+                                title: event.title ?? "Event",
+                                type: .event,
+                                isSystem: false,
+                                time: event.isAllDay ? nil : formatTime(event.startDate)
+                            )
                         }
                     }
                 }
 
-                // Notes
+                // Notes section (yellow)
                 if !notes.isEmpty {
-                    JohoSectionBox(title: "Notes", zone: .notes, icon: "note.text") {
-                        VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
-                            ForEach(notes) { note in
-                                EventItemView(
-                                    time: nil,
-                                    title: firstLine(of: note.content),
-                                    icon: note.symbolName ?? "note.text"
-                                )
-                            }
+                    bentoSection(
+                        title: "Notes",
+                        icon: "note.text",
+                        zone: .notes
+                    ) {
+                        ForEach(notes) { note in
+                            bentoItemRow(
+                                title: firstLine(of: note.content),
+                                type: .note,
+                                isSystem: false
+                            )
+                        }
+                    }
+                }
+
+                // Trips section (blue/orange)
+                if !trips.isEmpty {
+                    bentoSection(
+                        title: "Trips",
+                        icon: "airplane",
+                        zone: .trips
+                    ) {
+                        ForEach(trips) { trip in
+                            bentoItemRow(
+                                title: trip.destination,
+                                type: .trip,
+                                isSystem: false
+                            )
                         }
                     }
                 }
             }
+            .padding(.horizontal, JohoDimensions.spacingMD)
         } else {
-            // Empty state
-            Text("No events or notes")
-                .font(JohoFont.bodySmall)
-                .foregroundStyle(JohoColors.black.opacity(0.6))
-                .padding(.vertical, JohoDimensions.spacingXS)
+            EmptyView()
         }
     }
 
-    // MARK: - Day Badge Styling
+    // MARK: - Bento Section Box (情報デザイン: Star Pages style with wall)
+    //
+    // ┌───────────────────────────────────────────────┬──────┐
+    // │ [HOLIDAYS]                                    │  ★   │
+    // ├───────────────────────────────────────────────┴──────┤
+    // │ Items...                                              │
+    // └───────────────────────────────────────────────────────┘
 
-    private var dayBadgeBackground: Color {
-        if isSelected {
-            return JohoColors.black
+    @ViewBuilder
+    private func bentoSection<Content: View>(
+        title: String,
+        icon: String,
+        zone: SectionZone,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Section header with icon compartment
+            HStack(spacing: 0) {
+                // LEFT: Title pill
+                JohoPill(text: title.uppercased(), style: .whiteOnBlack, size: .small)
+                    .padding(.leading, JohoDimensions.spacingMD)
+
+                Spacer()
+
+                // WALL (vertical divider)
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(width: 1.5)
+                    .frame(maxHeight: .infinity)
+
+                // RIGHT: Icon compartment
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(JohoColors.black)
+                    .frame(width: 40)
+                    .frame(maxHeight: .infinity)
+            }
+            .frame(height: 32)
+            .background(zone.background.opacity(0.5))
+
+            // Horizontal divider
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(height: 1.5)
+
+            // Items
+            VStack(spacing: 0) {
+                content()
+            }
+            .padding(.vertical, 4)
         }
-        if day.isToday {
-            return JohoColors.yellow
-        }
-        let weekday = Calendar.iso8601.component(.weekday, from: day.date)
-        if weekday == 1 { // Sunday
-            return JohoColors.pink.opacity(0.3)
-        }
-        return JohoColors.white
+        .background(zone.background)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+        )
     }
 
-    private var dayBadgeTextColor: Color {
-        if isSelected {
-            return JohoColors.white
+    // MARK: - Bento Item Row (情報デザイン: Compartmentalized with walls)
+    //
+    // ┌──────┬────────────────────────────────────┬─────────┐
+    // │ ●🔒  │ Epiphany                           │ [SWE]   │
+    // └──────┴────────────────────────────────────┴─────────┘
+
+    @ViewBuilder
+    private func bentoItemRow(
+        title: String,
+        type: SpecialDayType,
+        isSystem: Bool,
+        region: String? = nil,
+        time: String? = nil
+    ) -> some View {
+        HStack(spacing: 0) {
+            // LEFT COMPARTMENT: Type indicator (fixed 32pt)
+            HStack(alignment: .center, spacing: 3) {
+                Circle()
+                    .fill(type.accentColor)
+                    .frame(width: 10, height: 10)
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+
+                if isSystem {
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 7, weight: .bold))
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                }
+            }
+            .frame(width: 32, alignment: .center)
+            .frame(maxHeight: .infinity)
+
+            // WALL (vertical divider)
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(width: 1.5)
+                .frame(maxHeight: .infinity)
+
+            // CENTER COMPARTMENT: Title (flexible)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(JohoColors.black)
+                    .lineLimit(1)
+
+                if let time = time {
+                    Text(time)
+                        .font(JohoFont.monoSmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                }
+            }
+            .padding(.horizontal, 8)
+            .frame(maxHeight: .infinity, alignment: .leading)
+
+            Spacer(minLength: 4)
+
+            // WALL (vertical divider) - only if we have right content
+            if region != nil {
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(width: 1.5)
+                    .frame(maxHeight: .infinity)
+
+                // RIGHT COMPARTMENT: Region pill
+                if let region = region, !region.isEmpty {
+                    CountryPill(region: region)
+                        .padding(.horizontal, 6)
+                        .frame(maxHeight: .infinity)
+                }
+            }
         }
-        return JohoColors.black
+        .frame(minHeight: 36)
+        .contentShape(Rectangle())
     }
 
     // MARK: - Formatters
@@ -506,6 +746,7 @@ struct CollapsibleDayCard: View {
     }
 
     private var fullDateText: String {
+        // 情報デザイン: Star Pages format - "January 6, 2026"
         let formatter = DateFormatter()
         formatter.dateFormat = "MMMM d, yyyy"
         return formatter.string(from: day.date)
@@ -520,24 +761,6 @@ struct CollapsibleDayCard: View {
     private func firstLine(of text: String) -> String {
         text.components(separatedBy: .newlines).first ?? text
     }
-
-    private var accessibilityLabel: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .full
-        var label = dateFormatter.string(from: day.date)
-
-        if !holidays.isEmpty {
-            label += ". Holidays: \(holidays.map { $0.displayTitle }.joined(separator: ", "))"
-        }
-        if !calendarEvents.isEmpty {
-            label += ". \(calendarEvents.count) calendar events"
-        }
-        if !notes.isEmpty {
-            label += ". \(notes.count) notes"
-        }
-
-        return label
-    }
 }
 
 // MARK: - Event Item View
@@ -546,13 +769,13 @@ struct EventItemView: View, Equatable {
     let time: String?
     let title: String
     let icon: String
-    var isRedDay: Bool = false
+    var isBankHoliday: Bool = false
 
     static func == (lhs: EventItemView, rhs: EventItemView) -> Bool {
         lhs.time == rhs.time &&
         lhs.title == rhs.title &&
         lhs.icon == rhs.icon &&
-        lhs.isRedDay == rhs.isRedDay
+        lhs.isBankHoliday == rhs.isBankHoliday
     }
 
     var body: some View {
@@ -580,16 +803,11 @@ struct EventItemView: View, Equatable {
             }
 
             Spacer()
-
-            // Red day indicator
-            if isRedDay {
-                JohoPill(text: "Red Day", style: .colored(JohoColors.pink), size: .small)
-            }
         }
     }
 
     private var iconBackground: Color {
-        if isRedDay {
+        if isBankHoliday {
             return JohoColors.pink
         }
         return JohoColors.white
@@ -628,10 +846,26 @@ class CalendarEventManager {
         let startOfWeek = calendar.startOfDay(for: week.startDate)
         guard let endOfWeek = calendar.date(byAdding: .day, value: 7, to: startOfWeek) else { return }
 
+        // 情報デザイン: Only fetch from USER calendars, not subscription/holiday calendars
+        // This ensures HolidayManager is the SINGLE source of truth for holidays
+        let userCalendars = eventStore.calendars(for: .event).filter { cal in
+            // Include only editable calendars (user-created events)
+            // Exclude: subscription calendars (holidays), birthdays, read-only
+            cal.allowsContentModifications &&
+            cal.type != .subscription &&
+            cal.type != .birthday
+        }
+
+        // If no user calendars, return empty
+        guard !userCalendars.isEmpty else {
+            eventsByDate = [:]
+            return
+        }
+
         let predicate = eventStore.predicateForEvents(
             withStart: startOfWeek,
             end: endOfWeek,
-            calendars: nil
+            calendars: userCalendars  // Only user calendars
         )
 
         let events = eventStore.events(matching: predicate)
@@ -673,6 +907,7 @@ class CalendarEventManager {
             selectedDay: currentWeek.days.first,
             notes: [],
             holidays: [],
+            trips: [],
             onDayTap: { _ in }
         )
     }
@@ -688,6 +923,7 @@ class CalendarEventManager {
         selectedDay: nil,
         notes: [],
         holidays: [],
+        trips: [],
         onDayTap: { _ in }
     )
 }

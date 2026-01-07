@@ -87,13 +87,13 @@ struct DayExportData: Identifiable {
 struct HolidayExportInfo: Identifiable {
     let id = UUID()
     let name: String
-    let isRedDay: Bool
+    let isBankHoliday: Bool
     let symbol: String?
     let description: String?
 
-    init(name: String, isRedDay: Bool, symbol: String? = nil, description: String? = nil) {
+    init(name: String, isBankHoliday: Bool, symbol: String? = nil, description: String? = nil) {
         self.name = name
-        self.isRedDay = isRedDay
+        self.isBankHoliday = isBankHoliday
         self.symbol = symbol
         self.description = description
     }

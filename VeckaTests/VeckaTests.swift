@@ -177,7 +177,7 @@ final class HolidayEngineTests: XCTestCase {
     private func calculateEaster(year: Int) -> Date? {
         let easterRule = HolidayRule(
             name: "Easter",
-            isRedDay: true,
+            isBankHoliday: true,
             type: .easterRelative,
             daysOffset: 0
         )
@@ -228,7 +228,7 @@ final class HolidayEngineTests: XCTestCase {
     func testFixedHoliday() {
         let rule = HolidayRule(
             name: "Christmas",
-            isRedDay: true,
+            isBankHoliday: true,
             type: .fixed,
             month: 12,
             day: 25
@@ -250,7 +250,7 @@ final class HolidayEngineTests: XCTestCase {
         // Good Friday is 2 days before Easter
         let rule = HolidayRule(
             name: "Good Friday",
-            isRedDay: true,
+            isBankHoliday: true,
             type: .easterRelative,
             daysOffset: -2
         )
@@ -270,7 +270,7 @@ final class HolidayEngineTests: XCTestCase {
         // Ascension Day is 39 days after Easter
         let rule = HolidayRule(
             name: "Ascension Day",
-            isRedDay: true,
+            isBankHoliday: true,
             type: .easterRelative,
             daysOffset: 39
         )
@@ -293,7 +293,7 @@ final class HolidayEngineTests: XCTestCase {
         let rule = HolidayRule(
             name: "Thanksgiving",
             region: "US",
-            isRedDay: true,
+            isBankHoliday: true,
             type: .nthWeekday,
             month: 11,
             weekday: 5, // Thursday
@@ -316,7 +316,7 @@ final class HolidayEngineTests: XCTestCase {
         // Last Sunday in May (Sweden)
         let rule = HolidayRule(
             name: "Mother's Day",
-            isRedDay: false,
+            isBankHoliday: false,
             type: .nthWeekday,
             month: 5,
             weekday: 1, // Sunday
@@ -340,7 +340,7 @@ final class HolidayEngineTests: XCTestCase {
         // Midsummer Day: Saturday between June 20-26
         let rule = HolidayRule(
             name: "Midsummer Day",
-            isRedDay: true,
+            isBankHoliday: true,
             type: .floating,
             month: 6,
             weekday: 7, // Saturday
@@ -365,7 +365,7 @@ final class HolidayEngineTests: XCTestCase {
     func testValidFixedRule() {
         let rule = HolidayRule(
             name: "Test",
-            isRedDay: true,
+            isBankHoliday: true,
             type: .fixed,
             month: 12,
             day: 25
@@ -377,7 +377,7 @@ final class HolidayEngineTests: XCTestCase {
     func testInvalidFixedRuleMissingMonth() {
         let rule = HolidayRule(
             name: "Test",
-            isRedDay: true,
+            isBankHoliday: true,
             type: .fixed,
             day: 25
         )
@@ -388,7 +388,7 @@ final class HolidayEngineTests: XCTestCase {
     func testInvalidMonthRange() {
         let rule = HolidayRule(
             name: "Test",
-            isRedDay: true,
+            isBankHoliday: true,
             type: .fixed,
             month: 13, // Invalid
             day: 25
@@ -400,7 +400,7 @@ final class HolidayEngineTests: XCTestCase {
     func testInvalidDayRange() {
         let rule = HolidayRule(
             name: "Test",
-            isRedDay: true,
+            isBankHoliday: true,
             type: .fixed,
             month: 12,
             day: 32 // Invalid
@@ -412,7 +412,7 @@ final class HolidayEngineTests: XCTestCase {
     func testInvalidEasterRelativeMissingOffset() {
         let rule = HolidayRule(
             name: "Test",
-            isRedDay: true,
+            isBankHoliday: true,
             type: .easterRelative
         )
         XCTAssertFalse(rule.isValid)
@@ -422,7 +422,7 @@ final class HolidayEngineTests: XCTestCase {
     func testValidAstronomicalRule() {
         let rule = HolidayRule(
             name: "Summer Solstice",
-            isRedDay: false,
+            isBankHoliday: false,
             type: .astronomical,
             month: 6 // Valid (3, 6, 9, or 12)
         )
@@ -432,7 +432,7 @@ final class HolidayEngineTests: XCTestCase {
     func testInvalidAstronomicalMonth() {
         let rule = HolidayRule(
             name: "Test",
-            isRedDay: false,
+            isBankHoliday: false,
             type: .astronomical,
             month: 5 // Invalid - must be 3, 6, 9, or 12
         )
@@ -580,7 +580,7 @@ final class HolidayAccuracyTests: XCTestCase {
     // MARK: - Swedish Holiday Accuracy
 
     func testSwedishNewYearsDay() {
-        let rule = HolidayRule(name: "New Year's Day", isRedDay: true, type: .fixed, month: 1, day: 1)
+        let rule = HolidayRule(name: "New Year's Day", isBankHoliday: true, type: .fixed, month: 1, day: 1)
         let date = engine.calculateDate(for: rule, year: 2025)
 
         XCTAssertNotNil(date)
@@ -588,7 +588,7 @@ final class HolidayAccuracyTests: XCTestCase {
     }
 
     func testSwedishEpiphany() {
-        let rule = HolidayRule(name: "Epiphany", isRedDay: true, type: .fixed, month: 1, day: 6)
+        let rule = HolidayRule(name: "Epiphany", isBankHoliday: true, type: .fixed, month: 1, day: 6)
         let date = engine.calculateDate(for: rule, year: 2025)
 
         XCTAssertNotNil(date)
@@ -597,7 +597,7 @@ final class HolidayAccuracyTests: XCTestCase {
 
     func testSwedishMaundyThursday() {
         // Easter 2025: April 20, so Maundy Thursday is April 17
-        let rule = HolidayRule(name: "Maundy Thursday", isRedDay: false, type: .easterRelative, daysOffset: -3)
+        let rule = HolidayRule(name: "Maundy Thursday", isBankHoliday: false, type: .easterRelative, daysOffset: -3)
         let date = engine.calculateDate(for: rule, year: 2025)
 
         XCTAssertNotNil(date)
@@ -606,7 +606,7 @@ final class HolidayAccuracyTests: XCTestCase {
 
     func testSwedishEasterMonday() {
         // Easter 2025: April 20, so Easter Monday is April 21
-        let rule = HolidayRule(name: "Easter Monday", isRedDay: true, type: .easterRelative, daysOffset: 1)
+        let rule = HolidayRule(name: "Easter Monday", isBankHoliday: true, type: .easterRelative, daysOffset: 1)
         let date = engine.calculateDate(for: rule, year: 2025)
 
         XCTAssertNotNil(date)
@@ -614,7 +614,7 @@ final class HolidayAccuracyTests: XCTestCase {
     }
 
     func testSwedishWalpurgisNight() {
-        let rule = HolidayRule(name: "Walpurgis Night", isRedDay: false, type: .fixed, month: 4, day: 30)
+        let rule = HolidayRule(name: "Walpurgis Night", isBankHoliday: false, type: .fixed, month: 4, day: 30)
         let date = engine.calculateDate(for: rule, year: 2025)
 
         XCTAssertNotNil(date)
@@ -622,7 +622,7 @@ final class HolidayAccuracyTests: XCTestCase {
     }
 
     func testSwedishMayDay() {
-        let rule = HolidayRule(name: "May Day", isRedDay: true, type: .fixed, month: 5, day: 1)
+        let rule = HolidayRule(name: "May Day", isBankHoliday: true, type: .fixed, month: 5, day: 1)
         let date = engine.calculateDate(for: rule, year: 2025)
 
         XCTAssertNotNil(date)
@@ -630,7 +630,7 @@ final class HolidayAccuracyTests: XCTestCase {
     }
 
     func testSwedishNationalDay() {
-        let rule = HolidayRule(name: "National Day", isRedDay: true, type: .fixed, month: 6, day: 6)
+        let rule = HolidayRule(name: "National Day", isBankHoliday: true, type: .fixed, month: 6, day: 6)
         let date = engine.calculateDate(for: rule, year: 2025)
 
         XCTAssertNotNil(date)
@@ -639,7 +639,7 @@ final class HolidayAccuracyTests: XCTestCase {
 
     func testSwedishMidsummerEve() {
         // Friday between June 19-25
-        let rule = HolidayRule(name: "Midsummer Eve", isRedDay: false, type: .floating, month: 6, weekday: 6, dayRangeStart: 19, dayRangeEnd: 25)
+        let rule = HolidayRule(name: "Midsummer Eve", isBankHoliday: false, type: .floating, month: 6, weekday: 6, dayRangeStart: 19, dayRangeEnd: 25)
         let date = engine.calculateDate(for: rule, year: 2025)
 
         XCTAssertNotNil(date)
@@ -653,7 +653,7 @@ final class HolidayAccuracyTests: XCTestCase {
 
     func testSwedishAllSaintsDay() {
         // Saturday between Oct 31 - Nov 6
-        let rule = HolidayRule(name: "All Saints' Day", isRedDay: true, type: .floating, month: 11, weekday: 7, dayRangeStart: 31, dayRangeEnd: 37)
+        let rule = HolidayRule(name: "All Saints' Day", isBankHoliday: true, type: .floating, month: 11, weekday: 7, dayRangeStart: 31, dayRangeEnd: 37)
         let date = engine.calculateDate(for: rule, year: 2025)
 
         XCTAssertNotNil(date)
@@ -663,7 +663,7 @@ final class HolidayAccuracyTests: XCTestCase {
     }
 
     func testSwedishChristmasEve() {
-        let rule = HolidayRule(name: "Christmas Eve", isRedDay: false, type: .fixed, month: 12, day: 24)
+        let rule = HolidayRule(name: "Christmas Eve", isBankHoliday: false, type: .fixed, month: 12, day: 24)
         let date = engine.calculateDate(for: rule, year: 2025)
 
         XCTAssertNotNil(date)
@@ -671,7 +671,7 @@ final class HolidayAccuracyTests: XCTestCase {
     }
 
     func testSwedishChristmasDay() {
-        let rule = HolidayRule(name: "Christmas Day", isRedDay: true, type: .fixed, month: 12, day: 25)
+        let rule = HolidayRule(name: "Christmas Day", isBankHoliday: true, type: .fixed, month: 12, day: 25)
         let date = engine.calculateDate(for: rule, year: 2025)
 
         XCTAssertNotNil(date)
@@ -679,7 +679,7 @@ final class HolidayAccuracyTests: XCTestCase {
     }
 
     func testSwedishBoxingDay() {
-        let rule = HolidayRule(name: "Boxing Day", isRedDay: true, type: .fixed, month: 12, day: 26)
+        let rule = HolidayRule(name: "Boxing Day", isBankHoliday: true, type: .fixed, month: 12, day: 26)
         let date = engine.calculateDate(for: rule, year: 2025)
 
         XCTAssertNotNil(date)
@@ -879,7 +879,7 @@ final class PerformanceBenchmarkTests: XCTestCase {
 
     func testHolidayEngineCalculationPerformance() {
         let engine = HolidayEngine()
-        let rule = HolidayRule(name: "Test", isRedDay: true, type: .easterRelative, daysOffset: 0)
+        let rule = HolidayRule(name: "Test", isBankHoliday: true, type: .easterRelative, daysOffset: 0)
 
         measure {
             for year in 2020..<2030 {
@@ -972,8 +972,8 @@ final class StateConsistencyTests: XCTestCase {
     }
 
     func testHolidayCacheItemEquatability() {
-        let item1 = HolidayCacheItem(id: "test", region: "SE", name: "Test", titleOverride: nil, isRedDay: true, symbolName: nil)
-        let item2 = HolidayCacheItem(id: "test", region: "SE", name: "Test", titleOverride: nil, isRedDay: true, symbolName: nil)
+        let item1 = HolidayCacheItem(id: "test", region: "SE", name: "Test", titleOverride: nil, isBankHoliday: true, symbolName: nil)
+        let item2 = HolidayCacheItem(id: "test", region: "SE", name: "Test", titleOverride: nil, isBankHoliday: true, symbolName: nil)
 
         XCTAssertEqual(item1, item2)
         XCTAssertEqual(item1.hashValue, item2.hashValue)
@@ -981,11 +981,11 @@ final class StateConsistencyTests: XCTestCase {
 
     func testHolidayCacheItemDisplayTitle() {
         // Without override, should return localized name
-        let item1 = HolidayCacheItem(id: "test", region: "SE", name: "holiday.christmas", titleOverride: nil, isRedDay: true, symbolName: nil)
+        let item1 = HolidayCacheItem(id: "test", region: "SE", name: "holiday.christmas", titleOverride: nil, isBankHoliday: true, symbolName: nil)
         XCTAssertFalse(item1.displayTitle.isEmpty)
 
         // With override, should return override
-        let item2 = HolidayCacheItem(id: "test", region: "SE", name: "holiday.christmas", titleOverride: "Custom Title", isRedDay: true, symbolName: nil)
+        let item2 = HolidayCacheItem(id: "test", region: "SE", name: "holiday.christmas", titleOverride: "Custom Title", isBankHoliday: true, symbolName: nil)
         XCTAssertEqual(item2.displayTitle, "Custom Title")
     }
 

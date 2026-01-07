@@ -101,7 +101,7 @@ struct TripListView: View {
                         zone: .trips
                     )
                     .frame(maxWidth: .infinity)
-                    .padding(.top, 60)
+                    .padding(.top, JohoDimensions.spacingXL)
                 }
             }
             .padding(.vertical, JohoDimensions.spacingLG)
@@ -230,6 +230,9 @@ struct TripDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: JohoDimensions.spacingLG) {
+                // 情報デザイン: Status bar safe zone - prevents content from scrolling under status bar icons
+                Spacer().frame(height: 44)
+
                 // Page header
                 JohoPageHeader(
                     title: trip.tripName,
@@ -238,7 +241,7 @@ struct TripDetailView: View {
                 .padding(.horizontal, JohoDimensions.spacingLG)
 
                 // Trip Info Section
-                JohoSectionBox(title: "Trip Info", zone: .trips, icon: "airplane.departure") {
+                JohoSectionBox(title: "Trip Info", zone: .trips) {
                     VStack(spacing: JohoDimensions.spacingSM) {
                         // Destination
                         HStack {
@@ -338,7 +341,7 @@ struct TripDetailView: View {
 
                 // Expense total if any
                 if expenseCount > 0 {
-                    JohoSectionBox(title: "Total Expenses", zone: .expenses, icon: "creditcard.fill") {
+                    JohoSectionBox(title: "Total Expenses", zone: .expenses) {
                         Text(String(format: "%.0f SEK", trip.totalExpenses))
                             .font(JohoFont.displaySmall)
                             .foregroundStyle(JohoColors.black)
@@ -348,7 +351,7 @@ struct TripDetailView: View {
 
                 // Mileage total if any
                 if mileageCount > 0 {
-                    JohoSectionBox(title: "Total Distance", zone: .trips, icon: "car.fill") {
+                    JohoSectionBox(title: "Total Distance", zone: .trips) {
                         Text(String(format: "%.1f km", totalMileage))
                             .font(JohoFont.displaySmall)
                             .foregroundStyle(JohoColors.black)

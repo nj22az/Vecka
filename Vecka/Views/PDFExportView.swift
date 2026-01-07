@@ -161,22 +161,22 @@ struct PDFExportView: View {
                                         HStack(spacing: 4) {
                                             Image(systemName: "creditcard.fill")
                                                 .font(.caption)
-                                                .foregroundStyle(.green)
+                                                .foregroundStyle(JohoColors.green)
                                             Text(preview.totalExpenses, format: .currency(code: preview.currency))
-                                                .font(.caption.weight(.medium))
+                                                .font(.system(size: 12, weight: .medium, design: .rounded))
                                         }
                                     }
                                     if preview.tripCount > 0 {
                                         HStack(spacing: 4) {
                                             Image(systemName: "airplane.departure")
                                                 .font(.caption)
-                                                .foregroundStyle(.blue)
+                                                .foregroundStyle(JohoColors.orange)
                                             Text("\(preview.tripCount) trip\(preview.tripCount == 1 ? "" : "s")")
-                                                .font(.caption.weight(.medium))
+                                                .font(.system(size: 12, weight: .medium, design: .rounded))
                                         }
                                     }
                                 }
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(JohoColors.black.opacity(0.7))
                             }
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -240,12 +240,12 @@ struct PDFExportView: View {
                                                 ForEach(day.expenses, id: \.description) { expense in
                                                     HStack {
                                                         Text(expense.description)
-                                                            .font(.caption)
-                                                            .foregroundStyle(.secondary)
+                                                            .font(.system(size: 12, weight: .medium, design: .rounded))
+                                                            .foregroundStyle(JohoColors.black.opacity(0.6))
                                                         Spacer()
                                                         Text(expense.amount, format: .currency(code: expense.currency))
-                                                            .font(.caption.weight(.medium))
-                                                            .foregroundStyle(.green)
+                                                            .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                                            .foregroundStyle(JohoColors.green)
                                                     }
                                                 }
                                             }
@@ -257,18 +257,22 @@ struct PDFExportView: View {
                                                 HStack(spacing: 6) {
                                                     Image(systemName: "airplane.departure")
                                                         .font(.caption2)
-                                                        .foregroundStyle(.blue)
+                                                        .foregroundStyle(JohoColors.orange)
                                                     Text("\(trip.name) → \(trip.destination)")
-                                                        .font(.caption)
-                                                        .foregroundStyle(.blue)
+                                                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                                                        .foregroundStyle(JohoColors.orange)
                                                 }
                                             }
                                         }
                                     }
                                     .padding(JohoDimensions.spacingSM)
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                    .background(Color.secondary.opacity(0.05))
+                                    .background(JohoColors.black.opacity(0.03))
                                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                            .stroke(JohoColors.black.opacity(0.1), lineWidth: 1)
+                                    )
                                 }
 
                                 if preview.dailyEntries.count > 3 {

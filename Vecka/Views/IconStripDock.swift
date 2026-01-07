@@ -2,8 +2,8 @@
 //  IconStripDock.swift
 //  Vecka
 //
-//  Horizontal bottom dock for iPhone - adapts iPad's IconStripSidebar
-//  Black background, semantic accent colors, thick borders
+//  Horizontal bottom dock for iPhone - 5 navigation items only
+//  情報デザイン: House, Calendar, Contacts, Star, Cog
 //
 
 import SwiftUI
@@ -13,18 +13,13 @@ import SwiftUI
 struct IconStripDock: View {
     @Binding var selection: SidebarSelection?
 
-    /// Action for the + button (context-aware based on current selection)
-    var onAdd: (() -> Void)?
-
-    /// Custom accent color for the plus button
-    var addButtonColor: Color = JohoColors.cyan
-
-    // MARK: - Layout Constants
+    // MARK: - Layout Constants (情報デザイン: Selected icon is larger)
     private let dockHeight: CGFloat = 56
-    private let iconSize: CGFloat = 22
+    private let iconSizeNormal: CGFloat = 20
+    private let iconSizeSelected: CGFloat = 24
     private let activeBarHeight: CGFloat = 4
 
-    // Dock items - main navigation sections (情報デザイン: 5 pages)
+    // Dock items - main navigation sections (情報デザイン: 5 pages only)
     private let dockItems: [SidebarSelection] = [
         .landing, .calendar, .contacts, .specialDays, .settings
     ]
@@ -37,14 +32,9 @@ struct IconStripDock: View {
                 .frame(height: 1)
 
             HStack(spacing: 0) {
-                // Navigation items
+                // Navigation items only - no extra buttons
                 ForEach(dockItems) { item in
                     dockButton(for: item)
-                }
-
-                // Add button (if action provided)
-                if let addAction = onAdd {
-                    addButton(action: addAction)
                 }
             }
             .frame(height: dockHeight)
@@ -55,7 +45,10 @@ struct IconStripDock: View {
     // MARK: - Dock Button
 
     private func dockButton(for item: SidebarSelection) -> some View {
-        Button {
+        let isSelected = selection == item
+        let iconSize = isSelected ? iconSizeSelected : iconSizeNormal
+
+        return Button {
             withAnimation(.easeInOut(duration: 0.15)) {
                 selection = item
             }
@@ -63,13 +56,14 @@ struct IconStripDock: View {
             VStack(spacing: 4) {
                 // Selection indicator bar (top)
                 Capsule()
-                    .fill(selection == item ? item.accentColor : Color.clear)
+                    .fill(isSelected ? item.accentColor : Color.clear)
                     .frame(width: 24, height: activeBarHeight)
 
-                // Icon
+                // Icon (情報デザイン: Selected is larger)
                 Image(systemName: item.icon)
-                    .font(.system(size: iconSize, weight: selection == item ? .bold : .medium, design: .rounded))
-                    .foregroundStyle(selection == item ? item.accentColor : JohoColors.white.opacity(0.6))
+                    .font(.system(size: iconSize, weight: isSelected ? .bold : .medium, design: .rounded))
+                    .foregroundStyle(isSelected ? item.accentColor : JohoColors.white.opacity(0.6))
+                    .animation(.easeInOut(duration: 0.15), value: isSelected)
 
                 Spacer()
             }
@@ -79,35 +73,7 @@ struct IconStripDock: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(item.label)
-        .accessibilityAddTraits(selection == item ? .isSelected : [])
-    }
-
-    // MARK: - Add Button
-
-    private func addButton(action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            VStack(spacing: 4) {
-                // Spacer to align with other icons
-                Color.clear
-                    .frame(height: activeBarHeight)
-
-                // Plus icon
-                Image(systemName: "plus")
-                    .font(.system(size: iconSize, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
-                    .frame(width: 36, height: 36)
-                    .background(addButtonColor)
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
-
-                Spacer()
-            }
-            .frame(width: 56)
-            .frame(height: dockHeight)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Add")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 
@@ -120,11 +86,7 @@ struct IconStripDock: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(JohoColors.background)
 
-        IconStripDock(
-            selection: .constant(.calendar),
-            onAdd: { print("Add tapped") },
-            addButtonColor: JohoColors.yellow
-        )
+        IconStripDock(selection: .constant(.calendar))
     }
     .ignoresSafeArea(edges: .bottom)
 }

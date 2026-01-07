@@ -2,22 +2,28 @@
 //  UnifiedEntryView.swift
 //  Vecka
 //
-//  情報デザイン: Unified Entry form for Note, Trip, and Expense creation
-//  Single purple entry point, type-switchable form, preserves existing models
+//  情報デザイン: TRUE Bento Box Entry Form
+//  - ONE container with internal compartments
+//  - Type selector as compact strip in header
+//  - Form fields as bento compartments below
+//  - NO spacing between containers - walls only
+//
+//  Follows: Onsen/Star/Calendar golden standards
+//  SF Pro symbols only - NO emojis
 //
 
 import SwiftUI
 import SwiftData
 
-// MARK: - 情報デザイン Unified Entry Sheet
+// MARK: - 情報デザイン TRUE Bento Entry Sheet
 
-/// Unified entry creation sheet with type selector
-/// Creates DailyNote, TravelTrip, or ExpenseItem based on selected type
 struct JohoUnifiedEntrySheet: View {
     let initialDate: Date
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     // Entry type selection
     @State private var selectedType: EntryType = .note
@@ -26,7 +32,7 @@ struct JohoUnifiedEntrySheet: View {
     // NOTE FIELDS
     // ═══════════════════════════════════════════════════════════════
     @State private var noteContent: String = ""
-    @State private var noteSymbol: String = "note.text"
+    @State private var noteSymbol: String = "doc.text"
 
     // ═══════════════════════════════════════════════════════════════
     // TRIP FIELDS
@@ -51,33 +57,38 @@ struct JohoUnifiedEntrySheet: View {
     @State private var selectedCategory: ExpenseCategory?
 
     // ═══════════════════════════════════════════════════════════════
+    // HOLIDAY FIELDS
+    // ═══════════════════════════════════════════════════════════════
+    @State private var holidayName: String = ""
+    @State private var holidayIsBank: Bool = false
+    @State private var holidaySymbol: String = "star"
+
+    // ═══════════════════════════════════════════════════════════════
+    // BIRTHDAY FIELDS
+    // ═══════════════════════════════════════════════════════════════
+    @State private var birthdayFirstName: String = ""
+    @State private var birthdayLastName: String = ""
+    @State private var birthdayHasYear: Bool = true
+
+    // ═══════════════════════════════════════════════════════════════
     // SHARED DATE FIELDS
     // ═══════════════════════════════════════════════════════════════
     @State private var selectedYear: Int
     @State private var selectedMonth: Int
     @State private var selectedDay: Int
 
-    // Icon picker
+    // Pickers
     @State private var showingIconPicker = false
-
-    // Collapsible category picker
     @State private var showingCategoryPicker = false
     @State private var expandedGroups: Set<ExpenseCategoryGroup> = []
 
-    // Categories
     @Query(sort: \ExpenseCategory.sortOrder) private var categories: [ExpenseCategory]
-
-    // Dynamic colors for dark mode
-    @Environment(\.johoColorMode) private var colorMode
-    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
-
-    // Base Currency
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
 
     private let calendar = Calendar.current
 
     // ═══════════════════════════════════════════════════════════════
-    // COMPUTED PROPERTIES
+    // COMPUTED
     // ═══════════════════════════════════════════════════════════════
 
     private var canSave: Bool {
@@ -89,22 +100,23 @@ struct JohoUnifiedEntrySheet: View {
         case .expense:
             guard let amount = Double(expenseAmount.replacingOccurrences(of: ",", with: ".")) else { return false }
             return amount > 0 && !expenseDescription.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        case .holiday:
+            return !holidayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        case .birthday:
+            return !birthdayFirstName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         }
     }
 
     private var selectedDate: Date {
-        let components = DateComponents(year: selectedYear, month: selectedMonth, day: selectedDay)
-        return calendar.date(from: components) ?? initialDate
+        calendar.date(from: DateComponents(year: selectedYear, month: selectedMonth, day: selectedDay)) ?? initialDate
     }
 
     private var tripStartDate: Date {
-        let components = DateComponents(year: tripStartYear, month: tripStartMonth, day: tripStartDay)
-        return calendar.date(from: components) ?? initialDate
+        calendar.date(from: DateComponents(year: tripStartYear, month: tripStartMonth, day: tripStartDay)) ?? initialDate
     }
 
     private var tripEndDate: Date {
-        let components = DateComponents(year: tripEndYear, month: tripEndMonth, day: tripEndDay)
-        return calendar.date(from: components) ?? initialDate
+        calendar.date(from: DateComponents(year: tripEndYear, month: tripEndMonth, day: tripEndDay)) ?? initialDate
     }
 
     private var yearRange: [Int] {
@@ -126,8 +138,6 @@ struct JohoUnifiedEntrySheet: View {
         _selectedYear = State(initialValue: year)
         _selectedMonth = State(initialValue: month)
         _selectedDay = State(initialValue: day)
-
-        // Trip defaults: same start, +7 days for end
         _tripStartYear = State(initialValue: year)
         _tripStartMonth = State(initialValue: month)
         _tripStartDay = State(initialValue: day)
@@ -144,49 +154,46 @@ struct JohoUnifiedEntrySheet: View {
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // BODY
+    // BODY - TRUE BENTO (ONE container)
     // ═══════════════════════════════════════════════════════════════
 
     var body: some View {
-        // 情報デザイン: UNIFIED BENTO PILLBOX - white background with black borders
-        VStack(spacing: 0) {
-            Spacer().frame(height: JohoDimensions.spacingLG)
-
-            // UNIFIED BENTO CONTAINER
+        ScrollView {
             VStack(spacing: 0) {
-                headerRow
+                // ═══════════════════════════════════════════════════════════
+                // THE BENTO BOX - One unified container
+                // ═══════════════════════════════════════════════════════════
+                VStack(spacing: 0) {
+                    // ROW 1: Header with type selector integrated
+                    headerRow
 
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(height: 1.5)
+                    wall
 
-                typeSelector
+                    // ROW 2: Type strip (5 compact tiles)
+                    typeStrip
 
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(height: 1.5)
+                    wall
 
-                // Dynamic content based on type
-                dynamicFields
+                    // ROW 3+: Dynamic form fields
+                    dynamicFields
+                }
+                .background(colors.surface)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                        .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
+                )
+                .padding(.horizontal, JohoDimensions.spacingSM)
+                .padding(.top, JohoDimensions.spacingSM)
             }
-            .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-            )
-            .padding(.horizontal, JohoDimensions.spacingLG)
-
-            Spacer()
         }
+        .scrollContentBackground(.hidden)
         .johoBackground()
         .navigationBarHidden(true)
-        .onAppear {
-            expenseCurrency = baseCurrency
-        }
+        .onAppear { expenseCurrency = baseCurrency }
         .sheet(isPresented: $showingIconPicker) {
             JohoIconPickerSheet(
-                selectedSymbol: $noteSymbol,
+                selectedSymbol: selectedType == .note ? $noteSymbol : $holidaySymbol,
                 accentColor: selectedType.color,
                 lightBackground: colors.surface
             )
@@ -203,126 +210,135 @@ struct JohoUnifiedEntrySheet: View {
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // HEADER ROW
+    // WALL (Horizontal divider) - 情報デザイン SOFT: Gentle, not harsh
+    // ═══════════════════════════════════════════════════════════════
+
+    private var wall: some View {
+        Rectangle()
+            .fill(colors.border.opacity(0.3))
+            .frame(height: 1)
+    }
+
+    private var thinWall: some View {
+        Rectangle()
+            .fill(colors.border.opacity(0.2))
+            .frame(height: 0.5)
+    }
+
+    private func verticalWall(width: CGFloat = 1) -> some View {
+        Rectangle()
+            .fill(colors.border.opacity(0.3))
+            .frame(width: width)
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // HEADER ROW: [✕] | [+] ENTRY | [✓]
     // ═══════════════════════════════════════════════════════════════
 
     private var headerRow: some View {
         HStack(spacing: 0) {
-            // LEFT: Close button (マルバツ: ×)
+            // Close button - clear and visible
             Button { dismiss() } label: {
-                Text("×")
-                    .font(.system(size: 20, weight: .black, design: .rounded))
-                    .foregroundStyle(colors.primary)
-                    .frame(width: 44, height: 44)
+                Image(systemName: "xmark")
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .foregroundStyle(colors.primary.opacity(0.5))
+                    .frame(width: 44, height: 48)
             }
+            .buttonStyle(.plain)
 
-            // WALL
-            Rectangle()
-                .fill(colors.border)
-                .frame(width: 1.5)
-                .frame(maxHeight: .infinity)
+            verticalWall()
 
-            // CENTER: Purple Entry icon + Title
+            // Icon + TYPE NAME - Shows what you're adding (not generic "ENTRY")
             HStack(spacing: JohoDimensions.spacingSM) {
-                Image(systemName: EntryType.entryButtonIcon)
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundStyle(EntryType.entryButtonColor)
-                    .frame(width: 36, height: 36)
-                    .background(EntryType.entryButtonColor.opacity(0.15))
-                    .clipShape(Squircle(cornerRadius: 8))
-                    .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
+                // Type icon in colored box (like Calendar header)
+                Image(systemName: selectedType.icon)
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+                    .frame(width: 28, height: 28)
+                    .background(selectedType.color)
+                    .clipShape(Squircle(cornerRadius: 6))
 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("NEW ENTRY")
-                        .font(.system(size: 16, weight: .black, design: .rounded))
-                        .foregroundStyle(colors.primary)
-                    Text(selectedType.subtitle)
-                        .font(.system(size: 11, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.6))
-                }
-
-                Spacer()
+                // Show TYPE NAME - "ADD NOTE", "ADD TRIP", etc.
+                Text("ADD \(selectedType.displayName)")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary.opacity(0.8))
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, JohoDimensions.spacingSM)
-            .frame(maxHeight: .infinity)
 
-            // WALL
-            Rectangle()
-                .fill(colors.border)
-                .frame(width: 1.5)
-                .frame(maxHeight: .infinity)
+            verticalWall()
 
-            // RIGHT: Save button (マルバツ: ○)
+            // Save button - PROMINENT when valid (filled background)
             Button {
                 saveEntry()
                 dismiss()
             } label: {
-                Text("○")
-                    .font(.system(size: 20, weight: .black, design: .rounded))
-                    .foregroundStyle(canSave ? JohoColors.white : colors.primary.opacity(0.4))
-                    .frame(width: 44, height: 44)
-                    .background(canSave ? selectedType.color : colors.surface)
-                    .clipShape(Squircle(cornerRadius: 8))
-                    .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
+                Image(systemName: "checkmark")
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(canSave ? JohoColors.black : colors.primary.opacity(0.2))
+                    .frame(width: 52, height: 48)
+                    .background(canSave ? selectedType.color : Color.clear)
             }
+            .buttonStyle(.plain)
             .disabled(!canSave)
-            .padding(.horizontal, 8)
-            .frame(maxHeight: .infinity)
+        }
+        .frame(height: 48)
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // TYPE STRIP: 5 compact tiles in horizontal row
+    // ═══════════════════════════════════════════════════════════════
+
+    private var typeStrip: some View {
+        HStack(spacing: 0) {
+            ForEach(Array(EntryType.allCases.enumerated()), id: \.element.id) { index, type in
+                if index > 0 {
+                    verticalWall(width: 1)
+                }
+                compactTypeTile(type)
+            }
         }
         .frame(height: 56)
-        .background(colors.surface)
     }
 
-    // ═══════════════════════════════════════════════════════════════
-    // TYPE SELECTOR (Segmented)
-    // ═══════════════════════════════════════════════════════════════
+    private func compactTypeTile(_ type: EntryType) -> some View {
+        let isSelected = selectedType == type
 
-    private var typeSelector: some View {
-        HStack(spacing: 0) {
-            ForEach(EntryType.allCases) { type in
-                Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        selectedType = type
-                    }
-                    HapticManager.selection()
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: type.icon)
-                            .font(.system(size: 12, weight: .bold))
-                        Text(type.displayName)
-                            .font(.system(size: 11, weight: .black, design: .rounded))
-                    }
-                    // 情報デザイン: white text on color when selected, colored icon on white when not
-                    .foregroundStyle(selectedType == type ? JohoColors.white : type.color)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 40)
-                    .background(selectedType == type ? type.color : colors.surface)
-                }
-                .buttonStyle(.plain)
-
-                if type != EntryType.allCases.last {
-                    Rectangle()
-                        .fill(colors.border)
-                        .frame(width: 1.5)
-                }
+        return Button {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                selectedType = type
             }
+            HapticManager.selection()
+        } label: {
+            // 情報デザイン: ICONS ONLY - no confusing text codes
+            // Larger icons that are self-explanatory (Nintendo/Line style)
+            Image(systemName: type.icon)
+                .font(.system(size: isSelected ? 24 : 20, weight: .semibold, design: .rounded))
+                .foregroundStyle(isSelected ? JohoColors.black : type.color)
+                .frame(maxWidth: .infinity)
+                .frame(height: 52)
+                // Selected = filled color, Unselected = subtle tint
+                .background(isSelected ? type.color : type.color.opacity(0.15))
+                // 情報デザイン: Explicit tap target - prevents Apple Pencil Scribble
+                .contentShape(Rectangle())
         }
-        .frame(height: 40)
+        .buttonStyle(.plain)
+        // Disable Scribble interaction - this is a BUTTON not a text field
+        .allowsHitTesting(true)
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // DYNAMIC FIELDS
+    // DYNAMIC FIELDS (per type)
     // ═══════════════════════════════════════════════════════════════
 
     @ViewBuilder
     private var dynamicFields: some View {
         switch selectedType {
-        case .note:
-            noteFields
-        case .trip:
-            tripFields
-        case .expense:
-            expenseFields
+        case .note: noteFields
+        case .trip: tripFields
+        case .expense: expenseFields
+        case .holiday: holidayFields
+        case .birthday: birthdayFields
         }
     }
 
@@ -332,39 +348,21 @@ struct JohoUnifiedEntrySheet: View {
 
     private var noteFields: some View {
         VStack(spacing: 0) {
-            // Content row - 情報デザイン: white background, not colored
-            fieldRow(
-                icon: "pencil",
-                iconColor: selectedType.color,
-                content: {
-                    TextField("Note content", text: $noteContent, axis: .vertical)
-                        .font(JohoFont.body)
-                        .foregroundStyle(colors.primary)
-                        .lineLimit(3...6)
-                        .padding(.horizontal, JohoDimensions.spacingMD)
-                },
-                background: colors.surface,
-                minHeight: 72
-            )
+            fieldRow(icon: "pencil", color: selectedType.color) {
+                TextField("Note content", text: $noteContent, axis: .vertical)
+                    .font(.system(size: 15, weight: .medium, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .lineLimit(2...5)
+            }
+            .frame(minHeight: 64)
 
-            Rectangle().fill(colors.border).frame(height: 1.5)
+            thinWall
 
-            // Date row
-            dateRow(
-                year: $selectedYear,
-                month: $selectedMonth,
-                day: $selectedDay,
-                background: colors.surface
-            )
+            dateRow(year: $selectedYear, month: $selectedMonth, day: $selectedDay)
 
-            Rectangle().fill(colors.border).frame(height: 1.5)
+            thinWall
 
-            // Icon picker row
-            iconPickerRow(
-                currentIcon: noteSymbol,
-                accentColor: selectedType.color,
-                background: colors.surface
-            )
+            iconPickerRow(currentIcon: noteSymbol)
         }
     }
 
@@ -374,110 +372,60 @@ struct JohoUnifiedEntrySheet: View {
 
     private var tripFields: some View {
         VStack(spacing: 0) {
-            // Trip name row - 情報デザイン: white background
-            fieldRow(
-                icon: "tag.fill",
-                iconColor: selectedType.color,
-                content: {
-                    TextField("Trip name", text: $tripName)
-                        .font(JohoFont.body)
-                        .foregroundStyle(colors.primary)
-                        .padding(.horizontal, JohoDimensions.spacingMD)
-                },
-                background: colors.surface
-            )
-
-            Rectangle().fill(colors.border).frame(height: 1.5)
-
-            // Destination row
-            fieldRow(
-                icon: "mappin.circle.fill",
-                iconColor: selectedType.color,
-                content: {
-                    TextField("Destination", text: $tripDestination)
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary)
-                        .padding(.horizontal, JohoDimensions.spacingMD)
-                },
-                background: colors.surface
-            )
-
-            Rectangle().fill(colors.border).frame(height: 1.5)
-
-            // Start date row
-            HStack(spacing: 0) {
-                Text("FROM")
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primary.opacity(0.6))
-                    .frame(width: 44)
-                    .frame(maxHeight: .infinity)
-
-                Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
-
-                datePickerCells(
-                    year: $tripStartYear,
-                    month: $tripStartMonth,
-                    day: $tripStartDay
-                )
+            fieldRow(icon: "mappin.circle", color: selectedType.color) {
+                TextField("Destination", text: $tripDestination)
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
             }
-            .frame(height: 44)
-            .background(colors.surface)
 
-            Rectangle().fill(colors.border).frame(height: 1.5)
+            thinWall
 
-            // End date row
-            HStack(spacing: 0) {
-                Text("TO")
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primary.opacity(0.6))
-                    .frame(width: 44)
-                    .frame(maxHeight: .infinity)
-
-                Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
-
-                datePickerCells(
-                    year: $tripEndYear,
-                    month: $tripEndMonth,
-                    day: $tripEndDay
-                )
+            fieldRow(icon: "tag", color: colors.primary.opacity(0.4)) {
+                TextField("Trip name (optional)", text: $tripName)
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .foregroundStyle(colors.primary.opacity(0.8))
             }
-            .frame(height: 44)
-            .background(colors.surface)
 
-            Rectangle().fill(colors.border).frame(height: 1.5)
+            thinWall
 
-            // Trip type row
-            HStack(spacing: 0) {
-                Image(systemName: "briefcase.fill")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(selectedType.color)
-                    .frame(width: 44)
-                    .frame(maxHeight: .infinity)
+            labeledDateRow(label: "FROM", year: $tripStartYear, month: $tripStartMonth, day: $tripStartDay)
 
-                Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
+            thinWall
 
-                ForEach(TripType.allCases, id: \.self) { type in
-                    Button {
-                        tripType = type
-                        HapticManager.selection()
-                    } label: {
-                        Text(type.rawValue.uppercased())
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
-                            .foregroundStyle(tripType == type ? JohoColors.white : colors.primary)
-                            .frame(maxWidth: .infinity)
-                            .frame(maxHeight: .infinity)
-                            .background(tripType == type ? selectedType.color : Color.clear)
-                    }
-                    .buttonStyle(.plain)
+            labeledDateRow(label: "TO", year: $tripEndYear, month: $tripEndMonth, day: $tripEndDay)
 
-                    if type != TripType.allCases.last {
-                        Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
-                    }
+            thinWall
+
+            tripTypeSegment
+        }
+    }
+
+    private var tripTypeSegment: some View {
+        HStack(spacing: 0) {
+            iconZone(icon: "briefcase", color: selectedType.color)
+            verticalWall()
+
+            ForEach(TripType.allCases, id: \.self) { type in
+                Button {
+                    tripType = type
+                    HapticManager.selection()
+                } label: {
+                    // 情報デザイン SOFT: Gentle text, colored backgrounds
+                    Text(type.rawValue.uppercased().prefix(4))
+                        .font(.system(size: 10, weight: .semibold, design: .rounded))
+                        .foregroundStyle(tripType == type ? colors.primary : colors.primary.opacity(0.5))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 44)
+                        .background(tripType == type ? selectedType.color.opacity(0.6) : Color.clear)
+                }
+                .buttonStyle(.plain)
+
+                if type != TripType.allCases.last {
+                    verticalWall(width: 1)
                 }
             }
-            .frame(height: 44)
-            .background(colors.surface)
         }
+        .frame(height: 44)
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -486,202 +434,297 @@ struct JohoUnifiedEntrySheet: View {
 
     private var expenseFields: some View {
         VStack(spacing: 0) {
-            // Description row - 情報デザイン: white background
-            fieldRow(
-                icon: "pencil",
-                iconColor: selectedType.color,
-                content: {
-                    TextField("Expense description", text: $expenseDescription)
-                        .font(JohoFont.body)
-                        .foregroundStyle(colors.primary)
-                        .padding(.horizontal, JohoDimensions.spacingMD)
-                },
-                background: colors.surface
-            )
-
-            Rectangle().fill(colors.border).frame(height: 1.5)
-
-            // Amount row
-            HStack(spacing: 0) {
-                Image(systemName: "dollarsign")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(selectedType.color)
-                    .frame(width: 44)
-                    .frame(maxHeight: .infinity)
-
-                Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
-
-                TextField("0.00", text: $expenseAmount)
-                    .font(.system(size: 18, weight: .bold, design: .monospaced))
-                    .keyboardType(.decimalPad)
+            fieldRow(icon: "pencil", color: selectedType.color) {
+                TextField("Description", text: $expenseDescription)
+                    .font(.system(size: 15, weight: .medium, design: .rounded))
                     .foregroundStyle(colors.primary)
-                    .multilineTextAlignment(.trailing)
-                    .padding(.horizontal, JohoDimensions.spacingMD)
-
-                Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
-
-                Menu {
-                    ForEach(CurrencyDefinition.defaultCurrencies) { curr in
-                        Button(curr.code) {
-                            expenseCurrency = curr.code
-                        }
-                    }
-                } label: {
-                    Text(expenseCurrency)
-                        .font(.system(size: 14, weight: .bold, design: .monospaced))
-                        .foregroundStyle(colors.primary)
-                        .frame(width: 72)
-                        .frame(maxHeight: .infinity)
-                }
             }
-            .frame(height: 48)
-            .background(colors.surface)
 
-            Rectangle().fill(colors.border).frame(height: 1.5)
+            thinWall
 
-            // Date row
-            dateRow(
-                year: $selectedYear,
-                month: $selectedMonth,
-                day: $selectedDay,
-                background: colors.surface
-            )
+            amountRow
 
-            Rectangle().fill(colors.border).frame(height: 1.5)
+            thinWall
 
-            // Category row - tappable to open collapsible picker
+            dateRow(year: $selectedYear, month: $selectedMonth, day: $selectedDay)
+
+            thinWall
+
+            categoryRow
+
+            thinWall
+
+            fieldRow(icon: "storefront", color: colors.primary.opacity(0.4)) {
+                TextField("Store (optional)", text: $expenseMerchant)
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundStyle(colors.primary.opacity(0.7))
+            }
+        }
+    }
+
+    private var amountRow: some View {
+        HStack(spacing: 0) {
+            iconZone(icon: "dollarsign", color: selectedType.color)
+            verticalWall()
+
+            TextField("0", text: $expenseAmount)
+                .font(.system(size: 20, weight: .bold, design: .monospaced))
+                .keyboardType(.decimalPad)
+                .foregroundStyle(colors.primary)
+                .multilineTextAlignment(.trailing)
+                .padding(.horizontal, JohoDimensions.spacingSM)
+                .frame(maxWidth: .infinity)
+
+            verticalWall()
+
+            Menu {
+                ForEach(CurrencyDefinition.defaultCurrencies) { curr in
+                    Button(curr.code) { expenseCurrency = curr.code }
+                }
+            } label: {
+                Text(expenseCurrency)
+                    .font(.system(size: 12, weight: .black, design: .monospaced))
+                    .foregroundStyle(colors.primary)
+                    .frame(width: 48, height: 44)
+            }
+        }
+        .frame(height: 44)
+    }
+
+    private var categoryRow: some View {
+        Button {
+            showingCategoryPicker = true
+            HapticManager.selection()
+        } label: {
+            HStack(spacing: 0) {
+                iconZone(icon: "folder", color: selectedType.color)
+                verticalWall()
+
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    if let category = selectedCategory {
+                        Image(systemName: category.iconName)
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(JohoColors.white)
+                            .frame(width: 22, height: 22)
+                            .background(category.color)
+                            .clipShape(Circle())
+
+                        Text(category.name.uppercased())
+                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primary)
+                    } else {
+                        Circle()
+                            .stroke(colors.border, lineWidth: 1.5)
+                            .frame(width: 22, height: 22)
+
+                        Text("CATEGORY")
+                            .font(.system(size: 11, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.5))
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(colors.primary.opacity(0.4))
+                }
+                .padding(.horizontal, JohoDimensions.spacingSM)
+                .frame(height: 44)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // HOLIDAY FIELDS
+    // ═══════════════════════════════════════════════════════════════
+
+    private var holidayFields: some View {
+        VStack(spacing: 0) {
+            fieldRow(icon: "pencil", color: selectedType.color) {
+                TextField("Holiday name", text: $holidayName)
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+            }
+
+            thinWall
+
+            dateRow(year: $selectedYear, month: $selectedMonth, day: $selectedDay)
+
+            thinWall
+
+            holidayTypeSegment
+
+            thinWall
+
+            iconPickerRow(currentIcon: holidaySymbol)
+        }
+    }
+
+    private var holidayTypeSegment: some View {
+        HStack(spacing: 0) {
+            iconZone(icon: "flag", color: selectedType.color)
+            verticalWall()
+
             Button {
-                showingCategoryPicker = true
+                holidayIsBank = false
                 HapticManager.selection()
             } label: {
-                HStack(spacing: 0) {
-                    Image(systemName: "folder.fill")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(selectedType.color)
-                        .frame(width: 44)
-                        .frame(maxHeight: .infinity)
-
-                    Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
-
-                    // Selected category display
-                    HStack(spacing: JohoDimensions.spacingSM) {
-                        if let category = selectedCategory {
-                            // Show selected category icon + name
-                            Image(systemName: category.iconName)
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundStyle(category.color)
-                                .frame(width: 28, height: 28)
-                                .background(category.color.opacity(0.15))
-                                .clipShape(Circle())
-
-                            Text(category.name.uppercased())
-                                .font(.system(size: 12, weight: .bold, design: .rounded))
-                                .foregroundStyle(colors.primary)
-                        } else {
-                            // No category selected
-                            Image(systemName: "minus")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundStyle(colors.primary.opacity(0.4))
-                                .frame(width: 28, height: 28)
-                                .background(colors.primary.opacity(0.05))
-                                .clipShape(Circle())
-
-                            Text("SELECT CATEGORY")
-                                .font(.system(size: 12, weight: .medium, design: .rounded))
-                                .foregroundStyle(colors.primary.opacity(0.6))
-                        }
-
-                        Spacer()
-
-                        // Chevron indicator
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(colors.primary.opacity(0.4))
-                    }
-                    .padding(.horizontal, JohoDimensions.spacingMD)
-                    .frame(maxHeight: .infinity)
-                }
-                .frame(height: 48)
-                .background(colors.surface)
+                // 情報デザイン SOFT: Gentle orange tint
+                Text("OBSERVANCE")
+                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .foregroundStyle(!holidayIsBank ? colors.primary : colors.primary.opacity(0.5))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+                    .background(!holidayIsBank ? JohoColors.orange.opacity(0.6) : Color.clear)
             }
             .buttonStyle(.plain)
 
-            Rectangle().fill(colors.border).frame(height: 1.5)
+            verticalWall(width: 1)
 
-            // Merchant row (optional)
-            fieldRow(
-                icon: "storefront.fill",
-                iconColor: colors.primary.opacity(0.6),
-                content: {
-                    TextField("Store name (optional)", text: $expenseMerchant)
-                        .font(JohoFont.caption)
-                        .foregroundStyle(colors.primary.opacity(0.6))
-                        .padding(.horizontal, JohoDimensions.spacingMD)
-                },
-                background: colors.surface
-            )
+            Button {
+                holidayIsBank = true
+                HapticManager.selection()
+            } label: {
+                // 情報デザイン SOFT: Softer red tint
+                Text("HOLIDAY")
+                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .foregroundStyle(holidayIsBank ? colors.primary : colors.primary.opacity(0.5))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+                    .background(holidayIsBank ? JohoColors.red.opacity(0.5) : Color.clear)
+            }
+            .buttonStyle(.plain)
         }
+        .frame(height: 44)
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // HELPER VIEWS
+    // BIRTHDAY FIELDS
     // ═══════════════════════════════════════════════════════════════
+
+    private var birthdayFields: some View {
+        VStack(spacing: 0) {
+            fieldRow(icon: "person", color: selectedType.color) {
+                TextField("First name", text: $birthdayFirstName)
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+            }
+
+            thinWall
+
+            fieldRow(icon: "person.text.rectangle", color: colors.primary.opacity(0.4)) {
+                TextField("Last name (optional)", text: $birthdayLastName)
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .foregroundStyle(colors.primary.opacity(0.8))
+            }
+
+            thinWall
+
+            birthdayYearSegment
+
+            thinWall
+
+            if birthdayHasYear {
+                dateRow(year: $selectedYear, month: $selectedMonth, day: $selectedDay)
+            } else {
+                monthDayRow(month: $selectedMonth, day: $selectedDay)
+            }
+        }
+    }
+
+    private var birthdayYearSegment: some View {
+        HStack(spacing: 0) {
+            iconZone(icon: "calendar.badge.clock", color: selectedType.color)
+            verticalWall()
+
+            Button {
+                birthdayHasYear = true
+                HapticManager.selection()
+            } label: {
+                // 情報デザイン SOFT: Gentle pink tint
+                Text("WITH YEAR")
+                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .foregroundStyle(birthdayHasYear ? colors.primary : colors.primary.opacity(0.5))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+                    .background(birthdayHasYear ? selectedType.color.opacity(0.6) : Color.clear)
+            }
+            .buttonStyle(.plain)
+
+            verticalWall(width: 1)
+
+            Button {
+                birthdayHasYear = false
+                HapticManager.selection()
+            } label: {
+                // 情報デザイン SOFT: Subtle gray tint
+                Text("NO YEAR")
+                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .foregroundStyle(!birthdayHasYear ? colors.primary : colors.primary.opacity(0.5))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+                    .background(!birthdayHasYear ? colors.primary.opacity(0.1) : Color.clear)
+            }
+            .buttonStyle(.plain)
+        }
+        .frame(height: 44)
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // SHARED FIELD COMPONENTS
+    // ═══════════════════════════════════════════════════════════════
+
+    private func iconZone(icon: String, color: Color) -> some View {
+        // 情報デザイン: BLACK icon on colored tint (like Calendar header)
+        // This ensures visibility - colored icons on light tints are invisible
+        Image(systemName: icon)
+            .font(.system(size: 15, weight: .semibold, design: .rounded))
+            .foregroundStyle(JohoColors.black.opacity(0.7))
+            .frame(width: 44, height: 44)
+            .background(color.opacity(0.3))
+    }
 
     private func fieldRow<Content: View>(
         icon: String,
-        iconColor: Color,
-        @ViewBuilder content: () -> Content,
-        background: Color,
-        minHeight: CGFloat = 48
+        color: Color,
+        @ViewBuilder content: () -> Content
     ) -> some View {
         HStack(spacing: 0) {
-            Image(systemName: icon)
-                .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(iconColor)
-                .frame(width: 44)
-                .frame(maxHeight: .infinity)
-
-            Rectangle()
-                .fill(colors.border)
-                .frame(width: 1.5)
-                .frame(maxHeight: .infinity)
-
+            iconZone(icon: icon, color: color)
+            verticalWall()
             content()
+                .padding(.horizontal, JohoDimensions.spacingSM)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .frame(maxHeight: .infinity)
         }
-        .frame(minHeight: minHeight)
-        .background(background)
+        .frame(minHeight: 44)
     }
 
-    private func dateRow(
-        year: Binding<Int>,
-        month: Binding<Int>,
-        day: Binding<Int>,
-        background: Color
-    ) -> some View {
+    private func dateRow(year: Binding<Int>, month: Binding<Int>, day: Binding<Int>) -> some View {
         HStack(spacing: 0) {
-            Image(systemName: "calendar")
-                .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(selectedType.color)
-                .frame(width: 44)
-                .frame(maxHeight: .infinity)
-
-            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
-
+            iconZone(icon: "calendar", color: selectedType.color)
+            verticalWall()
             datePickerCells(year: year, month: month, day: day)
         }
-        .frame(height: 48)
-        .background(background)
+        .frame(height: 44)
     }
 
-    private func datePickerCells(
-        year: Binding<Int>,
-        month: Binding<Int>,
-        day: Binding<Int>
-    ) -> some View {
+    private func labeledDateRow(label: String, year: Binding<Int>, month: Binding<Int>, day: Binding<Int>) -> some View {
         HStack(spacing: 0) {
-            // Year
+            Text(label)
+                .font(.system(size: 10, weight: .black, design: .rounded))
+                .foregroundStyle(colors.primary.opacity(0.6))
+                .frame(width: 44, height: 44)
+                .background(selectedType.color.opacity(0.15))
+
+            verticalWall()
+            datePickerCells(year: year, month: month, day: day)
+        }
+        .frame(height: 44)
+    }
+
+    private func datePickerCells(year: Binding<Int>, month: Binding<Int>, day: Binding<Int>) -> some View {
+        HStack(spacing: 0) {
             Menu {
                 ForEach(yearRange, id: \.self) { y in
                     Button { year.wrappedValue = y } label: { Text(String(y)) }
@@ -691,12 +734,11 @@ struct JohoUnifiedEntrySheet: View {
                     .font(.system(size: 14, weight: .bold, design: .monospaced))
                     .foregroundStyle(colors.primary)
                     .frame(maxWidth: .infinity)
-                    .frame(maxHeight: .infinity)
+                    .frame(height: 44)
             }
 
-            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
+            verticalWall(width: 1)
 
-            // Month
             Menu {
                 ForEach(1...12, id: \.self) { m in
                     Button { month.wrappedValue = m } label: { Text(monthName(m)) }
@@ -706,12 +748,11 @@ struct JohoUnifiedEntrySheet: View {
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .frame(maxWidth: .infinity)
-                    .frame(maxHeight: .infinity)
+                    .frame(height: 44)
             }
 
-            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
+            verticalWall(width: 1)
 
-            // Day
             Menu {
                 ForEach(1...daysInMonth(month.wrappedValue, year: year.wrappedValue), id: \.self) { d in
                     Button { day.wrappedValue = d } label: { Text("\(d)") }
@@ -720,64 +761,73 @@ struct JohoUnifiedEntrySheet: View {
                 Text("\(day.wrappedValue)")
                     .font(.system(size: 14, weight: .bold, design: .monospaced))
                     .foregroundStyle(colors.primary)
-                    .frame(width: 44)
-                    .frame(maxHeight: .infinity)
+                    .frame(width: 44, height: 44)
             }
         }
     }
 
-    private func iconPickerRow(
-        currentIcon: String,
-        accentColor: Color,
-        background: Color
-    ) -> some View {
+    private func monthDayRow(month: Binding<Int>, day: Binding<Int>) -> some View {
+        HStack(spacing: 0) {
+            iconZone(icon: "calendar", color: selectedType.color)
+            verticalWall()
+
+            Menu {
+                ForEach(1...12, id: \.self) { m in
+                    Button { month.wrappedValue = m } label: { Text(monthName(m)) }
+                }
+            } label: {
+                Text(monthName(month.wrappedValue))
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+            }
+
+            verticalWall(width: 1)
+
+            Menu {
+                ForEach(1...daysInMonth(month.wrappedValue, year: 2024), id: \.self) { d in
+                    Button { day.wrappedValue = d } label: { Text("\(d)") }
+                }
+            } label: {
+                Text("\(day.wrappedValue)")
+                    .font(.system(size: 14, weight: .bold, design: .monospaced))
+                    .foregroundStyle(colors.primary)
+                    .frame(width: 56, height: 44)
+            }
+        }
+        .frame(height: 44)
+    }
+
+    private func iconPickerRow(currentIcon: String) -> some View {
         Button {
             showingIconPicker = true
             HapticManager.selection()
         } label: {
             HStack(spacing: 0) {
+                // 情報デザイン: BLACK icon on colored tint (like Calendar header)
                 Image(systemName: currentIcon)
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundStyle(accentColor)
-                    .frame(width: 44)
-                    .frame(maxHeight: .infinity)
+                    .font(.system(size: 16, weight: .semibold, design: .rounded))
+                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                    .frame(width: 44, height: 44)
+                    .background(selectedType.color.opacity(0.3))
 
-                Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
+                verticalWall()
 
-                Text("Tap to change icon")
-                    .font(JohoFont.caption)
-                    .foregroundStyle(colors.primary.opacity(0.6))
-                    .padding(.leading, JohoDimensions.spacingMD)
+                HStack {
+                    Text("Change icon")
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.7))
 
-                Spacer()
+                    Spacer()
 
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(colors.primary.opacity(0.4))
-                    .padding(.trailing, JohoDimensions.spacingMD)
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(colors.primary.opacity(0.4))
+                }
+                .padding(.horizontal, JohoDimensions.spacingSM)
+                .frame(height: 44)
             }
-            .frame(height: 48)
-            .background(background)
-        }
-        .buttonStyle(.plain)
-    }
-
-    @ViewBuilder
-    private func categoryButton(_ category: ExpenseCategory?, isSelected: Bool) -> some View {
-        Button {
-            selectedCategory = category
-            HapticManager.selection()
-        } label: {
-            Image(systemName: category?.iconName ?? "minus")
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(isSelected ? JohoColors.white : (category?.color ?? JohoColors.black))
-                .frame(width: 32, height: 32)
-                .background(isSelected ? (category?.color ?? JohoColors.black) : JohoColors.white)
-                .clipShape(Circle())
-                .overlay(
-                    Circle()
-                        .stroke(category?.color ?? JohoColors.black, lineWidth: isSelected ? 2.5 : 1.5)
-                )
         }
         .buttonStyle(.plain)
     }
@@ -790,16 +840,13 @@ struct JohoUnifiedEntrySheet: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "MMM"
         let components = DateComponents(year: 2024, month: month, day: 1)
-        let tempDate = calendar.date(from: components) ?? Date()
-        return formatter.string(from: tempDate)
+        return formatter.string(from: calendar.date(from: components) ?? Date())
     }
 
     private func daysInMonth(_ month: Int, year: Int) -> Int {
         let components = DateComponents(year: year, month: month, day: 1)
-        guard let tempDate = calendar.date(from: components),
-              let range = calendar.range(of: .day, in: .month, for: tempDate) else {
-            return 31
-        }
+        guard let date = calendar.date(from: components),
+              let range = calendar.range(of: .day, in: .month, for: date) else { return 31 }
         return range.count
     }
 
@@ -809,24 +856,19 @@ struct JohoUnifiedEntrySheet: View {
 
     private func saveEntry() {
         switch selectedType {
-        case .note:
-            saveNote()
-        case .trip:
-            saveTrip()
-        case .expense:
-            saveExpense()
+        case .note: saveNote()
+        case .trip: saveTrip()
+        case .expense: saveExpense()
+        case .holiday: saveHoliday()
+        case .birthday: saveBirthday()
         }
     }
 
     private func saveNote() {
-        let trimmedContent = noteContent.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedContent.isEmpty else { return }
+        let content = noteContent.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !content.isEmpty else { return }
 
-        let note = DailyNote(
-            date: selectedDate,
-            content: trimmedContent,
-            symbolName: noteSymbol
-        )
+        let note = DailyNote(date: selectedDate, content: content, symbolName: noteSymbol)
         modelContext.insert(note)
 
         do {
@@ -838,12 +880,12 @@ struct JohoUnifiedEntrySheet: View {
     }
 
     private func saveTrip() {
-        let trimmedDestination = tripDestination.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedDestination.isEmpty else { return }
+        let destination = tripDestination.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !destination.isEmpty else { return }
 
         let trip = TravelTrip(
-            tripName: tripName.isEmpty ? trimmedDestination : tripName,
-            destination: trimmedDestination,
+            tripName: tripName.isEmpty ? destination : tripName,
+            destination: destination,
             startDate: tripStartDate,
             endDate: tripEndDate,
             tripType: tripType
@@ -859,16 +901,16 @@ struct JohoUnifiedEntrySheet: View {
     }
 
     private func saveExpense() {
-        guard let amountValue = Double(expenseAmount.replacingOccurrences(of: ",", with: ".")) else { return }
-        let trimmedDesc = expenseDescription.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedDesc.isEmpty else { return }
+        guard let amount = Double(expenseAmount.replacingOccurrences(of: ",", with: ".")) else { return }
+        let desc = expenseDescription.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !desc.isEmpty else { return }
 
         let expense = ExpenseItem(
             date: selectedDate,
-            amount: amountValue,
+            amount: amount,
             currency: expenseCurrency,
             merchantName: expenseMerchant.isEmpty ? nil : expenseMerchant,
-            itemDescription: trimmedDesc,
+            itemDescription: desc,
             notes: nil
         )
         expense.category = selectedCategory
@@ -881,11 +923,62 @@ struct JohoUnifiedEntrySheet: View {
             Log.w("Failed to save expense: \(error.localizedDescription)")
         }
     }
+
+    private func saveHoliday() {
+        let name = holidayName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty else { return }
+
+        let rule = HolidayRule(
+            name: name,
+            region: "CUSTOM",
+            isBankHoliday: holidayIsBank,
+            symbolName: holidaySymbol,
+            type: .fixed,
+            month: selectedMonth,
+            day: selectedDay
+        )
+        modelContext.insert(rule)
+
+        do {
+            try modelContext.save()
+            HapticManager.notification(.success)
+        } catch {
+            Log.w("Failed to save holiday: \(error.localizedDescription)")
+        }
+    }
+
+    private func saveBirthday() {
+        let firstName = birthdayFirstName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !firstName.isEmpty else { return }
+
+        let lastName = birthdayLastName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let birthdayDate: Date?
+        if birthdayHasYear {
+            birthdayDate = selectedDate
+        } else {
+            birthdayDate = calendar.date(from: DateComponents(year: 1604, month: selectedMonth, day: selectedDay))
+        }
+
+        let contact = Contact(
+            givenName: firstName,
+            familyName: lastName,
+            birthday: birthdayDate,
+            birthdayKnown: true
+        )
+        modelContext.insert(contact)
+
+        do {
+            try modelContext.save()
+            HapticManager.notification(.success)
+        } catch {
+            Log.w("Failed to save birthday: \(error.localizedDescription)")
+        }
+    }
 }
 
 // MARK: - Preview
 
 #Preview {
     JohoUnifiedEntrySheet(selectedDate: Date())
-        .modelContainer(for: [DailyNote.self, TravelTrip.self, ExpenseItem.self, ExpenseCategory.self], inMemory: true)
+        .modelContainer(for: [DailyNote.self, TravelTrip.self, ExpenseItem.self, ExpenseCategory.self, HolidayRule.self, Contact.self], inMemory: true)
 }

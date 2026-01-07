@@ -2,8 +2,8 @@
 //  VeckaWidget.swift
 //  VeckaWidget
 //
-//  iOS 26 Liquid Glass widget implementation
-//  Supports all widget sizes: small, medium, large, extra large
+//  情報デザイン (Jōhō Dezain) Widget
+//  Japanese Minimalist: Small (week hero) + Large (month calendar)
 //
 
 import WidgetKit
@@ -20,11 +20,10 @@ struct VeckaWidgetEntryView: View {
         case .systemSmall:
             VeckaSmallWidgetView(entry: entry)
         case .systemMedium:
-            VeckaMediumWidgetView(entry: entry)
+            // Use world clock widget if clocks are configured
+            WorldClockMediumWidgetView(entry: entry)
         case .systemLarge:
             VeckaLargeWidgetView(entry: entry)
-        case .systemExtraLarge:
-            VeckaExtraLargeWidgetView(entry: entry)
         default:
             VeckaSmallWidgetView(entry: entry)
         }
@@ -41,8 +40,7 @@ struct VeckaWidget: Widget {
             VeckaWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Week Number")
-        .description("View the current ISO week number, upcoming events, and monthly calendar.")
-        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .systemExtraLarge])
-        .contentMarginsDisabled()
+        .description("View the current ISO week number and monthly calendar.")
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }

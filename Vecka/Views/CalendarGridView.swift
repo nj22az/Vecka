@@ -28,6 +28,10 @@ struct CalendarGridView: View {
     /// Dynamic colors based on color mode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
+    // MARK: - Lunar Calendar Support (Âm Lịch)
+    @AppStorage("showLunarCalendar") private var showLunarCalendar = false
+    private let lunarService = LunarCalendarService.shared
+
     init(
         month: CalendarMonth,
         selectedWeek: CalendarWeek?,
@@ -119,14 +123,23 @@ extension CalendarGridView {
     @ViewBuilder
     private var headerRow: some View {
         // Week column header - inverted background (black in light, white in dark)
-        Text("W")
-            .font(JohoFont.label)
-            .foregroundStyle(colors.primaryInverted)
-            .frame(height: 28)
-            .frame(maxWidth: .infinity)
-            .background(colors.surfaceInverted)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-            .accessibilityLabel(Localization.weekColumnHeader)
+        // 情報デザイン: Show moon icon when lunar calendar is active
+        HStack(spacing: 2) {
+            Text("W")
+                .font(JohoFont.label)
+                .foregroundStyle(colors.primaryInverted)
+
+            if showLunarCalendar {
+                Image(systemName: "moon.fill")
+                    .font(.system(size: 8, weight: .bold))
+                    .foregroundStyle(JohoColors.yellow)
+            }
+        }
+        .frame(height: 28)
+        .frame(maxWidth: .infinity)
+        .background(colors.surfaceInverted)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .accessibilityLabel(showLunarCalendar ? "Week, Lunar calendar active" : Localization.weekColumnHeader)
 
         // Day Headers (MON-SUN) - UPPERCASE, bold, rounded
         ForEach(0..<7, id: \.self) { index in
@@ -219,22 +232,25 @@ extension CalendarGridView {
                     )
 
                 // Day number - bold rounded font
-                VStack(spacing: 2) {
+                VStack(spacing: showLunarCalendar ? 0 : 2) {
                     Text("\(day.dayNumber)")
-                        .font(JohoFont.subheadline) // 情報デザイン: iPhone golden standard
+                        .font(showLunarCalendar ? JohoFont.label : JohoFont.subheadline) // Smaller when lunar shown
                         .fontWeight(.bold)
                         .foregroundStyle(dayTextColor(for: day, isSelected: isSelected))
                         .monospacedDigit()
+
+                    // Lunar date (Âm Lịch) when enabled
+                    if showLunarCalendar {
+                        lunarDateView(for: day.date, isToday: day.isToday, isSelected: isSelected)
+                    }
 
                     // 情報デザイン: Priority-filtered indicators (max 3 + overflow)
                     // Priority: HOL > BDY > OBS > EVT > NTE > TRP > EXP
                     priorityIndicators(for: day, dataCheck: dataCheck)
                 }
 
-                // 情報デザイン: Trip span indicator at bottom of cell
-                if let tripPosition = dataCheck?.tripPosition {
-                    tripSpanIndicator(position: tripPosition, isToday: day.isToday)
-                }
+                // 情報デザイン: Trip indicators shown as orbs only (no connecting lines)
+                // The span bar was removed - too visually noisy, orbs communicate better
             }
             .frame(maxWidth: .infinity)
             .frame(height: cellSize)
@@ -424,6 +440,40 @@ extension CalendarGridView {
         }
 
         return indicators
+    }
+
+    // MARK: - Lunar Calendar View (Âm Lịch)
+
+    /// Displays lunar date below Gregorian day number
+    /// - Special highlighting for Mùng 1 (1st) and Rằm (15th)
+    @ViewBuilder
+    private func lunarDateView(for date: Date, isToday: Bool, isSelected: Bool) -> some View {
+        let lunar = lunarService.lunarDate(from: date)
+        let isFirstDay = lunar.day == 1
+        let isFullMoon = lunar.day == 15
+
+        // Format: "1/M" for first day showing month, or just day number
+        let displayText = isFirstDay ? "\(lunar.day)/\(lunar.month)" : "\(lunar.day)"
+
+        // Color: Red for Mùng 1, Orange for Rằm, subtle otherwise
+        let textColor: Color = {
+            if isFirstDay {
+                return JohoColors.red
+            } else if isFullMoon {
+                return JohoColors.orange
+            } else if isToday {
+                return JohoColors.black.opacity(0.6)
+            } else if isSelected {
+                return colors.primaryInverted.opacity(0.7)
+            } else {
+                return colors.primary.opacity(0.5)
+            }
+        }()
+
+        Text(displayText)
+            .font(.system(size: 8, weight: isFirstDay || isFullMoon ? .bold : .medium, design: .rounded))
+            .foregroundStyle(textColor)
+            .monospacedDigit()
     }
 
     // MARK: - Helper Methods

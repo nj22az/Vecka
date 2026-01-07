@@ -35,6 +35,10 @@ struct LandingPageView: View {
 
     private var holidayManager = HolidayManager.shared
 
+    // UI State for sheets
+    @State private var showTripsSheet = false
+    @State private var showExpensesSheet = false
+
     // MARK: - Computed Properties
 
     private var today: Date { Date() }
@@ -79,28 +83,36 @@ struct LandingPageView: View {
         return MonthTheme.theme(for: month)
     }
 
-    /// Special days count for current month
-    private var specialDaysThisMonth: (holidays: Int, notes: Int) {
+    /// Special days count for current month (matches Star page format)
+    /// Returns holidays (red●), observances (orange○), birthdays (pink○)
+    private var specialDaysThisMonth: (holidays: Int, observances: Int, birthdays: Int) {
         let calendar = Calendar.current
         let month = calendar.component(.month, from: today)
         let year = calendar.component(.year, from: today)
 
-        // Count holidays this month
+        // Count holidays and observances this month
         var holidayCount = 0
+        var observanceCount = 0
         for (date, holidays) in holidayManager.holidayCache {
             if calendar.component(.month, from: date) == month &&
                calendar.component(.year, from: date) == year {
-                holidayCount += holidays.count
+                for holiday in holidays {
+                    if holiday.isBankHoliday {
+                        holidayCount += 1
+                    } else {
+                        observanceCount += 1
+                    }
+                }
             }
         }
 
-        // Count notes/events this month
-        let noteCount = allNotes.filter { note in
-            calendar.component(.month, from: note.date) == month &&
-            calendar.component(.year, from: note.date) == year
+        // Count birthdays this month (from contacts)
+        let birthdayCount = contacts.filter { contact in
+            guard let birthday = contact.birthday else { return false }
+            return calendar.component(.month, from: birthday) == month
         }.count
 
-        return (holidayCount, noteCount)
+        return (holidayCount, observanceCount, birthdayCount)
     }
 
     /// Next upcoming birthday from contacts
@@ -174,6 +186,16 @@ struct LandingPageView: View {
         }
         .scrollContentBackground(.hidden)
         .johoBackground()
+        .sheet(isPresented: $showTripsSheet) {
+            NavigationStack {
+                TripListView()
+            }
+        }
+        .sheet(isPresented: $showExpensesSheet) {
+            NavigationStack {
+                ExpenseListView()
+            }
+        }
     }
 
     // MARK: - Page Header (Two-Row: Icon+Title | Week+Date - Matches Calendar)
@@ -212,15 +234,15 @@ struct LandingPageView: View {
                     .fill(colors.border)
                     .frame(width: 1.5)
 
-                // RIGHT COMPARTMENT: Animated mascot (情報デザイン)
-                // Happy default with random ♨️ onsen transformation, tap to return
+                // RIGHT COMPARTMENT: Subtle mascot (情報デザイン)
+                // Light animations: blinking, eye movement - no distracting transforms
                 JohoMascot(
                     mood: mascotMood,
                     size: 44,
                     borderWidth: 1.5,
-                    showBob: true,
-                    showBlink: true,
-                    autoOnsen: true  // Randomly transforms to ♨️, tap to return
+                    showBob: true,      // Gentle bobbing
+                    showBlink: true,    // Eye blinks
+                    autoOnsen: false    // No ♨️ transformation
                 )
                 .padding(JohoDimensions.spacingSM)
             }
@@ -555,7 +577,7 @@ struct LandingPageView: View {
                 .fill(colors.border)
                 .frame(height: 1.5)
 
-            // 2x2 Grid - Star Page Style (情報デザイン: Centered icons, light backgrounds)
+            // 3x2 Grid - Star Page Style (情報デザイン: Centered icons, light backgrounds)
             HStack(spacing: JohoDimensions.spacingSM) {
                 VStack(spacing: JohoDimensions.spacingSM) {
                     // CALENDAR: Week progress
@@ -586,6 +608,30 @@ struct LandingPageView: View {
                         customBackground: currentMonthTheme.lightBackground
                     )
 
+                    // TRIPS: Travel (情報デザイン: Orange zone)
+                    sheetGlanceTile(
+                        icon: "airplane",
+                        label: "\(allTrips.count)",
+                        indicator: activeTripsIndicator,
+                        iconColor: SpecialDayType.trip.accentColor,
+                        bgColor: SpecialDayType.trip.lightBackground
+                    ) {
+                        showTripsSheet = true
+                    }
+                }
+
+                VStack(spacing: JohoDimensions.spacingSM) {
+                    // EXPENSES: Money (情報デザイン: Green zone)
+                    sheetGlanceTile(
+                        icon: "dollarsign.circle.fill",
+                        label: "\(allExpenses.count)",
+                        indicator: expensesIndicator,
+                        iconColor: SpecialDayType.expense.accentColor,
+                        bgColor: SpecialDayType.expense.lightBackground
+                    ) {
+                        showExpensesSheet = true
+                    }
+
                     // SETTINGS: Health
                     starStyleGlanceTile(
                         target: .settings,
@@ -605,13 +651,14 @@ struct LandingPageView: View {
         )
     }
 
-    /// Special days indicator using maru-batsu symbols (●/○)
+    /// Special days indicator matching Star page format (●red ○pink)
     private var specialDaysIndicator: String? {
-        let (holidays, notes) = specialDaysThisMonth
-        if holidays == 0 && notes == 0 { return nil }
+        let (holidays, observances, birthdays) = specialDaysThisMonth
+        if holidays == 0 && observances == 0 && birthdays == 0 { return nil }
         var parts: [String] = []
-        if holidays > 0 { parts.append("●\(holidays)") }
-        if notes > 0 { parts.append("○\(notes)") }
+        if holidays > 0 { parts.append("●\(holidays)") }  // Red holidays
+        if observances > 0 { parts.append("○\(observances)") }  // Orange observances
+        if birthdays > 0 { parts.append("○\(birthdays)") }  // Pink birthdays
         return parts.joined(separator: " ")
     }
 
@@ -623,6 +670,39 @@ struct LandingPageView: View {
         } else {
             return "★ \(birthday.daysUntil)d"
         }
+    }
+
+    /// Active trips indicator (情報デザイン: ✈ symbol)
+    private var activeTripsIndicator: String? {
+        let today = Calendar.iso8601.startOfDay(for: Date())
+        let active = allTrips.filter { trip in
+            let start = Calendar.iso8601.startOfDay(for: trip.startDate)
+            let end = Calendar.iso8601.startOfDay(for: trip.endDate)
+            return start <= today && today <= end
+        }.count
+        if active > 0 { return "✈ \(active)" }
+
+        // Check for upcoming trips in next 7 days
+        let upcoming = allTrips.filter { trip in
+            let start = Calendar.iso8601.startOfDay(for: trip.startDate)
+            let daysUntil = Calendar.iso8601.dateComponents([.day], from: today, to: start).day ?? 0
+            return daysUntil > 0 && daysUntil <= 7
+        }.count
+        if upcoming > 0 { return "→ \(upcoming)" }
+        return nil
+    }
+
+    /// Expenses indicator (情報デザイン: this month total)
+    private var expensesIndicator: String? {
+        let calendar = Calendar.iso8601
+        let now = Date()
+        let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: now)) ?? now
+        let thisMonthExpenses = allExpenses.filter { $0.date >= startOfMonth }
+        if thisMonthExpenses.isEmpty { return nil }
+        let total = thisMonthExpenses.reduce(into: 0.0) { result, expense in
+            result += expense.amount
+        }
+        return "¤\(Int(total))"
     }
 
     /// Star Page Style GLANCE tile - matches month card design EXACTLY
@@ -684,6 +764,46 @@ struct LandingPageView: View {
         .accessibilityLabel("\(target.label): \(label)")
     }
 
+    /// Sheet-based GLANCE tile for Trips and Expenses (情報デザイン)
+    /// Same visual style as starStyleGlanceTile but with custom action
+    private func sheetGlanceTile(
+        icon: String,
+        label: String,
+        indicator: String?,
+        iconColor: Color,
+        bgColor: Color,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button {
+            HapticManager.impact(.light)
+            action()
+        } label: {
+            VStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 32, weight: .bold))
+                    .foregroundStyle(iconColor)
+
+                Text(label)
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+
+                if let indicator = indicator {
+                    Text(indicator)
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                } else {
+                    Text("—")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(JohoColors.black.opacity(0.3))
+                }
+            }
+            .frame(maxWidth: .infinity, minHeight: 100)
+            .background(bgColor)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+
     // MARK: - TodayItem Model
 
     private struct TodayItem: Identifiable {
@@ -704,12 +824,12 @@ struct LandingPageView: View {
         // 1. Holidays today
         if let holidays = holidayManager.holidayCache[todayStart] {
             for holiday in holidays {
-                let color = holiday.isRedDay ? JohoColors.red : JohoColors.orange
-                let badge = holiday.isRedDay ? "HOL" : "OBS"
+                let color = holiday.isBankHoliday ? JohoColors.red : JohoColors.orange
+                let badge = holiday.isBankHoliday ? "HOL" : "OBS"
                 items.append(TodayItem(
                     title: holiday.displayTitle,
                     subtitle: nil,
-                    icon: holiday.isRedDay ? "star.fill" : "sparkles",
+                    icon: holiday.isBankHoliday ? "star.fill" : "sparkles",
                     color: color,
                     typeBadge: badge
                 ))

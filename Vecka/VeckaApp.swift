@@ -13,6 +13,14 @@ import SwiftData
 struct VeckaApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @State private var navigationManager = NavigationManager()
+    @AppStorage("johoColorMode") private var johoColorMode = "light"
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @State private var showOnboarding = false
+
+    /// Computed color mode for the environment
+    private var colorMode: JohoColorMode {
+        JohoColorMode(rawValue: johoColorMode) ?? .light
+    }
 
     /// CloudKit-enabled ModelContainer for iCloud sync across devices
     /// Requires: iCloud capability + CloudKit container in Xcode project settings
@@ -20,6 +28,7 @@ struct VeckaApp: App {
         let schema = Schema([
             DailyNote.self,
             HolidayRule.self,
+            HolidayChangeLog.self,  // 情報デザイン: Audit trail for holiday changes
             CalendarRule.self,
             CountdownEvent.self,
             // Expense system models
@@ -50,6 +59,8 @@ struct VeckaApp: App {
             IconCatalogItem.self,
             // Location
             SavedLocation.self,
+            // World Clocks (Onsen landing page)
+            WorldClock.self,
         ])
 
         let modelConfiguration = ModelConfiguration(
@@ -76,11 +87,22 @@ struct VeckaApp: App {
         WindowGroup {
             ContentView()
                 .environment(navigationManager)
+                // 情報デザイン: Apply color mode to entire app
+                .johoColorMode(colorMode)
+                // 情報デザイン: Match system chrome to user's color mode choice
+                .preferredColorScheme(colorMode == .dark ? .dark : .light)
             .onOpenURL { url in
                 handleWidgetURL(url)
             }
             .onAppear {
                 Log.i("App launched. System language: \(LanguageManager.shared.currentLanguageCode)")
+                // Show onboarding on first launch
+                if !hasCompletedOnboarding {
+                    showOnboarding = true
+                }
+            }
+            .fullScreenCover(isPresented: $showOnboarding) {
+                OnboardingView(hasCompletedOnboarding: $hasCompletedOnboarding)
             }
         }
         .modelContainer(sharedModelContainer)
@@ -128,9 +150,19 @@ struct VeckaApp: App {
 class NavigationManager {
     var targetDate = Date()
     var shouldScrollToWeek = false
+    var targetPage: SidebarSelection = .landing  // 情報デザイン: Landing is home
+    var shouldNavigateToPage = false
+
+    /// Navigate to landing page (情報デザイン: Onsen is home)
+    func navigateToLanding() {
+        targetPage = .landing
+        shouldNavigateToPage = true
+    }
 
     func navigateToToday() {
         targetDate = Date()
+        targetPage = .landing  // 情報デザイン: Today goes to landing
+        shouldNavigateToPage = true
         shouldScrollToWeek = true
     }
 
@@ -141,6 +173,8 @@ class NavigationManager {
         // Find the date for the given week number
         if let weekDate = calendar.date(from: DateComponents(weekOfYear: weekNumber, yearForWeekOfYear: year)) {
             targetDate = weekDate
+            targetPage = .landing  // 情報デザイン: Widget taps go to landing
+            shouldNavigateToPage = true
             shouldScrollToWeek = true
         }
     }
@@ -151,6 +185,8 @@ class NavigationManager {
         // Find the date for the given week number and year
         if let weekDate = calendar.date(from: DateComponents(weekOfYear: weekNumber, yearForWeekOfYear: year)) {
             targetDate = weekDate
+            targetPage = .landing  // 情報デザイン: Widget taps go to landing
+            shouldNavigateToPage = true
             shouldScrollToWeek = true
         }
     }

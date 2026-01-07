@@ -44,15 +44,17 @@ class PDFRenderer {
         static let small = UIFont.systemFont(ofSize: 10, weight: .regular)
     }
 
-    // MARK: - Colors
+    // MARK: - Colors (情報デザイン compliant)
     private struct Colors {
         static let text = UIColor.black
         static let textSecondary = UIColor.darkGray
         static let textTertiary = UIColor.gray
-        static let accent = UIColor.systemBlue
-        static let redDay = UIColor.systemRed
+        // 情報デザイン: Cyan for events/scheduled time
+        static let accent = UIColor(red: 0.65, green: 0.95, blue: 0.99, alpha: 1.0)  // #A5F3FC
+        // 情報デザイン: Red for alerts/warnings/Sundays
+        static let redDay = UIColor(red: 0.90, green: 0.22, blue: 0.21, alpha: 1.0)  // #E53935
         static let divider = UIColor.lightGray
-        static let cardBackground = UIColor(white: 0.97, alpha: 1.0)
+        static let cardBackground = UIColor.white  // 情報デザイン: Pure white backgrounds
     }
 
     // MARK: - Initialization
@@ -248,14 +250,14 @@ class PDFRenderer {
             // Draw holiday name
             let nameAttrs: [NSAttributedString.Key: Any] = [
                 .font: Fonts.body,
-                .foregroundColor: holiday.isRedDay ? Colors.redDay : Colors.text
+                .foregroundColor: holiday.isBankHoliday ? Colors.redDay : Colors.text
             ]
 
             let namePoint = CGPoint(x: cardRect.minX + 12, y: cardRect.minY + 14)
             (holiday.name as NSString).draw(at: namePoint, withAttributes: nameAttrs)
 
             // Draw red day indicator
-            if holiday.isRedDay {
+            if holiday.isBankHoliday {
                 let indicatorRect = CGRect(
                     x: cardRect.maxX - 24,
                     y: cardRect.minY + 12,

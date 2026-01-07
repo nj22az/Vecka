@@ -8,7 +8,7 @@
 import Foundation
 
 enum HolidaySymbolCatalog {
-    static func defaultSymbolName(for name: String, isRedDay: Bool) -> String? {
+    static func defaultSymbolName(for name: String, isBankHoliday: Bool) -> String? {
         if name.hasPrefix("holiday.") {
             switch name {
             case "holiday.juldagen", "holiday.annandag_jul": return "gift.fill"
@@ -23,7 +23,7 @@ enum HolidaySymbolCatalog {
             }
         }
 
-        return isRedDay ? "flag.fill" : "star"
+        return isBankHoliday ? "flag.fill" : "star"
     }
 
     static let suggestedSymbols: [String] = [

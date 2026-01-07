@@ -44,7 +44,7 @@ struct WeekPickerSheet: View {
                         .frame(height: 180)
                     }
                     .padding(.horizontal)
-                    .padding(.top, 20)
+                    .padding(.top, JohoDimensions.spacingLG)
 
                     Divider()
                         .padding(.vertical, 16)

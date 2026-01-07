@@ -21,10 +21,11 @@ enum HolidayRuleType: String, Codable {
 @Model
 final class HolidayRule {
     @Attribute(.unique) var id: String
-    
+
     var name: String
-    var region: String // "SE", "US", etc.
-    var isRedDay: Bool // True = Red Day (Holiday), False = Observance (Valentine's)
+    var region: String // "SE", "US", "VN", "CUSTOM"
+    @Attribute(originalName: "isRedDay")
+    var isBankHoliday: Bool // True = Bank Holiday, False = Observance
 
     /// Optional user-facing title override (shown instead of localization key or name).
     var titleOverride: String?
@@ -41,6 +42,21 @@ final class HolidayRule {
     /// Optional notes/description for the observance
     var notes: String?
 
+    /// 情報デザイン: Local language name (e.g., "Julafton" for Christmas Eve in Swedish)
+    /// Shown alongside English name for authenticity
+    var localName: String?
+
+    // MARK: - 情報デザイン: Editable Holiday Database Fields
+
+    /// True if this rule was seeded from defaults (can be reset)
+    var isSystemDefault: Bool = false
+
+    /// Whether this rule is active (soft delete = disabled)
+    var isEnabled: Bool = true
+
+    /// Original rule JSON for "Reset to Default" feature
+    var originalDefaultJSON: String?
+
     // Rule Configuration
     var type: HolidayRuleType
     
@@ -56,12 +72,13 @@ final class HolidayRule {
     init(
         name: String,
         region: String = "SE",
-        isRedDay: Bool,
+        isBankHoliday: Bool,
         titleOverride: String? = nil,
         symbolName: String? = nil,
         iconColor: String? = nil,
         userModifiedAt: Date? = nil,
         notes: String? = nil,
+        localName: String? = nil,
         type: HolidayRuleType,
         month: Int? = nil,
         day: Int? = nil,
@@ -69,17 +86,20 @@ final class HolidayRule {
         weekday: Int? = nil,
         ordinal: Int? = nil,
         dayRangeStart: Int? = nil,
-        dayRangeEnd: Int? = nil
+        dayRangeEnd: Int? = nil,
+        isSystemDefault: Bool = false,
+        isEnabled: Bool = true
     ) {
         self.id = "\(region)-\(name)"
         self.name = name
         self.region = region
-        self.isRedDay = isRedDay
+        self.isBankHoliday = isBankHoliday
         self.titleOverride = titleOverride
         self.symbolName = symbolName
         self.iconColor = iconColor
         self.userModifiedAt = userModifiedAt
         self.notes = notes
+        self.localName = localName
         self.type = type
         self.month = month
         self.day = day
@@ -88,6 +108,13 @@ final class HolidayRule {
         self.ordinal = ordinal
         self.dayRangeStart = dayRangeStart
         self.dayRangeEnd = dayRangeEnd
+        self.isSystemDefault = isSystemDefault
+        self.isEnabled = isEnabled
+
+        // Store original JSON for system defaults (for reset feature)
+        if isSystemDefault {
+            self.originalDefaultJSON = self.toJSON()
+        }
 
         // Validate parameters match the rule type in debug builds
         #if DEBUG
@@ -95,6 +122,30 @@ final class HolidayRule {
             Log.w("HolidayRule validation warning for '\(name)': \(error)")
         }
         #endif
+    }
+
+    // MARK: - JSON Serialization (for changelog/reset)
+
+    func toJSON() -> String {
+        let snapshot = HolidayRuleSnapshot(from: self)
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .sortedKeys
+        guard let data = try? encoder.encode(snapshot),
+              let json = String(data: data, encoding: .utf8) else {
+            return "{}"
+        }
+        return json
+    }
+
+    /// Whether this rule has been modified from its default
+    var isModifiedFromDefault: Bool {
+        guard isSystemDefault else { return false }
+        return userModifiedAt != nil
+    }
+
+    /// Whether this rule can be reset to default
+    var canResetToDefault: Bool {
+        isSystemDefault && isModifiedFromDefault && originalDefaultJSON != nil
     }
 
     // MARK: - Validation

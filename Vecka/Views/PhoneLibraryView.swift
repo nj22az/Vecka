@@ -180,8 +180,8 @@ struct PhoneLibraryView: View {
     }
 
     private var specialDaysSubtitle: String {
-        let redDays = holidays.filter { $0.isRedDay }.count
-        let observances = holidays.filter { !$0.isRedDay }.count
+        let redDays = holidays.filter { $0.isBankHoliday }.count
+        let observances = holidays.filter { !$0.isBankHoliday }.count
         var parts: [String] = []
         if redDays > 0 { parts.append("\(redDays) holidays") }
         if observances > 0 { parts.append("\(observances) observances") }

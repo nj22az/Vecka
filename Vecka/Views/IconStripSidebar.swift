@@ -75,69 +75,52 @@ struct IconStripSidebar: View {
             Spacer()
 
             // Smart repack button - only shows when widgets need collapsing
-            // 情報デザイン: 44pt touch target, black border
             if showRepackButton, let repackAction = onRepack {
-                Button(action: repackAction) {
-                    Image(systemName: "arrow.up.left.and.arrow.down.right.circle.fill")
-                        .font(.system(size: iconSize + 4, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.orange)
-                        .frame(width: 44, height: 44)
-                        .background(JohoColors.black)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(JohoColors.orange, lineWidth: 2))
-                }
-                .buttonStyle(.plain)
-                .padding(.bottom, JohoDimensions.spacingMD)
+                JohoIconButton(
+                    icon: "arrow.up.left.and.arrow.down.right.circle.fill",
+                    color: JohoColors.black,
+                    foregroundColor: JohoColors.orange,
+                    borderColor: JohoColors.orange,
+                    size: 44,
+                    borderWidth: 2
+                ) { repackAction() }
                 .accessibilityLabel("Repack widgets")
+                .padding(.bottom, JohoDimensions.spacingMD)
                 .transition(.scale.combined(with: .opacity))
             }
 
             // Add button (context-aware action with custom color)
-            // 情報デザイン: 44pt touch target, 2pt black border
             if let addAction = onAdd {
-                Button(action: addAction) {
-                    Image(systemName: "plus")
-                        .font(.system(size: iconSize, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
-                        .frame(width: 44, height: 44)
-                        .background(addButtonColor)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
-                }
-                .buttonStyle(.plain)
-                .padding(.bottom, JohoDimensions.spacingLG)
+                JohoIconButton(
+                    icon: "plus",
+                    color: addButtonColor,
+                    size: 44,
+                    borderWidth: 2
+                ) { addAction() }
                 .accessibilityLabel("Add")
+                .padding(.bottom, JohoDimensions.spacingLG)
                 .transition(.scale.combined(with: .opacity))
             }
 
             // Export button (above settings)
-            // 情報デザイン: 44pt touch target, 2pt border, 0.7 opacity min
             if let exportAction = onExport {
-                Button(action: exportAction) {
-                    Image(systemName: "square.and.arrow.up")
-                        .font(.system(size: iconSize, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.white.opacity(0.7))
-                        .frame(width: 44, height: 44)
-                        .background(JohoColors.black)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(JohoColors.white.opacity(0.3), lineWidth: 2))
-                }
-                .buttonStyle(.plain)
+                JohoIconButton(
+                    icon: "square.and.arrow.up",
+                    color: JohoColors.black,
+                    size: 44,
+                    borderWidth: 2
+                ) { exportAction() }
                 .accessibilityLabel("Export")
                 .padding(.bottom, JohoDimensions.spacingSM)
             }
 
-            // Legend info button - 情報デザイン: Always visible
-            Button { showLegend = true } label: {
-                Image(systemName: "info.circle")
-                    .font(.system(size: iconSize, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.white.opacity(0.7))
-                    .frame(width: 44, height: 44)
-                    .background(JohoColors.black)
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(JohoColors.white.opacity(0.3), lineWidth: 2))
-            }
-            .buttonStyle(.plain)
+            // Legend info button
+            JohoIconButton(
+                icon: "info.circle",
+                color: JohoColors.black,
+                size: 44,
+                borderWidth: 2
+            ) { showLegend = true }
             .accessibilityLabel("Legend")
             .padding(.bottom, JohoDimensions.spacingSM)
             .popover(isPresented: $showLegend) {

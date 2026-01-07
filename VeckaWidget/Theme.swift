@@ -700,7 +700,7 @@ struct JohoWeekBadge: View {
 struct JohoDayCell: View {
     let day: Int
     let isToday: Bool
-    let isRedDay: Bool
+    let isBankHoliday: Bool
     let isSunday: Bool
     var cellSize: CGFloat = 28
 
@@ -720,7 +720,7 @@ struct JohoDayCell: View {
 
     private var textColor: Color {
         if isToday { return JohoWidgetColors.white }
-        if isRedDay { return JohoWidgetColors.pink }
+        if isBankHoliday { return JohoWidgetColors.pink }
         if isSunday { return JohoWidgetColors.sundayBlue }
         return JohoWidgetColors.black
     }
@@ -728,16 +728,16 @@ struct JohoDayCell: View {
 
 struct JohoHolidayPill: View {
     let name: String
-    let isRedDay: Bool
+    let isBankHoliday: Bool
 
     var body: some View {
         HStack(spacing: JohoDimensions.spacingXS) {
             Circle()
-                .fill(isRedDay ? JohoWidgetColors.pink : JohoWidgetColors.cyan)
+                .fill(isBankHoliday ? JohoWidgetColors.pink : JohoWidgetColors.cyan)
                 .frame(width: 6, height: 6)
             Text(name)
                 .font(JohoWidgetFont.labelSmall)
-                .foregroundStyle(isRedDay ? JohoWidgetColors.pink : JohoWidgetColors.cyan)
+                .foregroundStyle(isBankHoliday ? JohoWidgetColors.pink : JohoWidgetColors.cyan)
                 .lineLimit(1)
         }
     }

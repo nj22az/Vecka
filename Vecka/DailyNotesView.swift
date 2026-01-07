@@ -40,13 +40,19 @@ struct DailyNotesView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: JohoDimensions.spacingLG) {
-                // Page Header
+                // Page Header (情報デザイン: White text on black background)
                 HStack(alignment: .top) {
-                    JohoPageHeader(
-                        title: selectedDate.formatted(.dateTime.weekday(.wide)),
-                        badge: "NOTES",
-                        subtitle: selectedDate.formatted(date: .long, time: .omitted)
-                    )
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: JohoDimensions.spacingSM) {
+                            JohoPill(text: "NOTES", style: .whiteOnBlack, size: .large)
+                        }
+                        Text(selectedDate.formatted(.dateTime.weekday(.wide)))
+                            .font(JohoFont.headline)
+                            .foregroundStyle(JohoColors.white)
+                        Text(selectedDate.formatted(date: .long, time: .omitted))
+                            .font(JohoFont.body)
+                            .foregroundStyle(JohoColors.white.opacity(0.7))
+                    }
 
                     Spacer()
 
@@ -54,7 +60,12 @@ struct DailyNotesView: View {
                         Button {
                             dismiss()
                         } label: {
-                            JohoActionButton(icon: "xmark")
+                            Image(systemName: "xmark")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundStyle(JohoColors.white)
+                                .frame(width: 32, height: 32)
+                                .background(JohoColors.white.opacity(0.2))
+                                .clipShape(Circle())
                         }
                     }
                 }
@@ -62,24 +73,26 @@ struct DailyNotesView: View {
                 .padding(.top, JohoDimensions.spacingSM)
                 .safeAreaPadding(.top)
 
-                // Holidays for this day
+                // Holidays for this day (in white card)
                 if let holidays = holidaysForDay, !holidays.isEmpty {
-                    JohoSectionBox(title: "HOLIDAYS", zone: .holidays, icon: "star.fill") {
-                        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                            ForEach(holidays, id: \.id) { holiday in
-                                HStack(spacing: JohoDimensions.spacingSM) {
-                                    Image(systemName: holiday.symbolName ?? "flag.fill")
-                                        .font(.system(size: 14, weight: .bold))
-                                        .foregroundStyle(holiday.isRedDay ? JohoColors.pink : JohoColors.cyan)
+                    JohoCard(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderMedium) {
+                        JohoSectionBox(title: "HOLIDAYS", zone: .holidays) {
+                            VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                                ForEach(holidays, id: \.id) { holiday in
+                                    HStack(spacing: JohoDimensions.spacingSM) {
+                                        Image(systemName: holiday.symbolName ?? "flag.fill")
+                                            .font(.system(size: 14, weight: .bold))
+                                            .foregroundStyle(holiday.isBankHoliday ? JohoColors.pink : JohoColors.cyan)
 
-                                    Text(holiday.displayTitle)
-                                        .font(JohoFont.body)
-                                        .foregroundStyle(JohoColors.black)
+                                        Text(holiday.displayTitle)
+                                            .font(JohoFont.body)
+                                            .foregroundStyle(JohoColors.black)
 
-                                    Spacer()
+                                        Spacer()
 
-                                    if holiday.isRedDay {
-                                        JohoPill(text: "RED DAY", style: .colored(JohoColors.pink), size: .small)
+                                        if holiday.isBankHoliday {
+                                            JohoPill(text: "RED DAY", style: .colored(JohoColors.pink), size: .small)
+                                        }
                                     }
                                 }
                             }
@@ -88,7 +101,7 @@ struct DailyNotesView: View {
                     .padding(.horizontal, JohoDimensions.spacingLG)
                 }
 
-                // Add Note Button
+                // Add Note Button (情報デザイン: Yellow accent for notes)
                 if !isCreating {
                     Button {
                         withAnimation(AnimationConstants.quickSpring) {
@@ -101,11 +114,15 @@ struct DailyNotesView: View {
                             Text("Add Note")
                                 .font(JohoFont.button)
                         }
-                        .foregroundStyle(JohoColors.white)
+                        .foregroundStyle(JohoColors.black)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, JohoDimensions.spacingMD)
-                        .background(JohoColors.black)
+                        .background(JohoColors.yellow)
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                        )
                     }
                     .padding(.horizontal, JohoDimensions.spacingLG)
                 }
@@ -129,11 +146,15 @@ struct DailyNotesView: View {
                     .padding(.horizontal, JohoDimensions.spacingLG)
                 }
 
-                // Existing Notes (display only - edit/delete in month card)
+                // Existing Notes in white cards (情報デザイン: White cards on black bg)
                 if !dayNotes.isEmpty {
-                    VStack(spacing: JohoDimensions.spacingSM) {
-                        ForEach(dayNotes) { note in
-                            JohoNoteCard(note: note)
+                    JohoCard(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderMedium) {
+                        JohoSectionBox(title: "NOTES", zone: .notes) {
+                            VStack(spacing: JohoDimensions.spacingSM) {
+                                ForEach(dayNotes) { note in
+                                    JohoNoteCard(note: note)
+                                }
+                            }
                         }
                     }
                     .padding(.horizontal, JohoDimensions.spacingLG)
@@ -141,18 +162,29 @@ struct DailyNotesView: View {
 
                 // Empty state
                 if dayNotes.isEmpty && !isCreating {
-                    JohoEmptyState(
-                        title: "No Notes",
-                        message: "Tap 'Add Note' to create your first note for this day.",
-                        icon: "note.text",
-                        zone: .notes
-                    )
+                    JohoCard(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderMedium) {
+                        VStack(spacing: JohoDimensions.spacingMD) {
+                            Image(systemName: "note.text")
+                                .font(.system(size: 32, weight: .medium))
+                                .foregroundStyle(JohoColors.yellow)
+                            Text("No Notes")
+                                .font(JohoFont.headline)
+                                .foregroundStyle(JohoColors.black)
+                            Text("Tap 'Add Note' to create your first note for this day.")
+                                .font(JohoFont.body)
+                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                                .multilineTextAlignment(.center)
+                        }
+                        .padding(JohoDimensions.spacingLG)
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingLG)
                     .padding(.top, JohoDimensions.spacingXL)
                 }
             }
             .padding(.bottom, JohoDimensions.spacingXL)
         }
-        .johoBackground()
+        .johoBackground()  // 情報デザイン: BLACK background for AMOLED
+        .scrollContentBackground(.hidden)
         .navigationBarHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {
@@ -679,7 +711,8 @@ struct JohoNoteEditorSheet: View {
 
             Spacer()
         }
-        .johoBackground()
+        .johoBackground()  // 情報デザイン: BLACK background for AMOLED
+        .scrollContentBackground(.hidden)
         .navigationBarHidden(true)
         .sheet(isPresented: $showingIconPicker) {
             JohoIconPickerSheet(

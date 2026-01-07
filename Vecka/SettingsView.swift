@@ -8,6 +8,7 @@
 
 import SwiftUI
 import SwiftData
+import WidgetKit
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
@@ -19,7 +20,9 @@ struct SettingsView: View {
     @AppStorage("johoColorMode") private var johoColorMode = "light"
     @AppStorage("showLunarCalendar") private var showLunarCalendar = false  // For Vietnamese holidays
     @AppStorage("customLandingTitle") private var customLandingTitle = ""
-
+    // PDF Export settings (情報デザイン: User-configurable branding)
+    @AppStorage("pdfExportTitle") private var pdfExportTitle = "Contact Directory"
+    @AppStorage("pdfExportFooter") private var pdfExportFooter = ""  // Empty = page number only
     /// Dynamic colors based on color mode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
@@ -279,11 +282,11 @@ struct SettingsView: View {
                 // Personalization Section (情報デザイン: User customization)
                 personalizationSection
 
+                // Export Section (情報デザイン: PDF branding options)
+                exportSettingsSection
+
                 // World Clocks Section (Onsen landing page)
                 worldClocksSection
-
-                // Unified DATABASE Section (情報デザイン: Legend + Stats in Bento style)
-                unifiedDatabaseSection
 
                 // About Section
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
@@ -303,7 +306,7 @@ struct SettingsView: View {
                         )
 
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("WeekGrid")
+                            Text("Onsen Planner")
                                 .font(JohoFont.displaySmall)
                                 .foregroundStyle(colors.primary)
 
@@ -369,7 +372,7 @@ struct SettingsView: View {
 
     private var regionSummary: String {
         let names = holidayRegions.regions.compactMap { code in
-            RegionSelectionView.options.first(where: { $0.code == code })?.displayName
+            RegionSelectionView.allRegions.first(where: { $0.code == code })?.displayName
         }
         if names.isEmpty { return "None selected" }
         return names.joined(separator: ", ")
@@ -378,8 +381,9 @@ struct SettingsView: View {
     private var regionSymbolName: String {
         if holidayRegions.regions.count == 1,
            let code = holidayRegions.regions.first,
-           let option = RegionSelectionView.options.first(where: { $0.code == code }) {
-            return option.symbol
+           let option = RegionSelectionView.allRegions.first(where: { $0.code == code }) {
+            // Use continent symbol for single region
+            return option.continent.symbol
         }
         return "globe"
     }
@@ -480,41 +484,90 @@ struct SettingsView: View {
         )
     }
 
-    // MARK: - Dark Mode Toggle (夜間モード)
+    // MARK: - Dark Mode Picker (情報デザイン: Segmented control)
 
     private var darkModeToggleRow: some View {
         VStack(spacing: JohoDimensions.spacingSM) {
-            HStack(spacing: JohoDimensions.spacingMD) {
-                // Icon zone
-                Image(systemName: selectedColorMode == .dark ? "moon.fill" : "sun.max.fill")
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(selectedColorMode == .dark ? JohoColors.white : JohoColors.black)
-                    .frame(width: 44, height: 44)
-                    .background(selectedColorMode == .dark ? JohoColors.black : JohoColors.yellow)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                    )
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Dark Mode")
-                        .font(JohoFont.headline)
+            VStack(spacing: JohoDimensions.spacingMD) {
+                // Header row
+                HStack(spacing: JohoDimensions.spacingMD) {
+                    // Icon zone
+                    Image(systemName: "circle.lefthalf.filled")
+                        .font(.system(size: 20, weight: .bold))
                         .foregroundStyle(colors.primary)
+                        .frame(width: 44, height: 44)
+                        .background(JohoColors.inputBackground)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
+                        )
 
-                    Text(selectedColorMode == .dark ? "AMOLED Dark Mode" : "Light Mode")
-                        .font(JohoFont.body)
-                        .foregroundStyle(colors.secondary)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Appearance")
+                            .font(JohoFont.headline)
+                            .foregroundStyle(colors.primary)
+
+                        Text(selectedColorMode == .dark ? "Dark mode active" : "Light mode active")
+                            .font(JohoFont.body)
+                            .foregroundStyle(colors.secondary)
+                    }
+
+                    Spacer()
                 }
 
-                Spacer()
+                // Segmented control (情報デザイン: Two-button picker)
+                HStack(spacing: 0) {
+                    // LIGHT button
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.15)) {
+                            johoColorMode = "light"
+                        }
+                        HapticManager.selection()
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "sun.max")
+                                .font(.system(size: 12, weight: .bold))
+                            Text("LIGHT")
+                                .font(.system(size: 12, weight: .black, design: .rounded))
+                        }
+                        .foregroundStyle(selectedColorMode == .light ? JohoColors.white : JohoColors.black)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(selectedColorMode == .light ? JohoColors.black : JohoColors.white)
+                    }
+                    .buttonStyle(.plain)
 
-                Toggle("", isOn: Binding(
-                    get: { selectedColorMode == .dark },
-                    set: { johoColorMode = $0 ? "dark" : "light" }
-                ))
-                .labelsHidden()
-                .tint(JohoColors.black)
+                    // Vertical divider
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+
+                    // DARK button
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.15)) {
+                            johoColorMode = "dark"
+                        }
+                        HapticManager.selection()
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "moon")
+                                .font(.system(size: 12, weight: .bold))
+                            Text("DARK")
+                                .font(.system(size: 12, weight: .black, design: .rounded))
+                        }
+                        .foregroundStyle(selectedColorMode == .dark ? JohoColors.white : JohoColors.black)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(selectedColorMode == .dark ? JohoColors.black : JohoColors.white)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                        .stroke(JohoColors.black, lineWidth: 1.5)
+                )
             }
             .padding(JohoDimensions.spacingMD)
             .background(colors.surface)
@@ -525,7 +578,7 @@ struct SettingsView: View {
             )
 
             // Footer
-            Text("Dark mode inverts colors for AMOLED screens. White text on pure black saves battery.")
+            Text("Dark mode uses white text on black. Saves battery on OLED screens.")
                 .font(JohoFont.caption)
                 .foregroundStyle(colors.secondary)
                 .padding(.horizontal, JohoDimensions.spacingSM)
@@ -542,35 +595,54 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
             JohoPill(text: "LUNAR CALENDAR", style: .whiteOnBlack, size: .small)
 
-            HStack(spacing: JohoDimensions.spacingMD) {
-                // Moon icon
-                Image(systemName: showLunarCalendar ? "moon.stars.fill" : "moon")
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(showLunarCalendar ? Color(hex: "FFCD00") : JohoColors.black)
-                    .frame(width: 44, height: 44)
-                    .background(showLunarCalendar ? Color(hex: "DA251D") : JohoColors.inputBackground)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                    )
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Show Lunar Dates")
-                        .font(JohoFont.headline)
-                        .foregroundStyle(colors.primary)
-
-                    Text(showLunarCalendar ? "Showing Âm Lịch dates" : "Gregorian only")
-                        .font(JohoFont.body)
-                        .foregroundStyle(colors.secondary)
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    showLunarCalendar.toggle()
                 }
+                HapticManager.selection()
+            } label: {
+                HStack(spacing: JohoDimensions.spacingMD) {
+                    // Moon icon
+                    Image(systemName: showLunarCalendar ? "moon.stars.fill" : "moon")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(showLunarCalendar ? Color(hex: "FFCD00") : JohoColors.black)
+                        .frame(width: 44, height: 44)
+                        .background(showLunarCalendar ? Color(hex: "DA251D") : JohoColors.inputBackground)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
+                        )
 
-                Spacer()
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Show Lunar Dates")
+                            .font(JohoFont.headline)
+                            .foregroundStyle(colors.primary)
 
-                Toggle("", isOn: $showLunarCalendar)
-                    .labelsHidden()
-                    .tint(Color(hex: "DA251D"))
+                        Text(showLunarCalendar ? "Showing Âm Lịch dates" : "Gregorian only")
+                            .font(JohoFont.body)
+                            .foregroundStyle(colors.secondary)
+                    }
+
+                    Spacer()
+
+                    // Visual toggle indicator (情報デザイン: Maru circle)
+                    Circle()
+                        .fill(showLunarCalendar ? Color(hex: "DA251D") : JohoColors.inputBackground)
+                        .frame(width: 28, height: 28)
+                        .overlay(
+                            Circle().stroke(JohoColors.black, lineWidth: 1.5)
+                        )
+                        .overlay(
+                            showLunarCalendar ?
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundStyle(.white)
+                            : nil
+                        )
+                }
             }
+            .buttonStyle(.plain)
             .padding(JohoDimensions.spacingMD)
             .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
@@ -763,6 +835,97 @@ struct SettingsView: View {
         }
     }
 
+    // MARK: - Export Settings Section (情報デザイン: PDF branding)
+
+    private var exportSettingsSection: some View {
+        VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
+            // Section label
+            JohoPill(text: "EXPORT", style: .whiteOnBlack, size: .small)
+
+            // PDF Title setting
+            HStack(spacing: JohoDimensions.spacingMD) {
+                // Icon zone
+                Image(systemName: "doc.text")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(JohoColors.black)
+                    .frame(width: 44, height: 44)
+                    .background(JohoColors.purple.opacity(0.3))
+                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                    .overlay(
+                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
+                    )
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("PDF Title")
+                        .font(JohoFont.headline)
+                        .foregroundStyle(colors.primary)
+
+                    TextField("Contact Directory", text: $pdfExportTitle)
+                        .font(JohoFont.body)
+                        .foregroundStyle(colors.secondary)
+                }
+
+                Spacer()
+            }
+            .padding(JohoDimensions.spacingMD)
+            .background(colors.surface)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+            )
+
+            // PDF Footer setting
+            HStack(spacing: JohoDimensions.spacingMD) {
+                // Icon zone
+                Image(systemName: "text.alignleft")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(JohoColors.black)
+                    .frame(width: 44, height: 44)
+                    .background(JohoColors.purple.opacity(0.2))
+                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                    .overlay(
+                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
+                    )
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("PDF Footer")
+                        .font(JohoFont.headline)
+                        .foregroundStyle(colors.primary)
+
+                    TextField("Page number only", text: $pdfExportFooter)
+                        .font(JohoFont.body)
+                        .foregroundStyle(colors.secondary)
+                }
+
+                Spacer()
+            }
+            .padding(JohoDimensions.spacingMD)
+            .background(colors.surface)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+            )
+
+            // Footer hint
+            Text("Leave footer empty to show page numbers only.")
+                .font(JohoFont.caption)
+                .foregroundStyle(colors.secondary)
+                .padding(.horizontal, JohoDimensions.spacingSM)
+        }
+        .padding(JohoDimensions.spacingLG)
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
+        )
+        .padding(.horizontal, JohoDimensions.spacingLG)
+    }
+
     // MARK: - World Clocks Section (情報デザイン: Onsen landing page clocks)
 
     private var worldClocksSection: some View {
@@ -940,11 +1103,30 @@ struct SettingsView: View {
         )
         modelContext.insert(clock)
         try? modelContext.save()
+        syncWorldClocksToWidget()
     }
 
     private func deleteClock(_ clock: WorldClock) {
         modelContext.delete(clock)
         try? modelContext.save()
+        syncWorldClocksToWidget()
+    }
+
+    /// Sync world clocks to App Group for widget access
+    private func syncWorldClocksToWidget() {
+        // Convert SwiftData WorldClock to shared Codable format
+        let sharedClocks = worldClocks.prefix(3).enumerated().map { index, clock in
+            SharedWorldClock(
+                id: clock.id,
+                cityName: clock.cityName,
+                timezoneIdentifier: clock.timezoneIdentifier,
+                sortOrder: index
+            )
+        }
+        WorldClockStorage.save(Array(sharedClocks))
+
+        // Reload widget timeline
+        WidgetCenter.shared.reloadTimelines(ofKind: "VeckaWidget")
     }
 
     // MARK: - Unified DATABASE Section (情報デザイン: Star Page Month Card Style)
@@ -1253,46 +1435,118 @@ struct CurrencyPickerView: View {
     }
 }
 
-// MARK: - Region Selection View (情報デザイン)
+// MARK: - Region Selection View (情報デザイン: Continent-grouped with INDEX)
 
 struct RegionSelectionView: View {
     @Binding var selectedRegions: HolidayRegionSelection
     @State private var showSelectionLimitAlert = false
+    @State private var searchText = ""
+    @State private var isIndexExpanded = false
+    @State private var filterContinent: Continent?
+    @State private var expandedContinents: Set<Continent> = []  // 情報デザイン: Collapsed by default
     @Environment(\.johoColorMode) private var colorMode
 
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
+    // 情報デザイン accent color for Holidays (Pink zone)
+    private var accentColor: Color { JohoColors.pink }
+
+    // MARK: - Continent Enum (情報デザイン: No colored globes, use SF Symbols)
+
+    enum Continent: String, CaseIterable, Identifiable {
+        case europe = "Europe"
+        case asia = "Asia"
+        case americas = "Americas"
+
+        var id: String { rawValue }
+
+        /// 情報デザイン: Black SF Symbols only, no colored globes
+        var symbol: String {
+            switch self {
+            case .europe: return "building.columns"
+            case .asia: return "sun.horizon"
+            case .americas: return "mountain.2"
+            }
+        }
+
+        var shortCode: String {
+            switch self {
+            case .europe: return "EU"
+            case .asia: return "AS"
+            case .americas: return "AM"
+            }
+        }
+    }
+
+    // MARK: - Region Data (情報デザイン: No colored icons, just code + name)
+
     struct RegionOption: Identifiable, Hashable {
         let code: String
         let titleKey: String
-        let symbol: String
-        let color: Color
+        let continent: Continent
 
         var id: String { code }
         var displayName: String { NSLocalizedString(titleKey, comment: "Region Name") }
     }
 
-    static let options: [RegionOption] = [
-        // Original regions
-        .init(code: "SE", titleKey: "region.sweden", symbol: "globe.europe.africa", color: .blue),
-        .init(code: "US", titleKey: "region.us", symbol: "globe.americas", color: .red),
-        .init(code: "VN", titleKey: "region.vietnam", symbol: "globe.asia.australia", color: .green),
-        // European expansion
-        .init(code: "DE", titleKey: "region.germany", symbol: "globe.europe.africa", color: Color(hex: "DD0000")),
-        .init(code: "GB", titleKey: "region.uk", symbol: "globe.europe.africa", color: Color(hex: "012169")),
-        .init(code: "FR", titleKey: "region.france", symbol: "globe.europe.africa", color: Color(hex: "002395")),
-        .init(code: "IT", titleKey: "region.italy", symbol: "globe.europe.africa", color: Color(hex: "008C45")),
-        .init(code: "NL", titleKey: "region.netherlands", symbol: "globe.europe.africa", color: Color(hex: "AE1C28")),
-        // Asian expansion
-        .init(code: "JP", titleKey: "region.japan", symbol: "globe.asia.australia", color: Color(hex: "BC002D")),
-        .init(code: "HK", titleKey: "region.hongkong", symbol: "globe.asia.australia", color: Color(hex: "DE2910")),
-        .init(code: "CN", titleKey: "region.china", symbol: "globe.asia.australia", color: Color(hex: "DE2910")),
-        .init(code: "TH", titleKey: "region.thailand", symbol: "globe.asia.australia", color: Color(hex: "241D4F"))
+    static let allRegions: [RegionOption] = [
+        // Europe
+        .init(code: "SE", titleKey: "region.sweden", continent: .europe),
+        .init(code: "DE", titleKey: "region.germany", continent: .europe),
+        .init(code: "GB", titleKey: "region.uk", continent: .europe),
+        .init(code: "FR", titleKey: "region.france", continent: .europe),
+        .init(code: "IT", titleKey: "region.italy", continent: .europe),
+        .init(code: "NL", titleKey: "region.netherlands", continent: .europe),
+        // Asia
+        .init(code: "VN", titleKey: "region.vietnam", continent: .asia),
+        .init(code: "JP", titleKey: "region.japan", continent: .asia),
+        .init(code: "HK", titleKey: "region.hongkong", continent: .asia),
+        .init(code: "CN", titleKey: "region.china", continent: .asia),
+        .init(code: "TH", titleKey: "region.thailand", continent: .asia),
+        // Americas
+        .init(code: "US", titleKey: "region.us", continent: .americas),
     ]
+
+    // MARK: - Computed Properties
+
+    /// Regions grouped by continent
+    private var regionsByContinent: [Continent: [RegionOption]] {
+        Dictionary(grouping: Self.allRegions) { $0.continent }
+    }
+
+    /// Filtered regions based on search and continent filter
+    private var filteredRegions: [RegionOption] {
+        var result = Self.allRegions
+
+        // Filter by search text
+        if !searchText.isEmpty {
+            result = result.filter { region in
+                region.displayName.localizedCaseInsensitiveContains(searchText) ||
+                region.code.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+
+        // Filter by continent
+        if let continent = filterContinent {
+            result = result.filter { $0.continent == continent }
+        }
+
+        return result
+    }
+
+    /// Sorted continents for display
+    private var sortedContinents: [Continent] {
+        Continent.allCases
+    }
+
+    /// Regions count per continent (for index badges)
+    private func regionCount(for continent: Continent) -> Int {
+        regionsByContinent[continent]?.count ?? 0
+    }
 
     var body: some View {
         ScrollView {
-            VStack(spacing: JohoDimensions.spacingLG) {
+            VStack(spacing: JohoDimensions.spacingMD) {
                 // Header
                 JohoPageHeader(
                     title: NSLocalizedString("settings.region", comment: "Region"),
@@ -1302,51 +1556,53 @@ struct RegionSelectionView: View {
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.top, JohoDimensions.spacingSM)
 
-                // Regions list
-                VStack(spacing: JohoDimensions.spacingSM) {
-                    ForEach(Self.options) { region in
-                        Button {
-                            toggle(region.code)
-                        } label: {
-                            HStack(spacing: JohoDimensions.spacingMD) {
-                                // Region icon zone
-                                Image(systemName: region.symbol)
-                                    .font(.system(size: 20, weight: .bold))
-                                    .foregroundStyle(region.color)
-                                    .frame(width: 44, height: 44)
-                                    .background(selectedRegions.regions.contains(region.code) ? SectionZone.holidays.background : JohoColors.inputBackground)
-                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                    .overlay(
-                                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                            .stroke(colors.border, lineWidth: selectedRegions.regions.contains(region.code) ? JohoDimensions.borderMedium : JohoDimensions.borderThin)
-                                    )
+                // MAIN CONTENT CONTAINER (情報デザイン: All content in white container)
+                VStack(spacing: 0) {
+                    // Search field row
+                    HStack(spacing: JohoDimensions.spacingSM) {
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(colors.primary)
 
-                                Text(region.displayName)
-                                    .font(JohoFont.headline)
+                        TextField("Search regions", text: $searchText)
+                            .font(JohoFont.body)
+                            .foregroundStyle(colors.primary)
+
+                        if !searchText.isEmpty {
+                            Button {
+                                searchText = ""
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 16, weight: .bold))
                                     .foregroundStyle(colors.primary)
-
-                                Spacer()
-
-                                if selectedRegions.regions.contains(region.code) {
-                                    Image(systemName: "checkmark")
-                                        .font(.system(size: 16, weight: .bold))
-                                        .foregroundStyle(colors.primary)
-                                }
                             }
-                            .padding(JohoDimensions.spacingMD)
-                            .background(colors.surface)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                    .stroke(colors.border, lineWidth: selectedRegions.regions.contains(region.code) ? JohoDimensions.borderThick : JohoDimensions.borderMedium)
-                            )
                         }
-                        .buttonStyle(.plain)
                     }
-                }
-                .padding(.horizontal, JohoDimensions.spacingLG)
+                    .padding(JohoDimensions.spacingMD)
 
-                Spacer(minLength: JohoDimensions.spacingXL)
+                    // Horizontal divider
+                    Rectangle()
+                        .fill(colors.border)
+                        .frame(height: 1.5)
+
+                    // 情報デザイン: INDEX header (collapsible continent filter)
+                    continentIndexHeader
+
+                    // Horizontal divider
+                    Rectangle()
+                        .fill(colors.border)
+                        .frame(height: 1)
+
+                    // Region list grouped by continent
+                    regionListContent
+                }
+                .background(colors.surface)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                        .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
+                )
+                .padding(.horizontal, JohoDimensions.spacingLG)
             }
             .padding(.bottom, JohoDimensions.spacingXL)
         }
@@ -1358,6 +1614,342 @@ struct RegionSelectionView: View {
             Text("You can select up to two regions.")
         }
     }
+
+    // MARK: - Continent INDEX Header (情報デザイン: Collapsible like Contacts)
+
+    private var continentIndexHeader: some View {
+        VStack(spacing: 0) {
+            // Header row: INDEX > (tap to expand/collapse)
+            Button {
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    isIndexExpanded.toggle()
+                }
+                HapticManager.selection()
+            } label: {
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    // Icon zone (情報デザイン: colored box)
+                    Image(systemName: "globe")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .frame(width: 24, height: 24)
+                        .background(accentColor.opacity(0.3))
+                        .clipShape(Squircle(cornerRadius: 5))
+                        .overlay(
+                            Squircle(cornerRadius: 5)
+                                .stroke(colors.border, lineWidth: 1)
+                        )
+
+                    Text("INDEX")
+                        .font(.system(size: 12, weight: .black, design: .rounded))
+                        .tracking(1)
+                        .foregroundStyle(colors.primary)
+
+                    // Chevron indicating expand/collapse state
+                    Image(systemName: isIndexExpanded ? "chevron.down" : "chevron.right")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(colors.primary.opacity(0.6))
+
+                    Spacer()
+
+                    // Selected count badge
+                    HStack(spacing: 4) {
+                        Text("\(selectedRegions.regions.count)/2")
+                            .font(.system(size: 12, weight: .black, design: .rounded))
+                        Text("selected")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primaryInverted.opacity(0.8))
+                    }
+                    .foregroundStyle(colors.primaryInverted)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(accentColor)
+                    .clipShape(Squircle(cornerRadius: 6))
+                    .overlay(
+                        Squircle(cornerRadius: 6)
+                            .stroke(colors.border, lineWidth: 1.5)
+                    )
+
+                    // Show current filter badge if active
+                    if let continent = filterContinent {
+                        HStack(spacing: 4) {
+                            Image(systemName: continent.symbol)
+                                .font(.system(size: 10, weight: .bold))
+                            Text(continent.shortCode)
+                                .font(.system(size: 12, weight: .black, design: .rounded))
+                        }
+                        .foregroundStyle(colors.primaryInverted)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(colors.primary)
+                        .clipShape(Squircle(cornerRadius: 6))
+                        .overlay(
+                            Squircle(cornerRadius: 6)
+                                .stroke(colors.border, lineWidth: 1.5)
+                        )
+
+                        // × clear button (情報デザイン: マルバツ)
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                filterContinent = nil
+                            }
+                            HapticManager.selection()
+                        } label: {
+                            Text("×")
+                                .font(.system(size: 14, weight: .black))
+                                .foregroundStyle(JohoColors.white)
+                                .frame(width: 28, height: 28)
+                                .background(JohoColors.red)
+                                .clipShape(Circle())
+                        }
+                        .accessibilityLabel("Clear filter")
+                    }
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(isIndexExpanded ? "Collapse index" : "Expand index")
+
+            // Expanded: Continent filter buttons
+            if isIndexExpanded {
+                // Thin divider
+                Rectangle()
+                    .fill(colors.border.opacity(0.3))
+                    .frame(height: 1)
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+
+                // Continent buttons
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    // "ALL" button
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            filterContinent = nil
+                        }
+                        HapticManager.selection()
+                    } label: {
+                        VStack(spacing: 2) {
+                            Text("ALL")
+                                .font(.system(size: 10, weight: .black, design: .rounded))
+                            Text("\(Self.allRegions.count)")
+                                .font(.system(size: 9, weight: .bold, design: .rounded))
+                                .opacity(0.7)
+                        }
+                        .foregroundStyle(filterContinent == nil ? colors.primaryInverted : colors.primary)
+                        .frame(minWidth: 50, minHeight: 44)
+                        .background(filterContinent == nil ? accentColor : JohoColors.inputBackground)
+                        .clipShape(Squircle(cornerRadius: 8))
+                        .overlay(
+                            Squircle(cornerRadius: 8)
+                                .stroke(colors.border, lineWidth: filterContinent == nil ? 2 : 1)
+                        )
+                    }
+                    .accessibilityLabel("Show all regions")
+
+                    // Continent buttons (情報デザイン: Black/white only)
+                    ForEach(sortedContinents) { continent in
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                if filterContinent == continent {
+                                    filterContinent = nil
+                                } else {
+                                    filterContinent = continent
+                                }
+                            }
+                            HapticManager.selection()
+                        } label: {
+                            VStack(spacing: 2) {
+                                Image(systemName: continent.symbol)
+                                    .font(.system(size: 14, weight: .bold))
+                                Text("\(regionCount(for: continent))")
+                                    .font(.system(size: 9, weight: .bold, design: .rounded))
+                                    .opacity(0.7)
+                            }
+                            .foregroundStyle(filterContinent == continent ? colors.primaryInverted : colors.primary)
+                            .frame(minWidth: 50, minHeight: 44)
+                            .background(filterContinent == continent ? colors.primary : JohoColors.inputBackground)
+                            .clipShape(Squircle(cornerRadius: 8))
+                            .overlay(
+                                Squircle(cornerRadius: 8)
+                                    .stroke(colors.border, lineWidth: filterContinent == continent ? 2 : 1)
+                            )
+                        }
+                        .accessibilityLabel("Filter by \(continent.rawValue)")
+                    }
+
+                    Spacer()
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+            }
+        }
+        .background(colors.surface)
+    }
+
+    // MARK: - Region List Content (情報デザイン: Collapsible continents)
+
+    private var regionListContent: some View {
+        LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+            // If filtering by continent or searching, show flat list (always expanded)
+            if filterContinent != nil || !searchText.isEmpty {
+                ForEach(filteredRegions) { region in
+                    regionRow(for: region)
+                }
+            } else {
+                // Show grouped by continent with collapsible section headers
+                ForEach(sortedContinents) { continent in
+                    if let regions = regionsByContinent[continent], !regions.isEmpty {
+                        Section {
+                            // Only show regions if continent is expanded
+                            if expandedContinents.contains(continent) {
+                                ForEach(regions) { region in
+                                    regionRow(for: region)
+                                }
+                            }
+                        } header: {
+                            continentSectionHeader(continent: continent)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Continent Section Header (情報デザイン: Tappable, collapsible)
+
+    private func continentSectionHeader(continent: Continent) -> some View {
+        let isExpanded = expandedContinents.contains(continent)
+        let regionsInContinent = regionsByContinent[continent] ?? []
+        let selectedInContinent = regionsInContinent.filter { selectedRegions.regions.contains($0.code) }.count
+
+        return Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                if isExpanded {
+                    expandedContinents.remove(continent)
+                } else {
+                    expandedContinents.insert(continent)
+                }
+            }
+            HapticManager.selection()
+        } label: {
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Expand/collapse chevron
+                Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(colors.primary.opacity(0.6))
+                    .frame(width: 16)
+
+                // Continent icon (情報デザイン: Black/white only)
+                Image(systemName: continent.symbol)
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(colors.primaryInverted)
+                    .frame(width: 24, height: 24)
+                    .background(colors.primary)
+                    .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+
+                Text(continent.rawValue.uppercased())
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .tracking(1)
+                    .foregroundStyle(colors.primary)
+
+                // Selected count badge
+                if selectedInContinent > 0 {
+                    Text("○ \(selectedInContinent)")
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primaryInverted)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(accentColor)
+                        .clipShape(Capsule())
+                }
+
+                Spacer()
+
+                // Region count
+                Text("\(regionsInContinent.count)")
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary.opacity(0.5))
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .background(colors.surface)
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Region Row (情報デザイン: マルバツ selection)
+
+    private func regionRow(for region: RegionOption) -> some View {
+        let isSelected = selectedRegions.regions.contains(region.code)
+
+        return HStack(spacing: JohoDimensions.spacingSM) {
+            // Region code badge (情報デザイン: Black/white)
+            Text(region.code)
+                .font(.system(size: 12, weight: .black, design: .rounded))
+                .foregroundStyle(isSelected ? colors.primaryInverted : colors.primary)
+                .frame(width: 40, height: 40)
+                .background(isSelected ? colors.primary : JohoColors.inputBackground)
+                .clipShape(Squircle(cornerRadius: 8))
+                .overlay(
+                    Squircle(cornerRadius: 8)
+                        .stroke(colors.border, lineWidth: isSelected ? 2 : 1)
+                )
+
+            // Region name
+            VStack(alignment: .leading, spacing: 2) {
+                Text(region.displayName)
+                    .font(.system(size: 15, weight: .medium, design: .rounded))
+                    .foregroundStyle(colors.primary)
+
+                Text(region.continent.rawValue)
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                    .foregroundStyle(colors.primary.opacity(0.5))
+            }
+
+            Spacer()
+
+            // 情報デザイン: マルバツ buttons (○ select, × deselect)
+            if isSelected {
+                // × Deselect button (red)
+                Button {
+                    toggle(region.code)
+                } label: {
+                    Text("×")
+                        .font(.system(size: 18, weight: .black))
+                        .foregroundStyle(JohoColors.white)
+                        .frame(width: 36, height: 36)
+                        .background(JohoColors.red)
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(colors.border, lineWidth: 1.5)
+                        )
+                }
+                .buttonStyle(.plain)
+            } else {
+                // ○ Select button (green outline)
+                Button {
+                    toggle(region.code)
+                } label: {
+                    Text("○")
+                        .font(.system(size: 18, weight: .black))
+                        .foregroundStyle(Color(hex: "38A169"))
+                        .frame(width: 36, height: 36)
+                        .background(Color(hex: "38A169").opacity(0.1))
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(Color(hex: "38A169"), lineWidth: 1.5)
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
+        .background(isSelected ? accentColor.opacity(0.1) : Color.clear)
+    }
+
+    // MARK: - Toggle Selection
 
     private func toggle(_ code: String) {
         if selectedRegions.regions.contains(code) {

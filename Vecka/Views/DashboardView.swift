@@ -2,14 +2,16 @@
 //  DashboardView.swift
 //  Vecka
 //
-//  Predefined dashboard for iPad - shows at-a-glance information
-//  情報デザイン (Jōhō Dezain) - Fixed layout, no user customization
+//  Data dashboard - shows at-a-glance information
+//  情報デザイン (Jōhō Dezain) - Adaptive grid, no truncation
+//
+//  Future: Will become "Stats" or "Data" page
 //
 
 import SwiftUI
 import SwiftData
 
-// MARK: - Dashboard View (iPad Only)
+// MARK: - Dashboard View
 
 struct DashboardView: View {
     @Environment(\.modelContext) private var modelContext
@@ -18,9 +20,14 @@ struct DashboardView: View {
     @Query(sort: \DailyNote.date, order: .reverse) private var allNotes: [DailyNote]
     @Query(sort: \ExpenseItem.date, order: .reverse) private var allExpenses: [ExpenseItem]
     @Query private var allTrips: [TravelTrip]
+    @Query private var contacts: [Contact]
+    @Query private var countdownEvents: [CountdownEvent]
 
     // Managers
     private var holidayManager = HolidayManager.shared
+
+    // Random spotlight state - changes each view appearance
+    @State private var spotlightItem: SpotlightItem?
 
     // Computed active trips (end date >= today)
     private var activeTrips: [TravelTrip] {
@@ -32,41 +39,40 @@ struct DashboardView: View {
     private var notesCount: Int { allNotes.count }
     private var expensesCount: Int { getThisMonthExpenses().count }
     private var tripsCount: Int { activeTrips.count }
-    private var holidaysCount: Int { getUpcomingHolidays(limit: 10).count }
+    private var specialDaysCount: Int { getAllUpcomingSpecialDays().count }
 
     var body: some View {
         GeometryReader { geometry in
-            let isLandscape = geometry.size.width > geometry.size.height
-
             ScrollView {
                 VStack(spacing: JohoDimensions.spacingMD) {
                     // 情報デザイン: Bento-style page header (Golden Standard Pattern)
-                    toolsPageHeader
+                    dataPageHeader
                         .padding(.horizontal, JohoDimensions.spacingLG)
                         .padding(.top, JohoDimensions.spacingSM)
 
-                    if isLandscape {
-                        landscapeLayout(geometry: geometry)
-                    } else {
-                        portraitLayout(geometry: geometry)
-                    }
+                    // Adaptive grid layout - cards flow naturally
+                    adaptiveCardGrid(geometry: geometry)
                 }
+                .padding(.bottom, JohoDimensions.spacingLG)
             }
             .scrollContentBackground(.hidden)
         }
         .johoBackground()
+        .onAppear {
+            pickRandomSpotlight()
+        }
     }
 
-    // MARK: - Tools Page Header (情報デザイン: Golden Standard Pattern from Star Page)
+    // MARK: - Data Page Header (情報デザイン: Golden Standard Pattern)
 
-    private var toolsPageHeader: some View {
+    private var dataPageHeader: some View {
         VStack(spacing: 0) {
-            // TOP ROW: Icon + Title | WALL | Widget count
+            // TOP ROW: Icon + Title | WALL | Card count
             HStack(spacing: 0) {
                 // LEFT COMPARTMENT: Icon + Title
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone with Tools accent color (Teal)
-                    Image(systemName: "wrench.and.screwdriver")
+                    Image(systemName: "chart.bar.xaxis")
                         .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundStyle(PageHeaderColor.tools.accent)
                         .frame(width: 40, height: 40)
@@ -77,7 +83,7 @@ struct DashboardView: View {
                                 .stroke(JohoColors.black, lineWidth: 1.5)
                         )
 
-                    Text("TOOLS")
+                    Text("DATA")
                         .font(JohoFont.headline)
                         .foregroundStyle(JohoColors.black)
                 }
@@ -90,17 +96,17 @@ struct DashboardView: View {
                     .fill(JohoColors.black)
                     .frame(width: 1.5)
 
-                // RIGHT COMPARTMENT: Widget count
+                // RIGHT COMPARTMENT: Card count
                 HStack(spacing: 4) {
                     Text("7")
                         .font(.system(size: 16, weight: .bold, design: .rounded))
                         .monospacedDigit()
                         .foregroundStyle(JohoColors.black)
-                    Text("WIDGETS")
+                    Text("CARDS")
                         .font(JohoFont.labelSmall)
                         .foregroundStyle(JohoColors.black.opacity(0.7))
                 }
-                .frame(width: 100)
+                .frame(width: 80)
             }
             .frame(height: 56)
 
@@ -138,12 +144,12 @@ struct DashboardView: View {
             if tripsCount > 0 {
                 statIndicator(count: tripsCount, color: JohoColors.orange, label: "trips")
             }
-            if holidaysCount > 0 {
-                statIndicator(count: holidaysCount, color: JohoColors.pink, label: "holidays")
+            if specialDaysCount > 0 {
+                statIndicator(count: specialDaysCount, color: JohoColors.pink, label: "upcoming")
             }
 
-            if notesCount == 0 && expensesCount == 0 && tripsCount == 0 && holidaysCount == 0 {
-                Text("Your dashboard at a glance")
+            if notesCount == 0 && expensesCount == 0 && tripsCount == 0 && specialDaysCount == 0 {
+                Text("Your data at a glance")
                     .font(JohoFont.bodySmall)
                     .foregroundStyle(JohoColors.black.opacity(0.6))
             }
@@ -163,83 +169,89 @@ struct DashboardView: View {
         .accessibilityLabel("\(count) \(label)")
     }
 
-    // MARK: - Landscape Layout (3 columns)
+    // MARK: - Adaptive Card Grid (情報デザイン: No truncation, natural flow)
 
     @ViewBuilder
-    private func landscapeLayout(geometry: GeometryProxy) -> some View {
+    private func adaptiveCardGrid(geometry: GeometryProxy) -> some View {
         let spacing: CGFloat = JohoDimensions.spacingMD
-        let columnWidth = (geometry.size.width - spacing * 4) / 3
+        let horizontalPadding: CGFloat = JohoDimensions.spacingLG
+        let availableWidth = geometry.size.width - (horizontalPadding * 2)
 
-        HStack(alignment: .top, spacing: spacing) {
-            // Column 1: Today + Week
-            VStack(spacing: spacing) {
-                todayCard
-                weekInfoCard
-                yearProgressCard
-            }
-            .frame(width: columnWidth)
+        // Determine column count based on available width
+        // Min card width ~160pt for readability
+        let minCardWidth: CGFloat = 160
+        let maxColumns = max(1, Int(availableWidth / minCardWidth))
+        let columns = min(maxColumns, 3) // Cap at 3 columns
 
-            // Column 2: Upcoming
-            VStack(spacing: spacing) {
-                upcomingHolidaysCard
-                countdownsCard
-            }
-            .frame(width: columnWidth)
-
-            // Column 3: Activity
-            VStack(spacing: spacing) {
-                recentNotesCard
-                expenseSummaryCard
-                if !activeTrips.isEmpty {
-                    activeTripCard
-                }
-            }
-            .frame(width: columnWidth)
-        }
-        .padding(spacing)
-    }
-
-    // MARK: - Portrait Layout (2 columns)
-
-    @ViewBuilder
-    private func portraitLayout(geometry: GeometryProxy) -> some View {
-        let spacing: CGFloat = JohoDimensions.spacingMD
-        let columnWidth = (geometry.size.width - spacing * 3) / 2
+        let cardWidth = (availableWidth - (spacing * CGFloat(columns - 1))) / CGFloat(columns)
 
         VStack(spacing: spacing) {
-            // Row 1: Today hero (full width)
+            // Row 1: Today (full width hero card)
             todayCard
+                .padding(.horizontal, horizontalPadding)
 
-            // Row 2: Week + Year progress
-            HStack(alignment: .top, spacing: spacing) {
-                weekInfoCard
-                    .frame(width: columnWidth)
-                yearProgressCard
-                    .frame(width: columnWidth)
+            // Row 2: Week + Year (or stacked on narrow screens)
+            if columns >= 2 {
+                HStack(alignment: .top, spacing: spacing) {
+                    weekInfoCard
+                        .frame(width: cardWidth)
+                    yearProgressCard
+                        .frame(width: cardWidth)
+                    if columns == 3 {
+                        spotlightCard
+                            .frame(width: cardWidth)
+                    }
+                }
+                .padding(.horizontal, horizontalPadding)
+
+                // Spotlight card for 2-column layout (full width)
+                if columns == 2 {
+                    spotlightCard
+                        .padding(.horizontal, horizontalPadding)
+                }
+            } else {
+                VStack(spacing: spacing) {
+                    weekInfoCard
+                    yearProgressCard
+                    spotlightCard
+                }
+                .padding(.horizontal, horizontalPadding)
             }
 
-            // Row 3: Upcoming holidays + Countdowns
-            HStack(alignment: .top, spacing: spacing) {
-                upcomingHolidaysCard
-                    .frame(width: columnWidth)
-                countdownsCard
-                    .frame(width: columnWidth)
+            // Row 3: Upcoming + Notes (or stacked)
+            if columns >= 2 {
+                HStack(alignment: .top, spacing: spacing) {
+                    upcomingHolidaysCard
+                        .frame(width: cardWidth)
+                    recentNotesCard
+                        .frame(width: cardWidth)
+                    if columns == 3 {
+                        expenseSummaryCard
+                            .frame(width: cardWidth)
+                    }
+                }
+                .padding(.horizontal, horizontalPadding)
+
+                // Extra row for 2-column layout
+                if columns == 2 {
+                    expenseSummaryCard
+                        .padding(.horizontal, horizontalPadding)
+                }
+            } else {
+                VStack(spacing: spacing) {
+                    upcomingHolidaysCard
+                    recentNotesCard
+                    expenseSummaryCard
+                }
+                .padding(.horizontal, horizontalPadding)
             }
 
-            // Row 4: Notes + Expenses
-            HStack(alignment: .top, spacing: spacing) {
-                recentNotesCard
-                    .frame(width: columnWidth)
-                expenseSummaryCard
-                    .frame(width: columnWidth)
-            }
-
-            // Row 5: Active trip (full width, if any)
+            // Row 4: Active trip (full width, if any)
             if !activeTrips.isEmpty {
                 activeTripCard
+                    .padding(.horizontal, horizontalPadding)
             }
         }
-        .padding(spacing)
     }
 
     // MARK: - Today Card (情報デザイン: Yellow = NOW/Present)
@@ -251,7 +263,7 @@ struct DashboardView: View {
         let weekday = today.formatted(.dateTime.weekday(.wide)).uppercased()
         let monthYear = today.formatted(.dateTime.month(.wide).year())
 
-        return DashboardCard(title: "TODAY", icon: "sun.max.fill", zone: .notes) {
+        return DataCard(title: "TODAY", icon: "sun.max.fill", zone: .notes) {
             HStack(spacing: JohoDimensions.spacingLG) {
                 // Large day number - 情報デザイン: Hero display size
                 Text("\(dayNumber)")
@@ -279,7 +291,7 @@ struct DashboardView: View {
         let weekNumber = WeekCalculator.shared.weekNumber(for: Date())
         let daysLeft = daysLeftInWeek()
 
-        return DashboardCard(title: "WEEK", icon: "calendar.badge.clock", zone: .calendar) {
+        return DataCard(title: "WEEK", icon: "calendar.badge.clock", zone: .calendar) {
             VStack(spacing: JohoDimensions.spacingSM) {
                 Text("W\(weekNumber)")
                     .font(JohoFont.displayMedium)
@@ -293,7 +305,7 @@ struct DashboardView: View {
         }
     }
 
-    // MARK: - Year Progress Card (情報デザイン: Green = Money/Growth)
+    // MARK: - Year Progress Card (情報デザイン: Green = Growth)
 
     private var yearProgressCard: some View {
         let calendar = Calendar.iso8601
@@ -305,7 +317,7 @@ struct DashboardView: View {
         let daysPassed = calendar.dateComponents([.day], from: startOfYear, to: today).day!
         let progress = Double(daysPassed) / Double(totalDays)
 
-        return DashboardCard(title: "YEAR", icon: "chart.bar.fill", zone: .expenses) {
+        return DataCard(title: "YEAR", icon: "chart.bar.fill", zone: .expenses) {
             VStack(spacing: JohoDimensions.spacingSM) {
                 Text("\(Int(progress * 100))%")
                     .font(JohoFont.displaySmall)
@@ -330,11 +342,61 @@ struct DashboardView: View {
                 }
                 .frame(height: 10)
 
-                Text("\(totalDays - daysPassed) days left in \(String(year))")
+                Text("\(totalDays - daysPassed) days left")
                     .font(JohoFont.caption)
                     .foregroundStyle(JohoColors.black.opacity(0.6))
             }
             .frame(maxWidth: .infinity)
+        }
+    }
+
+    // MARK: - Spotlight Card (Random special day countdown)
+
+    private var spotlightCard: some View {
+        DataCard(title: "SPOTLIGHT", icon: "sparkles", zone: .events) {
+            if let item = spotlightItem {
+                VStack(spacing: JohoDimensions.spacingSM) {
+                    // Days countdown - large number
+                    Text("\(item.daysUntil)")
+                        .font(JohoFont.displayMedium)
+                        .foregroundStyle(item.color)
+
+                    Text("days until")
+                        .font(JohoFont.labelSmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+
+                    // Event name
+                    Text(item.name)
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(JohoColors.black)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    // Type indicator
+                    HStack(spacing: 4) {
+                        Circle()
+                            .fill(item.color)
+                            .frame(width: 6, height: 6)
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                        Text(item.typeLabel)
+                            .font(JohoFont.labelSmall)
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            } else {
+                VStack(spacing: JohoDimensions.spacingSM) {
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 24, weight: .medium))
+                        .foregroundStyle(JohoColors.black.opacity(0.3))
+
+                    Text("No upcoming events")
+                        .font(JohoFont.caption)
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                }
+                .frame(maxWidth: .infinity)
+            }
         }
     }
 
@@ -343,7 +405,7 @@ struct DashboardView: View {
     private var upcomingHolidaysCard: some View {
         let upcomingHolidays = getUpcomingHolidays(limit: 3)
 
-        return DashboardCard(title: "HOLIDAYS", icon: "star.fill", zone: .holidays) {
+        return DataCard(title: "HOLIDAYS", icon: "star.fill", zone: .holidays) {
             if upcomingHolidays.isEmpty {
                 Text("No upcoming holidays")
                     .font(JohoFont.caption)
@@ -372,46 +434,12 @@ struct DashboardView: View {
         }
     }
 
-    // MARK: - Countdowns Card (情報デザイン: Purple = Events/Countdowns)
-
-    private var countdownsCard: some View {
-        let countdowns = getUpcomingCountdowns(limit: 3)
-
-        return DashboardCard(title: "COUNTDOWNS", icon: "timer", zone: .events) {
-            if countdowns.isEmpty {
-                Text("No countdowns set")
-                    .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
-                    .frame(maxWidth: .infinity)
-            } else {
-                VStack(spacing: JohoDimensions.spacingSM) {
-                    ForEach(countdowns, id: \.name) { countdown in
-                        HStack {
-                            JohoIndicatorCircle(color: JohoColors.eventPurple, size: .small)
-
-                            Text(countdown.name)
-                                .font(JohoFont.bodySmall)
-                                .foregroundStyle(JohoColors.black)
-                                .lineLimit(1)
-
-                            Spacer()
-
-                            Text("\(countdown.days)d")
-                                .font(JohoFont.labelSmall)
-                                .foregroundStyle(JohoColors.eventPurple)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     // MARK: - Recent Notes Card (情報デザイン: Cream = Personal/Notes)
 
     private var recentNotesCard: some View {
         let recentNotes = Array(allNotes.prefix(3))
 
-        return DashboardCard(title: "NOTES", icon: "note.text", zone: .notes) {
+        return DataCard(title: "NOTES", icon: "note.text", zone: .notes) {
             if recentNotes.isEmpty {
                 Text("No notes yet")
                     .font(JohoFont.caption)
@@ -423,7 +451,7 @@ struct DashboardView: View {
                         HStack {
                             JohoIndicatorCircle(color: JohoColors.yellow, size: .small)
 
-                            Text(note.content.prefix(30) + (note.content.count > 30 ? "..." : ""))
+                            Text(note.content.prefix(25) + (note.content.count > 25 ? "..." : ""))
                                 .font(JohoFont.caption)
                                 .foregroundStyle(JohoColors.black)
                                 .lineLimit(1)
@@ -446,7 +474,7 @@ struct DashboardView: View {
         let thisMonth = getThisMonthExpenses()
         let total = thisMonth.reduce(0) { $0 + $1.amount }
 
-        return DashboardCard(title: "EXPENSES", icon: "dollarsign.circle", zone: .expenses) {
+        return DataCard(title: "EXPENSES", icon: "dollarsign.circle", zone: .expenses) {
             VStack(spacing: JohoDimensions.spacingSM) {
                 Text(formatCurrency(total))
                     .font(JohoFont.displaySmall)
@@ -474,7 +502,7 @@ struct DashboardView: View {
         let daysLeft = Calendar.iso8601.dateComponents([.day], from: Date(), to: trip.endDate).day ?? 0
 
         return AnyView(
-            DashboardCard(title: "ACTIVE TRIP", icon: "airplane", zone: .trips) {
+            DataCard(title: "ACTIVE TRIP", icon: "airplane", zone: .trips) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(trip.tripName)
@@ -506,6 +534,84 @@ struct DashboardView: View {
         )
     }
 
+    // MARK: - Spotlight Item (Random special day)
+
+    private struct SpotlightItem {
+        let name: String
+        let daysUntil: Int
+        let color: Color
+        let typeLabel: String
+    }
+
+    private func pickRandomSpotlight() {
+        let allSpecialDays = getAllUpcomingSpecialDays()
+        guard !allSpecialDays.isEmpty else {
+            spotlightItem = nil
+            return
+        }
+
+        // Pick a random one
+        let randomItem = allSpecialDays.randomElement()!
+        spotlightItem = randomItem
+    }
+
+    private func getAllUpcomingSpecialDays() -> [SpotlightItem] {
+        let today = Calendar.iso8601.startOfDay(for: Date())
+        let calendar = Calendar.iso8601
+        var items: [SpotlightItem] = []
+
+        // 1. Holidays from cache
+        for (date, cachedHolidays) in holidayManager.holidayCache {
+            if date > today {
+                let days = calendar.dateComponents([.day], from: today, to: date).day ?? 0
+                for holiday in cachedHolidays {
+                    let color = holiday.isBankHoliday ? JohoColors.red : JohoColors.orange
+                    let typeLabel = holiday.isBankHoliday ? "HOLIDAY" : "OBSERVANCE"
+                    items.append(SpotlightItem(name: holiday.displayTitle, daysUntil: days, color: color, typeLabel: typeLabel))
+                }
+            }
+        }
+
+        // 2. Birthdays from contacts (within next 365 days)
+        let currentYear = calendar.component(.year, from: today)
+        for contact in contacts {
+            guard let birthday = contact.birthday else { continue }
+            let bMonth = calendar.component(.month, from: birthday)
+            let bDay = calendar.component(.day, from: birthday)
+
+            // Check this year and next year
+            for yearOffset in 0...1 {
+                if let nextBirthday = calendar.date(from: DateComponents(year: currentYear + yearOffset, month: bMonth, day: bDay)),
+                   nextBirthday > today {
+                    let days = calendar.dateComponents([.day], from: today, to: nextBirthday).day ?? 0
+                    if days <= 365 {
+                        let name = contact.displayName.isEmpty ? "Birthday" : "\(contact.displayName)'s Birthday"
+                        items.append(SpotlightItem(name: name, daysUntil: days, color: JohoColors.pink, typeLabel: "BIRTHDAY"))
+                        break
+                    }
+                }
+            }
+        }
+
+        // 3. Countdown events
+        for event in countdownEvents {
+            let eventDate = calendar.startOfDay(for: event.targetDate)
+            if eventDate > today {
+                let days = calendar.dateComponents([.day], from: today, to: eventDate).day ?? 0
+                items.append(SpotlightItem(name: event.title, daysUntil: days, color: JohoColors.eventPurple, typeLabel: "EVENT"))
+            }
+        }
+
+        // 4. New Year (always include)
+        let year = calendar.component(.year, from: today)
+        if let newYear = calendar.date(from: DateComponents(year: year + 1, month: 1, day: 1)) {
+            let days = calendar.dateComponents([.day], from: today, to: newYear).day ?? 0
+            items.append(SpotlightItem(name: "New Year \(year + 1)", daysUntil: days, color: JohoColors.cyan, typeLabel: "NEW YEAR"))
+        }
+
+        return items.filter { $0.daysUntil > 0 && $0.daysUntil <= 365 }
+    }
+
     // MARK: - Helper Functions
 
     private func daysLeftInWeek() -> Int {
@@ -513,7 +619,6 @@ struct DashboardView: View {
         let today = Date()
         let weekday = calendar.component(.weekday, from: today)
         // ISO week: Monday = 2, Sunday = 1
-        // Days until Sunday (end of week)
         let adjustedWeekday = weekday == 1 ? 7 : weekday - 1
         return 7 - adjustedWeekday
     }
@@ -523,7 +628,6 @@ struct DashboardView: View {
 
         var holidays: [(name: String, date: Date)] = []
 
-        // Get holidays from HolidayManager cache
         for (date, cachedHolidays) in holidayManager.holidayCache {
             if date >= today {
                 for holiday in cachedHolidays {
@@ -532,27 +636,7 @@ struct DashboardView: View {
             }
         }
 
-        // Sort by date and take first N
         return Array(holidays.sorted { $0.date < $1.date }.prefix(limit))
-    }
-
-    private func getUpcomingCountdowns(limit: Int) -> [(name: String, days: Int)] {
-        var countdowns: [(name: String, days: Int)] = []
-
-        // Add some predefined countdowns
-        let calendar = Calendar.iso8601
-        let today = Date()
-        let year = calendar.component(.year, from: today)
-
-        // New Year
-        if let newYear = calendar.date(from: DateComponents(year: year + 1, month: 1, day: 1)) {
-            let days = calendar.dateComponents([.day], from: today, to: newYear).day ?? 0
-            if days > 0 {
-                countdowns.append(("New Year \(year + 1)", days))
-            }
-        }
-
-        return Array(countdowns.sorted { $0.days < $1.days }.prefix(limit))
     }
 
     private func getThisMonthExpenses() -> [ExpenseItem] {
@@ -567,7 +651,7 @@ struct DashboardView: View {
         let days = Calendar.iso8601.dateComponents([.day], from: Date(), to: date).day ?? 0
         if days == 0 { return "Today" }
         if days == 1 { return "Tomorrow" }
-        return "\(days) days"
+        return "\(days)d"
     }
 
     private func formatCurrency(_ amount: Double) -> String {
@@ -578,9 +662,9 @@ struct DashboardView: View {
     }
 }
 
-// MARK: - Dashboard Card Component (情報デザイン: Bento compartment style)
+// MARK: - Data Card Component (情報デザイン: Bento compartment style)
 
-private struct DashboardCard<Content: View>: View {
+private struct DataCard<Content: View>: View {
     let title: String
     let icon: String
     let zone: SectionZone
@@ -632,12 +716,17 @@ private struct DashboardCard<Content: View>: View {
 
 // MARK: - Preview
 
-#Preview("Dashboard - Portrait") {
+#Preview("Data Dashboard - Portrait") {
     DashboardView()
         .frame(width: 820, height: 1180)
 }
 
-#Preview("Dashboard - Landscape") {
+#Preview("Data Dashboard - Landscape") {
     DashboardView()
         .frame(width: 1180, height: 820)
+}
+
+#Preview("Data Dashboard - iPhone") {
+    DashboardView()
+        .frame(width: 393, height: 852)
 }

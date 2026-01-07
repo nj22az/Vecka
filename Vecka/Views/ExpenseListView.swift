@@ -30,6 +30,8 @@ struct ExpenseListView: View {
     @State private var showFilterSheet = false
     @State private var selectedExpense: ExpenseItem?
     @State private var groupBy: GroupingOption = .date
+    @State private var showExportSheet = false
+    @State private var exportContext: PDFExportContext?
 
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
 
@@ -83,6 +85,28 @@ struct ExpenseListView: View {
                                     Label("Filter Options", systemImage: "line.3.horizontal.decrease.circle")
                                 }
                             }
+
+                            // PDF Export (情報デザイン: Direct access to reports)
+                            Section("Export") {
+                                Button {
+                                    let weekInfo = WeekCalculator.shared.weekInfo(for: Date())
+                                    exportContext = .expenseReportWeek(weekNumber: weekInfo.weekNumber, year: weekInfo.year, baseCurrency: baseCurrency)
+                                    showExportSheet = true
+                                } label: {
+                                    Label("This Week's Expenses", systemImage: "doc.text")
+                                }
+
+                                Button {
+                                    let calendar = Calendar.iso8601
+                                    let now = Date()
+                                    let month = calendar.component(.month, from: now)
+                                    let year = calendar.component(.year, from: now)
+                                    exportContext = .expenseReportMonth(month: month, year: year, baseCurrency: baseCurrency)
+                                    showExportSheet = true
+                                } label: {
+                                    Label("This Month's Expenses", systemImage: "doc.text.fill")
+                                }
+                            }
                         } label: {
                             JohoActionButton(icon: "ellipsis")
                         }
@@ -122,6 +146,11 @@ struct ExpenseListView: View {
                     trips: trips
                 )
             }
+            .sheet(isPresented: $showExportSheet) {
+                if let context = exportContext {
+                    SimplePDFExportView(exportContext: context)
+                }
+            }
             .onChange(of: baseCurrency) { _, _ in
                 recalculateAllExpenses()
             }
@@ -130,30 +159,145 @@ struct ExpenseListView: View {
     // MARK: - Summary Card
 
     private var summaryCard: some View {
-        JohoCard {
-            VStack(spacing: JohoDimensions.spacingSM) {
-                JohoPill(text: "Total", style: .whiteOnBlack)
+        VStack(spacing: 0) {
+            // Main total card
+            JohoCard {
+                VStack(spacing: JohoDimensions.spacingSM) {
+                    JohoPill(text: "Total", style: .whiteOnBlack)
 
-                Text(formattedTotal)
-                    .font(JohoFont.displayLarge)
-                    .foregroundStyle(JohoColors.black)
+                    Text(formattedTotal)
+                        .font(JohoFont.displayLarge)
+                        .foregroundStyle(JohoColors.black)
 
-                HStack(spacing: JohoDimensions.spacingXS) {
-                    Text(baseCurrency)
-                        .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                    HStack(spacing: JohoDimensions.spacingXS) {
+                        Text(baseCurrency)
+                            .font(JohoFont.body)
+                            .foregroundStyle(JohoColors.black.opacity(0.7))
 
-                    Text("•")
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        Text("•")
+                            .foregroundStyle(JohoColors.black.opacity(0.5))
 
-                    Text("\(filteredExpenses.count) transactions")
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                        Text("\(filteredExpenses.count) transactions")
+                            .font(JohoFont.bodySmall)
+                            .foregroundStyle(JohoColors.black.opacity(0.7))
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+
+            // Multi-currency breakdown (情報デザイン: Show original currencies)
+            if !currencyBreakdown.isEmpty && currencyBreakdown.count > 1 {
+                multiCurrencyBreakdownSection
+            }
+        }
+    }
+
+    // MARK: - Multi-Currency Breakdown
+
+    /// Breakdown of expenses by original currency
+    private var currencyBreakdown: [(currency: String, total: Double, convertedTotal: Double, count: Int)] {
+        let grouped = Dictionary(grouping: filteredExpenses) { $0.currency }
+        return grouped.map { (currency, expenses) in
+            let total = expenses.reduce(0.0) { $0 + $1.amount }
+            let convertedTotal = expenses.reduce(0.0) { $0 + ($1.convertedAmount ?? $1.amount) }
+            return (currency, total, convertedTotal, expenses.count)
+        }.sorted { $0.convertedTotal > $1.convertedTotal }
+    }
+
+    private var multiCurrencyBreakdownSection: some View {
+        VStack(spacing: 0) {
+            // Section header (情報デザイン: Clear hierarchy)
+            HStack {
+                JohoPill(text: "BY CURRENCY", style: .blackOnWhite, size: .small)
+                Spacer()
+                Text("\(currencyBreakdown.count) currencies")
+                    .font(JohoFont.labelSmall)
+                    .foregroundStyle(JohoColors.black.opacity(0.5))
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.top, JohoDimensions.spacingMD)
+            .padding(.bottom, JohoDimensions.spacingSM)
+
+            // Currency rows
+            VStack(spacing: 0) {
+                ForEach(Array(currencyBreakdown.enumerated()), id: \.element.currency) { index, item in
+                    currencyBreakdownRow(item: item)
+
+                    if index < currencyBreakdown.count - 1 {
+                        Rectangle()
+                            .fill(JohoColors.black.opacity(0.1))
+                            .frame(height: 1)
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+                    }
                 }
             }
-            .frame(maxWidth: .infinity)
+            .background(JohoColors.white)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+            )
         }
         .padding(.horizontal, JohoDimensions.spacingLG)
+        .padding(.top, JohoDimensions.spacingSM)
+    }
+
+    private func currencyBreakdownRow(item: (currency: String, total: Double, convertedTotal: Double, count: Int)) -> some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            // Currency badge (情報デザイン: Green expense zone)
+            Text(item.currency)
+                .font(.system(size: 10, weight: .black, design: .rounded))
+                .foregroundStyle(JohoColors.black)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(SectionZone.expenses.background)
+                .clipShape(Capsule())
+                .overlay(
+                    Capsule()
+                        .stroke(JohoColors.black, lineWidth: 1)
+                )
+
+            VStack(alignment: .leading, spacing: 2) {
+                // Original amount
+                Text(formatCurrency(item.total, code: item.currency))
+                    .font(JohoFont.headline)
+                    .foregroundStyle(JohoColors.black)
+
+                // Transaction count
+                Text("\(item.count) transaction\(item.count == 1 ? "" : "s")")
+                    .font(JohoFont.labelSmall)
+                    .foregroundStyle(JohoColors.black.opacity(0.5))
+            }
+
+            Spacer()
+
+            // Converted amount (if different currency)
+            if item.currency != baseCurrency {
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("→ \(formatCurrency(item.convertedTotal, code: baseCurrency))")
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(JohoColors.black.opacity(0.7))
+
+                    // Show approximate rate
+                    if item.total > 0 {
+                        let rate = item.convertedTotal / item.total
+                        Text("≈ \(String(format: "%.2f", rate)) \(baseCurrency)")
+                            .font(.system(size: 9, weight: .medium, design: .rounded))
+                            .foregroundStyle(JohoColors.black.opacity(0.4))
+                    }
+                }
+            }
+        }
+        .padding(JohoDimensions.spacingMD)
+    }
+
+    private func formatCurrency(_ amount: Double, code: String) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = code
+        formatter.maximumFractionDigits = 0
+        return formatter.string(from: NSNumber(value: amount)) ?? "\(code) \(Int(amount))"
     }
 
     private var formattedTotal: String {
@@ -530,6 +674,9 @@ struct FilterOptionsSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: JohoDimensions.spacingLG) {
+                    // 情報デザイン: Status bar safe zone - prevents content from scrolling under status bar icons
+                    Spacer().frame(height: 44)
+
                     // Date Range Section
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                         JohoPill(text: "Date Range", style: .whiteOnBlack, size: .medium)
@@ -738,6 +885,9 @@ struct ExpenseDetailView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: JohoDimensions.spacingLG) {
+                    // 情報デザイン: Status bar safe zone - prevents content from scrolling under status bar icons
+                    Spacer().frame(height: 44)
+
                     // Amount Card - Hero display
                     JohoCard {
                         VStack(spacing: JohoDimensions.spacingMD) {

@@ -42,25 +42,9 @@ struct NotesListView: View {
                 .padding(.top, JohoDimensions.spacingSM)
                 .safeAreaPadding(.top)
 
-                // Search field
-                HStack(spacing: JohoDimensions.spacingSM) {
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
-
-                    TextField("Search notes...", text: $searchText)
-                        .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
-                }
-                .padding(.horizontal, JohoDimensions.spacingMD)
-                .padding(.vertical, JohoDimensions.spacingSM)
-                .background(JohoColors.white)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
-                )
-                .padding(.horizontal, JohoDimensions.spacingLG)
+                // Search field (unified component)
+                JohoSearchField(text: $searchText, placeholder: "Search notes...")
+                    .padding(.horizontal, JohoDimensions.spacingLG)
 
                 // Pinned section
                 if !pinnedUpcomingNotes.isEmpty {
@@ -144,6 +128,7 @@ struct NotesListView: View {
             }
             .presentationDetents([.large])
             .presentationDragIndicator(.visible)
+            .presentationBackground(JohoColors.white)  // 情報デザイン: WHITE sheet background
         }
     }
 

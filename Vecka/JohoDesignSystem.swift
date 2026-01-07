@@ -281,9 +281,42 @@ enum SectionZone {
         }
     }
 
+    /// 情報デザイン: Dark mode background colors (muted, works on black)
+    /// Darker, saturated versions that maintain semantic meaning on black backgrounds
+    var darkBackground: Color {
+        switch self {
+        case .calendar: return Color(hex: "164E63")    // Dark Cyan
+        case .notes: return Color(hex: "78350F")       // Dark Amber
+        case .expenses: return Color(hex: "14532D")    // Dark Green
+        case .trips: return Color(hex: "7C2D12")       // Dark Orange
+        case .holidays: return Color(hex: "831843")    // Dark Pink
+        case .observances: return Color(hex: "7C2D12") // Dark Orange
+        case .birthdays: return Color(hex: "831843")   // Dark Pink
+        case .contacts: return Color(hex: "581C87")    // Dark Purple
+        case .events, .countdowns: return Color(hex: "164E63") // Dark Cyan
+        case .warning: return Color(hex: "7C2D12")     // Dark Orange
+        }
+    }
+
+    /// Get background color for the specified color mode
+    func background(for mode: JohoColorMode) -> Color {
+        switch mode {
+        case .light: return background
+        case .dark: return darkBackground
+        }
+    }
+
     // All zones use BLACK text now (light backgrounds have good contrast)
     var textColor: Color {
         JohoColors.black
+    }
+
+    /// Get text color for the specified color mode
+    func textColor(for mode: JohoColorMode) -> Color {
+        switch mode {
+        case .light: return JohoColors.black
+        case .dark: return JohoColors.white
+        }
     }
 }
 
@@ -408,13 +441,17 @@ struct JohoPill: View {
     let text: String
     var style: PillStyle = .blackOnWhite
     var size: PillSize = .medium
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     enum PillStyle {
-        case blackOnWhite   // White pill, black border, black text
-        case whiteOnBlack   // Black pill, white text (most common)
-        case colored(Color) // 情報デザイン: WHITE pill, colored border, colored text (NOT inverted!)
-        case coloredInverted(Color) // Inverted: Colored bg, white text (use sparingly)
-        case muted          // Gray background, muted text - for past dates (YESTERDAY, X DAYS AGO)
+        case blackOnWhite   // Surface pill, primary border, primary text
+        case whiteOnBlack   // Primary pill, inverted text (most common)
+        case colored(Color) // 情報デザイン: Surface pill, colored border, colored text (NOT inverted!)
+        case coloredInverted(Color) // Inverted: Colored bg, appropriate text (use sparingly)
+        case muted          // Muted background, muted text - for past dates (YESTERDAY, X DAYS AGO)
     }
 
     enum PillSize {
@@ -457,13 +494,13 @@ struct JohoPill: View {
 
     private var textColor: Color {
         switch style {
-        case .blackOnWhite: return JohoColors.black
-        case .whiteOnBlack: return JohoColors.white
-        case .colored(let color): return color  // 情報デザイン: Colored text on white
+        case .blackOnWhite: return colors.primary
+        case .whiteOnBlack: return colors.primaryInverted
+        case .colored(let color): return color  // 情報デザイン: Colored text on surface
         case .coloredInverted(let color):
             // 情報デザイン: Black text on light backgrounds (yellow), white on dark
             return color == JohoColors.yellow ? JohoColors.black : JohoColors.white
-        case .muted: return JohoColors.black.opacity(0.6)  // Muted text for past dates
+        case .muted: return colors.primary.opacity(0.6)  // Muted text for past dates
         }
     }
 
@@ -472,26 +509,26 @@ struct JohoPill: View {
         switch style {
         case .blackOnWhite:
             Capsule()
-                .fill(JohoColors.white)
-                .overlay(Capsule().stroke(JohoColors.black, lineWidth: 2))
+                .fill(colors.surface)
+                .overlay(Capsule().stroke(colors.border, lineWidth: 2))
         case .whiteOnBlack:
             Capsule()
-                .fill(JohoColors.black)
+                .fill(colors.primary)
         case .colored(let color):
-            // 情報デザイン: WHITE background, COLORED border (not inverted!)
+            // 情報デザイン: Surface background, COLORED border (not inverted!)
             Capsule()
-                .fill(JohoColors.white)
+                .fill(colors.surface)
                 .overlay(Capsule().stroke(color, lineWidth: 1.5))
         case .coloredInverted(let color):
             // Inverted style (use sparingly)
             Capsule()
                 .fill(color)
-                .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1.5))
+                .overlay(Capsule().stroke(colors.border, lineWidth: 1.5))
         case .muted:
             // Muted gray for past dates (YESTERDAY, X DAYS AGO)
             Capsule()
-                .fill(JohoColors.black.opacity(0.1))
-                .overlay(Capsule().stroke(JohoColors.black.opacity(0.3), lineWidth: 1.5))
+                .fill(colors.primary.opacity(0.1))
+                .overlay(Capsule().stroke(colors.border.opacity(0.3), lineWidth: 1.5))
         }
     }
 }
@@ -504,6 +541,10 @@ struct JohoIndicatorCircle: View {
     let color: Color
     var size: JohoIndicatorSize = .medium
     var isFilled: Bool = true  // Filled = primary (●), Outlined = secondary (○)
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     enum JohoIndicatorSize {
         case tiny      // 5pt - calendar grid indicators
@@ -539,7 +580,7 @@ struct JohoIndicatorCircle: View {
             .frame(width: size.dimension, height: size.dimension)
             .overlay(
                 Circle()
-                    .stroke(isFilled ? JohoColors.black : color, lineWidth: size.borderWidth)
+                    .stroke(isFilled ? colors.border : color, lineWidth: size.borderWidth)
             )
     }
 }
@@ -550,27 +591,23 @@ struct JohoIndicatorCircle: View {
 struct JohoSectionBox<Content: View>: View {
     let title: String
     let zone: SectionZone
-    var icon: String? = nil
+    // 情報デザイン: Removed redundant icon parameter
+    // The pill label already communicates the section type
+    // "Every visual element must serve a clear informational purpose."
     @ViewBuilder let content: Content
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-            // Header with pill label
-            HStack(spacing: JohoDimensions.spacingSM) {
-                JohoPill(text: title, style: .whiteOnBlack, size: .medium)
-
-                if let icon {
-                    Image(systemName: icon)
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(JohoColors.black)
-                }
-
-                Spacer()
-            }
+            // Header with pill label only (情報デザイン: no redundant icon)
+            JohoPill(text: title, style: .whiteOnBlack, size: .medium)
 
             // Content
             content
-                .foregroundStyle(zone.textColor)
+                .foregroundStyle(colors.primary)
         }
         .padding(JohoDimensions.spacingMD)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -578,31 +615,35 @@ struct JohoSectionBox<Content: View>: View {
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
         )
     }
 }
 
-// MARK: - Form Section (情報デザイン: WHITE background for entry forms)
-// Use for Add Trip, Add Expense, etc. - always WHITE with thick BLACK borders
+// MARK: - Form Section (情報デザイン: Surface background for entry forms)
+// Use for Add Trip, Add Expense, etc. - surface background with border
 
 struct JohoFormSection<Content: View>: View {
     let title: String
     var icon: String? = nil
     var accentColor: Color = JohoColors.black
     @ViewBuilder let content: Content
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header row with BLACK pill
+            // Header row with pill
             HStack(spacing: JohoDimensions.spacingSM) {
                 Text(title)
                     .font(.system(size: 11, weight: .black, design: .rounded))
                     .tracking(1.2)
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
-                    .background(JohoColors.black)
+                    .background(colors.primary)
                     .clipShape(Squircle(cornerRadius: 4))
 
                 if let icon {
@@ -615,22 +656,22 @@ struct JohoFormSection<Content: View>: View {
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
-            .background(JohoColors.white)
+            .background(colors.surface)
 
-            // BLACK divider
+            // Divider
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: JohoDimensions.borderMedium)
 
-            // Content area - WHITE background
+            // Content area
             content
                 .padding(14)
-                .background(JohoColors.white)
+                .background(colors.surface)
         }
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
         )
     }
 }
@@ -641,39 +682,47 @@ struct JohoFormField<Content: View>: View {
     let label: String
     var isOptional: Bool = false
     @ViewBuilder let content: Content
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(label)
                 .font(.system(size: 10, weight: .black, design: .rounded))
                 .tracking(0.8)
-                .foregroundStyle(isOptional ? JohoColors.black.opacity(0.5) : JohoColors.black.opacity(0.7))
+                .foregroundStyle(isOptional ? colors.primary.opacity(0.5) : colors.primary.opacity(0.7))
 
             content
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 12)
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 }
 
-// MARK: - Info Card (White card with black border)
+// MARK: - Info Card (Surface card with border)
 // For list items, detail cards
 
 struct JohoCard<Content: View>: View {
     var cornerRadius: CGFloat = JohoDimensions.radiusMedium
     var borderWidth: CGFloat = JohoDimensions.borderMedium
     @ViewBuilder let content: Content
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         content
             .padding(JohoDimensions.spacingMD)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: cornerRadius))
             .overlay(
                 Squircle(cornerRadius: cornerRadius)
-                    .stroke(JohoColors.black, lineWidth: borderWidth)
+                    .stroke(colors.border, lineWidth: borderWidth)
             )
     }
 }
@@ -686,6 +735,10 @@ struct JohoDayCell: View {
     var isSelected: Bool = false
     var hasEvent: Bool = false
     var eventColor: Color = JohoColors.pink
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         ZStack {
@@ -696,7 +749,7 @@ struct JohoDayCell: View {
             // Border (always present, thicker when selected)
             Squircle(cornerRadius: JohoDimensions.radiusSmall)
                 .stroke(
-                    JohoColors.black,
+                    colors.border,
                     lineWidth: (isToday || isSelected) ? JohoDimensions.borderThick : JohoDimensions.borderThin
                 )
 
@@ -712,7 +765,7 @@ struct JohoDayCell: View {
                     Circle()
                         .fill(eventColor)
                         .frame(width: 6, height: 6)
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1))
                         .padding(.bottom, 4)
                 }
             }
@@ -721,14 +774,15 @@ struct JohoDayCell: View {
     }
 
     private var backgroundColor: Color {
-        if isSelected { return JohoColors.black }
+        if isSelected { return colors.primary }
         if isToday { return JohoColors.yellow }
-        return JohoColors.white
+        return colors.surface
     }
 
     private var textColor: Color {
-        if isSelected { return JohoColors.white }
-        return JohoColors.black
+        if isSelected { return colors.primaryInverted }
+        if isToday { return JohoColors.black }  // Yellow always gets black text
+        return colors.primary
     }
 }
 
@@ -737,6 +791,10 @@ struct JohoDayCell: View {
 struct JohoWeekBadge: View {
     let weekNumber: Int
     var size: BadgeSize = .large
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     enum BadgeSize {
         case small, medium, large
@@ -770,18 +828,18 @@ struct JohoWeekBadge: View {
         VStack(spacing: 2) {
             Text("WEEK")
                 .font(size.labelFont)
-                .foregroundStyle(JohoColors.white.opacity(0.8))
+                .foregroundStyle(colors.primaryInverted.opacity(0.8))
 
             Text("\(weekNumber)")
                 .font(size.numberFont)
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primaryInverted)
         }
         .frame(width: size.dimension, height: size.dimension)
-        .background(JohoColors.black)
+        .background(colors.primary)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.white, lineWidth: 2)
+                .stroke(colors.primaryInverted, lineWidth: 2)
         )
     }
 }
@@ -795,31 +853,35 @@ struct JohoListRow: View {
     let zone: SectionZone
     var badge: String? = nil
     var showChevron: Bool = true
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         HStack(spacing: JohoDimensions.spacingMD) {
             // Icon in colored squircle
             Image(systemName: icon)
                 .font(.system(size: 18, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(JohoColors.black)  // Always black on colored backgrounds
                 .frame(width: 40, height: 40)
                 .background(zone.background)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                        .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
                 )
 
             // Text content
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 if let subtitle {
                     Text(subtitle)
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                 }
             }
 
@@ -834,15 +896,15 @@ struct JohoListRow: View {
             if showChevron {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
             }
         }
         .padding(JohoDimensions.spacingMD)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
     }
 }
@@ -853,16 +915,20 @@ struct JohoStatBox: View {
     let value: String
     let label: String
     let zone: SectionZone
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         VStack(spacing: JohoDimensions.spacingXS) {
             Text(value)
                 .font(JohoFont.displaySmall)
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(JohoColors.black)  // Always black on colored backgrounds
 
             Text(label.uppercased())
                 .font(JohoFont.labelSmall)
-                .foregroundStyle(JohoColors.black.opacity(0.7))
+                .foregroundStyle(JohoColors.black.opacity(0.7))  // Always black on colored backgrounds
         }
         .frame(maxWidth: .infinity)
         .padding(JohoDimensions.spacingMD)
@@ -870,18 +936,22 @@ struct JohoStatBox: View {
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
     }
 }
 
 // MARK: - Page Header
-// 情報デザイン: BLACK text on WHITE background, ALWAYS
+// 情報デザイン: Dynamic colors based on color mode
 
 struct JohoPageHeader: View {
     let title: String
     var badge: String? = nil
     var subtitle: String? = nil
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
@@ -891,21 +961,21 @@ struct JohoPageHeader: View {
 
             Text(title)
                 .font(JohoFont.displayMedium)
-                .foregroundStyle(JohoColors.black)  // 情報デザイン: BLACK text
+                .foregroundStyle(colors.primary)
 
             if let subtitle {
                 Text(subtitle)
                     .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black.opacity(0.7))  // 情報デザイン: min 0.6 opacity
+                    .foregroundStyle(colors.primary.opacity(0.7))
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(JohoDimensions.spacingLG)
-        .background(JohoColors.white)  // 情報デザイン: WHITE container
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
         )
     }
 }
@@ -923,6 +993,10 @@ struct JohoEditorHeader: View {
     let canSave: Bool             // Validation state for Save button
     let onBack: () -> Void
     let onSave: () -> Void
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
@@ -930,13 +1004,13 @@ struct JohoEditorHeader: View {
             Button(action: onBack) {
                 Text(JohoSymbols.batsu)  // ×
                     .font(.system(size: 22, weight: .bold))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .frame(width: 44, height: 44)
-                    .background(JohoColors.white)
+                    .background(colors.surface)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
                     )
             }
 
@@ -949,18 +1023,18 @@ struct JohoEditorHeader: View {
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                        .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                 )
 
             // Title area
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(JohoFont.headline)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 Text(subtitle)
                     .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                    .foregroundStyle(colors.primary.opacity(0.7))
             }
 
             Spacer()
@@ -969,23 +1043,23 @@ struct JohoEditorHeader: View {
             Button(action: onSave) {
                 Text(JohoSymbols.maru)  // ○
                     .font(.system(size: 28, weight: .bold))
-                    .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                    .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(0.4))
                     .frame(width: 44, height: 44)
-                    .background(canSave ? accentColor : JohoColors.white)
+                    .background(canSave ? accentColor : colors.surface)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                     )
             }
             .disabled(!canSave)
         }
         .padding(JohoDimensions.spacingLG)  // 16pt all sides
-        .background(JohoColors.white)  // 情報デザイン: WHITE background
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)  // 3pt border
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)  // 3pt border
         )
     }
 }
@@ -996,18 +1070,22 @@ struct JohoMetricRow: View {
     let label: String
     let value: String
     var zone: SectionZone = .calendar
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         HStack {
             Text(label)
                 .font(JohoFont.body)
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
 
             Spacer()
 
             Text(value)
                 .font(JohoFont.monoMedium)
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, JohoDimensions.spacingSM)
@@ -1022,18 +1100,164 @@ struct JohoIconBadge: View {
     let icon: String
     let zone: SectionZone
     var size: CGFloat = 32
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         Image(systemName: icon)
             .font(.system(size: size * 0.5, weight: .bold, design: .rounded))
-            .foregroundStyle(JohoColors.black)
+            .foregroundStyle(JohoColors.black)  // Always black on colored backgrounds
             .frame(width: size, height: size)
             .background(zone.background)
             .clipShape(Squircle(cornerRadius: size * 0.25))
             .overlay(
                 Squircle(cornerRadius: size * 0.25)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
             )
+    }
+}
+
+// MARK: - Icon Button (Actionable circular button with semantic color)
+
+/// 情報デザイン: Unified circular icon button for actions
+/// Use semantic colors: cyan=message, purple=email, green=call, orange=trip
+struct JohoIconButton: View {
+    let icon: String
+    let color: Color
+    var foregroundColor: Color? = nil  // nil = auto (black on light, white on dark)
+    var borderColor: Color? = nil      // nil = black
+    var size: CGFloat = 36
+    var borderWidth: CGFloat = 1
+    let action: () -> Void
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    /// Auto-detect foreground color based on background brightness
+    private var effectiveForeground: Color {
+        if let fg = foregroundColor { return fg }
+        // Dark backgrounds get white text, light backgrounds get black
+        return color == JohoColors.black ? JohoColors.white.opacity(0.7) : JohoColors.black
+    }
+
+    private var effectiveBorder: Color {
+        borderColor ?? JohoColors.black
+    }
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: icon)
+                .font(.system(size: size * 0.4, weight: .bold, design: .rounded))
+                .foregroundStyle(effectiveForeground)
+                .frame(width: size, height: size)
+                .background(color)
+                .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .stroke(effectiveBorder, lineWidth: borderWidth)
+                )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Search Field (情報デザイン styled search input)
+
+/// 情報デザイン: Unified search field with squircle styling
+struct JohoSearchField: View {
+    @Binding var text: String
+    var placeholder: String = "Search"
+    var zone: SectionZone = .calendar
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    var body: some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 14, weight: .medium, design: .rounded))
+                .foregroundStyle(JohoColors.black.opacity(0.5))
+
+            TextField(placeholder, text: $text)
+                .font(.system(size: 14, weight: .medium, design: .rounded))
+                .foregroundStyle(JohoColors.black)
+
+            if !text.isEmpty {
+                Button {
+                    text = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(JohoColors.black.opacity(0.4))
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM + 2)
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+        )
+    }
+}
+
+// MARK: - Contact Action Buttons (Semantic action buttons for contacts)
+
+/// 情報デザイン: Pre-configured contact action buttons
+enum JohoContactAction {
+    case message(phone: String)
+    case email(address: String)
+    case call(phone: String)
+
+    var icon: String {
+        switch self {
+        case .message: return "message.fill"
+        case .email: return "envelope.fill"
+        case .call: return "phone.fill"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .message: return JohoColors.cyan
+        case .email: return JohoColors.purple
+        case .call: return JohoColors.green
+        }
+    }
+
+    func execute() {
+        let urlString: String
+        switch self {
+        case .message(let phone):
+            urlString = "sms:\(phone)"
+        case .email(let address):
+            urlString = "mailto:\(address)"
+        case .call(let phone):
+            urlString = "tel:\(phone)"
+        }
+        if let url = URL(string: urlString) {
+            UIApplication.shared.open(url)
+        }
+    }
+}
+
+struct JohoContactActionButton: View {
+    let action: JohoContactAction
+
+    var body: some View {
+        JohoIconButton(
+            icon: action.icon,
+            color: action.color,
+            size: 36,
+            borderWidth: 1
+        ) {
+            action.execute()
+        }
     }
 }
 
@@ -1045,6 +1269,10 @@ struct JohoToggleRow: View {
     let icon: String
     let zone: SectionZone
     @Binding var isOn: Bool
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         HStack(spacing: JohoDimensions.spacingMD) {
@@ -1053,12 +1281,12 @@ struct JohoToggleRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 if let subtitle {
                     Text(subtitle)
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                 }
             }
 
@@ -1069,11 +1297,11 @@ struct JohoToggleRow: View {
                 .tint(zone.background)
         }
         .padding(JohoDimensions.spacingMD)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
     }
 }
@@ -1081,9 +1309,14 @@ struct JohoToggleRow: View {
 // MARK: - Divider
 
 struct JohoDivider: View {
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     var body: some View {
         Rectangle()
-            .fill(JohoColors.black)
+            .fill(colors.border)
             .frame(height: 2)
     }
 }
@@ -1209,10 +1442,14 @@ struct CountryPill: View {
 
 // MARK: - 情報デザイン Toggle
 
-/// Standard 情報デザイン toggle switch with black border
+/// Standard 情報デザイン toggle switch with border
 struct JohoToggle: View {
     @Binding var isOn: Bool
     var accentColor: Color = JohoColors.cyan
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         Button {
@@ -1223,17 +1460,17 @@ struct JohoToggle: View {
         } label: {
             ZStack(alignment: isOn ? .trailing : .leading) {
                 Capsule()
-                    .fill(isOn ? accentColor : JohoColors.black.opacity(0.2))
+                    .fill(isOn ? accentColor : colors.primary.opacity(0.2))
                     .frame(width: 50, height: 28)
                     .overlay(
                         Capsule()
-                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                     )
 
                 Circle()
-                    .fill(JohoColors.white)
+                    .fill(colors.surface)
                     .frame(width: 22, height: 22)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                    .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
                     .padding(3)
             }
         }
@@ -1250,27 +1487,31 @@ struct JohoEmptyState: View {
     let message: String
     let icon: String
     let zone: SectionZone
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         VStack(spacing: JohoDimensions.spacingMD) {
             Image(systemName: icon)
                 .font(.system(size: 48, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(JohoColors.black)  // Always black on colored backgrounds
                 .frame(width: 80, height: 80)
                 .background(zone.background)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                        .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                 )
 
             Text(title)
                 .font(JohoFont.headline)
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primary)
 
             Text(message)
                 .font(JohoFont.bodySmall)
-                .foregroundStyle(JohoColors.white.opacity(0.7))
+                .foregroundStyle(colors.primary.opacity(0.7))
                 .multilineTextAlignment(.center)
         }
         .padding(JohoDimensions.spacingXL)
@@ -1315,6 +1556,10 @@ struct JohoTodayBanner: View {
     let date: Date
     var weekNumber: Int
     var onTapToday: (() -> Void)? = nil
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private var dayNumber: Int {
         Calendar.iso8601.component(.day, from: date)
@@ -1335,18 +1580,18 @@ struct JohoTodayBanner: View {
     var body: some View {
         Button(action: { onTapToday?() }) {
             HStack(spacing: JohoDimensions.spacingMD) {
-                // Large day number
+                // Large day number (always black on yellow)
                 Text("\(dayNumber)")
                     .font(JohoFont.displayLarge)
                     .foregroundStyle(JohoColors.black)
                     .frame(width: 72)
 
-                // Vertical separator
+                // Vertical separator (always black on yellow)
                 Rectangle()
                     .fill(JohoColors.black)
                     .frame(width: 3, height: 56)
 
-                // Date info
+                // Date info (always black on yellow)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(weekdayName)
                         .font(JohoFont.headline)
@@ -1359,26 +1604,26 @@ struct JohoTodayBanner: View {
 
                 Spacer()
 
-                // Week badge
+                // Week badge (inverted colors)
                 VStack(spacing: 0) {
                     Text("WEEK")
                         .font(JohoFont.labelSmall)
-                        .foregroundStyle(JohoColors.white.opacity(0.8))
+                        .foregroundStyle(colors.primaryInverted.opacity(0.8))
 
                     Text("\(weekNumber)")
                         .font(JohoFont.displaySmall)
-                        .foregroundStyle(JohoColors.white)
+                        .foregroundStyle(colors.primaryInverted)
                 }
                 .frame(width: 56, height: 56)
-                .background(JohoColors.black)
+                .background(colors.primary)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             }
             .padding(JohoDimensions.spacingMD)
-            .background(JohoColors.yellow)
+            .background(JohoColors.yellow)  // Yellow is semantic color - always yellow
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
             )
         }
         .buttonStyle(.plain)
@@ -1396,6 +1641,10 @@ struct JohoMonthSelector: View {
     var onPrevious: (() -> Void)? = nil
     var onNext: (() -> Void)? = nil
     var onTap: (() -> Void)? = nil
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         HStack(spacing: JohoDimensions.spacingSM) {
@@ -1403,13 +1652,13 @@ struct JohoMonthSelector: View {
             Button(action: { onPrevious?() }) {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .frame(width: 36, height: 36)
-                    .background(JohoColors.white)
+                    .background(colors.surface)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                     )
             }
             .buttonStyle(.plain)
@@ -1419,24 +1668,24 @@ struct JohoMonthSelector: View {
                 HStack(spacing: 6) {
                     Text(monthName.uppercased())
                         .font(.system(size: 15, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .lineLimit(1)
 
                     Text(verbatim: "\(year)")
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                        .foregroundStyle(colors.primary.opacity(0.7))
 
                     Image(systemName: "chevron.down")
                         .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(0.5))
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
                 .padding(.vertical, JohoDimensions.spacingSM)
-                .background(JohoColors.white)
+                .background(colors.surface)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                        .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                 )
             }
             .buttonStyle(.plain)
@@ -1445,13 +1694,13 @@ struct JohoMonthSelector: View {
             Button(action: { onNext?() }) {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .frame(width: 36, height: 36)
-                    .background(JohoColors.white)
+                    .background(colors.surface)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                     )
             }
             .buttonStyle(.plain)
@@ -1728,14 +1977,14 @@ struct HotelClockWidget: View {
 
             JohoWeekBadge(weekNumber: 52)
 
-            JohoSectionBox(title: "Holidays", zone: .holidays, icon: "star.fill") {
+            JohoSectionBox(title: "Holidays", zone: .holidays) {
                 Text("Christmas Eve")
                     .font(JohoFont.body)
                 Text("Boxing Day")
                     .font(JohoFont.body)
             }
 
-            JohoSectionBox(title: "Notes", zone: .notes, icon: "note.text") {
+            JohoSectionBox(title: "Notes", zone: .notes) {
                 Text("Remember to buy gifts")
                     .font(JohoFont.body)
             }

@@ -22,25 +22,37 @@ struct SimplePDFExportView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 24) {
-                // Preview of what will be exported
-                VStack(spacing: 12) {
+                // Preview of what will be exported (情報デザイン styled)
+                VStack(spacing: JohoDimensions.spacingMD) {
+                    // Icon zone
                     Image(systemName: exportContext.icon)
-                        .font(.system(size: 60))
-                        .foregroundStyle(.blue)
+                        .font(.system(size: 48, weight: .medium, design: .rounded))
+                        .foregroundStyle(JohoColors.black)
+                        .frame(width: 80, height: 80)
+                        .background(JohoColors.cyan.opacity(0.2))
+                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                .stroke(JohoColors.black, lineWidth: 1.5)
+                        )
 
                     Text(exportContext.title)
-                        .font(.title2)
-                        .fontWeight(.semibold)
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black)
 
                     Text(exportContext.subtitle)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
 
                     Text(exportContext.pageCountDescription)
-                        .font(.caption)
-                        .foregroundStyle(.tertiary)
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.4))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(JohoColors.black.opacity(0.05))
+                        .clipShape(Capsule())
                 }
-                .padding(.top, JohoDimensions.spacingXL)
+                .padding(.top, JohoDimensions.spacingLG)
 
                 Spacer()
 
@@ -101,6 +113,14 @@ struct SimplePDFExportView: View {
                     url = try await SimplePDFExportService.exportWeek(weekNumber: week, year: year, modelContext: modelContext)
                 case .month(let month, let year):
                     url = try await SimplePDFExportService.exportMonth(month: month, year: year, modelContext: modelContext)
+                case .weekSummary(let week, let year, let baseCurrency):
+                    url = try await SimplePDFExportService.exportWeekSummary(weekNumber: week, year: year, baseCurrency: baseCurrency, modelContext: modelContext)
+                case .expenseReportWeek(let week, let year, let baseCurrency):
+                    url = try await SimplePDFExportService.exportExpenseReportForWeek(weekNumber: week, year: year, baseCurrency: baseCurrency, modelContext: modelContext)
+                case .expenseReportMonth(let month, let year, let baseCurrency):
+                    url = try await SimplePDFExportService.exportExpenseReportForMonth(month: month, year: year, baseCurrency: baseCurrency, modelContext: modelContext)
+                case .expenseReportTrip(let trip, let baseCurrency):
+                    url = try await SimplePDFExportService.exportExpenseReportForTrip(trip: trip, baseCurrency: baseCurrency, modelContext: modelContext)
                 }
 
                 await MainActor.run {
@@ -125,6 +145,10 @@ enum PDFExportContext {
     case day(Date)
     case week(weekNumber: Int, year: Int)
     case month(month: Int, year: Int)
+    case weekSummary(weekNumber: Int, year: Int, baseCurrency: String)
+    case expenseReportWeek(weekNumber: Int, year: Int, baseCurrency: String)
+    case expenseReportMonth(month: Int, year: Int, baseCurrency: String)
+    case expenseReportTrip(trip: TravelTrip, baseCurrency: String)
 
     var icon: String {
         switch self {
@@ -132,6 +156,8 @@ enum PDFExportContext {
         case .day: return "calendar.day.timeline.left"
         case .week: return "calendar"
         case .month: return "calendar.badge.clock"
+        case .weekSummary: return "square.text.square"
+        case .expenseReportWeek, .expenseReportMonth, .expenseReportTrip: return "dollarsign.circle"
         }
     }
 
@@ -146,6 +172,15 @@ enum PDFExportContext {
         case .month(let month, let year):
             let monthName = DateFormatterCache.monthName.monthSymbols[month - 1]
             return "\(monthName) \(year)"
+        case .weekSummary(let week, _, _):
+            return "Week \(week) Summary"
+        case .expenseReportWeek(let week, _, _):
+            return "Expense Report – Week \(week)"
+        case .expenseReportMonth(let month, let year, _):
+            let monthName = DateFormatterCache.monthName.monthSymbols[month - 1]
+            return "Expense Report – \(monthName) \(year)"
+        case .expenseReportTrip(let trip, _):
+            return "Trip Expenses – \(trip.tripName)"
         }
     }
 
@@ -159,6 +194,14 @@ enum PDFExportContext {
             return "7 days with full details"
         case .month:
             return "Complete month overview"
+        case .weekSummary:
+            return "Compact single-page week overview"
+        case .expenseReportWeek:
+            return "All expenses for the week with breakdown"
+        case .expenseReportMonth:
+            return "Monthly expense breakdown by category"
+        case .expenseReportTrip(let trip, _):
+            return "Expenses for \(trip.destination)"
         }
     }
 
@@ -179,6 +222,10 @@ enum PDFExportContext {
             }
             let daysInMonth = range.count
             return "\(daysInMonth) pages (one per day)"
+        case .weekSummary:
+            return "1 page (compact summary)"
+        case .expenseReportWeek, .expenseReportMonth, .expenseReportTrip:
+            return "1 page (expense breakdown)"
         }
     }
 }

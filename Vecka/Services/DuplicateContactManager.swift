@@ -361,6 +361,73 @@ class DuplicateContactManager {
         try? modelContext.save()
     }
 
+    /// Manual merge: Merge secondary contact into primary without requiring a suggestion
+    /// Used for user-initiated merges of contacts the system didn't detect as duplicates
+    func manualMerge(
+        primary: Contact,
+        secondary: Contact,
+        modelContext: ModelContext
+    ) {
+        // Merge phone numbers (avoid duplicates)
+        let existingPhones = Set(primary.phoneNumbers.map { normalizePhone($0.value) })
+        for phone in secondary.phoneNumbers {
+            if !existingPhones.contains(normalizePhone(phone.value)) {
+                primary.phoneNumbers.append(phone)
+            }
+        }
+
+        // Merge email addresses (avoid duplicates)
+        let existingEmails = Set(primary.emailAddresses.map { $0.value.lowercased() })
+        for email in secondary.emailAddresses {
+            if !existingEmails.contains(email.value.lowercased()) {
+                primary.emailAddresses.append(email)
+            }
+        }
+
+        // Merge postal addresses (avoid duplicates by comparing formatted address)
+        let existingAddresses = Set(primary.postalAddresses.map { $0.formattedAddress.lowercased() })
+        for address in secondary.postalAddresses {
+            if !existingAddresses.contains(address.formattedAddress.lowercased()) {
+                primary.postalAddresses.append(address)
+            }
+        }
+
+        // Take birthday from secondary if primary doesn't have one
+        if primary.birthday == nil && secondary.birthday != nil {
+            primary.birthday = secondary.birthday
+        }
+
+        // Append notes with separator
+        if let secondaryNote = secondary.note, !secondaryNote.isEmpty {
+            if let primaryNote = primary.note, !primaryNote.isEmpty {
+                primary.note = "\(primaryNote)\n\n---\nMerged from \(secondary.displayName):\n\(secondaryNote)"
+            } else {
+                primary.note = secondaryNote
+            }
+        }
+
+        // Take photo from secondary if primary doesn't have one
+        if primary.imageData == nil && secondary.imageData != nil {
+            primary.imageData = secondary.imageData
+        }
+
+        // Take organization from secondary if primary doesn't have one
+        if (primary.organizationName == nil || primary.organizationName?.isEmpty == true) &&
+           secondary.organizationName != nil && !secondary.organizationName!.isEmpty {
+            primary.organizationName = secondary.organizationName
+        }
+
+        // Update timestamp
+        primary.modifiedAt = Date()
+
+        // Delete secondary contact
+        modelContext.delete(secondary)
+
+        try? modelContext.save()
+
+        Log.i("Manual merge completed: \(secondary.displayName) → \(primary.displayName)")
+    }
+
     /// Dismiss a duplicate suggestion (never suggest this pair again)
     func dismissSuggestion(_ suggestion: DuplicateSuggestion, modelContext: ModelContext) {
         suggestion.status = "dismissed"

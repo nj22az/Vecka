@@ -173,6 +173,7 @@ struct ModernCalendarView: View {
     @State private var showExpenseEditor = false
 
     // MARK: - Helper for sidebar add action (extracted for type checking)
+    // 情報デザイン: Skip intermediate menu, go directly to unified entry form
     private var sidebarAddAction: (() -> Void)? {
         guard shouldShowAddButton else { return nil }
         return {
@@ -180,7 +181,7 @@ struct ModernCalendarView: View {
             case .contacts:
                 showContactMenu = true
             case .specialDays:
-                showSpecialDayMenu = true
+                showUnifiedEntry = true  // 情報デザイン: Direct to unified entry (5 types)
             default:
                 break
             }
@@ -195,7 +196,7 @@ struct ModernCalendarView: View {
     @State private var showContactEditor = false
     @State private var showObservanceEditor = false
     @State private var showHolidayEditor = false
-    @State private var showSpecialDayMenu = false
+    // showSpecialDayMenu removed - 情報デザイン: Go directly to unified entry form
     @State private var showContactMenu = false
     @State private var contactEditorMode: JohoContactEditorMode = .birthday
     @State private var showCountdownEditor = false
@@ -321,6 +322,7 @@ struct ModernCalendarView: View {
     }
 
     /// Add action for iPhone dock (context-aware)
+    /// 情報デザイン: Skip intermediate menu, go directly to unified entry form
     private var iPhoneDockAddAction: (() -> Void)? {
         guard shouldShowAddButton else { return nil }
         return {
@@ -328,7 +330,7 @@ struct ModernCalendarView: View {
             case .contacts:
                 showContactMenu = true
             case .specialDays:
-                showSpecialDayMenu = true
+                showUnifiedEntry = true  // 情報デザイン: Direct to unified entry (5 types)
             default:
                 break
             }
@@ -376,6 +378,7 @@ struct ModernCalendarView: View {
                         selectedDay: selectedDay,
                         notes: notesForWeek(week),
                         holidays: holidaysForWeek(week),
+                        trips: tripsForWeek(week),  // 情報デザイン: Pass trips for week
                         onDayTap: { day in
                             handleDayTap(day)
                             showWeekDetailSheet = false
@@ -479,42 +482,8 @@ struct ModernCalendarView: View {
             )
             .presentationCornerRadius(20)
         }
-        .sheet(isPresented: $showSpecialDayMenu) {
-            // 情報デザイン: Consolidated menu (4 options instead of 7)
-            JohoAddSpecialDaySheet(
-                onSelectHoliday: {
-                    // Opens Holiday editor (supports Holiday/Observance type toggle)
-                    showSpecialDayMenu = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        showHolidayEditor = true
-                    }
-                },
-                onSelectEntry: {
-                    // Opens unified Note/Trip/Expense editor
-                    showSpecialDayMenu = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        showUnifiedEntry = true
-                    }
-                },
-                onSelectBirthday: {
-                    // Opens Contact editor for birthday entry
-                    showSpecialDayMenu = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        contactEditorMode = .birthday
-                        showContactEditor = true
-                    }
-                },
-                onSelectCountdown: {
-                    // Opens Event/Countdown editor
-                    showSpecialDayMenu = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        showCountdownEditor = true
-                    }
-                }
-            )
-            // Note: Presentation styling is now controlled by the sheet itself
-            // for proper 情報デザイン compliance (squircle, clear background)
-        }
+        // 情報デザイン: Intermediate menu removed - unified entry form has all 5 types
+        // (note, trip, expense, holiday, birthday)
         .sheet(isPresented: $showCountdownEditor) {
             NavigationStack {
                 CustomCountdownDialog(
@@ -577,7 +546,15 @@ struct ModernCalendarView: View {
         .onChange(of: navigationManager.targetDate) { _, newDate in
             withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
                 selectedDate = newDate
-                sidebarSelection = .calendar
+            }
+        }
+        // 情報デザイン: Widget deep links navigate to landing page (Onsen is home)
+        .onChange(of: navigationManager.shouldNavigateToPage) { _, shouldNavigate in
+            if shouldNavigate {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                    sidebarSelection = navigationManager.targetPage
+                }
+                navigationManager.shouldNavigateToPage = false
             }
         }
     }
@@ -627,10 +604,10 @@ struct ModernCalendarView: View {
                     },
                     onOpenExpenses: nil,
                     onAddEntry: {
-                        // 情報デザイン: Opens add entry menu (same as Star page)
+                        // 情報デザイン: Opens unified entry form directly (5 types)
                         noteEditorDate = dashboardDate
                         countdownEditorDate = dashboardDate
-                        showSpecialDayMenu = true
+                        showUnifiedEntry = true
                     }
                 )
                 .id(dashboardDate)
@@ -970,7 +947,7 @@ struct ModernCalendarView: View {
         // Check holidays and observances from cache
         if let cachedHolidays = holidayManager.holidayCache[day] {
             for holiday in cachedHolidays {
-                if holiday.isRedDay {
+                if holiday.isBankHoliday {
                     check.hasHoliday = true
                 } else {
                     check.hasObservance = true
@@ -1053,6 +1030,19 @@ struct ModernCalendarView: View {
         return result
     }
 
+    // 情報デザイン: Get trips that overlap with week (for week detail view)
+    private func tripsForWeek(_ week: CalendarWeek) -> [TravelTrip] {
+        let weekStart = Calendar.iso8601.startOfDay(for: week.startDate)
+        guard let weekEnd = Calendar.iso8601.date(byAdding: .day, value: 6, to: weekStart) else { return [] }
+
+        return trips.filter { trip in
+            let tripStart = Calendar.iso8601.startOfDay(for: trip.startDate)
+            let tripEnd = Calendar.iso8601.startOfDay(for: trip.endDate)
+            // Trip overlaps with week if: tripStart <= weekEnd && tripEnd >= weekStart
+            return tripStart <= weekEnd && tripEnd >= weekStart
+        }
+    }
+
     private func color(for colorName: String) -> Color {
         switch colorName {
         case "red": return JohoColors.pink
@@ -1072,7 +1062,7 @@ struct ModernCalendarView: View {
             DayDashboardView.HolidayInfo(
                 id: holiday.id,
                 name: holiday.displayTitle,
-                isRedDay: holiday.isRedDay,
+                isBankHoliday: holiday.isBankHoliday,
                 symbolName: holiday.symbolName
             )
         }
@@ -1304,7 +1294,7 @@ struct ModernCalendarView: View {
         let rule = HolidayRule(
             name: name,
             region: region.isEmpty ? (holidayRegions.primaryRegion ?? "SE") : region,
-            isRedDay: false,
+            isBankHoliday: false,
             titleOverride: name,
             symbolName: symbol,
             iconColor: iconColor,
@@ -1336,7 +1326,7 @@ struct ModernCalendarView: View {
         let rule = HolidayRule(
             name: name,
             region: region.isEmpty ? (holidayRegions.primaryRegion ?? "SE") : region,
-            isRedDay: true,  // Red day = holiday
+            isBankHoliday: true,  // Red day = holiday
             titleOverride: name,
             symbolName: symbol,
             iconColor: iconColor,

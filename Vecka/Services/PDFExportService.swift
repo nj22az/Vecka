@@ -140,7 +140,7 @@ class PDFExportService {
                 holidays = dayHolidays.map { holiday in
                     HolidayExportInfo(
                         name: holiday.displayTitle,
-                        isRedDay: holiday.isRedDay,
+                        isBankHoliday: holiday.isBankHoliday,
                         symbol: holiday.symbolName,
                         description: nil
                     )

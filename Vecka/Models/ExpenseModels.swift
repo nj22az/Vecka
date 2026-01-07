@@ -245,7 +245,7 @@ final class TravelTrip {
 
 // MARK: - Trip Type
 
-enum TripType: String, Codable {
+enum TripType: String, Codable, CaseIterable {
     case business = "Business"
     case personal = "Personal"
     case mixed = "Mixed"

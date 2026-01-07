@@ -23,7 +23,7 @@ enum WidgetHolidayRuleType {
 
 struct WidgetHolidayRule {
     let name: String           // Localization key (e.g., "holiday.juldagen")
-    let isRedDay: Bool
+    let isBankHoliday: Bool
     let type: WidgetHolidayRuleType
 
     // Parameters (based on type)
@@ -42,7 +42,7 @@ struct WidgetHoliday: Identifiable {
     let id: String
     let date: Date
     let name: String
-    let isRedDay: Bool
+    let isBankHoliday: Bool
 
     var displayName: String {
         // Try localization first
@@ -70,42 +70,42 @@ struct WidgetHolidayEngine {
 
     private let swedishHolidayRules: [WidgetHolidayRule] = [
         // --- RED DAYS (Official Public Holidays) ---
-        WidgetHolidayRule(name: "holiday.nyarsdagen", isRedDay: true, type: .fixed, month: 1, day: 1),
-        WidgetHolidayRule(name: "holiday.trettondedag_jul", isRedDay: true, type: .fixed, month: 1, day: 6),
-        WidgetHolidayRule(name: "holiday.forsta_maj", isRedDay: true, type: .fixed, month: 5, day: 1),
-        WidgetHolidayRule(name: "holiday.sveriges_nationaldag", isRedDay: true, type: .fixed, month: 6, day: 6),
-        WidgetHolidayRule(name: "holiday.juldagen", isRedDay: true, type: .fixed, month: 12, day: 25),
-        WidgetHolidayRule(name: "holiday.annandag_jul", isRedDay: true, type: .fixed, month: 12, day: 26),
+        WidgetHolidayRule(name: "holiday.nyarsdagen", isBankHoliday: true, type: .fixed, month: 1, day: 1),
+        WidgetHolidayRule(name: "holiday.trettondedag_jul", isBankHoliday: true, type: .fixed, month: 1, day: 6),
+        WidgetHolidayRule(name: "holiday.forsta_maj", isBankHoliday: true, type: .fixed, month: 5, day: 1),
+        WidgetHolidayRule(name: "holiday.sveriges_nationaldag", isBankHoliday: true, type: .fixed, month: 6, day: 6),
+        WidgetHolidayRule(name: "holiday.juldagen", isBankHoliday: true, type: .fixed, month: 12, day: 25),
+        WidgetHolidayRule(name: "holiday.annandag_jul", isBankHoliday: true, type: .fixed, month: 12, day: 26),
 
         // --- HOLIDAYS (Not Red Days) ---
-        WidgetHolidayRule(name: "holiday.nyarsafton", isRedDay: false, type: .fixed, month: 12, day: 31),
-        WidgetHolidayRule(name: "holiday.julafton", isRedDay: false, type: .fixed, month: 12, day: 24),
+        WidgetHolidayRule(name: "holiday.nyarsafton", isBankHoliday: false, type: .fixed, month: 12, day: 31),
+        WidgetHolidayRule(name: "holiday.julafton", isBankHoliday: false, type: .fixed, month: 12, day: 24),
 
         // --- Observances ---
-        WidgetHolidayRule(name: "holiday.alla_hjartans_dag", isRedDay: false, type: .fixed, month: 2, day: 14),
-        WidgetHolidayRule(name: "holiday.internationella_kvinnodagen", isRedDay: false, type: .fixed, month: 3, day: 8),
+        WidgetHolidayRule(name: "holiday.alla_hjartans_dag", isBankHoliday: false, type: .fixed, month: 2, day: 14),
+        WidgetHolidayRule(name: "holiday.internationella_kvinnodagen", isBankHoliday: false, type: .fixed, month: 3, day: 8),
 
         // --- Easter Relative ---
-        WidgetHolidayRule(name: "holiday.langfredagen", isRedDay: true, type: .easterRelative, daysOffset: -2),
-        WidgetHolidayRule(name: "holiday.paskdagen", isRedDay: true, type: .easterRelative, daysOffset: 0),
-        WidgetHolidayRule(name: "holiday.annandag_pask", isRedDay: true, type: .easterRelative, daysOffset: 1),
-        WidgetHolidayRule(name: "holiday.kristi_himmelsfardsdag", isRedDay: true, type: .easterRelative, daysOffset: 39),
-        WidgetHolidayRule(name: "holiday.pingstdagen", isRedDay: true, type: .easterRelative, daysOffset: 49),
+        WidgetHolidayRule(name: "holiday.langfredagen", isBankHoliday: true, type: .easterRelative, daysOffset: -2),
+        WidgetHolidayRule(name: "holiday.paskdagen", isBankHoliday: true, type: .easterRelative, daysOffset: 0),
+        WidgetHolidayRule(name: "holiday.annandag_pask", isBankHoliday: true, type: .easterRelative, daysOffset: 1),
+        WidgetHolidayRule(name: "holiday.kristi_himmelsfardsdag", isBankHoliday: true, type: .easterRelative, daysOffset: 39),
+        WidgetHolidayRule(name: "holiday.pingstdagen", isBankHoliday: true, type: .easterRelative, daysOffset: 49),
 
         // --- Floating Red Days ---
-        WidgetHolidayRule(name: "holiday.midsommardagen", isRedDay: true, type: .floating, month: 6, weekday: 7, dayRangeStart: 20, dayRangeEnd: 26),
-        WidgetHolidayRule(name: "holiday.midsommarafton", isRedDay: false, type: .floating, month: 6, weekday: 6, dayRangeStart: 19, dayRangeEnd: 25),
-        WidgetHolidayRule(name: "holiday.alla_helgons_dag", isRedDay: true, type: .nthWeekday, month: 11, weekday: 7, ordinal: 1),
+        WidgetHolidayRule(name: "holiday.midsommardagen", isBankHoliday: true, type: .floating, month: 6, weekday: 7, dayRangeStart: 20, dayRangeEnd: 26),
+        WidgetHolidayRule(name: "holiday.midsommarafton", isBankHoliday: false, type: .floating, month: 6, weekday: 6, dayRangeStart: 19, dayRangeEnd: 25),
+        WidgetHolidayRule(name: "holiday.alla_helgons_dag", isBankHoliday: true, type: .nthWeekday, month: 11, weekday: 7, ordinal: 1),
 
         // --- Other Observances ---
-        WidgetHolidayRule(name: "holiday.mors_dag", isRedDay: false, type: .nthWeekday, month: 5, weekday: 1, ordinal: -1),
-        WidgetHolidayRule(name: "holiday.fars_dag", isRedDay: false, type: .nthWeekday, month: 11, weekday: 1, ordinal: 2),
+        WidgetHolidayRule(name: "holiday.mors_dag", isBankHoliday: false, type: .nthWeekday, month: 5, weekday: 1, ordinal: -1),
+        WidgetHolidayRule(name: "holiday.fars_dag", isBankHoliday: false, type: .nthWeekday, month: 11, weekday: 1, ordinal: 2),
 
         // --- Astronomical Events ---
-        WidgetHolidayRule(name: "holiday.virdagjamning", isRedDay: false, type: .astronomical, month: 3),
-        WidgetHolidayRule(name: "holiday.sommarsolstand", isRedDay: false, type: .astronomical, month: 6),
-        WidgetHolidayRule(name: "holiday.hostdagjamning", isRedDay: false, type: .astronomical, month: 9),
-        WidgetHolidayRule(name: "holiday.vintersolstand", isRedDay: false, type: .astronomical, month: 12),
+        WidgetHolidayRule(name: "holiday.virdagjamning", isBankHoliday: false, type: .astronomical, month: 3),
+        WidgetHolidayRule(name: "holiday.sommarsolstand", isBankHoliday: false, type: .astronomical, month: 6),
+        WidgetHolidayRule(name: "holiday.hostdagjamning", isBankHoliday: false, type: .astronomical, month: 9),
+        WidgetHolidayRule(name: "holiday.vintersolstand", isBankHoliday: false, type: .astronomical, month: 12),
     ]
 
     // MARK: - Public API
@@ -124,14 +124,14 @@ struct WidgetHolidayEngine {
                     id: rule.name,
                     date: holidayDate,
                     name: rule.name,
-                    isRedDay: rule.isRedDay
+                    isBankHoliday: rule.isBankHoliday
                 ))
             }
         }
 
         // Sort: red days first, then alphabetically
         return holidays.sorted { lhs, rhs in
-            if lhs.isRedDay != rhs.isRedDay { return lhs.isRedDay }
+            if lhs.isBankHoliday != rhs.isBankHoliday { return lhs.isBankHoliday }
             return lhs.displayName < rhs.displayName
         }
     }
@@ -160,7 +160,7 @@ struct WidgetHolidayEngine {
                             id: "\(rule.name)-\(checkYear)",
                             date: normalizedDate,
                             name: rule.name,
-                            isRedDay: rule.isRedDay
+                            isBankHoliday: rule.isBankHoliday
                         ))
                     }
                 }
@@ -170,7 +170,7 @@ struct WidgetHolidayEngine {
         // Sort by date, then by red day status
         return holidays.sorted { lhs, rhs in
             if lhs.date != rhs.date { return lhs.date < rhs.date }
-            if lhs.isRedDay != rhs.isRedDay { return lhs.isRedDay }
+            if lhs.isBankHoliday != rhs.isBankHoliday { return lhs.isBankHoliday }
             return lhs.displayName < rhs.displayName
         }
     }

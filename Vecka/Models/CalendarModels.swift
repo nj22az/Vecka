@@ -326,10 +326,10 @@ struct CalendarDay: Identifiable, Hashable {
     let isToday: Bool
     let noteColor: String? // Added for color-coded note indicator
 
-    /// Is this day a holiday (Red Day)?
+    /// Is this day a holiday (Bank Holiday)?
     @MainActor var isHoliday: Bool {
         let normalized = Calendar.current.startOfDay(for: date)
-        return (HolidayManager.shared.holidayCache[normalized] ?? []).contains(where: { $0.isRedDay })
+        return (HolidayManager.shared.holidayCache[normalized] ?? []).contains(where: { $0.isBankHoliday })
     }
 
     /// Name of the holiday (if any)

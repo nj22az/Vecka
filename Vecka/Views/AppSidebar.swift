@@ -39,14 +39,15 @@ enum SidebarSelection: String, Hashable, Identifiable, CaseIterable {
         }
     }
 
-    /// The accent color for this item's circle background when selected
+    /// The accent color for this item - uses PageHeaderColor for consistency
+    /// 情報デザイン: Each page has its own distinct color
     var accentColor: Color {
         switch self {
-        case .landing: return Color(hex: "F59E0B")    // Warm Amber (情報デザイン: TODAY/NOW)
-        case .calendar: return Color(hex: "E53E3E")   // Red
-        case .contacts: return Color(hex: "718096")   // Slate
-        case .specialDays: return Color(hex: "FFD700") // Gold (star = gold)
-        case .settings: return Color(hex: "718096")   // Slate
+        case .landing: return PageHeaderColor.landing.accent       // Warm Amber #F59E0B
+        case .calendar: return PageHeaderColor.calendar.accent     // Deep Indigo #4338CA
+        case .contacts: return PageHeaderColor.contacts.accent     // Warm Brown #78350F
+        case .specialDays: return PageHeaderColor.specialDays.accent  // Rich Amber #D97706
+        case .settings: return PageHeaderColor.settings.accent     // Slate Blue #475569
         }
     }
 
@@ -82,7 +83,7 @@ struct AppSidebar: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             // Header (情報デザイン: Black text on white)
-            Text("WeekGrid")
+            Text("Onsen Planner")
                 .font(JohoFont.headline)
                 .foregroundStyle(JohoColors.black)
                 .padding(.horizontal, JohoDimensions.spacingLG)
@@ -114,7 +115,7 @@ struct AppSidebar: View {
 
             // Footer (情報デザイン: Black text with opacity)
             VStack(spacing: 4) {
-                Text("WeekGrid")
+                Text("Onsen Planner")
                     .font(JohoFont.caption)
                     .foregroundStyle(JohoColors.black.opacity(0.7))
                 Text("© 2025 The Office of Nils Johansson")

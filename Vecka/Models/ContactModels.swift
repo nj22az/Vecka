@@ -9,6 +9,42 @@ import Foundation
 import SwiftData
 import Contacts
 
+// MARK: - Contact Group (情報デザイン: Organize contacts)
+
+enum ContactGroup: String, Codable, CaseIterable {
+    case family = "Family"
+    case friends = "Friends"
+    case work = "Work"
+    case other = "Other"
+
+    var icon: String {
+        switch self {
+        case .family: return "house.fill"
+        case .friends: return "person.2.fill"
+        case .work: return "briefcase.fill"
+        case .other: return "person.fill"
+        }
+    }
+
+    var color: String {
+        switch self {
+        case .family: return "FECDD3"  // Pink - holidays/celebration
+        case .friends: return "E9D5FF"  // Purple - contacts
+        case .work: return "A5F3FC"     // Cyan - events
+        case .other: return "E5E7EB"    // Gray
+        }
+    }
+
+    var localizedName: String {
+        switch self {
+        case .family: return NSLocalizedString("contact.group.family", value: "Family", comment: "Contact group")
+        case .friends: return NSLocalizedString("contact.group.friends", value: "Friends", comment: "Contact group")
+        case .work: return NSLocalizedString("contact.group.work", value: "Work", comment: "Contact group")
+        case .other: return NSLocalizedString("contact.group.other", value: "Other", comment: "Contact group")
+        }
+    }
+}
+
 @Model
 final class Contact {
     var id: UUID
@@ -64,6 +100,16 @@ final class Contact {
     // iOS Contacts integration
     var cnContactIdentifier: String?
 
+    // Group (情報デザイン: Categorize contacts)
+    /// Contact group for organization (Family, Friends, Work, Other)
+    var groupRawValue: String = ContactGroup.other.rawValue
+
+    /// Computed property to access group as enum
+    var group: ContactGroup {
+        get { ContactGroup(rawValue: groupRawValue) ?? .other }
+        set { groupRawValue = newValue.rawValue }
+    }
+
     init(
         givenName: String = "",
         familyName: String = "",
@@ -73,7 +119,8 @@ final class Contact {
         emailAddresses: [ContactEmailAddress] = [],
         postalAddresses: [ContactPostalAddress] = [],
         birthday: Date? = nil,
-        birthdayKnown: Bool = true
+        birthdayKnown: Bool = true,
+        group: ContactGroup = .other
     ) {
         self.id = UUID()
         self.createdAt = Date()
@@ -91,6 +138,7 @@ final class Contact {
         self.socialProfiles = []
         self.urlAddresses = []
         self.relations = []
+        self.groupRawValue = group.rawValue
     }
 
     var displayName: String {
