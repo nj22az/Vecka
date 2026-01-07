@@ -99,6 +99,11 @@ struct ContactDetailView: View {
                     emailSection
                 }
 
+                // Social links section (情報デザイン: LINE-style social profiles)
+                if !contact.socialProfiles.isEmpty {
+                    socialLinksSection
+                }
+
                 // Address section
                 if isEditMode || !contact.postalAddresses.isEmpty {
                     addressSection
@@ -387,22 +392,9 @@ struct ContactDetailView: View {
                 .fill(JohoColors.black)
                 .frame(height: 1.5)
 
-            // Action buttons row - softer pill-style buttons
-            HStack(spacing: JohoDimensions.spacingSM) {
-                // Call button
-                if let phone = contact.phoneNumbers.first {
-                    profileActionButton(
-                        icon: "phone.fill",
-                        label: "CALL",
-                        color: JohoColors.green
-                    ) {
-                        if let url = URL(string: "tel:\(phone.value)") {
-                            UIApplication.shared.open(url)
-                        }
-                    }
-                }
-
-                // Message button
+            // 情報デザイン: LINE-style action buttons row (circular icons + labels)
+            HStack(spacing: 0) {
+                // Message button (cyan)
                 if let phone = contact.phoneNumbers.first {
                     profileActionButton(
                         icon: "message.fill",
@@ -415,7 +407,33 @@ struct ContactDetailView: View {
                     }
                 }
 
-                // Email button
+                // Call button (green)
+                if let phone = contact.phoneNumbers.first {
+                    profileActionButton(
+                        icon: "phone.fill",
+                        label: "CALL",
+                        color: JohoColors.green
+                    ) {
+                        if let url = URL(string: "tel:\(phone.value)") {
+                            UIApplication.shared.open(url)
+                        }
+                    }
+                }
+
+                // Video button (purple) - FaceTime
+                if let phone = contact.phoneNumbers.first {
+                    profileActionButton(
+                        icon: "video.fill",
+                        label: "VIDEO",
+                        color: PageHeaderColor.contacts.accent
+                    ) {
+                        if let url = URL(string: "facetime:\(phone.value)") {
+                            UIApplication.shared.open(url)
+                        }
+                    }
+                }
+
+                // Email button (warm brown accent)
                 if let email = contact.emailAddresses.first {
                     profileActionButton(
                         icon: "envelope.fill",
@@ -428,7 +446,8 @@ struct ContactDetailView: View {
                     }
                 }
             }
-            .padding(JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingMD)
+            .padding(.horizontal, JohoDimensions.spacingSM)
         }
         .background(JohoColors.white)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
@@ -438,29 +457,29 @@ struct ContactDetailView: View {
         )
     }
 
-    /// 情報デザイン: LINE-style action button with solid colors
+    /// 情報デザイン: LINE-style action button (circular icon + label below)
     @ViewBuilder
     private func profileActionButton(icon: String, label: String, color: Color, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            HStack(spacing: 6) {
+            VStack(spacing: 6) {
+                // Circular icon (情報デザイン: 44pt minimum touch target)
                 Image(systemName: icon)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.system(size: 18, weight: .bold))
                     .foregroundStyle(color)
+                    .frame(width: 48, height: 48)
+                    .background(JohoColors.white)
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
 
+                // Label below
                 Text(label)
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .font(.system(size: 9, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
+                    .tracking(0.5)
             }
-            .padding(.horizontal, JohoDimensions.spacingMD)
-            .padding(.vertical, JohoDimensions.spacingSM)
-            .background(JohoColors.white)
-            .clipShape(Capsule())
-            .overlay(
-                Capsule()
-                    .stroke(JohoColors.black, lineWidth: 1)
-            )
         }
         .buttonStyle(.plain)
+        .frame(maxWidth: .infinity)
     }
 
     // Removed quickActionsSection - now integrated into heroAvatarSection
@@ -552,6 +571,124 @@ struct ContactDetailView: View {
                     }
                 }
             }
+        }
+    }
+
+    // MARK: - Social Links Section (情報デザイン: LINE-style social profiles)
+
+    private var socialLinksSection: some View {
+        johoDetailSection(title: "SOCIAL", icon: "link", iconColor: PageHeaderColor.contacts.accent) {
+            VStack(spacing: JohoDimensions.spacingSM) {
+                ForEach(contact.socialProfiles, id: \.id) { profile in
+                    Button {
+                        // Open the profile URL or construct one
+                        if let urlString = profile.url, let url = URL(string: urlString) {
+                            UIApplication.shared.open(url)
+                        } else {
+                            // Construct URL based on service
+                            let url = constructSocialURL(service: profile.service, username: profile.username)
+                            if let url = url {
+                                UIApplication.shared.open(url)
+                            }
+                        }
+                    } label: {
+                        socialProfileRow(profile: profile)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+
+    /// 情報デザイン: Social profile row with service icon and username
+    @ViewBuilder
+    private func socialProfileRow(profile: ContactSocialProfile) -> some View {
+        HStack(spacing: JohoDimensions.spacingMD) {
+            // Service icon in colored zone
+            Image(systemName: socialServiceIcon(for: profile.service))
+                .font(.system(size: 14, weight: .bold))
+                .foregroundStyle(socialServiceColor(for: profile.service))
+                .frame(width: 32, height: 32)
+                .background(JohoColors.inputBackground)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                        .stroke(JohoColors.black, lineWidth: 1)
+                )
+
+            // Service name + username
+            VStack(alignment: .leading, spacing: 2) {
+                Text(profile.service.uppercased())
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.black.opacity(0.6))
+
+                Text("@\(profile.username)")
+                    .font(JohoFont.body)
+                    .foregroundStyle(JohoColors.black)
+            }
+
+            Spacer()
+
+            // External link indicator
+            Image(systemName: "arrow.up.right")
+                .font(.system(size: 12, weight: .bold))
+                .foregroundStyle(JohoColors.black.opacity(0.6))
+        }
+        .padding(JohoDimensions.spacingSM)
+        .background(JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                .stroke(JohoColors.black, lineWidth: 1)
+        )
+    }
+
+    /// Get appropriate icon for social service
+    private func socialServiceIcon(for service: String) -> String {
+        switch service.lowercased() {
+        case "twitter", "x": return "at"
+        case "instagram": return "camera.fill"
+        case "facebook": return "person.2.fill"
+        case "linkedin": return "briefcase.fill"
+        case "tiktok": return "music.note"
+        case "youtube": return "play.rectangle.fill"
+        case "snapchat": return "camera.viewfinder"
+        case "pinterest": return "pin.fill"
+        case "tumblr": return "text.quote"
+        case "reddit": return "bubble.left.and.bubble.right.fill"
+        case "github": return "chevron.left.forwardslash.chevron.right"
+        case "mastodon": return "text.bubble.fill"
+        default: return "link"
+        }
+    }
+
+    /// Get semantic color for social service
+    private func socialServiceColor(for service: String) -> Color {
+        switch service.lowercased() {
+        case "twitter", "x": return JohoColors.cyan
+        case "instagram": return Color(hex: "#E1306C")  // Instagram pink
+        case "facebook": return Color(hex: "#1877F2")   // Facebook blue
+        case "linkedin": return Color(hex: "#0A66C2")   // LinkedIn blue
+        case "tiktok": return JohoColors.black
+        case "youtube": return Color(hex: "#FF0000")    // YouTube red
+        case "snapchat": return JohoColors.yellow
+        case "github": return JohoColors.black
+        default: return PageHeaderColor.contacts.accent
+        }
+    }
+
+    /// Construct URL for social service if not provided
+    private func constructSocialURL(service: String, username: String) -> URL? {
+        let cleanUsername = username.hasPrefix("@") ? String(username.dropFirst()) : username
+        switch service.lowercased() {
+        case "twitter", "x": return URL(string: "https://twitter.com/\(cleanUsername)")
+        case "instagram": return URL(string: "https://instagram.com/\(cleanUsername)")
+        case "facebook": return URL(string: "https://facebook.com/\(cleanUsername)")
+        case "linkedin": return URL(string: "https://linkedin.com/in/\(cleanUsername)")
+        case "tiktok": return URL(string: "https://tiktok.com/@\(cleanUsername)")
+        case "youtube": return URL(string: "https://youtube.com/@\(cleanUsername)")
+        case "github": return URL(string: "https://github.com/\(cleanUsername)")
+        default: return nil
         }
     }
 
@@ -747,7 +884,7 @@ struct ContactDetailView: View {
                     // Date pickers (only if HAS selected)
                     if editHasBirthday && editBirthdayKnown {
                         HStack(spacing: 8) {
-                            // Year
+                            // Year (情報デザイン: solid background + border)
                             Menu {
                                 ForEach(yearRange, id: \.self) { year in
                                     Button { editYear = year } label: { Text(String(year)) }
@@ -758,11 +895,12 @@ struct ContactDetailView: View {
                                     .foregroundStyle(JohoColors.black)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 8)
-                                    .background(JohoColors.black.opacity(0.05))
+                                    .background(JohoColors.inputBackground)
                                     .clipShape(Capsule())
+                                    .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                             }
 
-                            // Month
+                            // Month (情報デザイン: solid background + border)
                             Menu {
                                 ForEach(1...12, id: \.self) { month in
                                     Button { editMonth = month } label: { Text(monthName(month)) }
@@ -773,11 +911,12 @@ struct ContactDetailView: View {
                                     .foregroundStyle(JohoColors.black)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 8)
-                                    .background(JohoColors.black.opacity(0.05))
+                                    .background(JohoColors.inputBackground)
                                     .clipShape(Capsule())
+                                    .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                             }
 
-                            // Day
+                            // Day (情報デザイン: solid background + border)
                             Menu {
                                 ForEach(1...daysInMonth(editMonth, year: editYear), id: \.self) { day in
                                     Button { editDay = day } label: { Text("\(day)") }
@@ -788,8 +927,9 @@ struct ContactDetailView: View {
                                     .foregroundStyle(JohoColors.black)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 8)
-                                    .background(JohoColors.black.opacity(0.05))
+                                    .background(JohoColors.inputBackground)
                                     .clipShape(Capsule())
+                                    .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                             }
 
                             Spacer()
@@ -1759,6 +1899,7 @@ struct JohoContactEditorSheet: View {
                             .padding(.horizontal, JohoDimensions.spacingMD)
 
                             // Birthday date picker (only shown when HAS is selected)
+                            // 情報デザイン: solid background + border on all pickers
                             if hasBirthday && birthdayKnown {
                                 HStack(spacing: 8) {
                                     // Year
@@ -1772,8 +1913,9 @@ struct JohoContactEditorSheet: View {
                                             .foregroundStyle(JohoColors.black)
                                             .padding(.horizontal, 12)
                                             .padding(.vertical, 8)
-                                            .background(JohoColors.black.opacity(0.05))
+                                            .background(JohoColors.inputBackground)
                                             .clipShape(Capsule())
+                                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                                     }
 
                                     // Month
@@ -1787,8 +1929,9 @@ struct JohoContactEditorSheet: View {
                                             .foregroundStyle(JohoColors.black)
                                             .padding(.horizontal, 12)
                                             .padding(.vertical, 8)
-                                            .background(JohoColors.black.opacity(0.05))
+                                            .background(JohoColors.inputBackground)
                                             .clipShape(Capsule())
+                                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                                     }
 
                                     // Day
@@ -1802,8 +1945,9 @@ struct JohoContactEditorSheet: View {
                                             .foregroundStyle(JohoColors.black)
                                             .padding(.horizontal, 12)
                                             .padding(.vertical, 8)
-                                            .background(JohoColors.black.opacity(0.05))
+                                            .background(JohoColors.inputBackground)
                                             .clipShape(Capsule())
+                                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                                     }
 
                                     Spacer()

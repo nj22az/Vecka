@@ -39,8 +39,9 @@ class ContactsManager {
 
     /// Imports all contacts from iOS Contacts app
     /// 情報デザイン: Deduplication check prevents double imports
+    /// iOS 18+: .limited access returns only user-selected contacts
     func importAllContacts(to modelContext: ModelContext) async throws -> Int {
-        guard authorizationStatus == .authorized else {
+        guard authorizationStatus == .authorized || authorizationStatus == .limited else {
             throw ContactsError.notAuthorized
         }
 
@@ -133,8 +134,9 @@ class ContactsManager {
     }
 
     /// Fetches all iOS contacts for picker
+    /// iOS 18+: .limited access returns only user-selected contacts
     func fetchAllCNContacts() throws -> [CNContact] {
-        guard authorizationStatus == .authorized else {
+        guard authorizationStatus == .authorized || authorizationStatus == .limited else {
             throw ContactsError.notAuthorized
         }
 
@@ -152,8 +154,9 @@ class ContactsManager {
     // MARK: - Export to iOS Contacts
 
     /// Exports a WeekGrid contact to iOS Contacts
+    /// Note: Export requires full access (.authorized), not limited access
     func exportToIOSContacts(_ contact: Contact) throws {
-        guard authorizationStatus == .authorized else {
+        guard authorizationStatus == .authorized || authorizationStatus == .limited else {
             throw ContactsError.notAuthorized
         }
 

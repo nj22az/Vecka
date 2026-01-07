@@ -1199,8 +1199,9 @@ struct ContactImportView: View {
     private var accentColor: Color { PageHeaderColor.contacts.accent }
 
     // Computed property for authorization check
+    // iOS 18+: Handle both .authorized and .limited (user selected specific contacts)
     private var isAuthorized: Bool {
-        authorizationStatus == .authorized
+        authorizationStatus == .authorized || authorizationStatus == .limited
     }
 
     var body: some View {
