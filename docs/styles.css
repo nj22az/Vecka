@@ -108,42 +108,421 @@ body {
     border: var(--border-thick) solid var(--black);
 }
 
-.logo-icon {
-    width: 40px;
-    height: 40px;
-    background: var(--yellow);
-    border-radius: var(--radius-md);
-    border: var(--border-normal) solid var(--black);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .logo-text {
     font-size: 18px;
     font-weight: 800;
     letter-spacing: 1px;
 }
 
-.mascot-card {
-    width: 52px;
-    height: 52px;
-    background: var(--white);
-    border-radius: var(--radius-lg);
-    border: var(--border-thick) solid var(--black);
+/* ================================
+   MASCOT WITH HOUSE HAT
+   ================================ */
+.mascot-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* House Hat - Roof */
+.house-hat {
+    position: relative;
+    width: 36px;
+    margin-bottom: -2px;
+}
+
+.house-hat .roof {
+    width: 0;
+    height: 0;
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-bottom: 14px solid var(--yellow);
+    position: relative;
+}
+
+.house-hat .roof::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: -16px;
+    width: 0;
+    height: 0;
+    border-left: 16px solid transparent;
+    border-right: 16px solid transparent;
+    border-bottom: 12px solid var(--black);
+    clip-path: polygon(0% 100%, 50% 0%, 100% 100%, 85% 100%, 50% 20%, 15% 100%);
+}
+
+.house-hat .chimney {
+    position: absolute;
+    right: 6px;
+    top: -6px;
+    width: 6px;
+    height: 10px;
+    background: var(--yellow);
+    border: 1.5px solid var(--black);
+    border-bottom: none;
+}
+
+/* Mascot Box */
+.mascot-box {
+    width: 32px;
+    height: 28px;
+    background: var(--yellow);
+    border: 2px solid var(--black);
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.mascot-face {
+.mascot-eyes {
     font-size: 10px;
+    font-weight: 900;
     color: var(--black);
+    letter-spacing: 4px;
+    margin-left: 2px;
 }
 
-.mascot-eyes {
+/* Large Mascot (Hero) */
+.mascot-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+}
+
+.house-hat-large {
+    width: 100px;
+    margin-bottom: -6px;
+}
+
+.house-hat-large .roof {
+    border-left: 50px solid transparent;
+    border-right: 50px solid transparent;
+    border-bottom: 40px solid var(--yellow);
+}
+
+.house-hat-large .roof::after {
+    top: 4px;
+    left: -46px;
+    border-left: 46px solid transparent;
+    border-right: 46px solid transparent;
+    border-bottom: 36px solid var(--black);
+    clip-path: polygon(0% 100%, 50% 0%, 100% 100%, 88% 100%, 50% 15%, 12% 100%);
+}
+
+.house-hat-large .chimney {
+    right: 16px;
+    top: -14px;
+    width: 14px;
+    height: 24px;
+}
+
+.mascot-box-large {
+    width: 88px;
+    height: 76px;
+    border-radius: 8px;
+    border-width: 3px;
+}
+
+.mascot-eyes-large {
+    font-size: 24px;
+    letter-spacing: 12px;
+    margin-left: 6px;
+}
+
+/* Medium Mascot (Download section) */
+.download-mascot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+}
+
+.house-hat-medium {
+    width: 72px;
+    margin-bottom: -4px;
+}
+
+.house-hat-medium .roof {
+    border-left: 36px solid transparent;
+    border-right: 36px solid transparent;
+    border-bottom: 28px solid var(--yellow);
+}
+
+.house-hat-medium .roof::after {
+    top: 4px;
+    left: -32px;
+    border-left: 32px solid transparent;
+    border-right: 32px solid transparent;
+    border-bottom: 24px solid var(--black);
+    clip-path: polygon(0% 100%, 50% 0%, 100% 100%, 88% 100%, 50% 15%, 12% 100%);
+}
+
+.house-hat-medium .chimney {
+    right: 12px;
+    top: -10px;
+    width: 10px;
+    height: 18px;
+}
+
+.mascot-box-medium {
+    width: 64px;
+    height: 56px;
+    border-radius: 6px;
+}
+
+.mascot-eyes-medium {
+    font-size: 18px;
+    letter-spacing: 8px;
+    margin-left: 4px;
+}
+
+/* Tiny Mascot (Footer) */
+.footer-mascot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.house-hat-tiny {
+    width: 28px;
+    margin-bottom: -2px;
+}
+
+.house-hat-tiny .roof {
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    border-bottom: 11px solid var(--yellow);
+}
+
+.mascot-box-tiny {
+    width: 24px;
+    height: 20px;
+    border-width: 1.5px;
+    border-radius: 3px;
+}
+
+.mascot-eyes-tiny {
+    font-size: 7px;
+    letter-spacing: 3px;
+    margin-left: 1px;
+}
+
+/* Coming Soon Badge */
+.coming-soon-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    background: var(--yellow);
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-full);
+    border: var(--border-normal) solid var(--black);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--black);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* Design Philosophy Section */
+.design-philosophy {
+    background: var(--gray-light);
+    border-radius: var(--radius-lg);
+    border: var(--border-normal) solid var(--black);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+    text-align: center;
+}
+
+.philosophy-intro {
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.6;
+    margin-bottom: var(--space-xs);
+}
+
+.philosophy-title {
+    font-size: 18px;
     font-weight: 900;
-    letter-spacing: 2px;
+    margin-bottom: var(--space-sm);
+}
+
+.philosophy-description {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.7;
+    line-height: 1.6;
+}
+
+/* Coming Soon Section */
+.coming-soon-section {
+    margin-top: var(--space-lg);
+}
+
+.coming-soon-card {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    background: var(--yellow);
+    padding: var(--space-md) var(--space-xl);
+    border-radius: var(--radius-lg);
+    border: var(--border-thick) solid var(--black);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.coming-icon {
+    font-size: 16px;
+}
+
+/* Philosophy Box in Bento */
+.philosophy-box {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    border: var(--border-normal) solid var(--black);
+    padding: var(--space-md);
+    text-align: left;
+}
+
+.philosophy-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.philosophy-marker {
+    font-size: 12px;
+    opacity: 0.5;
+}
+
+.philosophy-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.philosophy-list {
+    list-style: none;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.philosophy-list li {
+    padding: var(--space-xs) 0;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.philosophy-list li:last-child {
+    border-bottom: none;
+}
+
+/* Notify Section */
+.notify-section {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--gray);
+}
+
+.notify-text {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.6;
+    margin-bottom: var(--space-md);
+}
+
+.github-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    background: var(--black);
+    color: var(--white);
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-md);
+    border: var(--border-thick) solid var(--black);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.github-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 0 0 var(--yellow);
+}
+
+.github-button svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Download Section Updates */
+.download-title {
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: var(--space-xs);
+}
+
+.download-subtitle {
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0.6;
+    margin-bottom: var(--space-lg);
+}
+
+/* Footer Updates */
+.footer-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.footer-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.footer-company {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: 0.5px;
+}
+
+.footer-tagline {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--white);
+    opacity: 0.6;
+}
+
+/* Action Icon Circle */
+.action-icon-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: var(--border-normal) solid var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    background: var(--white);
 }
 
 .hero-content {
@@ -200,6 +579,44 @@ body {
 .badge-purple { background: var(--purple); }
 .badge-green { background: var(--green); }
 .badge-cyan { background: var(--cyan); }
+.badge-orange { background: var(--orange); }
+.badge-pink { background: var(--pink); }
+
+/* Target Audience Section */
+.target-audience {
+    background: var(--black);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+    text-align: center;
+}
+
+.audience-intro {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--white);
+    opacity: 0.6;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: var(--space-sm);
+}
+
+.audience-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    justify-content: center;
+}
+
+.audience-tag {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--white);
+    background: rgba(255,255,255,0.1);
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(255,255,255,0.2);
+}
 
 .cta-button {
     display: inline-flex;
@@ -231,6 +648,86 @@ body {
 section {
     background: var(--black);
     padding: var(--space-2xl) var(--space-lg);
+}
+
+/* ================================
+   WHY ONSEN SECTION
+   ================================ */
+.why-section {
+    background: var(--bg-cream);
+    padding: var(--space-3xl) var(--space-lg);
+}
+
+.why-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.why-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+}
+
+.why-marker {
+    font-size: 18px;
+    color: var(--black);
+    opacity: 0.4;
+}
+
+.why-title {
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: var(--black);
+}
+
+.why-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+}
+
+.why-card {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    border: var(--border-thick) solid var(--black);
+    padding: var(--space-xl);
+    text-align: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.why-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 0 0 var(--black);
+}
+
+.why-icon {
+    font-size: 36px;
+    margin-bottom: var(--space-md);
+}
+
+.why-card h3 {
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: var(--space-sm);
+    color: var(--black);
+}
+
+.why-card p {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.6;
+    color: var(--black);
+    opacity: 0.7;
+}
+
+@media (max-width: 640px) {
+    .why-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .section-header {
