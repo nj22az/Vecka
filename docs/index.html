@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onsen Planner - 情報デザイン Calendar</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    <meta name="description" content="Onsen Planner - A beautiful iOS calendar app following 情報デザイン (Japanese Information Design) principles. Track weeks, contacts, expenses, and more.">
+    <meta property="og:title" content="Onsen Planner - 情報デザイン Calendar">
+    <meta property="og:description" content="A beautiful iOS calendar app following Japanese Information Design principles.">
+    <meta property="og:image" content="screenshots/landing.png">
+</head>
+<body>
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-container">
+            <div class="hero-header">
+                <div class="logo-card">
+                    <div class="logo-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                            <path d="M3 9.5L12 4L21 9.5V20C21 20.5 20.5 21 20 21H4C3.5 21 3 20.5 3 20V9.5Z" fill="#F59E0B" stroke="#000" stroke-width="2"/>
+                            <rect x="9" y="13" width="6" height="8" fill="#FEF3C7" stroke="#000" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <span class="logo-text">ONSEN</span>
+                </div>
+                <div class="mascot-card">
+                    <div class="mascot-face">
+                        <span class="mascot-eyes">• •</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-content">
+                <h1 class="hero-title">ONSEN PLANNER</h1>
+                <p class="hero-tagline">情報デザイン Calendar</p>
+                <p class="hero-description">
+                    A beautifully crafted iOS app following Japanese Information Design principles.
+                    Track your weeks, manage contacts, log expenses, and plan trips — all in one elegant interface.
+                </p>
+                <div class="hero-badges">
+                    <span class="badge badge-yellow">Week Numbers</span>
+                    <span class="badge badge-purple">Contacts</span>
+                    <span class="badge badge-green">Expenses</span>
+                    <span class="badge badge-cyan">Events</span>
+                </div>
+                <a href="#download" class="cta-button">
+                    <span class="cta-icon">↓</span>
+                    Download for iOS
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features Bento Grid -->
+    <section class="features">
+        <div class="section-header">
+            <span class="section-marker">※</span>
+            <h2 class="section-title">FEATURES</h2>
+        </div>
+
+        <div class="bento-grid">
+            <!-- Main Feature - Dashboard -->
+            <div class="bento-card bento-large">
+                <div class="card-header">
+                    <div class="card-icon card-icon-yellow">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1"/>
+                        </svg>
+                    </div>
+                    <span class="card-label">DASHBOARD</span>
+                </div>
+                <div class="phone-frame">
+                    <img src="screenshots/landing.png" alt="Onsen Planner Dashboard" class="screenshot">
+                </div>
+                <p class="card-description">Your day at a glance. Bento-style widgets show week number, holidays, contacts, trips, and expenses.</p>
+            </div>
+
+            <!-- Calendar -->
+            <div class="bento-card bento-medium">
+                <div class="card-header">
+                    <div class="card-icon card-icon-cyan">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <rect x="3" y="4" width="18" height="18" rx="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                    </div>
+                    <span class="card-label">CALENDAR</span>
+                </div>
+                <div class="phone-frame phone-frame-small">
+                    <img src="screenshots/calendar.png" alt="Week Calendar View" class="screenshot">
+                </div>
+                <p class="card-description">ISO 8601 week numbers with holiday indicators.</p>
+            </div>
+
+            <!-- Contacts -->
+            <div class="bento-card bento-medium">
+                <div class="card-header">
+                    <div class="card-icon card-icon-purple">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <circle cx="12" cy="8" r="4"/>
+                            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                        </svg>
+                    </div>
+                    <span class="card-label">CONTACTS</span>
+                </div>
+                <div class="phone-frame phone-frame-small">
+                    <img src="screenshots/contacts.png" alt="Contact Management" class="screenshot">
+                </div>
+                <p class="card-description">Manage contacts with birthday reminders.</p>
+            </div>
+
+            <!-- Contact Detail -->
+            <div class="bento-card bento-wide">
+                <div class="card-header">
+                    <div class="card-icon card-icon-orange">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+                        </svg>
+                    </div>
+                    <span class="card-label">LINE-STYLE ACTIONS</span>
+                </div>
+                <div class="action-preview">
+                    <div class="action-button action-cyan">
+                        <span class="action-icon">💬</span>
+                        <span class="action-label">MESSAGE</span>
+                    </div>
+                    <div class="action-button action-green">
+                        <span class="action-icon">📞</span>
+                        <span class="action-label">CALL</span>
+                    </div>
+                    <div class="action-button action-purple">
+                        <span class="action-icon">📹</span>
+                        <span class="action-label">VIDEO</span>
+                    </div>
+                    <div class="action-button action-orange">
+                        <span class="action-icon">✉️</span>
+                        <span class="action-label">EMAIL</span>
+                    </div>
+                </div>
+                <p class="card-description">Quick actions inspired by LINE messenger. Message, call, video chat, or email with one tap.</p>
+            </div>
+
+            <!-- Settings -->
+            <div class="bento-card bento-small">
+                <div class="card-header">
+                    <div class="card-icon card-icon-gray">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                        </svg>
+                    </div>
+                    <span class="card-label">SETTINGS</span>
+                </div>
+                <p class="card-description">Customize holidays, regions, and appearance.</p>
+            </div>
+
+            <!-- Design Philosophy -->
+            <div class="bento-card bento-philosophy">
+                <div class="philosophy-content">
+                    <span class="philosophy-kanji">情報</span>
+                    <span class="philosophy-kanji">デザイン</span>
+                </div>
+                <div class="philosophy-text">
+                    <h3>Japanese Information Design</h3>
+                    <p>Clean lines. Solid colors. No blur. No gradients. Just pure, functional beauty.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Highlights Section -->
+    <section class="highlights">
+        <div class="section-header">
+            <span class="section-marker">●</span>
+            <h2 class="section-title">HIGHLIGHTS</h2>
+        </div>
+
+        <div class="highlights-grid">
+            <div class="highlight-card highlight-yellow">
+                <div class="highlight-number">52</div>
+                <div class="highlight-label">WEEKS TRACKED</div>
+                <p>ISO 8601 week numbers for the entire year</p>
+            </div>
+            <div class="highlight-card highlight-pink">
+                <div class="highlight-number">3</div>
+                <div class="highlight-label">HOLIDAY REGIONS</div>
+                <p>Sweden, USA, and Vietnam holidays built-in</p>
+            </div>
+            <div class="highlight-card highlight-green">
+                <div class="highlight-number">∞</div>
+                <div class="highlight-label">CUSTOM DAYS</div>
+                <p>Add your own special days and events</p>
+            </div>
+            <div class="highlight-card highlight-cyan">
+                <div class="highlight-number">📱</div>
+                <div class="highlight-label">WIDGETS</div>
+                <p>Home screen widgets in all sizes</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section class="download" id="download">
+        <div class="download-card">
+            <div class="download-header">
+                <div class="app-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                        <path d="M3 9.5L12 4L21 9.5V20C21 20.5 20.5 21 20 21H4C3.5 21 3 20.5 3 20V9.5Z" fill="#F59E0B" stroke="#000" stroke-width="2"/>
+                        <rect x="9" y="13" width="6" height="8" fill="#FEF3C7" stroke="#000" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <div class="app-info">
+                    <h3 class="app-name">Onsen Planner</h3>
+                    <p class="app-subtitle">WeekGrid Calendar</p>
+                </div>
+            </div>
+            <div class="download-features">
+                <span class="download-feature">✓ iOS 18+</span>
+                <span class="download-feature">✓ SwiftUI Native</span>
+                <span class="download-feature">✓ SwiftData</span>
+                <span class="download-feature">✓ WidgetKit</span>
+            </div>
+            <a href="https://apps.apple.com" class="download-button" target="_blank" rel="noopener">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                </svg>
+                <span>Download on the App Store</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <span class="footer-logo">温泉</span>
+                <span class="footer-name">ONSEN PLANNER</span>
+            </div>
+            <div class="footer-links">
+                <a href="https://github.com/nj22az/Vecka" target="_blank" rel="noopener">GitHub</a>
+                <span class="footer-divider">|</span>
+                <span>Made with 情報デザイン</span>
+            </div>
+            <p class="footer-copyright">© 2026 Onsen Planner. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
