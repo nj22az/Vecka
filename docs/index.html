@@ -14,357 +14,223 @@
     <meta property="og:image" content="screenshots/landing.png">
 </head>
 <body>
-    <!-- Hero Section -->
-    <header class="hero">
-        <div class="hero-container">
-            <div class="hero-header">
-                <div class="logo-card">
-                    <!-- Mascot: Simple box with eyes -->
-                    <div class="mascot-box mascot-box-sm">
-                        <span class="mascot-eyes">• •</span>
+    <div class="page">
+        <!-- Header Card (Star Page Style) -->
+        <header class="header-card">
+            <div class="header-row">
+                <div class="header-left">
+                    <div class="mascot">
+                        <span class="eyes">• •</span>
                     </div>
                     <span class="logo-text">ONSEN</span>
                 </div>
-                <div class="coming-soon-badge">
-                    <span class="pulse-dot"></span>
-                    COMING SOON
+                <div class="header-divider"></div>
+                <div class="header-right">
+                    <span class="status-badge">COMING SOON</span>
                 </div>
             </div>
+        </header>
 
-            <div class="hero-content">
-                <!-- Large Mascot -->
-                <div class="mascot-box mascot-box-lg">
-                    <span class="mascot-eyes mascot-eyes-lg">• •</span>
+        <!-- Hero Section -->
+        <section class="hero-card">
+            <div class="hero-mascot">
+                <span class="eyes-lg">• •</span>
+            </div>
+            <h1 class="hero-title">ONSEN PLANNER</h1>
+            <p class="hero-subtitle">Your life. Organized beautifully.</p>
+
+            <div class="philosophy-card">
+                <span class="kome">※</span>
+                <span class="philosophy-text">My interpretation of Japanese Information Design</span>
+            </div>
+
+            <p class="hero-description">
+                Clean lines. Solid colors. No blur. No gradients.
+                Pure, functional beauty inspired by Japanese craft.
+            </p>
+
+            <div class="feature-pills">
+                <span class="pill pill-yellow">Week Numbers</span>
+                <span class="pill pill-purple">Contacts</span>
+                <span class="pill pill-green">Expenses</span>
+                <span class="pill pill-cyan">Events</span>
+                <span class="pill pill-orange">Trips</span>
+                <span class="pill pill-pink">Holidays</span>
+            </div>
+        </section>
+
+        <!-- Who Is It For -->
+        <section class="audience-card">
+            <div class="section-header">
+                <span class="marker">●</span>
+                <span class="section-title">BUILT FOR</span>
+            </div>
+            <div class="audience-grid">
+                <div class="audience-item">
+                    <svg class="audience-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    <span class="audience-label">Week-number thinkers</span>
                 </div>
-
-                <h1 class="hero-title">ONSEN PLANNER</h1>
-                <p class="hero-tagline">Your life. Organized beautifully.</p>
-
-                <div class="design-philosophy">
-                    <p class="philosophy-intro">My interpretation of</p>
-                    <h2 class="philosophy-title">Japanese Information Design</h2>
-                    <p class="philosophy-description">
-                        Clean lines. Solid colors. No blur. No gradients.
-                        Pure, functional beauty inspired by the clarity of Japanese design.
-                    </p>
+                <div class="audience-item">
+                    <svg class="audience-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="2" y1="12" x2="22" y2="12"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    </svg>
+                    <span class="audience-label">Expats and global families</span>
                 </div>
+                <div class="audience-item">
+                    <svg class="audience-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <line x1="3" y1="9" x2="21" y2="9"/>
+                        <line x1="9" y1="21" x2="9" y2="9"/>
+                    </svg>
+                    <span class="audience-label">Design-conscious minimalists</span>
+                </div>
+                <div class="audience-item">
+                    <svg class="audience-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                    <span class="audience-label">People who love Muji</span>
+                </div>
+            </div>
+        </section>
 
-                <div class="target-audience">
-                    <p class="audience-intro">Built for</p>
-                    <div class="audience-tags">
-                        <span class="audience-tag">Week-number thinkers</span>
-                        <span class="audience-tag">Design-conscious minimalists</span>
-                        <span class="audience-tag">Expats tracking multiple calendars</span>
-                        <span class="audience-tag">People who appreciate Muji aesthetics</span>
+        <!-- Screenshots Bento -->
+        <section class="screenshots-section">
+            <div class="section-header">
+                <span class="marker">※</span>
+                <span class="section-title">FEATURES</span>
+            </div>
+
+            <div class="bento">
+                <!-- Main Screenshot -->
+                <div class="bento-main">
+                    <div class="screenshot-card">
+                        <img src="screenshots/landing.png" alt="Onsen Dashboard" class="screenshot">
+                    </div>
+                    <div class="screenshot-info">
+                        <span class="screenshot-label">DASHBOARD</span>
+                        <p>Your day at a glance. Bento-style widgets show week number, holidays, contacts, trips, and expenses.</p>
                     </div>
                 </div>
 
-                <div class="hero-badges">
-                    <span class="badge badge-yellow">Week Numbers</span>
-                    <span class="badge badge-purple">Contacts</span>
-                    <span class="badge badge-green">Expenses</span>
-                    <span class="badge badge-cyan">Events</span>
-                    <span class="badge badge-orange">Trips</span>
-                    <span class="badge badge-pink">Holidays</span>
-                </div>
-
-                <div class="coming-soon-section">
-                    <div class="coming-soon-card">
-                        <svg class="coming-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                        <span class="coming-text">Coming Soon to iOS</span>
+                <!-- Secondary Screenshots -->
+                <div class="bento-side">
+                    <div class="screenshot-card-sm">
+                        <img src="screenshots/calendar.png" alt="Calendar" class="screenshot">
+                        <span class="screenshot-label-sm">CALENDAR</span>
+                    </div>
+                    <div class="screenshot-card-sm">
+                        <img src="screenshots/contacts.png" alt="Contacts" class="screenshot">
+                        <span class="screenshot-label-sm">CONTACTS</span>
                     </div>
                 </div>
             </div>
-        </div>
-    </header>
+        </section>
 
-    <!-- Why Onsen Section -->
-    <section class="why-section">
-        <div class="why-container">
-            <div class="why-header">
-                <span class="why-marker">◈</span>
-                <h2 class="why-title">WHY ONSEN?</h2>
-            </div>
-            <div class="why-grid">
-                <div class="why-card">
-                    <div class="why-icon why-icon-yellow">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="4" width="18" height="18" rx="2"/>
-                            <line x1="16" y1="2" x2="16" y2="6"/>
-                            <line x1="8" y1="2" x2="8" y2="6"/>
-                            <line x1="3" y1="10" x2="21" y2="10"/>
-                            <text x="12" y="17" font-size="6" font-weight="bold" text-anchor="middle" fill="currentColor" stroke="none">52</text>
-                        </svg>
-                    </div>
-                    <h3>Week-First Thinking</h3>
-                    <p>Europeans think in weeks. "Let's meet week 23" is natural. Onsen puts ISO 8601 week numbers front and center.</p>
-                </div>
-                <div class="why-card">
-                    <div class="why-icon why-icon-pink">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="2" y1="12" x2="22" y2="12"/>
-                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                        </svg>
-                    </div>
-                    <h3>Multi-Cultural</h3>
-                    <p>Track holidays across Sweden, USA, and Vietnam. Perfect for expats, global families, and international workers.</p>
-                </div>
-                <div class="why-card">
-                    <div class="why-icon why-icon-cyan">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="18" height="18" rx="2"/>
-                            <line x1="3" y1="9" x2="21" y2="9"/>
-                            <line x1="9" y1="21" x2="9" y2="9"/>
-                        </svg>
-                    </div>
-                    <h3>Opinionated Design</h3>
-                    <p>No blur. No gradients. No glass. Just solid colors, black borders, and functional clarity inspired by Japanese craft.</p>
-                </div>
-                <div class="why-card">
-                    <div class="why-icon why-icon-green">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="7" height="7" rx="1"/>
-                            <rect x="14" y="3" width="7" height="7" rx="1"/>
-                            <rect x="3" y="14" width="7" height="7" rx="1"/>
-                            <rect x="14" y="14" width="7" height="7" rx="1"/>
-                        </svg>
-                    </div>
-                    <h3>One Beautiful App</h3>
-                    <p>Contacts, expenses, trips, and events in one place. Not enterprise bloat—just a personal life dashboard.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Bento Grid -->
-    <section class="features">
-        <div class="section-header">
-            <span class="section-marker">※</span>
-            <h2 class="section-title">FEATURES</h2>
-        </div>
-
-        <div class="bento-grid">
-            <!-- Main Feature - Dashboard -->
-            <div class="bento-card bento-large">
-                <div class="card-header">
-                    <div class="card-icon card-icon-yellow">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <rect x="3" y="3" width="7" height="7" rx="1"/>
-                            <rect x="14" y="3" width="7" height="7" rx="1"/>
-                            <rect x="3" y="14" width="7" height="7" rx="1"/>
-                            <rect x="14" y="14" width="7" height="7" rx="1"/>
-                        </svg>
-                    </div>
-                    <span class="card-label">DASHBOARD</span>
-                </div>
-                <div class="phone-frame">
-                    <img src="screenshots/landing.png" alt="Onsen Planner Dashboard" class="screenshot">
-                </div>
-                <p class="card-description">Your day at a glance. Bento-style widgets show week number, holidays, contacts, trips, and expenses.</p>
+        <!-- Highlights (Star Page Grid Style) -->
+        <section class="highlights-section">
+            <div class="section-header">
+                <span class="marker">○</span>
+                <span class="section-title">HIGHLIGHTS</span>
             </div>
 
-            <!-- Calendar -->
-            <div class="bento-card bento-medium">
-                <div class="card-header">
-                    <div class="card-icon card-icon-cyan">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <rect x="3" y="4" width="18" height="18" rx="2"/>
-                            <line x1="16" y1="2" x2="16" y2="6"/>
-                            <line x1="8" y1="2" x2="8" y2="6"/>
-                            <line x1="3" y1="10" x2="21" y2="10"/>
-                        </svg>
-                    </div>
-                    <span class="card-label">CALENDAR</span>
+            <div class="highlights-grid">
+                <div class="highlight-tile highlight-yellow">
+                    <span class="highlight-value">52</span>
+                    <span class="highlight-label">WEEKS</span>
+                    <span class="highlight-desc">ISO 8601</span>
                 </div>
-                <div class="phone-frame phone-frame-small">
-                    <img src="screenshots/calendar.png" alt="Week Calendar View" class="screenshot">
+                <div class="highlight-tile highlight-pink">
+                    <span class="highlight-value">3</span>
+                    <span class="highlight-label">REGIONS</span>
+                    <span class="highlight-desc">SE US VN</span>
                 </div>
-                <p class="card-description">ISO 8601 week numbers with holiday indicators.</p>
-            </div>
-
-            <!-- Contacts -->
-            <div class="bento-card bento-medium">
-                <div class="card-header">
-                    <div class="card-icon card-icon-purple">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <circle cx="12" cy="8" r="4"/>
-                            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
-                        </svg>
-                    </div>
-                    <span class="card-label">CONTACTS</span>
+                <div class="highlight-tile highlight-green">
+                    <svg class="highlight-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    <span class="highlight-label">CUSTOM</span>
+                    <span class="highlight-desc">Your days</span>
                 </div>
-                <div class="phone-frame phone-frame-small">
-                    <img src="screenshots/contacts.png" alt="Contact Management" class="screenshot">
-                </div>
-                <p class="card-description">Manage contacts with birthday reminders.</p>
-            </div>
-
-            <!-- Contact Detail -->
-            <div class="bento-card bento-wide">
-                <div class="card-header">
-                    <div class="card-icon card-icon-orange">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
-                        </svg>
-                    </div>
-                    <span class="card-label">QUICK ACTIONS</span>
-                </div>
-                <div class="action-preview">
-                    <div class="action-button action-cyan">
-                        <div class="action-icon-circle">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                            </svg>
-                        </div>
-                        <span class="action-label">MESSAGE</span>
-                    </div>
-                    <div class="action-button action-green">
-                        <div class="action-icon-circle">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                            </svg>
-                        </div>
-                        <span class="action-label">CALL</span>
-                    </div>
-                    <div class="action-button action-purple">
-                        <div class="action-icon-circle">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="23 7 16 12 23 17 23 7"/>
-                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-                            </svg>
-                        </div>
-                        <span class="action-label">VIDEO</span>
-                    </div>
-                    <div class="action-button action-orange">
-                        <div class="action-icon-circle">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                                <polyline points="22,6 12,13 2,6"/>
-                            </svg>
-                        </div>
-                        <span class="action-label">EMAIL</span>
-                    </div>
-                </div>
-                <p class="card-description">Quick actions inspired by LINE messenger. Message, call, video chat, or email with one tap.</p>
-            </div>
-
-            <!-- Settings -->
-            <div class="bento-card bento-small">
-                <div class="card-header">
-                    <div class="card-icon card-icon-gray">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <circle cx="12" cy="12" r="3"/>
-                            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-                        </svg>
-                    </div>
-                    <span class="card-label">SETTINGS</span>
-                </div>
-                <p class="card-description">Customize holidays, regions, and appearance.</p>
-            </div>
-
-            <!-- Design Philosophy -->
-            <div class="bento-card bento-philosophy">
-                <div class="philosophy-box">
-                    <div class="philosophy-header">
-                        <span class="philosophy-marker">◯</span>
-                        <span class="philosophy-label">DESIGN RULES</span>
-                    </div>
-                    <ul class="philosophy-list">
-                        <li>Solid colors only</li>
-                        <li>Black borders always</li>
-                        <li>No blur or gradients</li>
-                        <li>Clean typography</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Highlights Section -->
-    <section class="highlights">
-        <div class="section-header">
-            <span class="section-marker">●</span>
-            <h2 class="section-title">HIGHLIGHTS</h2>
-        </div>
-
-        <div class="highlights-grid">
-            <div class="highlight-card highlight-yellow">
-                <div class="highlight-number">52</div>
-                <div class="highlight-label">WEEKS TRACKED</div>
-                <p>ISO 8601 week numbers for the entire year</p>
-            </div>
-            <div class="highlight-card highlight-pink">
-                <div class="highlight-number">3</div>
-                <div class="highlight-label">HOLIDAY REGIONS</div>
-                <p>Sweden, USA, and Vietnam holidays built-in</p>
-            </div>
-            <div class="highlight-card highlight-green">
-                <div class="highlight-number">∞</div>
-                <div class="highlight-label">CUSTOM DAYS</div>
-                <p>Add your own special days and events</p>
-            </div>
-            <div class="highlight-card highlight-cyan">
-                <div class="highlight-number highlight-icon">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                <div class="highlight-tile highlight-cyan">
+                    <svg class="highlight-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="5" y="2" width="14" height="20" rx="2"/>
                         <line x1="12" y1="18" x2="12.01" y2="18"/>
                     </svg>
-                </div>
-                <div class="highlight-label">WIDGETS</div>
-                <p>Home screen widgets in all sizes</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Coming Soon Section -->
-    <section class="download" id="download">
-        <div class="download-card">
-            <div class="mascot-box mascot-box-md">
-                <span class="mascot-eyes mascot-eyes-md">• •</span>
-            </div>
-
-            <h3 class="download-title">Coming Soon</h3>
-            <p class="download-subtitle">Onsen Planner is currently in development</p>
-
-            <div class="download-features">
-                <span class="download-feature">iOS 18+</span>
-                <span class="download-feature">SwiftUI Native</span>
-                <span class="download-feature">SwiftData</span>
-                <span class="download-feature">WidgetKit</span>
-            </div>
-
-            <div class="notify-section">
-                <p class="notify-text">Follow the development on GitHub</p>
-                <a href="https://github.com/nj22az/Vecka" class="github-button" target="_blank" rel="noopener">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                    </svg>
-                    <span>View on GitHub</span>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-brand">
-                <div class="mascot-box mascot-box-xs">
-                    <span class="mascot-eyes mascot-eyes-xs">• •</span>
-                </div>
-                <div class="footer-info">
-                    <span class="footer-company">The Office of Nils Johansson</span>
-                    <span class="footer-tagline">My interpretation of Japanese Information Design</span>
+                    <span class="highlight-label">WIDGETS</span>
+                    <span class="highlight-desc">All sizes</span>
                 </div>
             </div>
-            <div class="footer-links">
-                <a href="https://github.com/nj22az/Vecka" target="_blank" rel="noopener">GitHub</a>
+        </section>
+
+        <!-- Design Rules (Star Page Style) -->
+        <section class="rules-card">
+            <div class="section-header">
+                <span class="marker">◯</span>
+                <span class="section-title">DESIGN RULES</span>
             </div>
-            <p class="footer-copyright">© 2026 The Office of Nils Johansson. All rights reserved.</p>
-        </div>
-    </footer>
+            <div class="rules-grid">
+                <div class="rule-item">
+                    <span class="rule-check">○</span>
+                    <span>Solid colors only</span>
+                </div>
+                <div class="rule-item">
+                    <span class="rule-check">○</span>
+                    <span>Black borders always</span>
+                </div>
+                <div class="rule-item">
+                    <span class="rule-check">○</span>
+                    <span>No blur or gradients</span>
+                </div>
+                <div class="rule-item">
+                    <span class="rule-check">○</span>
+                    <span>Clean typography</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Coming Soon CTA -->
+        <section class="cta-card">
+            <div class="cta-mascot">
+                <span class="eyes-md">• •</span>
+            </div>
+            <h2 class="cta-title">Coming Soon</h2>
+            <p class="cta-subtitle">Onsen Planner is currently in development</p>
+
+            <div class="tech-pills">
+                <span class="tech-pill">iOS 18+</span>
+                <span class="tech-pill">SwiftUI</span>
+                <span class="tech-pill">SwiftData</span>
+                <span class="tech-pill">WidgetKit</span>
+            </div>
+
+            <a href="https://github.com/nj22az/Vecka" class="github-link" target="_blank" rel="noopener">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                <span>Follow on GitHub</span>
+            </a>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-mascot">
+                <span class="eyes-sm">• •</span>
+            </div>
+            <div class="footer-info">
+                <span class="footer-company">The Office of Nils Johansson</span>
+                <span class="footer-tagline">My interpretation of Japanese Information Design</span>
+            </div>
+            <p class="footer-copyright">© 2026 All rights reserved.</p>
+        </footer>
+    </div>
 </body>
 </html>
