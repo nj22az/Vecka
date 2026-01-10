@@ -39,6 +39,9 @@ struct LandingPageView: View {
     @State private var showTripsSheet = false
     @State private var showExpensesSheet = false
 
+    // Random stat state (情報デザイン: Rotating insights)
+    @State private var randomStatIndex: Int = 0
+
     // MARK: - Computed Properties
 
     private var today: Date { Date() }
@@ -153,12 +156,127 @@ struct LandingPageView: View {
         return closestBirthday
     }
 
-    /// Database health status
-    private var databaseHealth: (isHealthy: Bool, slotsRemaining: Int) {
-        let totalEntries = allNotes.count + allExpenses.count + allTrips.count + contacts.count + countdownEvents.count
-        let maxSlots = 5000
-        let remaining = maxSlots - totalEntries
-        return (remaining > 100, remaining)
+    // MARK: - Random Stat (情報デザイン: Rotating insights, not settings)
+
+    /// Model for random stat display
+    private struct RandomStat {
+        let icon: String
+        let label: String
+        let indicator: String?
+        let iconColor: Color
+        let bgColor: Color
+    }
+
+    /// Available random stats to show (情報デザイン: User-relevant data)
+    private var availableRandomStats: [RandomStat] {
+        var stats: [RandomStat] = []
+
+        // 1. Year progress
+        let calendar = Calendar.iso8601
+        let dayOfYear = calendar.ordinality(of: .day, in: .year, for: today) ?? 1
+        let daysInYear = calendar.range(of: .day, in: .year, for: today)?.count ?? 365
+        let yearProgress = Int((Double(dayOfYear) / Double(daysInYear)) * 100)
+        stats.append(RandomStat(
+            icon: "chart.pie.fill",
+            label: "\(yearProgress)%",
+            indicator: "year",
+            iconColor: JohoColors.green,
+            bgColor: JohoColors.green.opacity(0.15)
+        ))
+
+        // 2. Week context (X of 52)
+        let totalWeeks = calendar.range(of: .weekOfYear, in: .yearForWeekOfYear, for: today)?.count ?? 52
+        stats.append(RandomStat(
+            icon: "calendar.badge.clock",
+            label: "W\(weekNumber)",
+            indicator: "of \(totalWeeks)",
+            iconColor: JohoColors.cyan,
+            bgColor: JohoColors.cyan.opacity(0.15)
+        ))
+
+        // 3. Notes count (if any)
+        if !allNotes.isEmpty {
+            stats.append(RandomStat(
+                icon: "note.text",
+                label: "\(allNotes.count)",
+                indicator: "notes",
+                iconColor: JohoColors.yellow,
+                bgColor: JohoColors.yellow.opacity(0.15)
+            ))
+        }
+
+        // 4. Days until next holiday
+        if let nextHoliday = getNextHoliday() {
+            stats.append(RandomStat(
+                icon: "star.fill",
+                label: "\(nextHoliday.daysUntil)d",
+                indicator: nextHoliday.name.prefix(8).lowercased(),
+                iconColor: JohoColors.red,
+                bgColor: JohoColors.pink.opacity(0.15)
+            ))
+        }
+
+        // 5. Days left in month
+        let endOfMonth = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: calendar.date(from: calendar.dateComponents([.year, .month], from: today))!)!
+        let daysLeftInMonth = calendar.dateComponents([.day], from: today, to: endOfMonth).day ?? 0
+        stats.append(RandomStat(
+            icon: "calendar",
+            label: "\(daysLeftInMonth)",
+            indicator: "days left",
+            iconColor: currentMonthTheme.accentColor,
+            bgColor: currentMonthTheme.lightBackground
+        ))
+
+        // 6. Countdown events (if any)
+        if let nextEvent = countdownEvents.filter({ $0.targetDate > today }).min(by: { $0.targetDate < $1.targetDate }) {
+            let daysUntil = calendar.dateComponents([.day], from: today, to: nextEvent.targetDate).day ?? 0
+            stats.append(RandomStat(
+                icon: "clock.fill",
+                label: "\(daysUntil)d",
+                indicator: nextEvent.title.prefix(8).lowercased(),
+                iconColor: JohoColors.eventPurple,
+                bgColor: JohoColors.purple.opacity(0.15)
+            ))
+        }
+
+        return stats
+    }
+
+    /// Current random stat to display
+    private var currentRandomStat: RandomStat {
+        let stats = availableRandomStats
+        guard !stats.isEmpty else {
+            return RandomStat(
+                icon: "sparkles",
+                label: "—",
+                indicator: nil,
+                iconColor: JohoColors.black.opacity(0.5),
+                bgColor: JohoColors.black.opacity(0.05)
+            )
+        }
+        return stats[randomStatIndex % stats.count]
+    }
+
+    /// Get next upcoming holiday
+    private func getNextHoliday() -> (name: String, daysUntil: Int)? {
+        let calendar = Calendar.iso8601
+        let todayStart = calendar.startOfDay(for: today)
+
+        var closest: (name: String, daysUntil: Int)?
+
+        for (date, holidays) in holidayManager.holidayCache {
+            guard date > todayStart else { continue }
+            let days = calendar.dateComponents([.day], from: todayStart, to: date).day ?? 0
+            guard days > 0 && days <= 365 else { continue }
+
+            for holiday in holidays where holiday.isBankHoliday {
+                if closest == nil || days < closest!.daysUntil {
+                    closest = (holiday.displayTitle, days)
+                }
+            }
+        }
+
+        return closest
     }
 
     // MARK: - Body (Star Page Pattern)
@@ -186,6 +304,10 @@ struct LandingPageView: View {
         }
         .scrollContentBackground(.hidden)
         .johoBackground()
+        .onAppear {
+            // Randomize stat on each appearance (情報デザイン: Fresh insights)
+            randomStatIndex = Int.random(in: 0..<max(1, availableRandomStats.count))
+        }
         .sheet(isPresented: $showTripsSheet) {
             NavigationStack {
                 TripListView()
@@ -632,13 +754,8 @@ struct LandingPageView: View {
                         showExpensesSheet = true
                     }
 
-                    // SETTINGS: Health
-                    starStyleGlanceTile(
-                        target: .settings,
-                        icon: "gearshape.fill",
-                        label: databaseHealth.isHealthy ? "○" : "△",
-                        indicator: nil
-                    )
+                    // RANDOM STAT: Rotating insights (情報デザイン: User data, not settings)
+                    randomStatGlanceTile(stat: currentRandomStat)
                 }
             }
             .padding(JohoDimensions.spacingSM)
@@ -802,6 +919,43 @@ struct LandingPageView: View {
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .buttonStyle(.plain)
+    }
+
+    /// Display-only GLANCE tile for random stats (情報デザイン: Information, not navigation)
+    /// Tappable to cycle through different stats
+    private func randomStatGlanceTile(stat: RandomStat) -> some View {
+        Button {
+            HapticManager.impact(.light)
+            // Cycle to next stat on tap
+            withAnimation(.easeInOut(duration: 0.2)) {
+                randomStatIndex = (randomStatIndex + 1) % max(1, availableRandomStats.count)
+            }
+        } label: {
+            VStack(spacing: 6) {
+                Image(systemName: stat.icon)
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .foregroundStyle(stat.iconColor)
+
+                Text(stat.label)
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+
+                if let indicator = stat.indicator {
+                    Text(indicator)
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                } else {
+                    Text("—")
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.3))
+                }
+            }
+            .frame(maxWidth: .infinity, minHeight: 100)
+            .background(stat.bgColor)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Random stat: \(stat.label) \(stat.indicator ?? "")")
     }
 
     // MARK: - TodayItem Model
