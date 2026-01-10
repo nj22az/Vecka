@@ -599,7 +599,7 @@ struct SpecialDaysListView: View {
                             HapticManager.selection()
                         } label: {
                             Image(systemName: "chevron.left")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(.system(size: 14, weight: .bold, design: .rounded))
                                 .foregroundStyle(JohoColors.black)
                                 .frame(width: 32, height: 32)
                                 .background(JohoColors.inputBackground)
@@ -611,7 +611,7 @@ struct SpecialDaysListView: View {
                     // Icon zone - star for main view, month icon for detail
                     if let theme = theme {
                         Image(systemName: theme.icon)
-                            .font(.system(size: 20, weight: .bold))
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(theme.accentColor)
                             .frame(width: 40, height: 40)
                             .background(theme.lightBackground)
@@ -622,7 +622,7 @@ struct SpecialDaysListView: View {
                             )
                     } else {
                         Image(systemName: "star.fill")
-                            .font(.system(size: 20, weight: .bold))
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(PageHeaderColor.specialDays.accent)
                             .frame(width: 40, height: 40)
                             .background(PageHeaderColor.specialDays.lightBackground)
@@ -708,7 +708,7 @@ struct SpecialDaysListView: View {
                 HapticManager.selection()
             } label: {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
                     .frame(width: 24, height: 44)
                     .contentShape(Rectangle())
@@ -727,7 +727,7 @@ struct SpecialDaysListView: View {
                 HapticManager.selection()
             } label: {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
                     .frame(width: 24, height: 44)
                     .contentShape(Rectangle())
@@ -779,7 +779,7 @@ struct SpecialDaysListView: View {
             } label: {
                 HStack(spacing: 4) {
                     Image(systemName: "globe")
-                        .font(.system(size: 12, weight: .medium))
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
                     Text("Database")
                         .font(.system(size: 11, weight: .semibold, design: .rounded))
                 }
@@ -852,7 +852,7 @@ struct SpecialDaysListView: View {
                         .foregroundStyle(JohoColors.black)
 
                     Image(systemName: isLegendExpanded ? "chevron.down" : "chevron.right")
-                        .font(.system(size: 11, weight: .bold))
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.black.opacity(0.6))
 
                     Spacer()
@@ -925,7 +925,7 @@ struct SpecialDaysListView: View {
                 // TOP COMPARTMENT: Icon zone (情報デザイン: distinct visual anchor)
                 VStack {
                     Image(systemName: theme.icon)
-                        .font(.system(size: 22, weight: .bold))
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
                         .foregroundStyle(hasItems ? theme.accentColor : JohoColors.black.opacity(0.6))
                 }
                 .frame(maxWidth: .infinity)
@@ -941,7 +941,7 @@ struct SpecialDaysListView: View {
                 VStack(spacing: 6) {
                     // Month name (full name, bold)
                     Text(theme.name.uppercased())
-                        .font(.system(size: 11, weight: .black))
+                        .font(.system(size: 11, weight: .black, design: .rounded))
                         .foregroundStyle(JohoColors.black)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
@@ -1003,7 +1003,7 @@ struct SpecialDaysListView: View {
                         }
                     } else {
                         Text("—")
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
                             .foregroundStyle(JohoColors.black.opacity(0.6))
                     }
                 }
@@ -1039,7 +1039,7 @@ struct SpecialDaysListView: View {
                     icon: theme.icon,
                     zone: .holidays
                 )
-                .padding(.top, JohoDimensions.spacingXL)
+                .padding(.top, JohoDimensions.spacingSM)
             } else {
                 // Collapsible timeline (情報デザイン: clean, expandable day cards)
                 VStack(spacing: JohoDimensions.spacingSM) {
@@ -1240,7 +1240,7 @@ struct CollapsibleSpecialDayCard: View {
 
                     // Expand/collapse chevron
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.black)
                         .frame(width: 24, height: 24)
                 }
@@ -1420,7 +1420,7 @@ struct CollapsibleSpecialDayCard: View {
 
                 // RIGHT: Icon compartment
                 Image(systemName: icon)
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
@@ -1484,7 +1484,7 @@ struct CollapsibleSpecialDayCard: View {
 
                 // RIGHT: Icon compartment
                 Image(systemName: icon)
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
@@ -1536,7 +1536,7 @@ struct CollapsibleSpecialDayCard: View {
                 typeIndicatorDot(for: item.type)
                 if item.isSystemHoliday {
                     Image(systemName: "lock.fill")
-                        .font(.system(size: 7, weight: .bold))
+                        .font(.system(size: 7, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.black.opacity(0.5))
                 }
             }
@@ -1619,7 +1619,7 @@ struct CollapsibleSpecialDayCard: View {
                     typeIndicatorDot(for: item.type)
                     if !canEdit {
                         Image(systemName: "lock.fill")
-                            .font(.system(size: 7, weight: .bold))
+                            .font(.system(size: 7, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.black.opacity(0.5))
                     }
                 }
@@ -1699,7 +1699,7 @@ struct CollapsibleSpecialDayCard: View {
                     // Date info
                     HStack(spacing: 8) {
                         Image(systemName: "calendar")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.black.opacity(0.5))
                         Text(formatDate(item.date))
                             .font(.system(size: 11, weight: .medium, design: .monospaced))
@@ -1839,7 +1839,7 @@ extension SpecialDaysListView {
                     // LEFT: Icon + Date grouped
                     HStack(spacing: 6) {
                         Image(systemName: icon)
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
                             .foregroundStyle(iconColor)
 
                         Text("\(day)")
@@ -1875,7 +1875,7 @@ extension SpecialDaysListView {
 
                         // Event name (sans-serif for human data)
                         Text(row.title)
-                            .font(.system(size: 11, weight: .medium))
+                            .font(.system(size: 11, weight: .medium, design: .rounded))
                             .foregroundStyle(JohoColors.black)
                             .lineLimit(2)
                             .minimumScaleFactor(0.8)
@@ -1950,7 +1950,7 @@ extension SpecialDaysListView {
             HStack(spacing: 0) {
                 HStack(spacing: 6) {
                     Image(systemName: icon)
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(iconColor)
 
                     Text("\(dayCard.day)")
@@ -1992,7 +1992,7 @@ extension SpecialDaysListView {
                         typeIndicatorDot(for: item.type)
 
                         Text(item.title)
-                            .font(.system(size: 11, weight: .medium))
+                            .font(.system(size: 11, weight: .medium, design: .rounded))
                             .foregroundStyle(JohoColors.black)
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
@@ -2041,7 +2041,7 @@ extension SpecialDaysListView {
             zone: .holidays
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
-        .padding(.top, JohoDimensions.spacingXL)
+        .padding(.top, JohoDimensions.spacingSM)
     }
 
     // MARK: - Data Operations

@@ -211,7 +211,7 @@ struct LandingPageView: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone with Landing accent color (Warm Amber)
                     Image(systemName: "house.fill")
-                        .font(.system(size: 20, weight: .bold))
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundStyle(PageHeaderColor.landing.accent)
                         .frame(width: 40, height: 40)
                         .background(PageHeaderColor.landing.lightBackground)
@@ -559,7 +559,7 @@ struct LandingPageView: View {
             // Header with ※ kome-jirushi (reference/attention mark)
             HStack {
                 Text("※")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
 
                 Text("GLANCE")
@@ -736,7 +736,7 @@ struct LandingPageView: View {
             VStack(spacing: 6) {
                 // Large centered icon (Star page style - 32pt)
                 Image(systemName: icon)
-                    .font(.system(size: 32, weight: .bold))
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
                     .foregroundStyle(iconColor)
 
                 // Centered label (BLACK, bold, uppercase)
@@ -751,7 +751,7 @@ struct LandingPageView: View {
                         .foregroundStyle(JohoColors.black.opacity(0.7))
                 } else {
                     Text("—")
-                        .font(.system(size: 10, weight: .medium))
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
                         .foregroundStyle(JohoColors.black.opacity(0.3))
                 }
             }
@@ -780,7 +780,7 @@ struct LandingPageView: View {
         } label: {
             VStack(spacing: 6) {
                 Image(systemName: icon)
-                    .font(.system(size: 32, weight: .bold))
+                    .font(.system(size: 32, weight: .bold, design: .rounded))
                     .foregroundStyle(iconColor)
 
                 Text(label)
@@ -793,7 +793,7 @@ struct LandingPageView: View {
                         .foregroundStyle(JohoColors.black.opacity(0.7))
                 } else {
                     Text("—")
-                        .font(.system(size: 10, weight: .medium))
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
                         .foregroundStyle(JohoColors.black.opacity(0.3))
                 }
             }

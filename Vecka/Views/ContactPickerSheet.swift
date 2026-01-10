@@ -45,7 +45,7 @@ struct ContactPickerSheet: View {
                 // Search bar (情報デザイン: simple black border)
                 HStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: "magnifyingglass")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.black.opacity(0.5))
 
                     TextField("Search contacts...", text: $searchText)
@@ -69,7 +69,7 @@ struct ContactPickerSheet: View {
                         Spacer()
 
                         Image(systemName: searchText.isEmpty ? "person.crop.circle.badge.questionmark" : "magnifyingglass")
-                            .font(.system(size: 40, weight: .light))
+                            .font(.system(size: 40, weight: .light, design: .rounded))
                             .foregroundStyle(JohoColors.black.opacity(0.3))
 
                         Text(searchText.isEmpty ? "No other contacts available" : "No contacts match '\(searchText)'")
@@ -158,7 +158,7 @@ struct ContactPickerSheet: View {
 
                 // Chevron
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black.opacity(0.3))
             }
             .padding(.vertical, JohoDimensions.spacingSM)
@@ -190,7 +190,7 @@ struct ManualMergeSheet: View {
                     // Header info
                     VStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: "arrow.triangle.merge")
-                            .font(.system(size: 36, weight: .bold))
+                            .font(.system(size: 36, weight: .bold, design: .rounded))
                             .foregroundStyle(accentColor)
                             .frame(width: 72, height: 72)
                             .background(accentColor.opacity(0.2))
@@ -209,7 +209,7 @@ struct ManualMergeSheet: View {
                             .foregroundStyle(JohoColors.black.opacity(0.6))
                             .multilineTextAlignment(.center)
                     }
-                    .padding(.top, JohoDimensions.spacingLG)
+                    .padding(.top, JohoDimensions.spacingSM)
 
                     // Contact selection cards
                     VStack(spacing: JohoDimensions.spacingSM) {
@@ -238,7 +238,7 @@ struct ManualMergeSheet: View {
                             VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                                 HStack(spacing: JohoDimensions.spacingSM) {
                                     Image(systemName: "info.circle.fill")
-                                        .font(.system(size: 14, weight: .bold))
+                                        .font(.system(size: 14, weight: .bold, design: .rounded))
                                         .foregroundStyle(warningColor)
 
                                     Text("MERGE PREVIEW")
@@ -273,7 +273,7 @@ struct ManualMergeSheet: View {
                     } label: {
                         HStack(spacing: 8) {
                             Image(systemName: "arrow.triangle.merge")
-                                .font(.system(size: 15, weight: .bold))
+                                .font(.system(size: 15, weight: .bold, design: .rounded))
                             Text("Merge Contacts")
                                 .font(.system(size: 15, weight: .bold, design: .rounded))
                         }
@@ -313,7 +313,7 @@ struct ManualMergeSheet: View {
             HStack(spacing: JohoDimensions.spacingSM) {
                 // Selection indicator
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 22, weight: .bold))
+                    .font(.system(size: 22, weight: .bold, design: .rounded))
                     .foregroundStyle(isSelected ? accentColor : JohoColors.black.opacity(0.3))
 
                 // Avatar

@@ -153,7 +153,7 @@ struct HolidayDatabaseExplorer: View {
                             HapticManager.selection()
                         } label: {
                             Image(systemName: "chevron.left")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(.system(size: 14, weight: .bold, design: .rounded))
                                 .foregroundStyle(JohoColors.black)
                                 .frame(width: 32, height: 32)
                                 .background(JohoColors.inputBackground)
@@ -166,7 +166,7 @@ struct HolidayDatabaseExplorer: View {
                     if let regionID = selectedRegion,
                        let region = RegionDatabase.all.first(where: { $0.id == regionID }) {
                         Image(systemName: region.icon)
-                            .font(.system(size: 20, weight: .bold))
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(region.accentColor)
                             .frame(width: 40, height: 40)
                             .background(region.lightBackground)
@@ -177,7 +177,7 @@ struct HolidayDatabaseExplorer: View {
                             )
                     } else {
                         Image(systemName: "globe")
-                            .font(.system(size: 20, weight: .bold))
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.pink)
                             .frame(width: 40, height: 40)
                             .background(JohoColors.pink.opacity(0.15))
@@ -222,7 +222,7 @@ struct HolidayDatabaseExplorer: View {
                         HapticManager.selection()
                     } label: {
                         Image(systemName: "clock.arrow.circlepath")
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.system(size: 16, weight: .medium, design: .rounded))
                             .foregroundStyle(JohoColors.black)
                     }
 
@@ -327,7 +327,7 @@ struct HolidayDatabaseExplorer: View {
                 // TOP COMPARTMENT: Icon zone (情報デザイン: distinct visual anchor)
                 ZStack {
                     Image(systemName: region.icon)
-                        .font(.system(size: 22, weight: .bold))
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
                         .foregroundStyle(hasItems ? region.accentColor : JohoColors.black.opacity(0.6))
 
                     // Active indicator (top-right corner)
@@ -399,7 +399,7 @@ struct HolidayDatabaseExplorer: View {
                         }
                     } else {
                         Text("—")
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
                             .foregroundStyle(JohoColors.black.opacity(0.5))
                     }
                 }
@@ -482,7 +482,7 @@ struct HolidayDatabaseExplorer: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone
                     Image(systemName: icon)
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.black)
                         .frame(width: 24, height: 24)
                         .background(color.opacity(0.3))
@@ -557,12 +557,12 @@ struct HolidayDatabaseExplorer: View {
                 // Icon
                 if let symbolName = rule.symbolName, !symbolName.isEmpty {
                     Image(systemName: symbolName)
-                        .font(.system(size: 16, weight: .medium))
+                        .font(.system(size: 16, weight: .medium, design: .rounded))
                         .foregroundStyle(color)
                         .frame(width: 24)
                 } else {
                     Image(systemName: rule.isBankHoliday ? "flag.fill" : "star")
-                        .font(.system(size: 16, weight: .medium))
+                        .font(.system(size: 16, weight: .medium, design: .rounded))
                         .foregroundStyle(color)
                         .frame(width: 24)
                 }
@@ -596,13 +596,13 @@ struct HolidayDatabaseExplorer: View {
                 // Modified indicator
                 if rule.isModifiedFromDefault {
                     Text("※")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.orange)
                 }
 
                 // Chevron
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
                     .foregroundStyle(JohoColors.black.opacity(0.3))
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
@@ -618,7 +618,7 @@ struct HolidayDatabaseExplorer: View {
     private func emptyDatabaseState(for regionID: String) -> some View {
         VStack(spacing: JohoDimensions.spacingMD) {
             Image(systemName: "tray")
-                .font(.system(size: 48, weight: .light))
+                .font(.system(size: 48, weight: .light, design: .rounded))
                 .foregroundStyle(JohoColors.black.opacity(0.2))
 
             Text("No holidays in database")
@@ -664,7 +664,7 @@ struct HolidayDatabaseExplorer: View {
         } label: {
             HStack(spacing: JohoDimensions.spacingSM) {
                 Image(systemName: "arrow.down.circle")
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 16, weight: .medium, design: .rounded))
                 Text("Load Defaults")
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
             }
@@ -687,7 +687,7 @@ struct HolidayDatabaseExplorer: View {
         } label: {
             HStack(spacing: JohoDimensions.spacingSM) {
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 16, weight: .medium, design: .rounded))
                 Text("Apply to Calendar")
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
             }
@@ -862,7 +862,7 @@ struct HolidayRuleEditorSheet: View {
             } label: {
                 HStack {
                     Image(systemName: isEnabled ? "eye" : "eye.slash")
-                        .font(.system(size: 16, weight: .medium))
+                        .font(.system(size: 16, weight: .medium, design: .rounded))
                         .foregroundStyle(isEnabled ? JohoColors.black : JohoColors.black.opacity(0.4))
                         .frame(width: 24)
 
@@ -874,7 +874,7 @@ struct HolidayRuleEditorSheet: View {
 
                     // 情報デザイン: Custom toggle (マルバツ style)
                     Text(isEnabled ? "○" : "×")
-                        .font(.system(size: 18, weight: .bold))
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
                         .foregroundStyle(isEnabled ? JohoColors.green : JohoColors.red)
                         .frame(width: 32, height: 32)
                         .background(isEnabled ? JohoColors.green.opacity(0.15) : JohoColors.red.opacity(0.15))
@@ -913,7 +913,7 @@ struct HolidayRuleEditorSheet: View {
                 deleteButton
             }
         }
-        .padding(.top, JohoDimensions.spacingMD)
+        .padding(.top, JohoDimensions.spacingSM)
     }
 
     private var resetButton: some View {

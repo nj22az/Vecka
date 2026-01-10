@@ -141,7 +141,7 @@ struct OnboardingPageView: View {
                     .frame(width: 120, height: 120)
 
                 Image(systemName: page.icon)
-                    .font(.system(size: 48, weight: .medium))
+                    .font(.system(size: 48, weight: .medium, design: .rounded))
                     .foregroundStyle(JohoColors.black)
             }
 
@@ -150,7 +150,7 @@ struct OnboardingPageView: View {
                 .font(.system(size: 24, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoColors.black)
                 .multilineTextAlignment(.center)
-                .padding(.top, JohoDimensions.spacingMD)
+                .padding(.top, JohoDimensions.spacingSM)
 
             // Subtitle
             Text(page.subtitle)

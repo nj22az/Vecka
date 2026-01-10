@@ -131,7 +131,7 @@ extension CalendarGridView {
 
             if showLunarCalendar {
                 Image(systemName: "moon.fill")
-                    .font(.system(size: 8, weight: .bold))
+                    .font(.system(size: 8, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.yellow)
             }
         }

@@ -67,7 +67,7 @@ struct CountdownListView: View {
         HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
             // Icon zone (52×52pt) - matches Star Page month detail pattern
             Image(systemName: SpecialDayType.event.defaultIcon)
-                .font(.system(size: 24, weight: .bold))
+                .font(.system(size: 24, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoColors.black)
                 .frame(width: 52, height: 52)
                 .background(SpecialDayType.event.accentColor.opacity(0.3))
@@ -104,7 +104,7 @@ struct CountdownListView: View {
                 .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
-        .padding(.top, JohoDimensions.spacingLG)
+        .padding(.top, JohoDimensions.spacingSM)
     }
 
     // MARK: - Computed Properties
@@ -331,7 +331,7 @@ struct CountdownListView: View {
 
                 // RIGHT: Icon compartment
                 Image(systemName: icon)
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)

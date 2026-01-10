@@ -183,7 +183,7 @@ struct JohoExpenseEditorSheet: View {
                     // LEFT: Back button (44pt)
                     Button { dismiss() } label: {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary)
                             .frame(width: 44, height: 44)
                     }
@@ -198,7 +198,7 @@ struct JohoExpenseEditorSheet: View {
                     HStack(spacing: JohoDimensions.spacingSM) {
                         // Type icon in colored box
                         Image(systemName: "dollarsign.circle.fill")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundStyle(expenseAccentColor)
                             .frame(width: 36, height: 36)
                             .background(expenseLightBackground)
@@ -289,7 +289,7 @@ struct JohoExpenseEditorSheet: View {
                 HStack(spacing: 0) {
                     // LEFT: Dollar sign icon (40pt)
                     Image(systemName: "dollarsign")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
@@ -343,7 +343,7 @@ struct JohoExpenseEditorSheet: View {
                 HStack(spacing: 0) {
                     // LEFT: Calendar icon (40pt)
                     Image(systemName: "calendar")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
@@ -423,7 +423,7 @@ struct JohoExpenseEditorSheet: View {
                     HStack(spacing: 0) {
                         // LEFT: Folder icon (40pt)
                         Image(systemName: "folder.fill")
-                            .font(.system(size: 14, weight: .bold))
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary)
                             .frame(width: 40)
                             .frame(maxHeight: .infinity)
@@ -439,7 +439,7 @@ struct JohoExpenseEditorSheet: View {
                             if let category = selectedCategory {
                                 // Show selected category icon + name
                                 Image(systemName: category.iconName)
-                                    .font(.system(size: 16, weight: .bold))
+                                    .font(.system(size: 16, weight: .bold, design: .rounded))
                                     .foregroundStyle(category.color)
                                     .frame(width: 28, height: 28)
                                     .background(category.color.opacity(0.15))
@@ -451,7 +451,7 @@ struct JohoExpenseEditorSheet: View {
                             } else {
                                 // No category selected
                                 Image(systemName: "minus")
-                                    .font(.system(size: 16, weight: .bold))
+                                    .font(.system(size: 16, weight: .bold, design: .rounded))
                                     .foregroundStyle(colors.primary.opacity(0.4))
                                     .frame(width: 28, height: 28)
                                     .background(colors.primary.opacity(0.05))
@@ -466,7 +466,7 @@ struct JohoExpenseEditorSheet: View {
 
                             // Chevron indicator
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 12, weight: .semibold))
+                                .font(.system(size: 12, weight: .semibold, design: .rounded))
                                 .foregroundStyle(colors.primary.opacity(0.4))
                         }
                         .padding(.horizontal, JohoDimensions.spacingMD)
@@ -488,7 +488,7 @@ struct JohoExpenseEditorSheet: View {
                 HStack(spacing: 0) {
                     // LEFT: Store icon (40pt)
                     Image(systemName: "storefront.fill")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary.opacity(0.6))
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
@@ -524,7 +524,7 @@ struct JohoExpenseEditorSheet: View {
                     HStack(spacing: 0) {
                         // LEFT: Current icon (40pt)
                         Image(systemName: selectedSymbol)
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundStyle(expenseAccentColor)
                             .frame(width: 40)
                             .frame(maxHeight: .infinity)
@@ -544,7 +544,7 @@ struct JohoExpenseEditorSheet: View {
                         Spacer()
 
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 12, weight: .semibold, design: .rounded))
                             .foregroundStyle(colors.primary.opacity(0.4))
                             .padding(.trailing, JohoDimensions.spacingMD)
                     }
@@ -688,7 +688,7 @@ struct JohoCollapsibleCategoryPicker: View {
                     HapticManager.selection()
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.system(size: 14, weight: .black))
+                        .font(.system(size: 14, weight: .black, design: .rounded))
                         .foregroundStyle(colors.primary)
                         .frame(width: 36, height: 36)
                         .background(colors.surface)
@@ -738,7 +738,7 @@ struct JohoCollapsibleCategoryPicker: View {
             HStack(spacing: JohoDimensions.spacingMD) {
                 // Icon
                 Image(systemName: "minus.circle")
-                    .font(.system(size: 18, weight: .bold))
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary.opacity(0.5))
                     .frame(width: 36, height: 36)
                     .background(colors.primary.opacity(0.05))
@@ -758,7 +758,7 @@ struct JohoCollapsibleCategoryPicker: View {
                 // Selection indicator
                 if selectedCategory == nil {
                     Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 20, weight: .bold))
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundStyle(accentColor)
                 }
             }
@@ -790,7 +790,7 @@ struct JohoCollapsibleCategoryPicker: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Group icon
                     Image(systemName: group.icon)
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.surface)
                         .frame(width: 28, height: 28)
                         .background(colors.primary)
@@ -810,7 +810,7 @@ struct JohoCollapsibleCategoryPicker: View {
 
                     // Chevron indicator
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.surface.opacity(0.7))
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -844,7 +844,7 @@ struct JohoCollapsibleCategoryPicker: View {
             HStack(spacing: JohoDimensions.spacingMD) {
                 // Category icon
                 Image(systemName: category.iconName)
-                    .font(.system(size: 18, weight: .bold))
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
                     .foregroundStyle(isSelected ? colors.surface : category.color)
                     .frame(width: 36, height: 36)
                     .background(isSelected ? category.color : category.color.opacity(0.15))
@@ -873,7 +873,7 @@ struct JohoCollapsibleCategoryPicker: View {
                 // Selection indicator
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 20, weight: .bold))
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundStyle(category.color)
                 }
             }
@@ -1027,7 +1027,7 @@ struct JohoTemplatePickerSheet: View {
                             // Category header
                             HStack(spacing: 8) {
                                 Image(systemName: category.iconName)
-                                    .font(.system(size: 12, weight: .bold))
+                                    .font(.system(size: 12, weight: .bold, design: .rounded))
                                     .foregroundStyle(category.color)
                                 Text(category.name.uppercased())
                                     .font(.system(size: 10, weight: .black, design: .monospaced))
@@ -1068,7 +1068,7 @@ private struct JohoTemplateRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: category.iconName)
-                .font(.system(size: 16, weight: .bold))
+                .font(.system(size: 16, weight: .bold, design: .rounded))
                 .foregroundStyle(category.color)
                 .frame(width: 32, height: 32)
                 .background(category.color.opacity(0.15))
@@ -1089,7 +1089,7 @@ private struct JohoTemplateRow: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .bold))
+                .font(.system(size: 12, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoColors.black.opacity(0.6))
         }
         .padding(.horizontal, JohoDimensions.spacingMD)

@@ -137,7 +137,7 @@ struct HolidayChangeLogView: View {
             Spacer()
 
             Image(systemName: "clock.arrow.circlepath")
-                .font(.system(size: 48, weight: .light))
+                .font(.system(size: 48, weight: .light, design: .rounded))
                 .foregroundStyle(JohoColors.black.opacity(0.3))
 
             Text("No Changes Yet")
@@ -239,7 +239,7 @@ struct ChangeLogEntryRow: View {
 
             // Chevron
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
+                .font(.system(size: 12, weight: .semibold, design: .rounded))
                 .foregroundStyle(JohoColors.black.opacity(0.3))
         }
         .padding(JohoDimensions.spacingSM)
@@ -300,7 +300,7 @@ struct ChangeLogDetailSheet: View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
             HStack(spacing: JohoDimensions.spacingSM) {
                 Image(systemName: entry.actionIcon)
-                    .font(.system(size: 24, weight: .medium))
+                    .font(.system(size: 24, weight: .medium, design: .rounded))
                     .foregroundStyle(actionColor)
 
                 VStack(alignment: .leading, spacing: 2) {

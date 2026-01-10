@@ -52,7 +52,7 @@ struct SimplePDFExportView: View {
                         .background(JohoColors.black.opacity(0.05))
                         .clipShape(Capsule())
                 }
-                .padding(.top, JohoDimensions.spacingLG)
+                .padding(.top, JohoDimensions.spacingSM)
 
                 Spacer()
 

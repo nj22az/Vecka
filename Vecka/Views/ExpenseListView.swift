@@ -216,7 +216,7 @@ struct ExpenseListView: View {
                     .foregroundStyle(JohoColors.black.opacity(0.5))
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
-            .padding(.top, JohoDimensions.spacingMD)
+            .padding(.top, JohoDimensions.spacingSM)
             .padding(.bottom, JohoDimensions.spacingSM)
 
             // Currency rows

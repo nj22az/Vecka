@@ -342,7 +342,7 @@ struct DayDashboardView: View {
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "plus")
-                            .font(.system(size: 14, weight: .black))
+                            .font(.system(size: 14, weight: .black, design: .rounded))
                         Text("ADD")
                             .font(.system(size: 12, weight: .black, design: .rounded))
                             .tracking(0.5)
@@ -376,7 +376,7 @@ struct DayDashboardView: View {
         return VStack(spacing: JohoDimensions.spacingMD) {
             // Icon
             Image(systemName: "calendar.badge.plus")
-                .font(.system(size: 32, weight: .bold))
+                .font(.system(size: 32, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary.opacity(0.3))
 
             // Text
@@ -427,7 +427,7 @@ struct DayDashboardView: View {
 
                 // Icon compartment
                 Image(systemName: icon)
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
@@ -467,7 +467,7 @@ struct DayDashboardView: View {
 
                 if holiday.isBankHoliday {
                     Image(systemName: "building.columns.fill")
-                        .font(.system(size: 7, weight: .bold))
+                        .font(.system(size: 7, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.black.opacity(0.5))
                 }
             }
@@ -483,7 +483,7 @@ struct DayDashboardView: View {
             // CENTER: Icon + Name
             HStack(spacing: JohoDimensions.spacingSM) {
                 Image(systemName: holiday.symbolName ?? (holiday.isBankHoliday ? "flag.fill" : "flag"))
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
 
                 Text(holiday.name)
@@ -523,7 +523,7 @@ struct DayDashboardView: View {
 
                 if note.pinnedToDashboard == true {
                     Image(systemName: "pin.fill")
-                        .font(.system(size: 7, weight: .bold))
+                        .font(.system(size: 7, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.black.opacity(0.5))
                 }
             }
@@ -540,7 +540,7 @@ struct DayDashboardView: View {
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: note.symbolName ?? "note.text")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.black)
 
                     Text(title)
@@ -620,13 +620,13 @@ struct DayDashboardView: View {
             // LEFT: Category icon
             if let category = expense.category {
                 Image(systemName: category.iconName)
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
                     .frame(width: 32, alignment: .center)
                     .frame(maxHeight: .infinity)
             } else {
                 Image(systemName: "creditcard")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
                     .frame(width: 32, alignment: .center)
                     .frame(maxHeight: .infinity)
@@ -745,7 +745,7 @@ struct DayDashboardView: View {
         HStack(spacing: 0) {
             // LEFT: Pin indicator
             Image(systemName: "pin.fill")
-                .font(.system(size: 10, weight: .bold))
+                .font(.system(size: 10, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoColors.black)
                 .frame(width: 32, alignment: .center)
                 .frame(maxHeight: .infinity)
@@ -759,7 +759,7 @@ struct DayDashboardView: View {
             // CENTER: Content
             HStack(spacing: JohoDimensions.spacingSM) {
                 Image(systemName: note.symbolName ?? "note.text")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -860,12 +860,12 @@ private struct ExpenseDayRow: View {
             // Category icon
             if let category = expense.category {
                 Image(systemName: category.iconName)
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
                     .frame(width: 28, height: 28)
             } else {
                 Image(systemName: "creditcard")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
                     .frame(width: 28, height: 28)
             }
@@ -934,7 +934,7 @@ private struct NotePreviewRow: View {
 
                 if note.pinnedToDashboard == true {
                     Image(systemName: "pin.fill")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.black)
                 }
 
@@ -948,7 +948,7 @@ private struct NotePreviewRow: View {
 
             HStack(spacing: JohoDimensions.spacingSM) {
                 Image(systemName: note.symbolName ?? "note.text")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
 
                 Text(title)
@@ -1046,7 +1046,7 @@ private struct PinnedCountdownRow: View {
 
         HStack(spacing: JohoDimensions.spacingSM) {
             Image(systemName: note.symbolName ?? "note.text")
-                .font(.system(size: 20, weight: .bold))
+                .font(.system(size: 20, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoColors.black)
                 .frame(width: 32, alignment: .center)
 

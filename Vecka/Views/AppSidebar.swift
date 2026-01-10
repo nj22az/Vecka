@@ -87,7 +87,7 @@ struct AppSidebar: View {
                 .font(JohoFont.headline)
                 .foregroundStyle(JohoColors.black)
                 .padding(.horizontal, JohoDimensions.spacingLG)
-                .padding(.top, JohoDimensions.spacingMD)
+                .padding(.top, JohoDimensions.spacingSM)
 
             // 3x3 Icon Grid (情報デザイン: Solid white container, black border)
             LazyVGrid(columns: columns, spacing: 20) {
@@ -147,7 +147,7 @@ struct SidebarIconButton: View {
                         .frame(width: 52, height: 52)
 
                     Image(systemName: item.icon)
-                        .font(.system(size: 22, weight: isSelected ? .bold : .medium))
+                        .font(.system(size: 22, weight: isSelected ? .bold : .medium, design: .rounded))
                         .foregroundStyle(isSelected ? .white : JohoColors.black.opacity(0.6))
                         .frame(width: 52, height: 52)
                 }

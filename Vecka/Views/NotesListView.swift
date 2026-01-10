@@ -91,7 +91,7 @@ struct NotesListView: View {
                         icon: "note.text",
                         zone: .notes
                     )
-                    .padding(.top, JohoDimensions.spacingXL)
+                    .padding(.top, JohoDimensions.spacingSM)
                 } else {
                     ForEach(monthSections) { section in
                         VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
@@ -273,7 +273,7 @@ private struct NotesDayRow: View {
 
             // Chevron
             Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .bold))
+                .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoColors.black)
         }
         .padding(JohoDimensions.spacingMD)
@@ -333,7 +333,7 @@ private struct PinnedNoteRow: View {
 
             // Chevron
             Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .bold))
+                .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoColors.black)
         }
         .padding(JohoDimensions.spacingMD)

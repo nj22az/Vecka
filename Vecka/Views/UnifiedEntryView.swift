@@ -503,7 +503,7 @@ struct JohoUnifiedEntrySheet: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     if let category = selectedCategory {
                         Image(systemName: category.iconName)
-                            .font(.system(size: 12, weight: .bold))
+                            .font(.system(size: 12, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.white)
                             .frame(width: 22, height: 22)
                             .background(category.color)
@@ -525,7 +525,7 @@ struct JohoUnifiedEntrySheet: View {
                     Spacer()
 
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary.opacity(0.4))
                 }
                 .padding(.horizontal, JohoDimensions.spacingSM)
@@ -822,7 +822,7 @@ struct JohoUnifiedEntrySheet: View {
                     Spacer()
 
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 10, weight: .medium))
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
                         .foregroundStyle(colors.primary.opacity(0.4))
                 }
                 .padding(.horizontal, JohoDimensions.spacingSM)

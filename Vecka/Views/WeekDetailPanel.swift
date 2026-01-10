@@ -30,7 +30,7 @@ struct WeekDetailPanel: View {
                 // Redesigned header - inline week badge + date range
                 weekHeader
                     .padding(.horizontal, JohoDimensions.spacingLG)
-                    .padding(.top, JohoDimensions.spacingLG)
+                    .padding(.top, JohoDimensions.spacingSM)
 
                 // Week summary statistics (no "7 days" - show holidays instead)
                 weekSummaryStats
@@ -443,7 +443,7 @@ struct CollapsibleDayCard: View {
 
                     // Expand/collapse chevron
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.black)
                         .frame(width: 24, height: 24)
                 }
@@ -636,7 +636,7 @@ struct CollapsibleDayCard: View {
 
                 // RIGHT: Icon compartment
                 Image(systemName: icon)
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
@@ -687,7 +687,7 @@ struct CollapsibleDayCard: View {
 
                 if isSystem {
                     Image(systemName: "lock.fill")
-                        .font(.system(size: 7, weight: .bold))
+                        .font(.system(size: 7, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.black.opacity(0.5))
                 }
             }

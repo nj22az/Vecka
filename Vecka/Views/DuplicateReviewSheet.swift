@@ -23,7 +23,7 @@ struct DuplicateSuggestionBanner: View {
             HStack(spacing: 0) {
                 // LEFT: Warning icon zone
                 Image(systemName: "person.2.badge.key.fill")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(warningColor)
                     .frame(width: 44, height: 44)
                     .background(warningColor.opacity(0.2))
@@ -59,7 +59,7 @@ struct DuplicateSuggestionBanner: View {
                         .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1.5))
 
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.black)
                 }
                 .padding(.trailing, JohoDimensions.spacingMD)
@@ -155,7 +155,7 @@ struct DuplicateReviewSheet: View {
                         // Title with icon
                         HStack(spacing: JohoDimensions.spacingSM) {
                             Image(systemName: "person.2.badge.key.fill")
-                                .font(.system(size: 20, weight: .bold))
+                                .font(.system(size: 20, weight: .bold, design: .rounded))
                                 .foregroundStyle(warningColor)
                                 .frame(width: 40, height: 40)
                                 .background(warningColor.opacity(0.2))
@@ -264,7 +264,7 @@ struct DuplicateReviewSheet: View {
     private var emptyState: some View {
         VStack(spacing: JohoDimensions.spacingMD) {
             Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 40, weight: .bold))
+                .font(.system(size: 40, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoColors.green)
 
             Text("NO DUPLICATES")
@@ -306,7 +306,7 @@ struct DuplicateReviewSheet: View {
                     Spacer()
 
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.black)
                 }
                 .padding(JohoDimensions.spacingSM)
@@ -464,7 +464,7 @@ struct MergeContactSheet: View {
                         // Title
                         HStack(spacing: JohoDimensions.spacingSM) {
                             Image(systemName: "arrow.triangle.merge")
-                                .font(.system(size: 20, weight: .bold))
+                                .font(.system(size: 20, weight: .bold, design: .rounded))
                                 .foregroundStyle(accentColor)
                                 .frame(width: 40, height: 40)
                                 .background(accentColor.opacity(0.2))
@@ -601,7 +601,7 @@ struct MergeContactSheet: View {
 
                     if isSelected {
                         Image(systemName: "checkmark")
-                            .font(.system(size: 12, weight: .bold))
+                            .font(.system(size: 12, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.white)
                     }
                 }
@@ -652,7 +652,7 @@ struct MergeContactSheet: View {
     private func statBadge(icon: String, count: Int) -> some View {
         HStack(spacing: 2) {
             Image(systemName: icon)
-                .font(.system(size: 8, weight: .bold))
+                .font(.system(size: 8, weight: .bold, design: .rounded))
             Text("\(count)")
                 .font(.system(size: 9, weight: .bold, design: .rounded))
         }
@@ -747,7 +747,7 @@ struct ClusterMergeSheet: View {
                         // Title
                         HStack(spacing: JohoDimensions.spacingSM) {
                             Image(systemName: "arrow.triangle.merge")
-                                .font(.system(size: 20, weight: .bold))
+                                .font(.system(size: 20, weight: .bold, design: .rounded))
                                 .foregroundStyle(accentColor)
                                 .frame(width: 40, height: 40)
                                 .background(accentColor.opacity(0.2))
@@ -888,7 +888,7 @@ struct ClusterMergeSheet: View {
 
                     if isSelected {
                         Image(systemName: "checkmark")
-                            .font(.system(size: 12, weight: .bold))
+                            .font(.system(size: 12, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.white)
                     }
                 }
@@ -918,7 +918,7 @@ struct ClusterMergeSheet: View {
                         }
                         if contact.birthday != nil {
                             Image(systemName: "gift.fill")
-                                .font(.system(size: 8, weight: .bold))
+                                .font(.system(size: 8, weight: .bold, design: .rounded))
                                 .foregroundStyle(JohoColors.pink)
                         }
                     }
@@ -944,7 +944,7 @@ struct ClusterMergeSheet: View {
     private func clusterStatBadge(icon: String, count: Int) -> some View {
         HStack(spacing: 2) {
             Image(systemName: icon)
-                .font(.system(size: 8, weight: .bold))
+                .font(.system(size: 8, weight: .bold, design: .rounded))
             Text("\(count)")
                 .font(.system(size: 9, weight: .bold, design: .rounded))
         }

@@ -100,7 +100,7 @@ struct ContactExportSheet: View {
                     } label: {
                         HStack(spacing: 8) {
                             Image(systemName: allVisibleSelected ? "checkmark.square.fill" : "square")
-                                .font(.system(size: 18, weight: .bold))
+                                .font(.system(size: 18, weight: .bold, design: .rounded))
                                 .foregroundStyle(allVisibleSelected ? JohoColors.purple : JohoColors.black.opacity(0.4))
                             Text(allVisibleSelected ? "Deselect all" : "Select all")
                                 .font(.system(size: 13, weight: .medium, design: .rounded))
@@ -162,7 +162,7 @@ struct ContactExportSheet: View {
                                 ProgressView().tint(JohoColors.black)
                             } else {
                                 Image(systemName: "square.and.arrow.up")
-                                    .font(.system(size: 15, weight: .bold))
+                                    .font(.system(size: 15, weight: .bold, design: .rounded))
                             }
                             Text(isExporting ? "Generating..." : "Export \(selectedIDs.count) contacts")
                                 .font(.system(size: 15, weight: .bold, design: .rounded))
@@ -249,7 +249,7 @@ struct ContactExportSheet: View {
             HStack(spacing: JohoDimensions.spacingSM) {
                 // Checkbox
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 22, weight: .medium))
+                    .font(.system(size: 22, weight: .medium, design: .rounded))
                     .foregroundStyle(isSelected ? JohoColors.purple : JohoColors.black.opacity(0.3))
 
                 // Avatar
@@ -305,7 +305,7 @@ struct ContactExportSheet: View {
         } label: {
             HStack(spacing: 4) {
                 Image(systemName: icon)
-                    .font(.system(size: 10, weight: .bold))
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
                 Text(title)
                     .font(.system(size: 11, weight: .bold, design: .rounded))
             }

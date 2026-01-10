@@ -51,7 +51,7 @@ struct IconStripSidebar: View {
                 appIconHeader
             }
             .buttonStyle(.plain)
-            .padding(.top, JohoDimensions.spacingMD)
+            .padding(.top, JohoDimensions.spacingSM)
             .padding(.bottom, JohoDimensions.spacingLG)
             .accessibilityLabel("Calendar")
 
@@ -269,7 +269,7 @@ private struct SidebarLegendView: View {
 
                 Button { dismiss() } label: {
                     Image(systemName: "xmark")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.black)
                         .frame(width: 24, height: 24)
                         .background(JohoColors.black.opacity(0.1))

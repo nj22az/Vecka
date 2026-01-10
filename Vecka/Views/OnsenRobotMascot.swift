@@ -346,7 +346,7 @@ struct CompactRobotMascot: View {
     HStack(spacing: 0) {
         HStack(spacing: 8) {
             Image(systemName: "house.fill")
-                .font(.system(size: 20, weight: .bold))
+                .font(.system(size: 20, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoColors.orange)
                 .frame(width: 40, height: 40)
                 .background(JohoColors.orange.opacity(0.2))

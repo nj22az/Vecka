@@ -145,7 +145,7 @@ struct WorldClockCell: View {
             // Offset indicator
             HStack(spacing: 2) {
                 Image(systemName: isDaytime ? "sun.min.fill" : "moon.fill")
-                    .font(.system(size: 8, weight: .bold))
+                    .font(.system(size: 8, weight: .bold, design: .rounded))
                     .foregroundStyle(isDaytime ? Color(hex: "F39C12") : Color(hex: "6C5CE7"))
 
                 Text(offsetText)

@@ -648,7 +648,7 @@ struct ModernCalendarView: View {
                         .foregroundStyle(colors.primary)
 
                     Image(systemName: isLegendExpanded ? "chevron.down" : "chevron.right")
-                        .font(.system(size: 11, weight: .bold))
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.secondary)
 
                     Spacer()
@@ -883,7 +883,7 @@ struct ModernCalendarView: View {
         HStack(spacing: 4) {
             Button { navigateToPreviousMonth() } label: {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .frame(width: 24, height: 44)
                     .contentShape(Rectangle())
@@ -905,7 +905,7 @@ struct ModernCalendarView: View {
 
             Button { navigateToNextMonth() } label: {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .bold))
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .frame(width: 24, height: 44)
                     .contentShape(Rectangle())

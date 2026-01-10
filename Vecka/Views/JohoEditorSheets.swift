@@ -45,7 +45,7 @@ struct JohoUndoToast: View {
                 onDismiss()
             } label: {
                 Image(systemName: "xmark")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.white.opacity(0.6))
             }
         }
@@ -111,7 +111,7 @@ struct JohoIconPickerSheet: View {
                         .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
-                .padding(.top, JohoDimensions.spacingLG)
+                .padding(.top, JohoDimensions.spacingSM)
 
                 // Categories
                 ForEach(symbolCategories, id: \.name) { category in
@@ -126,7 +126,7 @@ struct JohoIconPickerSheet: View {
                                     dismiss()
                                 } label: {
                                     Image(systemName: symbol)
-                                        .font(.system(size: 20, weight: .bold))
+                                        .font(.system(size: 20, weight: .bold, design: .rounded))
                                         .foregroundStyle(selectedSymbol == symbol ? accentColor : JohoColors.black)
                                         .frame(width: 52, height: 52)
                                         .background(selectedSymbol == symbol ? lightBackground : JohoColors.white)
@@ -256,7 +256,7 @@ struct JohoSpecialDayEditorSheet: View {
                 HStack(spacing: 0) {
                     Button { dismiss() } label: {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.black)
                             .frame(width: 44, height: 44)
                     }
@@ -265,7 +265,7 @@ struct JohoSpecialDayEditorSheet: View {
 
                     HStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: type.defaultIcon)
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundStyle(type.accentColor)
                             .frame(width: 36, height: 36)
                             .background(type.lightBackground)
@@ -330,7 +330,7 @@ struct JohoSpecialDayEditorSheet: View {
                 // Date row
                 HStack(spacing: 0) {
                     Image(systemName: "calendar")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.black)
                         .frame(width: 40).frame(maxHeight: .infinity)
 
@@ -385,7 +385,7 @@ struct JohoSpecialDayEditorSheet: View {
                 } label: {
                     HStack(spacing: 0) {
                         Image(systemName: selectedSymbol)
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundStyle(type.accentColor)
                             .frame(width: 40).frame(maxHeight: .infinity)
 
@@ -399,7 +399,7 @@ struct JohoSpecialDayEditorSheet: View {
                         Spacer()
 
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 12, weight: .semibold, design: .rounded))
                             .foregroundStyle(JohoColors.black.opacity(0.4))
                             .padding(.trailing, JohoDimensions.spacingMD)
                     }
@@ -525,7 +525,7 @@ struct JohoBentoOptionRow: View {
         HStack(spacing: 0) {
             ZStack {
                 RoundedRectangle(cornerRadius: 10, style: .continuous).fill(option.color).frame(width: 48, height: 48)
-                Image(systemName: option.icon).font(.system(size: 22, weight: .bold)).foregroundStyle(JohoColors.white)
+                Image(systemName: option.icon).font(.system(size: 22, weight: .bold, design: .rounded)).foregroundStyle(JohoColors.white)
             }
             .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(colors.border, lineWidth: 2))
             .padding(.leading, JohoDimensions.spacingMD)
@@ -558,7 +558,7 @@ struct JohoBentoOptionRow: View {
             Rectangle().fill(colors.border).frame(width: 1.5).frame(height: 48).padding(.trailing, JohoDimensions.spacingSM)
 
             Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .bold))
+                .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 44, height: 48)
                 .padding(.trailing, JohoDimensions.spacingXS)
@@ -618,7 +618,7 @@ struct JohoEventEditorSheet: View {
                 HStack(spacing: 0) {
                     Button { dismiss() } label: {
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.black)
                             .frame(width: 44, height: 44)
                     }
@@ -627,7 +627,7 @@ struct JohoEventEditorSheet: View {
 
                     HStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: "calendar.badge.clock")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundStyle(eventAccentColor)
                             .frame(width: 36, height: 36)
                             .background(eventLightBackground)
@@ -691,7 +691,7 @@ struct JohoEventEditorSheet: View {
                 // Date row
                 HStack(spacing: 0) {
                     Image(systemName: "calendar")
-                        .font(.system(size: 14, weight: .bold))
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.black)
                         .frame(width: 40).frame(maxHeight: .infinity)
 
@@ -746,7 +746,7 @@ struct JohoEventEditorSheet: View {
                 } label: {
                     HStack(spacing: 0) {
                         Image(systemName: selectedSymbol)
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundStyle(eventAccentColor)
                             .frame(width: 40).frame(maxHeight: .infinity)
 
@@ -760,7 +760,7 @@ struct JohoEventEditorSheet: View {
                         Spacer()
 
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 12, weight: .semibold, design: .rounded))
                             .foregroundStyle(JohoColors.black.opacity(0.4))
                             .padding(.trailing, JohoDimensions.spacingMD)
                     }

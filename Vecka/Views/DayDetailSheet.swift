@@ -31,7 +31,7 @@ struct DayDetailSheet: View {
                 Spacer(minLength: JohoDimensions.spacingXL)
             }
             .padding(.horizontal, JohoDimensions.spacingLG)
-            .padding(.top, JohoDimensions.spacingMD)
+            .padding(.top, JohoDimensions.spacingSM)
             .padding(.bottom, JohoDimensions.spacingLG)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -86,7 +86,7 @@ struct DayDetailSheet: View {
                 dismiss()
             } label: {
                 Image(systemName: "xmark")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
                     .frame(width: 32, height: 32)
                     .background(JohoColors.white)
@@ -212,7 +212,7 @@ struct DayDetailSheet: View {
 
                     if isSystem {
                         Image(systemName: "lock.fill")
-                            .font(.system(size: 9, weight: .bold))
+                            .font(.system(size: 9, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.black.opacity(0.7))
                     }
                 }
@@ -277,7 +277,7 @@ struct DayDetailSheet: View {
     private var emptyState: some View {
         VStack(spacing: JohoDimensions.spacingMD) {
             Image(systemName: "calendar.badge.checkmark")
-                .font(.system(size: 32, weight: .bold))
+                .font(.system(size: 32, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoColors.black.opacity(0.3))
 
             Text("No special days")

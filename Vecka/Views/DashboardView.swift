@@ -397,7 +397,7 @@ struct DashboardView: View {
             } else {
                 VStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: "sparkles")
-                        .font(.system(size: 24, weight: .medium))
+                        .font(.system(size: 24, weight: .medium, design: .rounded))
                         .foregroundStyle(JohoColors.black.opacity(0.3))
 
                     Text("No upcoming events")
