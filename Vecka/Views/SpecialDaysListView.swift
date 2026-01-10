@@ -1577,6 +1577,13 @@ struct CollapsibleSpecialDayCard: View {
                 .frame(maxHeight: .infinity)
             }
             .frame(minHeight: 36)
+            // 情報デザイン: Tap gesture ONLY on main row, not expanded details
+            .contentShape(Rectangle())
+            .onTapGesture {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    expandedItemID = isExpanded ? nil : item.id
+                }
+            }
 
             // EXPANDED DETAILS (情報デザイン: tap to reveal)
             if isExpanded {
@@ -1585,57 +1592,57 @@ struct CollapsibleSpecialDayCard: View {
                     .fill(JohoColors.black)
                     .frame(height: 1.5)
 
-                // Details area
-                VStack(alignment: .leading, spacing: 6) {
-                    // Notes/description if available
-                    if let notes = item.notes, !notes.isEmpty {
-                        Text(notes)
-                            .font(.system(size: 12, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.8))
-                            .lineLimit(2)
+                // Details area - separate from tap gesture
+                HStack(spacing: 8) {
+                    // 情報デザイン: Only show notes if they ADD information beyond title
+                    // For .note type, notes = full content, title = first line
+                    // Don't show if notes == title (single-line note)
+                    if let notes = item.notes,
+                       !notes.isEmpty,
+                       notes != item.title {
+                        // Show additional content (lines beyond first)
+                        let additionalLines = notes.components(separatedBy: .newlines).dropFirst().joined(separator: "\n")
+                        if !additionalLines.isEmpty {
+                            Text(additionalLines)
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundStyle(JohoColors.black.opacity(0.8))
+                                .lineLimit(2)
+                        }
                     }
 
-                    // Date info
-                    HStack(spacing: 8) {
-                        Image(systemName: "calendar")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
-                        Text(formatDate(item.date))
-                            .font(.system(size: 11, weight: .medium, design: .monospaced))
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                    Spacer()
 
-                        Spacer()
+                    // Date badge
+                    Text(formatDate(item.date))
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 3)
+                        .background(JohoColors.black.opacity(0.05))
+                        .clipShape(Capsule())
 
-                        // Edit button (for user entries)
-                        if canEdit {
-                            Button {
-                                openEditor(item)
-                            } label: {
-                                HStack(spacing: 4) {
-                                    Image(systemName: "pencil")
-                                    Text("EDIT")
-                                }
-                                .font(.system(size: 10, weight: .bold, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(JohoColors.cyan)
-                                .clipShape(Capsule())
-                                .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
+                    // Edit button (for user entries) - 情報デザイン: 44pt touch target
+                    if canEdit {
+                        Button {
+                            openEditor(item)
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "pencil")
+                                Text("EDIT")
                             }
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(JohoColors.cyan)
+                            .clipShape(Capsule())
+                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1.5))
                         }
+                        .buttonStyle(.borderless)
                     }
                 }
                 .padding(.horizontal, 10)
-                .padding(.vertical, 8)
-            }
-        }
-        // 情報デザイン: NO separate container - rows flow within section
-        // The section provides the background, rows just have compartments
-        .contentShape(Rectangle())
-        .onTapGesture {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                expandedItemID = isExpanded ? nil : item.id
+                .padding(.vertical, 6)
             }
         }
         // 情報デザイン: Context menu for Edit/Delete (long-press)
@@ -1666,14 +1673,14 @@ struct CollapsibleSpecialDayCard: View {
         return formatter.string(from: date)
     }
 
-    // MARK: - Type Indicator Dot (情報デザイン: Accent-colored circles with BLACK borders)
-    // Circles ALWAYS use their type's accent color - bento boxes use light tints to ensure visibility
+    // MARK: - Type Indicator Dot (情報デザイン: BLACK icons for visibility)
+    // Icons use BLACK for maximum contrast against colored backgrounds
 
     @ViewBuilder
     private func typeIndicatorDot(for type: SpecialDayType) -> some View {
         Image(systemName: type.defaultIcon)
             .font(.system(size: 10, weight: .semibold, design: .rounded))
-            .foregroundStyle(type.accentColor)
+            .foregroundStyle(JohoColors.black)
     }
 
     // MARK: - Formatters
