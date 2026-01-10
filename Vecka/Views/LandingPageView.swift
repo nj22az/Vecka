@@ -296,18 +296,28 @@ struct LandingPageView: View {
                     worldClocksCard
                 }
 
-                // ADAPTIVE SECTION: Side-by-side on iPad, stacked on iPhone
-                // 情報デザイン: Bento grid expands horizontally on larger screens
+                // ADAPTIVE SECTION: Multi-column bento on iPad, stacked on iPhone
+                // 情報デザイン: Bento grid expands with more widgets on larger screens
                 if isRegularWidth {
-                    // iPad: Today and Glance side-by-side
+                    // iPad Row 1: Today, Upcoming, Week (3 columns)
                     HStack(alignment: .top, spacing: JohoDimensions.spacingMD) {
                         todayCard
                             .frame(maxWidth: .infinity)
-                        glanceCard
+                        upcomingCard
+                            .frame(maxWidth: .infinity)
+                        weekCard
                             .frame(maxWidth: .infinity)
                     }
+
+                    // iPad Row 2: Glance (2/3) + Progress (1/3)
+                    HStack(alignment: .top, spacing: JohoDimensions.spacingMD) {
+                        glanceCard
+                            .frame(maxWidth: .infinity)
+                        progressCard
+                            .frame(minWidth: 200, maxWidth: 280)
+                    }
                 } else {
-                    // iPhone/iPad mini: Stacked layout
+                    // iPhone/iPad mini: Stacked layout (no extra widgets)
                     todayCard
                     glanceCard
                 }
@@ -782,6 +792,481 @@ struct LandingPageView: View {
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
                 .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
+    }
+
+    // MARK: - UPCOMING Card (情報デザイン: Next 7 days overview)
+
+    private var upcomingCard: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Image(systemName: "arrow.right.circle.fill")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.cyan)
+
+                Text("UPCOMING")
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .tracking(1.5)
+                    .foregroundStyle(colors.primary)
+
+                Spacer()
+
+                if !upcomingItems.isEmpty {
+                    Text("\(upcomingItems.count)")
+                        .font(JohoFont.labelSmall)
+                        .foregroundStyle(colors.secondary)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            // Content
+            if upcomingItems.isEmpty {
+                Text("Nothing in the next 7 days")
+                    .font(JohoFont.body)
+                    .foregroundStyle(colors.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(JohoDimensions.spacingMD)
+            } else {
+                VStack(spacing: 0) {
+                    ForEach(Array(upcomingItems.prefix(5).enumerated()), id: \.element.id) { index, item in
+                        if index > 0 {
+                            Rectangle()
+                                .fill(colors.border.opacity(0.2))
+                                .frame(height: 1)
+                                .padding(.horizontal, JohoDimensions.spacingMD)
+                        }
+
+                        upcomingItemRow(item)
+                    }
+
+                    if upcomingItems.count > 5 {
+                        Rectangle()
+                            .fill(colors.border.opacity(0.2))
+                            .frame(height: 1)
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+
+                        Text("+\(upcomingItems.count - 5) more")
+                            .font(JohoFont.labelSmall)
+                            .foregroundStyle(colors.secondary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, JohoDimensions.spacingSM)
+                    }
+                }
+            }
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+        )
+    }
+
+    /// Upcoming item row
+    private func upcomingItemRow(_ item: UpcomingItem) -> some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            // Date badge
+            VStack(spacing: 0) {
+                Text(item.dayName)
+                    .font(.system(size: 9, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.secondary)
+                Text("\(item.dayNumber)")
+                    .font(.system(size: 14, weight: .black, design: .rounded))
+                    .foregroundStyle(item.isToday ? JohoColors.yellow : colors.primary)
+            }
+            .frame(width: 36)
+            .padding(.vertical, 4)
+            .background(item.isToday ? JohoColors.yellow.opacity(0.15) : colors.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .stroke(item.isToday ? JohoColors.yellow : colors.border.opacity(0.3), lineWidth: 1)
+            )
+
+            // Type indicator
+            Circle()
+                .fill(item.color)
+                .frame(width: 8, height: 8)
+                .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
+
+            // Title
+            Text(item.title)
+                .font(JohoFont.bodySmall)
+                .foregroundStyle(colors.primary)
+                .lineLimit(1)
+
+            Spacer()
+
+            // Type badge
+            Text(item.typeBadge)
+                .font(.system(size: 8, weight: .bold, design: .rounded))
+                .foregroundStyle(item.color)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(item.color.opacity(0.15))
+                .clipShape(Capsule())
+        }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
+    }
+
+    /// UpcomingItem model
+    private struct UpcomingItem: Identifiable {
+        let id = UUID()
+        let date: Date
+        let dayName: String
+        let dayNumber: Int
+        let isToday: Bool
+        let title: String
+        let color: Color
+        let typeBadge: String
+    }
+
+    /// Get upcoming items for next 7 days
+    private var upcomingItems: [UpcomingItem] {
+        let calendar = Calendar.iso8601
+        var items: [UpcomingItem] = []
+
+        for dayOffset in 0..<7 {
+            guard let date = calendar.date(byAdding: .day, value: dayOffset, to: todayStart) else { continue }
+            let dayName = date.formatted(.dateTime.weekday(.abbreviated)).uppercased()
+            let dayNumber = calendar.component(.day, from: date)
+            let isToday = dayOffset == 0
+
+            // Holidays
+            if let holidays = holidayManager.holidayCache[date] {
+                for holiday in holidays {
+                    let color = holiday.isBankHoliday ? JohoColors.red : JohoColors.orange
+                    let badge = holiday.isBankHoliday ? "HOL" : "OBS"
+                    items.append(UpcomingItem(
+                        date: date,
+                        dayName: dayName,
+                        dayNumber: dayNumber,
+                        isToday: isToday,
+                        title: holiday.displayTitle,
+                        color: color,
+                        typeBadge: badge
+                    ))
+                }
+            }
+
+            // Birthdays
+            let month = calendar.component(.month, from: date)
+            let day = calendar.component(.day, from: date)
+            for contact in contacts {
+                guard let birthday = contact.birthday else { continue }
+                let bMonth = calendar.component(.month, from: birthday)
+                let bDay = calendar.component(.day, from: birthday)
+                if bMonth == month && bDay == day {
+                    let name = contact.displayName.isEmpty ? "Someone" : contact.displayName
+                    items.append(UpcomingItem(
+                        date: date,
+                        dayName: dayName,
+                        dayNumber: dayNumber,
+                        isToday: isToday,
+                        title: "\(name)'s Birthday",
+                        color: JohoColors.pink,
+                        typeBadge: "BDY"
+                    ))
+                }
+            }
+
+            // Countdown events
+            for event in countdownEvents {
+                let eventDate = calendar.startOfDay(for: event.targetDate)
+                if eventDate == date {
+                    items.append(UpcomingItem(
+                        date: date,
+                        dayName: dayName,
+                        dayNumber: dayNumber,
+                        isToday: isToday,
+                        title: event.title,
+                        color: JohoColors.eventPurple,
+                        typeBadge: "EVT"
+                    ))
+                }
+            }
+
+            // Trips starting
+            for trip in allTrips {
+                let tripStart = calendar.startOfDay(for: trip.startDate)
+                if tripStart == date {
+                    items.append(UpcomingItem(
+                        date: date,
+                        dayName: dayName,
+                        dayNumber: dayNumber,
+                        isToday: isToday,
+                        title: trip.tripName,
+                        color: SpecialDayType.trip.accentColor,
+                        typeBadge: "TRP"
+                    ))
+                }
+            }
+        }
+
+        return items.sorted { $0.date < $1.date }
+    }
+
+    // MARK: - WEEK Card (情報デザイン: Mini week grid with indicators)
+
+    private var weekCard: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Image(systemName: "calendar.day.timeline.left")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.cyan)
+
+                Text("WEEK \(weekNumber)")
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .tracking(1.5)
+                    .foregroundStyle(colors.primary)
+
+                Spacer()
+
+                Text(String(year))
+                    .font(JohoFont.labelSmall)
+                    .foregroundStyle(colors.secondary)
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            // Week grid
+            HStack(spacing: 0) {
+                ForEach(weekDays, id: \.date) { day in
+                    if day.dayOfWeek > 1 {
+                        Rectangle()
+                            .fill(colors.border.opacity(0.3))
+                            .frame(width: 1)
+                    }
+
+                    weekDayCell(day)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .padding(.vertical, JohoDimensions.spacingSM)
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+        )
+    }
+
+    /// Week day cell
+    private func weekDayCell(_ day: WeekDay) -> some View {
+        VStack(spacing: 4) {
+            // Day name
+            Text(day.name)
+                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .foregroundStyle(day.isToday ? JohoColors.yellow : colors.secondary)
+
+            // Day number
+            Text("\(day.number)")
+                .font(.system(size: 16, weight: .black, design: .rounded))
+                .foregroundStyle(day.isToday ? colors.primaryInverted : colors.primary)
+                .frame(width: 32, height: 32)
+                .background(day.isToday ? JohoColors.yellow : Color.clear)
+                .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .stroke(day.isToday ? JohoColors.black : Color.clear, lineWidth: 1.5)
+                )
+
+            // Indicators
+            HStack(spacing: 2) {
+                ForEach(day.indicators.prefix(3), id: \.self) { color in
+                    Circle()
+                        .fill(color)
+                        .frame(width: 6, height: 6)
+                        .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
+                }
+            }
+            .frame(height: 8)
+        }
+        .padding(.vertical, 4)
+    }
+
+    /// WeekDay model
+    private struct WeekDay {
+        let date: Date
+        let name: String
+        let number: Int
+        let dayOfWeek: Int
+        let isToday: Bool
+        let indicators: [Color]
+    }
+
+    /// Get current week days (Mon-Sun ISO8601)
+    private var weekDays: [WeekDay] {
+        let calendar = Calendar.iso8601
+        guard let weekStart = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: today)) else {
+            return []
+        }
+
+        return (0..<7).compactMap { offset in
+            guard let date = calendar.date(byAdding: .day, value: offset, to: weekStart) else { return nil }
+            let dayStart = calendar.startOfDay(for: date)
+            let name = date.formatted(.dateTime.weekday(.narrow)).uppercased()
+            let number = calendar.component(.day, from: date)
+            let dayOfWeek = calendar.component(.weekday, from: date)
+            let isToday = calendar.isDateInToday(date)
+
+            // Collect indicators for this day
+            var indicators: [Color] = []
+
+            // Holidays
+            if let holidays = holidayManager.holidayCache[dayStart] {
+                for holiday in holidays {
+                    indicators.append(holiday.isBankHoliday ? JohoColors.red : JohoColors.orange)
+                }
+            }
+
+            // Birthdays
+            let month = calendar.component(.month, from: date)
+            let day = calendar.component(.day, from: date)
+            for contact in contacts {
+                guard let birthday = contact.birthday else { continue }
+                if calendar.component(.month, from: birthday) == month &&
+                   calendar.component(.day, from: birthday) == day {
+                    indicators.append(JohoColors.pink)
+                }
+            }
+
+            // Countdown events
+            for event in countdownEvents {
+                if calendar.startOfDay(for: event.targetDate) == dayStart {
+                    indicators.append(JohoColors.eventPurple)
+                }
+            }
+
+            // Active trips
+            for trip in allTrips {
+                let tripStart = calendar.startOfDay(for: trip.startDate)
+                let tripEnd = calendar.startOfDay(for: trip.endDate)
+                if dayStart >= tripStart && dayStart <= tripEnd {
+                    indicators.append(SpecialDayType.trip.accentColor)
+                }
+            }
+
+            return WeekDay(
+                date: date,
+                name: name,
+                number: number,
+                dayOfWeek: dayOfWeek,
+                isToday: isToday,
+                indicators: indicators
+            )
+        }
+    }
+
+    // MARK: - PROGRESS Card (情報デザイン: Time progress visualization)
+
+    private var progressCard: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Image(systemName: "chart.bar.fill")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.green)
+
+                Text("PROGRESS")
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .tracking(1.5)
+                    .foregroundStyle(colors.primary)
+
+                Spacer()
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            // Progress bars
+            VStack(spacing: JohoDimensions.spacingSM) {
+                progressRow(label: "YEAR", progress: yearProgress, color: JohoColors.green)
+                progressRow(label: "MONTH", progress: monthProgress, color: currentMonthTheme.accentColor)
+                progressRow(label: "WEEK", progress: weekProgress, color: JohoColors.cyan)
+            }
+            .padding(JohoDimensions.spacingMD)
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+        )
+    }
+
+    /// Progress row with bar
+    private func progressRow(label: String, progress: Double, color: Color) -> some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            Text(label)
+                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.secondary)
+                .frame(width: 44, alignment: .leading)
+
+            // Progress bar
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    // Background
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                        .fill(colors.border.opacity(0.2))
+
+                    // Fill
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                        .fill(color)
+                        .frame(width: geo.size.width * progress)
+                }
+            }
+            .frame(height: 12)
+
+            // Percentage
+            Text("\(Int(progress * 100))%")
+                .font(.system(size: 11, weight: .black, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 36, alignment: .trailing)
+        }
+    }
+
+    /// Year progress (0.0 - 1.0)
+    private var yearProgress: Double {
+        let calendar = Calendar.iso8601
+        let dayOfYear = calendar.ordinality(of: .day, in: .year, for: today) ?? 1
+        let daysInYear = calendar.range(of: .day, in: .year, for: today)?.count ?? 365
+        return Double(dayOfYear) / Double(daysInYear)
+    }
+
+    /// Month progress (0.0 - 1.0)
+    private var monthProgress: Double {
+        let calendar = Calendar.current
+        let dayOfMonth = calendar.component(.day, from: today)
+        let daysInMonth = calendar.range(of: .day, in: .month, for: today)?.count ?? 30
+        return Double(dayOfMonth) / Double(daysInMonth)
+    }
+
+    /// Week progress (0.0 - 1.0)
+    private var weekProgress: Double {
+        let calendar = Calendar.iso8601
+        let dayOfWeek = calendar.component(.weekday, from: today)
+        // ISO8601: Monday = 2, Sunday = 1 (wrap to 7)
+        let isoDayOfWeek = dayOfWeek == 1 ? 7 : dayOfWeek - 1
+        return Double(isoDayOfWeek) / 7.0
     }
 
     /// Special days indicator matching Star page format (●red ○pink)
