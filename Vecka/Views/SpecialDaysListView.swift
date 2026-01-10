@@ -1553,20 +1553,25 @@ struct CollapsibleSpecialDayCard: View {
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
-                // RIGHT COMPARTMENT: Country pill + Decoration icon (replaces code pill)
-                // 情報デザイン: Decoration icon ALWAYS shown (user decision)
+                // RIGHT COMPARTMENT: Country pill + OPTIONAL custom decoration icon
+                // 情報デザイン: Only show icon if user chose a DIFFERENT custom icon
+                // (type indicator is on LEFT, don't duplicate it on RIGHT)
                 HStack(spacing: 4) {
                     if item.hasCountryPill {
                         CountryPill(region: item.region)
                     }
-                    // Decoration icon - always show (custom or default type icon)
-                    Image(systemName: item.symbolName ?? item.type.defaultIcon)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(item.type.accentColor)
-                        .frame(width: 24, height: 24)
-                        .background(item.type.accentColor.opacity(0.15))
-                        .clipShape(Squircle(cornerRadius: 6))
-                        .overlay(Squircle(cornerRadius: 6).stroke(JohoColors.black, lineWidth: 1))
+                    // 情報デザイン: Decoration icon - ONLY show if custom icon differs from type default
+                    if let customIcon = item.symbolName,
+                       !customIcon.isEmpty,
+                       customIcon != item.type.defaultIcon {
+                        Image(systemName: customIcon)
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundStyle(item.type.accentColor)
+                            .frame(width: 24, height: 24)
+                            .background(item.type.accentColor.opacity(0.15))
+                            .clipShape(Squircle(cornerRadius: 6))
+                            .overlay(Squircle(cornerRadius: 6).stroke(JohoColors.black, lineWidth: 1))
+                    }
                 }
                 .frame(width: 72, alignment: .center)
                 .frame(maxHeight: .infinity)

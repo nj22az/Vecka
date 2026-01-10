@@ -840,7 +840,11 @@ struct CustomCountdownDialog: View {
         .johoBackground()
         .navigationBarHidden(true)
         .sheet(isPresented: $showingIconPicker) {
-            JohoIconPicker(selectedSymbol: $iconName)
+            // 情報デザイン: Exclude event default icon from picker
+            JohoIconPicker(
+                selectedSymbol: $iconName,
+                excludedSymbols: [SpecialDayType.event.defaultIcon]
+            )
         }
     }
 
@@ -949,6 +953,8 @@ private struct JohoIconPickerGrid: View {
 // Unselected state: Black icon on white background
 private struct JohoIconPicker: View {
     @Binding var selectedSymbol: String
+    /// 情報デザイン: Icons to exclude from picker (category defaults should not be selectable)
+    var excludedSymbols: Set<String> = []
     @Environment(\.dismiss) private var dismiss
 
     private let symbolCategories: [(name: String, symbols: [String])] = [
@@ -958,6 +964,13 @@ private struct JohoIconPicker: View {
         ("PEOPLE", ["person.fill", "person.2.fill", "figure.stand", "heart.circle.fill", "hand.raised.fill"]),
         ("TIME", ["calendar", "clock.fill", "hourglass", "timer", "sunrise.fill", "sunset.fill"]),
     ]
+
+    /// 情報デザイン: Filter out excluded symbols (category defaults)
+    private var filteredCategories: [(name: String, symbols: [String])] {
+        symbolCategories.map { category in
+            (name: category.name, symbols: category.symbols.filter { !excludedSymbols.contains($0) })
+        }.filter { !$0.symbols.isEmpty }
+    }
 
     private let columns = [GridItem(.adaptive(minimum: 52), spacing: JohoDimensions.spacingSM)]
 
@@ -998,8 +1011,8 @@ private struct JohoIconPicker: View {
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.top, JohoDimensions.spacingLG)
 
-                // Categories
-                ForEach(symbolCategories, id: \.name) { category in
+                // Categories (情報デザイン: filtered to exclude category defaults)
+                ForEach(filteredCategories, id: \.name) { category in
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                         JohoPill(text: category.name, style: .whiteOnBlack, size: .small)
 

@@ -64,6 +64,8 @@ struct JohoIconPickerSheet: View {
     @Binding var selectedSymbol: String
     let accentColor: Color
     let lightBackground: Color
+    /// 情報デザイン: Icons to exclude from picker (category defaults should not be selectable)
+    var excludedSymbols: Set<String> = []
     @Environment(\.dismiss) private var dismiss
 
     private let symbolCategories: [(name: String, symbols: [String])] = [
@@ -73,6 +75,13 @@ struct JohoIconPickerSheet: View {
         ("PEOPLE", ["person.fill", "person.2.fill", "figure.stand", "heart.circle.fill", "hand.raised.fill"]),
         ("TIME", ["calendar", "clock.fill", "hourglass", "timer", "sunrise.fill", "sunset.fill"]),
     ]
+
+    /// 情報デザイン: Filter out excluded symbols (category defaults)
+    private var filteredCategories: [(name: String, symbols: [String])] {
+        symbolCategories.map { category in
+            (name: category.name, symbols: category.symbols.filter { !excludedSymbols.contains($0) })
+        }.filter { !$0.symbols.isEmpty }
+    }
 
     private let columns = [GridItem(.adaptive(minimum: 52), spacing: JohoDimensions.spacingSM)]
 
@@ -113,8 +122,8 @@ struct JohoIconPickerSheet: View {
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.top, JohoDimensions.spacingSM)
 
-                // Categories
-                ForEach(symbolCategories, id: \.name) { category in
+                // Categories (情報デザイン: filtered to exclude category defaults)
+                ForEach(filteredCategories, id: \.name) { category in
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                         JohoPill(text: category.name, style: .whiteOnBlack, size: .small)
 
@@ -418,7 +427,13 @@ struct JohoSpecialDayEditorSheet: View {
         .johoBackground()
         .navigationBarHidden(true)
         .sheet(isPresented: $showingIconPicker) {
-            JohoIconPickerSheet(selectedSymbol: $selectedSymbol, accentColor: type.accentColor, lightBackground: type.lightBackground)
+            // 情報デザイン: Exclude category default icon from picker
+            JohoIconPickerSheet(
+                selectedSymbol: $selectedSymbol,
+                accentColor: type.accentColor,
+                lightBackground: type.lightBackground,
+                excludedSymbols: [type.defaultIcon]
+            )
         }
     }
 
@@ -779,7 +794,13 @@ struct JohoEventEditorSheet: View {
         .johoBackground()
         .navigationBarHidden(true)
         .sheet(isPresented: $showingIconPicker) {
-            JohoIconPickerSheet(selectedSymbol: $selectedSymbol, accentColor: eventAccentColor, lightBackground: eventLightBackground)
+            // 情報デザイン: Exclude event default icon from picker
+            JohoIconPickerSheet(
+                selectedSymbol: $selectedSymbol,
+                accentColor: eventAccentColor,
+                lightBackground: eventLightBackground,
+                excludedSymbols: [SpecialDayType.event.defaultIcon]
+            )
         }
     }
 

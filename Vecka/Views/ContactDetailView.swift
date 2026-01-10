@@ -2047,7 +2047,13 @@ struct JohoContactEditorSheet: View {
         }
         .buttonStyle(.plain)
         .sheet(isPresented: $showingIconPicker) {
-            ContactSymbolPicker(selectedSymbol: $selectedSymbol, accentColor: accentColor, lightBackground: lightBackground)
+            // 情報デザイン: Exclude birthday default icon from picker
+            ContactSymbolPicker(
+                selectedSymbol: $selectedSymbol,
+                accentColor: accentColor,
+                lightBackground: lightBackground,
+                excludedSymbols: [SpecialDayType.birthday.defaultIcon]
+            )
         }
     }
 
@@ -2427,6 +2433,8 @@ private struct ContactSymbolPicker: View {
     @Binding var selectedSymbol: String
     let accentColor: Color
     let lightBackground: Color
+    /// 情報デザイン: Icons to exclude from picker (category defaults should not be selectable)
+    var excludedSymbols: Set<String> = []
     @Environment(\.dismiss) private var dismiss
 
     // Symbol categories for contacts (person-focused)
@@ -2437,6 +2445,13 @@ private struct ContactSymbolPicker: View {
         ("WORK", ["briefcase.fill", "building.2.fill", "phone.fill", "envelope.fill", "laptopcomputer", "network"]),
         ("NATURE", ["leaf.fill", "sun.max.fill", "moon.fill", "cloud.sun.fill", "flame.fill", "drop.fill", "camera.macro"]),
     ]
+
+    /// 情報デザイン: Filter out excluded symbols (category defaults)
+    private var filteredCategories: [(name: String, symbols: [String])] {
+        symbolCategories.map { category in
+            (name: category.name, symbols: category.symbols.filter { !excludedSymbols.contains($0) })
+        }.filter { !$0.symbols.isEmpty }
+    }
 
     private let columns = [GridItem(.adaptive(minimum: 52), spacing: JohoDimensions.spacingSM)]
 
@@ -2484,8 +2499,8 @@ private struct ContactSymbolPicker: View {
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.top, JohoDimensions.spacingSM)
 
-                // Symbol categories
-                ForEach(symbolCategories, id: \.name) { category in
+                // Symbol categories (情報デザイン: filtered to exclude category defaults)
+                ForEach(filteredCategories, id: \.name) { category in
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                         // Category header
                         Text(category.name)
