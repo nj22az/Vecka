@@ -163,7 +163,7 @@ struct ExpenseListView: View {
             // Main total card
             JohoCard {
                 VStack(spacing: JohoDimensions.spacingSM) {
-                    JohoPill(text: "Total", style: .whiteOnBlack)
+                    JohoPill(text: "Total", style: .blackOnWhite)
 
                     Text(formattedTotal)
                         .font(JohoFont.displayLarge)
@@ -416,7 +416,7 @@ struct ExpenseListView: View {
 
     private var recentExpensesSection: some View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
-            JohoPill(text: "Recent", style: .whiteOnBlack, size: .large)
+            JohoPill(text: "Recent", style: .blackOnWhite, size: .large)
                 .padding(.horizontal, JohoDimensions.spacingLG)
 
             if filteredExpenses.isEmpty {
@@ -629,28 +629,25 @@ struct FilterChip: View {
                 if let icon = icon {
                     Image(systemName: icon)
                         .font(JohoFont.labelSmall)
-                        .foregroundStyle(isSelected ? JohoColors.white : JohoColors.black)
+                        .foregroundStyle(JohoColors.black)
                 }
 
                 Text(title)
                     .font(JohoFont.label)
-                    .foregroundStyle(isSelected ? JohoColors.white : JohoColors.black)
+                    .foregroundStyle(JohoColors.black)
 
                 if isSelected {
-                    Image(systemName: "xmark.circle.fill")
+                    Image(systemName: "xmark.circle")
                         .font(JohoFont.labelSmall)
-                        .foregroundStyle(JohoColors.white.opacity(0.8))
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
                 }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
-            .background(
-                isSelected ? JohoColors.black : JohoColors.white,
-                in: Capsule()
-            )
+            .background(JohoColors.white, in: Capsule())
             .overlay(
                 Capsule()
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                    .stroke(JohoColors.black, lineWidth: isSelected ? JohoDimensions.borderMedium : JohoDimensions.borderThin)
             )
         }
         .buttonStyle(.plain)
@@ -679,7 +676,7 @@ struct FilterOptionsSheet: View {
 
                     // Date Range Section
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                        JohoPill(text: "Date Range", style: .whiteOnBlack, size: .medium)
+                        JohoPill(text: "Date Range", style: .blackOnWhite, size: .medium)
 
                         VStack(spacing: JohoDimensions.spacingXS) {
                             ForEach([DateRange.all, .thisWeek, .thisMonth, .thisYear], id: \.self) { range in
@@ -715,7 +712,7 @@ struct FilterOptionsSheet: View {
 
                     // Category Section
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                        JohoPill(text: "Category", style: .whiteOnBlack, size: .medium)
+                        JohoPill(text: "Category", style: .blackOnWhite, size: .medium)
 
                         VStack(spacing: JohoDimensions.spacingXS) {
                             Button {
@@ -780,7 +777,7 @@ struct FilterOptionsSheet: View {
                     // Trips Section
                     if !trips.isEmpty {
                         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                            JohoPill(text: "Trip", style: .whiteOnBlack, size: .medium)
+                            JohoPill(text: "Trip", style: .blackOnWhite, size: .medium)
 
                             VStack(spacing: JohoDimensions.spacingXS) {
                                 Button {
@@ -891,7 +888,7 @@ struct ExpenseDetailView: View {
                     // Amount Card - Hero display
                     JohoCard {
                         VStack(spacing: JohoDimensions.spacingMD) {
-                            JohoPill(text: "Amount", style: .whiteOnBlack)
+                            JohoPill(text: "Amount", style: .blackOnWhite)
 
                             Text(expense.amount, format: .currency(code: expense.currency))
                                 .font(JohoFont.displayLarge)
