@@ -1,0 +1,213 @@
+/* KDP Print-Ready CSS - 6x9 inch trim size */
+
+@page {
+    size: 6in 9in;
+    margin-top: 0.75in;
+    margin-bottom: 0.75in;
+    margin-outside: 0.5in;
+    margin-inside: 0.75in;
+
+    @bottom-center {
+        content: counter(page);
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "Helvetica Neue", sans-serif;
+        font-size: 10pt;
+    }
+}
+
+@page :first {
+    @bottom-center {
+        content: none;
+    }
+}
+
+/* Base typography */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Rounded", "Helvetica Neue", sans-serif;
+    font-size: 11pt;
+    line-height: 1.5;
+    color: #000;
+    text-align: justify;
+    hyphens: auto;
+}
+
+/* Headings */
+h1 {
+    font-size: 24pt;
+    font-weight: 700;
+    margin-top: 2in;
+    margin-bottom: 0.5in;
+    page-break-before: always;
+    page-break-after: avoid;
+    text-align: left;
+}
+
+h1:first-of-type {
+    margin-top: 0;
+    page-break-before: avoid;
+}
+
+h2 {
+    font-size: 16pt;
+    font-weight: 700;
+    margin-top: 0.4in;
+    margin-bottom: 0.2in;
+    page-break-after: avoid;
+}
+
+h3 {
+    font-size: 13pt;
+    font-weight: 600;
+    margin-top: 0.3in;
+    margin-bottom: 0.15in;
+    page-break-after: avoid;
+}
+
+h4 {
+    font-size: 11pt;
+    font-weight: 600;
+    margin-top: 0.2in;
+    margin-bottom: 0.1in;
+}
+
+/* Blockquotes - Chapter epigraphs */
+blockquote {
+    font-style: italic;
+    font-size: 12pt;
+    margin: 0.3in 0.5in;
+    padding-left: 0.2in;
+    border-left: 3pt solid #000;
+    page-break-inside: avoid;
+}
+
+blockquote p {
+    margin: 0;
+}
+
+/* Code blocks */
+pre {
+    font-family: "SF Mono", "Menlo", "Monaco", monospace;
+    font-size: 9pt;
+    line-height: 1.4;
+    background-color: #f5f5f5;
+    border: 1pt solid #000;
+    padding: 0.15in;
+    margin: 0.2in 0;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    page-break-inside: avoid;
+}
+
+code {
+    font-family: "SF Mono", "Menlo", "Monaco", monospace;
+    font-size: 9.5pt;
+    background-color: #f0f0f0;
+    padding: 1pt 3pt;
+    border-radius: 2pt;
+}
+
+pre code {
+    background: none;
+    padding: 0;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.2in 0;
+    font-size: 10pt;
+    page-break-inside: avoid;
+}
+
+th, td {
+    border: 1pt solid #000;
+    padding: 6pt 8pt;
+    text-align: left;
+}
+
+th {
+    background-color: #000;
+    color: #fff;
+    font-weight: 700;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Horizontal rules - section breaks */
+hr {
+    border: none;
+    border-top: 1pt solid #000;
+    margin: 0.3in 1in;
+    page-break-after: avoid;
+}
+
+/* Lists */
+ul, ol {
+    margin: 0.15in 0;
+    padding-left: 0.3in;
+}
+
+li {
+    margin-bottom: 0.05in;
+}
+
+/* ASCII art boxes - preserve formatting */
+pre:has(code) {
+    font-size: 8pt;
+    line-height: 1.2;
+}
+
+/* Links - print as plain text */
+a {
+    color: #000;
+    text-decoration: none;
+}
+
+/* Paragraphs */
+p {
+    margin: 0 0 0.1in 0;
+    orphans: 3;
+    widows: 3;
+}
+
+/* Strong and emphasis */
+strong {
+    font-weight: 700;
+}
+
+em {
+    font-style: italic;
+}
+
+/* Title page styling */
+.title-page {
+    text-align: center;
+    page-break-after: always;
+}
+
+.title-page h1 {
+    margin-top: 2in;
+    font-size: 32pt;
+}
+
+/* Keep code examples together */
+h3 + pre,
+h4 + pre,
+p + pre {
+    page-break-before: avoid;
+}
+
+/* Prevent orphaned headings */
+h1, h2, h3, h4 {
+    page-break-inside: avoid;
+    page-break-after: avoid;
+}
+
+/* Quick reference boxes */
+pre:contains("情報デザイン") {
+    border: 2pt solid #000;
+    background-color: #fff;
+}

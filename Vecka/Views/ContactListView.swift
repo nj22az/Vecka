@@ -838,7 +838,7 @@ struct ContactListView: View {
                             .fill(isSelected ? JohoColors.red : JohoColors.white)
                             .frame(width: 28, height: 28)
                         Circle()
-                            .stroke(isSelected ? JohoColors.red : JohoColors.black.opacity(0.4), lineWidth: 2)
+                            .stroke(JohoColors.black, lineWidth: isSelected ? 2 : 1)
                             .frame(width: 28, height: 28)
                         if isSelected {
                             Image(systemName: "checkmark")
@@ -896,7 +896,7 @@ struct ContactListView: View {
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
         .frame(height: 64)
-        .background(isSelected ? JohoColors.redLight.opacity(0.3) : Color.clear)
+        .background(isSelected ? JohoColors.redLight : Color.clear)
     }
 
     // MARK: - Birthday Indicator (情報デザイン: Small pink dot)
@@ -1409,8 +1409,9 @@ struct ContactImportView: View {
                             .foregroundStyle(JohoColors.white)
                     }
                     .padding(JohoDimensions.spacingXL)
-                    .background(JohoColors.black.opacity(0.9))
+                    .background(JohoColors.black)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+                    .overlay(Squircle(cornerRadius: JohoDimensions.radiusLarge).stroke(JohoColors.white, lineWidth: 2))
                 }
             }
             .sheet(isPresented: $showingIOSContactPicker) {

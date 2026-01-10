@@ -102,10 +102,13 @@ struct DuplicateReviewSheet: View {
             if unionFind[id] == nil {
                 unionFind[id] = id
             }
-            if unionFind[id] != id {
-                unionFind[id] = find(unionFind[id]!)
+            guard let parent = unionFind[id] else { return id }
+            if parent != id {
+                let root = find(parent)
+                unionFind[id] = root
+                return root
             }
-            return unionFind[id]!
+            return parent
         }
 
         // Union function

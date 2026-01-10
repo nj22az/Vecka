@@ -925,7 +925,7 @@ struct HolidayRuleEditorSheet: View {
                 Text("Reset to Default")
             }
             .font(.system(size: 14, weight: .semibold, design: .rounded))
-            .foregroundStyle(Color.blue)
+            .foregroundStyle(JohoColors.cyan)
             .frame(maxWidth: .infinity)
             .padding(.vertical, JohoDimensions.spacingSM)
         }

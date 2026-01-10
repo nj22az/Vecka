@@ -12,7 +12,7 @@ PROJECT_NAME="Vecka"
 SCHEME_NAME="Vecka"
 PROJECT_FILE="Vecka.xcodeproj"
 BUILD_CONFIG="Debug"
-DESTINATION='platform=iOS Simulator,name=iPhone 16'
+DESTINATION='platform=iOS Simulator,name=iPhone 17 Pro'
 
 # Colors for output
 RED='\033[0;31m'
@@ -70,7 +70,7 @@ validate_project() {
     fi
     
     # Check if we're in the right directory
-    if [ ! -d "Vecka" ] || [ ! -d "VeckaWidget" ] || [ ! -d "VeckaShared" ]; then
+    if [ ! -d "Vecka" ] || [ ! -d "VeckaWidget" ]; then
         log_error "Missing required directories. Please run from project root."
         exit 1
     fi

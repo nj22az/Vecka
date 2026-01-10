@@ -178,14 +178,14 @@ struct ChangeLogEntryRow: View {
 
     private var actionColor: Color {
         switch entry.action {
-        case .created: return Color.green
-        case .modified: return Color.orange
-        case .deleted: return Color.red
-        case .enabled: return Color.green
-        case .disabled: return Color.gray
-        case .reset: return Color.blue
-        case .migrated: return Color.purple
-        case .defaultsLoaded: return Color.cyan
+        case .created: return JohoColors.green
+        case .modified: return JohoColors.orange
+        case .deleted: return JohoColors.red
+        case .enabled: return JohoColors.green
+        case .disabled: return JohoColors.black.opacity(0.4)
+        case .reset: return JohoColors.cyan
+        case .migrated: return JohoColors.eventPurple
+        case .defaultsLoaded: return JohoColors.cyan
         }
     }
 
@@ -193,7 +193,7 @@ struct ChangeLogEntryRow: View {
         HStack(spacing: JohoDimensions.spacingSM) {
             // Action icon
             Image(systemName: entry.actionIcon)
-                .font(.system(size: 20, weight: .medium))
+                .font(.system(size: 20, weight: .medium, design: .rounded))
                 .foregroundStyle(actionColor)
                 .frame(width: 32)
 
@@ -337,14 +337,14 @@ struct ChangeLogDetailSheet: View {
 
     private var actionColor: Color {
         switch entry.action {
-        case .created: return Color.green
-        case .modified: return Color.orange
-        case .deleted: return Color.red
-        case .enabled: return Color.green
-        case .disabled: return Color.gray
-        case .reset: return Color.blue
-        case .migrated: return Color.purple
-        case .defaultsLoaded: return Color.cyan
+        case .created: return JohoColors.green
+        case .modified: return JohoColors.orange
+        case .deleted: return JohoColors.red
+        case .enabled: return JohoColors.green
+        case .disabled: return JohoColors.black.opacity(0.4)
+        case .reset: return JohoColors.cyan
+        case .migrated: return JohoColors.eventPurple
+        case .defaultsLoaded: return JohoColors.cyan
         }
     }
 

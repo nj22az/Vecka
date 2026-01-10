@@ -307,46 +307,55 @@ struct DashboardView: View {
 
     // MARK: - Year Progress Card (情報デザイン: Green = Growth)
 
-    private var yearProgressCard: some View {
+    private var yearProgressData: (progress: Double, totalDays: Int, daysPassed: Int)? {
         let calendar = Calendar.iso8601
         let today = Date()
         let year = calendar.component(.year, from: today)
-        let startOfYear = calendar.date(from: DateComponents(year: year, month: 1, day: 1))!
-        let endOfYear = calendar.date(from: DateComponents(year: year + 1, month: 1, day: 1))!
-        let totalDays = calendar.dateComponents([.day], from: startOfYear, to: endOfYear).day!
-        let daysPassed = calendar.dateComponents([.day], from: startOfYear, to: today).day!
-        let progress = Double(daysPassed) / Double(totalDays)
+        guard let startOfYear = calendar.date(from: DateComponents(year: year, month: 1, day: 1)),
+              let endOfYear = calendar.date(from: DateComponents(year: year + 1, month: 1, day: 1)),
+              let totalDays = calendar.dateComponents([.day], from: startOfYear, to: endOfYear).day,
+              let daysPassed = calendar.dateComponents([.day], from: startOfYear, to: today).day,
+              totalDays > 0 else { return nil }
+        return (Double(daysPassed) / Double(totalDays), totalDays, daysPassed)
+    }
 
-        return DataCard(title: "YEAR", icon: "chart.bar.fill", zone: .expenses) {
-            VStack(spacing: JohoDimensions.spacingSM) {
-                Text("\(Int(progress * 100))%")
+    private var yearProgressCard: some View {
+        DataCard(title: "YEAR", icon: "chart.bar.fill", zone: .expenses) {
+            if let data = yearProgressData {
+                VStack(spacing: JohoDimensions.spacingSM) {
+                    Text("\(Int(data.progress * 100))%")
+                        .font(JohoFont.displaySmall)
+                        .foregroundStyle(JohoColors.black)
+
+                    // Progress bar - 情報デザイン: Squircle with black border
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            Squircle(cornerRadius: 4)
+                                .fill(JohoColors.black.opacity(0.1))
+                                .frame(height: 10)
+
+                            Squircle(cornerRadius: 4)
+                                .fill(JohoColors.green)
+                                .frame(width: geo.size.width * data.progress, height: 10)
+                        }
+                        .overlay(
+                            Squircle(cornerRadius: 4)
+                                .stroke(JohoColors.black, lineWidth: 1)
+                                .frame(height: 10)
+                        )
+                    }
+                    .frame(height: 10)
+
+                    Text("\(data.totalDays - data.daysPassed) days left")
+                        .font(JohoFont.caption)
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                }
+                .frame(maxWidth: .infinity)
+            } else {
+                Text("--")
                     .font(JohoFont.displaySmall)
                     .foregroundStyle(JohoColors.black)
-
-                // Progress bar - 情報デザイン: Squircle with black border
-                GeometryReader { geo in
-                    ZStack(alignment: .leading) {
-                        Squircle(cornerRadius: 4)
-                            .fill(JohoColors.black.opacity(0.1))
-                            .frame(height: 10)
-
-                        Squircle(cornerRadius: 4)
-                            .fill(JohoColors.green)
-                            .frame(width: geo.size.width * progress, height: 10)
-                    }
-                    .overlay(
-                        Squircle(cornerRadius: 4)
-                            .stroke(JohoColors.black, lineWidth: 1)
-                            .frame(height: 10)
-                    )
-                }
-                .frame(height: 10)
-
-                Text("\(totalDays - daysPassed) days left")
-                    .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
             }
-            .frame(maxWidth: .infinity)
         }
     }
 
@@ -550,9 +559,8 @@ struct DashboardView: View {
             return
         }
 
-        // Pick a random one
-        let randomItem = allSpecialDays.randomElement()!
-        spotlightItem = randomItem
+        // Pick a random one (safe - guard above ensures non-empty)
+        spotlightItem = allSpecialDays.randomElement()
     }
 
     private func getAllUpcomingSpecialDays() -> [SpotlightItem] {

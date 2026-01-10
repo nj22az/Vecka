@@ -820,7 +820,7 @@ struct ContactDetailView: View {
                             .clipShape(Squircle(cornerRadius: 8))
                             .overlay(
                                 Squircle(cornerRadius: 8)
-                                    .stroke(editHasBirthday && editBirthdayKnown ? JohoColors.black : JohoColors.black.opacity(0.3), lineWidth: editHasBirthday && editBirthdayKnown ? 1.5 : 1)
+                                    .stroke(JohoColors.black, lineWidth: editHasBirthday && editBirthdayKnown ? 1.5 : 1)
                             )
                         }
                         .buttonStyle(.plain)
@@ -859,14 +859,14 @@ struct ContactDetailView: View {
                                 Text("N/A")
                                     .font(.system(size: 11, weight: .bold, design: .rounded))
                             }
-                            .foregroundStyle(!editBirthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.5))
+                            .foregroundStyle(!editBirthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.6))
                             .padding(.horizontal, 14)
                             .padding(.vertical, 10)
-                            .background(!editBirthdayKnown ? JohoColors.black.opacity(0.4) : JohoColors.white)
+                            .background(!editBirthdayKnown ? JohoColors.black.opacity(0.6) : JohoColors.white)
                             .clipShape(Squircle(cornerRadius: 8))
                             .overlay(
                                 Squircle(cornerRadius: 8)
-                                    .stroke(JohoColors.black.opacity(!editBirthdayKnown ? 0.6 : 0.3), lineWidth: 1)
+                                    .stroke(JohoColors.black, lineWidth: 1)
                             )
                         }
                         .buttonStyle(.plain)
@@ -1085,8 +1085,9 @@ struct ContactDetailView: View {
 
                                 // Selection indicator
                                 Circle()
-                                    .fill(isSelected ? JohoColors.black : JohoColors.black.opacity(0.2))
+                                    .fill(isSelected ? JohoColors.black : JohoColors.inputBackground)
                                     .frame(width: 8, height: 8)
+                                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
@@ -1302,7 +1303,7 @@ struct ContactDetailView: View {
                     .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
             }
         }
-        .shadow(color: JohoColors.black.opacity(0.15), radius: 8, y: 4)
+        .shadow(color: JohoColors.black, radius: 0, x: 2, y: 2)
     }
 
     // MARK: - Control Buttons
@@ -1689,7 +1690,7 @@ struct JohoContactEditorSheet: View {
                     } label: {
                         Text(JohoSymbols.maru)  // ○
                             .font(.system(size: 26, weight: .bold))
-                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.6))
                             .frame(width: 44, height: 44)
                             .background(canSave ? accentColor : JohoColors.white)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
@@ -1721,7 +1722,7 @@ struct JohoContactEditorSheet: View {
                                 } else {
                                     // Elegant placeholder
                                     Circle()
-                                        .fill(JohoColors.black.opacity(0.05))
+                                        .fill(JohoColors.inputBackground)
                                         .frame(width: 120, height: 120)
                                         .overlay(
                                             VStack(spacing: 4) {
@@ -1733,7 +1734,7 @@ struct JohoContactEditorSheet: View {
                                                     .foregroundStyle(JohoColors.black.opacity(0.6))
                                             }
                                         )
-                                        .overlay(Circle().stroke(JohoColors.black.opacity(0.2), lineWidth: 1.5))
+                                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
                                 }
                             }
                             .frame(width: 120, height: 120)  // Fixed frame for tap area
@@ -1777,8 +1778,8 @@ struct JohoContactEditorSheet: View {
 
                     // Thin separator
                     Rectangle()
-                        .fill(JohoColors.black.opacity(0.1))
-                        .frame(height: 1)
+                        .fill(JohoColors.black)
+                        .frame(height: 0.5)
                         .padding(.horizontal, 40)
 
                     // Form fields - minimal style
@@ -1846,7 +1847,7 @@ struct JohoContactEditorSheet: View {
                             HStack(spacing: JohoDimensions.spacingSM) {
                                 Image(systemName: "birthday.cake")
                                     .font(.system(size: 16, weight: .medium))
-                                    .foregroundStyle(birthdayKnown ? SpecialDayType.birthday.accentColor : JohoColors.black.opacity(0.4))
+                                    .foregroundStyle(birthdayKnown ? SpecialDayType.birthday.accentColor : JohoColors.black.opacity(0.6))
                                     .frame(width: 24)
 
                                 // Three-state toggle: Has birthday / No birthday yet / N/A
@@ -1858,11 +1859,12 @@ struct JohoContactEditorSheet: View {
                                     } label: {
                                         Text("HAS")
                                             .font(.system(size: 11, weight: .bold, design: .rounded))
-                                            .foregroundStyle(hasBirthday && birthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.5))
+                                            .foregroundStyle(hasBirthday && birthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.6))
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
-                                            .background(hasBirthday && birthdayKnown ? SpecialDayType.birthday.accentColor : JohoColors.black.opacity(0.05))
+                                            .background(hasBirthday && birthdayKnown ? SpecialDayType.birthday.accentColor : JohoColors.inputBackground)
                                             .clipShape(Capsule())
+                                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                                     }
 
                                     // Not entered yet (default)
@@ -1872,11 +1874,12 @@ struct JohoContactEditorSheet: View {
                                     } label: {
                                         Text("NONE")
                                             .font(.system(size: 11, weight: .bold, design: .rounded))
-                                            .foregroundStyle(!hasBirthday && birthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.5))
+                                            .foregroundStyle(!hasBirthday && birthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.6))
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
-                                            .background(!hasBirthday && birthdayKnown ? JohoColors.black : JohoColors.black.opacity(0.05))
+                                            .background(!hasBirthday && birthdayKnown ? JohoColors.black : JohoColors.inputBackground)
                                             .clipShape(Capsule())
+                                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                                     }
 
                                     // N/A - explicitly unknown (won't show in Star page)
@@ -1886,11 +1889,12 @@ struct JohoContactEditorSheet: View {
                                     } label: {
                                         Text("N/A")
                                             .font(.system(size: 11, weight: .bold, design: .rounded))
-                                            .foregroundStyle(!birthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.5))
+                                            .foregroundStyle(!birthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.6))
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
-                                            .background(!birthdayKnown ? JohoColors.red : JohoColors.black.opacity(0.05))
+                                            .background(!birthdayKnown ? JohoColors.red : JohoColors.inputBackground)
                                             .clipShape(Capsule())
+                                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                                     }
                                 }
 
@@ -2021,7 +2025,7 @@ struct JohoContactEditorSheet: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("DECORATION")
                         .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
                     Text("Tap to change icon")
                         .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundStyle(JohoColors.black.opacity(0.6))

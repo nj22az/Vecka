@@ -437,7 +437,7 @@ struct LandingPageView: View {
         static func theme(for timezoneId: String) -> TimezoneTheme {
             // Extract region from timezone ID (e.g., "Asia/Tokyo" → "Asia")
             let region = timezoneId.split(separator: "/").first.map(String.init) ?? "default"
-            return themes[region] ?? themes["default"]!
+            return themes[region] ?? TimezoneTheme(region: "default", accentColor: Color(hex: "636E72"), lightBackground: Color(hex: "F0F2F3"))
         }
     }
 
