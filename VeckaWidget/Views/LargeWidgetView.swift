@@ -164,20 +164,31 @@ struct VeckaLargeWidgetView: View {
     private func dayCell(day: Int, dayIndex: Int) -> some View {
         let isToday = self.isToday(day: day)
         let dayDate = dateFor(day: day)
+        let dayStart = dayDate.map { calendar.startOfDay(for: $0) }
         let holidays = dayDate.map { holidayEngine.getHolidays(for: $0) } ?? []
+        let birthdays = dayStart.flatMap { entry.weekBirthdays[$0] } ?? []
         let isBankHoliday = holidays.first?.isBankHoliday ?? false
         let isSunday = dayIndex == 6
-        let hasEvent = !holidays.isEmpty
+        let hasHoliday = !holidays.isEmpty
+        let hasBirthday = !birthdays.isEmpty
 
         VStack(spacing: 2) {
             Text("\(day)")
                 .font(.system(size: 14, weight: isToday ? .bold : .regular, design: .rounded))
                 .foregroundStyle(cellTextColor(isToday: isToday, isBankHoliday: isBankHoliday, isSunday: isSunday))
 
-            if hasEvent {
-                Circle()
-                    .fill(isBankHoliday ? JohoWidget.Colors.alert : JohoWidget.Colors.event)
-                    .frame(width: 4, height: 4)
+            // 情報デザイン: Use icons for holidays and birthdays (consistent with main app)
+            HStack(spacing: 2) {
+                if hasHoliday {
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundStyle(isBankHoliday ? JohoWidget.Colors.alert : JohoWidget.Colors.event)
+                }
+                if hasBirthday {
+                    Image(systemName: "birthday.cake.fill")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundStyle(JohoWidget.Colors.holiday) // Pink for birthdays
+                }
             }
         }
         .frame(maxWidth: .infinity, minHeight: 36)

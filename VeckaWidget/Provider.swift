@@ -30,6 +30,8 @@ struct VeckaWidgetProvider: TimelineProvider {
             upcomingEvent: nil,
             todaysHolidays: [],
             upcomingHolidays: [],
+            todaysBirthdays: [],
+            weekBirthdays: [:],
             calendarAccessDenied: false
         )
     }
@@ -44,6 +46,8 @@ struct VeckaWidgetProvider: TimelineProvider {
             let accessDenied = !isCalendarAuthorized
             fetchCalendarEvents(for: now) { todays, week, next in
                 let (todaysHolidays, upcomingHolidays) = fetchHolidays(for: now)
+                let todaysBirthdays = fetchBirthdays(for: now)
+                let weekBirthdays = fetchWeekBirthdays(for: now)
                 completion(VeckaWidgetEntry(
                     date: now,
                     todaysEvents: todays,
@@ -51,6 +55,8 @@ struct VeckaWidgetProvider: TimelineProvider {
                     upcomingEvent: next,
                     todaysHolidays: todaysHolidays,
                     upcomingHolidays: upcomingHolidays,
+                    todaysBirthdays: todaysBirthdays,
+                    weekBirthdays: weekBirthdays,
                     calendarAccessDenied: accessDenied
                 ))
             }
@@ -64,6 +70,8 @@ struct VeckaWidgetProvider: TimelineProvider {
 
         fetchCalendarEvents(for: now) { todaysEvents, weekEvents, upcomingEvent in
             let (todaysHolidays, upcomingHolidays) = fetchHolidays(for: now)
+            let todaysBirthdays = fetchBirthdays(for: now)
+            let weekBirthdays = fetchWeekBirthdays(for: now)
             var entries: [VeckaWidgetEntry] = []
 
             // Create hourly updates for the next 24 hours
@@ -78,6 +86,8 @@ struct VeckaWidgetProvider: TimelineProvider {
                     upcomingEvent: upcomingEvent,
                     todaysHolidays: todaysHolidays,
                     upcomingHolidays: upcomingHolidays,
+                    todaysBirthdays: todaysBirthdays,
+                    weekBirthdays: weekBirthdays,
                     calendarAccessDenied: accessDenied
                 ))
             }
@@ -91,6 +101,8 @@ struct VeckaWidgetProvider: TimelineProvider {
                     upcomingEvent: upcomingEvent,
                     todaysHolidays: todaysHolidays,
                     upcomingHolidays: upcomingHolidays,
+                    todaysBirthdays: todaysBirthdays,
+                    weekBirthdays: weekBirthdays,
                     calendarAccessDenied: accessDenied
                 ))
             }
@@ -168,6 +180,68 @@ struct VeckaWidgetProvider: TimelineProvider {
         let upcomingHolidays = engine.getUpcomingHolidays(from: date, days: 30)
         return (todaysHolidays, upcomingHolidays)
     }
+
+    // MARK: - Birthday Fetching (情報デザイン: Birthdays from iOS Calendar)
+    private func fetchBirthdays(for date: Date) -> [WidgetBirthday] {
+        guard isCalendarAuthorized else { return [] }
+
+        let calendar = Self.calendar
+        let startOfDay = calendar.startOfDay(for: date)
+        guard let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) else { return [] }
+
+        // Find birthday calendars
+        let birthdayCalendars = eventStore.calendars(for: .event).filter { $0.type == .birthday }
+        guard !birthdayCalendars.isEmpty else { return [] }
+
+        let predicate = eventStore.predicateForEvents(
+            withStart: startOfDay,
+            end: endOfDay,
+            calendars: birthdayCalendars
+        )
+
+        return eventStore.events(matching: predicate).map { event in
+            WidgetBirthday(name: event.title ?? "Birthday", date: event.startDate)
+        }
+    }
+
+    /// Fetch birthdays for a range of dates (for week view)
+    private func fetchWeekBirthdays(for date: Date) -> [Date: [WidgetBirthday]] {
+        guard isCalendarAuthorized else { return [:] }
+
+        let calendar = Self.calendar
+        guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: date) else { return [:] }
+
+        // Find birthday calendars
+        let birthdayCalendars = eventStore.calendars(for: .event).filter { $0.type == .birthday }
+        guard !birthdayCalendars.isEmpty else { return [:] }
+
+        let predicate = eventStore.predicateForEvents(
+            withStart: weekInterval.start,
+            end: weekInterval.end,
+            calendars: birthdayCalendars
+        )
+
+        var birthdaysByDay: [Date: [WidgetBirthday]] = [:]
+        for event in eventStore.events(matching: predicate) {
+            let day = calendar.startOfDay(for: event.startDate)
+            let birthday = WidgetBirthday(name: event.title ?? "Birthday", date: event.startDate)
+            birthdaysByDay[day, default: []].append(birthday)
+        }
+        return birthdaysByDay
+    }
+}
+
+// MARK: - Widget Birthday Model
+struct WidgetBirthday: Identifiable {
+    let id = UUID()
+    let name: String
+    let date: Date
+
+    var displayName: String {
+        // Remove "'s Birthday" suffix if present (iOS adds this)
+        name.replacingOccurrences(of: "'s Birthday", with: "")
+            .replacingOccurrences(of: "'s birthday", with: "")
+    }
 }
 
 // MARK: - Thread-Safe Calendar Access
@@ -188,6 +262,8 @@ struct VeckaWidgetEntry: TimelineEntry {
     let upcomingEvent: EKEvent?
     let todaysHolidays: [WidgetHoliday]  // Today's holidays
     let upcomingHolidays: [WidgetHoliday]  // Upcoming holidays
+    let todaysBirthdays: [WidgetBirthday]  // Today's birthdays (情報デザイン)
+    let weekBirthdays: [Date: [WidgetBirthday]]  // Week birthdays for calendar view
     let calendarAccessDenied: Bool  // Shows feedback when calendar permission denied
 
     var weekNumber: Int {
@@ -245,6 +321,10 @@ struct VeckaWidgetEntry: TimelineEntry {
         !todaysHolidays.isEmpty
     }
 
+    var hasTodaysBirthdays: Bool {
+        !todaysBirthdays.isEmpty
+    }
+
     // Preview data
     static var preview: VeckaWidgetEntry {
         let engine = WidgetHolidayEngine()
@@ -256,6 +336,8 @@ struct VeckaWidgetEntry: TimelineEntry {
             upcomingEvent: nil,
             todaysHolidays: engine.getHolidays(for: today),
             upcomingHolidays: engine.getUpcomingHolidays(from: today, days: 30),
+            todaysBirthdays: [],
+            weekBirthdays: [:],
             calendarAccessDenied: false
         )
     }

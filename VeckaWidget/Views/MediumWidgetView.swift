@@ -41,8 +41,10 @@ struct VeckaMediumWidgetView: View {
         let startOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: entry.date)) ?? entry.date
         return (0..<7).map { offset in
             let date = calendar.date(byAdding: .day, value: offset, to: startOfWeek) ?? entry.date
+            let dayStart = calendar.startOfDay(for: date)
             let day = calendar.component(.day, from: date)
             let holidays = holidayEngine.getHolidays(for: date)
+            let birthdays = entry.weekBirthdays[dayStart] ?? []
             let isToday = calendar.isDate(date, inSameDayAs: entry.date)
             let isSunday = offset == 6
             return WeekDay(
@@ -50,7 +52,8 @@ struct VeckaMediumWidgetView: View {
                 isToday: isToday,
                 isSunday: isSunday,
                 isBankHoliday: holidays.first?.isBankHoliday ?? false,
-                hasEvent: !holidays.isEmpty
+                hasEvent: !holidays.isEmpty,
+                hasBirthday: !birthdays.isEmpty
             )
         }
     }
@@ -61,6 +64,10 @@ struct VeckaMediumWidgetView: View {
 
     private var todayHolidayName: String? {
         entry.todaysHolidays.first?.displayName
+    }
+
+    private var todayBirthdayName: String? {
+        entry.todaysBirthdays.first?.displayName
     }
 
     // MARK: - Body
@@ -138,14 +145,20 @@ struct VeckaMediumWidgetView: View {
 
             Spacer(minLength: 6)
 
-            // Bottom: Holiday indicator or nothing (MA: empty space is meaningful)
-            if let holiday = todayHolidayName {
-                holidayIndicator(name: holiday)
-                    .padding(.horizontal, 10)
-                    .padding(.bottom, 8)
-            } else {
-                Color.clear.frame(height: 20)
-                    .padding(.bottom, 8)
+            // Bottom: Holiday/Birthday indicators (情報デザイン: icons for both)
+            VStack(spacing: 4) {
+                if let holiday = todayHolidayName {
+                    holidayIndicator(name: holiday)
+                }
+                if let birthday = todayBirthdayName {
+                    birthdayIndicator(name: birthday)
+                }
+            }
+            .padding(.horizontal, 10)
+            .padding(.bottom, todayHolidayName == nil && todayBirthdayName == nil ? 8 : 4)
+
+            if todayHolidayName == nil && todayBirthdayName == nil {
+                Color.clear.frame(height: 12)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -181,12 +194,20 @@ struct VeckaMediumWidgetView: View {
                                 )
                         )
 
-                    // Event indicator (minimal dot)
-                    Circle()
-                        .fill(weekDay.hasEvent
-                            ? (weekDay.isBankHoliday ? JohoWidget.Colors.alert : JohoWidget.Colors.event)
-                            : Color.clear)
-                        .frame(width: 3, height: 3)
+                    // Event indicators (情報デザイン: icons for holidays and birthdays)
+                    HStack(spacing: 1) {
+                        if weekDay.hasEvent {
+                            Image(systemName: "star.fill")
+                                .font(.system(size: 6, weight: .bold))
+                                .foregroundStyle(weekDay.isBankHoliday ? JohoWidget.Colors.alert : JohoWidget.Colors.event)
+                        }
+                        if weekDay.hasBirthday {
+                            Image(systemName: "birthday.cake.fill")
+                                .font(.system(size: 6, weight: .bold))
+                                .foregroundStyle(JohoWidget.Colors.holiday) // Pink for birthdays
+                        }
+                    }
+                    .frame(height: 6)
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -197,13 +218,10 @@ struct VeckaMediumWidgetView: View {
 
     private func holidayIndicator(name: String) -> some View {
         HStack(spacing: 6) {
-            Circle()
-                .fill(JohoWidget.Colors.holiday)
-                .frame(width: 8, height: 8)
-                .overlay(
-                    Circle()
-                        .stroke(JohoWidget.Colors.border, lineWidth: 0.5)
-                )
+            // 情報デザイン: Use star icon for holidays (consistent with main app)
+            Image(systemName: "star.fill")
+                .font(.system(size: 10, weight: .bold))
+                .foregroundStyle(JohoWidget.Colors.alert)
 
             Text(name)
                 .font(.system(size: 12, weight: .semibold, design: .rounded))
@@ -211,6 +229,33 @@ struct VeckaMediumWidgetView: View {
                 .lineLimit(2)
                 .minimumScaleFactor(0.8)
                 .fixedSize(horizontal: false, vertical: true)
+
+            Spacer()
+        }
+        .padding(.vertical, 4)
+        .padding(.horizontal, 8)
+        .background(JohoWidget.Colors.holiday.opacity(0.15))
+        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .stroke(JohoWidget.Colors.border.opacity(0.3), lineWidth: 0.75)
+        )
+    }
+
+    // MARK: - Birthday Indicator (情報デザイン: consistent with main app)
+
+    private func birthdayIndicator(name: String) -> some View {
+        HStack(spacing: 6) {
+            // 情報デザイン: Use birthday cake icon (consistent with main app)
+            Image(systemName: "birthday.cake.fill")
+                .font(.system(size: 10, weight: .bold))
+                .foregroundStyle(JohoWidget.Colors.holiday) // Pink for birthdays
+
+            Text(name)
+                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                .foregroundStyle(JohoWidget.Colors.text)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
 
             Spacer()
         }
@@ -248,4 +293,5 @@ private struct WeekDay {
     let isSunday: Bool
     let isBankHoliday: Bool
     let hasEvent: Bool
+    let hasBirthday: Bool  // 情報デザイン: Birthday support
 }
