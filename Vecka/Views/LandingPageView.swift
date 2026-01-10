@@ -319,12 +319,32 @@ struct LandingPageView: View {
 
                         // Row 3: Week overview
                         weekCard
+
+                        // Row 4: Activity Strip
+                        activityStripCard
+
+                        // Row 5: Notes Stream
+                        if !recentNotes.isEmpty {
+                            notesStreamCard
+                        }
                     }
                     .frame(maxWidth: .infinity)
 
-                    // RIGHT COLUMN: Embedded Calendar
-                    embeddedCalendarCard
-                        .frame(width: 320)
+                    // RIGHT COLUMN: Embedded Calendar + Birthday + Expenses
+                    VStack(spacing: JohoDimensions.spacingMD) {
+                        embeddedCalendarCard
+
+                        // Birthday countdown (if any upcoming)
+                        if !upcomingBirthdays.isEmpty {
+                            birthdayCountdownCard
+                        }
+
+                        // Monthly expense summary
+                        if !thisMonthExpenses.isEmpty {
+                            monthlyExpenseSummaryCard
+                        }
+                    }
+                    .frame(width: 320)
                 }
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.top, JohoDimensions.spacingSM)
@@ -1869,6 +1889,596 @@ struct LandingPageView: View {
             }
         }
         .frame(height: 40)
+    }
+
+    // MARK: - NOTES STREAM Card (情報デザイン: Recent notes with color/symbol indicators)
+
+    /// Recent notes (last 5, sorted by date)
+    private var recentNotes: [DailyNote] {
+        Array(allNotes.prefix(5))
+    }
+
+    private var notesStreamCard: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Image(systemName: "note.text")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.yellow)
+
+                Text("NOTES")
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .tracking(1.5)
+                    .foregroundStyle(colors.primary)
+
+                Spacer()
+
+                // Pinned count indicator
+                let pinnedCount = allNotes.filter { $0.pinnedToDashboard == true }.count
+                if pinnedCount > 0 {
+                    HStack(spacing: 3) {
+                        Image(systemName: "pin.fill")
+                            .font(.system(size: 8, weight: .bold))
+                        Text("\(pinnedCount)")
+                    }
+                    .font(JohoFont.labelSmall)
+                    .foregroundStyle(JohoColors.red)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(JohoColors.red.opacity(0.1))
+                    .clipShape(Capsule())
+                }
+
+                Text("\(allNotes.count)")
+                    .font(JohoFont.labelSmall)
+                    .foregroundStyle(colors.secondary)
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            // Notes list
+            VStack(spacing: 0) {
+                ForEach(Array(recentNotes.enumerated()), id: \.element.id) { index, note in
+                    if index > 0 {
+                        Rectangle()
+                            .fill(colors.border.opacity(0.2))
+                            .frame(height: 1)
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+                    }
+
+                    noteStreamRow(note)
+                }
+            }
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+        )
+    }
+
+    /// Note stream row
+    private func noteStreamRow(_ note: DailyNote) -> some View {
+        let noteColor = note.color.map { Color(hex: $0) } ?? JohoColors.yellow
+        let isPinned = note.pinnedToDashboard == true
+
+        return HStack(spacing: JohoDimensions.spacingSM) {
+            // Color + Priority indicator
+            VStack(spacing: 2) {
+                Circle()
+                    .fill(noteColor)
+                    .frame(width: 10, height: 10)
+                    .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
+
+                // Priority marker (情報デザイン: マルバツ)
+                if let priority = note.priority {
+                    Text(priority == "high" ? "◎" : priority == "low" ? "△" : "")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundStyle(priority == "high" ? JohoColors.red : JohoColors.black.opacity(0.4))
+                }
+            }
+            .frame(width: 16)
+
+            // Symbol if any
+            if let symbolName = note.symbolName {
+                Image(systemName: symbolName)
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .foregroundStyle(noteColor)
+                    .frame(width: 16)
+            }
+
+            // Content preview
+            VStack(alignment: .leading, spacing: 2) {
+                Text(note.content.prefix(50) + (note.content.count > 50 ? "..." : ""))
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(colors.primary)
+                    .lineLimit(1)
+
+                // Date
+                Text(note.date.formatted(.dateTime.month(.abbreviated).day()))
+                    .font(.system(size: 10, weight: .medium, design: .rounded))
+                    .foregroundStyle(colors.secondary)
+            }
+
+            Spacer()
+
+            // Pinned indicator
+            if isPinned {
+                Image(systemName: "pin.fill")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(JohoColors.red)
+            }
+        }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
+    }
+
+    // MARK: - BIRTHDAY COUNTDOWN Card (情報デザイン: Next 3 birthdays)
+
+    /// Upcoming birthdays (next 3)
+    private var upcomingBirthdays: [(contact: Contact, daysUntil: Int)] {
+        let calendar = Calendar.current
+        var birthdays: [(Contact, Int)] = []
+
+        for contact in contacts {
+            guard let birthday = contact.birthday else { continue }
+            let birthdayComponents = calendar.dateComponents([.month, .day], from: birthday)
+
+            // Create this year's birthday
+            var thisYearBirthday = DateComponents()
+            thisYearBirthday.year = calendar.component(.year, from: today)
+            thisYearBirthday.month = birthdayComponents.month
+            thisYearBirthday.day = birthdayComponents.day
+
+            guard let birthdayDate = calendar.date(from: thisYearBirthday) else { continue }
+
+            var daysUntil = calendar.dateComponents([.day], from: today, to: birthdayDate).day ?? 0
+
+            // If birthday passed this year, calculate for next year
+            if daysUntil < 0 {
+                thisYearBirthday.year = calendar.component(.year, from: today) + 1
+                if let nextYearBirthday = calendar.date(from: thisYearBirthday) {
+                    daysUntil = calendar.dateComponents([.day], from: today, to: nextYearBirthday).day ?? 365
+                }
+            }
+
+            birthdays.append((contact, daysUntil))
+        }
+
+        return birthdays.sorted { $0.1 < $1.1 }.prefix(3).map { ($0.0, $0.1) }
+    }
+
+    private var birthdayCountdownCard: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Image(systemName: "birthday.cake.fill")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.pink)
+
+                Text("BIRTHDAYS")
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .tracking(1.5)
+                    .foregroundStyle(colors.primary)
+
+                Spacer()
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            // Birthday list
+            VStack(spacing: 0) {
+                ForEach(Array(upcomingBirthdays.enumerated()), id: \.element.contact.id) { index, item in
+                    if index > 0 {
+                        Rectangle()
+                            .fill(colors.border.opacity(0.2))
+                            .frame(height: 1)
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+                    }
+
+                    birthdayRow(contact: item.contact, daysUntil: item.daysUntil)
+                }
+            }
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+        )
+    }
+
+    /// Birthday row
+    private func birthdayRow(contact: Contact, daysUntil: Int) -> some View {
+        let firstName = contact.givenName.isEmpty ? contact.familyName : contact.givenName
+
+        return HStack(spacing: JohoDimensions.spacingSM) {
+            // Days countdown badge
+            VStack(spacing: 0) {
+                if daysUntil == 0 {
+                    Text("TODAY")
+                        .font(.system(size: 9, weight: .black, design: .rounded))
+                        .foregroundStyle(JohoColors.pink)
+                } else {
+                    Text("\(daysUntil)")
+                        .font(.system(size: 16, weight: .black, design: .rounded))
+                        .foregroundStyle(daysUntil <= 7 ? JohoColors.pink : colors.primary)
+                    Text("days")
+                        .font(.system(size: 8, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+            }
+            .frame(width: 44)
+            .padding(.vertical, 4)
+            .background(daysUntil == 0 ? JohoColors.pink.opacity(0.2) : colors.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .stroke(daysUntil <= 7 ? JohoColors.pink : colors.border.opacity(0.3), lineWidth: 1)
+            )
+
+            // Name
+            VStack(alignment: .leading, spacing: 2) {
+                Text(firstName)
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(colors.primary)
+                    .lineLimit(1)
+
+                // Birthday date
+                if let birthday = contact.birthday {
+                    Text(birthday.formatted(.dateTime.month(.abbreviated).day()))
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+            }
+
+            Spacer()
+
+            // Star for imminent birthdays
+            if daysUntil <= 7 {
+                Image(systemName: daysUntil == 0 ? "star.fill" : "star")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(JohoColors.pink)
+            }
+        }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
+    }
+
+    // MARK: - MONTHLY EXPENSE SUMMARY Card (情報デザイン: Spending overview)
+
+    /// This month's expenses
+    private var thisMonthExpenses: [ExpenseItem] {
+        let calendar = Calendar.iso8601
+        guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: today)) else {
+            return []
+        }
+        return allExpenses.filter { $0.date >= startOfMonth }
+    }
+
+    /// Category breakdown for this month
+    private var expenseCategoryBreakdown: [(category: String, icon: String, color: Color, total: Double)] {
+        var breakdown: [String: (icon: String, color: Color, total: Double)] = [:]
+
+        for expense in thisMonthExpenses {
+            let categoryName = expense.category?.name ?? "Other"
+            let icon = expense.category?.iconName ?? "creditcard.fill"
+            let color = expense.category?.color ?? JohoColors.green
+
+            if let existing = breakdown[categoryName] {
+                breakdown[categoryName] = (existing.icon, existing.color, existing.total + expense.amount)
+            } else {
+                breakdown[categoryName] = (icon, color, expense.amount)
+            }
+        }
+
+        return breakdown.map { ($0.key, $0.value.icon, $0.value.color, $0.value.total) }
+            .sorted { $0.3 > $1.3 }
+    }
+
+    private var monthlyExpenseSummaryCard: some View {
+        let total = thisMonthExpenses.reduce(0) { $0 + $1.amount }
+        let primaryCurrency = thisMonthExpenses.first?.currency ?? "SEK"
+
+        return VStack(spacing: 0) {
+            // Header with total
+            HStack {
+                Image(systemName: "chart.pie.fill")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.green)
+
+                Text("EXPENSES")
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .tracking(1.5)
+                    .foregroundStyle(colors.primary)
+
+                Spacer()
+
+                Text(currentMonthTheme.name.prefix(3).uppercased())
+                    .font(JohoFont.labelSmall)
+                    .foregroundStyle(colors.secondary)
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            // Total amount
+            VStack(spacing: 4) {
+                Text(formatCurrency(total, currency: primaryCurrency))
+                    .font(.system(size: 28, weight: .black, design: .rounded))
+                    .foregroundStyle(colors.primary)
+
+                Text("\(thisMonthExpenses.count) expenses")
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                    .foregroundStyle(colors.secondary)
+            }
+            .padding(.vertical, JohoDimensions.spacingMD)
+
+            // Category breakdown
+            if !expenseCategoryBreakdown.isEmpty {
+                Rectangle()
+                    .fill(colors.border.opacity(0.3))
+                    .frame(height: 1)
+
+                VStack(spacing: JohoDimensions.spacingXS) {
+                    ForEach(expenseCategoryBreakdown.prefix(4), id: \.category) { item in
+                        HStack(spacing: JohoDimensions.spacingSM) {
+                            // Category icon
+                            Image(systemName: item.icon)
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundStyle(item.color)
+                                .frame(width: 20)
+
+                            // Category name
+                            Text(item.category)
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundStyle(colors.primary)
+
+                            Spacer()
+
+                            // Amount
+                            Text(formatCurrency(item.total, currency: primaryCurrency))
+                                .font(.system(size: 12, weight: .bold, design: .rounded))
+                                .foregroundStyle(colors.primary)
+
+                            // Percentage
+                            let percentage = Int((item.total / total) * 100)
+                            Text("\(percentage)%")
+                                .font(.system(size: 10, weight: .medium, design: .rounded))
+                                .foregroundStyle(colors.secondary)
+                                .frame(width: 32, alignment: .trailing)
+                        }
+                    }
+                }
+                .padding(JohoDimensions.spacingSM)
+            }
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+        )
+    }
+
+    /// Format currency amount
+    private func formatCurrency(_ amount: Double, currency: String) -> String {
+        let symbol = CurrencyDefinition.symbol(for: currency)
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 0
+        let formattedAmount = formatter.string(from: NSNumber(value: amount)) ?? "\(Int(amount))"
+        return "\(symbol)\(formattedAmount)"
+    }
+
+    // MARK: - WEEK ACTIVITY STRIP Card (情報デザイン: Visual density dots)
+
+    private var activityStripCard: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Image(systemName: "waveform.path.ecg")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.eventPurple)
+
+                Text("ACTIVITY")
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .tracking(1.5)
+                    .foregroundStyle(colors.primary)
+
+                Spacer()
+
+                // Legend
+                HStack(spacing: 8) {
+                    legendDot(color: JohoColors.yellow, label: "N")
+                    legendDot(color: JohoColors.green, label: "E")
+                    legendDot(color: JohoColors.pink, label: "H")
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            // Activity strip
+            HStack(spacing: 0) {
+                ForEach(activityStripDays, id: \.date) { day in
+                    if day.dayOfWeek > 1 {
+                        Rectangle()
+                            .fill(colors.border.opacity(0.2))
+                            .frame(width: 1)
+                    }
+
+                    activityDayCell(day)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .padding(.vertical, JohoDimensions.spacingSM)
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+        )
+    }
+
+    /// Legend dot
+    private func legendDot(color: Color, label: String) -> some View {
+        HStack(spacing: 2) {
+            Circle()
+                .fill(color)
+                .frame(width: 6, height: 6)
+            Text(label)
+                .font(.system(size: 9, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.secondary)
+        }
+    }
+
+    /// Activity strip day model
+    private struct ActivityDay {
+        let date: Date
+        let dayOfWeek: Int
+        let name: String
+        let isToday: Bool
+        let noteCount: Int
+        let expenseCount: Int
+        let holidayCount: Int
+    }
+
+    /// Get activity strip days for current week
+    private var activityStripDays: [ActivityDay] {
+        let calendar = Calendar.iso8601
+        guard let weekStart = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: today)) else {
+            return []
+        }
+
+        return (0..<7).compactMap { offset in
+            guard let date = calendar.date(byAdding: .day, value: offset, to: weekStart) else { return nil }
+            let dayStart = calendar.startOfDay(for: date)
+            let name = date.formatted(.dateTime.weekday(.narrow)).uppercased()
+            let dayOfWeek = offset + 1  // 1-7 for Mon-Sun
+            let isToday = calendar.isDateInToday(date)
+
+            // Count notes
+            let noteCount = allNotes.filter { calendar.startOfDay(for: $0.date) == dayStart }.count
+
+            // Count expenses
+            let expenseCount = allExpenses.filter { calendar.startOfDay(for: $0.date) == dayStart }.count
+
+            // Count holidays/events
+            var holidayCount = 0
+            if let holidays = holidayManager.holidayCache[dayStart] {
+                holidayCount = holidays.count
+            }
+            // Add birthday count
+            let month = calendar.component(.month, from: date)
+            let day = calendar.component(.day, from: date)
+            for contact in contacts {
+                guard let birthday = contact.birthday else { continue }
+                if calendar.component(.month, from: birthday) == month &&
+                   calendar.component(.day, from: birthday) == day {
+                    holidayCount += 1
+                }
+            }
+
+            return ActivityDay(
+                date: date,
+                dayOfWeek: dayOfWeek,
+                name: name,
+                isToday: isToday,
+                noteCount: noteCount,
+                expenseCount: expenseCount,
+                holidayCount: holidayCount
+            )
+        }
+    }
+
+    /// Activity day cell
+    private func activityDayCell(_ day: ActivityDay) -> some View {
+        VStack(spacing: 4) {
+            // Day name
+            Text(day.name)
+                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .foregroundStyle(day.isToday ? JohoColors.yellow : colors.secondary)
+
+            // Activity dots stack (情報デザイン: Visual density)
+            VStack(spacing: 2) {
+                // Notes (yellow)
+                HStack(spacing: 1) {
+                    ForEach(0..<min(day.noteCount, 3), id: \.self) { _ in
+                        Circle()
+                            .fill(JohoColors.yellow)
+                            .frame(width: 5, height: 5)
+                    }
+                    if day.noteCount > 3 {
+                        Text("+")
+                            .font(.system(size: 7, weight: .bold))
+                            .foregroundStyle(JohoColors.yellow)
+                    }
+                }
+                .frame(height: 6)
+
+                // Expenses (green)
+                HStack(spacing: 1) {
+                    ForEach(0..<min(day.expenseCount, 3), id: \.self) { _ in
+                        Circle()
+                            .fill(JohoColors.green)
+                            .frame(width: 5, height: 5)
+                    }
+                    if day.expenseCount > 3 {
+                        Text("+")
+                            .font(.system(size: 7, weight: .bold))
+                            .foregroundStyle(JohoColors.green)
+                    }
+                }
+                .frame(height: 6)
+
+                // Holidays/Events (pink)
+                HStack(spacing: 1) {
+                    ForEach(0..<min(day.holidayCount, 3), id: \.self) { _ in
+                        Circle()
+                            .fill(JohoColors.pink)
+                            .frame(width: 5, height: 5)
+                    }
+                    if day.holidayCount > 3 {
+                        Text("+")
+                            .font(.system(size: 7, weight: .bold))
+                            .foregroundStyle(JohoColors.pink)
+                    }
+                }
+                .frame(height: 6)
+            }
+
+            // Today indicator
+            if day.isToday {
+                Circle()
+                    .fill(JohoColors.yellow)
+                    .frame(width: 4, height: 4)
+            } else {
+                Spacer()
+                    .frame(height: 4)
+            }
+        }
+        .padding(.vertical, 4)
     }
 }
 
