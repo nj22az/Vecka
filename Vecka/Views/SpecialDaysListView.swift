@@ -94,8 +94,8 @@ struct SpecialDaysListView: View {
     // Item expansion state (情報デザイン: tap to show details)
     @State private var expandedItemID: String?
 
-    // 情報デザイン: Expandable legend row (same as Calendar page)
-    @State private var isLegendExpanded = false
+    // 情報デザイン: Tappable stat indicators show type name
+    @State private var selectedStatType: SpecialDayType?
 
     // 情報デザイン: Holiday Database Explorer
     @State private var showingDatabaseExplorer = false
@@ -103,83 +103,6 @@ struct SpecialDaysListView: View {
     private var years: [Int] {
         let current = Calendar.current.component(.year, from: Date())
         return Array((current - 20)...(current + 20))
-    }
-
-    // MARK: - Legend Data (情報デザイン)
-
-    /// Legend item representing an indicator type present in the year
-    struct LegendItem: Identifiable {
-        let id = UUID()
-        let type: String
-        let label: String
-        let icon: String
-        let color: Color
-    }
-
-    /// Collects indicator types present in the selected year
-    /// Priority order: HOL > BDY > OBS > EVT > NTE > TRP > EXP
-    private var presentIndicators: [LegendItem] {
-        var items: [LegendItem] = []
-        let calendar = Calendar.current
-
-        // 1. Holidays (Bank Holidays) - RED
-        let hasHolidays = holidayManager.holidayCache.keys.contains { date in
-            calendar.component(.year, from: date) == selectedYear &&
-            (holidayManager.holidayCache[date]?.contains { $0.isBankHoliday } ?? false)
-        }
-        if hasHolidays {
-            items.append(LegendItem(type: "HOL", label: "Holiday", icon: SpecialDayType.holiday.defaultIcon, color: SpecialDayType.holiday.accentColor))
-        }
-
-        // 2. Birthdays - PINK (from contacts)
-        let hasBirthdays = contacts.contains { $0.birthday != nil }
-        if hasBirthdays {
-            items.append(LegendItem(type: "BDY", label: "Birthday", icon: SpecialDayType.birthday.defaultIcon, color: SpecialDayType.birthday.accentColor))
-        }
-
-        // 3. Observances - ORANGE
-        let hasObservances = holidayManager.holidayCache.keys.contains { date in
-            calendar.component(.year, from: date) == selectedYear &&
-            (holidayManager.holidayCache[date]?.contains { !$0.isBankHoliday } ?? false)
-        }
-        if hasObservances {
-            items.append(LegendItem(type: "OBS", label: "Observance", icon: SpecialDayType.observance.defaultIcon, color: SpecialDayType.observance.accentColor))
-        }
-
-        // 4. Events - PURPLE (countdown events)
-        let hasEvents = countdownEvents.contains { event in
-            calendar.component(.year, from: event.targetDate) == selectedYear
-        }
-        if hasEvents {
-            items.append(LegendItem(type: "EVT", label: "Event", icon: SpecialDayType.event.defaultIcon, color: SpecialDayType.event.accentColor))
-        }
-
-        // 5. Notes - YELLOW
-        let hasNotes = dailyNotes.contains { note in
-            calendar.component(.year, from: note.date) == selectedYear
-        }
-        if hasNotes {
-            items.append(LegendItem(type: "NTE", label: "Note", icon: SpecialDayType.note.defaultIcon, color: SpecialDayType.note.accentColor))
-        }
-
-        // 6. Trips - BLUE
-        let hasTrips = trips.contains { trip in
-            calendar.component(.year, from: trip.startDate) == selectedYear ||
-            calendar.component(.year, from: trip.endDate) == selectedYear
-        }
-        if hasTrips {
-            items.append(LegendItem(type: "TRP", label: "Trip", icon: SpecialDayType.trip.defaultIcon, color: SpecialDayType.trip.accentColor))
-        }
-
-        // 7. Expenses - GREEN
-        let hasExpenses = expenses.contains { expense in
-            calendar.component(.year, from: expense.date) == selectedYear
-        }
-        if hasExpenses {
-            items.append(LegendItem(type: "EXP", label: "Expense", icon: SpecialDayType.expense.defaultIcon, color: SpecialDayType.expense.accentColor))
-        }
-
-        return items
     }
 
     // MARK: - Computed Data
@@ -465,12 +388,6 @@ struct SpecialDaysListView: View {
                     monthDetailView(for: month)
                 } else {
                     monthGrid
-
-                    // 情報デザイン: Expandable legend showing indicator types in current year
-                    if !presentIndicators.isEmpty {
-                        starPageLegend
-                            .padding(.horizontal, JohoDimensions.spacingLG)
-                    }
                 }
                 Spacer(minLength: JohoDimensions.spacingXL)
             }
@@ -742,28 +659,42 @@ struct SpecialDaysListView: View {
 
     private var bentoStatsRow: some View {
         HStack(spacing: JohoDimensions.spacingMD) {
-            // 情報デザイン: Indicator order MUST match legend (presentIndicators)
+            // 情報デザイン: Tappable stat indicators - tap to see type name
             // Priority order: HOL > BDY > OBS > EVT > NTE > TRP > EXP
             if holidayCount > 0 {
-                statIndicator(count: holidayCount, icon: SpecialDayType.holiday.defaultIcon, color: SpecialDayType.holiday.accentColor)
+                statIndicator(type: .holiday, count: holidayCount)
             }
             if birthdayCount > 0 {
-                statIndicator(count: birthdayCount, icon: SpecialDayType.birthday.defaultIcon, color: SpecialDayType.birthday.accentColor)
+                statIndicator(type: .birthday, count: birthdayCount)
             }
             if observanceCount > 0 {
-                statIndicator(count: observanceCount, icon: SpecialDayType.observance.defaultIcon, color: SpecialDayType.observance.accentColor)
+                statIndicator(type: .observance, count: observanceCount)
             }
             if eventCount > 0 {
-                statIndicator(count: eventCount, icon: SpecialDayType.event.defaultIcon, color: SpecialDayType.event.accentColor)
+                statIndicator(type: .event, count: eventCount)
             }
             if noteCount > 0 {
-                statIndicator(count: noteCount, icon: SpecialDayType.note.defaultIcon, color: SpecialDayType.note.accentColor)
+                statIndicator(type: .note, count: noteCount)
             }
             if tripCount > 0 {
-                statIndicator(count: tripCount, icon: SpecialDayType.trip.defaultIcon, color: SpecialDayType.trip.accentColor)
+                statIndicator(type: .trip, count: tripCount)
             }
             if expenseCount > 0 {
-                statIndicator(count: expenseCount, icon: SpecialDayType.expense.defaultIcon, color: SpecialDayType.expense.accentColor)
+                statIndicator(type: .expense, count: expenseCount)
+            }
+
+            // 情報デザイン: Show selected type label with animation
+            if let selected = selectedStatType {
+                Text(selected.title.uppercased())
+                    .font(.system(size: 9, weight: .bold, design: .rounded))
+                    .tracking(0.5)
+                    .foregroundStyle(selected.accentColor)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(selected.lightBackground)
+                    .clipShape(Capsule())
+                    .overlay(Capsule().stroke(selected.accentColor, lineWidth: 1))
+                    .transition(.scale.combined(with: .opacity))
             }
 
             // Show empty state only when no entries exist
@@ -789,18 +720,38 @@ struct SpecialDaysListView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
             }
         }
+        .animation(.easeInOut(duration: 0.2), value: selectedStatType)
     }
 
-    private func statIndicator(count: Int, icon: String, color: Color) -> some View {
-        HStack(spacing: 4) {
-            Image(systemName: icon)
-                .font(.system(size: 10, weight: .semibold, design: .rounded))
-                .foregroundStyle(color)
-                .frame(width: 12, height: 12)
-            Text("\(count)")
-                .font(JohoFont.labelSmall)
-                .foregroundStyle(JohoColors.black)
+    /// 情報デザイン: Tappable stat indicator - shows type name when tapped
+    private func statIndicator(type: SpecialDayType, count: Int) -> some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                if selectedStatType == type {
+                    selectedStatType = nil  // Tap again to dismiss
+                } else {
+                    selectedStatType = type
+                }
+            }
+            HapticManager.selection()
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: type.defaultIcon)
+                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .foregroundStyle(type.accentColor)
+                    .frame(width: 12, height: 12)
+                Text("\(count)")
+                    .font(JohoFont.labelSmall)
+                    .foregroundStyle(JohoColors.black)
+            }
+            .padding(.horizontal, 4)
+            .padding(.vertical, 2)
+            .background(selectedStatType == type ? type.lightBackground : Color.clear)
+            .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
         }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(type.title): \(count)")
+        .accessibilityHint("Tap to show type name")
     }
 
     // MARK: - Month Grid (情報デザイン: 12 Month Flipcards in 3-Column Bento)
@@ -813,7 +764,7 @@ struct SpecialDaysListView: View {
         ]
 
         return VStack(spacing: JohoDimensions.spacingMD) {
-            // Month grid (legend shown in header when viewing month details)
+            // Month grid (tap stat icons in header to see type names)
             LazyVGrid(columns: columns, spacing: JohoDimensions.spacingSM) {
                 ForEach(1...12, id: \.self) { month in
                     monthFlipcard(for: month)
@@ -821,86 +772,6 @@ struct SpecialDaysListView: View {
             }
             .padding(.horizontal, JohoDimensions.spacingLG)
         }
-    }
-
-    // MARK: - Star Page Legend (情報デザイン)
-
-    /// Expandable legend row showing indicator types present in current year
-    private var starPageLegend: some View {
-        VStack(spacing: 0) {
-            // Header row - tappable to expand/collapse
-            Button {
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    isLegendExpanded.toggle()
-                }
-                HapticManager.selection()
-            } label: {
-                HStack(spacing: JohoDimensions.spacingSM) {
-                    // Icon zone - list bullet in cyan squircle
-                    Image(systemName: "list.bullet")
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
-                        .frame(width: 24, height: 24)
-                        .background(JohoColors.cyan.opacity(0.3))
-                        .clipShape(Squircle(cornerRadius: 5))
-                        .overlay(Squircle(cornerRadius: 5).stroke(JohoColors.black, lineWidth: 1))
-
-                    Text("LEGEND")
-                        .font(.system(size: 12, weight: .black, design: .rounded))
-                        .tracking(1)
-                        .foregroundStyle(JohoColors.black)
-
-                    Image(systemName: isLegendExpanded ? "chevron.down" : "chevron.right")
-                        .font(.system(size: 11, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
-
-                    Spacer()
-
-                    // Count badge showing number of indicator types
-                    if !presentIndicators.isEmpty {
-                        Text("\(presentIndicators.count)")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
-                    }
-                }
-                .padding(.horizontal, JohoDimensions.spacingMD)
-                .padding(.vertical, JohoDimensions.spacingSM)
-            }
-            .buttonStyle(.plain)
-
-            // Expanded content - clean 4-column grid of icons with labels
-            if isLegendExpanded && !presentIndicators.isEmpty {
-                Rectangle()
-                    .fill(JohoColors.black.opacity(0.2))
-                    .frame(height: 1)
-                    .padding(.horizontal, JohoDimensions.spacingMD)
-
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4), spacing: 8) {
-                    ForEach(presentIndicators) { item in
-                        VStack(spacing: 4) {
-                            Image(systemName: item.icon)
-                                .font(.system(size: 14, weight: .semibold, design: .rounded))
-                                .foregroundStyle(item.color)
-                            Text(item.type)
-                                .font(.system(size: 9, weight: .bold, design: .rounded))
-                                .foregroundStyle(JohoColors.black.opacity(0.7))
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-                }
-                .padding(.horizontal, JohoDimensions.spacingMD)
-                .padding(.vertical, JohoDimensions.spacingSM)
-            }
-        }
-        .background(JohoColors.white)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-        )
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("Legend, \(presentIndicators.count) indicator types")
-        .accessibilityHint(isLegendExpanded ? "Tap to collapse" : "Tap to expand")
     }
 
     // MARK: - Month Flipcard (情報デザイン: Compartmentalized Bento Style)
