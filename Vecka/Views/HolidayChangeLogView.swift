@@ -184,7 +184,7 @@ struct ChangeLogEntryRow: View {
         case .enabled: return JohoColors.green
         case .disabled: return JohoColors.black.opacity(0.4)
         case .reset: return JohoColors.cyan
-        case .migrated: return JohoColors.eventPurple
+        case .migrated: return JohoColors.cyan
         case .defaultsLoaded: return JohoColors.cyan
         }
     }
@@ -343,7 +343,7 @@ struct ChangeLogDetailSheet: View {
         case .enabled: return JohoColors.green
         case .disabled: return JohoColors.black.opacity(0.4)
         case .reset: return JohoColors.cyan
-        case .migrated: return JohoColors.eventPurple
+        case .migrated: return JohoColors.cyan
         case .defaultsLoaded: return JohoColors.cyan
         }
     }

@@ -44,37 +44,59 @@ extension Color {
 }
 
 // MARK: - Core Colors (Like Muhi/Rohto Packaging)
+// 情報デザイン Option B: 6-Color Simplified Palette
+// Each color has ONE clear meaning to reduce cognitive load
 
 enum JohoColors {
     // Primary contrast pair - ALWAYS use these for text
     static let black = Color(hex: "000000")
     static let white = Color(hex: "FFFFFF")
 
-    // Section background colors (情報デザイン semantic colors - CLAUDE.md spec)
-    static let pink = Color(hex: "FECDD3")      // Special Days - celebrations (#FECDD3)
-    static let red = Color(hex: "E53935")       // Alert/Warnings/Sundays (#E53935)
+    // ═══════════════════════════════════════════════════════════════════
+    // 情報デザイン: 6-COLOR SEMANTIC PALETTE
+    // ═══════════════════════════════════════════════════════════════════
+    // 1. YELLOW  = 今 (ima)   - NOW: Today, current moment, personal notes
+    // 2. CYAN    = 予定 (yotei) - SCHEDULED: Events, trips, appointments
+    // 3. PINK    = 祝 (iwai)  - CELEBRATION: Holidays, birthdays, special days
+    // 4. GREEN   = 金 (kane)  - MONEY: Expenses, financial items
+    // 5. PURPLE  = 人 (hito)  - PEOPLE: Contacts, relationships
+    // 6. RED     = 警告       - ALERT: Warnings, errors (system only)
+    // ═══════════════════════════════════════════════════════════════════
 
-    // 情報デザイン: Light tints for bento box backgrounds (so colored circles are visible)
-    static let redLight = Color(hex: "FECACA")      // Light red for holiday bento boxes
-    static let pinkLight = Color(hex: "FED7E2")     // Light pink for birthday bento boxes
-    static let green = Color(hex: "BBF7D0")     // Money/Expenses (#BBF7D0)
-    static let yellow = Color(hex: "FFE566")    // NOW/Present/Today (#FFE566)
-    static let orange = Color(hex: "FED7AA")    // Movement/Trips (#FED7AA)
-    static let cyan = Color(hex: "A5F3FC")      // Scheduled Time/Events (#A5F3FC)
-    static let cream = Color(hex: "FEF3C7")     // Personal/Notes (#FEF3C7)
-    static let purple = Color(hex: "E9D5FF")    // People/Contacts (#E9D5FF)
+    static let yellow = Color(hex: "FFE566")    // NOW - today, notes, present moment
+    static let cyan = Color(hex: "A5F3FC")      // SCHEDULED - events, trips, calendar
+    static let pink = Color(hex: "FECDD3")      // CELEBRATION - holidays, birthdays
+    static let green = Color(hex: "BBF7D0")     // MONEY - expenses
+    static let purple = Color(hex: "E9D5FF")    // PEOPLE - contacts
+    static let red = Color(hex: "E53935")       // ALERT - warnings, errors (system)
 
-    // Type-specific colors (for indicator circles)
-    static let eventPurple = Color(hex: "805AD5")  // EVT - Events
-    static let tripBlue = Color(hex: "3182CE")     // TRP - Trips
+    // Light tints for bento box backgrounds
+    static let yellowLight = Color(hex: "FEF3C7")   // Light yellow for notes
+    static let cyanLight = Color(hex: "CFFAFE")     // Light cyan for events
+    static let pinkLight = Color(hex: "FED7E2")     // Light pink for celebrations
+    static let greenLight = Color(hex: "D1FAE5")    // Light green for expenses
+    static let purpleLight = Color(hex: "F3E8FF")   // Light purple for contacts
+    static let redLight = Color(hex: "FECACA")      // Light red for alerts
+
+    // DEPRECATED: Use yellow instead (kept for migration)
+    @available(*, deprecated, message: "Use yellow - notes are 'present moment' items")
+    static let cream = Color(hex: "FFE566")
+
+    // DEPRECATED: Use cyan instead (kept for migration)
+    @available(*, deprecated, message: "Use cyan - trips are scheduled time items")
+    static let orange = Color(hex: "A5F3FC")
+
+    // Type-specific indicator colors (darker versions for visibility on white)
+    static let tripBlue = Color(hex: "3182CE")     // TRP indicator on calendar
+    static let eventPurple = Color(hex: "805AD5")  // EVT indicator on calendar
 
     // App base (dark mode base, but sections are colorful)
     static let background = Color(hex: "1A1A2E")
     static let surface = Color(hex: "FFFFFF")   // Cards are WHITE with black borders
 
-    // Form & Input semantic colors (情報デザイン)
+    // Form & Input semantic colors
     static let inputBackground = Color(hex: "F5F5F5")  // Light gray for text fields
-    static let notesBackground = Color(hex: "FEF3C7")  // Warm cream for notes content
+    static let notesBackground = Color(hex: "FFE566").opacity(0.3)  // Yellow tint for notes
 
     // Action colors (destructive/interactive)
     static let editAction = Color(hex: "3182CE")       // Blue for edit actions
@@ -249,52 +271,69 @@ extension View {
 }
 
 // MARK: - Section Zones (色分け)
-// Each feature gets a distinct pastel background + BLACK border
+// 情報デザイン Option B: 6-Color Simplified Zones
+// Each zone maps to ONE semantic color for reduced cognitive load
 
 enum SectionZone {
-    case calendar    // Cyan - cool, organized (legacy)
-    case notes       // Yellow - attention, ideas
-    case expenses    // Green - money, growth
-    case trips       // Blue - travel, adventure
-    case holidays    // RED - celebration, holidays
-    case observances // Orange - observances
-    case birthdays   // PINK - birthdays (from Contacts)
-    case contacts    // Cream - people, warmth
-    case events      // Purple - personal events/countdowns
-    case countdowns  // Purple (alias for events)
-    case warning     // Orange - alerts
+    // ═══════════════════════════════════════════════════════════════════
+    // 6 SEMANTIC ZONES (matching 6-color palette)
+    // ═══════════════════════════════════════════════════════════════════
+    case notes       // YELLOW - present moment, personal items
+    case calendar    // CYAN - scheduled time (events, trips, calendar)
+    case trips       // CYAN - scheduled time (alias for calendar)
+    case events      // CYAN - scheduled time (alias for calendar)
+    case countdowns  // CYAN - scheduled time (alias for calendar)
+    case holidays    // PINK - celebrations, special days
+    case observances // PINK - celebrations (alias for holidays)
+    case birthdays   // PINK - celebrations (alias for holidays)
+    case expenses    // GREEN - money, financial items
+    case contacts    // PURPLE - people, relationships
+    case warning     // RED - alerts (system only)
 
-    /// 情報デザイン: Semantic background colors (from design-system.md)
-    /// These are the PASTEL versions - no opacity needed
+    /// 情報デザイン: Semantic background colors (6-color palette)
     var background: Color {
         switch self {
-        case .calendar: return Color(hex: "A5F3FC")    // Cyan - Events/Calendar
-        case .notes: return Color(hex: "FEF3C7")       // Cream - Notes
-        case .expenses: return Color(hex: "BBF7D0")    // Green - Money
-        case .trips: return Color(hex: "FED7AA")       // Orange - Movement/Travel
-        case .holidays: return Color(hex: "FECDD3")    // Pink - Special Days/Holidays
-        case .observances: return Color(hex: "FED7AA") // Orange - Observances
-        case .birthdays: return Color(hex: "FECDD3")   // Pink - Birthdays
-        case .contacts: return Color(hex: "E9D5FF")    // Purple - People
-        case .events, .countdowns: return Color(hex: "A5F3FC") // Cyan - Events
-        case .warning: return Color(hex: "FED7AA")     // Orange - Alerts
+        // YELLOW = NOW (notes, present moment)
+        case .notes:
+            return JohoColors.yellow
+
+        // CYAN = SCHEDULED (all time-based items)
+        case .calendar, .trips, .events, .countdowns:
+            return JohoColors.cyan
+
+        // PINK = CELEBRATION (all special days)
+        case .holidays, .observances, .birthdays:
+            return JohoColors.pink
+
+        // GREEN = MONEY
+        case .expenses:
+            return JohoColors.green
+
+        // PURPLE = PEOPLE
+        case .contacts:
+            return JohoColors.purple
+
+        // RED = ALERT (system only)
+        case .warning:
+            return JohoColors.redLight
         }
     }
 
-    /// 情報デザイン: Dark mode background colors (muted, works on black)
-    /// Darker, saturated versions that maintain semantic meaning on black backgrounds
+    /// 情報デザイン: Dark mode background colors
     var darkBackground: Color {
         switch self {
-        case .calendar: return Color(hex: "164E63")    // Dark Cyan
-        case .notes: return Color(hex: "78350F")       // Dark Amber
-        case .expenses: return Color(hex: "14532D")    // Dark Green
-        case .trips: return Color(hex: "7C2D12")       // Dark Orange
-        case .holidays: return Color(hex: "831843")    // Dark Pink
-        case .observances: return Color(hex: "7C2D12") // Dark Orange
-        case .birthdays: return Color(hex: "831843")   // Dark Pink
-        case .contacts: return Color(hex: "581C87")    // Dark Purple
-        case .events, .countdowns: return Color(hex: "164E63") // Dark Cyan
-        case .warning: return Color(hex: "7C2D12")     // Dark Orange
+        case .notes:
+            return Color(hex: "78350F")       // Dark Yellow/Amber
+        case .calendar, .trips, .events, .countdowns:
+            return Color(hex: "164E63")       // Dark Cyan
+        case .holidays, .observances, .birthdays:
+            return Color(hex: "831843")       // Dark Pink
+        case .expenses:
+            return Color(hex: "14532D")       // Dark Green
+        case .contacts:
+            return Color(hex: "581C87")       // Dark Purple
+        case .warning:
+            return Color(hex: "7F1D1D")       // Dark Red
         }
     }
 
@@ -1801,6 +1840,7 @@ struct JohoCalendarDayCell: View {
     var hasNotes: Bool = false
     var hasExpenses: Bool = false
     var hasTrips: Bool = false
+    var hasEvents: Bool = false  // NEW: Generic events indicator
 
     var body: some View {
         ZStack {
@@ -1823,29 +1863,30 @@ struct JohoCalendarDayCell: View {
                     .foregroundStyle(textColor)
                     .monospacedDigit()
 
-                // Event indicators
+                // Event indicators (6-color palette)
+                // YELLOW=notes, CYAN=scheduled(trips+events), PINK=celebration, GREEN=money
                 HStack(spacing: 2) {
                     if isHoliday {
                         Circle()
-                            .fill(JohoColors.pink)
+                            .fill(JohoColors.pink)      // CELEBRATION
                             .frame(width: 5, height: 5)
                             .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
                     }
                     if hasNotes {
                         Circle()
-                            .fill(JohoColors.yellow)
+                            .fill(JohoColors.yellow)    // NOW
                             .frame(width: 5, height: 5)
                             .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
                     }
                     if hasExpenses {
                         Circle()
-                            .fill(JohoColors.green)
+                            .fill(JohoColors.green)     // MONEY
                             .frame(width: 5, height: 5)
                             .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
                     }
-                    if hasTrips {
+                    if hasTrips || hasEvents {
                         Circle()
-                            .fill(JohoColors.orange)
+                            .fill(JohoColors.cyan)      // SCHEDULED (unified)
                             .frame(width: 5, height: 5)
                             .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
                     }

@@ -142,7 +142,7 @@ struct DayDetailSheet: View {
                     detailRow(
                         title: "Event",
                         subtitle: "Custom event",
-                        color: JohoColors.eventPurple,
+                        color: JohoColors.cyan,
                         icon: "calendar.badge.clock",
                         isSystem: false
                     )
@@ -169,7 +169,7 @@ struct DayDetailSheet: View {
                     detailRow(
                         title: "Trip",
                         subtitle: "Travel / Trip",
-                        color: JohoColors.tripBlue,
+                        color: JohoColors.cyan,
                         icon: "airplane",
                         isSystem: false
                     )

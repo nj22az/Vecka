@@ -46,6 +46,14 @@ struct LandingPageView: View {
     // Random stat state (情報デザイン: Rotating insights)
     @State private var randomStatIndex: Int = 0
 
+    // Discovery Grid state (情報デザイン: Random events from database)
+    @State private var discoveryItems: [DiscoveryItem] = []
+    @State private var discoveryShuffleID = UUID()
+
+    // Navigation to Calendar with specific date
+    @State private var navigateToDate: Date?
+    @State private var shouldNavigateToCalendar = false
+
     // MARK: - Computed Properties
 
     private var today: Date { Date() }
@@ -72,14 +80,183 @@ struct LandingPageView: View {
         customLandingTitle.isEmpty ? "ONSEN" : customLandingTitle.uppercased()
     }
 
-    /// Limit world clocks to max 3
+    /// Limit world clocks to max 3, with 3 defaults if none configured
     private var displayClocks: [WorldClock] {
-        Array(worldClocks.prefix(3))
+        if worldClocks.isEmpty {
+            // 情報デザイン: Always show content, never empty states
+            // Default clocks: Tokyo, London, New York
+            return [
+                WorldClock(cityName: "Tokyo", timezoneIdentifier: "Asia/Tokyo", sortOrder: 0),
+                WorldClock(cityName: "London", timezoneIdentifier: "Europe/London", sortOrder: 1),
+                WorldClock(cityName: "New York", timezoneIdentifier: "America/New_York", sortOrder: 2)
+            ]
+        }
+        return Array(worldClocks.prefix(3))
     }
 
     /// Today's items for summary
     private var todayItems: [TodayItem] {
         getTodayItems()
+    }
+
+    // MARK: - Discovery Grid Data (情報デザイン: Random events from database)
+
+    /// Discovery item for the grid - represents any event from the database
+    struct DiscoveryItem: Identifiable {
+        let id = UUID()
+        let date: Date
+        let title: String
+        let type: DiscoveryType
+        let subtitle: String?
+
+        enum DiscoveryType {
+            case holiday, birthday, trip, expense, note, event
+
+            var icon: String {
+                switch self {
+                case .holiday: return "star.fill"
+                case .birthday: return "gift.fill"
+                case .trip: return "airplane"
+                case .expense: return "dollarsign.circle.fill"
+                case .note: return "note.text"
+                case .event: return "calendar"
+                }
+            }
+
+            var color: Color {
+                switch self {
+                case .holiday: return SpecialDayType.holiday.accentColor
+                case .birthday: return SpecialDayType.birthday.accentColor
+                case .trip: return SpecialDayType.trip.accentColor
+                case .expense: return SpecialDayType.expense.accentColor
+                case .note: return SpecialDayType.note.accentColor
+                case .event: return SpecialDayType.event.accentColor
+                }
+            }
+
+            var background: Color {
+                switch self {
+                case .holiday: return SpecialDayType.holiday.lightBackground
+                case .birthday: return SpecialDayType.birthday.lightBackground
+                case .trip: return SpecialDayType.trip.lightBackground
+                case .expense: return SpecialDayType.expense.lightBackground
+                case .note: return SpecialDayType.note.lightBackground
+                case .event: return SpecialDayType.event.lightBackground
+                }
+            }
+
+            var badge: String {
+                switch self {
+                case .holiday: return "HOL"
+                case .birthday: return "BDY"
+                case .trip: return "TRP"
+                case .expense: return "EXP"
+                case .note: return "NTE"
+                case .event: return "EVT"
+                }
+            }
+        }
+
+        var formattedDate: String {
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MMM d"
+            return formatter.string(from: date)
+        }
+
+        var yearString: String {
+            String(Calendar.current.component(.year, from: date))
+        }
+    }
+
+    /// Generate random discovery items from all database sources
+    private func generateDiscoveryItems(count: Int = 12) -> [DiscoveryItem] {
+        var items: [DiscoveryItem] = []
+
+        // Add holidays from cache
+        for (date, holidays) in holidayManager.holidayCache {
+            for holiday in holidays {
+                items.append(DiscoveryItem(
+                    date: date,
+                    title: holiday.displayTitle,
+                    type: holiday.isBankHoliday ? .holiday : .event,
+                    subtitle: holiday.region
+                ))
+            }
+        }
+
+        // Add birthdays from contacts
+        let calendar = Calendar.current
+        let currentYear = calendar.component(.year, from: today)
+        for contact in contacts {
+            if let birthday = contact.birthday {
+                // Create birthday for current year
+                var components = calendar.dateComponents([.month, .day], from: birthday)
+                components.year = currentYear
+                if let thisYearBirthday = calendar.date(from: components) {
+                    items.append(DiscoveryItem(
+                        date: thisYearBirthday,
+                        title: "\(contact.givenName)'s Birthday",
+                        type: .birthday,
+                        subtitle: contact.familyName
+                    ))
+                }
+            }
+        }
+
+        // Add trips
+        for trip in allTrips {
+            items.append(DiscoveryItem(
+                date: trip.startDate,
+                title: trip.destination,
+                type: .trip,
+                subtitle: trip.purpose
+            ))
+        }
+
+        // Add expenses
+        for expense in allExpenses.prefix(50) {
+            let amountStr = String(format: "%.0f %@", expense.amount, expense.currency)
+            items.append(DiscoveryItem(
+                date: expense.date,
+                title: expense.itemDescription,
+                type: .expense,
+                subtitle: amountStr
+            ))
+        }
+
+        // Add notes
+        for note in allNotes.prefix(50) {
+            if !note.content.isEmpty {
+                items.append(DiscoveryItem(
+                    date: note.date,
+                    title: String(note.content.prefix(30)),
+                    type: .note,
+                    subtitle: nil
+                ))
+            }
+        }
+
+        // Add countdown events
+        for event in countdownEvents {
+            items.append(DiscoveryItem(
+                date: event.targetDate,
+                title: event.title,
+                type: .event,
+                subtitle: nil
+            ))
+        }
+
+        // Shuffle and return requested count
+        return Array(items.shuffled().prefix(count))
+    }
+
+    /// Refresh discovery items with new random selection
+    private func shuffleDiscovery() {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            discoveryItems = generateDiscoveryItems(count: 20)
+            discoveryShuffleID = UUID()
+        }
+        HapticManager.selection()
     }
 
     // MARK: - GLANCE Data (情報デザイン: Contextual information)
@@ -238,7 +415,7 @@ struct LandingPageView: View {
                 icon: "clock.fill",
                 label: "\(daysUntil)d",
                 indicator: nextEvent.title.prefix(8).lowercased(),
-                iconColor: JohoColors.eventPurple,
+                iconColor: JohoColors.cyan,
                 bgColor: JohoColors.purple.opacity(0.15)
             ))
         }
@@ -295,12 +472,23 @@ struct LandingPageView: View {
     var body: some View {
         Group {
             if isRegularWidth {
-                // iPad: Full-screen bento grid - NO SCROLLING
-                // 情報デザイン: Content fills available space, black barely visible
-                GeometryReader { geometry in
-                    iPadBentoGrid(in: geometry)
+                // iPad: Same layout as iPhone, scaled to fill screen
+                // 情報デザイン: Identical components, just larger
+                ScrollView {
+                    VStack(spacing: JohoDimensions.spacingMD) {
+                        pageHeader
+
+                        if !displayClocks.isEmpty {
+                            worldClocksCard
+                        }
+
+                        todayCard
+                        glanceCard
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+                    .padding(.top, JohoDimensions.spacingSM)
+                    .padding(.bottom, JohoDimensions.spacingXL)
                 }
-                .padding(JohoDimensions.spacingSM)
             } else {
                 // iPhone/iPad mini: Scrollable stacked layout
                 ScrollView {
@@ -337,135 +525,1915 @@ struct LandingPageView: View {
         }
     }
 
-    // MARK: - iPad Bento Grid (情報デザイン: Full-screen adaptive layout)
+    // MARK: - iPad Bento Grid (情報デザイン: Discovery-focused dashboard)
 
-    /// 情報デザイン: iPad dashboard fills entire screen with bento compartments
-    /// No scrolling required - content adapts to available space
+    /// 情報デザイン: iPad dashboard - GLANCE (top) → AGENDA (middle) → DISCOVER (bottom)
+    /// Layout matches Star page bento styling with compartment walls
     @ViewBuilder
     private func iPadBentoGrid(in geometry: GeometryProxy) -> some View {
-        let spacing = JohoDimensions.spacingSM
-        let availableWidth = geometry.size.width - spacing * 2
-        let availableHeight = geometry.size.height - spacing * 2 - geometry.safeAreaInsets.bottom
+        let padding = JohoDimensions.spacingSM  // 8pt outer edge only
 
-        // 情報デザイン: 3-column layout for iPad
-        // Column widths: 35% | 35% | 30% (calendar column slightly narrower)
-        let col1Width = availableWidth * 0.35
-        let col2Width = availableWidth * 0.35
-        let col3Width = availableWidth * 0.30 - spacing * 2
+        // 情報デザイン: ONE BIG WHITE BENTO fills the screen
+        let availableHeight = geometry.size.height - geometry.safeAreaInsets.bottom - (padding * 2)
 
-        HStack(alignment: .top, spacing: spacing) {
-            // COLUMN 1: Header + Today + Glance
-            VStack(spacing: spacing) {
-                // Compact header
-                compactPageHeader
-                    .frame(maxWidth: .infinity)
+        // Detect orientation from geometry (more reliable than size classes)
+        let isLandscapeLayout = geometry.size.width > geometry.size.height
 
-                // Today card expands to fill
-                todayCardCompact
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+        // 情報デザイン: Information instrument layout
+        // Primary axis: TODAY → THIS WEEK → GLANCE (contextual) → PROGRESS
+        VStack(spacing: 0) {
+            // HEADER COMPARTMENT
+            iPadBentoHeader
+                .frame(height: 64)
 
-                // Glance card
-                glanceCardCompact
-                    .frame(maxWidth: .infinity)
-            }
-            .frame(width: col1Width)
+            // Horizontal wall below header
+            Rectangle().fill(JohoColors.black).frame(height: 2)
 
-            // COLUMN 2: World Clocks + Upcoming + Progress + Week
-            VStack(spacing: spacing) {
-                // World clocks (if any) or Week strip
-                if !displayClocks.isEmpty {
-                    worldClocksCardCompact
+            if isLandscapeLayout {
+                // LANDSCAPE: TODAY (primary) | THIS WEEK (secondary)
+                HStack(spacing: 0) {
+                    // LEFT (55%): TODAY - Primary information anchor
+                    iPadTodaySection
                         .frame(maxWidth: .infinity)
+
+                    Rectangle().fill(JohoColors.black).frame(width: 2)
+
+                    // RIGHT (45%): THIS WEEK - Secondary information
+                    iPadThisWeekSection
+                        .frame(width: geometry.size.width * 0.42)
                 }
+                .frame(maxHeight: .infinity)
+            } else {
+                // PORTRAIT: TODAY → THIS WEEK vertical stack
+                VStack(spacing: 0) {
+                    // TODAY - Primary anchor (takes more space)
+                    iPadTodaySection
+                        .frame(maxHeight: .infinity)
 
-                // Upcoming events
-                upcomingCardCompact
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    Rectangle().fill(JohoColors.black).frame(height: 2)
 
-                // Progress bars
-                progressCardCompact
-                    .frame(maxWidth: .infinity)
-
-                // Week strip
-                weekCardCompact
-                    .frame(maxWidth: .infinity)
-            }
-            .frame(width: col2Width)
-
-            // COLUMN 3: Calendar + Birthday + Expenses
-            VStack(spacing: spacing) {
-                // Calendar (main focus)
-                embeddedCalendarCardCompact
-                    .frame(maxWidth: .infinity)
-
-                // Birthdays (if any)
-                if !upcomingBirthdays.isEmpty {
-                    birthdayCountdownCardCompact
-                        .frame(maxWidth: .infinity)
-                }
-
-                // Expenses (if any)
-                if !thisMonthExpenses.isEmpty {
-                    monthlyExpenseSummaryCardCompact
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    // Fill space if no expenses
-                    Spacer()
+                    // THIS WEEK - Secondary
+                    iPadThisWeekSection
+                        .frame(maxHeight: .infinity)
                 }
             }
-            .frame(width: col3Width)
+
+            // Horizontal wall above glance
+            Rectangle().fill(JohoColors.black).frame(height: 2)
+
+            // GLANCE ROW: Contextual non-zero stats only
+            iPadGlanceRow
+                .frame(height: 44)
+
+            // Horizontal wall above footer
+            Rectangle().fill(JohoColors.black).frame(height: 2)
+
+            // FOOTER COMPARTMENT: Progress bars
+            iPadBentoFooter
+                .frame(height: 70)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusLarge).stroke(JohoColors.black, lineWidth: 3))
+        .padding(padding)
+        .frame(width: geometry.size.width, height: availableHeight + (padding * 2))
     }
 
-    // MARK: - Compact Page Header (iPad)
+    // MARK: - iPad TODAY Section (情報デザイン: Primary Information Anchor)
 
-    private var compactPageHeader: some View {
-        let dayNumber = Calendar.iso8601.component(.day, from: today)
-        let weekday = today.formatted(.dateTime.weekday(.abbreviated)).uppercased()
+    /// TODAY section - The dominant information object
+    /// Shows today's events or explicit "no events" state with next upcoming item
+    private var iPadTodaySection: some View {
+        VStack(spacing: 0) {
+            // Header with date
+            HStack(alignment: .center) {
+                Circle().fill(JohoColors.yellow).frame(width: 12, height: 12)
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                Text("TODAY")
+                    .font(.system(size: 14, weight: .black, design: .rounded))
+                    .tracking(1)
 
-        return HStack(spacing: JohoDimensions.spacingSM) {
-            // Icon
-            Image(systemName: "house.fill")
-                .font(.system(size: 16, weight: .bold, design: .rounded))
-                .foregroundStyle(PageHeaderColor.landing.accent)
-                .frame(width: 32, height: 32)
-                .background(PageHeaderColor.landing.lightBackground)
-                .clipShape(Squircle(cornerRadius: 6))
-                .overlay(Squircle(cornerRadius: 6).stroke(colors.border, lineWidth: 1))
+                Spacer()
 
-            VStack(alignment: .leading, spacing: 0) {
-                Text(displayTitle)
+                // Full date as anchor
+                Text(today.formatted(.dateTime.day().month(.wide).year()))
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.secondary)
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+
+            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+
+            // Content: Today's items or explicit empty state
+            if todayItems.isEmpty {
+                // Explicit empty state with next upcoming
+                VStack(spacing: JohoDimensions.spacingMD) {
+                    Spacer()
+
+                    // Clear state indicator
+                    VStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle")
+                            .font(.system(size: 32, weight: .medium))
+                            .foregroundStyle(JohoColors.black.opacity(0.2))
+                        Text("No events scheduled")
+                            .font(.system(size: 16, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.secondary)
+                    }
+
+                    // Next upcoming item (if any)
+                    if let nextItem = upcomingItems.first(where: { !$0.isToday }) {
+                        HStack(spacing: JohoDimensions.spacingSM) {
+                            Text("Next:")
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundStyle(colors.secondary)
+
+                            Circle()
+                                .fill(nextItem.color)
+                                .frame(width: 8, height: 8)
+                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+
+                            Text(nextItem.title)
+                                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                .foregroundStyle(JohoColors.black)
+
+                            Text("(\(nextItem.date.formatted(.dateTime.day().month(.abbreviated))))")
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
+                                .foregroundStyle(colors.secondary)
+                        }
+                        .padding(.horizontal, JohoDimensions.spacingMD)
+                        .padding(.vertical, JohoDimensions.spacingSM)
+                        .background(JohoColors.cream)
+                        .clipShape(Squircle(cornerRadius: 8))
+                        .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1))
+                    }
+
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                // Today's items with bento rows
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        ForEach(todayItems, id: \.id) { item in
+                            todayItemBentoRow(item)
+                            Rectangle().fill(JohoColors.black.opacity(0.2)).frame(height: 1)
+                        }
+                    }
+                    .padding(.top, JohoDimensions.spacingXS)
+                }
+            }
+        }
+        .background(JohoColors.white)
+    }
+
+    /// Today item as bento row with compartments
+    private func todayItemBentoRow(_ item: TodayItem) -> some View {
+        HStack(spacing: 0) {
+            // LEFT: Type indicator
+            Circle()
+                .fill(item.color)
+                .frame(width: 10, height: 10)
+                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                .frame(width: 36)
+
+            Rectangle().fill(JohoColors.black).frame(width: 1)
+                .frame(maxHeight: .infinity)
+
+            // CENTER: Title + subtitle if any
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.title)
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+                    .lineLimit(1)
+                if let subtitle = item.subtitle {
+                    Text(subtitle)
+                        .font(.system(size: 11, weight: .regular, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            Rectangle().fill(JohoColors.black).frame(width: 1)
+                .frame(maxHeight: .infinity)
+
+            // RIGHT: Badge
+            Text(item.typeBadge)
+                .font(.system(size: 9, weight: .black, design: .rounded))
+                .foregroundStyle(JohoColors.white)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(item.color)
+                .clipShape(Capsule())
+                .frame(width: 56)
+        }
+        .frame(height: 44)
+    }
+
+    // MARK: - iPad THIS WEEK Section (情報デザイン: Secondary Axis)
+
+    /// THIS WEEK section - Secondary information showing upcoming 7 days
+    private var iPadThisWeekSection: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Circle().fill(JohoColors.cyan).frame(width: 10, height: 10)
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                Text("THIS WEEK")
                     .font(.system(size: 12, weight: .black, design: .rounded))
-                    .foregroundStyle(colors.primary)
+                    .tracking(1)
 
-                HStack(spacing: 4) {
-                    Text(String(dayNumber))
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
-                    Text(weekday)
-                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                Spacer()
+
+                Text("W\(weekNumber)")
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(JohoColors.black)
+                    .clipShape(Capsule())
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+
+            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+
+            // Content
+            let weekItems = upcomingItems.filter { !$0.isToday }
+
+            if weekItems.isEmpty {
+                // Explicit empty state
+                VStack(spacing: 8) {
+                    Spacer()
+                    Text("All clear through W\(weekNumber)")
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                // Week items
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        ForEach(weekItems.prefix(10), id: \.id) { item in
+                            weekItemRow(item)
+                            Rectangle().fill(JohoColors.black.opacity(0.2)).frame(height: 1)
+                        }
+                    }
+                    .padding(.top, JohoDimensions.spacingXS)
+                }
+            }
+        }
+        .background(JohoColors.white)
+    }
+
+    /// Week item row
+    private func weekItemRow(_ item: UpcomingItem) -> some View {
+        HStack(spacing: 0) {
+            // LEFT: Day indicator
+            VStack(spacing: 0) {
+                Text(item.dayName)
+                    .font(.system(size: 9, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.secondary)
+                Text(String(item.dayNumber))
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+            }
+            .frame(width: 36)
+
+            Rectangle().fill(JohoColors.black).frame(width: 1)
+                .frame(maxHeight: .infinity)
+
+            // CENTER: Type dot + Title
+            HStack(spacing: JohoDimensions.spacingXS) {
+                Circle()
+                    .fill(item.color)
+                    .frame(width: 8, height: 8)
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+
+                Text(item.title)
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+                    .lineLimit(1)
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            Rectangle().fill(JohoColors.black).frame(width: 1)
+                .frame(maxHeight: .infinity)
+
+            // RIGHT: Badge
+            Text(item.typeBadge)
+                .font(.system(size: 8, weight: .black, design: .rounded))
+                .foregroundStyle(JohoColors.white)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 3)
+                .background(item.color)
+                .clipShape(Capsule())
+                .frame(width: 48)
+        }
+        .frame(height: 40)
+    }
+
+    // MARK: - iPad Glance Row (情報デザイン: Contextual non-zero stats only)
+
+    /// Compact glance row showing only non-zero stats with descriptions
+    private var iPadGlanceRow: some View {
+        HStack(spacing: 0) {
+            // Header
+            Image(systemName: "snowflake")
+                .font(.system(size: 10, weight: .bold))
+                .foregroundStyle(JohoColors.cyan)
+            Text("GLANCE")
+                .font(.system(size: 10, weight: .black, design: .rounded))
+                .tracking(0.5)
+                .padding(.leading, 4)
+
+            Rectangle().fill(JohoColors.black).frame(width: 1)
+                .padding(.horizontal, JohoDimensions.spacingSM)
+                .frame(maxHeight: .infinity)
+
+            // Non-zero stats only, with context
+            HStack(spacing: JohoDimensions.spacingMD) {
+                // Holidays this month (with names if few)
+                if specialDaysThisMonth.holidays > 0 {
+                    glanceChip(
+                        count: specialDaysThisMonth.holidays,
+                        label: specialDaysThisMonth.holidays == 1 ? "holiday" : "holidays",
+                        detail: "this month",
+                        color: SpecialDayType.holiday.accentColor
+                    )
+                }
+
+                // Contacts (only if non-zero)
+                if contacts.count > 0 {
+                    glanceChip(
+                        count: contacts.count,
+                        label: contacts.count == 1 ? "contact" : "contacts",
+                        detail: nil,
+                        color: PageHeaderColor.contacts.accent
+                    )
+                }
+
+                // Expenses (only if non-zero)
+                if allExpenses.count > 0 {
+                    glanceChip(
+                        count: allExpenses.count,
+                        label: allExpenses.count == 1 ? "expense" : "expenses",
+                        detail: nil,
+                        color: SpecialDayType.expense.accentColor
+                    )
+                }
+
+                // Trips (only if non-zero)
+                if allTrips.count > 0 {
+                    glanceChip(
+                        count: allTrips.count,
+                        label: allTrips.count == 1 ? "trip" : "trips",
+                        detail: nil,
+                        color: SpecialDayType.trip.accentColor
+                    )
+                }
+
+                // If everything is zero, show a neutral message
+                if specialDaysThisMonth.holidays == 0 && contacts.count == 0 && allExpenses.count == 0 && allTrips.count == 0 {
+                    Text("No tracked items")
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
                         .foregroundStyle(colors.secondary)
                 }
             }
 
             Spacer()
+        }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .background(JohoColors.white)
+    }
 
-            // Week badge
-            Text("W\(weekNumber)")
-                .font(.system(size: 10, weight: .black, design: .rounded))
-                .foregroundStyle(colors.primaryInverted)
+    /// Glance chip with count and label
+    private func glanceChip(count: Int, label: String, detail: String?, color: Color) -> some View {
+        HStack(spacing: 4) {
+            Text("\(count)")
+                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoColors.white)
                 .padding(.horizontal, 6)
-                .padding(.vertical, 3)
-                .background(colors.surfaceInverted)
+                .padding(.vertical, 2)
+                .background(color)
                 .clipShape(Capsule())
 
-            // Mascot
-            JohoMascot(mood: mascotMood, size: 32, borderWidth: 1, showBob: true, showBlink: true, autoOnsen: false)
+            Text(label)
+                .font(.system(size: 11, weight: .medium, design: .rounded))
+                .foregroundStyle(JohoColors.black)
+
+            if let detail = detail {
+                Text(detail)
+                    .font(.system(size: 10, weight: .regular, design: .rounded))
+                    .foregroundStyle(colors.secondary)
+            }
         }
-        .padding(JohoDimensions.spacingSM)
-        .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+    }
+
+    // MARK: - iPad Glance Section (情報デザイン: Large bento tiles)
+
+    /// GLANCE section - 2x3 grid of large bento tiles with key stats
+    private var iPadGlanceSection: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Image(systemName: "snowflake")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(JohoColors.cyan)
+                Text("GLANCE")
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .tracking(1)
+                Spacer()
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+
+            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+
+            // 2x3 Grid of large bento tiles
+            HStack(spacing: 0) {
+                // Row 1
+                largeBentoTile(icon: "calendar", label: "W\(weekNumber)", subtitle: "WEEK", color: PageHeaderColor.calendar.accent, bg: PageHeaderColor.calendar.lightBackground)
+
+                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+
+                largeBentoTile(icon: currentMonthTheme.icon, label: String(currentMonthTheme.name.prefix(3)).uppercased(), subtitle: "MONTH", color: currentMonthTheme.accentColor, bg: currentMonthTheme.lightBackground)
+
+                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+
+                largeBentoTile(icon: "person.2.fill", label: "\(contacts.count)", subtitle: "CONTACTS", color: PageHeaderColor.contacts.accent, bg: PageHeaderColor.contacts.lightBackground)
+            }
+            .frame(maxHeight: .infinity)
+
+            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+
+            HStack(spacing: 0) {
+                // Row 2
+                largeBentoTile(icon: "dollarsign.circle.fill", label: "\(allExpenses.count)", subtitle: "EXPENSES", color: SpecialDayType.expense.accentColor, bg: SpecialDayType.expense.lightBackground)
+
+                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+
+                largeBentoTile(icon: "airplane", label: "\(allTrips.count)", subtitle: "TRIPS", color: SpecialDayType.trip.accentColor, bg: SpecialDayType.trip.lightBackground)
+
+                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+
+                largeBentoTile(icon: "star.fill", label: "\(specialDaysThisMonth.holidays)", subtitle: "HOLIDAYS", color: SpecialDayType.holiday.accentColor, bg: SpecialDayType.holiday.lightBackground)
+            }
+            .frame(maxHeight: .infinity)
+        }
+        .background(JohoColors.white)
+    }
+
+    /// Large bento tile for GLANCE section
+    private func largeBentoTile(icon: String, label: String, subtitle: String, color: Color, bg: Color) -> some View {
+        VStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.system(size: 24, weight: .bold))
+                .foregroundStyle(color)
+                .frame(width: 44, height: 44)
+                .background(bg)
+                .clipShape(Squircle(cornerRadius: 10))
+                .overlay(Squircle(cornerRadius: 10).stroke(JohoColors.black, lineWidth: 1.5))
+
+            Text(label)
+                .font(.system(size: 20, weight: .black, design: .rounded))
+                .foregroundStyle(JohoColors.black)
+
+            Text(subtitle)
+                .font(.system(size: 9, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.secondary)
+                .tracking(0.5)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(JohoColors.white)
+    }
+
+    // MARK: - iPad Agenda Section (情報デザイン: Card styling)
+
+    /// AGENDA section - Today's items + This Week in card format
+    private var iPadAgendaSection: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Circle().fill(JohoColors.yellow).frame(width: 10, height: 10)
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                Text("AGENDA")
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .tracking(1)
+                Spacer()
+                if !todayItems.isEmpty || !upcomingItems.isEmpty {
+                    Text("\(todayItems.count + upcomingItems.count)")
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+
+            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+
+            if todayItems.isEmpty && upcomingItems.isEmpty {
+                // Empty state
+                VStack(spacing: 8) {
+                    Spacer()
+                    Image(systemName: "checkmark.circle")
+                        .font(.system(size: 40, weight: .medium))
+                        .foregroundStyle(colors.secondary.opacity(0.3))
+                    Text("All clear")
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                    Text("No events today or this week")
+                        .font(.system(size: 11, weight: .regular, design: .rounded))
+                        .foregroundStyle(colors.secondary.opacity(0.6))
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        // TODAY section
+                        if !todayItems.isEmpty {
+                            HStack {
+                                Text("TODAY")
+                                    .font(.system(size: 10, weight: .black, design: .rounded))
+                                    .foregroundStyle(JohoColors.yellow)
+                                Spacer()
+                            }
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+                            .padding(.top, JohoDimensions.spacingSM)
+
+                            ForEach(todayItems.prefix(5), id: \.id) { item in
+                                agendaTodayCard(item)
+                            }
+                        }
+
+                        // THIS WEEK section
+                        if !upcomingItems.isEmpty {
+                            HStack {
+                                Text("THIS WEEK")
+                                    .font(.system(size: 10, weight: .black, design: .rounded))
+                                    .foregroundStyle(JohoColors.cyan)
+                                Spacer()
+                            }
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+                            .padding(.top, todayItems.isEmpty ? JohoDimensions.spacingSM : JohoDimensions.spacingMD)
+
+                            ForEach(upcomingItems.prefix(6), id: \.id) { item in
+                                agendaUpcomingCard(item)
+                            }
+                        }
+                    }
+                    .padding(.bottom, JohoDimensions.spacingSM)
+                }
+            }
+        }
+        .background(JohoColors.white)
+    }
+
+    /// Agenda card for TodayItem (情報デザイン: Bento compartments)
+    private func agendaTodayCard(_ item: TodayItem) -> some View {
+        HStack(spacing: 0) {
+            // LEFT: Type indicator (32pt)
+            Circle()
+                .fill(item.color)
+                .frame(width: 10, height: 10)
+                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                .frame(width: 32)
+
+            // WALL
+            Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                .frame(maxHeight: .infinity)
+
+            // CENTER: Title
+            Text(item.title)
+                .font(.system(size: 13, weight: .medium, design: .rounded))
+                .foregroundStyle(JohoColors.black)
+                .lineLimit(1)
+                .padding(.horizontal, JohoDimensions.spacingSM)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            // WALL
+            Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                .frame(maxHeight: .infinity)
+
+            // RIGHT: Icon + Badge (64pt)
+            HStack(spacing: 4) {
+                Image(systemName: item.icon)
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(item.color)
+                    .frame(width: 22, height: 22)
+                    .background(item.color.opacity(0.2))
+                    .clipShape(Squircle(cornerRadius: 5))
+                    .overlay(Squircle(cornerRadius: 5).stroke(JohoColors.black, lineWidth: 1))
+
+                Text(item.typeBadge)
+                    .font(.system(size: 8, weight: .black, design: .rounded))
+                    .foregroundStyle(JohoColors.white)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(item.color)
+                    .clipShape(Capsule())
+            }
+            .frame(width: 64)
+        }
+        .frame(height: 40)
+        .background(JohoColors.white)
+        .overlay(
+            Rectangle().fill(JohoColors.black.opacity(0.15)).frame(height: 1),
+            alignment: .bottom
+        )
+        .padding(.horizontal, JohoDimensions.spacingXS)
+    }
+
+    /// Agenda card for UpcomingItem (情報デザイン: Bento compartments)
+    private func agendaUpcomingCard(_ item: UpcomingItem) -> some View {
+        HStack(spacing: 0) {
+            // LEFT: Type indicator (32pt)
+            Circle()
+                .fill(item.color)
+                .frame(width: 10, height: 10)
+                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                .frame(width: 32)
+
+            // WALL
+            Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                .frame(maxHeight: .infinity)
+
+            // CENTER: Title + Date
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.title)
+                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+                    .lineLimit(1)
+                Text(item.date.formatted(.dateTime.weekday(.abbreviated).day()))
+                    .font(.system(size: 10, weight: .medium, design: .rounded))
+                    .foregroundStyle(colors.secondary)
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            // WALL
+            Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                .frame(maxHeight: .infinity)
+
+            // RIGHT: Icon + Badge (64pt)
+            HStack(spacing: 4) {
+                Image(systemName: iconForBadge(item.typeBadge))
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(item.color)
+                    .frame(width: 22, height: 22)
+                    .background(item.color.opacity(0.2))
+                    .clipShape(Squircle(cornerRadius: 5))
+                    .overlay(Squircle(cornerRadius: 5).stroke(JohoColors.black, lineWidth: 1))
+
+                Text(item.typeBadge)
+                    .font(.system(size: 8, weight: .black, design: .rounded))
+                    .foregroundStyle(JohoColors.white)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(item.color)
+                    .clipShape(Capsule())
+            }
+            .frame(width: 64)
+        }
+        .frame(height: 40)
+        .background(JohoColors.white)
+        .overlay(
+            Rectangle().fill(JohoColors.black.opacity(0.15)).frame(height: 1),
+            alignment: .bottom
+        )
+        .padding(.horizontal, JohoDimensions.spacingXS)
+    }
+
+    /// Helper to get icon for type badge
+    private func iconForBadge(_ badge: String) -> String {
+        switch badge {
+        case "HOL": return "star.fill"
+        case "OBS": return "sparkles"
+        case "BDY": return "birthday.cake.fill"
+        case "EVT": return "calendar.badge.clock"
+        case "NTE": return "note.text"
+        case "TRP": return "airplane"
+        case "EXP": return "dollarsign.circle.fill"
+        default: return "circle.fill"
+        }
+    }
+
+    // MARK: - iPad Discover Section (情報デザイン: Star page style bento rows)
+
+    /// DISCOVER section - Random events in Star page bento row style
+    private var iPadDiscoverSection: some View {
+        VStack(spacing: 0) {
+            // HEADER: DISCOVER + Year + Shuffle
+            HStack {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(JohoColors.yellow)
+                Text("DISCOVER")
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .tracking(1)
+
+                Spacer()
+
+                // Year badge
+                Text(String(year))
+                    .font(.system(size: 16, weight: .black, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+
+                Spacer()
+
+                Button(action: shuffleDiscovery) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "shuffle")
+                            .font(.system(size: 10, weight: .bold))
+                        Text("SHUFFLE")
+                            .font(.system(size: 9, weight: .bold, design: .rounded))
+                    }
+                    .foregroundStyle(JohoColors.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(JohoColors.black)
+                    .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+
+            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+
+            // CONTENT: Star page style bento rows - fills all space
+            GeometryReader { geo in
+                let rowCount = 8
+                let dividerHeight: CGFloat = 1
+                let totalDividers = CGFloat(rowCount - 1)
+                let rowHeight = (geo.size.height - (totalDividers * dividerHeight)) / CGFloat(rowCount)
+
+                HStack(spacing: 0) {
+                    // LEFT COLUMN
+                    VStack(spacing: 0) {
+                        ForEach(0..<rowCount, id: \.self) { index in
+                            if index > 0 {
+                                Rectangle().fill(JohoColors.black).frame(height: dividerHeight)
+                            }
+                            if index < discoveryItems.count {
+                                discoveryBentoRow(discoveryItems[index])
+                                    .frame(height: rowHeight)
+                            } else {
+                                emptyDiscoveryBentoRow()
+                                    .frame(height: rowHeight)
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                    // VERTICAL WALL
+                    Rectangle().fill(JohoColors.black).frame(width: 2)
+
+                    // RIGHT COLUMN
+                    VStack(spacing: 0) {
+                        ForEach(0..<rowCount, id: \.self) { index in
+                            if index > 0 {
+                                Rectangle().fill(JohoColors.black).frame(height: dividerHeight)
+                            }
+                            let itemIndex = index + rowCount
+                            if itemIndex < discoveryItems.count {
+                                discoveryBentoRow(discoveryItems[itemIndex])
+                                    .frame(height: rowHeight)
+                            } else {
+                                emptyDiscoveryBentoRow()
+                                    .frame(height: rowHeight)
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+            .id(discoveryShuffleID)
+        }
+        .background(JohoColors.white)
+    }
+
+    /// Star page style bento row for discovery items
+    private func discoveryBentoRow(_ item: DiscoveryItem) -> some View {
+        Button(action: {
+            navigateToDate = item.date
+            shouldNavigateToCalendar = true
+            HapticManager.selection()
+        }) {
+            HStack(spacing: 0) {
+                // LEFT COMPARTMENT: Type indicator (32pt, centered)
+                Circle()
+                    .fill(item.type.color)
+                    .frame(width: 10, height: 10)
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                    .frame(width: 32)
+                    .frame(maxHeight: .infinity)
+
+                // WALL
+                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                    .frame(maxHeight: .infinity)
+
+                // CENTER COMPARTMENT: Title + Date (flexible)
+                HStack(spacing: JohoDimensions.spacingXS) {
+                    Text(item.title)
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundStyle(JohoColors.black)
+                        .lineLimit(1)
+
+                    Spacer(minLength: 4)
+
+                    Text(item.formattedDate)
+                        .font(.system(size: 9, weight: .bold, design: .monospaced))
+                        .foregroundStyle(colors.secondary)
+                }
+                .padding(.horizontal, 8)
+                .frame(maxHeight: .infinity)
+
+                // WALL
+                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                    .frame(maxHeight: .infinity)
+
+                // RIGHT COMPARTMENT: Icon + Badge (72pt)
+                HStack(spacing: 4) {
+                    Image(systemName: item.type.icon)
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(item.type.color)
+                        .frame(width: 22, height: 22)
+                        .background(item.type.background)
+                        .clipShape(Squircle(cornerRadius: 5))
+                        .overlay(Squircle(cornerRadius: 5).stroke(JohoColors.black, lineWidth: 1))
+
+                    Text(item.type.badge)
+                        .font(.system(size: 8, weight: .black, design: .rounded))
+                        .foregroundStyle(JohoColors.white)
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 2)
+                        .background(item.type.color)
+                        .clipShape(Capsule())
+                }
+                .frame(width: 72, alignment: .center)
+                .frame(maxHeight: .infinity)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(JohoColors.white)
+        }
+        .buttonStyle(.plain)
+    }
+
+    /// Empty bento row placeholder
+    private func emptyDiscoveryBentoRow() -> some View {
+        HStack(spacing: 0) {
+            // LEFT COMPARTMENT
+            Circle()
+                .fill(JohoColors.black.opacity(0.1))
+                .frame(width: 10, height: 10)
+                .frame(width: 32)
+                .frame(maxHeight: .infinity)
+
+            Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                .frame(maxHeight: .infinity)
+
+            // CENTER
+            Text("...")
+                .font(.system(size: 12, weight: .medium, design: .rounded))
+                .foregroundStyle(colors.secondary.opacity(0.3))
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                .frame(maxHeight: .infinity)
+
+            // RIGHT
+            Color.clear.frame(width: 72)
+                .frame(maxHeight: .infinity)
+        }
+        .background(JohoColors.white)
+    }
+
+    // MARK: - iPad Portrait Layout (情報デザイン: Vertical hierarchy)
+
+    /// Portrait layout: GLANCE (top) → AGENDA (middle) → DISCOVER (bottom)
+    private var iPadPortraitLayout: some View {
+        VStack(spacing: 0) {
+            // TOP: GLANCE section (fixed height)
+            iPadGlanceSection
+                .frame(height: 180)
+
+            Rectangle().fill(JohoColors.black).frame(height: 2)
+
+            // MIDDLE: Side-by-side Agenda + Discover preview
+            HStack(spacing: 0) {
+                // LEFT: Compact Agenda
+                VStack(spacing: 0) {
+                    HStack {
+                        Circle().fill(JohoColors.yellow).frame(width: 8, height: 8)
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                        Text("AGENDA")
+                            .font(.system(size: 10, weight: .black, design: .rounded))
+                            .tracking(1)
+                        Spacer()
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingSM)
+                    .padding(.vertical, JohoDimensions.spacingXS)
+
+                    Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+
+                    if todayItems.isEmpty && upcomingItems.isEmpty {
+                        VStack {
+                            Spacer()
+                            Image(systemName: "checkmark.circle")
+                                .font(.system(size: 20, weight: .medium))
+                                .foregroundStyle(colors.secondary.opacity(0.3))
+                            Text("All clear")
+                                .font(.system(size: 10, weight: .medium, design: .rounded))
+                                .foregroundStyle(colors.secondary)
+                            Spacer()
+                        }
+                    } else {
+                        ScrollView(showsIndicators: false) {
+                            VStack(spacing: 0) {
+                                ForEach(todayItems.prefix(3), id: \.id) { item in
+                                    agendaTodayItemRow(item)
+                                }
+                                ForEach(upcomingItems.prefix(3), id: \.id) { item in
+                                    agendaUpcomingItemRow(item)
+                                }
+                            }
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+
+                // RIGHT: Compact Discover
+                VStack(spacing: 0) {
+                    HStack {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(JohoColors.yellow)
+                        Text("DISCOVER")
+                            .font(.system(size: 10, weight: .black, design: .rounded))
+                            .tracking(1)
+                        Spacer()
+                        Button(action: shuffleDiscovery) {
+                            Image(systemName: "shuffle")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundStyle(JohoColors.black)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingSM)
+                    .padding(.vertical, JohoDimensions.spacingXS)
+
+                    Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+
+                    // Compact discover rows - anchored to top
+                    VStack(spacing: 0) {
+                        ForEach(discoveryItems.prefix(5), id: \.id) { item in
+                            compactDiscoverRow(item)
+                            if item.id != discoveryItems.prefix(5).last?.id {
+                                Rectangle().fill(JohoColors.black.opacity(0.2)).frame(height: 1)
+                            }
+                        }
+                        Spacer(minLength: 0)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .frame(maxHeight: .infinity)
+        }
+    }
+
+    /// Compact discover row for portrait
+    private func compactDiscoverRow(_ item: DiscoveryItem) -> some View {
+        Button(action: {
+            navigateToDate = item.date
+            shouldNavigateToCalendar = true
+            HapticManager.selection()
+        }) {
+            HStack(spacing: JohoDimensions.spacingXS) {
+                Circle()
+                    .fill(item.type.color)
+                    .frame(width: 8, height: 8)
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+
+                Text(item.title)
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+                    .lineLimit(1)
+
+                Spacer()
+
+                Text(item.type.badge)
+                    .font(.system(size: 7, weight: .black, design: .rounded))
+                    .foregroundStyle(JohoColors.white)
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 2)
+                    .background(item.type.color)
+                    .clipShape(Capsule())
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .padding(.vertical, 6)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - iPad Portrait Layout (情報デザイン: Vertical stack for portrait)
+
+    /// Portrait-specific content: Calendar on top, Agenda + Glance below
+    private var iPadPortraitContent: some View {
+        VStack(spacing: 0) {
+            // TOP: Calendar (compact, fills width, reasonable height)
+            iPadCalendarColumn
+                .frame(maxWidth: .infinity)
+                .frame(maxHeight: .infinity)
+
+            // Horizontal divider
+            Rectangle().fill(JohoColors.black).frame(height: 2)
+
+            // BOTTOM: 2-column grid (Agenda + Glance side by side)
+            HStack(spacing: 0) {
+                // LEFT: Agenda section
+                iPadPortraitAgenda
+                    .frame(maxWidth: .infinity)
+
+                // Vertical wall
+                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+
+                // RIGHT: Glance section
+                iPadPortraitGlance
+                    .frame(maxWidth: .infinity)
+            }
+            .frame(height: 200)
+        }
+    }
+
+    /// Portrait Agenda section (compact version)
+    private var iPadPortraitAgenda: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Circle().fill(JohoColors.yellow).frame(width: 8, height: 8)
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                Text("AGENDA")
+                    .font(.system(size: 10, weight: .black, design: .rounded))
+                    .tracking(1)
+                Spacer()
+                if !todayItems.isEmpty || !upcomingItems.isEmpty {
+                    Text("\(todayItems.count + upcomingItems.count)")
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .padding(.vertical, JohoDimensions.spacingXS)
+
+            Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+
+            if todayItems.isEmpty && upcomingItems.isEmpty {
+                VStack {
+                    Spacer()
+                    Image(systemName: "checkmark.circle")
+                        .font(.system(size: 24, weight: .medium))
+                        .foregroundStyle(colors.secondary.opacity(0.4))
+                    Text("All clear")
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                    Spacer()
+                }
+            } else {
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        if !todayItems.isEmpty {
+                            HStack {
+                                Text("TODAY")
+                                    .font(.system(size: 9, weight: .black, design: .rounded))
+                                    .foregroundStyle(JohoColors.yellow)
+                                Spacer()
+                            }
+                            .padding(.horizontal, JohoDimensions.spacingSM)
+                            .padding(.top, 4)
+
+                            ForEach(todayItems.prefix(4), id: \.id) { item in
+                                agendaTodayItemRow(item)
+                            }
+                        }
+
+                        if !upcomingItems.isEmpty {
+                            HStack {
+                                Text("THIS WEEK")
+                                    .font(.system(size: 9, weight: .black, design: .rounded))
+                                    .foregroundStyle(JohoColors.cyan)
+                                Spacer()
+                            }
+                            .padding(.horizontal, JohoDimensions.spacingSM)
+                            .padding(.top, todayItems.isEmpty ? 4 : 8)
+
+                            ForEach(upcomingItems.prefix(4), id: \.id) { item in
+                                agendaUpcomingItemRow(item)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(JohoColors.white)
+    }
+
+    /// Portrait Glance section (vertical tile stack)
+    private var iPadPortraitGlance: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Image(systemName: "snowflake")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(JohoColors.cyan)
+                Text("GLANCE")
+                    .font(.system(size: 10, weight: .black, design: .rounded))
+                    .tracking(1)
+                Spacer()
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .padding(.vertical, JohoDimensions.spacingXS)
+
+            Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+
+            // Glance tiles in 2x3 grid for portrait
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 6) {
+                compactGlanceTile(icon: "calendar", label: "W\(weekNumber)", color: PageHeaderColor.calendar.accent, bg: PageHeaderColor.calendar.lightBackground)
+                compactGlanceTile(icon: currentMonthTheme.icon, label: String(currentMonthTheme.name.prefix(3)).uppercased(), color: currentMonthTheme.accentColor, bg: currentMonthTheme.lightBackground)
+                compactGlanceTile(icon: "dollarsign.circle.fill", label: "\(allExpenses.count)", color: SpecialDayType.expense.accentColor, bg: SpecialDayType.expense.lightBackground)
+                compactGlanceTile(icon: "person.2.fill", label: "\(contacts.count)", color: PageHeaderColor.contacts.accent, bg: PageHeaderColor.contacts.lightBackground)
+                compactGlanceTile(icon: "airplane", label: "\(allTrips.count)", color: SpecialDayType.trip.accentColor, bg: SpecialDayType.trip.lightBackground)
+                compactGlanceTile(icon: "star.fill", label: "\(specialDaysThisMonth.holidays)", color: SpecialDayType.holiday.accentColor, bg: SpecialDayType.holiday.lightBackground)
+            }
+            .padding(JohoDimensions.spacingSM)
+            .frame(maxHeight: .infinity)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(JohoColors.white)
+    }
+
+    // MARK: - iPad Discovery Grid (情報デザイン: Dense list rows like iPhone)
+
+    /// Discovery Grid - 情報デザイン compliant with dense list rows
+    /// Styled like iPhone todayCard but scaled for iPad
+    private var iPadDiscoveryGrid: some View {
+        VStack(spacing: 0) {
+            // HEADER: DISCOVER + Year + Shuffle
+            HStack {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(JohoColors.yellow)
+                Text("DISCOVER")
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .tracking(1)
+
+                Spacer()
+
+                // Year prominently displayed
+                Text(String(year))
+                    .font(.system(size: 24, weight: .black, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+
+                Spacer()
+
+                Button(action: shuffleDiscovery) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "shuffle")
+                            .font(.system(size: 11, weight: .bold))
+                        Text("SHUFFLE")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                    }
+                    .foregroundStyle(JohoColors.white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(JohoColors.black)
+                    .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+
+            // Thick wall
+            Rectangle().fill(JohoColors.black).frame(height: 3)
+
+            // CONTENT: Dense list rows in columns - FILLS ALL SPACE
+            GeometryReader { geo in
+                let rowCount = 10
+                let dividerHeight: CGFloat = 1
+                let totalDividers = CGFloat(rowCount - 1)
+                let rowHeight = (geo.size.height - (totalDividers * dividerHeight)) / CGFloat(rowCount)
+
+                HStack(spacing: 0) {
+                    // LEFT COLUMN - First half of items
+                    VStack(spacing: 0) {
+                        ForEach(0..<rowCount, id: \.self) { index in
+                            if index > 0 {
+                                Rectangle().fill(JohoColors.black).frame(height: dividerHeight)
+                            }
+                            if index < discoveryItems.count {
+                                discoveryListRow(discoveryItems[index])
+                                    .frame(height: rowHeight)
+                            } else {
+                                emptyDiscoveryRow()
+                                    .frame(height: rowHeight)
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                    // VERTICAL WALL
+                    Rectangle().fill(JohoColors.black).frame(width: 3)
+
+                    // RIGHT COLUMN - Second half of items
+                    VStack(spacing: 0) {
+                        ForEach(0..<rowCount, id: \.self) { index in
+                            if index > 0 {
+                                Rectangle().fill(JohoColors.black).frame(height: dividerHeight)
+                            }
+                            let itemIndex = index + rowCount
+                            if itemIndex < discoveryItems.count {
+                                discoveryListRow(discoveryItems[itemIndex])
+                                    .frame(height: rowHeight)
+                            } else {
+                                emptyDiscoveryRow()
+                                    .frame(height: rowHeight)
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+            .id(discoveryShuffleID)
+        }
+        .background(JohoColors.white)
+    }
+
+    /// Dense discovery list row - like iPhone todayItemRow
+    private func discoveryListRow(_ item: DiscoveryItem) -> some View {
+        Button(action: {
+            navigateToDate = item.date
+            shouldNavigateToCalendar = true
+            HapticManager.selection()
+        }) {
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Type indicator dot
+                Circle()
+                    .fill(item.type.color)
+                    .frame(width: 10, height: 10)
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+
+                // Icon
+                Image(systemName: item.type.icon)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(item.type.color)
+                    .frame(width: 28, height: 28)
+                    .background(item.type.background)
+                    .clipShape(Squircle(cornerRadius: 6))
+                    .overlay(Squircle(cornerRadius: 6).stroke(JohoColors.black, lineWidth: 1))
+
+                // Date + Title
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(item.formattedDate)
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                    Text(item.title)
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .lineLimit(1)
+                }
+
+                Spacer()
+
+                // Year badge
+                Text(item.yearString)
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
+                    .background(JohoColors.cream)
+                    .clipShape(Capsule())
+                    .overlay(Capsule().stroke(JohoColors.black, lineWidth: 0.5))
+
+                // Type badge
+                Text(item.type.badge)
+                    .font(.system(size: 9, weight: .black, design: .rounded))
+                    .foregroundStyle(JohoColors.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(item.type.color)
+                    .clipShape(Capsule())
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            .background(JohoColors.white)
+        }
+        .buttonStyle(.plain)
+    }
+
+    /// Empty discovery row placeholder
+    private func emptyDiscoveryRow() -> some View {
+        HStack {
+            Circle()
+                .fill(colors.secondary.opacity(0.2))
+                .frame(width: 10, height: 10)
+            Rectangle()
+                .fill(colors.secondary.opacity(0.1))
+                .frame(height: 12)
+                .clipShape(Capsule())
+            Spacer()
+        }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(JohoColors.cream.opacity(0.3))
+    }
+
+    /// Sidebar for landscape mode - Glance + Agenda
+    private var iPadSidebar: some View {
+        VStack(spacing: 0) {
+            // GLANCE section
+            VStack(spacing: 0) {
+                HStack {
+                    Image(systemName: "snowflake")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(JohoColors.cyan)
+                    Text("GLANCE")
+                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .tracking(1)
+                    Spacer()
+                }
+                .padding(.horizontal, JohoDimensions.spacingSM)
+                .padding(.vertical, JohoDimensions.spacingXS)
+
+                Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+
+                // Compact glance tiles
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 4) {
+                    compactGlanceTile(icon: "calendar", label: "W\(weekNumber)", color: PageHeaderColor.calendar.accent, bg: PageHeaderColor.calendar.lightBackground)
+                    compactGlanceTile(icon: currentMonthTheme.icon, label: String(currentMonthTheme.name.prefix(3)).uppercased(), color: currentMonthTheme.accentColor, bg: currentMonthTheme.lightBackground)
+                    compactGlanceTile(icon: "dollarsign.circle.fill", label: "\(allExpenses.count)", color: SpecialDayType.expense.accentColor, bg: SpecialDayType.expense.lightBackground)
+                    compactGlanceTile(icon: "person.2.fill", label: "\(contacts.count)", color: PageHeaderColor.contacts.accent, bg: PageHeaderColor.contacts.lightBackground)
+                }
+                .padding(JohoDimensions.spacingXS)
+            }
+            .frame(height: 110)
+
+            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+
+            // AGENDA section
+            VStack(spacing: 0) {
+                HStack {
+                    Circle().fill(JohoColors.yellow).frame(width: 8, height: 8)
+                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                    Text("AGENDA")
+                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .tracking(1)
+                    Spacer()
+                }
+                .padding(.horizontal, JohoDimensions.spacingSM)
+                .padding(.vertical, JohoDimensions.spacingXS)
+
+                Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+
+                if todayItems.isEmpty && upcomingItems.isEmpty {
+                    VStack {
+                        Spacer()
+                        Image(systemName: "checkmark.circle")
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundStyle(colors.secondary.opacity(0.4))
+                        Text("All clear")
+                            .font(.system(size: 10, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.secondary)
+                        Spacer()
+                    }
+                } else {
+                    ScrollView(showsIndicators: false) {
+                        VStack(spacing: 0) {
+                            ForEach(todayItems.prefix(3), id: \.id) { item in
+                                agendaTodayItemRow(item)
+                            }
+                            ForEach(upcomingItems.prefix(4), id: \.id) { item in
+                                agendaUpcomingItemRow(item)
+                            }
+                        }
+                    }
+                }
+            }
+            .frame(maxHeight: .infinity)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(JohoColors.white)
+    }
+
+    /// Portrait Discovery layout - stacked vertically
+    private var iPadPortraitDiscovery: some View {
+        VStack(spacing: 0) {
+            // TOP: Discovery Grid (main focus)
+            iPadDiscoveryGrid
+                .frame(maxWidth: .infinity)
+                .frame(maxHeight: .infinity)
+
+            // Horizontal divider
+            Rectangle().fill(JohoColors.black).frame(height: 2)
+
+            // BOTTOM: Glance + Agenda side by side
+            HStack(spacing: 0) {
+                // Compact Glance
+                VStack(spacing: 0) {
+                    HStack {
+                        Image(systemName: "snowflake")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(JohoColors.cyan)
+                        Text("GLANCE")
+                            .font(.system(size: 10, weight: .black, design: .rounded))
+                            .tracking(1)
+                        Spacer()
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingSM)
+                    .padding(.vertical, JohoDimensions.spacingXS)
+
+                    Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+
+                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 4) {
+                        compactGlanceTile(icon: "calendar", label: "W\(weekNumber)", color: PageHeaderColor.calendar.accent, bg: PageHeaderColor.calendar.lightBackground)
+                        compactGlanceTile(icon: currentMonthTheme.icon, label: String(currentMonthTheme.name.prefix(3)).uppercased(), color: currentMonthTheme.accentColor, bg: currentMonthTheme.lightBackground)
+                        compactGlanceTile(icon: "dollarsign.circle.fill", label: "\(allExpenses.count)", color: SpecialDayType.expense.accentColor, bg: SpecialDayType.expense.lightBackground)
+                        compactGlanceTile(icon: "person.2.fill", label: "\(contacts.count)", color: PageHeaderColor.contacts.accent, bg: PageHeaderColor.contacts.lightBackground)
+                        compactGlanceTile(icon: "airplane", label: "\(allTrips.count)", color: SpecialDayType.trip.accentColor, bg: SpecialDayType.trip.lightBackground)
+                        compactGlanceTile(icon: "star.fill", label: "\(specialDaysThisMonth.holidays)", color: SpecialDayType.holiday.accentColor, bg: SpecialDayType.holiday.lightBackground)
+                    }
+                    .padding(JohoDimensions.spacingSM)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(JohoColors.white)
+
+                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+
+                // Compact Agenda
+                iPadPortraitAgenda
+                    .frame(maxWidth: .infinity)
+            }
+            .frame(height: 130)
+        }
+    }
+
+    // MARK: - iPad Bento Header (with clocks in subtitle)
+
+    private var iPadBentoHeader: some View {
+        let dayNumber = Calendar.iso8601.component(.day, from: today)
+        let weekday = today.formatted(.dateTime.weekday(.abbreviated)).uppercased()
+
+        return HStack(spacing: 0) {
+            // LEFT: Icon + Title + Date
+            HStack(spacing: JohoDimensions.spacingSM) {
+                Image(systemName: "house.fill")
+                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                    .foregroundStyle(PageHeaderColor.landing.accent)
+                    .frame(width: 40, height: 40)
+                    .background(PageHeaderColor.landing.lightBackground)
+                    .clipShape(Squircle(cornerRadius: 8))
+                    .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 6) {
+                        Text(displayTitle)
+                            .font(.system(size: 16, weight: .black, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
+                            .lineLimit(1)
+
+                        // Year badge (情報デザイン: Year prominently displayed)
+                        Text(String(year))
+                            .font(.system(size: 12, weight: .black, design: .rounded))
+                            .foregroundStyle(JohoColors.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(PageHeaderColor.calendar.accent)
+                            .clipShape(Capsule())
+                    }
+
+                    HStack(spacing: 4) {
+                        Text(String(dayNumber))
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                        Text(weekday)
+                            .font(.system(size: 11, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.secondary)
+                    }
+                }
+            }
+
+            Spacer()
+
+            // CENTER: World clocks display (actual times, not count)
+            HStack(spacing: JohoDimensions.spacingMD) {
+                ForEach(displayClocks, id: \.id) { clock in
+                    HStack(spacing: 4) {
+                        Text(clock.countryCode)
+                            .font(.system(size: 9, weight: .black, design: .rounded))
+                            .foregroundStyle(JohoColors.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(TimezoneTheme.theme(for: clock.timezoneIdentifier).accentColor)
+                            .clipShape(Capsule())
+                        Text(clock.formattedTime)
+                            .font(.system(size: 12, weight: .bold, design: .rounded))
+                            .monospacedDigit()
+                            .foregroundStyle(JohoColors.black)
+                    }
+                }
+            }
+
+            Spacer()
+
+            // VERTICAL WALL
+            Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                .padding(.vertical, JohoDimensions.spacingXS)
+
+            // RIGHT: Week badge + Mascot
+            HStack(spacing: JohoDimensions.spacingSM) {
+                Text("W\(weekNumber)")
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .foregroundStyle(JohoColors.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(JohoColors.black)
+                    .clipShape(Capsule())
+
+                JohoMascot(mood: mascotMood, size: 36, borderWidth: 1.5, showBob: true, showBlink: true, autoOnsen: false)
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(JohoColors.white)
+    }
+
+    // MARK: - iPad Bento Column Components
+
+    /// Left column: Week strip (vertical days)
+    private var iPadWeekColumn: some View {
+        VStack(spacing: 0) {
+            ForEach(weekDays, id: \.date) { day in
+                if day.dayOfWeek > 1 {
+                    Rectangle().fill(JohoColors.black.opacity(0.2)).frame(height: 1)
+                }
+                HStack(spacing: 6) {
+                    Text(day.name)
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(day.isToday ? JohoColors.yellow : colors.secondary)
+                        .frame(width: 24)
+                    Text(String(day.number))
+                        .font(.system(size: 16, weight: .black, design: .rounded))
+                        .foregroundStyle(day.isToday ? JohoColors.black : colors.primary)
+                        .frame(width: 32, height: 32)
+                        .background(day.isToday ? JohoColors.yellow : Color.clear)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(day.isToday ? JohoColors.black : Color.clear, lineWidth: 1))
+                    // Indicators
+                    HStack(spacing: 2) {
+                        ForEach(day.indicators.prefix(3), id: \.self) { color in
+                            Circle().fill(color).frame(width: 5, height: 5)
+                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                        }
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal, JohoDimensions.spacingSM)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(JohoColors.white)
+    }
+
+    /// Center column: Calendar
+    private var iPadCalendarColumn: some View {
+        VStack(spacing: 0) {
+            // Month header
+            HStack {
+                Button { navigateEmbeddedCalendar(by: -1); HapticManager.selection() } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 14, weight: .bold))
+                        .frame(width: 44, height: 44)
+                }
+                Spacer()
+                VStack(spacing: 0) {
+                    Text(embeddedMonthName)
+                        .font(.system(size: 16, weight: .black, design: .rounded))
+                    Text(String(embeddedCalendarYear))
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(colors.secondary)
+                }
+                Spacer()
+                Button { navigateEmbeddedCalendar(by: 1); HapticManager.selection() } label: {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .bold))
+                        .frame(width: 44, height: 44)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+
+            Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+
+            // 情報デザイン: Day headers with GRID LINES
+            HStack(spacing: 0) {
+                ForEach(["M", "T", "W", "T", "F", "S", "S"], id: \.self) { d in
+                    Text(d)
+                        .font(.system(size: 11, weight: .black, design: .rounded))
+                        .foregroundStyle(d == "S" ? JohoColors.red : JohoColors.black)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 28)
+                        .overlay(
+                            Rectangle().stroke(JohoColors.black, lineWidth: 1)
+                        )
+                }
+            }
+
+            // 情報デザイン: Calendar grid with GRID LINES on each cell
+            VStack(spacing: 0) {
+                ForEach(embeddedCalendarWeeks, id: \.self) { week in
+                    HStack(spacing: 0) {
+                        ForEach(week, id: \.self) { day in
+                            embeddedDayCellWithGrid(day)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        }
+                    }
+                    .frame(maxHeight: .infinity)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(JohoColors.white)
+    }
+
+    /// Right column: AGENDA (merged Today+Upcoming) + GLANCE
+    /// 情報デザイン: Glance moved UP, combined agenda view
+    private var iPadRightColumn: some View {
+        VStack(spacing: 0) {
+            // AGENDA section (merged Today + Upcoming)
+            VStack(spacing: 0) {
+                // Header
+                HStack {
+                    Circle().fill(JohoColors.yellow).frame(width: 8, height: 8)
+                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                    Text("AGENDA")
+                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .tracking(1)
+                    Spacer()
+                    if !todayItems.isEmpty || !upcomingItems.isEmpty {
+                        Text("\(todayItems.count + upcomingItems.count)")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.secondary)
+                    }
+                }
+                .padding(.horizontal, JohoDimensions.spacingSM)
+                .padding(.vertical, JohoDimensions.spacingXS)
+
+                Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+
+                if todayItems.isEmpty && upcomingItems.isEmpty {
+                    VStack {
+                        Spacer()
+                        Image(systemName: "checkmark.circle")
+                            .font(.system(size: 28, weight: .medium))
+                            .foregroundStyle(colors.secondary.opacity(0.4))
+                        Text("All clear")
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.secondary)
+                        Spacer()
+                    }
+                } else {
+                    ScrollView {
+                        VStack(spacing: 0) {
+                            // TODAY sub-section
+                            if !todayItems.isEmpty {
+                                HStack {
+                                    Text("TODAY")
+                                        .font(.system(size: 9, weight: .black, design: .rounded))
+                                        .foregroundStyle(JohoColors.yellow)
+                                        .tracking(0.5)
+                                    Spacer()
+                                }
+                                .padding(.horizontal, JohoDimensions.spacingSM)
+                                .padding(.top, JohoDimensions.spacingXS)
+                                .padding(.bottom, 2)
+
+                                ForEach(todayItems, id: \.id) { item in
+                                    agendaTodayItemRow(item)
+                                }
+                            }
+
+                            // THIS WEEK sub-section
+                            if !upcomingItems.isEmpty {
+                                HStack {
+                                    Text("THIS WEEK")
+                                        .font(.system(size: 9, weight: .black, design: .rounded))
+                                        .foregroundStyle(JohoColors.cyan)
+                                        .tracking(0.5)
+                                    Spacer()
+                                }
+                                .padding(.horizontal, JohoDimensions.spacingSM)
+                                .padding(.top, todayItems.isEmpty ? JohoDimensions.spacingXS : JohoDimensions.spacingSM)
+                                .padding(.bottom, 2)
+
+                                ForEach(upcomingItems.prefix(5), id: \.id) { item in
+                                    agendaUpcomingItemRow(item)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            // Horizontal divider
+            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+
+            // GLANCE section (moved UP from footer)
+            VStack(spacing: 0) {
+                HStack {
+                    Image(systemName: "snowflake")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(JohoColors.cyan)
+                    Text("GLANCE")
+                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .tracking(1)
+                    Spacer()
+                }
+                .padding(.horizontal, JohoDimensions.spacingSM)
+                .padding(.vertical, JohoDimensions.spacingXS)
+
+                Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+
+                // Glance tiles in grid
+                HStack(spacing: 6) {
+                    compactGlanceTile(icon: "calendar", label: "W\(weekNumber)", color: PageHeaderColor.calendar.accent, bg: PageHeaderColor.calendar.lightBackground)
+                    compactGlanceTile(icon: currentMonthTheme.icon, label: String(currentMonthTheme.name.prefix(3)).uppercased(), color: currentMonthTheme.accentColor, bg: currentMonthTheme.lightBackground)
+                    compactGlanceTile(icon: "dollarsign.circle.fill", label: "\(allExpenses.count)", color: SpecialDayType.expense.accentColor, bg: SpecialDayType.expense.lightBackground)
+                    compactGlanceTile(icon: "person.2.fill", label: "\(contacts.count)", color: PageHeaderColor.contacts.accent, bg: PageHeaderColor.contacts.lightBackground)
+                    compactGlanceTile(icon: "airplane", label: "\(allTrips.count)", color: SpecialDayType.trip.accentColor, bg: SpecialDayType.trip.lightBackground)
+                }
+                .padding(JohoDimensions.spacingSM)
+            }
+            .frame(height: 90)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(JohoColors.white)
+    }
+
+    /// Agenda item row for TodayItem
+    private func agendaTodayItemRow(_ item: TodayItem) -> some View {
+        HStack(spacing: 8) {
+            Circle()
+                .fill(item.color)
+                .frame(width: 8, height: 8)
+                .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+
+            Text(item.title)
+                .font(.system(size: 12, weight: .medium, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .lineLimit(1)
+
+            Spacer()
+
+            Text(item.typeBadge)
+                .font(.system(size: 8, weight: .black, design: .rounded))
+                .foregroundStyle(JohoColors.white)
+                .padding(.horizontal, 5)
+                .padding(.vertical, 2)
+                .background(item.color)
+                .clipShape(Capsule())
+        }
+        .padding(.horizontal, JohoDimensions.spacingSM)
+        .padding(.vertical, 4)
+    }
+
+    /// Agenda item row for UpcomingItem
+    private func agendaUpcomingItemRow(_ item: UpcomingItem) -> some View {
+        HStack(spacing: 8) {
+            Circle()
+                .fill(item.color)
+                .frame(width: 8, height: 8)
+                .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+
+            Text(item.title)
+                .font(.system(size: 12, weight: .medium, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .lineLimit(1)
+
+            Spacer()
+
+            Text(item.dayName)
+                .font(.system(size: 9, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.secondary)
+
+            Text(item.typeBadge)
+                .font(.system(size: 8, weight: .black, design: .rounded))
+                .foregroundStyle(JohoColors.white)
+                .padding(.horizontal, 5)
+                .padding(.vertical, 2)
+                .background(item.color)
+                .clipShape(Capsule())
+        }
+        .padding(.horizontal, JohoDimensions.spacingSM)
+        .padding(.vertical, 4)
+    }
+
+    /// Footer: PROGRESS bars only (Glance moved to right column)
+    /// 情報デザイン: Progress takes full width with larger, more prominent bars
+    private var iPadBentoFooter: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Image(systemName: "chart.bar.fill")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(JohoColors.cyan)
+                Text("PROGRESS")
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .tracking(1)
+                Spacer()
+                // Show percentage of year complete
+                Text("\(Int(yearProgress * 100))% of \(String(Calendar.iso8601.component(.year, from: Date())))")
+                    .font(.system(size: 10, weight: .medium, design: .rounded))
+                    .foregroundStyle(colors.secondary)
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingXS)
+
+            Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+
+            // Progress bars - larger and more prominent
+            HStack(spacing: JohoDimensions.spacingLG) {
+                progressBarLarge(label: "YEAR", progress: yearProgress, color: JohoColors.cyan.opacity(0.5))
+                progressBarLarge(label: "MONTH", progress: monthProgress, color: JohoColors.cyan)
+                progressBarLarge(label: "WEEK", progress: weekProgress, color: JohoColors.cyan.opacity(0.7))
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(JohoColors.white)
+    }
+
+    /// Large progress bar for footer (情報デザイン: More prominent)
+    private func progressBarLarge(label: String, progress: Double, color: Color) -> some View {
+        VStack(spacing: 4) {
+            HStack {
+                Text(label)
+                    .font(.system(size: 10, weight: .black, design: .rounded))
+                    .foregroundStyle(colors.secondary)
+                Spacer()
+                Text("\(Int(progress * 100))%")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(colors.primary)
+            }
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(colors.secondary.opacity(0.2))
+                        .overlay(Capsule().stroke(JohoColors.black, lineWidth: 0.5))
+                    Capsule()
+                        .fill(color)
+                        .frame(width: geo.size.width * progress)
+                }
+            }
+            .frame(height: 12)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func progressBarRow(label: String, progress: Double, color: Color) -> some View {
+        HStack(spacing: 8) {
+            Text(label)
+                .font(.system(size: 9, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.secondary)
+                .frame(width: 40, alignment: .leading)
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(colors.secondary.opacity(0.2))
+                    Capsule().fill(color)
+                        .frame(width: geo.size.width * progress)
+                }
+            }
+            .frame(height: 8)
+            Text("\(Int(progress * 100))%")
+                .font(.system(size: 9, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(colors.primary)
+                .frame(width: 30, alignment: .trailing)
+        }
     }
 
     // MARK: - Compact Today Card (iPad)
@@ -487,10 +2455,16 @@ struct LandingPageView: View {
             Rectangle().fill(colors.border).frame(height: 1)
 
             if todayItems.isEmpty {
-                Text("Nothing scheduled")
-                    .font(.system(size: 11, weight: .medium, design: .rounded))
-                    .foregroundStyle(colors.secondary)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                VStack(spacing: 4) {
+                    Image(systemName: "checkmark.circle")
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundStyle(colors.secondary.opacity(0.4))
+                    Text("All clear")
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, JohoDimensions.spacingMD)
             } else {
                 ScrollView {
                     VStack(spacing: 0) {
@@ -507,7 +2481,7 @@ struct LandingPageView: View {
         }
         .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick))
     }
 
     private func todayItemRowCompact(_ item: TodayItem) -> some View {
@@ -566,7 +2540,7 @@ struct LandingPageView: View {
         }
         .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick))
     }
 
     private func compactGlanceTile(icon: String, label: String, color: Color, bg: Color) -> some View {
@@ -588,30 +2562,58 @@ struct LandingPageView: View {
     // MARK: - Compact World Clocks Card (iPad)
 
     private var worldClocksCardCompact: some View {
-        HStack(spacing: 0) {
-            ForEach(Array(displayClocks.enumerated()), id: \.element.id) { index, clock in
-                if index > 0 {
-                    Rectangle().fill(colors.border).frame(width: 1)
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Image(systemName: "globe")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(JohoColors.cyan)
+                Text("WORLD CLOCKS").font(.system(size: 10, weight: .black, design: .rounded)).tracking(1)
+                Spacer()
+                if !displayClocks.isEmpty {
+                    Text("\(displayClocks.count)").font(.system(size: 10, weight: .bold)).foregroundStyle(colors.secondary)
                 }
-                VStack(spacing: 2) {
-                    Text(clock.countryCode)
-                        .font(.system(size: 9, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.white)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(TimezoneTheme.theme(for: clock.timezoneIdentifier).accentColor)
-                        .clipShape(Capsule())
-                    Text(clock.formattedTime)
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary)
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .padding(.vertical, JohoDimensions.spacingXS)
+
+            Rectangle().fill(JohoColors.black).frame(height: 1)
+
+            // Content
+            if displayClocks.isEmpty {
+                Text("Add clocks in Settings")
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(colors.secondary)
+                    .frame(maxWidth: .infinity)
+                    .padding(JohoDimensions.spacingSM)
+            } else {
+                HStack(spacing: 0) {
+                    ForEach(Array(displayClocks.enumerated()), id: \.element.id) { index, clock in
+                        if index > 0 {
+                            Rectangle().fill(JohoColors.black.opacity(0.3)).frame(width: 1)
+                        }
+                        VStack(spacing: 2) {
+                            Text(clock.countryCode)
+                                .font(.system(size: 9, weight: .black, design: .rounded))
+                                .foregroundStyle(JohoColors.white)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(TimezoneTheme.theme(for: clock.timezoneIdentifier).accentColor)
+                                .clipShape(Capsule())
+                            Text(clock.formattedTime)
+                                .font(.system(size: 12, weight: .bold, design: .rounded))
+                                .foregroundStyle(colors.primary)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, JohoDimensions.spacingXS)
+                    }
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, JohoDimensions.spacingXS)
             }
         }
         .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+        // 情報デザイン: BLACK border always visible - THICK
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick))
     }
 
     // MARK: - Compact Upcoming Card (iPad)
@@ -634,10 +2636,16 @@ struct LandingPageView: View {
             Rectangle().fill(colors.border).frame(height: 1)
 
             if upcomingItems.isEmpty {
-                Text("Nothing upcoming")
-                    .font(.system(size: 11, weight: .medium, design: .rounded))
-                    .foregroundStyle(colors.secondary)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                VStack(spacing: 4) {
+                    Image(systemName: "calendar.badge.checkmark")
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundStyle(colors.secondary.opacity(0.4))
+                    Text("Nothing planned")
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, JohoDimensions.spacingMD)
             } else {
                 ScrollView {
                     VStack(spacing: 0) {
@@ -654,7 +2662,7 @@ struct LandingPageView: View {
         }
         .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick))
     }
 
     private func upcomingItemRowCompact(_ item: UpcomingItem) -> some View {
@@ -718,7 +2726,7 @@ struct LandingPageView: View {
         }
         .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick))
     }
 
     private func progressRowCompact(label: String, progress: Double, color: Color) -> some View {
@@ -764,7 +2772,8 @@ struct LandingPageView: View {
         }
         .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+        // 情報デザイン: BLACK border always visible - THICK for iPad
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick))
     }
 
     // MARK: - Compact Embedded Calendar Card (iPad)
@@ -836,7 +2845,8 @@ struct LandingPageView: View {
         }
         .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+        // 情報デザイン: BLACK border always visible - THICK for iPad
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick))
     }
 
     private func embeddedDayCellCompact(_ day: EmbeddedCalendarDay) -> some View {
@@ -859,6 +2869,46 @@ struct LandingPageView: View {
             }
         }
         .frame(height: 30)
+    }
+
+    /// 情報デザイン: Day cell with GRID LINES (1pt black border)
+    /// Inspired by Refills and Class Timetable apps
+    private func embeddedDayCellWithGrid(_ day: EmbeddedCalendarDay) -> some View {
+        let calendar = Calendar.iso8601
+        let isSunday = calendar.component(.weekday, from: day.date) == 1
+
+        return VStack(spacing: 2) {
+            // Day number with highlight for today
+            Text(String(day.dayNumber))
+                .font(.system(size: 14, weight: day.isToday ? .black : .medium, design: .rounded))
+                .foregroundStyle(
+                    day.isToday ? JohoColors.black :
+                    isSunday && day.isCurrentMonth ? JohoColors.red :
+                    day.isCurrentMonth ? colors.primary : colors.secondary.opacity(0.3)
+                )
+                .frame(width: 28, height: 28)
+                .background(day.isToday ? JohoColors.yellow : Color.clear)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(day.isToday ? JohoColors.black : Color.clear, lineWidth: 1.5))
+
+            // Event indicators
+            if !day.indicators.isEmpty && day.isCurrentMonth {
+                HStack(spacing: 2) {
+                    ForEach(Array(day.indicators.prefix(3).enumerated()), id: \.offset) { _, color in
+                        Circle().fill(color).frame(width: 5, height: 5)
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                    }
+                }
+                .frame(height: 6)
+            } else {
+                Spacer().frame(height: 6)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(day.isCurrentMonth ? JohoColors.white : JohoColors.cream.opacity(0.3))
+        .overlay(
+            Rectangle().stroke(JohoColors.black, lineWidth: 1)
+        )
     }
 
     // MARK: - Compact Birthday Countdown Card (iPad)
@@ -887,7 +2937,7 @@ struct LandingPageView: View {
         }
         .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick))
     }
 
     private func birthdayRowCompact(contact: Contact, daysUntil: Int) -> some View {
@@ -965,7 +3015,7 @@ struct LandingPageView: View {
         }
         .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick))
     }
 
     // MARK: - Page Header (Two-Row: Icon+Title | Week+Date - Matches Calendar)
@@ -1609,7 +3659,7 @@ struct LandingPageView: View {
                         dayNumber: dayNumber,
                         isToday: isToday,
                         title: event.title,
-                        color: JohoColors.eventPurple,
+                        color: JohoColors.cyan,
                         typeBadge: "EVT"
                     ))
                 }
@@ -1770,7 +3820,7 @@ struct LandingPageView: View {
             // Countdown events
             for event in countdownEvents {
                 if calendar.startOfDay(for: event.targetDate) == dayStart {
-                    indicators.append(JohoColors.eventPurple)
+                    indicators.append(JohoColors.cyan)
                 }
             }
 
@@ -2156,7 +4206,7 @@ struct LandingPageView: View {
                     title: event.title,
                     subtitle: nil,
                     icon: "calendar.badge.clock",
-                    color: JohoColors.eventPurple,
+                    color: JohoColors.cyan,
                     typeBadge: "EVT"
                 ))
             }
@@ -2353,7 +4403,7 @@ struct LandingPageView: View {
 
         // Get first day of month
         guard let firstOfMonth = calendar.date(from: DateComponents(year: embeddedCalendarYear, month: embeddedCalendarMonth, day: 1)),
-              let range = calendar.range(of: .day, in: .month, for: firstOfMonth) else {
+              calendar.range(of: .day, in: .month, for: firstOfMonth) != nil else {
             return []
         }
 
@@ -2401,7 +4451,7 @@ struct LandingPageView: View {
                 // Events
                 for event in countdownEvents {
                     if calendar.startOfDay(for: event.targetDate) == dayStart {
-                        indicators.append(JohoColors.eventPurple)
+                        indicators.append(JohoColors.cyan)
                         break
                     }
                 }
@@ -2892,7 +4942,7 @@ struct LandingPageView: View {
             HStack {
                 Image(systemName: "waveform.path.ecg")
                     .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.eventPurple)
+                    .foregroundStyle(JohoColors.cyan)
 
                 Text("ACTIVITY")
                     .font(.system(size: 11, weight: .black, design: .rounded))

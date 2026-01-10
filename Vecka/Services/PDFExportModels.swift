@@ -57,7 +57,6 @@ struct DayExportData: Identifiable {
     let notes: [NoteExportInfo]
     let expenses: [ExpenseExportInfo]
     let statistics: DayStatistics
-    var weather: WeatherExportInfo?
 
     init(
         date: Date,
@@ -67,8 +66,7 @@ struct DayExportData: Identifiable {
         observances: [ObservanceExportInfo] = [],
         notes: [NoteExportInfo] = [],
         expenses: [ExpenseExportInfo] = [],
-        statistics: DayStatistics = DayStatistics(),
-        weather: WeatherExportInfo? = nil
+        statistics: DayStatistics = DayStatistics()
     ) {
         self.date = date
         self.weekNumber = weekNumber
@@ -78,7 +76,6 @@ struct DayExportData: Identifiable {
         self.notes = notes
         self.expenses = expenses
         self.statistics = statistics
-        self.weather = weather
     }
 }
 
@@ -183,36 +180,6 @@ struct ExpenseExportInfo: Identifiable {
         formatter.numberStyle = .currency
         formatter.currencyCode = currency
         return formatter.string(from: amount as NSDecimalNumber) ?? "\(amount) \(currency)"
-    }
-}
-
-// MARK: - Weather Export Info
-
-struct WeatherExportInfo {
-    let condition: String
-    let symbolName: String
-    let highTemperature: String
-    let lowTemperature: String
-    let precipitationChance: String?
-    let humidity: String?
-    let windSpeed: String?
-
-    init(
-        condition: String,
-        symbolName: String,
-        highTemperature: String,
-        lowTemperature: String,
-        precipitationChance: String? = nil,
-        humidity: String? = nil,
-        windSpeed: String? = nil
-    ) {
-        self.condition = condition
-        self.symbolName = symbolName
-        self.highTemperature = highTemperature
-        self.lowTemperature = lowTemperature
-        self.precipitationChance = precipitationChance
-        self.humidity = humidity
-        self.windSpeed = windSpeed
     }
 }
 
@@ -363,7 +330,6 @@ struct DayStatistics {
 
 struct PDFExportOptions {
     // Content Options
-    var includeWeather: Bool = false
     var includeStatistics: Bool = true
     var includeNotes: Bool = true
     var includeHolidays: Bool = true
@@ -376,7 +342,7 @@ struct PDFExportOptions {
 
     // Header Customization
     var showHeader: Bool = true
-    var headerTitle: String = "Vecka"
+    var headerTitle: String = "Onsen Planner"
     var headerSubtitle: String? = nil
     var showHeaderLine: Bool = true
 

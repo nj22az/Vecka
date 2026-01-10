@@ -222,13 +222,6 @@ class PDFExportService {
             totalExpenseAmount: totalExpenseAmount
         )
 
-        // Fetch weather (if available and requested)
-        var weather: WeatherExportInfo?
-        if options.includeWeather {
-            // Weather will be implemented in Phase 2
-            weather = nil
-        }
-
         return DayExportData(
             date: date,
             weekNumber: weekNumber,
@@ -237,8 +230,7 @@ class PDFExportService {
             observances: [], // TODO: Add observances
             notes: notes,
             expenses: expenses,
-            statistics: statistics,
-            weather: weather
+            statistics: statistics
         )
     }
 

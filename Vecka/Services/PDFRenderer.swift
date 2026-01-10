@@ -135,12 +135,6 @@ class PDFRenderer {
             yPosition += 20
         }
 
-        // Weather
-        if let weather = day.weather, options.includeWeather {
-            yPosition = drawWeather(weather, at: yPosition, in: context)
-            yPosition += 20
-        }
-
         // Statistics
         if options.includeStatistics {
             yPosition = drawStatistics(day: day, at: yPosition, in: context)
@@ -153,7 +147,7 @@ class PDFRenderer {
     // MARK: - Drawing Methods
 
     private func drawHeader(day: DayExportData, at y: CGFloat, in context: CGContext) -> CGFloat {
-        let title = "Vecka"
+        let title = "Onsen Planner"
         let attributes: [NSAttributedString.Key: Any] = [
             .font: Fonts.title,
             .foregroundColor: Colors.text
@@ -358,58 +352,6 @@ class PDFRenderer {
 
             currentY += noteHeight + 8
         }
-
-        return currentY
-    }
-
-    private func drawWeather(_ weather: WeatherExportInfo, at y: CGFloat, in context: CGContext) -> CGFloat {
-        var currentY = y
-
-        // Section header
-        let headerAttrs: [NSAttributedString.Key: Any] = [
-            .font: Fonts.subheading,
-            .foregroundColor: Colors.text
-        ]
-        let header = "Weather"
-        let headerSize = (header as NSString).size(withAttributes: headerAttrs)
-        (header as NSString).draw(at: CGPoint(x: contentRect.minX, y: currentY), withAttributes: headerAttrs)
-        currentY += headerSize.height + 12
-
-        // Weather card
-        let cardRect = CGRect(
-            x: contentRect.minX,
-            y: currentY,
-            width: contentRect.width,
-            height: 80
-        )
-
-        // Draw card background
-        context.setFillColor(Colors.cardBackground.cgColor)
-        let cardPath = UIBezierPath(roundedRect: cardRect, cornerRadius: 8)
-        context.addPath(cardPath.cgPath)
-        context.fillPath()
-
-        // Draw weather info
-        let tempText = "\(weather.highTemperature) / \(weather.lowTemperature)"
-        let tempAttrs: [NSAttributedString.Key: Any] = [
-            .font: Fonts.heading,
-            .foregroundColor: Colors.text
-        ]
-        (tempText as NSString).draw(
-            at: CGPoint(x: cardRect.minX + 12, y: cardRect.minY + 15),
-            withAttributes: tempAttrs
-        )
-
-        let conditionAttrs: [NSAttributedString.Key: Any] = [
-            .font: Fonts.body,
-            .foregroundColor: Colors.textSecondary
-        ]
-        (weather.condition as NSString).draw(
-            at: CGPoint(x: cardRect.minX + 12, y: cardRect.minY + 45),
-            withAttributes: conditionAttrs
-        )
-
-        currentY += 88
 
         return currentY
     }

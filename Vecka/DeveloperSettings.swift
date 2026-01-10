@@ -132,9 +132,9 @@ struct DeveloperSettingsView: View {
                     HStack(spacing: JohoDimensions.spacingMD) {
                         Image(systemName: "wand.and.stars")
                             .font(.system(size: 20, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.eventPurple)
+                            .foregroundStyle(JohoColors.cyan)
                             .frame(width: 44, height: 44)
-                            .background(JohoColors.eventPurple.opacity(0.2))
+                            .background(JohoColors.cyan.opacity(0.2))
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(
                                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
@@ -212,7 +212,7 @@ struct DeveloperSettingsView: View {
                     miniGeneratorButton(
                         icon: "calendar.badge.clock",
                         label: "Events",
-                        color: JohoColors.eventPurple
+                        color: JohoColors.cyan
                     ) {
                         generateDummyCountdowns()
                     }
@@ -833,12 +833,8 @@ struct SampleAvatarView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // Background gradient
-                LinearGradient(
-                    colors: [primaryColor, secondaryColor],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+                // Background (solid color per 情報デザイン)
+                primaryColor
 
                 // Pattern overlay
                 patternView(for: geometry.size)

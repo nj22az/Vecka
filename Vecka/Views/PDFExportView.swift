@@ -22,7 +22,6 @@ struct PDFExportView: View {
     @State private var rangeEnd = Date()
 
     // Options
-    @State private var includeWeather = false
     @State private var includeStatistics = true
     @State private var includeNotes = true
     @State private var includeHolidays = true
@@ -118,20 +117,11 @@ struct PDFExportView: View {
                     Toggle("Include Expenses", isOn: $includeExpenses)
                     Toggle("Include Holidays", isOn: $includeHolidays)
                     Toggle("Include Statistics", isOn: $includeStatistics)
-
-                    // MARK: - Weather option (Disabled)
-                    // if #available(iOS 16.0, *) {
-                    //     Toggle("Include Weather", isOn: $includeWeather)
-                    // }
                 } header: {
                     Text("Export Options")
                 } footer: {
                     Text("Export includes selected data for the chosen date range")
                         .font(.caption)
-                    // if includeWeather {
-                    //     Text("Weather data will be included if available")
-                    //         .font(.caption)
-                    // }
                 }
 
                 // Live Preview
@@ -423,7 +413,6 @@ struct PDFExportView: View {
         do {
             let scope = buildExportScope()
             let options = PDFExportOptions(
-                includeWeather: includeWeather,
                 includeStatistics: includeStatistics,
                 includeNotes: includeNotes,
                 includeHolidays: includeHolidays,

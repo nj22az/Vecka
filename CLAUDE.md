@@ -70,17 +70,18 @@ Color.blue                       // No raw colors
 Text("\(year)")                  // Use String(year)
 ```
 
-### 3. Color Semantics
+### 3. Color Semantics (6-Color Simplified Palette)
 
-| Color | Meaning |
-|-------|---------|
-| Yellow `#FFE566` | Today/Now |
-| Cyan `#A5F3FC` | Events |
-| Pink `#FECDD3` | Holidays |
-| Orange `#FED7AA` | Trips |
-| Green `#BBF7D0` | Expenses |
-| Purple `#E9D5FF` | Contacts |
-| Red `#E53935` | Warnings |
+| Color | Japanese | Meaning |
+|-------|----------|---------|
+| Yellow `#FFE566` | 今 (ima) | NOW - today, notes |
+| Cyan `#A5F3FC` | 予定 (yotei) | SCHEDULED - events, trips |
+| Pink `#FECDD3` | 祝 (iwai) | CELEBRATION - holidays, birthdays |
+| Green `#BBF7D0` | 金 (kane) | MONEY - expenses |
+| Purple `#E9D5FF` | 人 (hito) | PEOPLE - contacts |
+| Red `#E53935` | 警告 | ALERT - warnings (system only) |
+
+**Deprecated:** Orange (→ use Cyan), Cream (→ use Yellow)
 
 ### 4. Border Widths
 

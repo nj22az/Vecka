@@ -135,7 +135,7 @@ struct VeckaMediumWidgetView: View {
                 Spacer()
             }
             .padding(.horizontal, 12)
-            .padding(.top, 10)
+            .padding(.top, 8)
 
             Spacer(minLength: 6)
 

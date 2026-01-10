@@ -92,7 +92,7 @@ struct ModernCalendarView: View {
 
             // 4. Event - PURPLE
             if dataCheck.hasEvent && !foundTypes.contains("EVT") {
-                items.append(LegendItem(type: "EVT", label: "Event", color: JohoColors.eventPurple))
+                items.append(LegendItem(type: "EVT", label: "Event", color: JohoColors.cyan))
                 foundTypes.insert("EVT")
             }
 
@@ -104,7 +104,7 @@ struct ModernCalendarView: View {
 
             // 6. Trip - BLUE
             if dataCheck.hasTrip && !foundTypes.contains("TRP") {
-                items.append(LegendItem(type: "TRP", label: "Trip", color: JohoColors.tripBlue))
+                items.append(LegendItem(type: "TRP", label: "Trip", color: JohoColors.cyan))
                 foundTypes.insert("TRP")
             }
 

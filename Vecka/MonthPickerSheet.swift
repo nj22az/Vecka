@@ -66,9 +66,9 @@ struct MonthPickerSheet: View {
                 .fill(JohoColors.black)
                 .frame(height: 3)
 
-            // Month and Year selection - side by side
-            HStack(alignment: .top, spacing: 12) {
-                // Month Grid (3x4) with integrated label
+            // 情報デザイン: Month and Year in balanced bento layout
+            HStack(alignment: .top, spacing: JohoDimensions.spacingSM) {
+                // LEFT: Month Grid (3x4) - fills 65% width
                 VStack(spacing: 0) {
                     // Section header integrated into border
                     Text("MONTH")
@@ -78,21 +78,21 @@ struct MonthPickerSheet: View {
                         .padding(.vertical, 4)
                         .background(JohoColors.black)
 
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: 3), spacing: 4) {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 3), spacing: 6) {
                         ForEach(1...12, id: \.self) { m in
                             monthButton(month: m)
                         }
                     }
-                    .padding(8)
+                    .padding(JohoDimensions.spacingSM)
                 }
                 .background(JohoColors.white)
-                .clipShape(Squircle(cornerRadius: 12))
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
-                    Squircle(cornerRadius: 12)
-                        .stroke(JohoColors.black, lineWidth: 3)
+                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
                 )
 
-                // Year column with integrated label
+                // RIGHT: Year Grid (2x5 visible) - fills 35% width
                 VStack(spacing: 0) {
                     // Section header integrated into border
                     Text("YEAR")
@@ -104,13 +104,13 @@ struct MonthPickerSheet: View {
 
                     ScrollViewReader { proxy in
                         ScrollView(showsIndicators: false) {
-                            VStack(spacing: 4) {
+                            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: 2), spacing: 4) {
                                 ForEach(years, id: \.self) { y in
                                     yearButton(year: y)
                                         .id(y)
                                 }
                             }
-                            .padding(8)
+                            .padding(JohoDimensions.spacingSM)
                         }
                         .onAppear {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -121,19 +121,19 @@ struct MonthPickerSheet: View {
                         }
                     }
                 }
-                .frame(width: 90)
                 .background(JohoColors.white)
-                .clipShape(Squircle(cornerRadius: 12))
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
-                    Squircle(cornerRadius: 12)
-                        .stroke(JohoColors.black, lineWidth: 3)
+                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
                 )
             }
-            .padding(12)
+            .padding(JohoDimensions.spacingSM)
         }
         .background(JohoColors.cream)
-        .presentationDetents([.height(340)])
-        .presentationCornerRadius(20)
+        // 情報デザイン: Content fills available space
+        .presentationDetents([.medium])
+        .presentationCornerRadius(JohoDimensions.radiusLarge)
         .presentationDragIndicator(.hidden)
     }
 

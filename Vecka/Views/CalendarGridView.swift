@@ -279,7 +279,7 @@ extension CalendarGridView {
     /// - Single: no bar (just regular indicator)
     @ViewBuilder
     private func tripSpanIndicator(position: TripDayPosition, isToday: Bool) -> some View {
-        let tripColor = JohoColors.tripBlue
+        let tripColor = JohoColors.cyan
         let barHeight: CGFloat = 4
 
         VStack {
@@ -427,9 +427,9 @@ extension CalendarGridView {
             indicators.append(IndicatorInfo(icon: "sparkles", color: JohoColors.orange))
         }
 
-        // 4. Event - calendar.badge.clock PURPLE
+        // 4. Event - calendar.badge.clock CYAN (scheduled time items)
         if dataCheck?.hasEvent == true {
-            indicators.append(IndicatorInfo(icon: "calendar.badge.clock", color: JohoColors.eventPurple))
+            indicators.append(IndicatorInfo(icon: "calendar.badge.clock", color: JohoColors.cyan))
         }
 
         // 5. Note - note.text YELLOW
@@ -437,9 +437,9 @@ extension CalendarGridView {
             indicators.append(IndicatorInfo(icon: "note.text", color: JohoColors.yellow))
         }
 
-        // 6. Trip - airplane BLUE
+        // 6. Trip - airplane CYAN (scheduled time items)
         if dataCheck?.hasTrip == true {
-            indicators.append(IndicatorInfo(icon: "airplane", color: JohoColors.tripBlue))
+            indicators.append(IndicatorInfo(icon: "airplane", color: JohoColors.cyan))
         }
 
         // 7. Expense - dollarsign.circle.fill GREEN (lowest priority)

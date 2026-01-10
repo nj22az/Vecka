@@ -168,7 +168,7 @@ struct CountdownListView: View {
             HStack(spacing: 0) {
                 // LEFT: Type indicator (32pt)
                 HStack(alignment: .center, spacing: 3) {
-                    JohoIndicatorCircle(color: JohoColors.eventPurple, size: .medium)
+                    JohoIndicatorCircle(color: JohoColors.cyan, size: .medium)
                 }
                 .frame(width: 32, alignment: .center)
                 .frame(maxHeight: .infinity)
@@ -312,7 +312,7 @@ struct CountdownListView: View {
                                 Text("Add")
                                     .font(JohoFont.label)
                             }
-                            .foregroundStyle(JohoColors.eventPurple)
+                            .foregroundStyle(JohoColors.cyan)
                         }
                     }
                 }
@@ -377,7 +377,7 @@ struct CountdownListView: View {
         HStack(spacing: 0) {
             // LEFT COMPARTMENT: Type indicator (fixed 32pt, centered)
             HStack(alignment: .center, spacing: 3) {
-                JohoIndicatorCircle(color: JohoColors.eventPurple, size: .small)
+                JohoIndicatorCircle(color: JohoColors.cyan, size: .small)
             }
             .frame(width: 32, alignment: .center)
             .frame(maxHeight: .infinity)
@@ -419,9 +419,9 @@ struct CountdownListView: View {
             HStack(spacing: 4) {
                 Image(systemName: icon ?? "calendar.badge.clock")
                     .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.eventPurple)
+                    .foregroundStyle(JohoColors.cyan)
                     .frame(width: 24, height: 24)
-                    .background(JohoColors.eventPurple.opacity(0.15))
+                    .background(JohoColors.cyan.opacity(0.15))
                     .clipShape(Squircle(cornerRadius: 6))
                     .overlay(Squircle(cornerRadius: 6).stroke(JohoColors.black, lineWidth: 1))
             }

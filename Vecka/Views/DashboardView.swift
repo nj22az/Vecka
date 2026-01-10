@@ -606,7 +606,7 @@ struct DashboardView: View {
             let eventDate = calendar.startOfDay(for: event.targetDate)
             if eventDate > today {
                 let days = calendar.dateComponents([.day], from: today, to: eventDate).day ?? 0
-                items.append(SpotlightItem(name: event.title, daysUntil: days, color: JohoColors.eventPurple, typeLabel: "EVENT"))
+                items.append(SpotlightItem(name: event.title, daysUntil: days, color: JohoColors.cyan, typeLabel: "EVENT"))
             }
         }
 

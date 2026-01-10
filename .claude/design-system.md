@@ -15,22 +15,27 @@ Inspired by Japanese OTC medicine packaging (Muhi, Rohto, Salonpas):
 
 ---
 
-## Color Semantics
+## Color Semantics (6-Color Simplified Palette)
 
-Colors are NEVER decorative. Each has ONE meaning:
+情報デザイン uses **6 semantic colors** for reduced cognitive load.
+Each color has ONE clear meaning - no overlap, no confusion.
 
-| Color | Hex | Semantic Meaning | Usage |
-|-------|-----|------------------|-------|
-| **Yellow** | `#FFE566` | NOW / Present | Today, current highlight, attention |
-| **Cyan** | `#A5F3FC` | Scheduled Time | Events, appointments, calendar items |
-| **Pink** | `#FECDD3` | Special Day | Holidays, birthdays, celebrations |
-| **Orange** | `#FED7AA` | Movement | Trips, travel, locations |
-| **Green** | `#BBF7D0` | Money | Expenses, financial, transactions |
-| **Purple** | `#E9D5FF` | People | Contacts, relationships |
-| **Red** | `#E53935` | Alert | Warnings, Sundays, errors |
-| **Cream** | `#FEF3C7` | Personal | Notes, user annotations |
-| **Black** | `#000000` | Definition | Borders, text, authority |
-| **White** | `#FFFFFF` | Content | Container backgrounds |
+| Color | Hex | Japanese | Semantic Meaning | Usage |
+|-------|-----|----------|------------------|-------|
+| **Yellow** | `#FFE566` | 今 (ima) | NOW | Today, notes, current moment |
+| **Cyan** | `#A5F3FC` | 予定 (yotei) | SCHEDULED | Events, trips, calendar items |
+| **Pink** | `#FECDD3` | 祝 (iwai) | CELEBRATION | Holidays, birthdays, special days |
+| **Green** | `#BBF7D0` | 金 (kane) | MONEY | Expenses, financial items |
+| **Purple** | `#E9D5FF` | 人 (hito) | PEOPLE | Contacts, relationships |
+| **Red** | `#E53935` | 警告 | ALERT | System warnings only |
+
+**Structural Colors:**
+| Color | Hex | Usage |
+|-------|-----|-------|
+| **Black** | `#000000` | Borders, text, authority |
+| **White** | `#FFFFFF` | Container backgrounds |
+
+**Note:** Orange and Cream have been **deprecated**. Use Cyan for trips, Yellow for notes.
 
 ### App Background Options
 
@@ -153,22 +158,22 @@ All corners MUST use continuous curvature:
 
 ---
 
-## Type Indicator Circles
+## Type Indicator Circles (6-Color Mapping)
 
 Type indicator circles show what kind of content exists. They ALWAYS have:
-1. **Filled center** with the type's ACCENT COLOR (never white!)
+1. **Filled center** with the type's SEMANTIC COLOR
 2. **BLACK border** (1-1.5pt stroke)
 3. **Consistent sizing** based on context
 
-| Type | Color | Hex | Code |
-|------|-------|-----|------|
-| **Holiday** | Red | `#E53E3E` | HOL |
-| **Observance** | Orange | `#ED8936` | OBS |
-| **Event** | Purple | `#805AD5` | EVT |
-| **Birthday** | Pink | `#D53F8C` | BDY |
-| **Note** | Yellow | `#ECC94B` | NTE |
-| **Trip** | Blue | `#3182CE` | TRP |
-| **Expense** | Green | `#38A169` | EXP |
+| Type | Semantic | Color | Code |
+|------|----------|-------|------|
+| **Note** | NOW | Yellow `#FFE566` | NTE |
+| **Trip** | SCHEDULED | Cyan `#A5F3FC` | TRP |
+| **Event** | SCHEDULED | Cyan `#A5F3FC` | EVT |
+| **Holiday** | CELEBRATION | Pink `#FECDD3` | HOL |
+| **Birthday** | CELEBRATION | Pink `#FECDD3` | BDY |
+| **Expense** | MONEY | Green `#BBF7D0` | EXP |
+| **Contact** | PEOPLE | Purple `#E9D5FF` | CTN |
 
 **Circle Sizes:**
 
@@ -425,9 +430,13 @@ grep -rn "\.padding(.top," --include="*.swift"
 ┌─────────────────────────────────────────────┐
 │         情報デザイン QUICK REFERENCE         │
 ├─────────────────────────────────────────────┤
-│ COLORS: Yellow=Now, Cyan=Events,            │
-│   Pink=Holidays, Orange=Trips,              │
-│   Green=Money, Purple=People, Red=Alert     │
+│ 6-COLOR PALETTE (reduced cognitive load):   │
+│   Yellow = NOW (today, notes)               │
+│   Cyan   = SCHEDULED (events, trips)        │
+│   Pink   = CELEBRATION (holidays, birthdays)│
+│   Green  = MONEY (expenses)                 │
+│   Purple = PEOPLE (contacts)                │
+│   Red    = ALERT (system warnings only)     │
 ├─────────────────────────────────────────────┤
 │ BORDERS: 1pt=cells, 1.5pt=rows,             │
 │   2pt=buttons, 2.5pt=selected, 3pt=cards    │
@@ -436,6 +445,7 @@ grep -rn "\.padding(.top," --include="*.swift"
 ├─────────────────────────────────────────────┤
 │ FORBIDDEN: Glass, Gradients, Missing        │
 │   borders, Raw colors, .cornerRadius()      │
+│   Orange (use Cyan), Cream (use Yellow)     │
 └─────────────────────────────────────────────┘
 ```
 

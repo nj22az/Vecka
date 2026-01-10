@@ -262,9 +262,9 @@ struct HolidayDatabaseExplorer: View {
                     // Active indicator
                     if isActiveRegion(regionID) {
                         HStack(spacing: 4) {
-                            Circle()
-                                .fill(JohoColors.green)
-                                .frame(width: 8, height: 8)
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 10, weight: .semibold, design: .rounded))
+                                .foregroundStyle(JohoColors.green)
                             Text("ACTIVE")
                                 .font(.system(size: 10, weight: .bold, design: .rounded))
                                 .foregroundStyle(JohoColors.green)
@@ -335,10 +335,9 @@ struct HolidayDatabaseExplorer: View {
                         VStack {
                             HStack {
                                 Spacer()
-                                Circle()
-                                    .fill(JohoColors.green)
-                                    .frame(width: 10, height: 10)
-                                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                    .foregroundStyle(JohoColors.green)
                             }
                             Spacer()
                         }
@@ -368,29 +367,27 @@ struct HolidayDatabaseExplorer: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
 
-                    // Stats row (情報デザイン: Circles with counts)
+                    // Stats row (情報デザイン: Colored icons with counts)
                     if hasItems {
                         HStack(spacing: 4) {
-                            // Holidays: Red circle
+                            // Holidays: Star icon
                             if hCount > 0 {
                                 HStack(spacing: 2) {
-                                    Circle()
-                                        .fill(JohoColors.red)
-                                        .frame(width: 8, height: 8)
-                                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                                    Image(systemName: SpecialDayType.holiday.defaultIcon)
+                                        .font(.system(size: 8, weight: .semibold, design: .rounded))
+                                        .foregroundStyle(SpecialDayType.holiday.accentColor)
                                     Text("\(hCount)")
                                         .font(.system(size: 9, weight: .bold, design: .rounded))
                                         .foregroundStyle(JohoColors.black)
                                 }
                             }
 
-                            // Observances: Orange circle
+                            // Observances: Sparkles icon
                             if oCount > 0 {
                                 HStack(spacing: 2) {
-                                    Circle()
-                                        .fill(JohoColors.orange)
-                                        .frame(width: 8, height: 8)
-                                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                                    Image(systemName: SpecialDayType.observance.defaultIcon)
+                                        .font(.system(size: 8, weight: .semibold, design: .rounded))
+                                        .foregroundStyle(SpecialDayType.observance.accentColor)
                                     Text("\(oCount)")
                                         .font(.system(size: 9, weight: .bold, design: .rounded))
                                         .foregroundStyle(JohoColors.black)
