@@ -366,22 +366,34 @@ extension CalendarGridView {
 
     // MARK: - Priority Indicators (情報デザイン)
 
+    /// Indicator info with icon and color for consistency across app
+    private struct IndicatorInfo: Hashable {
+        let icon: String
+        let color: Color
+
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(icon)
+        }
+
+        static func == (lhs: IndicatorInfo, rhs: IndicatorInfo) -> Bool {
+            lhs.icon == rhs.icon
+        }
+    }
+
     /// Returns max 3 indicators + overflow badge based on priority
     /// Priority order: HOL > BDY > OBS > EVT > NTE > TRP > EXP
+    /// Uses SF Symbol icons for consistency with Star page and Database
     @ViewBuilder
     private func priorityIndicators(for day: CalendarDay, dataCheck: DayDataCheck?) -> some View {
         let indicators = collectIndicators(for: day, dataCheck: dataCheck)
         let displayIndicators = Array(indicators.prefix(3))
         let overflow = indicators.count - 3
-        // Use black stroke on yellow/selected cells, dynamic otherwise
-        let indicatorStroke = day.isToday ? JohoColors.black : colors.border
 
-        HStack(spacing: 3) {
-            ForEach(displayIndicators, id: \.self) { color in
-                Circle()
-                    .fill(color)
-                    .frame(width: 7, height: 7)
-                    .overlay(Circle().stroke(indicatorStroke, lineWidth: 1))
+        HStack(spacing: 2) {
+            ForEach(displayIndicators, id: \.self) { info in
+                Image(systemName: info.icon)
+                    .font(.system(size: 8, weight: .bold, design: .rounded))
+                    .foregroundStyle(info.color)
             }
 
             // Overflow badge when >3 indicators
@@ -389,54 +401,50 @@ extension CalendarGridView {
                 Text("+\(overflow)")
                     .font(.system(size: 6, weight: .black, design: .rounded))
                     .foregroundStyle(day.isToday ? JohoColors.black : colors.primary)
-                    .padding(.horizontal, 2)
-                    .padding(.vertical, 1)
-                    .background(day.isToday ? JohoColors.white : colors.surface)
-                    .clipShape(Capsule())
-                    .overlay(Capsule().stroke(indicatorStroke, lineWidth: JohoDimensions.borderThin))
             }
         }
-        .frame(height: 8)
+        .frame(height: 10)
     }
 
-    /// Collects indicator colors in priority order
+    /// Collects indicator info (icon + color) in priority order
     /// Priority: HOL > BDY > OBS > EVT > NTE > TRP > EXP
-    private func collectIndicators(for day: CalendarDay, dataCheck: DayDataCheck?) -> [Color] {
-        var indicators: [Color] = []
+    /// Icons match SpecialDayType.defaultIcon for app-wide consistency
+    private func collectIndicators(for day: CalendarDay, dataCheck: DayDataCheck?) -> [IndicatorInfo] {
+        var indicators: [IndicatorInfo] = []
 
-        // 1. Holiday - RED (highest priority)
+        // 1. Holiday - star.fill RED (highest priority)
         if day.isHoliday || dataCheck?.hasHoliday == true {
-            indicators.append(JohoColors.red)
+            indicators.append(IndicatorInfo(icon: "star.fill", color: JohoColors.red))
         }
 
-        // 2. Birthday - PINK
+        // 2. Birthday - birthday.cake.fill PINK
         if dataCheck?.hasBirthday == true {
-            indicators.append(JohoColors.pink)
+            indicators.append(IndicatorInfo(icon: "birthday.cake.fill", color: JohoColors.pink))
         }
 
-        // 3. Observance - ORANGE
+        // 3. Observance - sparkles ORANGE
         if dataCheck?.hasObservance == true {
-            indicators.append(JohoColors.orange)
+            indicators.append(IndicatorInfo(icon: "sparkles", color: JohoColors.orange))
         }
 
-        // 4. Event - PURPLE
+        // 4. Event - calendar.badge.clock PURPLE
         if dataCheck?.hasEvent == true {
-            indicators.append(JohoColors.eventPurple)
+            indicators.append(IndicatorInfo(icon: "calendar.badge.clock", color: JohoColors.eventPurple))
         }
 
-        // 5. Note - YELLOW
+        // 5. Note - note.text YELLOW
         if dataCheck?.hasNote == true {
-            indicators.append(JohoColors.yellow)
+            indicators.append(IndicatorInfo(icon: "note.text", color: JohoColors.yellow))
         }
 
-        // 6. Trip - BLUE
+        // 6. Trip - airplane BLUE
         if dataCheck?.hasTrip == true {
-            indicators.append(JohoColors.tripBlue)
+            indicators.append(IndicatorInfo(icon: "airplane", color: JohoColors.tripBlue))
         }
 
-        // 7. Expense - GREEN (lowest priority)
+        // 7. Expense - dollarsign.circle.fill GREEN (lowest priority)
         if dataCheck?.hasExpense == true {
-            indicators.append(JohoColors.green)
+            indicators.append(IndicatorInfo(icon: "dollarsign.circle.fill", color: JohoColors.green))
         }
 
         return indicators

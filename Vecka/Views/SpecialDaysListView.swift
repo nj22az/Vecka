@@ -112,6 +112,7 @@ struct SpecialDaysListView: View {
         let id = UUID()
         let type: String
         let label: String
+        let icon: String
         let color: Color
     }
 
@@ -127,13 +128,13 @@ struct SpecialDaysListView: View {
             (holidayManager.holidayCache[date]?.contains { $0.isBankHoliday } ?? false)
         }
         if hasHolidays {
-            items.append(LegendItem(type: "HOL", label: "Holiday", color: SpecialDayType.holiday.accentColor))
+            items.append(LegendItem(type: "HOL", label: "Holiday", icon: SpecialDayType.holiday.defaultIcon, color: SpecialDayType.holiday.accentColor))
         }
 
         // 2. Birthdays - PINK (from contacts)
         let hasBirthdays = contacts.contains { $0.birthday != nil }
         if hasBirthdays {
-            items.append(LegendItem(type: "BDY", label: "Birthday", color: SpecialDayType.birthday.accentColor))
+            items.append(LegendItem(type: "BDY", label: "Birthday", icon: SpecialDayType.birthday.defaultIcon, color: SpecialDayType.birthday.accentColor))
         }
 
         // 3. Observances - ORANGE
@@ -142,7 +143,7 @@ struct SpecialDaysListView: View {
             (holidayManager.holidayCache[date]?.contains { !$0.isBankHoliday } ?? false)
         }
         if hasObservances {
-            items.append(LegendItem(type: "OBS", label: "Observance", color: SpecialDayType.observance.accentColor))
+            items.append(LegendItem(type: "OBS", label: "Observance", icon: SpecialDayType.observance.defaultIcon, color: SpecialDayType.observance.accentColor))
         }
 
         // 4. Events - PURPLE (countdown events)
@@ -150,7 +151,7 @@ struct SpecialDaysListView: View {
             calendar.component(.year, from: event.targetDate) == selectedYear
         }
         if hasEvents {
-            items.append(LegendItem(type: "EVT", label: "Event", color: SpecialDayType.event.accentColor))
+            items.append(LegendItem(type: "EVT", label: "Event", icon: SpecialDayType.event.defaultIcon, color: SpecialDayType.event.accentColor))
         }
 
         // 5. Notes - YELLOW
@@ -158,7 +159,7 @@ struct SpecialDaysListView: View {
             calendar.component(.year, from: note.date) == selectedYear
         }
         if hasNotes {
-            items.append(LegendItem(type: "NTE", label: "Note", color: SpecialDayType.note.accentColor))
+            items.append(LegendItem(type: "NTE", label: "Note", icon: SpecialDayType.note.defaultIcon, color: SpecialDayType.note.accentColor))
         }
 
         // 6. Trips - BLUE
@@ -167,7 +168,7 @@ struct SpecialDaysListView: View {
             calendar.component(.year, from: trip.endDate) == selectedYear
         }
         if hasTrips {
-            items.append(LegendItem(type: "TRP", label: "Trip", color: SpecialDayType.trip.accentColor))
+            items.append(LegendItem(type: "TRP", label: "Trip", icon: SpecialDayType.trip.defaultIcon, color: SpecialDayType.trip.accentColor))
         }
 
         // 7. Expenses - GREEN
@@ -175,7 +176,7 @@ struct SpecialDaysListView: View {
             calendar.component(.year, from: expense.date) == selectedYear
         }
         if hasExpenses {
-            items.append(LegendItem(type: "EXP", label: "Expense", color: SpecialDayType.expense.accentColor))
+            items.append(LegendItem(type: "EXP", label: "Expense", icon: SpecialDayType.expense.defaultIcon, color: SpecialDayType.expense.accentColor))
         }
 
         return items
@@ -744,25 +745,25 @@ struct SpecialDaysListView: View {
             // 情報デザイン: Indicator order MUST match legend (presentIndicators)
             // Priority order: HOL > BDY > OBS > EVT > NTE > TRP > EXP
             if holidayCount > 0 {
-                statIndicator(count: holidayCount, color: SpecialDayType.holiday.accentColor)
+                statIndicator(count: holidayCount, icon: SpecialDayType.holiday.defaultIcon, color: SpecialDayType.holiday.accentColor)
             }
             if birthdayCount > 0 {
-                statIndicator(count: birthdayCount, color: SpecialDayType.birthday.accentColor)
+                statIndicator(count: birthdayCount, icon: SpecialDayType.birthday.defaultIcon, color: SpecialDayType.birthday.accentColor)
             }
             if observanceCount > 0 {
-                statIndicator(count: observanceCount, color: SpecialDayType.observance.accentColor)
+                statIndicator(count: observanceCount, icon: SpecialDayType.observance.defaultIcon, color: SpecialDayType.observance.accentColor)
             }
             if eventCount > 0 {
-                statIndicator(count: eventCount, color: SpecialDayType.event.accentColor)
+                statIndicator(count: eventCount, icon: SpecialDayType.event.defaultIcon, color: SpecialDayType.event.accentColor)
             }
             if noteCount > 0 {
-                statIndicator(count: noteCount, color: SpecialDayType.note.accentColor)
+                statIndicator(count: noteCount, icon: SpecialDayType.note.defaultIcon, color: SpecialDayType.note.accentColor)
             }
             if tripCount > 0 {
-                statIndicator(count: tripCount, color: SpecialDayType.trip.accentColor)
+                statIndicator(count: tripCount, icon: SpecialDayType.trip.defaultIcon, color: SpecialDayType.trip.accentColor)
             }
             if expenseCount > 0 {
-                statIndicator(count: expenseCount, color: SpecialDayType.expense.accentColor)
+                statIndicator(count: expenseCount, icon: SpecialDayType.expense.defaultIcon, color: SpecialDayType.expense.accentColor)
             }
 
             // Show empty state only when no entries exist
@@ -775,32 +776,27 @@ struct SpecialDaysListView: View {
 
             Spacer()
 
-            // 情報デザイン: Database explorer button
+            // 情報デザイン: Database explorer button (icon only)
             Button {
                 showingDatabaseExplorer = true
                 HapticManager.selection()
             } label: {
-                HStack(spacing: 4) {
-                    Image(systemName: "globe")
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                    Text("Database")
-                        .font(.system(size: 11, weight: .semibold, design: .rounded))
-                }
-                .foregroundStyle(JohoColors.black.opacity(0.7))
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(JohoColors.black.opacity(0.05))
-                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                Image(systemName: "globe")
+                    .font(.system(size: 16, weight: .medium, design: .rounded))
+                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                    .frame(width: 32, height: 32)
+                    .background(JohoColors.black.opacity(0.05))
+                    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
             }
         }
     }
 
-    private func statIndicator(count: Int, color: Color) -> some View {
+    private func statIndicator(count: Int, icon: String, color: Color) -> some View {
         HStack(spacing: 4) {
-            Circle()
-                .fill(color)
-                .frame(width: 8, height: 8)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+            Image(systemName: icon)
+                .font(.system(size: 10, weight: .semibold, design: .rounded))
+                .foregroundStyle(color)
+                .frame(width: 12, height: 12)
             Text("\(count)")
                 .font(JohoFont.labelSmall)
                 .foregroundStyle(JohoColors.black)
@@ -872,26 +868,24 @@ struct SpecialDaysListView: View {
             }
             .buttonStyle(.plain)
 
-            // Expanded content - shows indicator types with colors
+            // Expanded content - clean 4-column grid of icons with labels
             if isLegendExpanded && !presentIndicators.isEmpty {
                 Rectangle()
                     .fill(JohoColors.black.opacity(0.2))
                     .frame(height: 1)
                     .padding(.horizontal, JohoDimensions.spacingMD)
 
-                LazyVGrid(columns: [
-                    GridItem(.adaptive(minimum: 100), spacing: JohoDimensions.spacingSM)
-                ], spacing: JohoDimensions.spacingSM) {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4), spacing: 8) {
                     ForEach(presentIndicators) { item in
-                        HStack(spacing: 6) {
-                            Circle()
-                                .fill(item.color)
-                                .frame(width: 10, height: 10)
-                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
-                            Text(item.label)
-                                .font(.system(size: 11, weight: .semibold, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
+                        VStack(spacing: 4) {
+                            Image(systemName: item.icon)
+                                .font(.system(size: 14, weight: .semibold, design: .rounded))
+                                .foregroundStyle(item.color)
+                            Text(item.type)
+                                .font(.system(size: 9, weight: .bold, design: .rounded))
+                                .foregroundStyle(JohoColors.black.opacity(0.7))
                         }
+                        .frame(maxWidth: .infinity)
                     }
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -949,57 +943,89 @@ struct SpecialDaysListView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
 
-                    // Stats row with clear indicators - 情報デザイン: Circles with BLACK borders
-                    // Order MUST match legend: HOL > BDY > OBS > EVT
+                    // Stats row with clear indicators - 情報デザイン: Colored SF Symbol icons
+                    // Order MUST match legend: HOL > BDY > OBS > EVT > NTE > TRP > EXP
                     if hasItems {
                         HStack(spacing: 4) {
-                            // 1. Holidays: Red filled circle + count (BLACK border)
+                            // 1. Holidays: Colored icon + count
                             if counts.holidays > 0 {
                                 HStack(spacing: 2) {
-                                    Circle()
-                                        .fill(SpecialDayType.holiday.accentColor)
-                                        .frame(width: 8, height: 8)
-                                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                                    Image(systemName: SpecialDayType.holiday.defaultIcon)
+                                        .font(.system(size: 8, weight: .semibold, design: .rounded))
+                                        .foregroundStyle(SpecialDayType.holiday.accentColor)
                                     Text("\(counts.holidays)")
                                         .font(.system(size: 9, weight: .bold, design: .rounded))
                                         .foregroundStyle(JohoColors.black)
                                 }
                             }
 
-                            // 2. Birthdays: Pink circle + count (BLACK border)
+                            // 2. Birthdays: Colored icon + count
                             if counts.birthdays > 0 {
                                 HStack(spacing: 2) {
-                                    Circle()
-                                        .fill(SpecialDayType.birthday.accentColor)
-                                        .frame(width: 8, height: 8)
-                                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                                    Image(systemName: SpecialDayType.birthday.defaultIcon)
+                                        .font(.system(size: 8, weight: .semibold, design: .rounded))
+                                        .foregroundStyle(SpecialDayType.birthday.accentColor)
                                     Text("\(counts.birthdays)")
                                         .font(.system(size: 9, weight: .bold, design: .rounded))
                                         .foregroundStyle(JohoColors.black)
                                 }
                             }
 
-                            // 3. Observances: Orange filled circle + count (BLACK border)
+                            // 3. Observances: Colored icon + count
                             if counts.observances > 0 {
                                 HStack(spacing: 2) {
-                                    Circle()
-                                        .fill(SpecialDayType.observance.accentColor)
-                                        .frame(width: 8, height: 8)
-                                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                                    Image(systemName: SpecialDayType.observance.defaultIcon)
+                                        .font(.system(size: 8, weight: .semibold, design: .rounded))
+                                        .foregroundStyle(SpecialDayType.observance.accentColor)
                                     Text("\(counts.observances)")
                                         .font(.system(size: 9, weight: .bold, design: .rounded))
                                         .foregroundStyle(JohoColors.black)
                                 }
                             }
 
-                            // 4. Events: Purple circle + count (BLACK border)
+                            // 4. Events: Colored icon + count
                             if counts.events > 0 {
                                 HStack(spacing: 2) {
-                                    Circle()
-                                        .fill(SpecialDayType.event.accentColor)
-                                        .frame(width: 8, height: 8)
-                                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                                    Image(systemName: SpecialDayType.event.defaultIcon)
+                                        .font(.system(size: 8, weight: .semibold, design: .rounded))
+                                        .foregroundStyle(SpecialDayType.event.accentColor)
                                     Text("\(counts.events)")
+                                        .font(.system(size: 9, weight: .bold, design: .rounded))
+                                        .foregroundStyle(JohoColors.black)
+                                }
+                            }
+
+                            // 5. Notes: Colored icon + count
+                            if counts.notes > 0 {
+                                HStack(spacing: 2) {
+                                    Image(systemName: SpecialDayType.note.defaultIcon)
+                                        .font(.system(size: 8, weight: .semibold, design: .rounded))
+                                        .foregroundStyle(SpecialDayType.note.accentColor)
+                                    Text("\(counts.notes)")
+                                        .font(.system(size: 9, weight: .bold, design: .rounded))
+                                        .foregroundStyle(JohoColors.black)
+                                }
+                            }
+
+                            // 6. Trips: Colored icon + count
+                            if counts.trips > 0 {
+                                HStack(spacing: 2) {
+                                    Image(systemName: SpecialDayType.trip.defaultIcon)
+                                        .font(.system(size: 8, weight: .semibold, design: .rounded))
+                                        .foregroundStyle(SpecialDayType.trip.accentColor)
+                                    Text("\(counts.trips)")
+                                        .font(.system(size: 9, weight: .bold, design: .rounded))
+                                        .foregroundStyle(JohoColors.black)
+                                }
+                            }
+
+                            // 7. Expenses: Colored icon + count
+                            if counts.expenses > 0 {
+                                HStack(spacing: 2) {
+                                    Image(systemName: SpecialDayType.expense.defaultIcon)
+                                        .font(.system(size: 8, weight: .semibold, design: .rounded))
+                                        .foregroundStyle(SpecialDayType.expense.accentColor)
+                                    Text("\(counts.expenses)")
                                         .font(.system(size: 9, weight: .bold, design: .rounded))
                                         .foregroundStyle(JohoColors.black)
                                 }
@@ -1275,52 +1301,45 @@ struct CollapsibleSpecialDayCard: View {
         )
     }
 
-    // MARK: - Content Indicator Dots (情報デザイン: Colored circles with BLACK borders)
+    // MARK: - Content Indicator Icons (情報デザイン: Colored SF Symbol icons)
 
     private var contentIndicatorDots: some View {
         HStack(spacing: 3) {
-            // 情報デザイン: All dots are filled circles with accent color + BLACK border
+            // 情報デザイン: Colored SF Symbol icons for each type
             if !holidays.isEmpty {
-                Circle()
-                    .fill(SpecialDayType.holiday.accentColor)
-                    .frame(width: 8, height: 8)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                Image(systemName: SpecialDayType.holiday.defaultIcon)
+                    .font(.system(size: 8, weight: .semibold, design: .rounded))
+                    .foregroundStyle(SpecialDayType.holiday.accentColor)
             }
             if !observances.isEmpty {
-                Circle()
-                    .fill(SpecialDayType.observance.accentColor)
-                    .frame(width: 8, height: 8)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                Image(systemName: SpecialDayType.observance.defaultIcon)
+                    .font(.system(size: 8, weight: .semibold, design: .rounded))
+                    .foregroundStyle(SpecialDayType.observance.accentColor)
             }
             if !events.isEmpty {
-                Circle()
-                    .fill(SpecialDayType.event.accentColor)
-                    .frame(width: 8, height: 8)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                Image(systemName: SpecialDayType.event.defaultIcon)
+                    .font(.system(size: 8, weight: .semibold, design: .rounded))
+                    .foregroundStyle(SpecialDayType.event.accentColor)
             }
             if !birthdays.isEmpty {
-                Circle()
-                    .fill(SpecialDayType.birthday.accentColor)
-                    .frame(width: 8, height: 8)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                Image(systemName: SpecialDayType.birthday.defaultIcon)
+                    .font(.system(size: 8, weight: .semibold, design: .rounded))
+                    .foregroundStyle(SpecialDayType.birthday.accentColor)
             }
             if !notes.isEmpty {
-                Circle()
-                    .fill(SpecialDayType.note.accentColor)
-                    .frame(width: 8, height: 8)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                Image(systemName: SpecialDayType.note.defaultIcon)
+                    .font(.system(size: 8, weight: .semibold, design: .rounded))
+                    .foregroundStyle(SpecialDayType.note.accentColor)
             }
             if !tripsForDay.isEmpty {
-                Circle()
-                    .fill(SpecialDayType.trip.accentColor)
-                    .frame(width: 8, height: 8)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                Image(systemName: SpecialDayType.trip.defaultIcon)
+                    .font(.system(size: 8, weight: .semibold, design: .rounded))
+                    .foregroundStyle(SpecialDayType.trip.accentColor)
             }
             if !expensesForDay.isEmpty {
-                Circle()
-                    .fill(SpecialDayType.expense.accentColor)
-                    .frame(width: 8, height: 8)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                Image(systemName: SpecialDayType.expense.defaultIcon)
+                    .font(.system(size: 8, weight: .semibold, design: .rounded))
+                    .foregroundStyle(SpecialDayType.expense.accentColor)
             }
         }
     }
@@ -1776,10 +1795,9 @@ struct CollapsibleSpecialDayCard: View {
 
     @ViewBuilder
     private func typeIndicatorDot(for type: SpecialDayType) -> some View {
-        Circle()
-            .fill(type.accentColor)
-            .frame(width: 10, height: 10)
-            .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+        Image(systemName: type.defaultIcon)
+            .font(.system(size: 10, weight: .semibold, design: .rounded))
+            .foregroundStyle(type.accentColor)
     }
 
     // MARK: - Formatters
@@ -2021,14 +2039,13 @@ extension SpecialDaysListView {
         .shadow(color: JohoColors.black.opacity(0.05), radius: 2, x: 0, y: 1)
     }
 
-    // MARK: - Type Indicator Dot (情報デザイン: Accent-colored circles with BLACK borders)
+    // MARK: - Type Indicator Icon (情報デザイン: Colored SF Symbol icons)
 
     @ViewBuilder
     private func typeIndicatorDot(for type: SpecialDayType) -> some View {
-        Circle()
-            .fill(type.accentColor)
-            .frame(width: 10, height: 10)
-            .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+        Image(systemName: type.defaultIcon)
+            .font(.system(size: 10, weight: .semibold, design: .rounded))
+            .foregroundStyle(type.accentColor)
     }
 }
 
