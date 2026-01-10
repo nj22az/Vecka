@@ -1673,14 +1673,14 @@ struct CollapsibleSpecialDayCard: View {
         return formatter.string(from: date)
     }
 
-    // MARK: - Type Indicator Dot (情報デザイン: BLACK icons for visibility)
-    // Icons use BLACK for maximum contrast against colored backgrounds
+    // MARK: - Type Indicator Dot (情報デザイン: RED icons for visibility)
+    // Icons use RED for maximum contrast against colored backgrounds
 
     @ViewBuilder
     private func typeIndicatorDot(for type: SpecialDayType) -> some View {
         Image(systemName: type.defaultIcon)
             .font(.system(size: 10, weight: .semibold, design: .rounded))
-            .foregroundStyle(JohoColors.black)
+            .foregroundStyle(JohoColors.red)
     }
 
     // MARK: - Formatters

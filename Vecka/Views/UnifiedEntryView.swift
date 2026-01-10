@@ -312,9 +312,10 @@ struct JohoUnifiedEntrySheet: View {
         } label: {
             // 情報デザイン: ICONS ONLY - no confusing text codes
             // Larger icons that are self-explanatory (Nintendo/Line style)
+            // Icons ALWAYS use black for visibility - background provides color distinction
             Image(systemName: type.icon)
                 .font(.system(size: isSelected ? 24 : 20, weight: .semibold, design: .rounded))
-                .foregroundStyle(isSelected ? JohoColors.black : type.color)
+                .foregroundStyle(JohoColors.black)
                 .frame(maxWidth: .infinity)
                 .frame(height: 52)
                 // Selected = filled color, Unselected = subtle tint
