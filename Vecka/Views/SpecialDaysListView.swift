@@ -127,13 +127,13 @@ struct SpecialDaysListView: View {
             (holidayManager.holidayCache[date]?.contains { $0.isBankHoliday } ?? false)
         }
         if hasHolidays {
-            items.append(LegendItem(type: "HOL", label: "Holiday", color: JohoColors.red))
+            items.append(LegendItem(type: "HOL", label: "Holiday", color: SpecialDayType.holiday.accentColor))
         }
 
         // 2. Birthdays - PINK (from contacts)
         let hasBirthdays = contacts.contains { $0.birthday != nil }
         if hasBirthdays {
-            items.append(LegendItem(type: "BDY", label: "Birthday", color: JohoColors.pink))
+            items.append(LegendItem(type: "BDY", label: "Birthday", color: SpecialDayType.birthday.accentColor))
         }
 
         // 3. Observances - ORANGE
@@ -142,7 +142,7 @@ struct SpecialDaysListView: View {
             (holidayManager.holidayCache[date]?.contains { !$0.isBankHoliday } ?? false)
         }
         if hasObservances {
-            items.append(LegendItem(type: "OBS", label: "Observance", color: JohoColors.orange))
+            items.append(LegendItem(type: "OBS", label: "Observance", color: SpecialDayType.observance.accentColor))
         }
 
         // 4. Events - PURPLE (countdown events)
@@ -150,7 +150,7 @@ struct SpecialDaysListView: View {
             calendar.component(.year, from: event.targetDate) == selectedYear
         }
         if hasEvents {
-            items.append(LegendItem(type: "EVT", label: "Event", color: JohoColors.eventPurple))
+            items.append(LegendItem(type: "EVT", label: "Event", color: SpecialDayType.event.accentColor))
         }
 
         // 5. Notes - YELLOW
@@ -158,7 +158,7 @@ struct SpecialDaysListView: View {
             calendar.component(.year, from: note.date) == selectedYear
         }
         if hasNotes {
-            items.append(LegendItem(type: "NTE", label: "Note", color: JohoColors.yellow))
+            items.append(LegendItem(type: "NTE", label: "Note", color: SpecialDayType.note.accentColor))
         }
 
         // 6. Trips - BLUE
@@ -167,7 +167,7 @@ struct SpecialDaysListView: View {
             calendar.component(.year, from: trip.endDate) == selectedYear
         }
         if hasTrips {
-            items.append(LegendItem(type: "TRP", label: "Trip", color: JohoColors.tripBlue))
+            items.append(LegendItem(type: "TRP", label: "Trip", color: SpecialDayType.trip.accentColor))
         }
 
         // 7. Expenses - GREEN
@@ -175,7 +175,7 @@ struct SpecialDaysListView: View {
             calendar.component(.year, from: expense.date) == selectedYear
         }
         if hasExpenses {
-            items.append(LegendItem(type: "EXP", label: "Expense", color: JohoColors.green))
+            items.append(LegendItem(type: "EXP", label: "Expense", color: SpecialDayType.expense.accentColor))
         }
 
         return items
@@ -953,7 +953,7 @@ struct SpecialDaysListView: View {
                             if counts.holidays > 0 {
                                 HStack(spacing: 2) {
                                     Circle()
-                                        .fill(JohoColors.red)
+                                        .fill(SpecialDayType.holiday.accentColor)
                                         .frame(width: 8, height: 8)
                                         .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
                                     Text("\(counts.holidays)")
@@ -966,7 +966,7 @@ struct SpecialDaysListView: View {
                             if counts.observances > 0 {
                                 HStack(spacing: 2) {
                                     Circle()
-                                        .fill(JohoColors.orange)
+                                        .fill(SpecialDayType.observance.accentColor)
                                         .frame(width: 8, height: 8)
                                         .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
                                     Text("\(counts.observances)")
@@ -979,7 +979,7 @@ struct SpecialDaysListView: View {
                             if counts.events > 0 {
                                 HStack(spacing: 2) {
                                     Circle()
-                                        .fill(Color(hex: "805AD5"))
+                                        .fill(SpecialDayType.event.accentColor)
                                         .frame(width: 8, height: 8)
                                         .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
                                     Text("\(counts.events)")
@@ -992,7 +992,7 @@ struct SpecialDaysListView: View {
                             if counts.birthdays > 0 {
                                 HStack(spacing: 2) {
                                     Circle()
-                                        .fill(JohoColors.pink)
+                                        .fill(SpecialDayType.birthday.accentColor)
                                         .frame(width: 8, height: 8)
                                         .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
                                     Text("\(counts.birthdays)")
