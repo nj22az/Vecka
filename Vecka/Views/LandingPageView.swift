@@ -283,50 +283,68 @@ struct LandingPageView: View {
         return closest
     }
 
-    // MARK: - Body (Star Page Pattern + Adaptive Bento for iPad)
+    // MARK: - Body (Star Page Pattern + Combined Dashboard+Calendar for iPad)
 
     var body: some View {
         ScrollView {
-            VStack(spacing: JohoDimensions.spacingMD) {
-                // PAGE HEADER: Two-row card matching Calendar structure
-                pageHeader
+            if isRegularWidth {
+                // iPad: Combined Dashboard + Calendar side-by-side
+                // 情報デザイン: Maximum information density on large screens
+                HStack(alignment: .top, spacing: JohoDimensions.spacingMD) {
+                    // LEFT COLUMN: Dashboard widgets
+                    VStack(spacing: JohoDimensions.spacingMD) {
+                        // PAGE HEADER
+                        pageHeader
 
-                // WORLD CLOCKS: Hotel style (if configured)
-                if !displayClocks.isEmpty {
-                    worldClocksCard
-                }
+                        // WORLD CLOCKS (if configured)
+                        if !displayClocks.isEmpty {
+                            worldClocksCard
+                        }
 
-                // ADAPTIVE SECTION: Multi-column bento on iPad, stacked on iPhone
-                // 情報デザイン: Bento grid expands with more widgets on larger screens
-                if isRegularWidth {
-                    // iPad Row 1: Today, Upcoming, Week (3 columns)
-                    HStack(alignment: .top, spacing: JohoDimensions.spacingMD) {
-                        todayCard
-                            .frame(maxWidth: .infinity)
-                        upcomingCard
-                            .frame(maxWidth: .infinity)
+                        // Row 1: Today + Upcoming
+                        HStack(alignment: .top, spacing: JohoDimensions.spacingMD) {
+                            todayCard
+                                .frame(maxWidth: .infinity)
+                            upcomingCard
+                                .frame(maxWidth: .infinity)
+                        }
+
+                        // Row 2: Glance + Progress
+                        HStack(alignment: .top, spacing: JohoDimensions.spacingMD) {
+                            glanceCard
+                                .frame(maxWidth: .infinity)
+                            progressCard
+                                .frame(maxWidth: .infinity)
+                        }
+
+                        // Row 3: Week overview
                         weekCard
-                            .frame(maxWidth: .infinity)
+                    }
+                    .frame(maxWidth: .infinity)
+
+                    // RIGHT COLUMN: Embedded Calendar
+                    embeddedCalendarCard
+                        .frame(width: 320)
+                }
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.top, JohoDimensions.spacingSM)
+                .padding(.bottom, JohoDimensions.spacingXL)
+            } else {
+                // iPhone/iPad mini: Stacked layout
+                VStack(spacing: JohoDimensions.spacingMD) {
+                    pageHeader
+
+                    if !displayClocks.isEmpty {
+                        worldClocksCard
                     }
 
-                    // iPad Row 2: Glance (2/3) + Progress (1/3)
-                    HStack(alignment: .top, spacing: JohoDimensions.spacingMD) {
-                        glanceCard
-                            .frame(maxWidth: .infinity)
-                        progressCard
-                            .frame(minWidth: 200, maxWidth: 280)
-                    }
-                } else {
-                    // iPhone/iPad mini: Stacked layout (no extra widgets)
                     todayCard
                     glanceCard
                 }
+                .padding(.horizontal, JohoDimensions.spacingSM)
+                .padding(.top, JohoDimensions.spacingSM)
+                .padding(.bottom, JohoDimensions.spacingXL)
             }
-            .frame(maxWidth: isRegularWidth ? 1000 : .infinity) // 情報デザイン: Max width on large iPad
-            .frame(maxWidth: .infinity) // Center within scroll view
-            .padding(.horizontal, isRegularWidth ? JohoDimensions.spacingLG : JohoDimensions.spacingSM)
-            .padding(.top, JohoDimensions.spacingSM)
-            .padding(.bottom, JohoDimensions.spacingXL)
         }
         .scrollContentBackground(.hidden)
         .johoBackground()
@@ -1572,6 +1590,285 @@ struct LandingPageView: View {
         }
 
         return items
+    }
+
+    // MARK: - Embedded Calendar Card (情報デザイン: iPad Combined View)
+
+    @State private var embeddedCalendarMonth: Int = Calendar.current.component(.month, from: Date())
+    @State private var embeddedCalendarYear: Int = Calendar.current.component(.year, from: Date())
+
+    private var embeddedCalendarCard: some View {
+        VStack(spacing: 0) {
+            // Header with month navigation
+            HStack {
+                Button {
+                    navigateEmbeddedCalendar(by: -1)
+                    HapticManager.selection()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .frame(width: 44, height: 44)
+                }
+
+                Spacer()
+
+                VStack(spacing: 2) {
+                    Text(embeddedMonthName)
+                        .font(.system(size: 16, weight: .black, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                    Text(String(embeddedCalendarYear))
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+
+                Spacer()
+
+                Button {
+                    navigateEmbeddedCalendar(by: 1)
+                    HapticManager.selection()
+                } label: {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .frame(width: 44, height: 44)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .padding(.vertical, JohoDimensions.spacingXS)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            // Day headers
+            HStack(spacing: 0) {
+                ForEach(["M", "T", "W", "T", "F", "S", "S"], id: \.self) { day in
+                    Text(day)
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .padding(.vertical, JohoDimensions.spacingXS)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border.opacity(0.3))
+                .frame(height: 1)
+
+            // Calendar grid
+            VStack(spacing: 2) {
+                ForEach(embeddedCalendarWeeks, id: \.self) { week in
+                    HStack(spacing: 0) {
+                        ForEach(week, id: \.self) { day in
+                            embeddedDayCell(day)
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                }
+            }
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .padding(.horizontal, JohoDimensions.spacingXS)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            // Footer - tap to open full calendar
+            Button {
+                HapticManager.impact(.light)
+                NotificationCenter.default.post(name: .navigateToPage, object: SidebarSelection.calendar)
+            } label: {
+                HStack {
+                    Text("Open Full Calendar")
+                        .font(.system(size: 12, weight: .semibold, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+
+                    Image(systemName: "arrow.right")
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, JohoDimensions.spacingSM)
+            }
+            .buttonStyle(.plain)
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+        )
+    }
+
+    /// Month name for embedded calendar
+    private var embeddedMonthName: String {
+        let dateComponents = DateComponents(year: embeddedCalendarYear, month: embeddedCalendarMonth, day: 1)
+        guard let date = Calendar.current.date(from: dateComponents) else { return "" }
+        return date.formatted(.dateTime.month(.wide)).uppercased()
+    }
+
+    /// Navigate embedded calendar by months
+    private func navigateEmbeddedCalendar(by months: Int) {
+        var newMonth = embeddedCalendarMonth + months
+        var newYear = embeddedCalendarYear
+
+        if newMonth > 12 {
+            newMonth = 1
+            newYear += 1
+        } else if newMonth < 1 {
+            newMonth = 12
+            newYear -= 1
+        }
+
+        embeddedCalendarMonth = newMonth
+        embeddedCalendarYear = newYear
+    }
+
+    /// Generate weeks for embedded calendar
+    private var embeddedCalendarWeeks: [[EmbeddedCalendarDay]] {
+        let calendar = Calendar.iso8601
+        var weeks: [[EmbeddedCalendarDay]] = []
+
+        // Get first day of month
+        guard let firstOfMonth = calendar.date(from: DateComponents(year: embeddedCalendarYear, month: embeddedCalendarMonth, day: 1)),
+              let range = calendar.range(of: .day, in: .month, for: firstOfMonth) else {
+            return []
+        }
+
+        // Find the Monday of the week containing the 1st
+        let firstWeekday = calendar.component(.weekday, from: firstOfMonth)
+        let daysFromMonday = (firstWeekday + 5) % 7  // Convert Sunday=1 to Monday-based
+
+        guard let weekStart = calendar.date(byAdding: .day, value: -daysFromMonday, to: firstOfMonth) else {
+            return []
+        }
+
+        // Generate 6 weeks (covers all month layouts)
+        var currentDate = weekStart
+        for _ in 0..<6 {
+            var week: [EmbeddedCalendarDay] = []
+            for _ in 0..<7 {
+                let dayNum = calendar.component(.day, from: currentDate)
+                let monthNum = calendar.component(.month, from: currentDate)
+                let isCurrentMonth = monthNum == embeddedCalendarMonth
+                let isToday = calendar.isDateInToday(currentDate)
+                let dayStart = calendar.startOfDay(for: currentDate)
+
+                // Collect indicators
+                var indicators: [Color] = []
+
+                // Holidays
+                if let holidays = holidayManager.holidayCache[dayStart] {
+                    for holiday in holidays {
+                        indicators.append(holiday.isBankHoliday ? JohoColors.red : JohoColors.orange)
+                    }
+                }
+
+                // Birthdays
+                let month = calendar.component(.month, from: currentDate)
+                let day = calendar.component(.day, from: currentDate)
+                for contact in contacts {
+                    guard let birthday = contact.birthday else { continue }
+                    if calendar.component(.month, from: birthday) == month &&
+                       calendar.component(.day, from: birthday) == day {
+                        indicators.append(JohoColors.pink)
+                        break
+                    }
+                }
+
+                // Events
+                for event in countdownEvents {
+                    if calendar.startOfDay(for: event.targetDate) == dayStart {
+                        indicators.append(JohoColors.eventPurple)
+                        break
+                    }
+                }
+
+                // Notes
+                for note in allNotes {
+                    if calendar.startOfDay(for: note.date) == dayStart {
+                        indicators.append(JohoColors.yellow)
+                        break
+                    }
+                }
+
+                week.append(EmbeddedCalendarDay(
+                    date: currentDate,
+                    dayNumber: dayNum,
+                    isCurrentMonth: isCurrentMonth,
+                    isToday: isToday,
+                    indicators: Array(indicators.prefix(3))
+                ))
+
+                currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate) ?? currentDate
+            }
+            weeks.append(week)
+
+            // Stop if we've passed the end of the month and completed the week
+            let lastDayMonth = calendar.component(.month, from: week.last?.date ?? Date())
+            if lastDayMonth > embeddedCalendarMonth || (lastDayMonth == 1 && embeddedCalendarMonth == 12) {
+                break
+            }
+        }
+
+        return weeks
+    }
+
+    /// Embedded calendar day model
+    private struct EmbeddedCalendarDay: Hashable {
+        let date: Date
+        let dayNumber: Int
+        let isCurrentMonth: Bool
+        let isToday: Bool
+        let indicators: [Color]
+
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(date)
+        }
+
+        static func == (lhs: EmbeddedCalendarDay, rhs: EmbeddedCalendarDay) -> Bool {
+            lhs.date == rhs.date
+        }
+    }
+
+    /// Embedded calendar day cell
+    private func embeddedDayCell(_ day: EmbeddedCalendarDay) -> some View {
+        VStack(spacing: 2) {
+            // Day number
+            Text("\(day.dayNumber)")
+                .font(.system(size: 14, weight: day.isToday ? .black : .medium, design: .rounded))
+                .foregroundStyle(
+                    day.isToday ? colors.primaryInverted :
+                    day.isCurrentMonth ? colors.primary : colors.secondary.opacity(0.4)
+                )
+                .frame(width: 28, height: 28)
+                .background(day.isToday ? JohoColors.yellow : Color.clear)
+                .clipShape(Circle())
+                .overlay(
+                    Circle()
+                        .stroke(day.isToday ? JohoColors.black : Color.clear, lineWidth: 1.5)
+                )
+
+            // Indicators
+            if !day.indicators.isEmpty && day.isCurrentMonth {
+                HStack(spacing: 2) {
+                    ForEach(Array(day.indicators.enumerated()), id: \.offset) { _, color in
+                        Circle()
+                            .fill(color)
+                            .frame(width: 4, height: 4)
+                    }
+                }
+                .frame(height: 6)
+            } else {
+                Spacer()
+                    .frame(height: 6)
+            }
+        }
+        .frame(height: 40)
     }
 }
 
