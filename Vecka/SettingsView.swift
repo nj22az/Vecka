@@ -40,6 +40,9 @@ struct SettingsView: View {
     @State private var isEditingTitle = false
     @State private var editingTitle = ""
 
+    // Developer settings (DEBUG only)
+    @State private var showDeveloperSettings = false
+
     var body: some View {
         ScrollView {
             VStack(spacing: JohoDimensions.spacingLG) {
@@ -355,12 +358,20 @@ struct SettingsView: View {
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
 
+                // Developer Section (情報デザイン: Debug tools for testing)
+                #if DEBUG
+                developerSection
+                #endif
+
                 Spacer(minLength: JohoDimensions.spacingXL)
             }
             .padding(.bottom, JohoDimensions.spacingXL)
         }
         .johoBackground()
         .toolbar(.hidden, for: .navigationBar)
+        .sheet(isPresented: $showDeveloperSettings) {
+            DeveloperSettingsView()
+        }
     }
 
     private var currencyDisplayName: String {
@@ -1351,6 +1362,68 @@ struct SettingsView: View {
         } else {
             return "Healthy • \(remaining) entries remaining"
         }
+    }
+
+    // MARK: - Developer Section (DEBUG only)
+
+    private var developerSection: some View {
+        VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
+            JohoPill(text: "DEVELOPER", style: .whiteOnBlack, size: .small)
+
+            Button {
+                showDeveloperSettings = true
+            } label: {
+                HStack(spacing: JohoDimensions.spacingMD) {
+                    Image(systemName: "hammer.fill")
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.orange)
+                        .frame(width: 44, height: 44)
+                        .background(JohoColors.orange.opacity(0.2))
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
+                        )
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Developer Tools")
+                            .font(JohoFont.headline)
+                            .foregroundStyle(colors.primary)
+
+                        Text("Test data, debug info, reset")
+                            .font(JohoFont.body)
+                            .foregroundStyle(colors.secondary)
+                    }
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+                .padding(JohoDimensions.spacingMD)
+                .background(colors.surface)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                        .stroke(JohoColors.orange.opacity(0.5), lineWidth: JohoDimensions.borderMedium)
+                )
+            }
+            .buttonStyle(.plain)
+
+            Text("Debug features for development and testing.")
+                .font(JohoFont.caption)
+                .foregroundStyle(colors.secondary)
+                .padding(.horizontal, JohoDimensions.spacingSM)
+        }
+        .padding(JohoDimensions.spacingLG)
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                .stroke(JohoColors.orange.opacity(0.3), lineWidth: JohoDimensions.borderThick)
+        )
+        .padding(.horizontal, JohoDimensions.spacingLG)
     }
 }
 
