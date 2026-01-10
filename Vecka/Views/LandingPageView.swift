@@ -18,9 +18,13 @@ import SwiftData
 struct LandingPageView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.johoColorMode) private var colorMode
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     /// Dynamic colors based on color mode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    /// 情報デザイン: Adaptive layout for iPad (regular) vs iPhone (compact)
+    private var isRegularWidth: Bool { horizontalSizeClass == .regular }
 
     // Personalized title (情報デザイン: User can customize their landing page)
     @AppStorage("customLandingTitle") private var customLandingTitle = ""
@@ -279,7 +283,7 @@ struct LandingPageView: View {
         return closest
     }
 
-    // MARK: - Body (Star Page Pattern)
+    // MARK: - Body (Star Page Pattern + Adaptive Bento for iPad)
 
     var body: some View {
         ScrollView {
@@ -292,13 +296,25 @@ struct LandingPageView: View {
                     worldClocksCard
                 }
 
-                // TODAY: What's happening
-                todayCard
-
-                // GLANCE: Contextual information dashboard (情報デザイン)
-                glanceCard
+                // ADAPTIVE SECTION: Side-by-side on iPad, stacked on iPhone
+                // 情報デザイン: Bento grid expands horizontally on larger screens
+                if isRegularWidth {
+                    // iPad: Today and Glance side-by-side
+                    HStack(alignment: .top, spacing: JohoDimensions.spacingMD) {
+                        todayCard
+                            .frame(maxWidth: .infinity)
+                        glanceCard
+                            .frame(maxWidth: .infinity)
+                    }
+                } else {
+                    // iPhone/iPad mini: Stacked layout
+                    todayCard
+                    glanceCard
+                }
             }
-            .padding(.horizontal, JohoDimensions.spacingSM)
+            .frame(maxWidth: isRegularWidth ? 1000 : .infinity) // 情報デザイン: Max width on large iPad
+            .frame(maxWidth: .infinity) // Center within scroll view
+            .padding(.horizontal, isRegularWidth ? JohoDimensions.spacingLG : JohoDimensions.spacingSM)
             .padding(.top, JohoDimensions.spacingSM)
             .padding(.bottom, JohoDimensions.spacingXL)
         }
