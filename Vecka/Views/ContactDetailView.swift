@@ -1087,7 +1087,7 @@ struct ContactDetailView: View {
                                 Circle()
                                     .fill(isSelected ? JohoColors.black : JohoColors.inputBackground)
                                     .frame(width: 8, height: 8)
-                                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                                    .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)

@@ -283,90 +283,43 @@ struct LandingPageView: View {
         return closest
     }
 
-    // MARK: - Body (Star Page Pattern + Combined Dashboard+Calendar for iPad)
+    // MARK: - Body (情報デザイン: Content fills screen, no scrolling on iPad)
+
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+
+    /// 情報デザイン: iPad uses full screen bento grid, no scrolling
+    private var isLandscape: Bool {
+        verticalSizeClass == .compact
+    }
 
     var body: some View {
-        ScrollView {
+        Group {
             if isRegularWidth {
-                // iPad: Combined Dashboard + Calendar side-by-side
-                // 情報デザイン: Maximum information density on large screens
-                HStack(alignment: .top, spacing: JohoDimensions.spacingMD) {
-                    // LEFT COLUMN: Dashboard widgets
+                // iPad: Full-screen bento grid - NO SCROLLING
+                // 情報デザイン: Content fills available space, black barely visible
+                GeometryReader { geometry in
+                    iPadBentoGrid(in: geometry)
+                }
+                .padding(JohoDimensions.spacingSM)
+            } else {
+                // iPhone/iPad mini: Scrollable stacked layout
+                ScrollView {
                     VStack(spacing: JohoDimensions.spacingMD) {
-                        // PAGE HEADER
                         pageHeader
 
-                        // WORLD CLOCKS (if configured)
                         if !displayClocks.isEmpty {
                             worldClocksCard
                         }
 
-                        // Row 1: Today + Upcoming
-                        HStack(alignment: .top, spacing: JohoDimensions.spacingMD) {
-                            todayCard
-                                .frame(maxWidth: .infinity)
-                            upcomingCard
-                                .frame(maxWidth: .infinity)
-                        }
-
-                        // Row 2: Glance + Progress
-                        HStack(alignment: .top, spacing: JohoDimensions.spacingMD) {
-                            glanceCard
-                                .frame(maxWidth: .infinity)
-                            progressCard
-                                .frame(maxWidth: .infinity)
-                        }
-
-                        // Row 3: Week overview
-                        weekCard
-
-                        // Row 4: Activity Strip
-                        activityStripCard
-
-                        // Row 5: Notes Stream
-                        if !recentNotes.isEmpty {
-                            notesStreamCard
-                        }
+                        todayCard
+                        glanceCard
                     }
-                    .frame(maxWidth: .infinity)
-
-                    // RIGHT COLUMN: Embedded Calendar + Birthday + Expenses
-                    VStack(spacing: JohoDimensions.spacingMD) {
-                        embeddedCalendarCard
-
-                        // Birthday countdown (if any upcoming)
-                        if !upcomingBirthdays.isEmpty {
-                            birthdayCountdownCard
-                        }
-
-                        // Monthly expense summary
-                        if !thisMonthExpenses.isEmpty {
-                            monthlyExpenseSummaryCard
-                        }
-                    }
-                    .frame(width: 320)
+                    .padding(.horizontal, JohoDimensions.spacingSM)
+                    .padding(.top, JohoDimensions.spacingSM)
+                    .padding(.bottom, JohoDimensions.spacingXL)
                 }
-                .padding(.horizontal, JohoDimensions.spacingLG)
-                .padding(.top, JohoDimensions.spacingSM)
-                .padding(.bottom, JohoDimensions.spacingXL)
-            } else {
-                // iPhone/iPad mini: Stacked layout
-                VStack(spacing: JohoDimensions.spacingMD) {
-                    pageHeader
-
-                    if !displayClocks.isEmpty {
-                        worldClocksCard
-                    }
-
-                    todayCard
-                    glanceCard
-                }
-                .padding(.horizontal, JohoDimensions.spacingSM)
-                .padding(.top, JohoDimensions.spacingSM)
-                .padding(.bottom, JohoDimensions.spacingXL)
             }
         }
-        .scrollContentBackground(.hidden)
         .johoBackground()
         .onAppear {
             // Randomize stat on each appearance (情報デザイン: Fresh insights)
@@ -382,6 +335,637 @@ struct LandingPageView: View {
                 ExpenseListView()
             }
         }
+    }
+
+    // MARK: - iPad Bento Grid (情報デザイン: Full-screen adaptive layout)
+
+    /// 情報デザイン: iPad dashboard fills entire screen with bento compartments
+    /// No scrolling required - content adapts to available space
+    @ViewBuilder
+    private func iPadBentoGrid(in geometry: GeometryProxy) -> some View {
+        let spacing = JohoDimensions.spacingSM
+        let availableWidth = geometry.size.width - spacing * 2
+        let availableHeight = geometry.size.height - spacing * 2 - geometry.safeAreaInsets.bottom
+
+        // 情報デザイン: 3-column layout for iPad
+        // Column widths: 35% | 35% | 30% (calendar column slightly narrower)
+        let col1Width = availableWidth * 0.35
+        let col2Width = availableWidth * 0.35
+        let col3Width = availableWidth * 0.30 - spacing * 2
+
+        HStack(alignment: .top, spacing: spacing) {
+            // COLUMN 1: Header + Today + Glance
+            VStack(spacing: spacing) {
+                // Compact header
+                compactPageHeader
+                    .frame(maxWidth: .infinity)
+
+                // Today card expands to fill
+                todayCardCompact
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                // Glance card
+                glanceCardCompact
+                    .frame(maxWidth: .infinity)
+            }
+            .frame(width: col1Width)
+
+            // COLUMN 2: World Clocks + Upcoming + Progress + Week
+            VStack(spacing: spacing) {
+                // World clocks (if any) or Week strip
+                if !displayClocks.isEmpty {
+                    worldClocksCardCompact
+                        .frame(maxWidth: .infinity)
+                }
+
+                // Upcoming events
+                upcomingCardCompact
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                // Progress bars
+                progressCardCompact
+                    .frame(maxWidth: .infinity)
+
+                // Week strip
+                weekCardCompact
+                    .frame(maxWidth: .infinity)
+            }
+            .frame(width: col2Width)
+
+            // COLUMN 3: Calendar + Birthday + Expenses
+            VStack(spacing: spacing) {
+                // Calendar (main focus)
+                embeddedCalendarCardCompact
+                    .frame(maxWidth: .infinity)
+
+                // Birthdays (if any)
+                if !upcomingBirthdays.isEmpty {
+                    birthdayCountdownCardCompact
+                        .frame(maxWidth: .infinity)
+                }
+
+                // Expenses (if any)
+                if !thisMonthExpenses.isEmpty {
+                    monthlyExpenseSummaryCardCompact
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    // Fill space if no expenses
+                    Spacer()
+                }
+            }
+            .frame(width: col3Width)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    // MARK: - Compact Page Header (iPad)
+
+    private var compactPageHeader: some View {
+        let dayNumber = Calendar.iso8601.component(.day, from: today)
+        let weekday = today.formatted(.dateTime.weekday(.abbreviated)).uppercased()
+
+        return HStack(spacing: JohoDimensions.spacingSM) {
+            // Icon
+            Image(systemName: "house.fill")
+                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .foregroundStyle(PageHeaderColor.landing.accent)
+                .frame(width: 32, height: 32)
+                .background(PageHeaderColor.landing.lightBackground)
+                .clipShape(Squircle(cornerRadius: 6))
+                .overlay(Squircle(cornerRadius: 6).stroke(colors.border, lineWidth: 1))
+
+            VStack(alignment: .leading, spacing: 0) {
+                Text(displayTitle)
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .foregroundStyle(colors.primary)
+
+                HStack(spacing: 4) {
+                    Text(String(dayNumber))
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                    Text(weekday)
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+            }
+
+            Spacer()
+
+            // Week badge
+            Text("W\(weekNumber)")
+                .font(.system(size: 10, weight: .black, design: .rounded))
+                .foregroundStyle(colors.primaryInverted)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 3)
+                .background(colors.surfaceInverted)
+                .clipShape(Capsule())
+
+            // Mascot
+            JohoMascot(mood: mascotMood, size: 32, borderWidth: 1, showBob: true, showBlink: true, autoOnsen: false)
+        }
+        .padding(JohoDimensions.spacingSM)
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+    }
+
+    // MARK: - Compact Today Card (iPad)
+
+    private var todayCardCompact: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Circle().fill(JohoColors.yellow).frame(width: 8, height: 8)
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                Text("TODAY").font(.system(size: 10, weight: .black, design: .rounded)).tracking(1)
+                Spacer()
+                if !todayItems.isEmpty {
+                    Text("\(todayItems.count)").font(.system(size: 10, weight: .bold)).foregroundStyle(colors.secondary)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .padding(.vertical, JohoDimensions.spacingXS)
+
+            Rectangle().fill(colors.border).frame(height: 1)
+
+            if todayItems.isEmpty {
+                Text("Nothing scheduled")
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                    .foregroundStyle(colors.secondary)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ScrollView {
+                    VStack(spacing: 0) {
+                        ForEach(Array(todayItems.enumerated()), id: \.element.id) { index, item in
+                            if index > 0 {
+                                Rectangle().fill(colors.border.opacity(0.2)).frame(height: 1)
+                                    .padding(.horizontal, JohoDimensions.spacingSM)
+                            }
+                            todayItemRowCompact(item)
+                        }
+                    }
+                }
+            }
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+    }
+
+    private func todayItemRowCompact(_ item: TodayItem) -> some View {
+        HStack(spacing: 6) {
+            Circle().fill(item.color).frame(width: 6, height: 6)
+                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+            Image(systemName: item.icon)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(item.color)
+                .frame(width: 12)
+            Text(item.title)
+                .font(.system(size: 11, weight: .medium, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .lineLimit(1)
+            Spacer()
+            Text(item.typeBadge)
+                .font(.system(size: 7, weight: .bold))
+                .foregroundStyle(item.color)
+                .padding(.horizontal, 4)
+                .padding(.vertical, 1)
+                .background(item.color.opacity(0.15))
+                .clipShape(Capsule())
+        }
+        .padding(.horizontal, JohoDimensions.spacingSM)
+        .padding(.vertical, 4)
+    }
+
+    // MARK: - Compact Glance Card (iPad)
+
+    private var glanceCardCompact: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text("※").font(.system(size: 12, weight: .bold))
+                Text("GLANCE").font(.system(size: 10, weight: .black, design: .rounded)).tracking(1)
+                Spacer()
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .padding(.vertical, JohoDimensions.spacingXS)
+
+            Rectangle().fill(colors.border).frame(height: 1)
+
+            // 2x3 grid of tiles
+            LazyVGrid(columns: [
+                GridItem(.flexible(), spacing: 4),
+                GridItem(.flexible(), spacing: 4),
+                GridItem(.flexible(), spacing: 4)
+            ], spacing: 4) {
+                compactGlanceTile(icon: "calendar", label: "W\(weekNumber)", color: PageHeaderColor.calendar.accent, bg: PageHeaderColor.calendar.lightBackground)
+                compactGlanceTile(icon: currentMonthTheme.icon, label: currentMonthTheme.name.prefix(3).uppercased(), color: currentMonthTheme.accentColor, bg: currentMonthTheme.lightBackground)
+                compactGlanceTile(icon: "dollarsign.circle.fill", label: "\(allExpenses.count)", color: SpecialDayType.expense.accentColor, bg: SpecialDayType.expense.lightBackground)
+                compactGlanceTile(icon: "person.2.fill", label: "\(contacts.count)", color: PageHeaderColor.contacts.accent, bg: PageHeaderColor.contacts.lightBackground)
+                compactGlanceTile(icon: "airplane", label: "\(allTrips.count)", color: SpecialDayType.trip.accentColor, bg: SpecialDayType.trip.lightBackground)
+                compactGlanceTile(icon: "note.text", label: "\(allNotes.count)", color: JohoColors.yellow, bg: JohoColors.yellow.opacity(0.15))
+            }
+            .padding(JohoDimensions.spacingXS)
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+    }
+
+    private func compactGlanceTile(icon: String, label: String, color: Color, bg: Color) -> some View {
+        VStack(spacing: 2) {
+            Image(systemName: icon)
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .foregroundStyle(color)
+            Text(label)
+                .font(.system(size: 9, weight: .black, design: .rounded))
+                .foregroundStyle(JohoColors.black)
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 50)
+        .background(bg)
+        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 6, style: .continuous).stroke(JohoColors.black, lineWidth: 1))
+    }
+
+    // MARK: - Compact World Clocks Card (iPad)
+
+    private var worldClocksCardCompact: some View {
+        HStack(spacing: 0) {
+            ForEach(Array(displayClocks.enumerated()), id: \.element.id) { index, clock in
+                if index > 0 {
+                    Rectangle().fill(colors.border).frame(width: 1)
+                }
+                VStack(spacing: 2) {
+                    Text(clock.countryCode)
+                        .font(.system(size: 9, weight: .black, design: .rounded))
+                        .foregroundStyle(JohoColors.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(TimezoneTheme.theme(for: clock.timezoneIdentifier).accentColor)
+                        .clipShape(Capsule())
+                    Text(clock.formattedTime)
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, JohoDimensions.spacingXS)
+            }
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+    }
+
+    // MARK: - Compact Upcoming Card (iPad)
+
+    private var upcomingCardCompact: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Image(systemName: "arrow.right.circle.fill")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(JohoColors.cyan)
+                Text("UPCOMING").font(.system(size: 10, weight: .black, design: .rounded)).tracking(1)
+                Spacer()
+                if !upcomingItems.isEmpty {
+                    Text("\(upcomingItems.count)").font(.system(size: 10, weight: .bold)).foregroundStyle(colors.secondary)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .padding(.vertical, JohoDimensions.spacingXS)
+
+            Rectangle().fill(colors.border).frame(height: 1)
+
+            if upcomingItems.isEmpty {
+                Text("Nothing upcoming")
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                    .foregroundStyle(colors.secondary)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                ScrollView {
+                    VStack(spacing: 0) {
+                        ForEach(Array(upcomingItems.enumerated()), id: \.element.id) { index, item in
+                            if index > 0 {
+                                Rectangle().fill(colors.border.opacity(0.2)).frame(height: 1)
+                                    .padding(.horizontal, JohoDimensions.spacingSM)
+                            }
+                            upcomingItemRowCompact(item)
+                        }
+                    }
+                }
+            }
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+    }
+
+    private func upcomingItemRowCompact(_ item: UpcomingItem) -> some View {
+        HStack(spacing: 6) {
+            VStack(spacing: 0) {
+                Text(item.dayName).font(.system(size: 8, weight: .bold)).foregroundStyle(colors.secondary)
+                Text(String(item.dayNumber)).font(.system(size: 12, weight: .black))
+                    .foregroundStyle(item.isToday ? JohoColors.yellow : colors.primary)
+            }
+            .frame(width: 28)
+            .padding(.vertical, 2)
+            .background(item.isToday ? JohoColors.yellow.opacity(0.15) : Color.clear)
+            .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 4, style: .continuous)
+                .stroke(item.isToday ? JohoColors.yellow : colors.border.opacity(0.3), lineWidth: 1))
+
+            Circle().fill(item.color).frame(width: 6, height: 6)
+                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+
+            Text(item.title)
+                .font(.system(size: 10, weight: .medium, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .lineLimit(1)
+
+            Spacer()
+
+            Text(item.typeBadge)
+                .font(.system(size: 7, weight: .bold))
+                .foregroundStyle(item.color)
+                .padding(.horizontal, 4)
+                .padding(.vertical, 1)
+                .background(item.color.opacity(0.15))
+                .clipShape(Capsule())
+        }
+        .padding(.horizontal, JohoDimensions.spacingSM)
+        .padding(.vertical, 4)
+    }
+
+    // MARK: - Compact Progress Card (iPad)
+
+    private var progressCardCompact: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Image(systemName: "chart.bar.fill")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(JohoColors.green)
+                Text("PROGRESS").font(.system(size: 10, weight: .black, design: .rounded)).tracking(1)
+                Spacer()
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .padding(.vertical, JohoDimensions.spacingXS)
+
+            Rectangle().fill(colors.border).frame(height: 1)
+
+            VStack(spacing: 4) {
+                progressRowCompact(label: "YEAR", progress: yearProgress, color: JohoColors.green)
+                progressRowCompact(label: "MONTH", progress: monthProgress, color: currentMonthTheme.accentColor)
+                progressRowCompact(label: "WEEK", progress: weekProgress, color: JohoColors.cyan)
+            }
+            .padding(JohoDimensions.spacingSM)
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+    }
+
+    private func progressRowCompact(label: String, progress: Double, color: Color) -> some View {
+        HStack(spacing: 4) {
+            Text(label).font(.system(size: 8, weight: .bold)).foregroundStyle(colors.secondary).frame(width: 36, alignment: .leading)
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 2, style: .continuous).fill(JohoColors.black.opacity(0.1))
+                    RoundedRectangle(cornerRadius: 2, style: .continuous).fill(color).frame(width: geo.size.width * progress)
+                }
+            }
+            .frame(height: 8)
+            Text("\(Int(progress * 100))%").font(.system(size: 9, weight: .black)).frame(width: 28, alignment: .trailing)
+        }
+    }
+
+    // MARK: - Compact Week Card (iPad)
+
+    private var weekCardCompact: some View {
+        HStack(spacing: 0) {
+            ForEach(weekDays, id: \.date) { day in
+                if day.dayOfWeek > 1 {
+                    Rectangle().fill(colors.border.opacity(0.2)).frame(width: 1)
+                }
+                VStack(spacing: 2) {
+                    Text(day.name).font(.system(size: 9, weight: .bold)).foregroundStyle(day.isToday ? JohoColors.yellow : colors.secondary)
+                    Text(String(day.number))
+                        .font(.system(size: 12, weight: .black))
+                        .foregroundStyle(day.isToday ? JohoColors.black : colors.primary)
+                        .frame(width: 24, height: 24)
+                        .background(day.isToday ? JohoColors.yellow : Color.clear)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(day.isToday ? JohoColors.black : Color.clear, lineWidth: 1))
+                    HStack(spacing: 1) {
+                        ForEach(day.indicators.prefix(2), id: \.self) { color in
+                            Circle().fill(color).frame(width: 4, height: 4)
+                        }
+                    }.frame(height: 5)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 4)
+            }
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+    }
+
+    // MARK: - Compact Embedded Calendar Card (iPad)
+
+    private var embeddedCalendarCardCompact: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Button { navigateEmbeddedCalendar(by: -1); HapticManager.selection() } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 12, weight: .bold))
+                        .frame(width: 44, height: 36)
+                }
+                Spacer()
+                VStack(spacing: 0) {
+                    Text(embeddedMonthName)
+                        .font(.system(size: 14, weight: .black, design: .rounded))
+                    Text(String(embeddedCalendarYear))
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(colors.secondary)
+                }
+                Spacer()
+                Button { navigateEmbeddedCalendar(by: 1); HapticManager.selection() } label: {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .bold))
+                        .frame(width: 44, height: 36)
+                }
+            }
+
+            Rectangle().fill(colors.border).frame(height: 1)
+
+            // Day headers
+            HStack(spacing: 0) {
+                ForEach(["M", "T", "W", "T", "F", "S", "S"], id: \.self) { day in
+                    Text(day).font(.system(size: 9, weight: .bold)).foregroundStyle(colors.secondary).frame(maxWidth: .infinity)
+                }
+            }
+            .padding(.vertical, 4)
+
+            Rectangle().fill(colors.border.opacity(0.3)).frame(height: 1)
+
+            // Calendar grid
+            VStack(spacing: 1) {
+                ForEach(embeddedCalendarWeeks, id: \.self) { week in
+                    HStack(spacing: 0) {
+                        ForEach(week, id: \.self) { day in
+                            embeddedDayCellCompact(day).frame(maxWidth: .infinity)
+                        }
+                    }
+                }
+            }
+            .padding(.vertical, 4)
+
+            Rectangle().fill(colors.border).frame(height: 1)
+
+            // Footer
+            Button {
+                HapticManager.impact(.light)
+                NotificationCenter.default.post(name: .navigateToPage, object: SidebarSelection.calendar)
+            } label: {
+                HStack {
+                    Text("Open Calendar").font(.system(size: 10, weight: .semibold)).foregroundStyle(colors.secondary)
+                    Image(systemName: "arrow.right").font(.system(size: 9, weight: .bold)).foregroundStyle(colors.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 6)
+            }
+            .buttonStyle(.plain)
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+    }
+
+    private func embeddedDayCellCompact(_ day: EmbeddedCalendarDay) -> some View {
+        VStack(spacing: 1) {
+            Text(String(day.dayNumber))
+                .font(.system(size: 11, weight: day.isToday ? .black : .medium))
+                .foregroundStyle(day.isToday ? JohoColors.black : day.isCurrentMonth ? colors.primary : colors.secondary.opacity(0.3))
+                .frame(width: 22, height: 22)
+                .background(day.isToday ? JohoColors.yellow : Color.clear)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(day.isToday ? JohoColors.black : Color.clear, lineWidth: 1))
+            if !day.indicators.isEmpty && day.isCurrentMonth {
+                HStack(spacing: 1) {
+                    ForEach(Array(day.indicators.prefix(2).enumerated()), id: \.offset) { _, color in
+                        Circle().fill(color).frame(width: 3, height: 3)
+                    }
+                }.frame(height: 4)
+            } else {
+                Spacer().frame(height: 4)
+            }
+        }
+        .frame(height: 30)
+    }
+
+    // MARK: - Compact Birthday Countdown Card (iPad)
+
+    private var birthdayCountdownCardCompact: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Image(systemName: "birthday.cake.fill").font(.system(size: 10, weight: .bold)).foregroundStyle(JohoColors.pink)
+                Text("BIRTHDAYS").font(.system(size: 10, weight: .black, design: .rounded)).tracking(1)
+                Spacer()
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .padding(.vertical, JohoDimensions.spacingXS)
+
+            Rectangle().fill(colors.border).frame(height: 1)
+
+            VStack(spacing: 0) {
+                ForEach(Array(upcomingBirthdays.prefix(3).enumerated()), id: \.element.contact.id) { index, item in
+                    if index > 0 {
+                        Rectangle().fill(colors.border.opacity(0.2)).frame(height: 1)
+                            .padding(.horizontal, JohoDimensions.spacingSM)
+                    }
+                    birthdayRowCompact(contact: item.contact, daysUntil: item.daysUntil)
+                }
+            }
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
+    }
+
+    private func birthdayRowCompact(contact: Contact, daysUntil: Int) -> some View {
+        let firstName = contact.givenName.isEmpty ? contact.familyName : contact.givenName
+        return HStack(spacing: 6) {
+            VStack(spacing: 0) {
+                if daysUntil == 0 {
+                    Text("TODAY").font(.system(size: 7, weight: .black)).foregroundStyle(JohoColors.pink)
+                } else {
+                    Text(String(daysUntil)).font(.system(size: 12, weight: .black)).foregroundStyle(daysUntil <= 7 ? JohoColors.pink : colors.primary)
+                    Text("days").font(.system(size: 7, weight: .medium)).foregroundStyle(colors.secondary)
+                }
+            }
+            .frame(width: 36)
+            .padding(.vertical, 2)
+            .background(daysUntil == 0 ? JohoColors.pink.opacity(0.2) : Color.clear)
+            .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 4, style: .continuous)
+                .stroke(daysUntil <= 7 ? JohoColors.pink : colors.border.opacity(0.3), lineWidth: 1))
+
+            Text(firstName).font(.system(size: 11, weight: .medium)).foregroundStyle(colors.primary).lineLimit(1)
+            Spacer()
+            if daysUntil <= 7 {
+                Image(systemName: daysUntil == 0 ? "star.fill" : "star")
+                    .font(.system(size: 10, weight: .bold)).foregroundStyle(JohoColors.pink)
+            }
+        }
+        .padding(.horizontal, JohoDimensions.spacingSM)
+        .padding(.vertical, 4)
+    }
+
+    // MARK: - Compact Monthly Expense Summary Card (iPad)
+
+    private var monthlyExpenseSummaryCardCompact: some View {
+        let total = thisMonthExpenses.reduce(0) { $0 + $1.amount }
+        let primaryCurrency = thisMonthExpenses.first?.currency ?? "SEK"
+
+        return VStack(spacing: 0) {
+            HStack {
+                Image(systemName: "chart.pie.fill").font(.system(size: 10, weight: .bold)).foregroundStyle(JohoColors.green)
+                Text("EXPENSES").font(.system(size: 10, weight: .black, design: .rounded)).tracking(1)
+                Spacer()
+                Text(currentMonthTheme.name.prefix(3).uppercased()).font(.system(size: 9, weight: .medium)).foregroundStyle(colors.secondary)
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .padding(.vertical, JohoDimensions.spacingXS)
+
+            Rectangle().fill(colors.border).frame(height: 1)
+
+            VStack(spacing: 2) {
+                Text(formatCurrency(total, currency: primaryCurrency))
+                    .font(.system(size: 20, weight: .black, design: .rounded))
+                Text("\(thisMonthExpenses.count) expenses")
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundStyle(colors.secondary)
+            }
+            .padding(.vertical, JohoDimensions.spacingSM)
+
+            if !expenseCategoryBreakdown.isEmpty {
+                Rectangle().fill(colors.border.opacity(0.3)).frame(height: 1)
+                VStack(spacing: 2) {
+                    ForEach(expenseCategoryBreakdown.prefix(3), id: \.category) { item in
+                        HStack(spacing: 4) {
+                            Image(systemName: item.icon).font(.system(size: 10)).foregroundStyle(item.color).frame(width: 14)
+                            Text(item.category).font(.system(size: 10, weight: .medium)).foregroundStyle(colors.primary)
+                            Spacer()
+                            Text(formatCurrency(item.total, currency: primaryCurrency)).font(.system(size: 10, weight: .bold))
+                            let percentage = Int((item.total / total) * 100)
+                            Text("\(percentage)%").font(.system(size: 8)).foregroundStyle(colors.secondary).frame(width: 24, alignment: .trailing)
+                        }
+                    }
+                }
+                .padding(JohoDimensions.spacingXS)
+            }
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
     }
 
     // MARK: - Page Header (Two-Row: Icon+Title | Week+Date - Matches Calendar)
@@ -553,7 +1137,7 @@ struct LandingPageView: View {
                 .padding(.vertical, 3)
                 .background(theme.accentColor)
                 .clipShape(Capsule())
-                .overlay(Capsule().stroke(colors.border, lineWidth: 0.5))
+                .overlay(Capsule().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
 
             // Full city name (情報デザイン: Clear identification)
             Text(clock.cityName)
@@ -709,7 +1293,7 @@ struct LandingPageView: View {
             Circle()
                 .fill(item.color)
                 .frame(width: 8, height: 8)
-                .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
+                .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
 
             // Icon
             Image(systemName: item.icon)
@@ -931,7 +1515,7 @@ struct LandingPageView: View {
             Circle()
                 .fill(item.color)
                 .frame(width: 8, height: 8)
-                .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
+                .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
 
             // Title
             Text(item.title)
@@ -1129,7 +1713,7 @@ struct LandingPageView: View {
                     Circle()
                         .fill(color)
                         .frame(width: 6, height: 6)
-                        .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
+                        .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
                 }
             }
             .frame(height: 8)
@@ -1414,7 +1998,11 @@ struct LandingPageView: View {
             .frame(maxWidth: .infinity, minHeight: 100)
             .background(bgColor)
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-            // NO BORDER - Star page has no visible borders on cards
+            // 情報デザイン: Every element MUST have a border - 1pt for cells
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+            )
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(target.label): \(label)")
@@ -1456,6 +2044,11 @@ struct LandingPageView: View {
             .frame(maxWidth: .infinity, minHeight: 100)
             .background(bgColor)
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            // 情報デザイン: Every element MUST have a border - 1pt for cells
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+            )
         }
         .buttonStyle(.plain)
     }
@@ -1492,6 +2085,11 @@ struct LandingPageView: View {
             .frame(maxWidth: .infinity, minHeight: 100)
             .background(stat.bgColor)
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            // 情報デザイン: Every element MUST have a border - 1pt for cells
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+            )
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Random stat: \(stat.label) \(stat.indicator ?? "")")
@@ -1974,7 +2572,7 @@ struct LandingPageView: View {
                 Circle()
                     .fill(noteColor)
                     .frame(width: 10, height: 10)
-                    .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
+                    .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
 
                 // Priority marker (情報デザイン: マルバツ)
                 if let priority = note.priority {

@@ -173,7 +173,7 @@ struct OnsenRobotMascot: View {
                 Circle()
                     .fill(index == 1 ? accentColor : JohoColors.black.opacity(0.3))
                     .frame(width: size * 0.035, height: size * 0.035)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
             }
         }
     }
@@ -295,7 +295,7 @@ struct CompactRobotMascot: View {
             Circle()
                 .fill(accentColor)
                 .frame(width: size * 0.1, height: size * 0.1)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
                 .offset(y: -size * 0.42)
         }
         .onAppear {

@@ -598,38 +598,40 @@ struct SpecialDaysListView: View {
                             }
                             HapticManager.selection()
                         } label: {
+                            // 情報デザイン: Minimum 44pt touch target
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 14, weight: .bold, design: .rounded))
                                 .foregroundStyle(JohoColors.black)
-                                .frame(width: 32, height: 32)
+                                .frame(width: 44, height: 44)
                                 .background(JohoColors.inputBackground)
                                 .clipShape(Circle())
-                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                                .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
                         }
                     }
 
                     // Icon zone - star for main view, month icon for detail
+                    // 情報デザイン: 44pt touch target for consistency
                     if let theme = theme {
                         Image(systemName: theme.icon)
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(theme.accentColor)
-                            .frame(width: 40, height: 40)
+                            .frame(width: 44, height: 44)
                             .background(theme.lightBackground)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(
                                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(JohoColors.black, lineWidth: 1.5)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
                             )
                     } else {
                         Image(systemName: "star.fill")
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(PageHeaderColor.specialDays.accent)
-                            .frame(width: 40, height: 40)
+                            .frame(width: 44, height: 44)
                             .background(PageHeaderColor.specialDays.lightBackground)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(
                                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(JohoColors.black, lineWidth: 1.5)
+                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
                             )
                     }
 
@@ -739,15 +741,19 @@ struct SpecialDaysListView: View {
 
     private var bentoStatsRow: some View {
         HStack(spacing: JohoDimensions.spacingMD) {
-            // Show colored circles with counts for each type present
+            // 情報デザイン: Indicator order MUST match legend (presentIndicators)
+            // Priority order: HOL > BDY > OBS > EVT > NTE > TRP > EXP
             if holidayCount > 0 {
                 statIndicator(count: holidayCount, color: SpecialDayType.holiday.accentColor)
+            }
+            if birthdayCount > 0 {
+                statIndicator(count: birthdayCount, color: SpecialDayType.birthday.accentColor)
             }
             if observanceCount > 0 {
                 statIndicator(count: observanceCount, color: SpecialDayType.observance.accentColor)
             }
-            if birthdayCount > 0 {
-                statIndicator(count: birthdayCount, color: SpecialDayType.birthday.accentColor)
+            if eventCount > 0 {
+                statIndicator(count: eventCount, color: SpecialDayType.event.accentColor)
             }
             if noteCount > 0 {
                 statIndicator(count: noteCount, color: SpecialDayType.note.accentColor)
@@ -757,9 +763,6 @@ struct SpecialDaysListView: View {
             }
             if expenseCount > 0 {
                 statIndicator(count: expenseCount, color: SpecialDayType.expense.accentColor)
-            }
-            if eventCount > 0 {
-                statIndicator(count: eventCount, color: SpecialDayType.event.accentColor)
             }
 
             // Show empty state only when no entries exist
@@ -947,9 +950,10 @@ struct SpecialDaysListView: View {
                         .minimumScaleFactor(0.8)
 
                     // Stats row with clear indicators - 情報デザイン: Circles with BLACK borders
+                    // Order MUST match legend: HOL > BDY > OBS > EVT
                     if hasItems {
                         HStack(spacing: 4) {
-                            // Holidays: Red filled circle + count (BLACK border)
+                            // 1. Holidays: Red filled circle + count (BLACK border)
                             if counts.holidays > 0 {
                                 HStack(spacing: 2) {
                                     Circle()
@@ -962,7 +966,20 @@ struct SpecialDaysListView: View {
                                 }
                             }
 
-                            // Observances: Orange filled circle + count (BLACK border)
+                            // 2. Birthdays: Pink circle + count (BLACK border)
+                            if counts.birthdays > 0 {
+                                HStack(spacing: 2) {
+                                    Circle()
+                                        .fill(SpecialDayType.birthday.accentColor)
+                                        .frame(width: 8, height: 8)
+                                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                                    Text("\(counts.birthdays)")
+                                        .font(.system(size: 9, weight: .bold, design: .rounded))
+                                        .foregroundStyle(JohoColors.black)
+                                }
+                            }
+
+                            // 3. Observances: Orange filled circle + count (BLACK border)
                             if counts.observances > 0 {
                                 HStack(spacing: 2) {
                                     Circle()
@@ -975,7 +992,7 @@ struct SpecialDaysListView: View {
                                 }
                             }
 
-                            // Events: Purple circle + count (BLACK border)
+                            // 4. Events: Purple circle + count (BLACK border)
                             if counts.events > 0 {
                                 HStack(spacing: 2) {
                                     Circle()
@@ -983,19 +1000,6 @@ struct SpecialDaysListView: View {
                                         .frame(width: 8, height: 8)
                                         .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
                                     Text("\(counts.events)")
-                                        .font(.system(size: 9, weight: .bold, design: .rounded))
-                                        .foregroundStyle(JohoColors.black)
-                                }
-                            }
-
-                            // Birthdays: Pink circle + count (BLACK border)
-                            if counts.birthdays > 0 {
-                                HStack(spacing: 2) {
-                                    Circle()
-                                        .fill(SpecialDayType.birthday.accentColor)
-                                        .frame(width: 8, height: 8)
-                                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
-                                    Text("\(counts.birthdays)")
                                         .font(.system(size: 9, weight: .bold, design: .rounded))
                                         .foregroundStyle(JohoColors.black)
                                 }

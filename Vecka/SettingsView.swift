@@ -1285,7 +1285,7 @@ struct SettingsView: View {
                     Circle()
                         .fill(color)
                         .frame(width: 8, height: 8)
-                        .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
+                        .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
                     Text("\(count)")
                         .font(.system(size: 10, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.secondary)

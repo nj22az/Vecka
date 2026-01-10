@@ -393,7 +393,7 @@ extension CalendarGridView {
                     .padding(.vertical, 1)
                     .background(day.isToday ? JohoColors.white : colors.surface)
                     .clipShape(Capsule())
-                    .overlay(Capsule().stroke(indicatorStroke, lineWidth: 0.5))
+                    .overlay(Capsule().stroke(indicatorStroke, lineWidth: JohoDimensions.borderThin))
             }
         }
         .frame(height: 8)

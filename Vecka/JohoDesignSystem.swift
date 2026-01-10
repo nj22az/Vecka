@@ -1648,12 +1648,12 @@ struct JohoMonthSelector: View {
 
     var body: some View {
         HStack(spacing: JohoDimensions.spacingSM) {
-            // Previous month button
+            // Previous month button (情報デザイン: Minimum 44pt touch target)
             Button(action: { onPrevious?() }) {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
-                    .frame(width: 36, height: 36)
+                    .frame(width: 44, height: 44)
                     .background(colors.surface)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
@@ -1690,12 +1690,12 @@ struct JohoMonthSelector: View {
             }
             .buttonStyle(.plain)
 
-            // Next month button
+            // Next month button (情報デザイン: Minimum 44pt touch target)
             Button(action: { onNext?() }) {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
-                    .frame(width: 36, height: 36)
+                    .frame(width: 44, height: 44)
                     .background(colors.surface)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
@@ -1784,7 +1784,8 @@ struct JohoWeekNumberCell: View {
                 .foregroundStyle(JohoColors.white)
                 .monospacedDigit()
         }
-        .frame(width: 36, height: 44)
+        // 情報デザイン: Minimum 44pt touch target in both dimensions
+        .frame(width: 44, height: 44)
     }
 }
 
@@ -1828,25 +1829,25 @@ struct JohoCalendarDayCell: View {
                         Circle()
                             .fill(JohoColors.pink)
                             .frame(width: 5, height: 5)
-                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
                     }
                     if hasNotes {
                         Circle()
                             .fill(JohoColors.yellow)
                             .frame(width: 5, height: 5)
-                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
                     }
                     if hasExpenses {
                         Circle()
                             .fill(JohoColors.green)
                             .frame(width: 5, height: 5)
-                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
                     }
                     if hasTrips {
                         Circle()
                             .fill(JohoColors.orange)
                             .frame(width: 5, height: 5)
-                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
                     }
                 }
                 .frame(height: 6)

@@ -909,7 +909,7 @@ struct ContactListView: View {
             Circle()
                 .fill(JohoColors.pink)
                 .frame(width: 10, height: 10)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
         }
     }
 
@@ -965,7 +965,7 @@ struct ContactListView: View {
                         .padding(4)
                         .background(JohoColors.pink)
                         .clipShape(Circle())
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                        .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
                 }
             }
             .padding(.horizontal, JohoDimensions.spacingSM)

@@ -387,7 +387,7 @@ struct DashboardView: View {
                         Circle()
                             .fill(item.color)
                             .frame(width: 6, height: 6)
-                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                            .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
                         Text(item.typeLabel)
                             .font(JohoFont.labelSmall)
                             .foregroundStyle(JohoColors.black.opacity(0.6))
