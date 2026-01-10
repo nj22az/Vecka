@@ -88,6 +88,13 @@ struct JohoUnifiedEntrySheet: View {
     private let calendar = Calendar.current
 
     // ═══════════════════════════════════════════════════════════════
+    // SMART DETECTION
+    // ═══════════════════════════════════════════════════════════════
+    @State private var suggestedType: EntryType? = nil
+    @State private var hasDismissedSuggestion: Bool = false
+    @State private var detectionTask: Task<Void, Never>? = nil
+
+    // ═══════════════════════════════════════════════════════════════
     // COMPUTED
     // ═══════════════════════════════════════════════════════════════
 
@@ -169,8 +176,11 @@ struct JohoUnifiedEntrySheet: View {
 
                     wall
 
-                    // ROW 2: Type strip (5 compact tiles)
-                    typeStrip
+                    // ROW 2: Neutral type selector (情報デザイン: no colors in chrome)
+                    typeSelector
+
+                    // ROW 2.5: Smart suggestion (conditional)
+                    suggestionRow
 
                     wall
 
@@ -286,46 +296,89 @@ struct JohoUnifiedEntrySheet: View {
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // TYPE STRIP: 5 compact tiles in horizontal row
+    // TYPE SELECTOR: Neutral dropdown menu (情報デザイン compliant)
     // ═══════════════════════════════════════════════════════════════
 
-    private var typeStrip: some View {
-        HStack(spacing: 0) {
-            ForEach(Array(EntryType.allCases.enumerated()), id: \.element.id) { index, type in
-                if index > 0 {
-                    verticalWall(width: 1)
-                }
-                compactTypeTile(type)
+    private var typeSelector: some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            JohoTypeSelector(selectedType: $selectedType) { _ in
+                clearSuggestion()
             }
+
+            Spacer()
+
+            // Hint for required fields
+            Text(selectedType.requiredFieldsHint)
+                .font(.system(size: 11, weight: .medium, design: .rounded))
+                .foregroundStyle(colors.primary.opacity(0.5))
         }
-        .frame(height: 56)
+        .padding(JohoDimensions.spacingMD)
     }
 
-    private func compactTypeTile(_ type: EntryType) -> some View {
-        let isSelected = selectedType == type
+    // ═══════════════════════════════════════════════════════════════
+    // SMART SUGGESTION: Shows when input matches a pattern
+    // ═══════════════════════════════════════════════════════════════
 
-        return Button {
-            withAnimation(.easeInOut(duration: 0.15)) {
-                selectedType = type
-            }
-            HapticManager.selection()
-        } label: {
-            // 情報デザイン: ICONS ONLY - no confusing text codes
-            // Larger icons that are self-explanatory (Nintendo/Line style)
-            // Icons ALWAYS use black for visibility - background provides color distinction
-            Image(systemName: type.icon)
-                .font(.system(size: isSelected ? 24 : 20, weight: .semibold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
-                .frame(maxWidth: .infinity)
-                .frame(height: 52)
-                // Selected = filled color, Unselected = subtle tint
-                .background(isSelected ? type.color : type.color.opacity(0.15))
-                // 情報デザイン: Explicit tap target - prevents Apple Pencil Scribble
-                .contentShape(Rectangle())
+    @ViewBuilder
+    private var suggestionRow: some View {
+        if let suggested = suggestedType,
+           suggested != selectedType,
+           !hasDismissedSuggestion {
+            JohoTypeSuggestionPill(
+                suggestedType: suggested,
+                onAccept: {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        selectedType = suggested
+                        suggestedType = nil
+                        hasDismissedSuggestion = false
+                    }
+                    HapticManager.selection()
+                },
+                onDismiss: {
+                    withAnimation(.easeInOut(duration: 0.15)) {
+                        hasDismissedSuggestion = true
+                    }
+                }
+            )
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.bottom, JohoDimensions.spacingSM)
         }
-        .buttonStyle(.plain)
-        // Disable Scribble interaction - this is a BUTTON not a text field
-        .allowsHitTesting(true)
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // SMART DETECTION LOGIC
+    // ═══════════════════════════════════════════════════════════════
+
+    private func runSmartDetection(for input: String) {
+        // Cancel previous detection task
+        detectionTask?.cancel()
+
+        // Reset suggestion when input is cleared
+        guard !input.isEmpty else {
+            suggestedType = nil
+            return
+        }
+
+        // Debounce: Wait 500ms before analyzing
+        detectionTask = Task {
+            try? await Task.sleep(for: .milliseconds(500))
+            guard !Task.isCancelled else { return }
+
+            if let result = EntryTypeDetector.analyze(input),
+               result.confidence >= 0.65 {
+                await MainActor.run {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        suggestedType = result.suggestedType
+                        hasDismissedSuggestion = false
+                    }
+                }
+            }
+        }
+    }
+
+    private func clearSuggestion() {
+        suggestedType = nil
+        hasDismissedSuggestion = false
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -354,6 +407,9 @@ struct JohoUnifiedEntrySheet: View {
                     .font(.system(size: 15, weight: .medium, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .lineLimit(2...5)
+                    .onChange(of: noteContent) { _, newValue in
+                        runSmartDetection(for: newValue)
+                    }
             }
             .frame(minHeight: 64)
 
@@ -377,6 +433,9 @@ struct JohoUnifiedEntrySheet: View {
                 TextField("Destination", text: $tripDestination)
                     .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
+                    .onChange(of: tripDestination) { _, newValue in
+                        runSmartDetection(for: newValue)
+                    }
             }
 
             thinWall
@@ -439,6 +498,9 @@ struct JohoUnifiedEntrySheet: View {
                 TextField("Description", text: $expenseDescription)
                     .font(.system(size: 15, weight: .medium, design: .rounded))
                     .foregroundStyle(colors.primary)
+                    .onChange(of: expenseDescription) { _, newValue in
+                        runSmartDetection(for: newValue)
+                    }
             }
 
             thinWall
@@ -475,6 +537,9 @@ struct JohoUnifiedEntrySheet: View {
                 .multilineTextAlignment(.trailing)
                 .padding(.horizontal, JohoDimensions.spacingSM)
                 .frame(maxWidth: .infinity)
+                .onChange(of: expenseAmount) { _, newValue in
+                    runSmartDetection(for: newValue)
+                }
 
             verticalWall()
 
@@ -546,6 +611,9 @@ struct JohoUnifiedEntrySheet: View {
                 TextField("Holiday name", text: $holidayName)
                     .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
+                    .onChange(of: holidayName) { _, newValue in
+                        runSmartDetection(for: newValue)
+                    }
             }
 
             thinWall
@@ -610,6 +678,9 @@ struct JohoUnifiedEntrySheet: View {
                 TextField("First name", text: $birthdayFirstName)
                     .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
+                    .onChange(of: birthdayFirstName) { _, newValue in
+                        runSmartDetection(for: newValue)
+                    }
             }
 
             thinWall

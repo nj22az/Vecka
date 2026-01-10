@@ -2006,6 +2006,122 @@ struct HotelClockWidget: View {
     }
 }
 
+// MARK: - Type Selector (Unified Entry)
+
+/// 情報デザイン: Neutral dropdown type selector for unified entry form
+/// Black/white only - no semantic colors in the selector chrome
+struct JohoTypeSelector: View {
+    @Binding var selectedType: EntryType
+    var onTypeChange: ((EntryType) -> Void)? = nil
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    var body: some View {
+        Menu {
+            ForEach(EntryType.allCases) { type in
+                Button {
+                    selectedType = type
+                    onTypeChange?(type)
+                    HapticManager.selection()
+                } label: {
+                    Label(type.displayName, systemImage: type.icon)
+                }
+            }
+        } label: {
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Icon in squircle (neutral - no color)
+                Image(systemName: selectedType.icon)
+                    .font(.system(size: 16, weight: .semibold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .frame(width: 32, height: 32)
+                    .background(colors.surface)
+                    .clipShape(Squircle(cornerRadius: 8))
+                    .overlay(
+                        Squircle(cornerRadius: 8)
+                            .stroke(colors.border, lineWidth: 1.5)
+                    )
+
+                // Type name
+                Text(selectedType.displayName)
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+
+                // Chevron
+                Image(systemName: "chevron.down")
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary.opacity(0.5))
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .background(colors.surface)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+            )
+        }
+    }
+}
+
+/// 情報デザイン: Suggestion pill for smart type detection
+/// Appears when input matches a pattern, tappable to switch type
+struct JohoTypeSuggestionPill: View {
+    let suggestedType: EntryType
+    let onAccept: () -> Void
+    let onDismiss: () -> Void
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    var body: some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            // Sparkle icon
+            Image(systemName: "sparkles")
+                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary.opacity(0.6))
+
+            // Suggestion text
+            Text("Looks like \(suggestedType.displayName.lowercased())?")
+                .font(.system(size: 12, weight: .medium, design: .rounded))
+                .foregroundStyle(colors.primary.opacity(0.8))
+
+            // Accept button
+            Button(action: onAccept) {
+                HStack(spacing: 4) {
+                    Image(systemName: suggestedType.icon)
+                    Text("Switch")
+                }
+                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primaryInverted)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(colors.primary)
+                .clipShape(Capsule())
+            }
+            .buttonStyle(.plain)
+
+            // Dismiss button
+            Button(action: onDismiss) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(colors.primary.opacity(0.4))
+                    .frame(width: 24, height: 24)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
+        .background(colors.primary.opacity(0.05))
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                .stroke(colors.border.opacity(0.3), lineWidth: 1)
+        )
+        .transition(.move(edge: .top).combined(with: .opacity))
+    }
+}
+
 // MARK: - Preview
 
 #Preview("Joho Components") {
