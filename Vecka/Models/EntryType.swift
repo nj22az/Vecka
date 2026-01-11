@@ -44,7 +44,7 @@ enum EntryType: String, CaseIterable, Identifiable {
         case .trip: return JohoColors.cyan          // SCHEDULED - time-based items
         case .expense: return JohoColors.green      // MONEY - financial items
         case .holiday: return JohoColors.pink       // CELEBRATION - special days
-        case .birthday: return JohoColors.pink      // CELEBRATION - special days
+        case .birthday: return Color(hex: "78350F") // PEOPLE - matches contacts brown
         }
     }
 

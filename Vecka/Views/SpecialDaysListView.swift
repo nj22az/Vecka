@@ -95,7 +95,7 @@ struct SpecialDaysListView: View {
     @State private var expandedItemID: String?
 
     // 情報デザイン: Tappable stat indicators show type name
-    @State private var selectedStatType: SpecialDayType?
+    // Removed: selectedStatType (now using popovers)
 
     // 情報デザイン: Holiday Database Explorer
     @State private var showingDatabaseExplorer = false
@@ -646,20 +646,6 @@ struct SpecialDaysListView: View {
                 statIndicator(type: .expense, count: expenseCount)
             }
 
-            // 情報デザイン: Show selected type label with animation
-            if let selected = selectedStatType {
-                Text(selected.title.uppercased())
-                    .font(.system(size: 9, weight: .bold, design: .rounded))
-                    .tracking(0.5)
-                    .foregroundStyle(selected.accentColor)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(selected.lightBackground)
-                    .clipShape(Capsule())
-                    .overlay(Capsule().stroke(selected.accentColor, lineWidth: 1))
-                    .transition(.scale.combined(with: .opacity))
-            }
-
             // Show empty state only when no entries exist
             let totalCount = holidayCount + observanceCount + birthdayCount + noteCount + tripCount + expenseCount + eventCount
             if totalCount == 0 {
@@ -683,38 +669,72 @@ struct SpecialDaysListView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
             }
         }
-        .animation(.easeInOut(duration: 0.2), value: selectedStatType)
     }
 
-    /// 情報デザイン: Tappable stat indicator - shows type name when tapped
+    /// 情報デザイン: Icon-only stat indicator with popover details
+    @State private var activePopoverType: SpecialDayType?
+
     private func statIndicator(type: SpecialDayType, count: Int) -> some View {
         Button {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                if selectedStatType == type {
-                    selectedStatType = nil  // Tap again to dismiss
-                } else {
-                    selectedStatType = type
-                }
-            }
             HapticManager.selection()
+            activePopoverType = type
         } label: {
-            HStack(spacing: 5) {
-                Image(systemName: type.defaultIcon)
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundStyle(type.accentColor)
-                    .frame(width: 16, height: 16)
-                Text("\(count)")
-                    .font(.system(size: 12, weight: .semibold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
-            }
-            .padding(.horizontal, 6)
-            .padding(.vertical, 4)
-            .background(selectedStatType == type ? type.lightBackground : Color.clear)
-            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+            Image(systemName: type.defaultIcon)
+                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .foregroundStyle(type.accentColor)
+                .frame(width: 28, height: 28)
         }
         .buttonStyle(.plain)
+        .popover(isPresented: Binding(
+            get: { activePopoverType == type },
+            set: { if !$0 { activePopoverType = nil } }
+        )) {
+            statPopover(type: type, count: count)
+        }
         .accessibilityLabel("\(type.title): \(count)")
-        .accessibilityHint("Tap to show type name")
+        .accessibilityHint("Tap for details")
+    }
+
+    /// 情報デザイン: Compact popover showing type details
+    private func statPopover(type: SpecialDayType, count: Int) -> some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            Image(systemName: type.defaultIcon)
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .foregroundStyle(type.accentColor)
+                .frame(width: 32, height: 32)
+                .background(type.lightBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .stroke(type.accentColor, lineWidth: 1.5)
+                )
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(type.title.uppercased())
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .tracking(0.5)
+                    .foregroundStyle(JohoColors.black)
+
+                Text("\(count) in " + String(selectedYear))
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                    .foregroundStyle(type.accentColor)
+            }
+        }
+        .padding(JohoDimensions.spacingMD)
+        .background(JohoColors.white)
+        .presentationCompactAdaptation(.popover)
+    }
+
+    /// 情報デザイン: Clean colored dot for month cards (maintains symmetry)
+    private func monthCardDot(type: SpecialDayType, count: Int) -> some View {
+        Circle()
+            .fill(type.accentColor)
+            .frame(width: 8, height: 8)
+            .overlay(
+                Circle()
+                    .stroke(JohoColors.black, lineWidth: 0.5)
+            )
+            .accessibilityLabel("\(count) \(type.title)")
     }
 
     // MARK: - Month Grid (情報デザイン: 12 Month Flipcards in 3-Column Bento)
@@ -777,92 +797,30 @@ struct SpecialDaysListView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
 
-                    // Stats row with clear indicators - 情報デザイン: Colored SF Symbol icons
-                    // Order MUST match legend: HOL > BDY > OBS > EVT > NTE > TRP > EXP
+                    // 情報デザイン: Simple colored dots for clean symmetry
+                    // Order: HOL > BDY > OBS > EVT > NTE > TRP > EXP
                     if hasItems {
-                        HStack(spacing: 4) {
-                            // 1. Holidays: Colored icon + count
+                        HStack(spacing: 6) {
                             if counts.holidays > 0 {
-                                HStack(spacing: 2) {
-                                    Image(systemName: SpecialDayType.holiday.defaultIcon)
-                                        .font(.system(size: 8, weight: .semibold, design: .rounded))
-                                        .foregroundStyle(SpecialDayType.holiday.accentColor)
-                                    Text("\(counts.holidays)")
-                                        .font(.system(size: 9, weight: .bold, design: .rounded))
-                                        .foregroundStyle(JohoColors.black)
-                                }
+                                monthCardDot(type: .holiday, count: counts.holidays)
                             }
-
-                            // 2. Birthdays: Colored icon + count
                             if counts.birthdays > 0 {
-                                HStack(spacing: 2) {
-                                    Image(systemName: SpecialDayType.birthday.defaultIcon)
-                                        .font(.system(size: 8, weight: .semibold, design: .rounded))
-                                        .foregroundStyle(SpecialDayType.birthday.accentColor)
-                                    Text("\(counts.birthdays)")
-                                        .font(.system(size: 9, weight: .bold, design: .rounded))
-                                        .foregroundStyle(JohoColors.black)
-                                }
+                                monthCardDot(type: .birthday, count: counts.birthdays)
                             }
-
-                            // 3. Observances: Colored icon + count
                             if counts.observances > 0 {
-                                HStack(spacing: 2) {
-                                    Image(systemName: SpecialDayType.observance.defaultIcon)
-                                        .font(.system(size: 8, weight: .semibold, design: .rounded))
-                                        .foregroundStyle(SpecialDayType.observance.accentColor)
-                                    Text("\(counts.observances)")
-                                        .font(.system(size: 9, weight: .bold, design: .rounded))
-                                        .foregroundStyle(JohoColors.black)
-                                }
+                                monthCardDot(type: .observance, count: counts.observances)
                             }
-
-                            // 4. Events: Colored icon + count
                             if counts.events > 0 {
-                                HStack(spacing: 2) {
-                                    Image(systemName: SpecialDayType.event.defaultIcon)
-                                        .font(.system(size: 8, weight: .semibold, design: .rounded))
-                                        .foregroundStyle(SpecialDayType.event.accentColor)
-                                    Text("\(counts.events)")
-                                        .font(.system(size: 9, weight: .bold, design: .rounded))
-                                        .foregroundStyle(JohoColors.black)
-                                }
+                                monthCardDot(type: .event, count: counts.events)
                             }
-
-                            // 5. Notes: Colored icon + count
                             if counts.notes > 0 {
-                                HStack(spacing: 2) {
-                                    Image(systemName: SpecialDayType.note.defaultIcon)
-                                        .font(.system(size: 8, weight: .semibold, design: .rounded))
-                                        .foregroundStyle(SpecialDayType.note.accentColor)
-                                    Text("\(counts.notes)")
-                                        .font(.system(size: 9, weight: .bold, design: .rounded))
-                                        .foregroundStyle(JohoColors.black)
-                                }
+                                monthCardDot(type: .note, count: counts.notes)
                             }
-
-                            // 6. Trips: Colored icon + count
                             if counts.trips > 0 {
-                                HStack(spacing: 2) {
-                                    Image(systemName: SpecialDayType.trip.defaultIcon)
-                                        .font(.system(size: 8, weight: .semibold, design: .rounded))
-                                        .foregroundStyle(SpecialDayType.trip.accentColor)
-                                    Text("\(counts.trips)")
-                                        .font(.system(size: 9, weight: .bold, design: .rounded))
-                                        .foregroundStyle(JohoColors.black)
-                                }
+                                monthCardDot(type: .trip, count: counts.trips)
                             }
-
-                            // 7. Expenses: Colored icon + count
                             if counts.expenses > 0 {
-                                HStack(spacing: 2) {
-                                    Image(systemName: SpecialDayType.expense.defaultIcon)
-                                        .font(.system(size: 8, weight: .semibold, design: .rounded))
-                                        .foregroundStyle(SpecialDayType.expense.accentColor)
-                                    Text("\(counts.expenses)")
-                                        .font(.system(size: 9, weight: .bold, design: .rounded))
-                                        .foregroundStyle(JohoColors.black)
-                                }
+                                monthCardDot(type: .expense, count: counts.expenses)
                             }
                         }
                     } else {

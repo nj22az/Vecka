@@ -69,7 +69,7 @@ enum SpecialDayType: String, CaseIterable {
         case .holiday: return Color(hex: "E53E3E")    // Red - "day off!"
         case .observance: return Color(hex: "ED8936") // Orange - celebration
         case .event: return Color(hex: "805AD5")      // Purple - personal
-        case .birthday: return Color(hex: "D53F8C")   // Pink - birthdays
+        case .birthday: return Color(hex: "78350F")   // Warm Brown - matches contacts (people)
         case .note: return Color(hex: "ECC94B")       // Yellow - notes
         case .trip: return Color(hex: "3182CE")       // Blue - travel
         case .expense: return Color(hex: "38A169")    // Green - money
@@ -82,7 +82,7 @@ enum SpecialDayType: String, CaseIterable {
         case .holiday: return Color(hex: "FDE8E8")    // Light red
         case .observance: return Color(hex: "FEEBC8") // Light orange
         case .event: return Color(hex: "E9D8FD")      // Light purple
-        case .birthday: return Color(hex: "FED7E2")   // Light pink
+        case .birthday: return Color(hex: "F5EBDA")   // Light tan - matches contacts
         case .note: return Color(hex: "FEFCBF")       // Light yellow
         case .trip: return Color(hex: "BEE3F8")       // Light blue
         case .expense: return Color(hex: "C6F6D5")    // Light green
