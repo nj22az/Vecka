@@ -74,6 +74,11 @@ struct VeckaMediumWidgetView: View {
         entry.todaysBirthdays.first?.displayName
     }
 
+    // 情報デザイン: Theme constants for consistency
+    private var typo: JohoWidget.Typography.Scale { JohoWidget.Typography.medium }
+    private var borders: JohoWidget.Borders.Weights { JohoWidget.Borders.medium }
+    private var corners: JohoWidget.Corners.Radii { JohoWidget.Corners.medium }
+
     // MARK: - Body
 
     var body: some View {
@@ -83,10 +88,10 @@ struct VeckaMediumWidgetView: View {
                 weekNumberHero
                     .frame(width: geo.size.width * 0.35)
 
-                // Vertical divider (情報デザイン: thin black wall)
+                // Vertical divider (情報デザイン: match border weight)
                 Rectangle()
                     .fill(JohoWidget.Colors.border)
-                    .frame(width: 1.5)
+                    .frame(width: borders.container)
 
                 // RIGHT: Minimal calendar strip
                 rightPanel
@@ -95,12 +100,12 @@ struct VeckaMediumWidgetView: View {
         }
         .widgetURL(URL(string: "vecka://week/\(weekNumber)/\(entry.year)"))
         .containerBackground(for: .widget) {
-            // 情報デザイン: Strong 2.5pt black border (per Theme.Borders.medium.widget)
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
+            // 情報デザイン: Theme.Borders.medium.widget = 2.5pt
+            RoundedRectangle(cornerRadius: corners.widget, style: .continuous)
                 .fill(JohoWidget.Colors.content)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .stroke(JohoWidget.Colors.border, lineWidth: 2.5)
+                    RoundedRectangle(cornerRadius: corners.widget - 2, style: .continuous)
+                        .stroke(JohoWidget.Colors.border, lineWidth: borders.widget)
                         .padding(1)
                 )
         }
@@ -112,17 +117,17 @@ struct VeckaMediumWidgetView: View {
 
     private var weekNumberHero: some View {
         VStack(spacing: 2) {
-            // Main hero: Week number
+            // Main hero: Week number (情報デザイン: Theme.Typography.medium.weekNumber = 56pt)
             Text("\(weekNumber)")
-                .font(.system(size: 48, weight: .black, design: .rounded))
+                .font(.system(size: typo.weekNumber, weight: .black, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text)
                 .minimumScaleFactor(0.7)
 
-            // Subtitle: "WEEK" (情報デザイン: visible, not invisible)
+            // Subtitle: "WEEK" (情報デザイン: visible, minimum 9pt)
             Text("WEEK")
-                .font(.system(size: 9, weight: .bold, design: .rounded))
+                .font(.system(size: typo.label, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
-                .tracking(2)
+                .tracking(1)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         // 情報デザイン: WHITE background - color only on TODAY indicator
@@ -135,8 +140,8 @@ struct VeckaMediumWidgetView: View {
             // Top: Month + Year label (情報デザイン: complete information, readable)
             HStack {
                 Text("\(monthName) \(year)")
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.text.opacity(0.7))
+                    .font(.system(size: typo.caption, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
                     .tracking(1)
                 Spacer()
             }
@@ -176,49 +181,50 @@ struct VeckaMediumWidgetView: View {
         HStack(spacing: 2) {
             ForEach(Array(currentWeekDays.enumerated()), id: \.offset) { index, weekDay in
                 VStack(spacing: 1) {
-                    // Weekday label (tiny, subtle)
+                    // Weekday label (情報デザイン: minimum 9pt per audit)
                     Text(weekdayLabels[index])
-                        .font(.system(size: 8, weight: .semibold, design: .rounded))
+                        .font(.system(size: typo.label, weight: .semibold, design: .rounded))
                         .foregroundStyle(
                             weekDay.isSunday
                                 ? JohoWidget.Colors.alert.opacity(0.6)
-                                : JohoWidget.Colors.text.opacity(0.3)
+                                : JohoWidget.Colors.text.opacity(0.4)
                         )
 
                     // Day number (情報デザイン: Circle for today = NOW indicator)
+                    // Day cell: 28pt width for better touch target (limited by widget space)
                     ZStack {
                         if weekDay.isToday {
                             Circle()
                                 .fill(JohoWidget.Colors.now)
-                                .frame(width: 26, height: 26)
+                                .frame(width: 28, height: 28)
                             Circle()
-                                .stroke(JohoWidget.Colors.border, lineWidth: 1.5)
-                                .frame(width: 26, height: 26)
+                                .stroke(JohoWidget.Colors.border, lineWidth: borders.selected)
+                                .frame(width: 28, height: 28)
                         } else if weekDay.isBankHoliday {
                             Circle()
                                 .fill(JohoWidget.Colors.holiday.opacity(0.3))
-                                .frame(width: 26, height: 26)
+                                .frame(width: 28, height: 28)
                         }
                         Text("\(weekDay.day)")
-                            .font(.system(size: 13, weight: weekDay.isToday ? .black : .medium, design: .rounded))
+                            .font(.system(size: typo.body, weight: weekDay.isToday ? .black : .medium, design: .rounded))
                             .foregroundStyle(dayTextColor(weekDay))
                     }
-                    .frame(width: 26, height: 26)
+                    .frame(width: 28, height: 28)
 
                     // Event indicators (情報デザイン: icons for holidays and birthdays)
                     HStack(spacing: 1) {
                         if weekDay.hasEvent {
                             Image(systemName: "star.fill")
-                                .font(.system(size: 6, weight: .bold))
+                                .font(.system(size: 7, weight: .bold))
                                 .foregroundStyle(weekDay.isBankHoliday ? JohoWidget.Colors.alert : JohoWidget.Colors.event)
                         }
                         if weekDay.hasBirthday {
                             Image(systemName: "birthday.cake.fill")
-                                .font(.system(size: 6, weight: .bold))
+                                .font(.system(size: 7, weight: .bold))
                                 .foregroundStyle(JohoWidget.Colors.holiday) // Pink for birthdays
                         }
                     }
-                    .frame(height: 6)
+                    .frame(height: 8)
                 }
                 .frame(maxWidth: .infinity)
             }

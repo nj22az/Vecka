@@ -45,60 +45,66 @@ struct VeckaSmallWidgetView: View {
     // MARK: - Body
 
     var body: some View {
+        // 情報デザイン: Use Theme constants for consistency
+        let typo = JohoWidget.Typography.small
+        let borders = JohoWidget.Borders.small
+        let corners = JohoWidget.Corners.small
+
         VStack(spacing: 0) {
             // Header: Month + Year (情報デザイン: complete information, readable)
             Text("\(monthShort) \(year)")
-                .font(.system(size: 11, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text.opacity(0.7))
+                .font(.system(size: typo.caption, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
                 .tracking(1)
                 .padding(.top, 8)
 
             Spacer(minLength: 4)
 
-            // HERO: Week Number (the ONE thing)
+            // HERO: Week Number (情報デザイン: Theme.Typography.small.weekNumber = 48pt)
             Text("\(weekNumber)")
-                .font(.system(size: 56, weight: .black, design: .rounded))
+                .font(.system(size: typo.weekNumber, weight: .black, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text)
                 .minimumScaleFactor(0.5)
 
-            // Label (情報デザイン: readable, not invisible)
+            // Label (情報デザイン: readable, consistent opacity 0.6)
             Text("WEEK")
-                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .font(.system(size: typo.label, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
-                .tracking(2)
+                .tracking(1)
 
             Spacer(minLength: 4)
 
             // Footer: Today in YELLOW CIRCLE (情報デザイン: TODAY = NOW = YELLOW)
-            HStack(spacing: 4) {
-                // Today indicator: ALWAYS yellow circle with black border
+            // Touch target: 44pt minimum per Apple HIG
+            HStack(spacing: 6) {
+                // Today indicator: 44pt circle for touch target compliance
                 ZStack {
                     Circle()
                         .fill(JohoWidget.Colors.now)
-                        .frame(width: 32, height: 32)
+                        .frame(width: 44, height: 44)
                     Circle()
-                        .stroke(JohoWidget.Colors.border, lineWidth: 1.5)
-                        .frame(width: 32, height: 32)
+                        .stroke(JohoWidget.Colors.border, lineWidth: borders.selected)
+                        .frame(width: 44, height: 44)
                     Text("\(dayOfMonth)")
-                        .font(.system(size: 16, weight: .black, design: .rounded))
+                        .font(.system(size: 18, weight: .black, design: .rounded))
                         .foregroundStyle(JohoWidget.Colors.text)
                 }
 
                 Text(weekdayShort)
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .font(.system(size: typo.headline, weight: .bold, design: .rounded))
                     .foregroundStyle(sundayOrHolidayColor)
             }
-            .padding(.bottom, 8)
+            .padding(.bottom, 6)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .widgetURL(URL(string: "vecka://week/\(weekNumber)/\(entry.year)"))
         .containerBackground(for: .widget) {
-            // 情報デザイン: Strong 2pt black border (per Theme.Borders.small.widget)
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
+            // 情報デザイン: Theme.Borders.small.widget = 2pt
+            RoundedRectangle(cornerRadius: corners.widget, style: .continuous)
                 .fill(JohoWidget.Colors.content)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(JohoWidget.Colors.border, lineWidth: 2)
+                    RoundedRectangle(cornerRadius: corners.widget - 2, style: .continuous)
+                        .stroke(JohoWidget.Colors.border, lineWidth: borders.widget)
                         .padding(1)
                 )
         }

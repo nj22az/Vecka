@@ -14,6 +14,11 @@ struct WorldClockMediumWidgetView: View {
     let entry: VeckaWidgetEntry
     private let family: WidgetFamily = .systemMedium
 
+    // 情報デザイン: Theme constants for consistency
+    private var typo: JohoWidget.Typography.Scale { JohoWidget.Typography.medium }
+    private var borders: JohoWidget.Borders.Weights { JohoWidget.Borders.medium }
+    private var corners: JohoWidget.Corners.Radii { JohoWidget.Corners.medium }
+
     private var worldClocks: [SharedWorldClock] {
         WorldClockStorage.load()
     }
@@ -25,10 +30,10 @@ struct WorldClockMediumWidgetView: View {
                 weekNumberSection
                     .frame(width: geo.size.width * 0.25)
 
-                // Vertical divider
+                // Vertical divider (情報デザイン: match border weight)
                 Rectangle()
                     .fill(JohoWidget.Colors.border)
-                    .frame(width: 1.5)
+                    .frame(width: borders.container)
 
                 // RIGHT: World clocks (bento compartments)
                 worldClocksSection
@@ -37,12 +42,12 @@ struct WorldClockMediumWidgetView: View {
         }
         .widgetURL(URL(string: "vecka://clocks"))
         .containerBackground(for: .widget) {
-            // 情報デザイン: Strong 2.5pt black border (per Theme.Borders.medium.widget)
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
+            // 情報デザイン: Theme.Borders.medium.widget = 2.5pt
+            RoundedRectangle(cornerRadius: corners.widget, style: .continuous)
                 .fill(JohoWidget.Colors.content)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .stroke(JohoWidget.Colors.border, lineWidth: 2.5)
+                    RoundedRectangle(cornerRadius: corners.widget - 2, style: .continuous)
+                        .stroke(JohoWidget.Colors.border, lineWidth: borders.widget)
                         .padding(1)
                 )
         }
@@ -64,40 +69,41 @@ struct WorldClockMediumWidgetView: View {
         VStack(spacing: 2) {
             // Month + Year (情報デザイン: complete temporal context)
             Text("\(monthShort)")
-                .font(.system(size: 9, weight: .bold, design: .rounded))
+                .font(.system(size: typo.label, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
                 .tracking(1)
 
             Text(year)
-                .font(.system(size: 8, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text.opacity(0.5))
+                .font(.system(size: typo.micro, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
 
             Spacer(minLength: 2)
 
-            // Week number (hero)
+            // Week number (hero) - compact version for world clock widget
             Text("\(entry.weekNumber)")
-                .font(.system(size: 32, weight: .black, design: .rounded))
+                .font(.system(size: 36, weight: .black, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text)
                 .minimumScaleFactor(0.7)
 
             Text("WEEK")
-                .font(.system(size: 7, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text.opacity(0.5))
-                .tracking(1.5)
+                .font(.system(size: typo.micro, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
+                .tracking(1)
 
             Spacer(minLength: 2)
 
-            // Today indicator (day number)
-            Text("\(entry.dayNumber)")
-                .font(.system(size: 16, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text)
-                .frame(width: 26, height: 26)
-                .background(JohoWidget.Colors.now)
-                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 6, style: .continuous)
-                        .stroke(JohoWidget.Colors.border, lineWidth: 1)
-                )
+            // Today indicator (情報デザイン: Circle like all other widgets, not RoundedRectangle)
+            ZStack {
+                Circle()
+                    .fill(JohoWidget.Colors.now)
+                    .frame(width: 32, height: 32)
+                Circle()
+                    .stroke(JohoWidget.Colors.border, lineWidth: borders.selected)
+                    .frame(width: 32, height: 32)
+                Text("\(entry.dayNumber)")
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoWidget.Colors.text)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.vertical, 6)
@@ -110,10 +116,10 @@ struct WorldClockMediumWidgetView: View {
         HStack(spacing: 0) {
             ForEach(Array(worldClocks.enumerated()), id: \.element.id) { index, clock in
                 if index > 0 {
-                    // 情報デザイン: Bento wall - full black, no opacity
+                    // 情報デザイン: Bento wall - match row border weight
                     Rectangle()
                         .fill(JohoWidget.Colors.border)
-                        .frame(width: 1)
+                        .frame(width: borders.row)
                 }
 
                 worldClockCell(clock)
@@ -130,17 +136,17 @@ struct WorldClockMediumWidgetView: View {
         return VStack(spacing: 3) {
             // Country code pill (情報デザイン: Region-colored with black border)
             Text(clock.countryCode)
-                .font(.system(size: 9, weight: .black, design: .rounded))
+                .font(.system(size: typo.label, weight: .black, design: .rounded))
                 .foregroundStyle(.white)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
                 .background(theme.accentColor)
                 .clipShape(Capsule())
-                .overlay(Capsule().stroke(JohoWidget.Colors.border, lineWidth: 1))
+                .overlay(Capsule().stroke(JohoWidget.Colors.border, lineWidth: borders.cell))
 
             // City name
             Text(clock.cityName)
-                .font(.system(size: 9, weight: .semibold, design: .rounded))
+                .font(.system(size: typo.label, weight: .semibold, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
@@ -155,17 +161,17 @@ struct WorldClockMediumWidgetView: View {
 
             // Digital time
             Text(clock.formattedTime)
-                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .font(.system(size: typo.headline, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text)
 
             // Day/Night + offset
             HStack(spacing: 2) {
                 Image(systemName: clock.isDaytime ? "sun.max.fill" : "moon.fill")
-                    .font(.system(size: 7))
+                    .font(.system(size: 8))
                     .foregroundStyle(clock.isDaytime ? Color(hex: "F39C12") : Color(hex: "6C5CE7"))
 
                 Text(clock.offsetFromLocal)
-                    .font(.system(size: 8, weight: .bold, design: .rounded))
+                    .font(.system(size: typo.micro, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
             }
         }
