@@ -50,12 +50,14 @@ final class GlanceFactProvider: ObservableObject {
             return egg
         }
 
-        // Try calendar fact first
-        if let calendarFact = randomCalendarFact() {
+        // 情報デザイン: 20% chance for calendar fact, 80% database facts for variety
+        // This ensures interesting region facts dominate while still showing relevant date info
+        if Double.random(in: 0...1) < 0.2,
+           let calendarFact = randomCalendarFact() {
             return calendarFact
         }
 
-        // Fall back to region facts from database
+        // Primarily show database facts for maximum variety
         return randomRegionFact()
     }
 
