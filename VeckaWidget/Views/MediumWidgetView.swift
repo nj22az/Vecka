@@ -37,6 +37,10 @@ struct VeckaMediumWidgetView: View {
         entry.date.formatted(.dateTime.month(.wide).locale(.autoupdatingCurrent)).uppercased()
     }
 
+    private var year: String {
+        String(entry.year)
+    }
+
     private var currentWeekDays: [WeekDay] {
         let startOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: entry.date)) ?? entry.date
         return (0..<7).map { offset in
@@ -91,11 +95,12 @@ struct VeckaMediumWidgetView: View {
         }
         .widgetURL(URL(string: "vecka://week/\(weekNumber)/\(entry.year)"))
         .containerBackground(for: .widget) {
+            // 情報デザイン: Strong black border
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .fill(JohoWidget.Colors.content)
                 .overlay(
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .stroke(JohoWidget.Colors.border.opacity(0.3), lineWidth: 1)
+                        .stroke(JohoWidget.Colors.border, lineWidth: 1.5)
                 )
         }
         .accessibilityElement(children: .combine)
@@ -108,7 +113,7 @@ struct VeckaMediumWidgetView: View {
         VStack(spacing: 2) {
             // Main hero: Week number
             Text("\(weekNumber)")
-                .font(.system(size: 52, weight: .black, design: .rounded))
+                .font(.system(size: 48, weight: .black, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text)
                 .minimumScaleFactor(0.7)
 
@@ -119,18 +124,18 @@ struct VeckaMediumWidgetView: View {
                 .tracking(2)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(JohoWidget.Colors.now.opacity(0.25))
+        .background(JohoWidget.Colors.now.opacity(0.4))
     }
 
     // MARK: - Right Panel (Japanese minimalism: curated content)
 
     private var rightPanel: some View {
         VStack(spacing: 0) {
-            // Top: Month label (small, understated)
+            // Top: Month + Year label (情報デザイン: complete information)
             HStack {
-                Text(monthName)
+                Text("\(monthName) \(year)")
                     .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.text.opacity(0.4))
+                    .foregroundStyle(JohoWidget.Colors.text.opacity(0.5))
                     .tracking(1)
                 Spacer()
             }
@@ -234,11 +239,11 @@ struct VeckaMediumWidgetView: View {
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 8)
-        .background(JohoWidget.Colors.holiday.opacity(0.15))
+        .background(JohoWidget.Colors.holiday.opacity(0.2))
         .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .stroke(JohoWidget.Colors.border.opacity(0.3), lineWidth: 0.75)
+                .stroke(JohoWidget.Colors.border, lineWidth: 1)
         )
     }
 
@@ -261,11 +266,11 @@ struct VeckaMediumWidgetView: View {
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 8)
-        .background(JohoWidget.Colors.holiday.opacity(0.15))
+        .background(JohoWidget.Colors.holiday.opacity(0.2))
         .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 6, style: .continuous)
-                .stroke(JohoWidget.Colors.border.opacity(0.3), lineWidth: 0.75)
+                .stroke(JohoWidget.Colors.border, lineWidth: 1)
         )
     }
 

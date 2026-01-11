@@ -30,6 +30,10 @@ struct VeckaSmallWidgetView: View {
         entry.date.formatted(.dateTime.month(.abbreviated).locale(.autoupdatingCurrent)).uppercased()
     }
 
+    private var year: String {
+        String(entry.year)
+    }
+
     private var isBankHoliday: Bool {
         entry.todaysHolidays.first?.isBankHoliday ?? false
     }
@@ -41,19 +45,26 @@ struct VeckaSmallWidgetView: View {
     // MARK: - Body
 
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 2) {
+            // Header: Month + Year (情報デザイン: complete information)
+            Text("\(monthShort) \(year)")
+                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoWidget.Colors.text.opacity(0.5))
+                .tracking(1)
+                .padding(.top, 8)
+
             Spacer()
 
             // HERO: Week Number (the ONE thing)
             Text("\(weekNumber)")
-                .font(.system(size: 72, weight: .black, design: .rounded))
+                .font(.system(size: 64, weight: .black, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text)
                 .minimumScaleFactor(0.5)
 
             // Small label
             Text("WEEK")
-                .font(.system(size: 11, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text.opacity(0.5))
+                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoWidget.Colors.text.opacity(0.4))
                 .tracking(2)
 
             Spacer()
@@ -61,28 +72,28 @@ struct VeckaSmallWidgetView: View {
             // Footer: Date + Day (minimal)
             HStack(spacing: 6) {
                 Text("\(dayOfMonth)")
-                    .font(.system(size: 20, weight: .heavy, design: .rounded))
+                    .font(.system(size: 18, weight: .heavy, design: .rounded))
                     .foregroundStyle(dayColor)
 
                 Text(weekdayShort)
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
                     .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
             }
-            .padding(.bottom, 12)
+            .padding(.bottom, 8)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .widgetURL(URL(string: "vecka://week/\(weekNumber)/\(entry.year)"))
         .containerBackground(for: .widget) {
-            // Simple white background with subtle border
+            // 情報デザイン: Strong black border
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .fill(JohoWidget.Colors.content)
                 .overlay(
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .stroke(JohoWidget.Colors.border.opacity(0.2), lineWidth: 1)
+                        .stroke(JohoWidget.Colors.border, lineWidth: 1.5)
                 )
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Week \(weekNumber), \(monthShort) \(dayOfMonth), \(weekdayShort)")
+        .accessibilityLabel("Week \(weekNumber), \(monthShort) \(dayOfMonth), \(weekdayShort), \(year)")
     }
 
     // MARK: - Styling

@@ -147,11 +147,12 @@ struct VeckaLargeWidgetView: View {
         }
         .widgetURL(URL(string: "vecka://week/\(entry.weekNumber)/\(entry.year)"))
         .containerBackground(for: .widget) {
+            // 情報デザイン: Strong black border
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(JohoWidget.Colors.content)
                 .overlay(
                     RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .stroke(JohoWidget.Colors.border.opacity(0.2), lineWidth: 1)
+                        .stroke(JohoWidget.Colors.border, lineWidth: 1.5)
                 )
         }
         .accessibilityElement(children: .combine)
