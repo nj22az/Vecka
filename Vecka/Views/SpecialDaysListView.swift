@@ -575,7 +575,7 @@ struct SpecialDaysListView: View {
 
                 // RIGHT COMPARTMENT: Year Picker
                 if selectedMonth == nil {
-                    bentoYearPicker
+                    JohoYearPicker(year: $selectedYear)
                 } else {
                     // Show year when in month detail (read-only)
                     Text(String(selectedYear))
@@ -616,43 +616,6 @@ struct SpecialDaysListView: View {
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
         .padding(.top, JohoDimensions.spacingSM)
-    }
-
-    // MARK: - Bento Year Picker (Simple Stepper Layout)
-
-    private var bentoYearPicker: some View {
-        HStack(spacing: 4) {
-            // Decrement button
-            Button {
-                withAnimation(.easeInOut(duration: 0.15)) { selectedYear -= 1 }
-                HapticManager.selection()
-            } label: {
-                Image(systemName: "chevron.left")
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
-                    .frame(width: 24, height: 44)
-                    .contentShape(Rectangle())
-            }
-
-            // Year text - plain text, no Menu wrapper
-            Text(String(selectedYear))
-                .font(.system(size: 16, weight: .bold, design: .rounded))
-                .monospacedDigit()
-                .foregroundStyle(JohoColors.black)
-                .fixedSize()
-
-            // Increment button
-            Button {
-                withAnimation(.easeInOut(duration: 0.15)) { selectedYear += 1 }
-                HapticManager.selection()
-            } label: {
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
-                    .frame(width: 24, height: 44)
-                    .contentShape(Rectangle())
-            }
-        }
     }
 
     // MARK: - Bento Stats Row

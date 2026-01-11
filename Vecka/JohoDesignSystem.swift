@@ -2006,6 +2006,60 @@ struct HotelClockWidget: View {
     }
 }
 
+// MARK: - Year Picker
+
+/// 情報デザイン: Compact year stepper with chevron buttons
+/// Reusable across Star Page, Calendar, Expenses, Countdowns, etc.
+struct JohoYearPicker: View {
+    @Binding var year: Int
+    var minYear: Int = 1900
+    var maxYear: Int = 2100
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    var body: some View {
+        HStack(spacing: 4) {
+            // Decrement button
+            Button {
+                if year > minYear {
+                    withAnimation(.easeInOut(duration: 0.15)) { year -= 1 }
+                    HapticManager.selection()
+                }
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(year > minYear ? colors.primary : colors.primary.opacity(0.3))
+                    .frame(width: 24, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .disabled(year <= minYear)
+
+            // Year text
+            Text(String(year))
+                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(colors.primary)
+                .fixedSize()
+
+            // Increment button
+            Button {
+                if year < maxYear {
+                    withAnimation(.easeInOut(duration: 0.15)) { year += 1 }
+                    HapticManager.selection()
+                }
+            } label: {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(year < maxYear ? colors.primary : colors.primary.opacity(0.3))
+                    .frame(width: 24, height: 44)
+                    .contentShape(Rectangle())
+            }
+            .disabled(year >= maxYear)
+        }
+    }
+}
+
 // MARK: - Type Selector (Unified Entry)
 
 /// 情報デザイン: Neutral dropdown type selector for unified entry form
