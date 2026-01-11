@@ -79,8 +79,8 @@ struct IconStripSidebar: View {
                 JohoIconButton(
                     icon: "arrow.up.left.and.arrow.down.right.circle.fill",
                     color: JohoColors.black,
-                    foregroundColor: JohoColors.orange,
-                    borderColor: JohoColors.orange,
+                    foregroundColor: JohoColors.cyan,
+                    borderColor: JohoColors.cyan,
                     size: 44,
                     borderWidth: 2
                 ) { repackAction() }

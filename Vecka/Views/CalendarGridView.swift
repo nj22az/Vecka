@@ -422,9 +422,9 @@ extension CalendarGridView {
             indicators.append(IndicatorInfo(icon: "birthday.cake.fill", color: JohoColors.pink))
         }
 
-        // 3. Observance - sparkles ORANGE
+        // 3. Observance - sparkles PINK (celebration category)
         if dataCheck?.hasObservance == true {
-            indicators.append(IndicatorInfo(icon: "sparkles", color: JohoColors.orange))
+            indicators.append(IndicatorInfo(icon: "sparkles", color: JohoColors.pink))
         }
 
         // 4. Event - calendar.badge.clock CYAN (scheduled time items)
@@ -463,12 +463,12 @@ extension CalendarGridView {
         // Format: "1/M" for first day showing month, or just day number
         let displayText = isFirstDay ? "\(lunar.day)/\(lunar.month)" : "\(lunar.day)"
 
-        // Color: Red for Mùng 1, Orange for Rằm, subtle otherwise
+        // Color: Red for Mùng 1, Pink for Rằm (celebration), subtle otherwise
         let textColor: Color = {
             if isFirstDay {
                 return JohoColors.red
             } else if isFullMoon {
-                return JohoColors.orange
+                return JohoColors.pink
             } else if isToday {
                 return JohoColors.black.opacity(0.6)
             } else if isSelected {

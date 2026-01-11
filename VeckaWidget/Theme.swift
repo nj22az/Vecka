@@ -16,11 +16,11 @@ enum JohoWidget {
         static let now = Color(hex: "FFE566")           // Yellow - Today/Current
         static let event = Color(hex: "A5F3FC")         // Cyan - Scheduled events
         static let holiday = Color(hex: "FECDD3")       // Pink - Special days
-        static let trip = Color(hex: "FED7AA")          // Orange - Travel/Movement
+        static let trip = Color(hex: "A5F3FC")          // Cyan - Travel/Movement
         static let expense = Color(hex: "BBF7D0")       // Green - Money
         static let contact = Color(hex: "E9D5FF")       // Purple - People
         static let alert = Color(hex: "E53935")         // Red - Warnings/Sunday
-        static let note = Color(hex: "FEF3C7")          // Cream - Personal notes
+        static let note = Color(hex: "FFE566")          // Yellow - Personal notes
 
         // Structural colors
         static let border = Color.black                  // Always pure black

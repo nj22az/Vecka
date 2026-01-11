@@ -413,6 +413,36 @@ enum JohoDimensions {
     static let spacingXL: CGFloat = 20
 }
 
+// MARK: - Card Size (Regular vs Compact)
+/// 情報デザイン: Adaptive card sizing for iPhone (regular) vs iPad compact layouts
+
+enum JohoCardSize {
+    case regular   // iPhone: larger text, more spacing
+    case compact   // iPad widgets: smaller text, tighter spacing
+
+    // Typography
+    var headerFontSize: CGFloat { self == .regular ? 11 : 10 }
+    var bodyFontSize: CGFloat { self == .regular ? 13 : 11 }
+    var labelFontSize: CGFloat { self == .regular ? 10 : 9 }
+    var badgeFontSize: CGFloat { self == .regular ? 8 : 7 }
+
+    // Indicators
+    var dotSize: CGFloat { self == .regular ? 8 : 6 }
+    var iconSize: CGFloat { self == .regular ? 12 : 10 }
+
+    // Spacing
+    var headerPadding: CGFloat { self == .regular ? JohoDimensions.spacingMD : JohoDimensions.spacingSM }
+    var contentPadding: CGFloat { self == .regular ? JohoDimensions.spacingMD : JohoDimensions.spacingSM }
+    var itemSpacing: CGFloat { self == .regular ? JohoDimensions.spacingSM : 4 }
+
+    // Border & Corner
+    var borderWidth: CGFloat { self == .regular ? JohoDimensions.borderMedium : JohoDimensions.borderThick }
+    var cornerRadius: CGFloat { self == .regular ? JohoDimensions.radiusMedium : JohoDimensions.radiusSmall }
+
+    // Item limits
+    var maxItems: Int { self == .regular ? 5 : 10 }
+}
+
 // MARK: - Squircle Shape
 // iOS app-icon style continuous corners
 

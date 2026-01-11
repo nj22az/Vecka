@@ -663,7 +663,7 @@ struct LandingPageView: View {
                         }
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .padding(.vertical, JohoDimensions.spacingSM)
-                        .background(JohoColors.cream)
+                        .background(JohoColors.yellow)
                         .clipShape(Squircle(cornerRadius: 8))
                         .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1))
                     }
@@ -3261,99 +3261,127 @@ struct LandingPageView: View {
         }
     }
 
-    // MARK: - Today Card
+    // MARK: - Today Card (Unified: Regular + Compact)
 
+    /// Backwards-compatible wrapper for regular size
     private var todayCard: some View {
-        VStack(spacing: 0) {
+        todayCardView(size: .regular)
+    }
+
+    /// Unified Today Card with adaptive sizing
+    private func todayCardView(size: JohoCardSize) -> some View {
+        let isCompact = size == .compact
+
+        return VStack(spacing: 0) {
             // Header
             HStack {
                 Circle()
                     .fill(JohoColors.yellow)
-                    .frame(width: 10, height: 10)
-                    .overlay(Circle().stroke(colors.border, lineWidth: 1))
+                    .frame(width: size.dotSize + 2, height: size.dotSize + 2)
+                    .overlay(Circle().stroke(isCompact ? JohoColors.black : colors.border, lineWidth: 1))
 
                 Text("TODAY")
-                    .font(.system(size: 11, weight: .black, design: .rounded))
-                    .tracking(1.5)
+                    .font(.system(size: size.headerFontSize, weight: .black, design: .rounded))
+                    .tracking(isCompact ? 1 : 1.5)
                     .foregroundStyle(colors.primary)
 
                 Spacer()
 
                 if !todayItems.isEmpty {
                     Text("\(todayItems.count)")
-                        .font(JohoFont.labelSmall)
+                        .font(.system(size: size.labelFontSize, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.secondary)
                 }
             }
-            .padding(.horizontal, JohoDimensions.spacingMD)
-            .padding(.vertical, JohoDimensions.spacingSM)
+            .padding(.horizontal, size.headerPadding)
+            .padding(.vertical, isCompact ? JohoDimensions.spacingXS : JohoDimensions.spacingSM)
 
             // Divider
             Rectangle()
                 .fill(colors.border)
-                .frame(height: 1.5)
+                .frame(height: isCompact ? 1 : 1.5)
 
             // Content
             if todayItems.isEmpty {
-                Text("Nothing scheduled")
-                    .font(JohoFont.body)
-                    .foregroundStyle(colors.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(JohoDimensions.spacingMD)
+                if isCompact {
+                    VStack(spacing: 4) {
+                        Image(systemName: "checkmark.circle")
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundStyle(colors.secondary.opacity(0.4))
+                        Text("All clear")
+                            .font(.system(size: size.labelFontSize, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, JohoDimensions.spacingMD)
+                } else {
+                    Text("Nothing scheduled")
+                        .font(JohoFont.body)
+                        .foregroundStyle(colors.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(size.contentPadding)
+                }
             } else {
-                VStack(spacing: 0) {
-                    ForEach(Array(todayItems.prefix(5).enumerated()), id: \.element.id) { index, item in
+                let content = VStack(spacing: 0) {
+                    ForEach(Array(todayItems.prefix(size.maxItems).enumerated()), id: \.element.id) { index, item in
                         if index > 0 {
                             Rectangle()
                                 .fill(colors.border.opacity(0.2))
                                 .frame(height: 1)
-                                .padding(.horizontal, JohoDimensions.spacingMD)
+                                .padding(.horizontal, size.contentPadding)
                         }
-
-                        todayItemRow(item)
+                        todayItemRowView(item, size: size)
                     }
 
-                    if todayItems.count > 5 {
+                    if !isCompact && todayItems.count > size.maxItems {
                         Rectangle()
                             .fill(colors.border.opacity(0.2))
                             .frame(height: 1)
-                            .padding(.horizontal, JohoDimensions.spacingMD)
+                            .padding(.horizontal, size.contentPadding)
 
-                        Text("+\(todayItems.count - 5) more")
-                            .font(JohoFont.labelSmall)
+                        Text("+\(todayItems.count - size.maxItems) more")
+                            .font(.system(size: size.labelFontSize, weight: .medium, design: .rounded))
                             .foregroundStyle(colors.secondary)
                             .frame(maxWidth: .infinity, alignment: .center)
                             .padding(.vertical, JohoDimensions.spacingSM)
                     }
                 }
+
+                if isCompact {
+                    ScrollView { content }
+                } else {
+                    content
+                }
             }
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .clipShape(Squircle(cornerRadius: size.cornerRadius))
         .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+            Squircle(cornerRadius: size.cornerRadius)
+                .stroke(isCompact ? JohoColors.black : colors.border, lineWidth: size.borderWidth)
         )
     }
 
-    /// Today item row
-    private func todayItemRow(_ item: TodayItem) -> some View {
-        HStack(spacing: JohoDimensions.spacingSM) {
+    /// Unified today item row
+    private func todayItemRowView(_ item: TodayItem, size: JohoCardSize) -> some View {
+        let isCompact = size == .compact
+
+        return HStack(spacing: isCompact ? 6 : JohoDimensions.spacingSM) {
             // Type indicator
             Circle()
                 .fill(item.color)
-                .frame(width: 8, height: 8)
-                .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
+                .frame(width: size.dotSize, height: size.dotSize)
+                .overlay(Circle().stroke(isCompact ? JohoColors.black : colors.border, lineWidth: 1))
 
             // Icon
             Image(systemName: item.icon)
-                .font(.system(size: 12, weight: .medium, design: .rounded))
+                .font(.system(size: size.iconSize, weight: .medium, design: .rounded))
                 .foregroundStyle(item.color)
-                .frame(width: 16)
+                .frame(width: isCompact ? 12 : 16)
 
             // Title
             Text(item.title)
-                .font(JohoFont.bodySmall)
+                .font(.system(size: size.bodyFontSize, weight: .medium, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .lineLimit(1)
 
@@ -3361,15 +3389,20 @@ struct LandingPageView: View {
 
             // Type badge
             Text(item.typeBadge)
-                .font(.system(size: 8, weight: .bold, design: .rounded))
+                .font(.system(size: size.badgeFontSize, weight: .bold, design: .rounded))
                 .foregroundStyle(item.color)
-                .padding(.horizontal, 6)
-                .padding(.vertical, 2)
+                .padding(.horizontal, isCompact ? 4 : 6)
+                .padding(.vertical, isCompact ? 1 : 2)
                 .background(item.color.opacity(0.15))
                 .clipShape(Capsule())
         }
-        .padding(.horizontal, JohoDimensions.spacingMD)
-        .padding(.vertical, JohoDimensions.spacingSM)
+        .padding(.horizontal, size.contentPadding)
+        .padding(.vertical, size.itemSpacing)
+    }
+
+    /// Backwards-compatible wrapper for old todayItemRow calls
+    private func todayItemRow(_ item: TodayItem) -> some View {
+        todayItemRowView(item, size: .regular)
     }
 
     // MARK: - GLANCE Card (情報デザイン: Star Page Style Dashboard)
