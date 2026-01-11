@@ -1,0 +1,92 @@
+{
+  "symbolSections": [
+    {
+      "id": "maru-batsu",
+      "title": "MARU-BATSU",
+      "symbols": ["○", "●", "◎", "×", "△", "▲", "□", "■", "◇", "◆"]
+    },
+    {
+      "id": "numbers",
+      "title": "NUMBERS",
+      "symbols": ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"]
+    },
+    {
+      "id": "arrows",
+      "title": "ARROWS",
+      "symbols": ["→", "←", "↑", "↓", "↗", "↘", "⇒", "⇐"]
+    },
+    {
+      "id": "status",
+      "title": "STATUS",
+      "symbols": ["✓", "✔", "⊘", "⚠", "ℹ", "※"]
+    },
+    {
+      "id": "stars",
+      "title": "STARS",
+      "symbols": ["★", "☆", "✦", "✿", "◉", "•"]
+    },
+    {
+      "id": "kanji",
+      "title": "KANJI",
+      "symbols": ["家", "仕", "友", "医", "店", "駅", "食", "休", "祝", "振"]
+    }
+  ],
+  "contactCategories": [
+    {
+      "id": "family",
+      "symbol": "家",
+      "sfSymbol": "heart.fill",
+      "colorHex": "FECDD3",
+      "label": "FAMILY"
+    },
+    {
+      "id": "work",
+      "symbol": "仕",
+      "sfSymbol": "briefcase.fill",
+      "colorHex": "A5F3FC",
+      "label": "WORK"
+    },
+    {
+      "id": "friend",
+      "symbol": "友",
+      "sfSymbol": "person.2.fill",
+      "colorHex": "E9D5FF",
+      "label": "FRIEND"
+    },
+    {
+      "id": "important",
+      "symbol": "★",
+      "sfSymbol": "star.fill",
+      "colorHex": "FFE566",
+      "label": "IMPORTANT"
+    },
+    {
+      "id": "medical",
+      "symbol": "✚",
+      "sfSymbol": "cross.case.fill",
+      "colorHex": "E53935",
+      "label": "MEDICAL"
+    },
+    {
+      "id": "service",
+      "symbol": "⚙",
+      "sfSymbol": "gearshape.fill",
+      "colorHex": "BBF7D0",
+      "label": "SERVICE"
+    }
+  ],
+  "priorityLevels": [
+    {"id": "highest", "symbol": "◎", "label": "HIGHEST"},
+    {"id": "high", "symbol": "○", "label": "HIGH"},
+    {"id": "medium", "symbol": "△", "label": "MEDIUM"},
+    {"id": "low", "symbol": "□", "label": "LOW"},
+    {"id": "none", "symbol": "−", "label": "NONE"}
+  ],
+  "statusIndicators": [
+    {"id": "complete", "symbol": "◎", "colorHex": "BBF7D0", "label": "COMPLETE"},
+    {"id": "good", "symbol": "○", "colorHex": "A5F3FC", "label": "GOOD"},
+    {"id": "partial", "symbol": "△", "colorHex": "FFE566", "label": "PARTIAL"},
+    {"id": "failed", "symbol": "×", "colorHex": "E53935", "label": "FAILED"},
+    {"id": "pending", "symbol": "□", "colorHex": "FFFFFF", "label": "PENDING"}
+  ]
+}

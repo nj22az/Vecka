@@ -430,15 +430,10 @@ struct JohoSymbolPickerSheet: View {
 
     @Environment(\.dismiss) private var dismiss
 
-    // Symbol categories for picker - NO EMOJI, only Unicode geometric and kanji
-    private let symbolSections: [(title: String, symbols: [String])] = [
-        ("MARU-BATSU", ["○", "●", "◎", "×", "△", "▲", "□", "■", "◇", "◆"]),
-        ("NUMBERS", ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"]),
-        ("ARROWS", ["→", "←", "↑", "↓", "↗", "↘", "⇒", "⇐"]),
-        ("STATUS", ["✓", "✔", "⊘", "⚠", "ℹ", "※"]),
-        ("STARS", ["★", "☆", "✦", "✿", "◉", "•"]),
-        ("KANJI", ["家", "仕", "友", "医", "店", "駅", "食", "休", "祝", "振"]),
-    ]
+    // Symbol categories for picker - loaded from JSON (情報デザイン: database-driven)
+    private var symbolSections: [(title: String, symbols: [String])] {
+        JohoSymbolsLoader.symbolSections
+    }
 
     var body: some View {
         NavigationStack {
@@ -695,4 +690,66 @@ struct JohoCategoryFilterBar: View {
     }
     .padding(.vertical)
     .johoBackground()
+}
+
+// MARK: - JSON Loader (情報デザイン: Database-driven symbols)
+
+enum JohoSymbolsLoader {
+    /// Symbol sections loaded from JSON for picker grid
+    static let symbolSections: [(title: String, symbols: [String])] = {
+        guard let url = Bundle.main.url(forResource: "joho-symbols", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let json = try? JSONDecoder().decode(JohoSymbolsJSON.self, from: data) else {
+            Log.e("Failed to load joho-symbols.json")
+            return defaultSymbolSections
+        }
+        Log.i("Loaded \(json.symbolSections.count) symbol sections from JSON")
+        return json.symbolSections.map { ($0.title, $0.symbols) }
+    }()
+
+    /// Fallback if JSON fails to load
+    private static let defaultSymbolSections: [(title: String, symbols: [String])] = [
+        ("MARU-BATSU", ["○", "●", "◎", "×", "△", "▲", "□", "■", "◇", "◆"]),
+        ("NUMBERS", ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"]),
+        ("ARROWS", ["→", "←", "↑", "↓", "↗", "↘", "⇒", "⇐"]),
+        ("STATUS", ["✓", "✔", "⊘", "⚠", "ℹ", "※"]),
+        ("STARS", ["★", "☆", "✦", "✿", "◉", "•"]),
+        ("KANJI", ["家", "仕", "友", "医", "店", "駅", "食", "休", "祝", "振"]),
+    ]
+}
+
+// MARK: - JSON DTOs
+
+private struct JohoSymbolsJSON: Codable {
+    let symbolSections: [SymbolSectionDTO]
+    let contactCategories: [ContactCategoryDTO]
+    let priorityLevels: [PriorityDTO]
+    let statusIndicators: [StatusDTO]
+}
+
+private struct SymbolSectionDTO: Codable {
+    let id: String
+    let title: String
+    let symbols: [String]
+}
+
+private struct ContactCategoryDTO: Codable {
+    let id: String
+    let symbol: String
+    let sfSymbol: String
+    let colorHex: String
+    let label: String
+}
+
+private struct PriorityDTO: Codable {
+    let id: String
+    let symbol: String
+    let label: String
+}
+
+private struct StatusDTO: Codable {
+    let id: String
+    let symbol: String
+    let colorHex: String
+    let label: String
 }
