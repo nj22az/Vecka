@@ -1,0 +1,86 @@
+[
+  {
+    "month": 1,
+    "name": "January",
+    "icon": "snowflake",
+    "accentColor": "4A90D9",
+    "lightBackground": "E8F4FD"
+  },
+  {
+    "month": 2,
+    "name": "February",
+    "icon": "heart.fill",
+    "accentColor": "E84393",
+    "lightBackground": "FDE8F3"
+  },
+  {
+    "month": 3,
+    "name": "March",
+    "icon": "leaf.fill",
+    "accentColor": "00B894",
+    "lightBackground": "E8FDF6"
+  },
+  {
+    "month": 4,
+    "name": "April",
+    "icon": "cloud.rain.fill",
+    "accentColor": "74B9FF",
+    "lightBackground": "EBF5FF"
+  },
+  {
+    "month": 5,
+    "name": "May",
+    "icon": "camera.macro",
+    "accentColor": "FDCB6E",
+    "lightBackground": "FFF9E8"
+  },
+  {
+    "month": 6,
+    "name": "June",
+    "icon": "sun.max.fill",
+    "accentColor": "F39C12",
+    "lightBackground": "FEF3E2"
+  },
+  {
+    "month": 7,
+    "name": "July",
+    "icon": "beach.umbrella.fill",
+    "accentColor": "00CEC9",
+    "lightBackground": "E8FFFE"
+  },
+  {
+    "month": 8,
+    "name": "August",
+    "icon": "flame.fill",
+    "accentColor": "E17055",
+    "lightBackground": "FDECE8"
+  },
+  {
+    "month": 9,
+    "name": "September",
+    "icon": "leaf.arrow.triangle.circlepath",
+    "accentColor": "D35400",
+    "lightBackground": "FDEEE5"
+  },
+  {
+    "month": 10,
+    "name": "October",
+    "icon": "moon.fill",
+    "accentColor": "6C5CE7",
+    "lightBackground": "EFECFD"
+  },
+  {
+    "month": 11,
+    "name": "November",
+    "icon": "wind",
+    "accentColor": "636E72",
+    "lightBackground": "F0F2F3"
+  },
+  {
+    "month": 12,
+    "name": "December",
+    "icon": "gift.fill",
+    "accentColor": "C0392B",
+    "lightBackground": "F9E7E5"
+  }
+]

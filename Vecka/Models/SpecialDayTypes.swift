@@ -136,7 +136,7 @@ func birthdayExpandedDisplayText(age: Int, date: Date, daysUntil: Int) -> String
     }
 }
 
-// MARK: - Month Theme (情報デザイン: Seasonal colors & icons)
+// MARK: - Month Theme (情報デザイン: JSON-driven seasonal colors & icons)
 
 struct MonthTheme {
     let month: Int
@@ -145,8 +145,24 @@ struct MonthTheme {
     let accentColor: Color     // Month's signature color
     let lightBackground: Color // Lighter tint for card background
 
-    /// 情報デザイン month themes - Japanese packaging style with seasonal associations
-    static let themes: [MonthTheme] = [
+    /// 情報デザイン month themes - loaded from JSON for easy customization
+    static let themes: [MonthTheme] = {
+        guard let url = Bundle.main.url(forResource: "month-themes", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let dtos = try? JSONDecoder().decode([MonthThemeDTO].self, from: data) else {
+            Log.e("Failed to load month-themes.json")
+            return defaultThemes
+        }
+        Log.i("Loaded \(dtos.count) month themes from JSON")
+        return dtos.map { $0.toMonthTheme() }
+    }()
+
+    static func theme(for month: Int) -> MonthTheme {
+        themes.first(where: { $0.month == month }) ?? themes[0]
+    }
+
+    /// Fallback themes if JSON fails to load
+    private static let defaultThemes: [MonthTheme] = [
         MonthTheme(month: 1, name: "January", icon: "snowflake",
                    accentColor: Color(hex: "4A90D9"), lightBackground: Color(hex: "E8F4FD")),
         MonthTheme(month: 2, name: "February", icon: "heart.fill",
@@ -172,9 +188,24 @@ struct MonthTheme {
         MonthTheme(month: 12, name: "December", icon: "gift.fill",
                    accentColor: Color(hex: "C0392B"), lightBackground: Color(hex: "F9E7E5"))
     ]
+}
 
-    static func theme(for month: Int) -> MonthTheme {
-        themes.first(where: { $0.month == month }) ?? themes[0]
+/// DTO for JSON decoding (colors stored as hex strings)
+private struct MonthThemeDTO: Codable {
+    let month: Int
+    let name: String
+    let icon: String
+    let accentColor: String      // Hex color without #
+    let lightBackground: String  // Hex color without #
+
+    func toMonthTheme() -> MonthTheme {
+        MonthTheme(
+            month: month,
+            name: name,
+            icon: icon,
+            accentColor: Color(hex: accentColor),
+            lightBackground: Color(hex: lightBackground)
+        )
     }
 }
 
