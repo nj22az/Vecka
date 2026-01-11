@@ -107,11 +107,11 @@ struct VeckaLargeWidgetView: View {
 
             // Calendar Grid
             VStack(spacing: 4) {
-                // Weekday headers
+                // Weekday headers (情報デザイン: functional labels)
                 HStack(spacing: 0) {
                     Text("W")
-                        .font(.system(size: 10, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoWidget.Colors.text.opacity(0.3))
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.text.opacity(0.5))
                         .frame(width: 28)
 
                     ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { index, symbol in
@@ -126,10 +126,10 @@ struct VeckaLargeWidgetView: View {
                 // Calendar rows
                 ForEach(Array(weeksInMonth.enumerated()), id: \.offset) { weekIndex, week in
                     HStack(spacing: 0) {
-                        // Week number
+                        // Week number (情報デザイン: functional, visible)
                         Text("\(weekNumber(for: weekIndex))")
-                            .font(.system(size: 9, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoWidget.Colors.text.opacity(0.3))
+                            .font(.system(size: 9, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoWidget.Colors.text.opacity(0.5))
                             .frame(width: 28)
 
                         ForEach(0..<7, id: \.self) { dayIndex in
@@ -147,12 +147,13 @@ struct VeckaLargeWidgetView: View {
         }
         .widgetURL(URL(string: "vecka://week/\(entry.weekNumber)/\(entry.year)"))
         .containerBackground(for: .widget) {
-            // 情報デザイン: Strong black border
+            // 情報デザイン: Strong black border (2pt for large widget)
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(JohoWidget.Colors.content)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .stroke(JohoWidget.Colors.border, lineWidth: 1.5)
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .stroke(JohoWidget.Colors.border, lineWidth: 2)
+                        .padding(1)
                 )
         }
         .accessibilityElement(children: .combine)
@@ -173,28 +174,46 @@ struct VeckaLargeWidgetView: View {
         let hasHoliday = !holidays.isEmpty
         let hasBirthday = !birthdays.isEmpty
 
-        VStack(spacing: 2) {
+        // 情報デザイン: Fixed height cell with overlay icons (no jumping)
+        ZStack {
+            // Today indicator: Circle background
+            if isToday {
+                Circle()
+                    .fill(JohoWidget.Colors.now)
+                    .frame(width: 32, height: 32)
+                    .overlay(
+                        Circle()
+                            .stroke(JohoWidget.Colors.border, lineWidth: 1)
+                    )
+            }
+
+            // Day number (always centered)
             Text("\(day)")
-                .font(.system(size: 14, weight: isToday ? .bold : .regular, design: .rounded))
+                .font(.system(size: 14, weight: isToday ? .bold : .medium, design: .rounded))
                 .foregroundStyle(cellTextColor(isToday: isToday, isBankHoliday: isBankHoliday, isSunday: isSunday))
 
-            // 情報デザイン: Use icons for holidays and birthdays (consistent with main app)
-            HStack(spacing: 2) {
-                if hasHoliday {
-                    Image(systemName: "star.fill")
-                        .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(isBankHoliday ? JohoWidget.Colors.alert : JohoWidget.Colors.event)
+            // 情報デザイン: Icons as overlay in corner (no layout shift)
+            if hasHoliday || hasBirthday {
+                VStack {
+                    Spacer()
+                    HStack(spacing: 1) {
+                        if hasHoliday {
+                            Circle()
+                                .fill(isBankHoliday ? JohoWidget.Colors.alert : JohoWidget.Colors.event)
+                                .frame(width: 5, height: 5)
+                        }
+                        if hasBirthday {
+                            Circle()
+                                .fill(JohoWidget.Colors.holiday)
+                                .frame(width: 5, height: 5)
+                        }
+                    }
                 }
-                if hasBirthday {
-                    Image(systemName: "birthday.cake.fill")
-                        .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(JohoWidget.Colors.holiday) // Pink for birthdays
-                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(.bottom, 2)
             }
         }
         .frame(maxWidth: .infinity, minHeight: 36)
-        .background(isToday ? JohoWidget.Colors.now.opacity(0.5) : Color.clear)
-        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
     // MARK: - Helper Functions

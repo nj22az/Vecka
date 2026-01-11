@@ -45,51 +45,61 @@ struct VeckaSmallWidgetView: View {
     // MARK: - Body
 
     var body: some View {
-        VStack(spacing: 2) {
-            // Header: Month + Year (情報デザイン: complete information)
+        VStack(spacing: 0) {
+            // Header: Month + Year (情報デザイン: complete information, readable)
             Text("\(monthShort) \(year)")
-                .font(.system(size: 10, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text.opacity(0.5))
+                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoWidget.Colors.text.opacity(0.7))
                 .tracking(1)
                 .padding(.top, 8)
 
-            Spacer()
+            Spacer(minLength: 4)
 
             // HERO: Week Number (the ONE thing)
             Text("\(weekNumber)")
-                .font(.system(size: 64, weight: .black, design: .rounded))
+                .font(.system(size: 56, weight: .black, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text)
                 .minimumScaleFactor(0.5)
 
-            // Small label
+            // Label (情報デザイン: readable, not invisible)
             Text("WEEK")
                 .font(.system(size: 10, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text.opacity(0.4))
+                .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
                 .tracking(2)
 
-            Spacer()
+            Spacer(minLength: 4)
 
-            // Footer: Date + Day (minimal)
-            HStack(spacing: 6) {
-                Text("\(dayOfMonth)")
-                    .font(.system(size: 18, weight: .heavy, design: .rounded))
-                    .foregroundStyle(dayColor)
+            // Footer: Today in YELLOW CIRCLE (情報デザイン: TODAY = NOW = YELLOW)
+            HStack(spacing: 4) {
+                // Today indicator: ALWAYS yellow circle with black border
+                ZStack {
+                    Circle()
+                        .fill(JohoWidget.Colors.now)
+                        .frame(width: 32, height: 32)
+                    Circle()
+                        .stroke(JohoWidget.Colors.border, lineWidth: 1.5)
+                        .frame(width: 32, height: 32)
+                    Text("\(dayOfMonth)")
+                        .font(.system(size: 16, weight: .black, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.text)
+                }
 
                 Text(weekdayShort)
-                    .font(.system(size: 11, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(sundayOrHolidayColor)
             }
             .padding(.bottom, 8)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .widgetURL(URL(string: "vecka://week/\(weekNumber)/\(entry.year)"))
         .containerBackground(for: .widget) {
-            // 情報デザイン: Strong black border
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
+            // 情報デザイン: Strong 2pt black border (per Theme.Borders.small.widget)
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .fill(JohoWidget.Colors.content)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .stroke(JohoWidget.Colors.border, lineWidth: 1.5)
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .stroke(JohoWidget.Colors.border, lineWidth: 2)
+                        .padding(1)
                 )
         }
         .accessibilityElement(children: .combine)
@@ -98,7 +108,7 @@ struct VeckaSmallWidgetView: View {
 
     // MARK: - Styling
 
-    private var dayColor: Color {
+    private var sundayOrHolidayColor: Color {
         if isBankHoliday { return JohoWidget.Colors.alert }
         if isSunday { return JohoWidget.Colors.alert }
         return JohoWidget.Colors.text
