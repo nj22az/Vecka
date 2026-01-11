@@ -46,6 +46,9 @@ struct LandingPageView: View {
     // Random stat state (情報デザイン: Rotating insights)
     @State private var randomStatIndex: Int = 0
 
+    // Quirky facts provider (情報デザイン: Region-based fallback facts)
+    @State private var factProvider = GlanceFactProvider(selectedRegions: ["SE", "VN", "UK"])
+
     // Discovery Grid state (情報デザイン: Random events from database)
     @State private var discoveryItems: [DiscoveryItem] = []
     @State private var discoveryShuffleID = UUID()
@@ -346,6 +349,16 @@ struct LandingPageView: View {
         let indicator: String?
         let iconColor: Color
         let bgColor: Color
+        let isFact: Bool  // 情報デザイン: Quirky facts need different text sizing
+
+        init(icon: String, label: String, indicator: String?, iconColor: Color, bgColor: Color, isFact: Bool = false) {
+            self.icon = icon
+            self.label = label
+            self.indicator = indicator
+            self.iconColor = iconColor
+            self.bgColor = bgColor
+            self.isFact = isFact
+        }
     }
 
     /// Available random stats to show (情報デザイン: User-relevant data)
@@ -417,6 +430,21 @@ struct LandingPageView: View {
                 indicator: nextEvent.title.prefix(8).lowercased(),
                 iconColor: JohoColors.cyan,
                 bgColor: JohoColors.purple.opacity(0.15)
+            ))
+        }
+
+        // 7. Quirky facts (情報デザイン: Region-based fallback when user data is sparse)
+        // Add 2-3 facts to the rotation for variety
+        let factsToAdd = stats.count < 3 ? 3 : 2  // More facts when less user data
+        for _ in 0..<factsToAdd {
+            let fact = factProvider.nextFact()
+            stats.append(RandomStat(
+                icon: fact.icon ?? "sparkles",
+                label: fact.text,
+                indicator: nil,
+                iconColor: fact.color,
+                bgColor: fact.color.opacity(0.1),
+                isFact: true
             ))
         }
 
@@ -3622,23 +3650,34 @@ struct LandingPageView: View {
                 randomStatIndex = (randomStatIndex + 1) % max(1, availableRandomStats.count)
             }
         } label: {
-            VStack(spacing: 6) {
+            VStack(spacing: stat.isFact ? 4 : 6) {
                 Image(systemName: stat.icon)
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .font(.system(size: stat.isFact ? 24 : 32, weight: .bold, design: .rounded))
                     .foregroundStyle(stat.iconColor)
 
-                Text(stat.label)
-                    .font(.system(size: 12, weight: .black, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
-
-                if let indicator = stat.indicator {
-                    Text(indicator)
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                // 情報デザイン: Facts use smaller, multiline text; stats use large single-line
+                if stat.isFact {
+                    Text(stat.label)
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(3)
+                        .minimumScaleFactor(0.8)
+                        .padding(.horizontal, 8)
                 } else {
-                    Text("—")
-                        .font(.system(size: 10, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.3))
+                    Text(stat.label)
+                        .font(.system(size: 12, weight: .black, design: .rounded))
+                        .foregroundStyle(JohoColors.black)
+
+                    if let indicator = stat.indicator {
+                        Text(indicator)
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black.opacity(0.7))
+                    } else {
+                        Text("—")
+                            .font(.system(size: 10, weight: .medium, design: .rounded))
+                            .foregroundStyle(JohoColors.black.opacity(0.3))
+                    }
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 100)
