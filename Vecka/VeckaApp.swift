@@ -61,6 +61,8 @@ struct VeckaApp: App {
             SavedLocation.self,
             // World Clocks (Onsen landing page)
             WorldClock.self,
+            // Quirky facts (情報デザイン: Database-driven content)
+            QuirkyFact.self,
         ])
 
         let modelConfiguration = ModelConfiguration(
@@ -100,6 +102,8 @@ struct VeckaApp: App {
                 if !hasCompletedOnboarding {
                     showOnboarding = true
                 }
+                // Seed quirky facts from JSON on first launch
+                QuirkyFactsLoader.seedIfNeeded(context: sharedModelContainer.mainContext)
             }
             .fullScreenCover(isPresented: $showOnboarding) {
                 OnboardingView(hasCompletedOnboarding: $hasCompletedOnboarding)

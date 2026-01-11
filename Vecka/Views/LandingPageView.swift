@@ -46,8 +46,8 @@ struct LandingPageView: View {
     // Random stat state (情報デザイン: Rotating insights)
     @State private var randomStatIndex: Int = 0
 
-    // Quirky facts provider (情報デザイン: Region-based fallback facts)
-    @State private var factProvider = GlanceFactProvider(selectedRegions: ["SE", "VN", "UK"])
+    // Quirky facts provider (情報デザイン: Database-driven facts)
+    @State private var factProvider: GlanceFactProvider?
 
     // Discovery Grid state (情報デザイン: Random events from database)
     @State private var discoveryItems: [DiscoveryItem] = []
@@ -433,19 +433,20 @@ struct LandingPageView: View {
             ))
         }
 
-        // 7. Quirky facts (情報デザイン: Region-based fallback when user data is sparse)
-        // Add 2-3 facts to the rotation for variety
-        let factsToAdd = stats.count < 3 ? 3 : 2  // More facts when less user data
-        for _ in 0..<factsToAdd {
-            let fact = factProvider.nextFact()
-            stats.append(RandomStat(
-                icon: fact.icon ?? "sparkles",
-                label: fact.text,
-                indicator: nil,
-                iconColor: fact.color,
-                bgColor: fact.color.opacity(0.1),
-                isFact: true
-            ))
+        // 7. Quirky facts (情報デザイン: Database-driven fallback when user data is sparse)
+        if let provider = factProvider {
+            let factsToAdd = stats.count < 3 ? 3 : 2
+            for _ in 0..<factsToAdd {
+                let fact = provider.nextFact()
+                stats.append(RandomStat(
+                    icon: fact.icon ?? "sparkles",
+                    label: fact.text,
+                    indicator: nil,
+                    iconColor: fact.color,
+                    bgColor: fact.color.opacity(0.1),
+                    isFact: true
+                ))
+            }
         }
 
         return stats
@@ -538,6 +539,10 @@ struct LandingPageView: View {
         }
         .johoBackground()
         .onAppear {
+            // Initialize fact provider with model context (情報デザイン: Database-driven)
+            if factProvider == nil {
+                factProvider = GlanceFactProvider(context: modelContext, selectedRegions: ["SE", "VN", "UK"])
+            }
             // Randomize stat on each appearance (情報デザイン: Fresh insights)
             randomStatIndex = Int.random(in: 0..<max(1, availableRandomStats.count))
         }

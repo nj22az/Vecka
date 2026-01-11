@@ -2,17 +2,16 @@
 //  GlanceFactProvider.swift
 //  Vecka
 //
-//  Smart fact provider for GLANCE tiles
-//  Priority: User Data → Calendar → Region Facts → Easter Eggs
-//  情報デザイン: No duplicates, region-aware, daily rotation
+//  情報デザイン: Database-driven fact provider for GLANCE tiles
+//  Minimal code, queries SwiftData
 //
 
 import Foundation
 import SwiftUI
+import SwiftData
 
-// MARK: - Glance Fact
+// MARK: - Glance Fact (Display Model)
 
-/// A fact ready for display in a GLANCE tile
 struct GlanceFact: Identifiable, Equatable {
     let id: String
     let text: String
@@ -29,63 +28,87 @@ struct GlanceFact: Identifiable, Equatable {
 @MainActor
 final class GlanceFactProvider: ObservableObject {
 
-    // MARK: - Properties
-
-    /// User's selected holiday regions (priority order)
+    private let context: ModelContext
     private let selectedRegions: [String]
-
-    /// Today's date for seeding randomness
     private let today: Date
-
-    /// Track used facts to prevent duplicates
     private var usedFactIDs: Set<String> = []
-
-    /// Easter egg probability (5%)
     private let easterEggChance: Double = 0.05
 
-    // MARK: - Init
-
-    init(selectedRegions: [String] = ["SE", "VN", "UK"], date: Date = Date()) {
+    init(context: ModelContext, selectedRegions: [String] = ["SE", "VN", "UK"], date: Date = Date()) {
+        self.context = context
         self.selectedRegions = selectedRegions
         self.today = date
     }
 
     // MARK: - Public API
 
-    /// Get a unique fact for a GLANCE tile
-    /// Each call returns a different fact (no duplicates in same view)
     func nextFact() -> GlanceFact {
         // Small chance for easter egg
-        if Double.random(in: 0...1) < easterEggChance {
-            if let egg = randomEasterEgg() {
-                return egg
-            }
+        if Double.random(in: 0...1) < easterEggChance,
+           let egg = randomEasterEgg() {
+            return egg
         }
 
-        // Try calendar fact first (contextual)
+        // Try calendar fact first
         if let calendarFact = randomCalendarFact() {
             return calendarFact
         }
 
-        // Fall back to region facts
+        // Fall back to region facts from database
         return randomRegionFact()
     }
 
-    /// Get multiple unique facts (for filling a GLANCE bento)
-    func facts(count: Int) -> [GlanceFact] {
-        usedFactIDs.removeAll()
-        var result: [GlanceFact] = []
-
-        for _ in 0..<count {
-            result.append(nextFact())
-        }
-
-        return result
-    }
-
-    /// Reset used facts (call when view reloads)
     func reset() {
         usedFactIDs.removeAll()
+    }
+
+    // MARK: - Database Queries
+
+    private func randomRegionFact() -> GlanceFact {
+        // Query facts for selected regions
+        let regions = selectedRegions
+        let descriptor = FetchDescriptor<QuirkyFact>(
+            predicate: #Predicate { regions.contains($0.region) }
+        )
+
+        let facts = (try? context.fetch(descriptor)) ?? []
+        let available = facts.filter { !usedFactIDs.contains($0.id) }
+        let pool = available.isEmpty ? facts : available
+
+        guard !pool.isEmpty else {
+            return GlanceFact(id: "fallback", text: "Week numbers matter.", icon: "sparkles", color: JohoColors.cyan)
+        }
+
+        // Seed based on date for daily consistency
+        let day = Calendar.current.component(.day, from: today)
+        let index = (day + usedFactIDs.count * 1000) % pool.count
+        let fact = pool[index]
+
+        usedFactIDs.insert(fact.id)
+
+        return GlanceFact(
+            id: fact.id,
+            text: fact.text,
+            icon: iconFor(category: fact.factCategory),
+            color: colorFor(region: fact.region)
+        )
+    }
+
+    private func randomEasterEgg() -> GlanceFact? {
+        let descriptor = FetchDescriptor<QuirkyFact>(
+            predicate: #Predicate { $0.region == "XX" }
+        )
+
+        let eggs = (try? context.fetch(descriptor)) ?? []
+        let available = eggs.filter { !usedFactIDs.contains($0.id) }
+        guard !available.isEmpty else { return nil }
+
+        let day = Calendar.current.component(.day, from: today)
+        let egg = available[day % available.count]
+
+        usedFactIDs.insert(egg.id)
+
+        return GlanceFact(id: egg.id, text: egg.text, icon: "sparkles", color: JohoColors.yellow)
     }
 
     // MARK: - Calendar Facts
@@ -97,148 +120,52 @@ final class GlanceFactProvider: ObservableObject {
         let month = calendar.component(.month, from: today)
         let weekOfYear = calendar.component(.weekOfYear, from: today)
 
-        // Build pool of calendar facts
-        var calendarFacts: [(id: String, text: String, icon: String)] = []
+        var facts: [(id: String, text: String, icon: String)] = []
 
-        // Days until weekend
+        // Days until Friday
         let daysUntilFriday = (6 - weekday + 7) % 7
         if daysUntilFriday > 0 && daysUntilFriday < 5 {
-            calendarFacts.append((
-                id: "cal_friday",
-                text: "\(daysUntilFriday) day\(daysUntilFriday == 1 ? "" : "s") until Friday",
-                icon: "party.popper"
-            ))
+            facts.append(("cal_friday", "\(daysUntilFriday) day\(daysUntilFriday == 1 ? "" : "s") until Friday", "party.popper"))
         }
 
-        // Week number
-        calendarFacts.append((
-            id: "cal_week",
-            text: "Week \(weekOfYear) of 52",
-            icon: "calendar"
-        ))
+        facts.append(("cal_week", "Week \(weekOfYear) of 52", "calendar"))
 
-        // Days until end of month
         if let range = calendar.range(of: .day, in: .month, for: today) {
             let daysLeft = range.count - day
             if daysLeft > 0 && daysLeft <= 10 {
-                calendarFacts.append((
-                    id: "cal_month_end",
-                    text: "\(daysLeft) days left this month",
-                    icon: "calendar.badge.clock"
-                ))
+                facts.append(("cal_month_end", "\(daysLeft) days left this month", "calendar.badge.clock"))
             }
-        }
-
-        // Month progress
-        if let range = calendar.range(of: .day, in: .month, for: today) {
             let progress = Int((Double(day) / Double(range.count)) * 100)
-            calendarFacts.append((
-                id: "cal_progress",
-                text: "\(progress)% through the month",
-                icon: "chart.pie"
-            ))
+            facts.append(("cal_progress", "\(progress)% through the month", "chart.pie"))
         }
 
-        // Year progress
         let dayOfYear = calendar.ordinality(of: .day, in: .year, for: today) ?? 1
-        let yearProgress = Int((Double(dayOfYear) / 365.0) * 100)
-        calendarFacts.append((
-            id: "cal_year",
-            text: "\(yearProgress)% through the year",
-            icon: "chart.bar"
-        ))
+        facts.append(("cal_year", "\(Int(Double(dayOfYear) / 365.0 * 100))% through the year", "chart.bar"))
 
-        // Special day messages
-        if weekday == 1 { // Sunday
-            calendarFacts.append((id: "cal_sunday", text: "Sunday: rest day", icon: "bed.double"))
-        } else if weekday == 6 { // Friday
-            calendarFacts.append((id: "cal_friday_is", text: "It's Friday!", icon: "star"))
-        } else if weekday == 7 { // Saturday
-            calendarFacts.append((id: "cal_saturday", text: "Saturday vibes", icon: "sun.max"))
-        }
+        if weekday == 1 { facts.append(("cal_sunday", "Sunday: rest day", "bed.double")) }
+        else if weekday == 6 { facts.append(("cal_friday_is", "It's Friday!", "star")) }
+        else if weekday == 7 { facts.append(("cal_saturday", "Saturday vibes", "sun.max")) }
 
-        // Month-specific
         switch month {
-        case 1: calendarFacts.append((id: "cal_jan", text: "New year, new week numbers", icon: "sparkles"))
-        case 6: calendarFacts.append((id: "cal_jun", text: "Midsommar approaches", icon: "sun.max"))
-        case 12: calendarFacts.append((id: "cal_dec", text: "December: cozy season", icon: "snowflake"))
+        case 1: facts.append(("cal_jan", "New year, new week numbers", "sparkles"))
+        case 6: facts.append(("cal_jun", "Midsommar approaches", "sun.max"))
+        case 12: facts.append(("cal_dec", "December: cozy season", "snowflake"))
         default: break
         }
 
-        // Filter out already used
-        let available = calendarFacts.filter { !usedFactIDs.contains($0.id) }
+        let available = facts.filter { !usedFactIDs.contains($0.id) }
         guard !available.isEmpty else { return nil }
 
-        // Pick one based on today's date (consistent within day)
         let seed = day + month * 100 + weekOfYear * 10000
-        let index = seed % available.count
-        let picked = available[index]
-
+        let picked = available[seed % available.count]
         usedFactIDs.insert(picked.id)
 
-        return GlanceFact(
-            id: picked.id,
-            text: picked.text,
-            icon: picked.icon,
-            color: JohoColors.cyan
-        )
-    }
-
-    // MARK: - Region Facts
-
-    private func randomRegionFact() -> GlanceFact {
-        // Get facts from selected regions
-        let regionFacts = QuirkyFactsDB.facts(for: selectedRegions)
-
-        // Filter out already used
-        let available = regionFacts.filter { !usedFactIDs.contains($0.id) }
-
-        // If all used, reset and pick any
-        let pool = available.isEmpty ? regionFacts : available
-
-        // Seed random based on date for daily consistency
-        let calendar = Calendar.current
-        let day = calendar.component(.day, from: today)
-        let seed = day + usedFactIDs.count * 1000
-
-        let index = seed % max(pool.count, 1)
-        let fact = pool.indices.contains(index) ? pool[index] : pool[0]
-
-        usedFactIDs.insert(fact.id)
-
-        return GlanceFact(
-            id: fact.id,
-            text: fact.text,
-            icon: iconFor(category: fact.category),
-            color: colorFor(region: fact.region)
-        )
-    }
-
-    // MARK: - Easter Eggs
-
-    private func randomEasterEgg() -> GlanceFact? {
-        let eggs = QuirkyFactsDB.easterEggs
-        let available = eggs.filter { !usedFactIDs.contains($0.id) }
-        guard !available.isEmpty else { return nil }
-
-        let calendar = Calendar.current
-        let day = calendar.component(.day, from: today)
-        let index = day % available.count
-        let egg = available[index]
-
-        usedFactIDs.insert(egg.id)
-
-        return GlanceFact(
-            id: egg.id,
-            text: egg.text,
-            icon: "sparkles",
-            color: JohoColors.yellow
-        )
+        return GlanceFact(id: picked.id, text: picked.text, icon: picked.icon, color: JohoColors.cyan)
     }
 
     // MARK: - Helpers
 
-    private func iconFor(category: QuirkyFact.FactCategory) -> String {
+    private func iconFor(category: QuirkyFact.Category) -> String {
         switch category {
         case .tradition: return "person.2"
         case .food: return "fork.knife"
@@ -251,21 +178,11 @@ final class GlanceFactProvider: ObservableObject {
 
     private func colorFor(region: String) -> Color {
         switch region.uppercased() {
-        case "SE": return Color(hex: "006AA7") // Swedish blue
-        case "VN": return Color(hex: "DA251D") // Vietnamese red
-        case "UK": return Color(hex: "012169") // British blue
-        case "US": return Color(hex: "3C3B6E") // American blue
+        case "SE": return Color(hex: "006AA7")
+        case "VN": return Color(hex: "DA251D")
+        case "UK": return Color(hex: "012169")
+        case "US": return Color(hex: "3C3B6E")
         default: return JohoColors.cyan
         }
     }
 }
-
-// MARK: - Preview Helpers
-
-#if DEBUG
-extension GlanceFactProvider {
-    static var preview: GlanceFactProvider {
-        GlanceFactProvider(selectedRegions: ["SE", "VN", "UK"])
-    }
-}
-#endif
