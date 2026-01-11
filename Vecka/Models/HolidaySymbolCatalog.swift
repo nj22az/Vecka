@@ -2,77 +2,107 @@
 //  HolidaySymbolCatalog.swift
 //  Vecka
 //
-//  Curated SF Symbols used for holidays.
+//  情報デザイン: Curated SF Symbols for holidays (JSON-driven)
 //
 
 import Foundation
 
 enum HolidaySymbolCatalog {
+    /// Get default SF Symbol for a holiday name
     static func defaultSymbolName(for name: String, isBankHoliday: Bool) -> String? {
         if name.hasPrefix("holiday.") {
-            switch name {
-            case "holiday.juldagen", "holiday.annandag_jul": return "gift.fill"
-            case "holiday.julafton": return "gift"
-            case "holiday.nyarsdagen", "holiday.nyarsafton": return "sparkles"
-            case "holiday.paskdagen", "holiday.annandag_pask": return "sun.max.fill"
-            case "holiday.langfredagen": return "cross.fill"
-            case "holiday.kristi_himmelsfardsdag": return "cloud.sun.fill"
-            case "holiday.midsommardagen", "holiday.midsommarafton": return "leaf.fill"
-            case "holiday.alla_hjartans_dag": return "heart.fill"
-            default: break
+            if let match = HolidaySymbolsLoader.holidayDefaults[name] {
+                return match
             }
         }
-
-        return isBankHoliday ? "flag.fill" : "star"
+        return isBankHoliday ? HolidaySymbolsLoader.defaultBankHoliday : HolidaySymbolsLoader.defaultObservance
     }
 
-    static let suggestedSymbols: [String] = [
-        "flag.fill",
-        "flag",
-        "star",
-        "star.fill",
-        "sparkles",
-        "gift",
-        "gift.fill",
-        "heart",
-        "heart.fill",
-        "birthday.cake",
-        "balloon.2",
-        "trophy.fill",
-        "leaf.fill",
-        "sun.max.fill",
-        "snowflake",
-        "cloud.sun.fill",
-        "bell.fill",
-        "graduationcap.fill",
-        "airplane",
-        "briefcase.fill"
-    ]
+    /// Suggested SF Symbols for holiday picker
+    static var suggestedSymbols: [String] {
+        HolidaySymbolsLoader.suggestedSymbols
+    }
 
+    /// Get human-readable label for an SF Symbol
     static func label(for symbol: String) -> String {
-        labels[symbol] ?? symbol
+        HolidaySymbolsLoader.labels[symbol] ?? symbol
     }
+}
 
-    private static let labels: [String: String] = [
-        "flag.fill": "Flag",
-        "flag": "Flag (Outline)",
-        "star": "Star",
-        "star.fill": "Star (Filled)",
-        "sparkles": "Sparkles",
-        "gift": "Gift",
-        "gift.fill": "Gift (Filled)",
-        "heart": "Heart",
-        "heart.fill": "Heart (Filled)",
-        "birthday.cake": "Cake",
-        "balloon.2": "Balloons",
-        "trophy.fill": "Trophy",
-        "leaf.fill": "Leaf",
-        "sun.max.fill": "Sun",
-        "snowflake": "Snowflake",
-        "cloud.sun.fill": "Cloud & Sun",
-        "bell.fill": "Bell",
-        "graduationcap.fill": "Graduation Cap",
-        "airplane": "Airplane",
-        "briefcase.fill": "Briefcase"
-    ]
+// MARK: - JSON Loader (情報デザイン: Database-driven symbols)
+
+private enum HolidaySymbolsLoader {
+    /// Holiday name to symbol mapping
+    static let holidayDefaults: [String: String] = {
+        Dictionary(uniqueKeysWithValues: loadedData.holidayDefaults.map { ($0.pattern, $0.symbol) })
+    }()
+
+    /// Suggested symbols for picker
+    static let suggestedSymbols: [String] = {
+        loadedData.suggestedSymbols.map { $0.symbol }
+    }()
+
+    /// Symbol to label mapping
+    static let labels: [String: String] = {
+        Dictionary(uniqueKeysWithValues: loadedData.suggestedSymbols.map { ($0.symbol, $0.label) })
+    }()
+
+    /// Default symbol for bank holidays
+    static let defaultBankHoliday: String = {
+        loadedData.defaultBankHoliday
+    }()
+
+    /// Default symbol for observances
+    static let defaultObservance: String = {
+        loadedData.defaultObservance
+    }()
+
+    /// Loaded JSON data with fallback
+    private static let loadedData: HolidaySymbolsJSON = {
+        guard let url = Bundle.main.url(forResource: "holiday-symbols", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let json = try? JSONDecoder().decode(HolidaySymbolsJSON.self, from: data) else {
+            Log.e("Failed to load holiday-symbols.json")
+            return defaultData
+        }
+        Log.i("Loaded \(json.suggestedSymbols.count) holiday symbols from JSON")
+        return json
+    }()
+
+    /// Fallback data if JSON fails to load
+    private static let defaultData = HolidaySymbolsJSON(
+        holidayDefaults: [
+            HolidayDefaultDTO(pattern: "holiday.juldagen", symbol: "gift.fill"),
+            HolidayDefaultDTO(pattern: "holiday.julafton", symbol: "gift"),
+            HolidayDefaultDTO(pattern: "holiday.nyarsdagen", symbol: "sparkles")
+        ],
+        suggestedSymbols: [
+            SuggestedSymbolDTO(symbol: "flag.fill", label: "Flag"),
+            SuggestedSymbolDTO(symbol: "star", label: "Star"),
+            SuggestedSymbolDTO(symbol: "sparkles", label: "Sparkles"),
+            SuggestedSymbolDTO(symbol: "gift.fill", label: "Gift"),
+            SuggestedSymbolDTO(symbol: "heart.fill", label: "Heart")
+        ],
+        defaultBankHoliday: "flag.fill",
+        defaultObservance: "star"
+    )
+}
+
+// MARK: - JSON DTOs
+
+private struct HolidaySymbolsJSON: Codable {
+    let holidayDefaults: [HolidayDefaultDTO]
+    let suggestedSymbols: [SuggestedSymbolDTO]
+    let defaultBankHoliday: String
+    let defaultObservance: String
+}
+
+private struct HolidayDefaultDTO: Codable {
+    let pattern: String
+    let symbol: String
+}
+
+private struct SuggestedSymbolDTO: Codable {
+    let symbol: String
+    let label: String
 }

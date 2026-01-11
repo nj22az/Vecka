@@ -1,0 +1,40 @@
+{
+  "holidayDefaults": [
+    {"pattern": "holiday.juldagen", "symbol": "gift.fill"},
+    {"pattern": "holiday.annandag_jul", "symbol": "gift.fill"},
+    {"pattern": "holiday.julafton", "symbol": "gift"},
+    {"pattern": "holiday.nyarsdagen", "symbol": "sparkles"},
+    {"pattern": "holiday.nyarsafton", "symbol": "sparkles"},
+    {"pattern": "holiday.paskdagen", "symbol": "sun.max.fill"},
+    {"pattern": "holiday.annandag_pask", "symbol": "sun.max.fill"},
+    {"pattern": "holiday.langfredagen", "symbol": "cross.fill"},
+    {"pattern": "holiday.kristi_himmelsfardsdag", "symbol": "cloud.sun.fill"},
+    {"pattern": "holiday.midsommardagen", "symbol": "leaf.fill"},
+    {"pattern": "holiday.midsommarafton", "symbol": "leaf.fill"},
+    {"pattern": "holiday.alla_hjartans_dag", "symbol": "heart.fill"}
+  ],
+  "suggestedSymbols": [
+    {"symbol": "flag.fill", "label": "Flag"},
+    {"symbol": "flag", "label": "Flag (Outline)"},
+    {"symbol": "star", "label": "Star"},
+    {"symbol": "star.fill", "label": "Star (Filled)"},
+    {"symbol": "sparkles", "label": "Sparkles"},
+    {"symbol": "gift", "label": "Gift"},
+    {"symbol": "gift.fill", "label": "Gift (Filled)"},
+    {"symbol": "heart", "label": "Heart"},
+    {"symbol": "heart.fill", "label": "Heart (Filled)"},
+    {"symbol": "birthday.cake", "label": "Cake"},
+    {"symbol": "balloon.2", "label": "Balloons"},
+    {"symbol": "trophy.fill", "label": "Trophy"},
+    {"symbol": "leaf.fill", "label": "Leaf"},
+    {"symbol": "sun.max.fill", "label": "Sun"},
+    {"symbol": "snowflake", "label": "Snowflake"},
+    {"symbol": "cloud.sun.fill", "label": "Cloud & Sun"},
+    {"symbol": "bell.fill", "label": "Bell"},
+    {"symbol": "graduationcap.fill", "label": "Graduation Cap"},
+    {"symbol": "airplane", "label": "Airplane"},
+    {"symbol": "briefcase.fill", "label": "Briefcase"}
+  ],
+  "defaultBankHoliday": "flag.fill",
+  "defaultObservance": "star"
+}
