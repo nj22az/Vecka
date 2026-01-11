@@ -46,8 +46,10 @@ struct LandingPageView: View {
     // Random stat state (情報デザイン: Rotating insights)
     @State private var randomStatIndex: Int = 0
 
-    // Quirky facts provider (情報デザイン: Database-driven facts)
+    // Quirky facts for GLANCE (情報デザイン: Database-driven facts only)
     @State private var factProvider: GlanceFactProvider?
+    @State private var glanceFacts: [GlanceFact] = []
+    @State private var selectedGlanceFact: GlanceFact?  // Tap-to-expand detail sheet
 
     // Discovery Grid state (情報デザイン: Random events from database)
     @State private var discoveryItems: [DiscoveryItem] = []
@@ -539,12 +541,12 @@ struct LandingPageView: View {
         }
         .johoBackground()
         .onAppear {
-            // Initialize fact provider with model context (情報デザイン: Database-driven)
+            // Initialize fact provider if needed
             if factProvider == nil {
                 factProvider = GlanceFactProvider(context: modelContext, selectedRegions: ["SE", "VN", "UK"])
             }
-            // Randomize stat on each appearance (情報デザイン: Fresh insights)
-            randomStatIndex = Int.random(in: 0..<max(1, availableRandomStats.count))
+            // 情報デザイン: Always refresh facts when landing page appears (tab switch, back navigation)
+            loadGlanceFacts()
         }
         .sheet(isPresented: $showTripsSheet) {
             NavigationStack {
@@ -555,6 +557,9 @@ struct LandingPageView: View {
             NavigationStack {
                 ExpenseListView()
             }
+        }
+        .sheet(item: $selectedGlanceFact) { fact in
+            GlanceFactDetailSheet(fact: fact)
         }
     }
 
@@ -2914,15 +2919,24 @@ struct LandingPageView: View {
         todayItemRowView(item, size: .regular)
     }
 
-    // MARK: - GLANCE Card (情報デザイン: Star Page Style Dashboard)
+    // MARK: - GLANCE Card (情報デザイン: Quirky Facts Grid)
 
     private var glanceCard: some View {
         VStack(spacing: 0) {
-            // Header with sparkle icon (情報デザイン: proper SF Symbol)
+            // Header with display icon (情報デザイン: Black contour icon)
             HStack {
-                Image(systemName: "sparkle")
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.cyan)
+                ZStack {
+                    Image(systemName: "rectangle.grid.2x3.fill")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.cyan)
+                }
+                .frame(width: 24, height: 24)
+                .background(JohoColors.cyan.opacity(0.15))
+                .clipShape(Squircle(cornerRadius: 6))
+                .overlay(
+                    Squircle(cornerRadius: 6)
+                        .stroke(JohoColors.black, lineWidth: 1)
+                )
 
                 Text("GLANCE")
                     .font(.system(size: 11, weight: .black, design: .rounded))
@@ -2930,72 +2944,37 @@ struct LandingPageView: View {
                     .foregroundStyle(colors.primary)
 
                 Spacer()
+
+                // Tap to refresh facts (情報デザイン: Visual stays small, tap area expanded)
+                Button {
+                    HapticManager.impact(.light)
+                    loadGlanceFacts()
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+                .buttonStyle(.plain)
+                .padding(JohoDimensions.spacingSM)  // Expand tap area without visual change
+                .contentShape(Rectangle())
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
 
-            // Divider
             Rectangle()
                 .fill(colors.border)
                 .frame(height: 1.5)
 
-            // 3x2 Grid - Star Page Style (情報デザイン: Centered icons, light backgrounds)
-            HStack(spacing: JohoDimensions.spacingSM) {
-                VStack(spacing: JohoDimensions.spacingSM) {
-                    // CALENDAR: Week progress
-                    starStyleGlanceTile(
-                        target: .calendar,
-                        icon: "calendar",
-                        label: "W\(weekNumber)",
-                        indicator: todayItems.isEmpty ? nil : "●\(todayItems.count)"
-                    )
-
-                    // CONTACTS: Count + birthday
-                    starStyleGlanceTile(
-                        target: .contacts,
-                        icon: "person.2.fill",
-                        label: "\(contacts.count)",
-                        indicator: nextBirthdayIndicator
-                    )
-                }
-
-                VStack(spacing: JohoDimensions.spacingSM) {
-                    // STAR: Month theme
-                    starStyleGlanceTile(
-                        target: .specialDays,
-                        icon: currentMonthTheme.icon,
-                        label: currentMonthTheme.name.prefix(3).uppercased(),
-                        indicator: specialDaysIndicator,
-                        customIconColor: currentMonthTheme.accentColor,
-                        customBackground: currentMonthTheme.lightBackground
-                    )
-
-                    // TRIPS: Travel (情報デザイン: Orange zone)
-                    sheetGlanceTile(
-                        icon: "airplane",
-                        label: "\(allTrips.count)",
-                        indicator: activeTripsIndicator,
-                        iconColor: SpecialDayType.trip.accentColor,
-                        bgColor: SpecialDayType.trip.lightBackground
-                    ) {
-                        showTripsSheet = true
+            // 3x2 Grid of quirky facts (情報デザイン: Month card style, tap to expand)
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: JohoDimensions.spacingSM) {
+                ForEach(glanceFacts) { fact in
+                    Button {
+                        HapticManager.selection()
+                        selectedGlanceFact = fact
+                    } label: {
+                        glanceFactTile(fact)
                     }
-                }
-
-                VStack(spacing: JohoDimensions.spacingSM) {
-                    // EXPENSES: Money (情報デザイン: Green zone)
-                    sheetGlanceTile(
-                        icon: "dollarsign.circle.fill",
-                        label: "\(allExpenses.count)",
-                        indicator: expensesIndicator,
-                        iconColor: SpecialDayType.expense.accentColor,
-                        bgColor: SpecialDayType.expense.lightBackground
-                    ) {
-                        showExpensesSheet = true
-                    }
-
-                    // RANDOM STAT: Rotating insights (情報デザイン: User data, not settings)
-                    randomStatGlanceTile(stat: currentRandomStat)
+                    .buttonStyle(.plain)
                 }
             }
             .padding(JohoDimensions.spacingSM)
@@ -3005,6 +2984,50 @@ struct LandingPageView: View {
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
                 .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+        )
+    }
+
+    /// Load 6 quirky facts from database (情報デザイン: Simple, database-driven)
+    private func loadGlanceFacts() {
+        guard let provider = factProvider else { return }
+        provider.reset()
+        glanceFacts = (0..<6).map { _ in provider.nextFact() }
+    }
+
+    /// Month card style fact tile (情報デザイン: Star page style - strong colors)
+    private func glanceFactTile(_ fact: GlanceFact) -> some View {
+        VStack(spacing: 0) {
+            // TOP: Icon zone (情報デザイン: Strong color like Star page month icons)
+            VStack {
+                Image(systemName: fact.icon ?? "star.fill")
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .foregroundStyle(fact.color)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)
+            .background(fact.color.opacity(0.2))
+
+            // Divider
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(height: 1.5)
+
+            // BOTTOM: Text zone
+            Text(fact.text)
+                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoColors.black)
+                .multilineTextAlignment(.center)
+                .lineLimit(3)
+                .minimumScaleFactor(0.7)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 8)
+                .frame(maxWidth: .infinity, minHeight: 52)
+        }
+        .background(JohoColors.white)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(JohoColors.black, lineWidth: 1.5)
         )
     }
 
@@ -4687,6 +4710,99 @@ struct LandingPageView: View {
 
 extension Notification.Name {
     static let navigateToPage = Notification.Name("navigateToPage")
+}
+
+// MARK: - Glance Fact Detail Sheet (情報デザイン: Tap-to-expand detail view)
+
+/// Detail sheet shown when tapping a GLANCE fact tile
+/// 情報デザイン: Larger view with full explanation
+struct GlanceFactDetailSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    let fact: GlanceFact
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header with close button
+            HStack {
+                Text("FACT")
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .tracking(1.5)
+                    .foregroundStyle(JohoColors.white)
+
+                Spacer()
+
+                Button { dismiss() } label: {
+                    ZStack {
+                        Circle()
+                            .fill(JohoColors.white)
+                            .frame(width: 28, height: 28)
+                        Image(systemName: "xmark")
+                            .font(.system(size: 11, weight: .black, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .background(JohoColors.black)
+
+            // Main content card
+            VStack(spacing: 0) {
+                // Large icon zone (情報デザイン: Hero display like Star page)
+                VStack(spacing: JohoDimensions.spacingSM) {
+                    Image(systemName: fact.icon ?? "star.fill")
+                        .font(.system(size: 64, weight: .bold, design: .rounded))
+                        .foregroundStyle(fact.color)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 120)
+                .background(fact.color.opacity(0.2))
+
+                // Thick divider
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 2)
+
+                // Text zone with headline
+                Text(fact.text)
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+                    .padding(.top, JohoDimensions.spacingMD)
+
+                // Thin divider
+                Rectangle()
+                    .fill(JohoColors.black.opacity(0.2))
+                    .frame(height: 1)
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+                    .padding(.vertical, JohoDimensions.spacingSM)
+
+                // Explanation text (情報デザイン: Full context for understanding)
+                Text(fact.explanation)
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .foregroundStyle(JohoColors.black.opacity(0.8))
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+                    .padding(.bottom, JohoDimensions.spacingLG)
+            }
+            .background(JohoColors.white)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+            )
+            .padding(JohoDimensions.spacingMD)
+
+            Spacer()
+        }
+        .background(fact.color.opacity(0.3))
+        .presentationDetents([.medium])
+        .presentationCornerRadius(JohoDimensions.radiusLarge)
+        .presentationDragIndicator(.hidden)
+    }
 }
 
 // MARK: - Preview

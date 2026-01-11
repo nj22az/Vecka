@@ -17,12 +17,14 @@ final class QuirkyFact {
     var region: String
     var category: String
     var text: String
+    var explanation: String  // 情報デザイン: Detailed explanation for tap-to-expand
 
-    init(id: String, region: String, category: String, text: String) {
+    init(id: String, region: String, category: String, text: String, explanation: String = "") {
         self.id = id
         self.region = region
         self.category = category
         self.text = text
+        self.explanation = explanation
     }
 }
 
@@ -58,10 +60,35 @@ enum QuirkyFactsLoader {
 
         // Insert into SwiftData
         for dto in facts {
-            let fact = QuirkyFact(id: dto.id, region: dto.region, category: dto.category, text: dto.text)
+            let fact = QuirkyFact(id: dto.id, region: dto.region, category: dto.category, text: dto.text, explanation: dto.explanation ?? "")
             context.insert(fact)
         }
 
+        try? context.save()
+    }
+
+    /// Force reseed - delete all and reload from JSON
+    static func forceReseed(context: ModelContext) {
+        // Delete all existing facts
+        let descriptor = FetchDescriptor<QuirkyFact>()
+        if let existing = try? context.fetch(descriptor) {
+            for fact in existing {
+                context.delete(fact)
+            }
+        }
+        try? context.save()
+
+        // Reload from JSON
+        guard let url = Bundle.main.url(forResource: "quirky-facts", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let facts = try? JSONDecoder().decode([FactDTO].self, from: data) else {
+            return
+        }
+
+        for dto in facts {
+            let fact = QuirkyFact(id: dto.id, region: dto.region, category: dto.category, text: dto.text, explanation: dto.explanation ?? "")
+            context.insert(fact)
+        }
         try? context.save()
     }
 
@@ -71,5 +98,6 @@ enum QuirkyFactsLoader {
         let region: String
         let category: String
         let text: String
+        let explanation: String?  // Optional for backwards compatibility
     }
 }
