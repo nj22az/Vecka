@@ -63,6 +63,8 @@ struct VeckaApp: App {
             WorldClock.self,
             // Quirky facts (情報デザイン: Database-driven content)
             QuirkyFact.self,
+            // Calendar facts (情報デザイン: Database-driven calendar information)
+            CalendarFact.self,
         ])
 
         let modelConfiguration = ModelConfiguration(
@@ -104,6 +106,8 @@ struct VeckaApp: App {
                 }
                 // Seed quirky facts from JSON on first launch
                 QuirkyFactsLoader.seedIfNeeded(context: sharedModelContainer.mainContext)
+                // Seed calendar facts from JSON on first launch
+                CalendarFactsLoader.seedIfNeeded(context: sharedModelContainer.mainContext)
             }
             .fullScreenCover(isPresented: $showOnboarding) {
                 OnboardingView(hasCompletedOnboarding: $hasCompletedOnboarding)

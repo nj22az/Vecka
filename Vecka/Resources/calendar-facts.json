@@ -1,0 +1,282 @@
+[
+  {
+    "id": "cal_friday",
+    "type": "conditional",
+    "condition": "daysUntilFriday",
+    "conditionMin": 1,
+    "conditionMax": 4,
+    "textTemplate": "{daysUntilFriday} day{plural} until Friday",
+    "icon": "party.popper.fill",
+    "colorSemantic": "pink",
+    "explanation": "The weekend is almost here! Friday marks the end of the work week and the start of well-deserved rest."
+  },
+  {
+    "id": "cal_week",
+    "type": "static",
+    "condition": "always",
+    "textTemplate": "Week {weekOfYear} of 52",
+    "icon": "calendar",
+    "colorSemantic": "cyan",
+    "explanation": "ISO 8601 divides each year into 52 or 53 weeks. Week 1 is the week containing the first Thursday of the year. Swedes organize their lives by week numbers."
+  },
+  {
+    "id": "cal_month_end",
+    "type": "conditional",
+    "condition": "daysLeftInMonth",
+    "conditionMin": 1,
+    "conditionMax": 10,
+    "textTemplate": "{daysLeftInMonth} days left this month",
+    "icon": "clock.fill",
+    "colorSemantic": "purple",
+    "explanation": "The month is almost over. Time to wrap up monthly goals and prepare for the next chapter."
+  },
+  {
+    "id": "cal_progress",
+    "type": "static",
+    "condition": "always",
+    "textTemplate": "{monthProgress}% through the month",
+    "icon": "chart.pie.fill",
+    "colorSemantic": "green",
+    "explanation": "Track your monthly progress. This percentage shows how far through the current month we are."
+  },
+  {
+    "id": "cal_year",
+    "type": "static",
+    "condition": "always",
+    "textTemplate": "{yearProgress}% through the year",
+    "icon": "chart.bar.fill",
+    "colorSemantic": "green",
+    "explanation": "Another day, another step through the year. This shows how far along we are in the current calendar year."
+  },
+  {
+    "id": "cal_sunday",
+    "type": "weekday",
+    "condition": "weekday",
+    "conditionValue": 1,
+    "textTemplate": "Sunday: rest day",
+    "icon": "bed.double.fill",
+    "colorSemantic": "purple",
+    "explanation": "Sunday is traditionally a day of rest in many cultures. Named after the Sun, it's perfect for recharging before the new week."
+  },
+  {
+    "id": "cal_monday",
+    "type": "weekday",
+    "condition": "weekday",
+    "conditionValue": 2,
+    "textTemplate": "Monday: fresh start",
+    "icon": "sunrise.fill",
+    "colorSemantic": "yellow",
+    "explanation": "Monday is named after the Moon. In Swedish it's Mandag. A fresh start to tackle the week ahead!"
+  },
+  {
+    "id": "cal_friday_is",
+    "type": "weekday",
+    "condition": "weekday",
+    "conditionValue": 6,
+    "textTemplate": "It's Friday!",
+    "icon": "star.fill",
+    "colorSemantic": "yellow",
+    "explanation": "TGIF! Friday is named after Norse goddess Frigg. In Sweden, Fridays mean fredagsmys - cozy evenings with family, snacks, and TV."
+  },
+  {
+    "id": "cal_saturday",
+    "type": "weekday",
+    "condition": "weekday",
+    "conditionValue": 7,
+    "textTemplate": "Saturday vibes",
+    "icon": "sun.max.fill",
+    "colorSemantic": "orange",
+    "explanation": "Saturday is the day for errands, adventures, or simply doing nothing. Named after Saturn, the Roman god of agriculture."
+  },
+  {
+    "id": "cal_jan",
+    "type": "month",
+    "condition": "month",
+    "conditionValue": 1,
+    "textTemplate": "New year, new week numbers",
+    "icon": "star.fill",
+    "colorSemantic": "yellow",
+    "explanation": "January resets our week counter! Week 1 begins, and Swedes everywhere start planning their year by week numbers."
+  },
+  {
+    "id": "cal_feb",
+    "type": "month",
+    "condition": "month",
+    "conditionValue": 2,
+    "textTemplate": "February: short but sweet",
+    "icon": "heart.fill",
+    "colorSemantic": "pink",
+    "explanation": "The shortest month brings Valentines Day and semla season in Sweden - cream-filled cardamom buns enjoyed before Lent."
+  },
+  {
+    "id": "cal_mar",
+    "type": "month",
+    "condition": "month",
+    "conditionValue": 3,
+    "textTemplate": "Spring is awakening",
+    "icon": "leaf.fill",
+    "colorSemantic": "green",
+    "explanation": "March marks the spring equinox. Days grow longer, and nature begins to wake from winter slumber."
+  },
+  {
+    "id": "cal_apr",
+    "type": "month",
+    "condition": "month",
+    "conditionValue": 4,
+    "textTemplate": "April showers bring May flowers",
+    "icon": "cloud.rain.fill",
+    "colorSemantic": "cyan",
+    "explanation": "April often brings Easter celebrations and Swedish children dressed as Easter witches going door-to-door."
+  },
+  {
+    "id": "cal_may",
+    "type": "month",
+    "condition": "month",
+    "conditionValue": 5,
+    "textTemplate": "May: nature blooms",
+    "icon": "leaf.fill",
+    "colorSemantic": "green",
+    "explanation": "May 1st is a public holiday in Sweden. Spring is in full bloom and outdoor life resumes after the long winter."
+  },
+  {
+    "id": "cal_jun",
+    "type": "month",
+    "condition": "month",
+    "conditionValue": 6,
+    "textTemplate": "Midsommar approaches",
+    "icon": "sun.max.fill",
+    "colorSemantic": "orange",
+    "explanation": "June brings the longest days and Swedens beloved Midsommar celebration - dancing around the maypole, eating pickled herring, and celebrating the midnight sun."
+  },
+  {
+    "id": "cal_jul",
+    "type": "month",
+    "condition": "month",
+    "conditionValue": 7,
+    "textTemplate": "July: peak summer",
+    "icon": "sun.max.fill",
+    "colorSemantic": "orange",
+    "explanation": "July is peak vacation season. Most Swedes take their industrisemester - the traditional summer holiday when many businesses close."
+  },
+  {
+    "id": "cal_aug",
+    "type": "month",
+    "condition": "month",
+    "conditionValue": 8,
+    "textTemplate": "August: crayfish season",
+    "icon": "fish.fill",
+    "colorSemantic": "pink",
+    "explanation": "August brings Swedish crayfish parties (kraftskiva) with paper hats, singing, and plenty of schnapps."
+  },
+  {
+    "id": "cal_sep",
+    "type": "month",
+    "condition": "month",
+    "conditionValue": 9,
+    "textTemplate": "September: back to routines",
+    "icon": "book.fill",
+    "colorSemantic": "purple",
+    "explanation": "September marks the end of summer vacation. Schools reopen and work routines resume after the long Swedish summer break."
+  },
+  {
+    "id": "cal_oct",
+    "type": "month",
+    "condition": "month",
+    "conditionValue": 10,
+    "textTemplate": "October: cinnamon bun day awaits",
+    "icon": "birthday.cake.fill",
+    "colorSemantic": "orange",
+    "explanation": "October 4th is Kanelbullens dag - National Cinnamon Bun Day in Sweden. Millions of kanelbullar are consumed!"
+  },
+  {
+    "id": "cal_nov",
+    "type": "month",
+    "condition": "month",
+    "conditionValue": 11,
+    "textTemplate": "November: cozy darkness",
+    "icon": "moon.fill",
+    "colorSemantic": "purple",
+    "explanation": "November brings early darkness and the Swedish tradition of mys - coziness with candles, blankets, and warm drinks."
+  },
+  {
+    "id": "cal_dec",
+    "type": "month",
+    "condition": "month",
+    "conditionValue": 12,
+    "textTemplate": "December: cozy season",
+    "icon": "snowflake",
+    "colorSemantic": "cyan",
+    "explanation": "December brings Advent calendars, Lucia celebrations, glogg (mulled wine), and of course - Donald Duck on TV at 3 PM on Christmas Eve."
+  },
+  {
+    "id": "cal_quarter_q1",
+    "type": "conditional",
+    "condition": "month",
+    "conditionMin": 1,
+    "conditionMax": 3,
+    "textTemplate": "Q1: first quarter of the year",
+    "icon": "1.circle.fill",
+    "colorSemantic": "cyan",
+    "explanation": "The first quarter spans January through March. A time for fresh starts and setting goals for the year ahead."
+  },
+  {
+    "id": "cal_quarter_q2",
+    "type": "conditional",
+    "condition": "month",
+    "conditionMin": 4,
+    "conditionMax": 6,
+    "textTemplate": "Q2: spring into action",
+    "icon": "2.circle.fill",
+    "colorSemantic": "green",
+    "explanation": "The second quarter spans April through June. Spring energy and longer days fuel productivity."
+  },
+  {
+    "id": "cal_quarter_q3",
+    "type": "conditional",
+    "condition": "month",
+    "conditionMin": 7,
+    "conditionMax": 9,
+    "textTemplate": "Q3: summer and harvest",
+    "icon": "3.circle.fill",
+    "colorSemantic": "orange",
+    "explanation": "The third quarter spans July through September. Summer vacations and back-to-routine transitions."
+  },
+  {
+    "id": "cal_quarter_q4",
+    "type": "conditional",
+    "condition": "month",
+    "conditionMin": 10,
+    "conditionMax": 12,
+    "textTemplate": "Q4: year-end sprint",
+    "icon": "4.circle.fill",
+    "colorSemantic": "purple",
+    "explanation": "The fourth quarter spans October through December. Time to finish strong and prepare for the holidays."
+  },
+  {
+    "id": "cal_days_in_month",
+    "type": "static",
+    "condition": "always",
+    "textTemplate": "{daysInMonth} days in {monthName}",
+    "icon": "calendar.badge.clock",
+    "colorSemantic": "cyan",
+    "explanation": "Each month has a different number of days. February is shortest (28-29), while January, March, May, July, August, October, and December have 31."
+  },
+  {
+    "id": "cal_day_of_year",
+    "type": "static",
+    "condition": "always",
+    "textTemplate": "Day {dayOfYear} of 365",
+    "icon": "number.circle.fill",
+    "colorSemantic": "cyan",
+    "explanation": "The day of year counts from January 1st. This helps track progress through the calendar year."
+  },
+  {
+    "id": "cal_weeks_left",
+    "type": "static",
+    "condition": "always",
+    "textTemplate": "{weeksLeftInYear} weeks left in {year}",
+    "icon": "hourglass",
+    "colorSemantic": "purple",
+    "explanation": "Counting down the weeks helps plan the remaining year and set achievable goals."
+  }
+]

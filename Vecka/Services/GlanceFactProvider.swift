@@ -125,61 +125,31 @@ final class GlanceFactProvider: ObservableObject {
         )
     }
 
-    // MARK: - Calendar Facts (情報デザイン: Strong distinct colors per fact type)
+    // MARK: - Calendar Facts (情報デザイン: Database-driven calendar information)
 
     private func randomCalendarFact() -> GlanceFact? {
-        let calendar = Calendar.current
-        let weekday = calendar.component(.weekday, from: today)
-        let day = calendar.component(.day, from: today)
-        let month = calendar.component(.month, from: today)
-        let weekOfYear = calendar.component(.weekOfYear, from: today)
+        // Query all calendar facts from database
+        let descriptor = FetchDescriptor<CalendarFact>()
+        let allFacts = (try? context.fetch(descriptor)) ?? []
 
-        // (id, text, icon, color, explanation) - each fact has distinct strong color
-        var facts: [(id: String, text: String, icon: String, color: Color, explanation: String)] = []
+        // Filter to applicable facts for today
+        let applicableFacts = allFacts.filter { $0.isApplicable(for: today) }
 
-        // Days until Friday - celebration pink
-        let daysUntilFriday = (6 - weekday + 7) % 7
-        if daysUntilFriday > 0 && daysUntilFriday < 5 {
-            facts.append(("cal_friday", "\(daysUntilFriday) day\(daysUntilFriday == 1 ? "" : "s") until Friday", "party.popper.fill", JohoColors.pink, "The weekend is almost here! Friday marks the end of the work week and the start of well-deserved rest."))
-        }
-
-        // Week number - cyan/schedule
-        facts.append(("cal_week", "Week \(weekOfYear) of 52", "calendar", JohoColors.cyan, "ISO 8601 divides each year into 52 or 53 weeks. Week 1 is the week containing the first Thursday of the year. Swedes organize their lives by week numbers."))
-
-        if let range = calendar.range(of: .day, in: .month, for: today) {
-            let daysLeft = range.count - day
-            if daysLeft > 0 && daysLeft <= 10 {
-                facts.append(("cal_month_end", "\(daysLeft) days left this month", "clock.fill", JohoColors.purple, "The month is almost over. Time to wrap up monthly goals and prepare for the next chapter."))
-            }
-            let progress = Int((Double(day) / Double(range.count)) * 100)
-            facts.append(("cal_progress", "\(progress)% through the month", "chart.pie.fill", JohoColors.green, "Track your monthly progress. This percentage shows how far through the current month we are."))
-        }
-
-        // Year progress - green/growth
-        let dayOfYear = calendar.ordinality(of: .day, in: .year, for: today) ?? 1
-        facts.append(("cal_year", "\(Int(Double(dayOfYear) / 365.0 * 100))% through the year", "chart.bar.fill", JohoColors.green, "Another day, another step through the year. This shows how far along we are in the current calendar year."))
-
-        // Weekday facts - distinct colors
-        if weekday == 1 { facts.append(("cal_sunday", "Sunday: rest day", "bed.double.fill", JohoColors.purple, "Sunday is traditionally a day of rest in many cultures. Named after the Sun, it's perfect for recharging before the new week.")) }
-        else if weekday == 6 { facts.append(("cal_friday_is", "It's Friday!", "star.fill", JohoColors.yellow, "TGIF! Friday is named after Norse goddess Frigg. In Sweden, Fridays mean 'fredagsmys' - cozy evenings with family, snacks, and TV.")) }
-        else if weekday == 7 { facts.append(("cal_saturday", "Saturday vibes", "sun.max.fill", Color(hex: "F97316"), "Saturday is the day for errands, adventures, or simply doing nothing. Named after Saturn, the Roman god of agriculture.")) }
-
-        // Seasonal facts - month-appropriate colors
-        switch month {
-        case 1: facts.append(("cal_jan", "New year, new week numbers", "star.fill", JohoColors.yellow, "January resets our week counter! Week 1 begins, and Swedes everywhere start planning their year by week numbers."))
-        case 6: facts.append(("cal_jun", "Midsommar approaches", "sun.max.fill", Color(hex: "F97316"), "June brings the longest days and Sweden's beloved Midsommar celebration - dancing around the maypole, eating pickled herring, and celebrating the midnight sun."))
-        case 12: facts.append(("cal_dec", "December: cozy season", "snowflake", JohoColors.cyan, "December brings Advent calendars, Lucia celebrations, glögg (mulled wine), and of course - Donald Duck on TV at 3 PM on Christmas Eve."))
-        default: break
-        }
-
-        let available = facts.filter { !usedFactIDs.contains($0.id) }
+        // Filter out already-used facts
+        let available = applicableFacts.filter { !usedFactIDs.contains($0.id) }
         guard !available.isEmpty else { return nil }
 
         // 情報デザイン: True random selection for variety
         let picked = available.randomElement()!
         usedFactIDs.insert(picked.id)
 
-        return GlanceFact(id: picked.id, text: picked.text, icon: picked.icon, color: picked.color, explanation: picked.explanation)
+        return GlanceFact(
+            id: picked.id,
+            text: picked.renderText(for: today),
+            icon: picked.icon,
+            color: picked.color,
+            explanation: picked.explanation
+        )
     }
 
     // MARK: - Helpers (情報デザイン: Strong colors like Star page)

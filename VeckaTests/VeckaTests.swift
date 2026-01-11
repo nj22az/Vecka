@@ -813,30 +813,27 @@ final class ServiceIntegrationTests: XCTestCase {
 final class UIAccessibilityTests: XCTestCase {
 
     func testSpacingTokensExist() {
-        // Verify all Spacing tokens exist and have reasonable values
-        XCTAssertEqual(Spacing.extraSmall, 4)
-        XCTAssertEqual(Spacing.small, 8)
-        XCTAssertEqual(Spacing.medium, 16)
-        XCTAssertEqual(Spacing.large, 24)
-        XCTAssertEqual(Spacing.extraLarge, 32)
-        XCTAssertEqual(Spacing.huge, 48)
-        XCTAssertEqual(Spacing.massive, 64)
+        // Verify all JohoDimensions spacing tokens exist and have reasonable values
+        XCTAssertEqual(JohoDimensions.spacingXS, 4)
+        XCTAssertEqual(JohoDimensions.spacingSM, 8)
+        XCTAssertEqual(JohoDimensions.spacingMD, 12)
+        XCTAssertEqual(JohoDimensions.spacingLG, 16)
+        XCTAssertEqual(JohoDimensions.spacingXL, 20)
     }
 
     func testSpacingTokensFollowScale() {
         // Spacing should follow a logical progression
-        XCTAssertTrue(Spacing.small < Spacing.medium)
-        XCTAssertTrue(Spacing.medium < Spacing.large)
-        XCTAssertTrue(Spacing.large < Spacing.extraLarge)
-        XCTAssertTrue(Spacing.extraLarge < Spacing.huge)
+        XCTAssertTrue(JohoDimensions.spacingSM < JohoDimensions.spacingMD)
+        XCTAssertTrue(JohoDimensions.spacingMD < JohoDimensions.spacingLG)
+        XCTAssertTrue(JohoDimensions.spacingLG < JohoDimensions.spacingXL)
     }
 
     func testTypographyTokensExist() {
-        // Verify Typography tokens exist
-        XCTAssertNotNil(Typography.title1)
-        XCTAssertNotNil(Typography.headline)
-        XCTAssertNotNil(Typography.body)
-        XCTAssertNotNil(Typography.caption1)
+        // Verify JohoFont tokens exist (they return Font values)
+        XCTAssertNotNil(JohoFont.headline)
+        XCTAssertNotNil(JohoFont.body)
+        XCTAssertNotNil(JohoFont.bodySmall)
+        XCTAssertNotNil(JohoFont.caption)
     }
 
     func testJohoColorsExist() {
@@ -972,8 +969,8 @@ final class StateConsistencyTests: XCTestCase {
     }
 
     func testHolidayCacheItemEquatability() {
-        let item1 = HolidayCacheItem(id: "test", region: "SE", name: "Test", titleOverride: nil, isBankHoliday: true, symbolName: nil)
-        let item2 = HolidayCacheItem(id: "test", region: "SE", name: "Test", titleOverride: nil, isBankHoliday: true, symbolName: nil)
+        let item1 = HolidayCacheItem(id: "test", region: "SE", name: "Test", titleOverride: nil, isBankHoliday: true, symbolName: nil, iconColor: nil, notes: nil, isUserCreated: false)
+        let item2 = HolidayCacheItem(id: "test", region: "SE", name: "Test", titleOverride: nil, isBankHoliday: true, symbolName: nil, iconColor: nil, notes: nil, isUserCreated: false)
 
         XCTAssertEqual(item1, item2)
         XCTAssertEqual(item1.hashValue, item2.hashValue)
@@ -981,11 +978,11 @@ final class StateConsistencyTests: XCTestCase {
 
     func testHolidayCacheItemDisplayTitle() {
         // Without override, should return localized name
-        let item1 = HolidayCacheItem(id: "test", region: "SE", name: "holiday.christmas", titleOverride: nil, isBankHoliday: true, symbolName: nil)
+        let item1 = HolidayCacheItem(id: "test", region: "SE", name: "holiday.christmas", titleOverride: nil, isBankHoliday: true, symbolName: nil, iconColor: nil, notes: nil, isUserCreated: false)
         XCTAssertFalse(item1.displayTitle.isEmpty)
 
         // With override, should return override
-        let item2 = HolidayCacheItem(id: "test", region: "SE", name: "holiday.christmas", titleOverride: "Custom Title", isBankHoliday: true, symbolName: nil)
+        let item2 = HolidayCacheItem(id: "test", region: "SE", name: "holiday.christmas", titleOverride: "Custom Title", isBankHoliday: true, symbolName: nil, iconColor: nil, notes: nil, isUserCreated: false)
         XCTAssertEqual(item2.displayTitle, "Custom Title")
     }
 
