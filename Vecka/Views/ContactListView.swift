@@ -372,34 +372,30 @@ struct ContactListView: View {
                 .fill(JohoColors.black)
                 .frame(height: 1.5)
 
-            // STATS ROW: Contact counts with indicators
+            // STATS ROW: 情報デザイン - clean summary without redundant orbs
             HStack(spacing: JohoDimensions.spacingMD) {
-                // Total contacts
-                HStack(spacing: 4) {
-                    JohoIndicatorCircle(color: PageHeaderColor.contacts.accent, size: .small)
-                    Text("\(contacts.count)")
-                        .font(JohoFont.labelSmall.bold())
-                        .foregroundStyle(JohoColors.black)
-                    Text("total")
-                        .font(JohoFont.labelSmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
-                }
+                // Total count only (no orb - the number speaks for itself)
+                Text("\(contacts.count) contacts")
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(JohoColors.black.opacity(0.7))
 
+                // Phone count with icon
                 if contactsWithPhone > 0 {
                     HStack(spacing: 4) {
                         Image(systemName: "phone.fill")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.cyan)
                         Text("\(contactsWithPhone)")
                             .font(JohoFont.labelSmall)
                             .foregroundStyle(JohoColors.black.opacity(0.7))
                     }
                 }
 
+                // Birthday count with icon
                 if contactsWithBirthday > 0 {
                     HStack(spacing: 4) {
                         Image(systemName: "gift.fill")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .font(.system(size: 11, weight: .bold, design: .rounded))
                             .foregroundStyle(SpecialDayType.birthday.accentColor)
                         Text("\(contactsWithBirthday)")
                             .font(JohoFont.labelSmall)

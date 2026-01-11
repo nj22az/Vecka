@@ -2885,11 +2885,11 @@ struct LandingPageView: View {
 
     private var glanceCard: some View {
         VStack(spacing: 0) {
-            // Header with ※ kome-jirushi (reference/attention mark)
+            // Header with sparkle icon (情報デザイン: proper SF Symbol)
             HStack {
-                Text("※")
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primary)
+                Image(systemName: "sparkle")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.cyan)
 
                 Text("GLANCE")
                     .font(.system(size: 11, weight: .black, design: .rounded))

@@ -698,19 +698,19 @@ struct SpecialDaysListView: View {
             }
             HapticManager.selection()
         } label: {
-            HStack(spacing: 4) {
+            HStack(spacing: 5) {
                 Image(systemName: type.defaultIcon)
-                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .font(.system(size: 13, weight: .bold, design: .rounded))
                     .foregroundStyle(type.accentColor)
-                    .frame(width: 12, height: 12)
+                    .frame(width: 16, height: 16)
                 Text("\(count)")
-                    .font(JohoFont.labelSmall)
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
             }
-            .padding(.horizontal, 4)
-            .padding(.vertical, 2)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 4)
             .background(selectedStatType == type ? type.lightBackground : Color.clear)
-            .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(type.title): \(count)")
