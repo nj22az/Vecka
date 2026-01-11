@@ -2163,7 +2163,7 @@ struct AddWorldClockView: View {
                                             .foregroundStyle(JohoColors.white)
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
-                                            .background(regionColor(for: city.region))
+                                            .background(regionColor(for: city.worldRegion))
                                             .clipShape(Capsule())
                                             .frame(width: 52)
 
@@ -2187,7 +2187,7 @@ struct AddWorldClockView: View {
 
                                         Image(systemName: "plus.circle")
                                             .font(.system(size: 18, weight: .medium))
-                                            .foregroundStyle(regionColor(for: city.region))
+                                            .foregroundStyle(regionColor(for: city.worldRegion))
                                     }
                                     .padding(JohoDimensions.spacingMD)
                                     .contentShape(Rectangle())
