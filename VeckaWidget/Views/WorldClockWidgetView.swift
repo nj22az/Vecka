@@ -37,12 +37,13 @@ struct WorldClockMediumWidgetView: View {
         }
         .widgetURL(URL(string: "vecka://clocks"))
         .containerBackground(for: .widget) {
-            // 情報デザイン: Strong black border
+            // 情報デザイン: Strong 2.5pt black border (per Theme.Borders.medium.widget)
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .fill(JohoWidget.Colors.content)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .stroke(JohoWidget.Colors.border, lineWidth: 1.5)
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .stroke(JohoWidget.Colors.border, lineWidth: 2.5)
+                        .padding(1)
                 )
         }
     }
@@ -100,7 +101,7 @@ struct WorldClockMediumWidgetView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.vertical, 6)
-        .background(JohoWidget.Colors.now.opacity(0.3))
+        // 情報デザイン: WHITE background - color only on TODAY indicator
     }
 
     // MARK: - World Clocks Section
@@ -170,7 +171,7 @@ struct WorldClockMediumWidgetView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.vertical, 4)
-        .background(theme.lightBackground.opacity(0.5))
+        // 情報デザイン: WHITE background - semantic color only on country pill
     }
 }
 

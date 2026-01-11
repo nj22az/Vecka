@@ -125,7 +125,7 @@ struct VeckaMediumWidgetView: View {
                 .tracking(2)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(JohoWidget.Colors.now.opacity(0.4))
+        // 情報デザイン: WHITE background - color only on TODAY indicator
     }
 
     // MARK: - Right Panel (Japanese minimalism: curated content)
