@@ -42,7 +42,7 @@ struct RegionDatabase: Identifiable {
         switch continent {
         case "Nordic": return JohoColors.cyan
         case "Asia": return JohoColors.pink
-        case "Americas": return JohoColors.orange
+        case "Americas": return JohoColors.cyan
         default: return JohoColors.black
         }
     }
@@ -442,7 +442,7 @@ struct HolidayDatabaseExplorer: View {
                     title: "OBSERVANCES",
                     subtitle: "Notable days (not bank holidays)",
                     icon: "star.fill",
-                    color: JohoColors.orange,
+                    color: JohoColors.cyan,
                     rules: obs
                 )
             }
@@ -594,7 +594,7 @@ struct HolidayDatabaseExplorer: View {
                 if rule.isModifiedFromDefault {
                     Text("※")
                         .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.orange)
+                        .foregroundStyle(JohoColors.cyan)
                 }
 
                 // Chevron

@@ -130,7 +130,7 @@ struct MonthPickerSheet: View {
             }
             .padding(JohoDimensions.spacingSM)
         }
-        .background(JohoColors.cream)
+        .background(JohoColors.yellow)
         // 情報デザイン: Content fills available space
         .presentationDetents([.medium])
         .presentationCornerRadius(JohoDimensions.radiusLarge)

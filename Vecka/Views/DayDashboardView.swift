@@ -841,7 +841,7 @@ struct DayDashboardView: View {
         case "red": return JohoColors.pink
         case "blue": return JohoColors.cyan
         case "green": return JohoColors.green
-        case "orange": return JohoColors.orange
+        case "orange": return JohoColors.cyan
         case "purple": return Color(hex: "B19CD9")
         case "yellow": return JohoColors.yellow
         default: return JohoColors.cyan
@@ -980,7 +980,7 @@ private struct NotePreviewRow: View {
         case "red": return JohoColors.pink
         case "blue": return JohoColors.cyan
         case "green": return JohoColors.green
-        case "orange": return JohoColors.orange
+        case "orange": return JohoColors.cyan
         case "purple": return Color(hex: "B19CD9")
         case "yellow": return JohoColors.yellow
         default: return JohoColors.cyan

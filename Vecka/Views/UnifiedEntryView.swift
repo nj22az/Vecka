@@ -645,7 +645,7 @@ struct JohoUnifiedEntrySheet: View {
                     .foregroundStyle(!holidayIsBank ? colors.primary : colors.primary.opacity(0.5))
                     .frame(maxWidth: .infinity)
                     .frame(height: 44)
-                    .background(!holidayIsBank ? JohoColors.orange.opacity(0.6) : Color.clear)
+                    .background(!holidayIsBank ? JohoColors.cyan.opacity(0.6) : Color.clear)
             }
             .buttonStyle(.plain)
 

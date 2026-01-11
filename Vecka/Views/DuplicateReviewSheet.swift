@@ -16,7 +16,7 @@ struct DuplicateSuggestionBanner: View {
     let suggestionCount: Int
     let onTap: () -> Void
 
-    private let warningColor = JohoColors.orange
+    private let warningColor = JohoColors.cyan
 
     var body: some View {
         Button(action: onTap) {
@@ -90,7 +90,7 @@ struct DuplicateReviewSheet: View {
     @State private var showingClusterMerge = false
 
     private let duplicateManager = DuplicateContactManager.shared
-    private let warningColor = JohoColors.orange
+    private let warningColor = JohoColors.cyan
 
     /// Groups related duplicate suggestions into clusters
     /// If A-B and B-C are duplicates, they form one cluster [A, B, C]
@@ -447,7 +447,7 @@ struct MergeContactSheet: View {
 
     @State private var selectedPrimary: Contact?
 
-    private let warningColor = JohoColors.orange
+    private let warningColor = JohoColors.cyan
     private let accentColor = PageHeaderColor.contacts.accent
 
     var body: some View {
@@ -730,7 +730,7 @@ struct ClusterMergeSheet: View {
 
     @State private var selectedPrimary: Contact?
 
-    private let warningColor = JohoColors.orange
+    private let warningColor = JohoColors.cyan
     private let accentColor = PageHeaderColor.contacts.accent
 
     var body: some View {

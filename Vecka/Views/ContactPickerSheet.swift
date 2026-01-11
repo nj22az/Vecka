@@ -181,7 +181,7 @@ struct ManualMergeSheet: View {
     @State private var selectedPrimary: Contact?
 
     private let accentColor = PageHeaderColor.contacts.accent
-    private let warningColor = JohoColors.orange
+    private let warningColor = JohoColors.cyan
 
     var body: some View {
         NavigationStack {

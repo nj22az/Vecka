@@ -1376,9 +1376,9 @@ struct SettingsView: View {
                 HStack(spacing: JohoDimensions.spacingMD) {
                     Image(systemName: "hammer.fill")
                         .font(.system(size: 20, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.orange)
+                        .foregroundStyle(JohoColors.cyan)
                         .frame(width: 44, height: 44)
-                        .background(JohoColors.orange.opacity(0.2))
+                        .background(JohoColors.cyan.opacity(0.2))
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusSmall)
@@ -1406,7 +1406,7 @@ struct SettingsView: View {
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(JohoColors.orange.opacity(0.5), lineWidth: JohoDimensions.borderMedium)
+                        .stroke(JohoColors.cyan.opacity(0.5), lineWidth: JohoDimensions.borderMedium)
                 )
             }
             .buttonStyle(.plain)
@@ -1421,7 +1421,7 @@ struct SettingsView: View {
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(JohoColors.orange.opacity(0.3), lineWidth: JohoDimensions.borderThick)
+                .stroke(JohoColors.cyan.opacity(0.3), lineWidth: JohoDimensions.borderThick)
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
     }

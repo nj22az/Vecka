@@ -160,7 +160,7 @@ struct PDFExportView: View {
                                         HStack(spacing: 4) {
                                             Image(systemName: "airplane.departure")
                                                 .font(.caption)
-                                                .foregroundStyle(JohoColors.orange)
+                                                .foregroundStyle(JohoColors.cyan)
                                             Text("\(preview.tripCount) trip\(preview.tripCount == 1 ? "" : "s")")
                                                 .font(.system(size: 12, weight: .medium, design: .rounded))
                                         }
@@ -247,10 +247,10 @@ struct PDFExportView: View {
                                                 HStack(spacing: 6) {
                                                     Image(systemName: "airplane.departure")
                                                         .font(.caption2)
-                                                        .foregroundStyle(JohoColors.orange)
+                                                        .foregroundStyle(JohoColors.cyan)
                                                     Text("\(trip.name) → \(trip.destination)")
                                                         .font(.system(size: 12, weight: .medium, design: .rounded))
-                                                        .foregroundStyle(JohoColors.orange)
+                                                        .foregroundStyle(JohoColors.cyan)
                                                 }
                                             }
                                         }

@@ -695,7 +695,7 @@ struct ContactDetailView: View {
     // MARK: - Address Section
 
     private var addressSection: some View {
-        johoDetailSection(title: "ADDRESS", icon: "mappin", iconColor: JohoColors.orange) {
+        johoDetailSection(title: "ADDRESS", icon: "mappin", iconColor: JohoColors.cyan) {
             if isEditMode {
                 // Edit mode: editable address fields
                 VStack(spacing: JohoDimensions.spacingSM) {
@@ -703,7 +703,7 @@ struct ContactDetailView: View {
                     HStack(spacing: JohoDimensions.spacingMD) {
                         Image(systemName: "mappin")
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.orange)
+                            .foregroundStyle(JohoColors.cyan)
                             .frame(width: 24)
 
                         TextField("Street address", text: $editStreet)
@@ -768,7 +768,7 @@ struct ContactDetailView: View {
                             } label: {
                                 Image(systemName: "map.fill")
                                     .font(.system(size: 16, weight: .bold, design: .rounded))
-                                    .foregroundStyle(JohoColors.orange)
+                                    .foregroundStyle(JohoColors.cyan)
                                     .frame(width: 44, height: 44)
                                     .background(JohoColors.white)
                                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))

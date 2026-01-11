@@ -142,7 +142,7 @@ struct DashboardView: View {
                 statIndicator(count: expensesCount, color: JohoColors.green, label: "expenses")
             }
             if tripsCount > 0 {
-                statIndicator(count: tripsCount, color: JohoColors.orange, label: "trips")
+                statIndicator(count: tripsCount, color: JohoColors.cyan, label: "trips")
             }
             if specialDaysCount > 0 {
                 statIndicator(count: specialDaysCount, color: JohoColors.pink, label: "upcoming")
@@ -573,7 +573,7 @@ struct DashboardView: View {
             if date > today {
                 let days = calendar.dateComponents([.day], from: today, to: date).day ?? 0
                 for holiday in cachedHolidays {
-                    let color = holiday.isBankHoliday ? JohoColors.red : JohoColors.orange
+                    let color = holiday.isBankHoliday ? JohoColors.red : JohoColors.cyan
                     let typeLabel = holiday.isBankHoliday ? "HOLIDAY" : "OBSERVANCE"
                     items.append(SpotlightItem(name: holiday.displayTitle, daysUntil: days, color: color, typeLabel: typeLabel))
                 }

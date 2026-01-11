@@ -133,7 +133,7 @@ struct DayDetailSheet: View {
                     detailRow(
                         title: "Observance",
                         subtitle: "Flag day / Memorial",
-                        color: JohoColors.orange,
+                        color: JohoColors.cyan,
                         icon: "flag.fill",
                         isSystem: true
                     )

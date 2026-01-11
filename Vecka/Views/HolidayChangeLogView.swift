@@ -179,7 +179,7 @@ struct ChangeLogEntryRow: View {
     private var actionColor: Color {
         switch entry.action {
         case .created: return JohoColors.green
-        case .modified: return JohoColors.orange
+        case .modified: return JohoColors.cyan
         case .deleted: return JohoColors.red
         case .enabled: return JohoColors.green
         case .disabled: return JohoColors.black.opacity(0.4)
@@ -338,7 +338,7 @@ struct ChangeLogDetailSheet: View {
     private var actionColor: Color {
         switch entry.action {
         case .created: return JohoColors.green
-        case .modified: return JohoColors.orange
+        case .modified: return JohoColors.cyan
         case .deleted: return JohoColors.red
         case .enabled: return JohoColors.green
         case .disabled: return JohoColors.black.opacity(0.4)

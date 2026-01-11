@@ -1048,7 +1048,7 @@ struct ModernCalendarView: View {
         case "red": return JohoColors.pink
         case "blue": return JohoColors.cyan
         case "green": return JohoColors.green
-        case "orange": return JohoColors.orange
+        case "orange": return JohoColors.cyan
         case "purple": return JohoColors.pink
         case "yellow": return JohoColors.yellow
         default: return JohoColors.cyan

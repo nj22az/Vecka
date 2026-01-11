@@ -347,9 +347,9 @@ struct CompactRobotMascot: View {
         HStack(spacing: 8) {
             Image(systemName: "house.fill")
                 .font(.system(size: 20, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.orange)
+                .foregroundStyle(JohoColors.cyan)
                 .frame(width: 40, height: 40)
-                .background(JohoColors.orange.opacity(0.2))
+                .background(JohoColors.cyan.opacity(0.2))
                 .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
 
             Text("ONSEN")

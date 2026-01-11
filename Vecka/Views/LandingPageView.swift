@@ -1853,7 +1853,7 @@ struct LandingPageView: View {
                     .foregroundStyle(JohoColors.black)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 3)
-                    .background(JohoColors.cream)
+                    .background(JohoColors.yellow)
                     .clipShape(Capsule())
                     .overlay(Capsule().stroke(JohoColors.black, lineWidth: 0.5))
 
@@ -1889,7 +1889,7 @@ struct LandingPageView: View {
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, JohoDimensions.spacingSM)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(JohoColors.cream.opacity(0.3))
+        .background(JohoColors.yellow.opacity(0.3))
     }
 
     /// Sidebar for landscape mode - Glance + Agenda
@@ -2521,7 +2521,7 @@ struct LandingPageView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(day.isCurrentMonth ? JohoColors.white : JohoColors.cream.opacity(0.3))
+        .background(day.isCurrentMonth ? JohoColors.white : JohoColors.yellow.opacity(0.3))
         .overlay(
             Rectangle().stroke(JohoColors.black, lineWidth: 1)
         )
@@ -3156,7 +3156,7 @@ struct LandingPageView: View {
             // Holidays
             if let holidays = holidayManager.holidayCache[date] {
                 for holiday in holidays {
-                    let color = holiday.isBankHoliday ? JohoColors.red : JohoColors.orange
+                    let color = holiday.isBankHoliday ? JohoColors.red : JohoColors.cyan
                     let badge = holiday.isBankHoliday ? "HOL" : "OBS"
                     items.append(UpcomingItem(
                         date: date,
@@ -3344,7 +3344,7 @@ struct LandingPageView: View {
             // Holidays
             if let holidays = holidayManager.holidayCache[dayStart] {
                 for holiday in holidays {
-                    indicators.append(holiday.isBankHoliday ? JohoColors.red : JohoColors.orange)
+                    indicators.append(holiday.isBankHoliday ? JohoColors.red : JohoColors.cyan)
                 }
             }
 
@@ -3718,7 +3718,7 @@ struct LandingPageView: View {
         // 1. Holidays today
         if let holidays = holidayManager.holidayCache[todayStart] {
             for holiday in holidays {
-                let color = holiday.isBankHoliday ? JohoColors.red : JohoColors.orange
+                let color = holiday.isBankHoliday ? JohoColors.red : JohoColors.cyan
                 let badge = holiday.isBankHoliday ? "HOL" : "OBS"
                 items.append(TodayItem(
                     title: holiday.displayTitle,
@@ -3790,7 +3790,7 @@ struct LandingPageView: View {
                     title: trip.tripName,
                     subtitle: nil,
                     icon: "airplane",
-                    color: JohoColors.orange,
+                    color: JohoColors.cyan,
                     typeBadge: "TRP"
                 ))
             }
@@ -3985,7 +3985,7 @@ struct LandingPageView: View {
                 // Holidays
                 if let holidays = holidayManager.holidayCache[dayStart] {
                     for holiday in holidays {
-                        indicators.append(holiday.isBankHoliday ? JohoColors.red : JohoColors.orange)
+                        indicators.append(holiday.isBankHoliday ? JohoColors.red : JohoColors.cyan)
                     }
                 }
 
