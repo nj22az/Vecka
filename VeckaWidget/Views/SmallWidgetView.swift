@@ -99,14 +99,8 @@ struct VeckaSmallWidgetView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .widgetURL(URL(string: "vecka://week/\(weekNumber)/\(entry.year)"))
         .containerBackground(for: .widget) {
-            // 情報デザイン: Theme.Borders.small.widget = 2pt
-            RoundedRectangle(cornerRadius: corners.widget, style: .continuous)
-                .fill(JohoWidget.Colors.content)
-                .overlay(
-                    RoundedRectangle(cornerRadius: corners.widget - 2, style: .continuous)
-                        .stroke(JohoWidget.Colors.border, lineWidth: borders.widget)
-                        .padding(1)
-                )
+            // 情報デザイン: Clean white background - iOS handles rounded corners
+            JohoWidget.Colors.content
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Week \(weekNumber), \(monthShort) \(dayOfMonth), \(weekdayShort), \(year)")

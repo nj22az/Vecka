@@ -42,14 +42,8 @@ struct WorldClockMediumWidgetView: View {
         }
         .widgetURL(URL(string: "vecka://clocks"))
         .containerBackground(for: .widget) {
-            // 情報デザイン: Theme.Borders.medium.widget = 2.5pt
-            RoundedRectangle(cornerRadius: corners.widget, style: .continuous)
-                .fill(JohoWidget.Colors.content)
-                .overlay(
-                    RoundedRectangle(cornerRadius: corners.widget - 2, style: .continuous)
-                        .stroke(JohoWidget.Colors.border, lineWidth: borders.widget)
-                        .padding(1)
-                )
+            // 情報デザイン: Clean white background - iOS handles rounded corners
+            JohoWidget.Colors.content
         }
     }
 
