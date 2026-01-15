@@ -119,23 +119,28 @@ enum WorldClockStorage {
     static let appGroupID = "group.Johansson.Vecka"
     static let worldClocksKey = "shared_world_clocks"
 
+    /// Safely access App Group UserDefaults
+    private static var sharedDefaults: UserDefaults? {
+        UserDefaults(suiteName: appGroupID)
+    }
+
     /// Save world clocks to App Group (called from main app)
     static func save(_ clocks: [SharedWorldClock]) {
-        guard let defaults = UserDefaults(suiteName: appGroupID) else { return }
-        if let encoded = try? JSONEncoder().encode(clocks) {
-            defaults.set(encoded, forKey: worldClocksKey)
-        }
+        guard let defaults = sharedDefaults,
+              let encoded = try? JSONEncoder().encode(clocks)
+        else { return }
+        defaults.set(encoded, forKey: worldClocksKey)
     }
 
     /// Load world clocks from App Group (called from widget)
+    /// Returns default clocks if App Group unavailable or empty
     static func load() -> [SharedWorldClock] {
-        guard let defaults = UserDefaults(suiteName: appGroupID),
+        guard let defaults = sharedDefaults,
               let data = defaults.data(forKey: worldClocksKey),
-              let clocks = try? JSONDecoder().decode([SharedWorldClock].self, from: data)
-        else {
-            return defaultClocks
-        }
-        return clocks.isEmpty ? defaultClocks : Array(clocks.prefix(3))
+              let clocks = try? JSONDecoder().decode([SharedWorldClock].self, from: data),
+              !clocks.isEmpty
+        else { return defaultClocks }
+        return Array(clocks.prefix(3))
     }
 
     /// Default clocks when none configured
