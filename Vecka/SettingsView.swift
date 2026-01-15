@@ -299,6 +299,7 @@ struct SettingsView: View {
                     // App info card (情報デザイン: Mascot as app icon)
                     HStack(spacing: JohoDimensions.spacingMD) {
                         // JohoMascot as app icon (情報デザイン: The face of the app)
+                        // Secret: SOS morse code (...---...) opens developer tools
                         JohoMascot(
                             mood: .happy,
                             size: 64,
@@ -307,6 +308,9 @@ struct SettingsView: View {
                             showBlink: true,
                             autoOnsen: false
                         )
+                        .onSOSGesture {
+                            showDeveloperSettings = true
+                        }
 
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Onsen Planner")
@@ -358,10 +362,7 @@ struct SettingsView: View {
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
 
-                // Developer Section (情報デザイン: Debug tools for testing)
-                #if DEBUG
-                developerSection
-                #endif
+                // Developer Section removed - access via SOS morse code on mascot
 
                 Spacer(minLength: JohoDimensions.spacingXL)
             }
