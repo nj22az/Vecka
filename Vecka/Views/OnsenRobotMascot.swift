@@ -27,6 +27,7 @@ struct OnsenRobotMascot: View {
 
     // MARK: - Animation State
 
+    @State private var isActive = false  // Memory safety: prevents async callbacks after disappear
     @State private var isWaving = false
     @State private var isBlinking = false
     @State private var bobOffset: CGFloat = 0
@@ -65,9 +66,11 @@ struct OnsenRobotMascot: View {
         }
         .frame(width: size, height: size)
         .onAppear {
+            isActive = true
             startAnimations()
         }
         .onDisappear {
+            isActive = false
             stopAnimations()
         }
     }
@@ -235,7 +238,9 @@ struct OnsenRobotMascot: View {
             isBlinking = true
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) { [self] in
+            guard isActive else { return }  // Memory safety: stop if view disappeared
+
             withAnimation(.easeIn(duration: 0.06)) {
                 isBlinking = false
             }
@@ -251,6 +256,7 @@ struct CompactRobotMascot: View {
     var size: CGFloat = 44
     var accentColor: Color = JohoColors.cyan
 
+    @State private var isActive = false  // Memory safety: prevents async callbacks after disappear
     @State private var isBlinking = false
     @State private var blinkTimer: Timer?
 
@@ -299,18 +305,25 @@ struct CompactRobotMascot: View {
                 .offset(y: -size * 0.42)
         }
         .onAppear {
+            isActive = true
             startBlinking()
         }
         .onDisappear {
+            isActive = false
             blinkTimer?.invalidate()
+            blinkTimer = nil
         }
     }
 
     private func startBlinking() {
         let interval = Double.random(in: 3.0...6.0)
-        blinkTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { _ in
+        blinkTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [self] _ in
+            guard isActive else { return }  // Memory safety: stop if view disappeared
+
             withAnimation(.easeOut(duration: 0.06)) { isBlinking = true }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [self] in
+                guard isActive else { return }  // Memory safety: stop if view disappeared
+
                 withAnimation(.easeIn(duration: 0.06)) { isBlinking = false }
                 startBlinking()
             }

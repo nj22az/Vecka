@@ -9,15 +9,31 @@
 import SwiftUI
 
 /// Analog clock view with hour and minute hands (情報デザイン compliant)
+/// Uses TimelineView for memory-safe time updates (no timer leaks)
 struct AnalogClockView: View {
     let timezone: TimeZone
     let size: CGFloat
     let accentColor: Color
 
-    @State private var currentTime = Date()
+    var body: some View {
+        // TimelineView properly manages its lifecycle - no memory leaks
+        TimelineView(.periodic(from: .now, by: 1)) { context in
+            ClockFaceView(
+                currentTime: context.date,
+                timezone: timezone,
+                size: size,
+                accentColor: accentColor
+            )
+        }
+    }
+}
 
-    // Timer for updating clock
-    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+/// Internal clock face view (extracted to avoid TimelineView re-render issues)
+private struct ClockFaceView: View {
+    let currentTime: Date
+    let timezone: TimeZone
+    let size: CGFloat
+    let accentColor: Color
 
     var body: some View {
         ZStack {
@@ -39,9 +55,6 @@ struct AnalogClockView: View {
                 .frame(width: size * 0.08, height: size * 0.08)
         }
         .frame(width: size, height: size)
-        .onReceive(timer) { _ in
-            currentTime = Date()
-        }
     }
 
     // MARK: - Clock Components
@@ -56,7 +69,7 @@ struct AnalogClockView: View {
     }
 
     private var hourMarkers: some View {
-        ForEach(0..<12) { hour in
+        ForEach(0..<12, id: \.self) { hour in
             Rectangle()
                 .fill(JohoColors.black)
                 .frame(width: hour % 3 == 0 ? size * 0.03 : size * 0.015,
@@ -108,6 +121,7 @@ struct AnalogClockView: View {
 }
 
 /// World clock cell with analog clock and digital time (情報デザイン)
+/// Uses TimelineView for memory-safe time updates (no timer leaks)
 struct WorldClockCell: View {
     let cityCode: String
     let cityName: String
@@ -116,8 +130,31 @@ struct WorldClockCell: View {
     let lightBackground: Color
     let isLocal: Bool
 
-    @State private var currentTime = Date()
-    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    var body: some View {
+        // TimelineView properly manages its lifecycle - no memory leaks
+        TimelineView(.periodic(from: .now, by: 1)) { context in
+            WorldClockCellContent(
+                currentTime: context.date,
+                cityCode: cityCode,
+                cityName: cityName,
+                timezone: timezone,
+                accentColor: accentColor,
+                lightBackground: lightBackground,
+                isLocal: isLocal
+            )
+        }
+    }
+}
+
+/// Internal content view for WorldClockCell
+private struct WorldClockCellContent: View {
+    let currentTime: Date
+    let cityCode: String
+    let cityName: String
+    let timezone: TimeZone
+    let accentColor: Color
+    let lightBackground: Color
+    let isLocal: Bool
 
     var body: some View {
         VStack(spacing: 6) {
@@ -156,9 +193,6 @@ struct WorldClockCell: View {
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
         .background(lightBackground)
-        .onReceive(timer) { _ in
-            currentTime = Date()
-        }
     }
 
     // MARK: - Computed Properties

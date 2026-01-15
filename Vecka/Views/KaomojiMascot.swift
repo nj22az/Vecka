@@ -136,6 +136,7 @@ struct JohoMascot: View {
 
     // MARK: - State
 
+    @State private var isActive = false  // Memory safety: prevents async callbacks after disappear
     @State private var isBlinking = false
     @State private var bobOffset: CGFloat = 0
     @State private var blinkTimer: Timer?
@@ -239,9 +240,11 @@ struct JohoMascot: View {
             }
         }
         .onAppear {
+            isActive = true
             startAnimations()
         }
         .onDisappear {
+            isActive = false
             stopAnimations()
         }
         .accessibilityLabel("Mascot")
@@ -480,7 +483,9 @@ struct JohoMascot: View {
 
         // Stay in onsen mode for 4-8 seconds, then return to normal
         let duration = Double.random(in: 4.0...8.0)
-        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [self] in
+            guard isActive else { return }  // Memory safety: stop if view disappeared
+
             withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                 isOnsenMode = false
                 waterRipple = 0
@@ -504,7 +509,9 @@ struct JohoMascot: View {
         // Random interval before showing sparkle (5-15 seconds)
         let interval = Double.random(in: 5.0...15.0)
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + interval) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + interval) { [self] in
+            guard isActive else { return }  // Memory safety: stop if view disappeared
+
             // Show sparkle
             withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                 sparkleVisible = true
@@ -512,7 +519,9 @@ struct JohoMascot: View {
 
             // Hide after 2-4 seconds
             let displayDuration = Double.random(in: 2.0...4.0)
-            DispatchQueue.main.asyncAfter(deadline: .now() + displayDuration) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + displayDuration) { [self] in
+                guard isActive else { return }  // Memory safety: stop if view disappeared
+
                 withAnimation(.easeOut(duration: 0.3)) {
                     sparkleVisible = false
                 }
@@ -543,7 +552,8 @@ struct JohoMascot: View {
         }
 
         // Remove heart after animation
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) { [self] in
+            guard isActive else { return }  // Memory safety: stop if view disappeared
             floatingHearts.removeAll { $0.id == heart.id }
         }
     }
@@ -557,7 +567,9 @@ struct JohoMascot: View {
             var puff = SteamPuff(xOffset: xOffset)
             puff.yOffset = size * 0.1
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.3) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.3) { [self] in
+                guard isActive else { return }  // Memory safety: stop if view disappeared
+
                 withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
                     steamPuffs.append(puff)
                 }
@@ -574,7 +586,9 @@ struct JohoMascot: View {
         }
 
         // Continue spawning while in onsen mode
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [self] in
+            guard isActive else { return }  // Memory safety: stop if view disappeared
+
             if isOnsenMode {
                 // Clean up old puffs
                 steamPuffs.removeAll { $0.opacity < 0.1 }
@@ -610,7 +624,9 @@ struct JohoMascot: View {
         }
 
         // Return to center after a moment
-        DispatchQueue.main.asyncAfter(deadline: .now() + Double.random(in: 0.5...1.5)) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + Double.random(in: 0.5...1.5)) { [self] in
+            guard isActive else { return }  // Memory safety: stop if view disappeared
+
             withAnimation(.easeInOut(duration: 0.4)) {
                 eyeOffset = .zero
             }
@@ -633,7 +649,9 @@ struct JohoMascot: View {
             isBlinking = true
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [self] in
+            guard isActive else { return }  // Memory safety: stop if view disappeared
+
             withAnimation(.easeIn(duration: 0.06)) {
                 isBlinking = false
             }

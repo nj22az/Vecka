@@ -16,7 +16,12 @@ class CurrencyService {
     static let shared = CurrencyService()
 
     // MARK: - Properties
+
+    /// Maximum cache entries before eviction (prevents unbounded memory growth)
+    private let maxCacheSize = 200
+
     private var rateCache: [String: Double] = [:]
+    private var cacheAccessOrder: [String] = []  // Track access order for LRU eviction
     
     var baseCurrency: String {
         get {
@@ -25,7 +30,7 @@ class CurrencyService {
         set {
             UserDefaults.standard.set(newValue, forKey: "baseCurrency")
             // Clear cache when base changes to avoid stale rates
-            rateCache.removeAll()
+            clearCache()
         }
     }
 
@@ -54,7 +59,7 @@ class CurrencyService {
 
         // 1. Try Direct
         if let rate = try await resolveDirectRate(from: from, to: to, date: date, context: context) {
-            rateCache[cacheKey] = rate
+            addToCache(key: cacheKey, rate: rate)
             return rate
         }
         
@@ -65,7 +70,7 @@ class CurrencyService {
                let r2 = try await resolveDirectRate(from: "SEK", to: to, date: date, context: context) {
                 let derivedRate = r1 * r2
                 Log.i("Derived rate via SEK: \(from)->SEK(\(r1)) * SEK->\(to)(\(r2)) = \(derivedRate)")
-                rateCache[cacheKey] = derivedRate
+                addToCache(key: cacheKey, rate: derivedRate)
                 return derivedRate
             }
         }
@@ -141,9 +146,9 @@ class CurrencyService {
 
         try context.save()
 
-        // Update cache
+        // Update cache with eviction
         let cacheKey = makeCacheKey(from: from, to: to, date: dayDate)
-        rateCache[cacheKey] = rate
+        addToCache(key: cacheKey, rate: rate)
 
         Log.i("Set exchange rate: \(from)->\(to) = \(rate) on \(dayDate)")
     }
@@ -272,6 +277,25 @@ class CurrencyService {
 
     func clearCache() {
         rateCache.removeAll()
+        cacheAccessOrder.removeAll()
+    }
+
+    /// Add entry to cache with LRU eviction to prevent unbounded memory growth
+    private func addToCache(key: String, rate: Double) {
+        // Remove existing entry from access order if present
+        if let existingIndex = cacheAccessOrder.firstIndex(of: key) {
+            cacheAccessOrder.remove(at: existingIndex)
+        }
+
+        // Add to cache and access order
+        rateCache[key] = rate
+        cacheAccessOrder.append(key)
+
+        // Evict oldest entries if over limit
+        while cacheAccessOrder.count > maxCacheSize {
+            let oldestKey = cacheAccessOrder.removeFirst()
+            rateCache.removeValue(forKey: oldestKey)
+        }
     }
 
     // MARK: - API Fetching
