@@ -54,7 +54,7 @@ Emoji are **NOT** 情報デザイン compliant:
 
 ---
 
-## Quick Reference for WeekGrid
+## Quick Reference for Onsen Planner
 
 ### Implementation Priority
 
@@ -114,7 +114,7 @@ The foundation of Japanese visual communication. Sony's PlayStation borrowed thi
 ∘  Small circle   = Detail level
 ```
 
-### WeekGrid Application
+### Onsen Planner Application
 
 ```
 ENTRY TYPE INDICATORS:
@@ -601,7 +601,7 @@ Understanding why these symbols work universally:
 
 ---
 
-## WeekGrid Symbol Mapping
+## Onsen Planner Symbol Mapping
 
 ### Current Implementation
 
@@ -649,7 +649,7 @@ Understanding why these symbols work universally:
 ### Color + Symbol Combinations
 
 ```swift
-// WeekGrid semantic indicators
+// Onsen Planner semantic indicators
 enum IndicatorStyle {
     case positive   // ○ or ● with green
     case negative   // × with red
@@ -758,5 +758,5 @@ This is the ONLY section to use when implementing. All symbols above are for und
 
 ---
 
-*Document created for WeekGrid 情報デザイン standardization*
+*Document created for Onsen Planner 情報デザイン standardization*
 *Last updated: 2026-01-03*

@@ -52,7 +52,7 @@ Master the Design Philosophy Behind Japanese Train Systems, OTC Packaging & Mode
 
 <h3>Complete iOS Case Study</h3>
 
-<p>The book includes a comprehensive case study of the <b>WeekGrid</b> calendar app, demonstrating:</p>
+<p>The book includes a comprehensive case study of the <b>Onsen Planner</b> calendar app, demonstrating:</p>
 
 <ul>
 <li>Full architecture documentation (Manager + Model + View pattern)</li>
@@ -181,7 +181,7 @@ Padroneggia la Filosofia di Design dei Sistemi Ferroviari Giapponesi e delle App
 
 <h3>Caso Studio iOS Completo</h3>
 
-<p>Il libro include un caso studio completo dell'app calendario <b>WeekGrid</b>, che dimostra:</p>
+<p>Il libro include un caso studio completo dell'app calendario <b>Onsen Planner</b>, che dimostra:</p>
 
 <ul>
 <li>Documentazione completa dell'architettura (pattern Manager + Model + View)</li>
@@ -303,7 +303,7 @@ Purposeful Visual Communication
 - Text: "Not just theory — complete SwiftUI components you can copy directly into your Xcode project."
 
 **Column 3: Case Study**
-- Image: WeekGrid app screenshot
+- Image: Onsen Planner app screenshot
 - Title: "Full App Case Study"
 - Text: "See how every principle applies to a real iOS app with 176 pages of detailed documentation."
 

@@ -1,4 +1,4 @@
-# WeekGrid (Onsen Planner) - Complete App Guide
+# Onsen Planner - Complete App Guide
 
 > **Version:** 1.0
 > **Platform:** iOS 18+
@@ -27,7 +27,7 @@
 
 ## Overview
 
-**WeekGrid** (internally codenamed "Vecka", Swedish for "week") is a professional iOS calendar application that emphasizes **ISO 8601 week numbers** with semantic color coding. The app follows a strict Japanese Information Design system (情報デザイン) that prioritizes clarity, consistency, and visual hierarchy.
+**Onsen Planner** (internally codenamed "Vecka", Swedish for "week") is a professional iOS calendar application that emphasizes **ISO 8601 week numbers** with semantic color coding. The app follows a strict Japanese Information Design system (情報デザイン) that prioritizes clarity, consistency, and visual hierarchy.
 
 ### Key Value Proposition
 - Professional week number display following ISO 8601 standard
@@ -546,7 +546,7 @@ Vecka/
 
 ## Summary
 
-WeekGrid (Onsen Planner) is a focused, well-designed calendar application that excels at:
+Onsen Planner is a focused, well-designed calendar application that excels at:
 - **Week number visibility** - Core feature done right
 - **Visual clarity** - 情報デザイン design system
 - **Personal organization** - Calendar, expenses, contacts in one app

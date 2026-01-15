@@ -37,10 +37,10 @@ Current deployment target is iOS 26.0, which does not exist. Maximum released iO
 
 ---
 
-## CRITICAL FIX #2: App Name (Onsen Planner → WeekGrid)
+## CRITICAL FIX #2: App Name (Onsen Planner → Onsen Planner)
 
 ### Issue
-Info.plist displays "Onsen Planner" but project should be "WeekGrid" per CLAUDE.md
+Info.plist displays "Onsen Planner" but project should be "Onsen Planner" per CLAUDE.md
 
 ### Fix Steps
 
@@ -53,13 +53,13 @@ Info.plist displays "Onsen Planner" but project should be "WeekGrid" per CLAUDE.
 
 2. Update CFBundleDisplayName:
    ```bash
-   /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName WeekGrid" \
+   /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName Onsen Planner" \
      /Users/nilsjohansson/Documents/AppDevelopment/Swift/Vecka/Vecka/Info.plist
    ```
 
 3. Update CFBundleName:
    ```bash
-   /usr/libexec/PlistBuddy -c "Set :CFBundleName WeekGrid" \
+   /usr/libexec/PlistBuddy -c "Set :CFBundleName Onsen Planner" \
      /Users/nilsjohansson/Documents/AppDevelopment/Swift/Vecka/Vecka/Info.plist
    ```
 
@@ -238,7 +238,7 @@ xcodebuild -project /Users/nilsjohansson/Documents/AppDevelopment/Swift/Vecka/Ve
 # 2. Check app name
 /usr/libexec/PlistBuddy -c "Print :CFBundleDisplayName" \
   /Users/nilsjohansson/Documents/AppDevelopment/Swift/Vecka/Vecka/Info.plist
-# Expected: WeekGrid
+# Expected: Onsen Planner
 
 # 3. Check privacy manifest exists and is valid
 plutil -lint /Users/nilsjohansson/Documents/AppDevelopment/Swift/Vecka/Vecka/PrivacyInfo.xcprivacy

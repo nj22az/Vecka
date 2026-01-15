@@ -1,6 +1,6 @@
 ===========================================
 情報デザイン (Jōhō Dezain) DESIGN AUDIT
-WeekGrid iOS App - 2026-01-10
+Onsen Planner iOS App - 2026-01-10
 ===========================================
 
 ## Overall HIG Compliance Score: 6/10
@@ -318,7 +318,7 @@ grep -rn "Material\|ultraThin" Vecka/Views/ --include="*.swift" | wc -l
 ## SUMMARY
 ===========================================
 
-The WeekGrid app demonstrates strong architectural adherence to 情報デザイン principles with excellent structural compliance (no glass, no gradients, proper borders, squircle corners). However, typography and color semantics need systematic correction.
+The Onsen Planner app demonstrates strong architectural adherence to 情報デザイン principles with excellent structural compliance (no glass, no gradients, proper borders, squircle corners). However, typography and color semantics need systematic correction.
 
 The violations are primarily in three categories:
 1. Raw system colors (19 instances) - easily fixable

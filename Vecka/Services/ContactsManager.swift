@@ -153,7 +153,7 @@ class ContactsManager {
 
     // MARK: - Export to iOS Contacts
 
-    /// Exports a WeekGrid contact to iOS Contacts
+    /// Exports an Onsen Planner contact to iOS Contacts
     /// Note: Export requires full access (.authorized), not limited access
     func exportToIOSContacts(_ contact: Contact) throws {
         guard authorizationStatus == .authorized || authorizationStatus == .limited else {

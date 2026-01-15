@@ -4,7 +4,7 @@
 
 ---
 
-Every design system needs a reference implementation—a single page that demonstrates every principle in harmony. In WeekGrid, this is the "Star Page" (★). It's not just a feature screen; it's a teaching document rendered as UI.
+Every design system needs a reference implementation—a single page that demonstrates every principle in harmony. In Onsen Planner, this is the "Star Page" (★). It's not just a feature screen; it's a teaching document rendered as UI.
 
 ---
 
@@ -12,14 +12,14 @@ Every design system needs a reference implementation—a single page that demons
 
 A Star Page is a real, functional screen that serves dual purposes:
 
-1. **For users:** A useful feature (in WeekGrid, a quick-glance dashboard)
+1. **For users:** A useful feature (in Onsen Planner, a quick-glance dashboard)
 2. **For developers:** A canonical reference for implementing Joho Dezain
 
 If your app has a Star Page, new team members can learn the design system by studying one file. Every component, every spacing decision, every color choice is visible in context.
 
 ---
 
-## WeekGrid's Star Page
+## Onsen Planner's Star Page
 
 The Star Page shows today's context at a glance:
 

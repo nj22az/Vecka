@@ -1,6 +1,6 @@
 //
 //  SimplePDFExportView.swift
-//  WeekGrid
+//  Onsen Planner
 //
 //  Simplified PDF export - exports exactly what you see on screen
 //

@@ -3,7 +3,7 @@
 //  Vecka
 //
 //  Right-side panel showing week details, calendar events, and notes
-//  Combines EventKit integration with WeekGrid's daily notes
+//  Combines EventKit integration with Onsen Planner's daily notes
 //  Uses Joho Design System - authentic Japanese packaging aesthetic
 //
 

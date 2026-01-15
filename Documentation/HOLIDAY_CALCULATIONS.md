@@ -1,6 +1,6 @@
 # Holiday Calculation System
 
-> Database-driven holiday engine for WeekGrid
+> Database-driven holiday engine for Onsen Planner
 
 ## Architecture Overview
 

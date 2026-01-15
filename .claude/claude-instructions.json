@@ -1,8 +1,8 @@
 {
   "project": {
-    "name": "WeekGrid",
+    "name": "Onsen Planner",
     "folder": "Vecka",
-    "appStoreName": "WeekGrid",
+    "appStoreName": "Onsen Planner",
     "platform": "iOS 18+",
     "technologies": ["SwiftUI", "SwiftData", "WidgetKit"],
     "designSystem": "情報デザイン (Jōhō Dezain) - Japanese Information Design",

@@ -1,7 +1,7 @@
 # Vecka iOS App - App Store Deployment Audit
 
 **Date Generated:** 2026-01-06  
-**Project:** WeekGrid (Vecka)  
+**Project:** Onsen Planner (Vecka)  
 **Status:** NOT READY FOR APP STORE - 4 Critical Issues  
 **Bundle ID:** `Johansson.Vecka`  
 **Team ID:** `P4LGU6F45C`  
@@ -42,7 +42,7 @@ Paths and locations of all configuration files:
 |---|-------|----------|--------|------|
 | 1 | Deployment target: iOS 26.0 (doesn't exist) | CRITICAL | App won't install | See Fixes Required |
 | 2 | Missing PrivacyInfo.xcprivacy | CRITICAL | App Store rejection | See Fixes Required |
-| 3 | App name: "Onsen Planner" (should be "WeekGrid") | CRITICAL | Wrong store name | Vecka/Info.plist |
+| 3 | App name: "Onsen Planner" (should be "Onsen Planner") | CRITICAL | Wrong store name | Vecka/Info.plist |
 | 4 | CloudKit in code but not entitlements | MEDIUM | Sync may fail | Vecka/Vecka.entitlements |
 
 ---
@@ -97,7 +97,7 @@ Read `AUDIT_SUMMARY.txt` (2 minutes)
 Open `APPSTORE_FIXES_REQUIRED.md` and:
 1. Fix deployment target (iOS 18.0)
 2. Create privacy manifest file
-3. Update app name to "WeekGrid"
+3. Update app name to "Onsen Planner"
 4. Add CloudKit entitlements
 
 ### Step 3: Verify Fixes
@@ -123,7 +123,7 @@ xcodebuild build -project /Users/nilsjohansson/Documents/AppDevelopment/Swift/Ve
 ### Current State
 ```
 Bundle ID:          Johansson.Vecka
-App Name:           Onsen Planner (WRONG - should be WeekGrid)
+App Name:           Onsen Planner (WRONG - should be Onsen Planner)
 Min OS:             iOS 26.0 (WRONG - should be 18.0)
 Deployment Target:  26.0 (WRONG - should be 18.0)
 Marketing Version:  1.0 (Good)
@@ -137,7 +137,7 @@ CloudKit Entitle:   MISSING (Medium)
 ### After Fixes
 ```
 Bundle ID:          Johansson.Vecka
-App Name:           WeekGrid (Fixed)
+App Name:           Onsen Planner (Fixed)
 Min OS:             iOS 18.0 (Fixed)
 Deployment Target:  18.0 (Fixed)
 Marketing Version:  1.0 (Good)
@@ -177,7 +177,7 @@ CloudKit Entitle:   Present (Fixed)
 Before submitting to App Store:
 
 - [ ] Deployment target changed to 18.0 (both targets)
-- [ ] App name updated to "WeekGrid" in Info.plist
+- [ ] App name updated to "Onsen Planner" in Info.plist
 - [ ] PrivacyInfo.xcprivacy created and added to target
 - [ ] CloudKit entitlement added to both targets' entitlements
 - [ ] All fixes verified with provided commands
@@ -251,7 +251,7 @@ Phase 8: Live on App Store (Upon approval)
    - We've provided the XML template - just copy and use it
 
 3. **App Name Matters**
-   - Users see "Onsen Planner" but project expects "WeekGrid"
+   - Users see "Onsen Planner" but project expects "Onsen Planner"
    - This will appear on App Store and home screen
    - Must match your App Store Connect app name
 

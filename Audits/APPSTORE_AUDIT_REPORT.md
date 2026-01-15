@@ -1,6 +1,6 @@
 # Vecka iOS App - App Store Deployment Readiness Audit
 **Generated:** 2026-01-06  
-**Project:** WeekGrid (Vecka)  
+**Project:** Onsen Planner (Vecka)  
 **Target Deployment:** iOS 26+ (CRITICAL ISSUE)  
 
 ---
@@ -21,9 +21,9 @@ The Vecka app has **MAJOR compatibility issues** preventing App Store submission
 - **Current Status:** 
   - `CFBundleDisplayName`: "Onsen Planner" (INFO.PLIST)
   - `CFBundleName`: "Onsen Planner" (INFO.PLIST)
-  - Expected (per CLAUDE.md): "WeekGrid"
+  - Expected (per CLAUDE.md): "Onsen Planner"
 - **Impact:** Wrong app name on App Store and home screen
-- **Action Required:** Update Info.plist keys to "WeekGrid"
+- **Action Required:** Update Info.plist keys to "Onsen Planner"
 - **Severity:** CRITICAL
 
 #### Issue 1.2: Missing Core Version Keys
@@ -273,7 +273,7 @@ LD_RUNPATH_SEARCH_PATHS = (
 |---|-------|----------|--------|-----|
 | 1 | Deployment target iOS 26.0 (doesn't exist) | CRITICAL | App won't install | Change to 18.0 |
 | 2 | Missing PrivacyInfo.xcprivacy | CRITICAL | Store rejection | Create privacy manifest |
-| 3 | App name "Onsen Planner" vs "WeekGrid" | CRITICAL | Wrong store name | Update Info.plist |
+| 3 | App name "Onsen Planner" vs "Onsen Planner" | CRITICAL | Wrong store name | Update Info.plist |
 | 4 | CloudKit in code but not in entitlements | MEDIUM | Sync may fail | Add iCloud capability |
 
 ### Nice-to-Fix Before Submission
@@ -290,7 +290,7 @@ Before submitting to App Store:
 
 - [ ] **Change IPHONEOS_DEPLOYMENT_TARGET from 26.0 to 18.0**
 - [ ] **Create PrivacyInfo.xcprivacy with proper API declarations**
-- [ ] **Update CFBundleDisplayName from "Onsen Planner" to "WeekGrid"**
+- [ ] **Update CFBundleDisplayName from "Onsen Planner" to "Onsen Planner"**
 - [ ] **Add CloudKit entitlement: `com.apple.developer.icloud-container-identifiers`**
 - [ ] **Verify build runs on iOS 18 simulator**
 - [ ] **Test all privacy-requested features work**

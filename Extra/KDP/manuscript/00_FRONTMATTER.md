@@ -9,7 +9,7 @@
 
 Every pixel in Japanese design serves a purpose. From Tokyo's legendary train signage to the meticulously organized OTC medicine packaging, Japan has perfected the art of visual communication. This book reveals the complete Joho Dezain (Jōhō Dezain) system and shows you how to apply it to modern app development.
 
-This is not a theoretical design book. It's built around a real production iOS app called WeekGrid. You'll see exactly how every principle translates to working code, with before-and-after comparisons that demonstrate the dramatic improvement Joho Dezain brings to user interfaces.
+This is not a theoretical design book. It's built around a real production iOS app called Onsen Planner. You'll see exactly how every principle translates to working code, with before-and-after comparisons that demonstrate the dramatic improvement Joho Dezain brings to user interfaces.
 
 ---
 
@@ -21,7 +21,7 @@ This is not a theoretical design book. It's built around a real production iOS a
 
 **Part 3: Component Library** provides production-ready patterns. Use this when building actual interfaces.
 
-**Part 4: Case Study** demonstrates everything in context through the WeekGrid app. This is where theory becomes practice.
+**Part 4: Case Study** demonstrates everything in context through the Onsen Planner app. This is where theory becomes practice.
 
 **Part 5: Implementation** gives you the tools to apply Joho Dezain to your own projects, including code patterns and audit checklists.
 

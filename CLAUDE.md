@@ -4,10 +4,10 @@ This file provides guidance to Claude Code when working with this repository.
 
 ## Project Overview
 
-**WeekGrid** is an iOS 18+ app displaying ISO 8601 week numbers with semantic color coding. Built with SwiftUI, SwiftData, and WidgetKit.
+**Onsen Planner** is an iOS 18+ app displaying ISO 8601 week numbers with semantic color coding. Built with SwiftUI, SwiftData, and WidgetKit.
 
 - **Project folder:** `Vecka` (legacy name)
-- **App Store name:** WeekGrid
+- **App Store name:** Onsen Planner
 - **Design System:** 情報デザイン (Jōhō Dezain) - Japanese Information Design
 
 ---

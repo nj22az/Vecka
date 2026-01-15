@@ -1,6 +1,6 @@
 # Component Glossary
 
-A complete reference of all pages, views, and reusable components in WeekGrid.
+A complete reference of all pages, views, and reusable components in Onsen Planner.
 
 ---
 

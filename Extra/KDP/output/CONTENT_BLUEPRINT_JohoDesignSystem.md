@@ -472,7 +472,7 @@ IMAGE_12_4: "JohoStatBox examples showing large numbers with labels, proper typo
 
 | Page | Content | Visuals |
 |------|---------|---------|
-| 121-122 | WeekGrid app overview | App screenshots |
+| 121-122 | Onsen Planner app overview | App screenshots |
 | 123-124 | Manager + Model + View pattern | Architecture diagram |
 | 125-126 | SwiftData model structure | Entity diagram |
 | 127-128 | Navigation architecture | Navigation flow |
@@ -481,7 +481,7 @@ IMAGE_12_4: "JohoStatBox examples showing large numbers with labels, proper typo
 **AI Image Prompts:**
 
 ```
-IMAGE_13_1: "WeekGrid app marketing screenshot showing main calendar view with week numbers, semantic colors for events, and 情報デザイン styling, iPhone 15 Pro frame"
+IMAGE_13_1: "Onsen Planner app marketing screenshot showing main calendar view with week numbers, semantic colors for events, and 情報デザイン styling, iPhone 15 Pro frame"
 
 IMAGE_13_2: "Architecture diagram showing Manager + Model + View pattern: User Action → View → Manager.shared (cache check) → SwiftData Query → Cache Update → View Update"
 
@@ -489,7 +489,7 @@ IMAGE_13_3: "SwiftData entity relationship diagram showing: HolidayRule, Calenda
 
 IMAGE_13_4: "Navigation flow diagram showing iPad (split view with sidebar) and iPhone (tab bar) patterns, with arrows showing transitions"
 
-IMAGE_13_5: "WeekGrid widget family showing Small (week number only), Medium (week + date range + countdown), Large (7-day calendar with events)"
+IMAGE_13_5: "Onsen Planner widget family showing Small (week number only), Medium (week + date range + countdown), Large (7-day calendar with events)"
 ```
 
 ---
@@ -535,7 +535,7 @@ IMAGE_14_4: "JohoWeekBadge large week number display showing the number 42 with 
 **AI Image Prompts:**
 
 ```
-IMAGE_15_1: "WeekGrid Star Page (Special Days) full screenshot showing: bento header with year picker, stats row with colored indicators, collapsible sections by type, iPhone 15 Pro frame"
+IMAGE_15_1: "Onsen Planner Star Page (Special Days) full screenshot showing: bento header with year picker, stats row with colored indicators, collapsible sections by type, iPhone 15 Pro frame"
 
 IMAGE_15_2: "Star Page header anatomy with annotations: icon zone (40pt), title 'Special Days', year picker (< 2026 >), stats row (●13 ○11 ◆5)"
 

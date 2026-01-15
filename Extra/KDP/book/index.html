@@ -381,7 +381,7 @@ Reference</a></li>
 <li><a href="#chapter-13-app-architecture"
 id="toc-chapter-13-app-architecture">Chapter 13: App Architecture</a>
 <ul>
-<li><a href="#weekgrid-overview" id="toc-weekgrid-overview">WeekGrid
+<li><a href="#weekgrid-overview" id="toc-weekgrid-overview">Onsen Planner
 Overview</a></li>
 <li><a href="#architecture-pattern"
 id="toc-architecture-pattern">Architecture Pattern</a></li>
@@ -433,7 +433,7 @@ Page” Golden Standard</a>
 <li><a href="#what-is-a-star-page" id="toc-what-is-a-star-page">What is
 a Star Page?</a></li>
 <li><a href="#weekgrids-star-page"
-id="toc-weekgrids-star-page">WeekGrid’s Star Page</a></li>
+id="toc-weekgrids-star-page">Onsen Planner’s Star Page</a></li>
 <li><a href="#anatomy-of-the-star-page"
 id="toc-anatomy-of-the-star-page">Anatomy of the Star Page</a></li>
 <li><a href="#complete-star-page-implementation"
@@ -564,7 +564,7 @@ packaging, Japan has perfected the art of visual communication. This
 book reveals the complete Joho Dezain (Jōhō Dezain) system and shows you
 how to apply it to modern app development.</p>
 <p>This is not a theoretical design book. It’s built around a real
-production iOS app called WeekGrid. You’ll see exactly how every
+production iOS app called Onsen Planner. You’ll see exactly how every
 principle translates to working code, with before-and-after comparisons
 that demonstrate the dramatic improvement Joho Dezain brings to user
 interfaces.</p>
@@ -579,7 +579,7 @@ sequentially or jump to specific topics.</p>
 <p><strong>Part 3: Component Library</strong> provides production-ready
 patterns. Use this when building actual interfaces.</p>
 <p><strong>Part 4: Case Study</strong> demonstrates everything in
-context through the WeekGrid app. This is where theory becomes
+context through the Onsen Planner app. This is where theory becomes
 practice.</p>
 <p><strong>Part 5: Implementation</strong> gives you the tools to apply
 Joho Dezain to your own projects, including code patterns and audit
@@ -5840,7 +5840,7 @@ class="sourceCode swift"><code class="sourceCode swift"><span id="cb193-1"><a hr
 │                                                             │
 └─────────────────────────────────────────────────────────────┘</code></pre>
 <hr />
-<p><em>Next: Part 4 — Case Study: WeekGrid</em></p>
+<p><em>Next: Part 4 — Case Study: Onsen Planner</em></p>
 <h1 id="chapter-13-app-architecture">Chapter 13: App Architecture</h1>
 <blockquote>
 <p>“Design systems don’t exist in theory. They exist in shipping
@@ -5848,11 +5848,11 @@ products.”</p>
 </blockquote>
 <hr />
 <p>Part 4 demonstrates Joho Dezain through a real production app:
-WeekGrid. This iOS calendar app displays ISO 8601 week numbers with
+Onsen Planner. This iOS calendar app displays ISO 8601 week numbers with
 semantic color coding. Every screen, every component, and every
 interaction follows the Joho Dezain principles we’ve covered.</p>
 <hr />
-<h2 id="weekgrid-overview">WeekGrid Overview</h2>
+<h2 id="weekgrid-overview">Onsen Planner Overview</h2>
 <p><strong>What it does:</strong> Displays week numbers with visual
 indication of holidays, events, and special days.</p>
 <p><strong>Core features:</strong> - ISO 8601 week number display -
@@ -5864,7 +5864,7 @@ persistence - WidgetKit for home screen widgets - App Intents for Siri
 integration</p>
 <hr />
 <h2 id="architecture-pattern">Architecture Pattern</h2>
-<p>WeekGrid uses a Manager + Model + View pattern:</p>
+<p>Onsen Planner uses a Manager + Model + View pattern:</p>
 <pre><code>┌─────────────────────────────────────────────────────────────┐
 │                                                             │
 │   User Action                                               │
@@ -6118,7 +6118,7 @@ class="sourceCode swift"><code class="sourceCode swift"><span id="cb203-1"><a hr
 <span id="cb203-32"><a href="#cb203-32" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <hr />
 <h2 id="multi-target-support">Multi-Target Support</h2>
-<p>WeekGrid shares code between the main app and widget extension:</p>
+<p>Onsen Planner shares code between the main app and widget extension:</p>
 <pre><code>┌─────────────────────────────────────────────────────────────┐
 │                                                             │
 │                    Shared Code                              │
@@ -6283,7 +6283,7 @@ class="sourceCode swift"><code class="sourceCode swift"><span id="cb208-1"><a hr
 <p>“A calendar is a year made visible.”</p>
 </blockquote>
 <hr />
-<p>The calendar is WeekGrid’s primary interface. It demonstrates how
+<p>The calendar is Onsen Planner’s primary interface. It demonstrates how
 Joho Dezain handles dense, scannable information displays. Every
 decision—from cell size to color coding—serves rapid comprehension.</p>
 <hr />
@@ -6811,7 +6811,7 @@ Page” Golden Standard</h1>
 </blockquote>
 <hr />
 <p>Every design system needs a reference implementation—a single page
-that demonstrates every principle in harmony. In WeekGrid, this is the
+that demonstrates every principle in harmony. In Onsen Planner, this is the
 “Star Page” (★). It’s not just a feature screen; it’s a teaching
 document rendered as UI.</p>
 <hr />
@@ -6819,7 +6819,7 @@ document rendered as UI.</p>
 <p>A Star Page is a real, functional screen that serves dual
 purposes:</p>
 <ol type="1">
-<li><strong>For users:</strong> A useful feature (in WeekGrid, a
+<li><strong>For users:</strong> A useful feature (in Onsen Planner, a
 quick-glance dashboard)</li>
 <li><strong>For developers:</strong> A canonical reference for
 implementing Joho Dezain</li>
@@ -6828,7 +6828,7 @@ implementing Joho Dezain</li>
 system by studying one file. Every component, every spacing decision,
 every color choice is visible in context.</p>
 <hr />
-<h2 id="weekgrids-star-page">WeekGrid’s Star Page</h2>
+<h2 id="weekgrids-star-page">Onsen Planner’s Star Page</h2>
 <p>The Star Page shows today’s context at a glance:</p>
 <pre><code>┌─────────────────────────────────────────────────────────────┐
 │                                                             │

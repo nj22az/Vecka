@@ -1,4 +1,4 @@
-# WeekGrid iOS App - Critical Bugs Audit
+# Onsen Planner iOS App - Critical Bugs Audit
 **Date:** 2026-01-10
 **Audited by:** Claude Code
 

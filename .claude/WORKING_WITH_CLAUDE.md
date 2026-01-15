@@ -1,4 +1,4 @@
-# Working with Claude on WeekGrid
+# Working with Claude on Onsen Planner
 
 A practical guide for collaborating with Claude Code on this project.
 
@@ -41,7 +41,7 @@ Vecka/
 
 ## The Golden Standard: Star Page
 
-**Star Page** (`Vecka/Views/SpecialDaysListView.swift`) is the reference implementation for all UI in WeekGrid.
+**Star Page** (`Vecka/Views/SpecialDaysListView.swift`) is the reference implementation for all UI in Onsen Planner.
 
 ### Why Star Page is the Standard
 

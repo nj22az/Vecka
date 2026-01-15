@@ -20,7 +20,7 @@ struct OnboardingView: View {
             iconColor: JohoColors.cyan,
             title: "ISO 8601 Week Numbers",
             subtitle: "Track time the way professionals do",
-            description: "WeekGrid displays weeks using the international ISO 8601 standard. Week 1 starts on the first Monday of the year containing at least 4 days."
+            description: "Onsen Planner displays weeks using the international ISO 8601 standard. Week 1 starts on the first Monday of the year containing at least 4 days."
         ),
         OnboardingPage(
             icon: "square.grid.3x3.fill",

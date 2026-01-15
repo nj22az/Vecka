@@ -2,7 +2,7 @@
 
 **Date:** January 8, 2026
 **Market Focus:** US & IT (Italian) Amazon
-**Book Concept:** A practical guide to Japanese Information Design principles with a real-world case study (WeekGrid app)
+**Book Concept:** A practical guide to Japanese Information Design principles with a real-world case study (Onsen Planner app)
 
 ---
 
@@ -16,7 +16,7 @@ The 情報デザイン (Japanese Information Design) niche represents a **high-p
 2. Mobile app/UI design with information design principles
 3. A real-world case study demonstrating the complete system
 
-The WeekGrid app provides an authentic, documented case study that no competitor can replicate.
+The Onsen Planner app provides an authentic, documented case study that no competitor can replicate.
 
 ---
 
@@ -131,9 +131,9 @@ Unlike Western information design which evolved from statistics and academia (Tu
 | Space | Fill the space | Ma (間) - purposeful emptiness |
 | Borders | Optional styling | Structural definition |
 
-### Case Study Advantage: WeekGrid
+### Case Study Advantage: Onsen Planner
 
-The book includes a **complete, documented case study** of the WeekGrid iOS app:
+The book includes a **complete, documented case study** of the Onsen Planner iOS app:
 
 - Full design system specification
 - Color semantics (Yellow=Today, Cyan=Events, Pink=Holidays, etc.)
@@ -243,7 +243,7 @@ Net royalty: $14.99 × 0.70 = $10.49 per sale
 | Criterion | Status | Notes |
 |-----------|--------|-------|
 | ✅ Market gap exists | PASS | No Japanese info design for apps |
-| ✅ Unique value proposition | PASS | WeekGrid case study is unreplicable |
+| ✅ Unique value proposition | PASS | Onsen Planner case study is unreplicable |
 | ✅ Positive margin | PASS | $9.49+ per paperback sale |
 | ✅ Sustainable trend | PASS | Design systems growing, Japanese aesthetics stable |
 | ✅ Competition manageable | PASS | Classics are dated, no direct competitor |
@@ -280,7 +280,7 @@ Net royalty: $14.99 × 0.70 = $10.49 per sale
 
 ### Key Differentiators to Emphasize
 1. Authentic Japanese design philosophy (情報デザイン)
-2. Real production case study (WeekGrid app)
+2. Real production case study (Onsen Planner app)
 3. Practical implementation guide with code
 4. Modern mobile-first approach
 5. Design system documentation methodology

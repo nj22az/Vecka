@@ -67,7 +67,7 @@ All other trademarks are the property of their respective owners.
 - Chapter 11: Navigation Patterns
 - Chapter 12: Data Display
 
-**Part 4: Case Study — WeekGrid**
+**Part 4: Case Study — Onsen Planner**
 
 - Chapter 13: App Architecture
 - Chapter 14: Calendar Design
@@ -5396,14 +5396,14 @@ struct JohoLoadingState: View {
 
 ---
 
-*Next: Part 4 — Case Study: WeekGrid*
+*Next: Part 4 — Case Study: Onsen Planner*
 
 
 ewpage
 
 ---
 
-# Part 4: Case Study — WeekGrid
+# Part 4: Case Study — Onsen Planner
 
 ---
 
@@ -5416,11 +5416,11 @@ ewpage
 
 ---
 
-Part 4 demonstrates 情報デザイン through a real production app: WeekGrid. This iOS calendar app displays ISO 8601 week numbers with semantic color coding. Every screen, every component, and every interaction follows the 情報デザイン principles we've covered.
+Part 4 demonstrates 情報デザイン through a real production app: Onsen Planner. This iOS calendar app displays ISO 8601 week numbers with semantic color coding. Every screen, every component, and every interaction follows the 情報デザイン principles we've covered.
 
 ---
 
-## WeekGrid Overview
+## Onsen Planner Overview
 
 **What it does:** Displays week numbers with visual indication of holidays, events, and special days.
 
@@ -5442,7 +5442,7 @@ Part 4 demonstrates 情報デザイン through a real production app: WeekGrid. 
 
 ## Architecture Pattern
 
-WeekGrid uses a Manager + Model + View pattern:
+Onsen Planner uses a Manager + Model + View pattern:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -5740,7 +5740,7 @@ struct WeekDetailView: View {
 
 ## Multi-Target Support
 
-WeekGrid shares code between the main app and widget extension:
+Onsen Planner shares code between the main app and widget extension:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -5938,7 +5938,7 @@ ewpage
 
 ---
 
-The calendar is WeekGrid's primary interface. It demonstrates how 情報デザイン handles dense, scannable information displays. Every decision—from cell size to color coding—serves rapid comprehension.
+The calendar is Onsen Planner's primary interface. It demonstrates how 情報デザイン handles dense, scannable information displays. Every decision—from cell size to color coding—serves rapid comprehension.
 
 ---
 
@@ -6541,7 +6541,7 @@ ewpage
 
 ---
 
-Every design system needs a reference implementation—a single page that demonstrates every principle in harmony. In WeekGrid, this is the "Star Page" (★). It's not just a feature screen; it's a teaching document rendered as UI.
+Every design system needs a reference implementation—a single page that demonstrates every principle in harmony. In Onsen Planner, this is the "Star Page" (★). It's not just a feature screen; it's a teaching document rendered as UI.
 
 ---
 
@@ -6549,14 +6549,14 @@ Every design system needs a reference implementation—a single page that demons
 
 A Star Page is a real, functional screen that serves dual purposes:
 
-1. **For users:** A useful feature (in WeekGrid, a quick-glance dashboard)
+1. **For users:** A useful feature (in Onsen Planner, a quick-glance dashboard)
 2. **For developers:** A canonical reference for implementing 情報デザイン
 
 If your app has a Star Page, new team members can learn the design system by studying one file. Every component, every spacing decision, every color choice is visible in context.
 
 ---
 
-## WeekGrid's Star Page
+## Onsen Planner's Star Page
 
 The Star Page shows today's context at a glance:
 

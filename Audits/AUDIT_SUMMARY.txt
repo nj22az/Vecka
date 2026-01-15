@@ -1,7 +1,7 @@
 ================================================================================
 VECKA iOS APP - APP STORE DEPLOYMENT AUDIT REPORT
 Generated: 2026-01-06
-Project: WeekGrid (Vecka)
+Project: Onsen Planner (Vecka)
 Bundle ID: Johansson.Vecka
 ================================================================================
 
@@ -25,9 +25,9 @@ CRITICAL ISSUES (Must Fix)
    - Impact: App Store submission will be rejected
    - Required since: January 2024
 
-3. APP NAME: "Onsen Planner" should be "WeekGrid"
+3. APP NAME: "Onsen Planner" should be "Onsen Planner"
    - Current: CFBundleDisplayName = "Onsen Planner"
-   - Fix: Update Info.plist keys to "WeekGrid"
+   - Fix: Update Info.plist keys to "Onsen Planner"
    - Impact: Wrong name on App Store
    - Location: /Users/nilsjohansson/Documents/AppDevelopment/Swift/Vecka/Vecka/Info.plist
 
@@ -133,7 +133,7 @@ Positive Findings:
 Critical Issues:
   1. Deployment target iOS 26.0 must be changed to 18.0
   2. PrivacyInfo.xcprivacy must be created
-  3. App name must be changed from "Onsen Planner" to "WeekGrid"
+  3. App name must be changed from "Onsen Planner" to "Onsen Planner"
   4. CloudKit entitlements must be added
 
 ================================================================================
@@ -164,7 +164,7 @@ NEXT STEPS
 2. Apply all 4 critical fixes:
    - Fix deployment target (iOS 18.0)
    - Create privacy manifest
-   - Update app name to "WeekGrid"
+   - Update app name to "Onsen Planner"
    - Add CloudKit entitlements
 
 3. Verify fixes with included verification commands
@@ -181,7 +181,7 @@ BUNDLE IDENTIFIER & TEAM INFO
 
 Bundle ID: Johansson.Vecka
 Team ID: P4LGU6F45C
-App Name (Current): Onsen Planner (WRONG - should be WeekGrid)
+App Name (Current): Onsen Planner (WRONG - should be Onsen Planner)
 Minimum OS (Current): iOS 26.0 (WRONG - should be 18.0)
 Deployment Target: iOS 18+
 

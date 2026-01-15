@@ -4,7 +4,7 @@
 
 ---
 
-The calendar is WeekGrid's primary interface. It demonstrates how Joho Dezain handles dense, scannable information displays. Every decision—from cell size to color coding—serves rapid comprehension.
+The calendar is Onsen Planner's primary interface. It demonstrates how Joho Dezain handles dense, scannable information displays. Every decision—from cell size to color coding—serves rapid comprehension.
 
 ---
 

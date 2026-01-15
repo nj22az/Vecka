@@ -4,11 +4,11 @@
 
 ---
 
-Part 4 demonstrates Joho Dezain through a real production app: WeekGrid. This iOS calendar app displays ISO 8601 week numbers with semantic color coding. Every screen, every component, and every interaction follows the Joho Dezain principles we've covered.
+Part 4 demonstrates Joho Dezain through a real production app: Onsen Planner. This iOS calendar app displays ISO 8601 week numbers with semantic color coding. Every screen, every component, and every interaction follows the Joho Dezain principles we've covered.
 
 ---
 
-## WeekGrid Overview
+## Onsen Planner Overview
 
 **What it does:** Displays week numbers with visual indication of holidays, events, and special days.
 
@@ -30,7 +30,7 @@ Part 4 demonstrates Joho Dezain through a real production app: WeekGrid. This iO
 
 ## Architecture Pattern
 
-WeekGrid uses a Manager + Model + View pattern:
+Onsen Planner uses a Manager + Model + View pattern:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -328,7 +328,7 @@ struct WeekDetailView: View {
 
 ## Multi-Target Support
 
-WeekGrid shares code between the main app and widget extension:
+Onsen Planner shares code between the main app and widget extension:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐

@@ -703,5 +703,5 @@ struct JohoLoadingState: View {
 
 ---
 
-*Next: Part 4 — Case Study: WeekGrid*
+*Next: Part 4 — Case Study: Onsen Planner*
 

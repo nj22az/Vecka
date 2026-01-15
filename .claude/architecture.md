@@ -1,4 +1,4 @@
-# WeekGrid Architecture
+# Onsen Planner Architecture
 
 > Reference this file when adding features, understanding code structure, or modifying data flow.
 
@@ -159,7 +159,7 @@ Maximum 2 regions selectable (enforced by `HolidayRegionSelection`).
 | Main App | `Johansson.Vecka` |
 | Widget | `Johansson.Vecka.VeckaWidget` |
 
-**App Store Name:** WeekGrid
+**App Store Name:** Onsen Planner
 
 ---
 
