@@ -188,10 +188,7 @@ struct ModernCalendarView: View {
         }
     }
 
-    // Export action removed - share functionality not ready yet
-    private var sidebarExportAction: (() -> Void)? {
-        return nil
-    }
+    // Export functionality available via calendar page header menu
     @State private var showTripEditor = false
     @State private var showContactEditor = false
     @State private var showObservanceEditor = false
@@ -856,6 +853,41 @@ struct ModernCalendarView: View {
                         )
                     }
                     .buttonStyle(.plain)
+                }
+
+                // Export button with menu
+                Menu {
+                    Button {
+                        pdfExportContext = .day(selectedDate)
+                        showPDFExport = true
+                    } label: {
+                        Label("Export Day", systemImage: "calendar.day.timeline.left")
+                    }
+
+                    Button {
+                        pdfExportContext = .week(weekNumber: currentMonth.weeks.first { $0.days.contains { Calendar.iso8601.isDate($0.date, inSameDayAs: selectedDate) } }?.weekNumber ?? weekNumber, year: currentMonth.year)
+                        showPDFExport = true
+                    } label: {
+                        Label("Export Week", systemImage: "calendar")
+                    }
+
+                    Button {
+                        pdfExportContext = .month(month: currentMonth.month, year: currentMonth.year)
+                        showPDFExport = true
+                    } label: {
+                        Label("Export Month", systemImage: "calendar.badge.clock")
+                    }
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(PageHeaderColor.calendar.accent)
+                        .frame(width: 32, height: 32)
+                        .background(PageHeaderColor.calendar.lightBackground)
+                        .clipShape(Squircle(cornerRadius: 6))
+                        .overlay(
+                            Squircle(cornerRadius: 6)
+                                .stroke(colors.border, lineWidth: 1)
+                        )
                 }
 
                 // Week badge
