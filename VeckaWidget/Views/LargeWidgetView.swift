@@ -242,7 +242,8 @@ struct VeckaLargeWidgetView: View {
     }
 
     private func weekNumber(for weekIndex: Int) -> Int {
-        guard let firstDayOfWeek = weeksInMonth[weekIndex].compactMap({ $0 }).first,
+        guard weekIndex < weeksInMonth.count,
+              let firstDayOfWeek = weeksInMonth[weekIndex].compactMap({ $0 }).first,
               let date = dateFor(day: firstDayOfWeek) else {
             return entry.weekNumber
         }

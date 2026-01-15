@@ -205,7 +205,7 @@ struct ContactListView: View {
         .onChange(of: contacts.count) { _, _ in
             // Rescan when contacts change
             refreshContactCache()  // 情報デザイン: Rebuild cache when contacts change
-            Task {
+            Task { @MainActor in
                 await duplicateManager.scanForDuplicates(contacts: contacts, modelContext: modelContext)
                 loadDuplicateSuggestions()
             }

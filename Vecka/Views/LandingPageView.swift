@@ -334,7 +334,11 @@ struct LandingPageView: View {
 
             let firstName = contact.givenName.isEmpty ? contact.familyName : contact.givenName
 
-            if closestBirthday == nil || daysUntil < closestBirthday!.daysUntil {
+            if let existingBirthday = closestBirthday {
+                if daysUntil < existingBirthday.daysUntil {
+                    closestBirthday = (firstName, daysUntil)
+                }
+            } else {
                 closestBirthday = (firstName, daysUntil)
             }
         }
@@ -413,7 +417,10 @@ struct LandingPageView: View {
         }
 
         // 5. Days left in month
-        let endOfMonth = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: calendar.date(from: calendar.dateComponents([.year, .month], from: today))!)!
+        guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: today)),
+              let endOfMonth = calendar.date(byAdding: DateComponents(month: 1, day: -1), to: startOfMonth) else {
+            return stats
+        }
         let daysLeftInMonth = calendar.dateComponents([.day], from: today, to: endOfMonth).day ?? 0
         stats.append(RandomStat(
             icon: "calendar",
@@ -482,7 +489,11 @@ struct LandingPageView: View {
             guard days > 0 && days <= 365 else { continue }
 
             for holiday in holidays where holiday.isBankHoliday {
-                if closest == nil || days < closest!.daysUntil {
+                if let existingClosest = closest {
+                    if days < existingClosest.daysUntil {
+                        closest = (holiday.displayTitle, days)
+                    }
+                } else {
                     closest = (holiday.displayTitle, days)
                 }
             }

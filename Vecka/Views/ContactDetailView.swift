@@ -118,7 +118,7 @@ struct ContactDetailView: View {
                 groupSection
 
                 // Notes section
-                if isEditMode || (contact.note != nil && !contact.note!.isEmpty) {
+                if isEditMode || (contact.note?.isEmpty == false) {
                     notesSection
                 }
 

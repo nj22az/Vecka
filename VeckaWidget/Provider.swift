@@ -37,39 +37,73 @@ struct VeckaWidgetProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (VeckaWidgetEntry) -> Void) {
-        // TEMP: Simple immediate snapshot for debugging
+        if context.isPreview {
+            // For widget gallery previews, use static preview data
+            completion(.preview)
+            return
+        }
+
+        // For actual snapshots, fetch real data synchronously where possible
         let now = Date()
+        let (todaysHolidays, upcomingHolidays) = fetchHolidays(for: now)
+        let todaysBirthdays = fetchBirthdays(for: now)
+        let weekBirthdays = fetchWeekBirthdays(for: now)
+
         let entry = VeckaWidgetEntry(
             date: now,
-            todaysEvents: [],
+            todaysEvents: [],  // Skip async calendar events for snapshots
             weekEvents: [:],
             upcomingEvent: nil,
-            todaysHolidays: [],
-            upcomingHolidays: [],
-            todaysBirthdays: [],
-            weekBirthdays: [:],
-            calendarAccessDenied: false
+            todaysHolidays: todaysHolidays,
+            upcomingHolidays: upcomingHolidays,
+            todaysBirthdays: todaysBirthdays,
+            weekBirthdays: weekBirthdays,
+            calendarAccessDenied: !isCalendarAuthorized
         )
         completion(entry)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<VeckaWidgetEntry>) -> Void) {
-        // TEMP: Simple immediate timeline for debugging
         let now = Date()
-        let entry = VeckaWidgetEntry(
-            date: now,
-            todaysEvents: [],
-            weekEvents: [:],
-            upcomingEvent: nil,
-            todaysHolidays: [],
-            upcomingHolidays: [],
-            todaysBirthdays: [],
-            weekBirthdays: [:],
-            calendarAccessDenied: false
-        )
-        let nextUpdate = now.addingTimeInterval(3600) // 1 hour
-        let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
-        completion(timeline)
+        let calendar = Self.calendar
+
+        // Fetch holidays synchronously (no async needed)
+        let (todaysHolidays, upcomingHolidays) = fetchHolidays(for: now)
+        let todaysBirthdays = fetchBirthdays(for: now)
+        let weekBirthdays = fetchWeekBirthdays(for: now)
+
+        // Fetch calendar events (can access EventKit synchronously in widgets)
+        fetchCalendarEvents(for: now) { todaysEvents, weekEvents, upcomingEvent in
+            let entry = VeckaWidgetEntry(
+                date: now,
+                todaysEvents: todaysEvents,
+                weekEvents: weekEvents,
+                upcomingEvent: upcomingEvent,
+                todaysHolidays: todaysHolidays,
+                upcomingHolidays: upcomingHolidays,
+                todaysBirthdays: todaysBirthdays,
+                weekBirthdays: weekBirthdays,
+                calendarAccessDenied: !self.isCalendarAuthorized
+            )
+
+            // Calculate next update time: midnight or next event, whichever is sooner
+            let nextMidnight = calendar.startOfDay(for: calendar.date(byAdding: .day, value: 1, to: now) ?? now)
+            var nextUpdate = nextMidnight
+
+            // Update at next event if sooner than midnight
+            if let event = upcomingEvent, event.startDate < nextMidnight {
+                nextUpdate = event.startDate
+            }
+
+            // Minimum update interval of 15 minutes to avoid excessive refreshes
+            let minimumUpdate = now.addingTimeInterval(15 * 60)
+            if nextUpdate < minimumUpdate {
+                nextUpdate = minimumUpdate
+            }
+
+            let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
+            completion(timeline)
+        }
     }
 
     // MARK: - Calendar Event Fetching
