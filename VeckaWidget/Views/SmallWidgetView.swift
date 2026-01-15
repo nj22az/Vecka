@@ -27,7 +27,9 @@ struct VeckaSmallWidgetView: View {
 
     private var year: String { String(entry.year) }
 
+    // 情報デザイン: Use theme constants for consistency
     private var borders: JohoWidget.Borders.Weights { JohoWidget.Borders.small }
+    private var typo: JohoWidget.Typography.Scale { JohoWidget.Typography.small }
 
     // MARK: - Body
 
@@ -48,40 +50,40 @@ struct VeckaSmallWidgetView: View {
 
             // Content: Information in upper-right area
             VStack(alignment: .trailing, spacing: 2) {
-                // Week number - hero
+                // Week number - hero (情報デザイン: typo.weekNumber = 48pt for small)
                 HStack(alignment: .firstTextBaseline, spacing: 2) {
                     Text("W")
-                        .font(.system(size: 14, weight: .medium, design: .rounded))
-                        .foregroundColor(.black.opacity(0.5))
+                        .font(.system(size: typo.headline, weight: .medium, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.text.opacity(0.5))
                     Text("\(weekNumber)")
-                        .font(.system(size: 42, weight: .black, design: .rounded))
-                        .foregroundColor(.black)
+                        .font(.system(size: typo.weekNumber, weight: .black, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.text)
                 }
 
                 // Date row
                 HStack(spacing: 4) {
                     Text(weekdayShort)
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundColor(.black.opacity(0.6))
+                        .font(.system(size: typo.headline, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
 
-                    // Today indicator
+                    // 情報デザイン: Today indicator with semantic NOW color + BLACK border
                     ZStack {
                         Circle()
-                            .fill(Color(red: 1, green: 0.9, blue: 0.4))
+                            .fill(JohoWidget.Colors.now)
                             .frame(width: 28, height: 28)
                         Circle()
-                            .stroke(Color.black, lineWidth: 1.5)
+                            .stroke(JohoWidget.Colors.border, lineWidth: borders.selected)
                             .frame(width: 28, height: 28)
                         Text("\(dayOfMonth)")
-                            .font(.system(size: 14, weight: .black, design: .rounded))
-                            .foregroundColor(.black)
+                            .font(.system(size: typo.body, weight: .black, design: .rounded))
+                            .foregroundStyle(JohoWidget.Colors.text)
                     }
                 }
 
                 // Month + Year
                 Text("\(monthShort) \(year)")
-                    .font(.system(size: 11, weight: .medium, design: .rounded))
-                    .foregroundColor(.black.opacity(0.5))
+                    .font(.system(size: typo.body, weight: .medium, design: .rounded))
+                    .foregroundStyle(JohoWidget.Colors.text.opacity(0.5))
 
                 Spacer()
             }
@@ -91,7 +93,7 @@ struct VeckaSmallWidgetView: View {
         }
         .widgetURL(URL(string: "vecka://week/\(weekNumber)/\(entry.year)"))
         .containerBackground(for: .widget) {
-            Color.white
+            JohoWidget.Colors.content
         }
     }
 }
