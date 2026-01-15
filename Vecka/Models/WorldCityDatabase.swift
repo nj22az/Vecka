@@ -147,7 +147,14 @@ struct WorldCityDatabase {
 
     /// Get default city (STM - Stora Mellösa)
     static var defaultCity: WorldCity {
-        cities.first { $0.code == "STM" } ?? cities[0]
+        cities.first { $0.code == "STM" } ?? cities.first ?? WorldCity(
+            name: "Stockholm",
+            country: "Sweden",
+            countryCode: "SE",
+            timezone: "Europe/Stockholm",
+            code: "STM",
+            region: "europe"
+        )
     }
 
     /// Get cities by region

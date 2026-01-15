@@ -158,7 +158,13 @@ struct MonthTheme {
     }()
 
     static func theme(for month: Int) -> MonthTheme {
-        themes.first(where: { $0.month == month }) ?? themes[0]
+        themes.first(where: { $0.month == month }) ?? themes.first ?? MonthTheme(
+            month: 1,
+            name: "January",
+            icon: "calendar",
+            accentColor: Color(hex: "4A90D9"),
+            lightBackground: Color(hex: "E8F4FD")
+        )
     }
 
     /// Fallback themes if JSON fails to load
