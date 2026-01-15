@@ -206,6 +206,49 @@ context.insert(holiday)
 
 ---
 
+## Data Export System
+
+### Exportable Data Types
+
+All data logged to calendar days must be exportable. The `EntryType` enum defines the 6 entry types:
+
+| Entry Type | SwiftData Model | Key Fields | Export Formats |
+|------------|-----------------|------------|----------------|
+| **Note** | `DailyNote` | content, color, priority, symbol, scheduledAt, duration | PDF |
+| **Expense** | `ExpenseItem` | amount, currency, category, merchant, description, isReimbursable | PDF, CSV |
+| **Trip** | `TravelTrip` | tripName, destination, purpose, tripType, startDate, endDate | PDF |
+| **Holiday** | `HolidayRule` | name, region, isBankHoliday, type, localName | PDF |
+| **Event** | `CountdownEvent` | title, targetDate, icon, colorHex | PDF |
+| **Birthday** | `Contact.birthday` | givenName, familyName, birthday | PDF, VCF |
+| **Mileage** | `MileageEntry` | distance, startLocation, endLocation, purpose, date | PDF, CSV |
+
+### Export Services
+
+| Service | Location | Output |
+|---------|----------|--------|
+| `SimplePDFExportService` | `Services/SimplePDFRenderer.swift` | PDF (day/week/month) |
+| `PDFExportService` | `Services/PDFExportService.swift` | PDF (detailed reports) |
+| `ContactExportService` | `Services/ContactExportService.swift` | PDF (contact directory) |
+| `CSVExportService` | `Services/CSVExportService.swift` | CSV (expenses, mileage) |
+
+### Export Entry Points
+
+| View | Export Button | Formats |
+|------|---------------|---------|
+| Calendar Page Header | Export menu (day/week/month) | PDF |
+| Contacts List Header | Export button | PDF, VCF |
+| Expenses List | Menu → Export | PDF, CSV |
+| Contact Detail | Share button | VCF, QR PNG |
+
+### Adding New Export Format
+
+1. Create export service in `Vecka/Services/`
+2. Add export option to relevant view
+3. Use `ShareSheet` for iOS share functionality
+4. Update this documentation
+
+---
+
 ## Debugging Tips
 
 ### Week Calculation Issues
