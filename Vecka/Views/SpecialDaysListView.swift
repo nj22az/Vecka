@@ -679,10 +679,20 @@ struct SpecialDaysListView: View {
             HapticManager.selection()
             activePopoverType = type
         } label: {
-            Image(systemName: type.defaultIcon)
-                .font(.system(size: 16, weight: .bold, design: .rounded))
-                .foregroundStyle(type.accentColor)
-                .frame(width: 28, height: 28)
+            HStack(spacing: 4) {
+                Image(systemName: type.defaultIcon)
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(type.accentColor)
+
+                Text(String(count))
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(JohoColors.black)
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(type.lightBackground.opacity(0.5))
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
         .buttonStyle(.plain)
         .popover(isPresented: Binding(
