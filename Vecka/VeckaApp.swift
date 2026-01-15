@@ -80,12 +80,22 @@ struct VeckaApp: App {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
             // Fallback to local-only if CloudKit fails (e.g., no iCloud account)
-            Log.e("CloudKit ModelContainer failed: \(error). Falling back to local storage.")
+            Log.e("Primary ModelContainer failed: \(error). Falling back to local storage.")
             let localConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
             do {
                 return try ModelContainer(for: schema, configurations: [localConfig])
             } catch {
-                fatalError("Could not create ModelContainer: \(error)")
+                // CRITICAL: Use in-memory store as LAST RESORT instead of crashing
+                // This allows the app to start even with corrupted persistent store
+                // User will lose data but can at least use the app
+                Log.e("Local ModelContainer failed: \(error). Using in-memory store as fallback.")
+                let memoryConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+                do {
+                    return try ModelContainer(for: schema, configurations: [memoryConfig])
+                } catch {
+                    // This should never happen - in-memory stores don't have migration issues
+                    fatalError("Could not create ModelContainer even in-memory: \(error)")
+                }
             }
         }
     }()

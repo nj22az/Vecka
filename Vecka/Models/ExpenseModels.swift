@@ -61,7 +61,8 @@ final class ExpenseTemplate {
     var notes: String?
     var isDefault: Bool
 
-    // Relationship
+    // Relationship - inverse required for SwiftData to properly manage parent-child
+    @Relationship(inverse: \ExpenseCategory.templates)
     var category: ExpenseCategory?
 
     init(
@@ -104,8 +105,11 @@ final class ExpenseItem {
     var receiptImageData: Data?
     var receiptFileName: String?
 
-    // Relationships
+    // Relationships - @Relationship required for SwiftData to properly manage references
+    @Relationship
     var category: ExpenseCategory?
+
+    @Relationship(inverse: \TravelTrip.expenses)
     var trip: TravelTrip?
 
     // Computed
@@ -297,7 +301,8 @@ final class MileageEntry {
     var endLatitude: Double?
     var endLongitude: Double?
 
-    // Relationship
+    // Relationship - @Relationship required for SwiftData to properly manage references
+    @Relationship(inverse: \TravelTrip.mileageEntries)
     var trip: TravelTrip?
 
     // Computed
