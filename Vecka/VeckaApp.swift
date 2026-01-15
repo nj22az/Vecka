@@ -67,10 +67,13 @@ struct VeckaApp: App {
             CalendarFact.self,
         ])
 
+        // CloudKit sync disabled: SwiftData models need inverse relationships,
+        // optional attributes, and no unique constraints for CloudKit compatibility.
+        // TODO: Enable CloudKit when models are updated for iCloud sync
         let modelConfiguration = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: false,
-            cloudKitDatabase: .automatic  // Enable CloudKit sync
+            cloudKitDatabase: .none  // Disabled until models are CloudKit-compatible
         )
 
         do {
