@@ -132,14 +132,34 @@ Vecka/
 
 ---
 
-## Supported Holiday Regions
+## Supported Holiday Regions (16 Countries)
 
-| Code | Country | Max 2 selectable |
-|------|---------|------------------|
-| SE | Sweden | ✓ |
-| US | United States | ✓ |
-| VN | Vietnam | ✓ |
+Users can select up to **2 regions** simultaneously.
 
+| Code | Country | Calendar Type |
+|------|---------|---------------|
+| **Nordic** |||
+| SE | Sweden | Gregorian + Easter |
+| NO | Norway | Gregorian + Easter |
+| DK | Denmark | Gregorian + Easter |
+| FI | Finland | Gregorian + Easter |
+| IS | Iceland | Gregorian + Easter |
+| **Europe** |||
+| DE | Germany | Gregorian + Easter |
+| GB | United Kingdom | Gregorian + Easter |
+| FR | France | Gregorian + Easter |
+| IT | Italy | Gregorian + Easter |
+| NL | Netherlands | Gregorian + Easter |
+| **Asia** |||
+| JP | Japan | Gregorian + Astronomical |
+| CN | China | Gregorian + Lunar |
+| HK | Hong Kong | Gregorian + Lunar + Easter |
+| TH | Thailand | Gregorian + Lunar (Buddhist) |
+| VN | Vietnam | Gregorian + Lunar |
+| **Americas** |||
+| US | United States | Gregorian |
+
+Holiday rules are defined in `HolidayManager.seedSwedishRules()`.
 Do NOT reference regions not in this list.
 
 ---

@@ -102,24 +102,26 @@ calendar.locale = Locale(identifier: "sv_SE")
 
 ## Holiday Calculation System
 
-**Five Types:**
-1. Fixed (e.g., Dec 25)
-2. Easter-relative (e.g., Good Friday)
-3. Floating (e.g., Midsummer)
-4. Nth weekday (e.g., Thanksgiving)
-5. Lunar (e.g., Tết)
+**Six Rule Types** (see `HolidayRuleType`):
+1. `fixed` — Fixed date (e.g., Dec 25)
+2. `easterRelative` — Days from Easter Sunday (e.g., Good Friday = -2)
+3. `floating` — Weekday within date range (e.g., Midsummer = Sat in Jun 20-26)
+4. `nthWeekday` — Nth weekday of month (e.g., Thanksgiving = 4th Thu in Nov)
+5. `lunar` — Lunar calendar date (e.g., Tết = 1st day of 1st lunar month)
+6. `astronomical` — Equinoxes/solstices (e.g., 春分の日)
 
-**Supported Regions:**
+**Supported Regions (16 Countries):**
 
-| Code | Country | Bank Holidays | Observances |
-|------|---------|---------------|-------------|
-| SE | Sweden | 12 | 8 |
-| US | United States | 11 | 5 |
-| VN | Vietnam | 6 | 1 (lunar) |
+| Region | Countries |
+|--------|-----------|
+| Nordic | SE, NO, DK, FI, IS |
+| Europe | DE, GB, FR, IT, NL |
+| Asia | JP, CN, HK, TH, VN |
+| Americas | US |
 
 Maximum 2 regions selectable (enforced by `HolidayRegionSelection`).
 
-**Adding Holidays:** Add `HolidayRule` entries in `HolidayManager.seedDefaultRules()`.
+**Adding Holidays:** Add `HolidayRule` entries in `HolidayManager.seedSwedishRules()`.
 
 ---
 
