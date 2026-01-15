@@ -268,6 +268,7 @@ struct CountdownListView: View {
                         name: custom.name,
                         days: days,
                         icon: custom.iconName,
+                        tasks: custom.tasks,  // 情報デザイン: Pass tasks for progress display
                         onDelete: {
                             deleteCustom(custom)
                         }
@@ -372,6 +373,7 @@ struct CountdownListView: View {
         name: String,
         days: Int,
         icon: String?,
+        tasks: [EventTask] = [],  // 情報デザイン: Event tasks for progress display
         onDelete: @escaping () -> Void
     ) -> some View {
         HStack(spacing: 0) {
@@ -388,12 +390,19 @@ struct CountdownListView: View {
                 .frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
-            // CENTER COMPARTMENT: Name + countdown (flexible)
+            // CENTER COMPARTMENT: Name + countdown + task progress (flexible)
             HStack(spacing: JohoDimensions.spacingXS) {
-                Text(name)
-                    .font(JohoFont.bodySmall)
-                    .foregroundStyle(JohoColors.black)
-                    .lineLimit(1)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(name)
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(JohoColors.black)
+                        .lineLimit(1)
+
+                    // 情報デザイン: Show task progress if event has tasks
+                    if !tasks.isEmpty {
+                        TaskProgressIndicator(tasks: tasks)
+                    }
+                }
 
                 Spacer(minLength: 4)
 
@@ -428,7 +437,7 @@ struct CountdownListView: View {
             .frame(width: 48, alignment: .center)
             .frame(maxHeight: .infinity)
         }
-        .frame(minHeight: 36)  // Match Star page row height
+        .frame(minHeight: tasks.isEmpty ? 36 : 48)  // 情報デザイン: Taller when showing task progress
         .contentShape(Rectangle())
         .contextMenu {
             Button(role: .destructive, action: onDelete) {

@@ -503,6 +503,9 @@ struct CustomCountdownDialog: View {
     @State private var iconName: String = "calendar.badge.clock"
     @State private var showingIconPicker = false
 
+    // Tasks/checklist (情報デザイン: Event preparation items)
+    @State private var tasks: [EventTask] = []
+
     // 情報デザイン: Events ALWAYS use purple color scheme
     private var eventAccentColor: Color { SpecialDayType.event.accentColor }
     private var eventLightBackground: Color { SpecialDayType.event.lightBackground }
@@ -835,6 +838,13 @@ struct CustomCountdownDialog: View {
             )
             .padding(.horizontal, JohoDimensions.spacingLG)
 
+            // ═══════════════════════════════════════════════════════════════
+            // TASKS SECTION: Checklist for event preparation (情報デザイン)
+            // ═══════════════════════════════════════════════════════════════
+            EventTasksSection(tasks: $tasks)
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.top, JohoDimensions.spacingMD)
+
             Spacer()
         }
         .johoBackground()
@@ -897,7 +907,8 @@ struct CustomCountdownDialog: View {
         }
 
         // Also save to UserDefaults for legacy countdown banner compatibility
-        let countdown = CustomCountdown(name: name, date: date, isAnnual: isAnnual, iconName: iconName)
+        // Include tasks for event preparation checklist (情報デザイン feature)
+        let countdown = CustomCountdown(name: name, date: date, isAnnual: isAnnual, iconName: iconName, tasks: tasks)
         var existingCountdowns: [CustomCountdown] = []
         if let data = UserDefaults.standard.data(forKey: "customCountdowns"),
            let countdowns = try? JSONDecoder().decode([CustomCountdown].self, from: data) {

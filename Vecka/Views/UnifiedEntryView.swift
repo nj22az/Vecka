@@ -71,6 +71,14 @@ struct JohoUnifiedEntrySheet: View {
     @State private var birthdayHasYear: Bool = true
 
     // ═══════════════════════════════════════════════════════════════
+    // EVENT FIELDS (情報デザイン: Countdown with tasks)
+    // ═══════════════════════════════════════════════════════════════
+    @State private var eventName: String = ""
+    @State private var eventIsAnnual: Bool = false
+    @State private var eventTasks: [EventTask] = []
+    @State private var eventIconName: String? = nil
+
+    // ═══════════════════════════════════════════════════════════════
     // SHARED DATE FIELDS
     // ═══════════════════════════════════════════════════════════════
     @State private var selectedYear: Int
@@ -111,6 +119,8 @@ struct JohoUnifiedEntrySheet: View {
             return !holidayName.trimmed.isEmpty
         case .birthday:
             return !birthdayFirstName.trimmed.isEmpty
+        case .event:
+            return !eventName.trimmed.isEmpty
         }
     }
 
@@ -393,6 +403,7 @@ struct JohoUnifiedEntrySheet: View {
         case .expense: expenseFields
         case .holiday: holidayFields
         case .birthday: birthdayFields
+        case .event: eventFields
         }
     }
 
@@ -744,6 +755,168 @@ struct JohoUnifiedEntrySheet: View {
     }
 
     // ═══════════════════════════════════════════════════════════════
+    // EVENT FIELDS (情報デザイン: Countdown with preparation tasks)
+    // ═══════════════════════════════════════════════════════════════
+
+    private var eventFields: some View {
+        VStack(spacing: 0) {
+            // Event name
+            fieldRow(icon: "calendar.badge.clock", color: selectedType.color) {
+                TextField("Event name", text: $eventName)
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+            }
+
+            thinWall
+
+            // Date
+            dateRow(year: $selectedYear, month: $selectedMonth, day: $selectedDay)
+
+            thinWall
+
+            // Annual toggle
+            eventAnnualSegment
+
+            thinWall
+
+            // Tasks section (情報デザイン: Embedded task list)
+            eventTasksRow
+        }
+    }
+
+    private var eventAnnualSegment: some View {
+        HStack(spacing: 0) {
+            iconZone(icon: "arrow.trianglehead.2.clockwise.rotate.90", color: selectedType.color)
+            verticalWall()
+
+            Button {
+                eventIsAnnual = false
+                HapticManager.selection()
+            } label: {
+                Text("ONE-TIME")
+                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .foregroundStyle(!eventIsAnnual ? colors.primary : colors.primary.opacity(0.5))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+                    .background(!eventIsAnnual ? selectedType.color.opacity(0.6) : Color.clear)
+            }
+            .buttonStyle(.plain)
+
+            verticalWall(width: 1)
+
+            Button {
+                eventIsAnnual = true
+                HapticManager.selection()
+            } label: {
+                Text("ANNUAL")
+                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .foregroundStyle(eventIsAnnual ? colors.primary : colors.primary.opacity(0.5))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+                    .background(eventIsAnnual ? selectedType.color.opacity(0.6) : Color.clear)
+            }
+            .buttonStyle(.plain)
+        }
+        .frame(height: 44)
+    }
+
+    private var eventTasksRow: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Tasks header
+            HStack(spacing: JohoDimensions.spacingSM) {
+                iconZone(icon: "checklist", color: selectedType.color)
+                verticalWall()
+
+                Text("PREPARATION TASKS")
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary.opacity(0.6))
+
+                Spacer()
+
+                // Task count
+                if !eventTasks.isEmpty {
+                    let completed = eventTasks.filter { $0.isCompleted && !$0.text.isEmpty }.count
+                    let total = eventTasks.filter { !$0.text.isEmpty }.count
+                    if total > 0 {
+                        Text("\(completed)/\(total)")
+                            .font(.system(size: 10, weight: .bold, design: .monospaced))
+                            .foregroundStyle(completed == total ? selectedType.color : colors.primary.opacity(0.5))
+                            .padding(.trailing, JohoDimensions.spacingMD)
+                    }
+                }
+            }
+            .frame(height: 44)
+
+            // Task list
+            ForEach(Array(eventTasks.enumerated()), id: \.element.id) { index, _ in
+                thinWall
+
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    // Checkbox
+                    Button {
+                        eventTasks[index].isCompleted.toggle()
+                        HapticManager.impact(.light)
+                    } label: {
+                        Image(systemName: eventTasks[index].isCompleted ? "checkmark.square.fill" : "square")
+                            .font(.system(size: 18, weight: .medium, design: .rounded))
+                            .foregroundStyle(eventTasks[index].isCompleted ? selectedType.color : colors.primary.opacity(0.4))
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.leading, JohoDimensions.spacingMD)
+
+                    // Task text
+                    TextField("Task", text: $eventTasks[index].text)
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .foregroundStyle(eventTasks[index].isCompleted ? colors.primary.opacity(0.4) : colors.primary)
+                        .strikethrough(eventTasks[index].isCompleted, color: colors.primary.opacity(0.4))
+
+                    // Delete button
+                    if !eventTasks[index].text.isEmpty {
+                        Button {
+                            withAnimation {
+                                eventTasks.remove(at: index)
+                            }
+                            HapticManager.notification(.warning)
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundStyle(colors.primary.opacity(0.3))
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.trailing, JohoDimensions.spacingMD)
+                    }
+                }
+                .frame(height: 40)
+            }
+
+            // Add task button
+            thinWall
+
+            Button {
+                withAnimation {
+                    eventTasks.append(EventTask(text: ""))
+                }
+                HapticManager.impact(.light)
+            } label: {
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.system(size: 16, weight: .medium, design: .rounded))
+                        .foregroundStyle(selectedType.color)
+
+                    Text("Add Task")
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundStyle(selectedType.color)
+
+                    Spacer()
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .frame(height: 40)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
     // SHARED FIELD COMPONENTS
     // ═══════════════════════════════════════════════════════════════
 
@@ -933,6 +1106,7 @@ struct JohoUnifiedEntrySheet: View {
         case .expense: saveExpense()
         case .holiday: saveHoliday()
         case .birthday: saveBirthday()
+        case .event: saveEvent()
         }
     }
 
@@ -1044,6 +1218,38 @@ struct JohoUnifiedEntrySheet: View {
             HapticManager.notification(.success)
         } catch {
             Log.w("Failed to save birthday: \(error.localizedDescription)")
+        }
+    }
+
+    private func saveEvent() {
+        let name = eventName.trimmed
+        guard !name.isEmpty else { return }
+
+        // Filter out empty tasks
+        let validTasks = eventTasks.filter { !$0.text.isEmpty }
+
+        let countdown = CustomCountdown(
+            name: name,
+            date: selectedDate,
+            isAnnual: eventIsAnnual,
+            iconName: eventIconName,
+            tasks: validTasks
+        )
+
+        // Load existing countdowns from UserDefaults
+        var countdowns: [CustomCountdown] = []
+        if let data = UserDefaults.standard.data(forKey: "customCountdowns"),
+           let decoded = try? JSONDecoder().decode([CustomCountdown].self, from: data) {
+            countdowns = decoded
+        }
+
+        // Add new countdown
+        countdowns.append(countdown)
+
+        // Save back to UserDefaults
+        if let encoded = try? JSONEncoder().encode(countdowns) {
+            UserDefaults.standard.set(encoded, forKey: "customCountdowns")
+            HapticManager.notification(.success)
         }
     }
 }

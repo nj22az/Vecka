@@ -8,6 +8,22 @@
 import Foundation
 import SwiftUI
 
+// MARK: - Event Task Model (情報デザイン: Checklist items for events)
+
+/// A single task/checklist item for an event
+/// Inspired by Swift Playgrounds Date Planner, styled for 情報デザイン
+struct EventTask: Identifiable, Hashable, Codable {
+    var id = UUID()
+    var text: String
+    var isCompleted: Bool = false
+
+    init(text: String, isCompleted: Bool = false) {
+        self.id = UUID()
+        self.text = text
+        self.isCompleted = isCompleted
+    }
+}
+
 // MARK: - Countdown Models
 
 /// Custom countdown event with XPC-safe operations
@@ -16,19 +32,33 @@ struct CustomCountdown: Codable, Hashable {
     let date: Date
     let isAnnual: Bool
     let iconName: String?
-    
+    var tasks: [EventTask]  // 情報デザイン: Checklist items for event preparation
+
     // Cache month and day components to avoid XPC-sensitive operations
     private let cachedMonth: Int?
     private let cachedDay: Int?
-    
+
+    // MARK: - Computed Properties (情報デザイン: Task completion status)
+
+    /// Number of incomplete tasks remaining
+    var remainingTaskCount: Int {
+        tasks.filter { !$0.isCompleted && !$0.text.isEmpty }.count
+    }
+
+    /// Whether all tasks are complete
+    var isComplete: Bool {
+        tasks.isEmpty || tasks.allSatisfy { $0.isCompleted || $0.text.isEmpty }
+    }
+
     // MARK: - Initializers
-    
-    init(name: String, date: Date, isAnnual: Bool, iconName: String? = nil) {
+
+    init(name: String, date: Date, isAnnual: Bool, iconName: String? = nil, tasks: [EventTask] = []) {
         self.name = name
         self.date = date
         self.isAnnual = isAnnual
         self.iconName = iconName
-        
+        self.tasks = tasks
+
         // Pre-compute and cache month/day components during initialization
         if isAnnual {
             let calendar = Calendar.iso8601
@@ -42,19 +72,22 @@ struct CustomCountdown: Codable, Hashable {
     }
     
     // MARK: - Codable Support with Backward Compatibility
-    
+
     private enum CodingKeys: String, CodingKey {
-        case name, date, isAnnual, cachedMonth, cachedDay, iconName
+        case name, date, isAnnual, cachedMonth, cachedDay, iconName, tasks
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         name = try container.decode(String.self, forKey: .name)
         date = try container.decode(Date.self, forKey: .date)
         isAnnual = try container.decode(Bool.self, forKey: .isAnnual)
         iconName = try container.decodeIfPresent(String.self, forKey: .iconName)
-        
+
+        // Decode tasks with backward compatibility (empty array if not present)
+        tasks = try container.decodeIfPresent([EventTask].self, forKey: .tasks) ?? []
+
         // Handle cached components with backward compatibility
         if let month = try container.decodeIfPresent(Int.self, forKey: .cachedMonth),
            let day = try container.decodeIfPresent(Int.self, forKey: .cachedDay) {
@@ -71,7 +104,7 @@ struct CustomCountdown: Codable, Hashable {
             self.cachedDay = nil
         }
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(name, forKey: .name)
@@ -80,6 +113,7 @@ struct CustomCountdown: Codable, Hashable {
         try container.encodeIfPresent(cachedMonth, forKey: .cachedMonth)
         try container.encodeIfPresent(cachedDay, forKey: .cachedDay)
         try container.encodeIfPresent(iconName, forKey: .iconName)
+        try container.encode(tasks, forKey: .tasks)
     }
     
     // MARK: - Target Date Calculation

@@ -22,6 +22,7 @@ enum EntryType: String, CaseIterable, Identifiable {
     case expense = "expense"
     case holiday = "holiday"
     case birthday = "birthday"
+    case event = "event"
 
     var id: String { rawValue }
 
@@ -33,6 +34,7 @@ enum EntryType: String, CaseIterable, Identifiable {
         case .expense: return "dollarsign.circle"    // Clean money icon
         case .holiday: return "star.fill"           // Celebration/special
         case .birthday: return "gift.fill"          // Birthday gift
+        case .event: return "calendar.badge.clock"  // Countdown/event
         }
     }
 
@@ -45,6 +47,7 @@ enum EntryType: String, CaseIterable, Identifiable {
         case .expense: return JohoColors.green      // MONEY - financial items
         case .holiday: return JohoColors.pink       // CELEBRATION - special days
         case .birthday: return Color(hex: "78350F") // PEOPLE - matches contacts brown
+        case .event: return JohoColors.cyan         // SCHEDULED - countdown events
         }
     }
 
@@ -66,6 +69,7 @@ enum EntryType: String, CaseIterable, Identifiable {
         case .expense: return "EXPENSE"
         case .holiday: return "HOLIDAY"
         case .birthday: return "BIRTHDAY"
+        case .event: return "EVENT"
         }
     }
 
@@ -77,6 +81,7 @@ enum EntryType: String, CaseIterable, Identifiable {
         case .expense: return "EXP"
         case .holiday: return "HOL"
         case .birthday: return "BDY"
+        case .event: return "EVT"
         }
     }
 
@@ -88,6 +93,7 @@ enum EntryType: String, CaseIterable, Identifiable {
         case .expense: return "Track spending"
         case .holiday: return "Official or observance"
         case .birthday: return "Add to contacts"
+        case .event: return "Countdown with tasks"
         }
     }
 
@@ -99,6 +105,7 @@ enum EntryType: String, CaseIterable, Identifiable {
         case .expense: return "Amount + Description"
         case .holiday: return "Name + Date"
         case .birthday: return "Name + Date"
+        case .event: return "Name + Date"
         }
     }
 }
