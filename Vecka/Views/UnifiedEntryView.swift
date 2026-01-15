@@ -873,7 +873,7 @@ struct JohoUnifiedEntrySheet: View {
                     // Delete button
                     if !eventTasks[index].text.isEmpty {
                         Button {
-                            withAnimation {
+                            _ = withAnimation {
                                 eventTasks.remove(at: index)
                             }
                             HapticManager.notification(.warning)
