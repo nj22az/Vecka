@@ -269,6 +269,7 @@ struct CountdownListView: View {
                         days: days,
                         icon: custom.iconName,
                         tasks: custom.tasks,  // 情報デザイン: Pass tasks for progress display
+                        countdown: custom,    // 情報デザイン: Pass full countdown for sharing
                         onDelete: {
                             deleteCustom(custom)
                         }
@@ -362,11 +363,11 @@ struct CountdownListView: View {
     // MARK: - Event Bento Row (matches Star page specialDayItemRow)
     //
     // 情報デザイン BENTO LAYOUT - Compartments with vertical dividers (walls)
-    // ┌─────┬─────────────────────────────────┬─────────────────┐
-    // │  ●  ┃ Event Name                      ┃ [icon]          │
-    // └─────┴─────────────────────────────────┴─────────────────┘
-    //  LEFT │           CENTER                │      RIGHT
-    //  32pt │          flexible               │      48pt
+    // ┌─────┬─────────────────────────────────┬───────┬─────────┐
+    // │  ●  ┃ Event Name                      ┃ share ┃ [icon]  │
+    // └─────┴─────────────────────────────────┴───────┴─────────┘
+    //  LEFT │           CENTER                │ 40pt  │  48pt
+    //  32pt │          flexible               │       │
 
     @ViewBuilder
     private func eventBentoRow(
@@ -374,6 +375,7 @@ struct CountdownListView: View {
         days: Int,
         icon: String?,
         tasks: [EventTask] = [],  // 情報デザイン: Event tasks for progress display
+        countdown: CustomCountdown,  // 情報デザイン: For sharing
         onDelete: @escaping () -> Void
     ) -> some View {
         HStack(spacing: 0) {
@@ -423,6 +425,19 @@ struct CountdownListView: View {
                 .frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
+            // SHARE COMPARTMENT: Share button (fixed 40pt)
+            if #available(iOS 16.0, *) {
+                CountdownShareButton(countdown: countdown, daysRemaining: days)
+                    .frame(width: 40, alignment: .center)
+                    .frame(maxHeight: .infinity)
+
+                // WALL (vertical divider)
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(width: 1.5)
+                    .frame(maxHeight: .infinity)
+            }
+
             // RIGHT COMPARTMENT: Decoration icon (fixed 48pt, centered)
             // 情報デザイン: Decoration icon ALWAYS shown (user decision)
             HStack(spacing: 4) {
@@ -440,6 +455,20 @@ struct CountdownListView: View {
         .frame(minHeight: tasks.isEmpty ? 36 : 48)  // 情報デザイン: Taller when showing task progress
         .contentShape(Rectangle())
         .contextMenu {
+            // 情報デザイン: Share option in context menu as well
+            if #available(iOS 16.0, *) {
+                ShareLink(
+                    item: ShareableCountdownSnapshot(
+                        countdown: countdown,
+                        daysRemaining: days,
+                        size: CGSize(width: 340, height: 220)
+                    ),
+                    preview: SharePreview(countdown.name, image: Image(systemName: icon ?? "calendar.badge.clock"))
+                ) {
+                    Label("Share", systemImage: "square.and.arrow.up")
+                }
+            }
+
             Button(role: .destructive, action: onDelete) {
                 Label("Delete", systemImage: "trash")
             }
