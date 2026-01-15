@@ -60,7 +60,7 @@ struct SettingsView: View {
                         Image(systemName: "star.fill")
                             .font(.system(size: 20, weight: .bold))
                             .foregroundStyle(colors.primary)
-                            .frame(width: 44, height: 44)
+                            .johoTouchTarget()
                             .background(Color(hex: "FFD700"))
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(
@@ -100,7 +100,7 @@ struct SettingsView: View {
                             Image(systemName: regionSymbolName)
                                 .font(.system(size: 20, weight: .bold))
                                 .foregroundStyle(colors.primary)
-                                .frame(width: 44, height: 44)
+                                .johoTouchTarget()
                                 .background(SectionZone.holidays.background)
                                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                 .overlay(
@@ -157,7 +157,7 @@ struct SettingsView: View {
                             Image(systemName: "dollarsign.circle")
                                 .font(.system(size: 20, weight: .bold))
                                 .foregroundStyle(colors.primary)
-                                .frame(width: 44, height: 44)
+                                .johoTouchTarget()
                                 .background(SectionZone.expenses.background)
                                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                 .overlay(
@@ -217,7 +217,7 @@ struct SettingsView: View {
                             Image(systemName: "circle.lefthalf.filled")
                                 .font(.system(size: 20, weight: .bold))
                                 .foregroundStyle(colors.primary)
-                                .frame(width: 44, height: 44)
+                                .johoTouchTarget()
                                 .background(PageHeaderColor.settings.lightBackground)
                                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                 .overlay(
@@ -506,7 +506,7 @@ struct SettingsView: View {
                     Image(systemName: "circle.lefthalf.filled")
                         .font(.system(size: 20, weight: .bold))
                         .foregroundStyle(colors.primary)
-                        .frame(width: 44, height: 44)
+                        .johoTouchTarget()
                         .background(JohoColors.inputBackground)
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(
@@ -617,7 +617,7 @@ struct SettingsView: View {
                     Image(systemName: showLunarCalendar ? "moon.stars.fill" : "moon")
                         .font(.system(size: 20, weight: .bold))
                         .foregroundStyle(showLunarCalendar ? Color(hex: "FFCD00") : JohoColors.black)
-                        .frame(width: 44, height: 44)
+                        .johoTouchTarget()
                         .background(showLunarCalendar ? Color(hex: "DA251D") : JohoColors.inputBackground)
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(
@@ -746,7 +746,7 @@ struct SettingsView: View {
                     Image(systemName: "textformat.abc")
                         .font(.system(size: 20, weight: .bold))
                         .foregroundStyle(PageHeaderColor.landing.accent)
-                        .frame(width: 44, height: 44)
+                        .johoTouchTarget()
                         .background(PageHeaderColor.landing.lightBackground)
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(
@@ -859,7 +859,7 @@ struct SettingsView: View {
                 Image(systemName: "doc.text")
                     .font(.system(size: 20, weight: .bold))
                     .foregroundStyle(JohoColors.black)
-                    .frame(width: 44, height: 44)
+                    .johoTouchTarget()
                     .background(JohoColors.purple.opacity(0.3))
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
@@ -893,7 +893,7 @@ struct SettingsView: View {
                 Image(systemName: "text.alignleft")
                     .font(.system(size: 20, weight: .bold))
                     .foregroundStyle(JohoColors.black)
-                    .frame(width: 44, height: 44)
+                    .johoTouchTarget()
                     .background(JohoColors.purple.opacity(0.2))
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
@@ -951,7 +951,7 @@ struct SettingsView: View {
                     Image(systemName: "globe")
                         .font(.system(size: 20, weight: .bold))
                         .foregroundStyle(JohoColors.black.opacity(0.4))
-                        .frame(width: 44, height: 44)
+                        .johoTouchTarget()
                         .background(JohoColors.black.opacity(0.05))
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(
@@ -1055,7 +1055,7 @@ struct SettingsView: View {
                     Image(systemName: "plus.circle.fill")
                         .font(.system(size: 20, weight: .bold))
                         .foregroundStyle(colors.primary)
-                        .frame(width: 44, height: 44)
+                        .johoTouchTarget()
                         .background(JohoColors.cyan)
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(
@@ -1377,7 +1377,7 @@ struct SettingsView: View {
                     Image(systemName: "hammer.fill")
                         .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.cyan)
-                        .frame(width: 44, height: 44)
+                        .johoTouchTarget()
                         .background(JohoColors.cyan.opacity(0.2))
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(
@@ -1460,7 +1460,7 @@ struct CurrencyPickerView: View {
                                 Text(currency.symbol)
                                     .font(.system(size: 20, weight: .bold))
                                     .foregroundStyle(colors.primary)
-                                    .frame(width: 44, height: 44)
+                                    .johoTouchTarget()
                                     .background(selectedCurrency == currency.code ? SectionZone.expenses.background : JohoColors.inputBackground)
                                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                     .overlay(
@@ -2369,7 +2369,7 @@ struct EditLandingTitleView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
                         HapticManager.impact(.light)
-                        onSave(title.trimmingCharacters(in: .whitespacesAndNewlines))
+                        onSave(title.trimmed)
                     } label: {
                         Text("○")
                             .font(.system(size: 24, weight: .bold))

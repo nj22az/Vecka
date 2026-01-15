@@ -520,7 +520,7 @@ struct SpecialDaysListView: View {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 14, weight: .bold, design: .rounded))
                                 .foregroundStyle(JohoColors.black)
-                                .frame(width: 44, height: 44)
+                                .johoTouchTarget()
                                 .background(JohoColors.inputBackground)
                                 .clipShape(Circle())
                                 .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
@@ -533,7 +533,7 @@ struct SpecialDaysListView: View {
                         Image(systemName: theme.icon)
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(theme.accentColor)
-                            .frame(width: 44, height: 44)
+                            .johoTouchTarget()
                             .background(theme.lightBackground)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(
@@ -544,7 +544,7 @@ struct SpecialDaysListView: View {
                         Image(systemName: "star.fill")
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(PageHeaderColor.specialDays.accent)
-                            .frame(width: 44, height: 44)
+                            .johoTouchTarget()
                             .background(PageHeaderColor.specialDays.lightBackground)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(
@@ -1098,37 +1098,37 @@ struct CollapsibleSpecialDayCard: View {
     private var contentIndicatorDots: some View {
         HStack(spacing: 3) {
             // 情報デザイン: Colored SF Symbol icons for each type
-            if !holidays.isEmpty {
+            if holidays.isNotEmpty {
                 Image(systemName: SpecialDayType.holiday.defaultIcon)
                     .font(.system(size: 8, weight: .semibold, design: .rounded))
                     .foregroundStyle(SpecialDayType.holiday.accentColor)
             }
-            if !observances.isEmpty {
+            if observances.isNotEmpty {
                 Image(systemName: SpecialDayType.observance.defaultIcon)
                     .font(.system(size: 8, weight: .semibold, design: .rounded))
                     .foregroundStyle(SpecialDayType.observance.accentColor)
             }
-            if !events.isEmpty {
+            if events.isNotEmpty {
                 Image(systemName: SpecialDayType.event.defaultIcon)
                     .font(.system(size: 8, weight: .semibold, design: .rounded))
                     .foregroundStyle(SpecialDayType.event.accentColor)
             }
-            if !birthdays.isEmpty {
+            if birthdays.isNotEmpty {
                 Image(systemName: SpecialDayType.birthday.defaultIcon)
                     .font(.system(size: 8, weight: .semibold, design: .rounded))
                     .foregroundStyle(SpecialDayType.birthday.accentColor)
             }
-            if !notes.isEmpty {
+            if notes.isNotEmpty {
                 Image(systemName: SpecialDayType.note.defaultIcon)
                     .font(.system(size: 8, weight: .semibold, design: .rounded))
                     .foregroundStyle(SpecialDayType.note.accentColor)
             }
-            if !tripsForDay.isEmpty {
+            if tripsForDay.isNotEmpty {
                 Image(systemName: SpecialDayType.trip.defaultIcon)
                     .font(.system(size: 8, weight: .semibold, design: .rounded))
                     .foregroundStyle(SpecialDayType.trip.accentColor)
             }
-            if !expensesForDay.isEmpty {
+            if expensesForDay.isNotEmpty {
                 Image(systemName: SpecialDayType.expense.defaultIcon)
                     .font(.system(size: 8, weight: .semibold, design: .rounded))
                     .foregroundStyle(SpecialDayType.expense.accentColor)
@@ -1142,7 +1142,7 @@ struct CollapsibleSpecialDayCard: View {
     private var expandedContent: some View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
             // Holidays section (pink background) - uses consolidated view
-            if !consolidatedHolidays.isEmpty {
+            if consolidatedHolidays.isNotEmpty {
                 consolidatedHolidaySection(
                     title: "Holidays",
                     items: consolidatedHolidays,
@@ -1152,7 +1152,7 @@ struct CollapsibleSpecialDayCard: View {
             }
 
             // Observances section (orange tint - matches type color)
-            if !observances.isEmpty {
+            if observances.isNotEmpty {
                 specialDaySection(
                     title: "Observances",
                     items: observances,
@@ -1162,7 +1162,7 @@ struct CollapsibleSpecialDayCard: View {
             }
 
             // Events section (purple tint - matches type color)
-            if !events.isEmpty {
+            if events.isNotEmpty {
                 specialDaySection(
                     title: "Events",
                     items: events,
@@ -1172,7 +1172,7 @@ struct CollapsibleSpecialDayCard: View {
             }
 
             // Birthdays section (pink tint - matches type color)
-            if !birthdays.isEmpty {
+            if birthdays.isNotEmpty {
                 specialDaySection(
                     title: "Birthdays",
                     items: birthdays,
@@ -1182,7 +1182,7 @@ struct CollapsibleSpecialDayCard: View {
             }
 
             // Notes section (yellow tint - matches type color)
-            if !notes.isEmpty {
+            if notes.isNotEmpty {
                 specialDaySection(
                     title: "Notes",
                     items: notes,
@@ -1192,7 +1192,7 @@ struct CollapsibleSpecialDayCard: View {
             }
 
             // Trips section (blue tint - matches type color)
-            if !tripsForDay.isEmpty {
+            if tripsForDay.isNotEmpty {
                 specialDaySection(
                     title: "Trips",
                     items: tripsForDay,
@@ -1202,7 +1202,7 @@ struct CollapsibleSpecialDayCard: View {
             }
 
             // Expenses section (green tint - matches type color)
-            if !expensesForDay.isEmpty {
+            if expensesForDay.isNotEmpty {
                 specialDaySection(
                     title: "Expenses",
                     items: expensesForDay,

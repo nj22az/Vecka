@@ -47,7 +47,7 @@ struct NotesListView: View {
                     .padding(.horizontal, JohoDimensions.spacingLG)
 
                 // Pinned section
-                if !pinnedUpcomingNotes.isEmpty {
+                if pinnedUpcomingNotes.isNotEmpty {
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
                         HStack {
                             JohoPill(text: Localization.pinnedHeader, style: .whiteOnBlack, size: .medium)
@@ -133,11 +133,11 @@ struct NotesListView: View {
     }
 
     private var trimmedSearch: String {
-        searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        searchText.trimmed
     }
 
     private var filteredNotes: [DailyNote] {
-        guard !trimmedSearch.isEmpty else { return notes }
+        guard trimmedSearch.isNotEmpty else { return notes }
         return notes.filter { $0.content.localizedCaseInsensitiveContains(trimmedSearch) }
     }
 
@@ -161,7 +161,7 @@ struct NotesListView: View {
         return groups
             .map { (day, notes) in
                 let latest = notes.max(by: { $0.date < $1.date })
-                let preview = latest?.content.trimmingCharacters(in: .whitespacesAndNewlines)
+                let preview = latest?.content.trimmed
                 return NotesDayGroup(
                     day: day,
                     count: notes.count,
@@ -250,7 +250,7 @@ private struct NotesDayRow: View {
                     .font(JohoFont.body)
                     .foregroundStyle(JohoColors.black)
 
-                if let preview = dayGroup.preview, !preview.isEmpty {
+                if let preview = dayGroup.preview, preview.isNotEmpty {
                     Text(preview)
                         .font(JohoFont.bodySmall)
                         .foregroundStyle(JohoColors.black.opacity(0.6))
@@ -358,7 +358,7 @@ private struct PinnedNoteRow: View {
     }
 
     private func titleLine(from raw: String) -> String {
-        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = raw.trimmed
         if let newlineIndex = trimmed.firstIndex(where: \.isNewline) {
             return String(trimmed[..<newlineIndex])
         }

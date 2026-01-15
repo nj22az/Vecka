@@ -82,7 +82,7 @@ struct WorldCityDatabase {
     /// - Parameter query: Search string
     /// - Returns: Matching cities, sorted by relevance
     static func search(_ query: String) -> [WorldCity] {
-        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        let trimmedQuery = query.trimmed.lowercased()
         guard !trimmedQuery.isEmpty else { return [] }
 
         // Score and filter cities

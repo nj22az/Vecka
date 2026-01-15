@@ -495,11 +495,7 @@ struct JohoContainer<Content: View>: View {
         content
             .padding(padding)
             .background(fillColor)
-            .clipShape(Squircle(cornerRadius: cornerRadius))
-            .overlay(
-                Squircle(cornerRadius: cornerRadius)
-                    .stroke(JohoColors.black, lineWidth: borderWidth)
-            )
+            .johoBordered(cornerRadius: cornerRadius, borderWidth: borderWidth)
     }
 }
 
@@ -681,11 +677,7 @@ struct JohoSectionBox<Content: View>: View {
         .padding(JohoDimensions.spacingMD)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(zone.background)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick, borderColor: colors.border)
     }
 }
 
@@ -737,11 +729,7 @@ struct JohoFormSection<Content: View>: View {
                 .padding(14)
                 .background(colors.surface)
         }
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderThick, borderColor: colors.border)
     }
 }
 
@@ -788,11 +776,7 @@ struct JohoCard<Content: View>: View {
             .padding(JohoDimensions.spacingMD)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: cornerRadius))
-            .overlay(
-                Squircle(cornerRadius: cornerRadius)
-                    .stroke(colors.border, lineWidth: borderWidth)
-            )
+            .johoBordered(cornerRadius: cornerRadius, borderWidth: borderWidth, borderColor: colors.border)
     }
 }
 
@@ -905,11 +889,7 @@ struct JohoWeekBadge: View {
         }
         .frame(width: size.dimension, height: size.dimension)
         .background(colors.primary)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.primaryInverted, lineWidth: 2)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 2, borderColor: colors.primaryInverted)
     }
 }
 
@@ -935,11 +915,7 @@ struct JohoListRow: View {
                 .foregroundStyle(JohoColors.black)  // Always black on colored backgrounds
                 .frame(width: 40, height: 40)
                 .background(zone.background)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                )
+                .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: JohoDimensions.borderThin, borderColor: colors.border)
 
             // Text content
             VStack(alignment: .leading, spacing: 2) {
@@ -970,11 +946,7 @@ struct JohoListRow: View {
         }
         .padding(JohoDimensions.spacingMD)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderMedium, borderColor: colors.border)
     }
 }
 
@@ -1002,11 +974,7 @@ struct JohoStatBox: View {
         .frame(maxWidth: .infinity)
         .padding(JohoDimensions.spacingMD)
         .background(zone.background)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderMedium, borderColor: colors.border)
     }
 }
 
@@ -1041,11 +1009,7 @@ struct JohoPageHeader: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(JohoDimensions.spacingLG)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick, borderColor: colors.border)
     }
 }
 
@@ -1074,13 +1038,9 @@ struct JohoEditorHeader: View {
                 Text(JohoSymbols.batsu)  // ×
                     .font(.system(size: 22, weight: .bold))
                     .foregroundStyle(colors.primary)
-                    .frame(width: 44, height: 44)
+                    .johoTouchTarget()
                     .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                    )
+                    .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: JohoDimensions.borderThin, borderColor: colors.border)
             }
 
             // Icon zone (52×52pt) - matches January 2026 pattern
@@ -1089,11 +1049,7 @@ struct JohoEditorHeader: View {
                 .foregroundStyle(accentColor)
                 .frame(width: 52, height: 52)
                 .background(lightBackground)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                )
+                .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderMedium, borderColor: colors.border)
 
             // Title area
             VStack(alignment: .leading, spacing: 2) {
@@ -1113,23 +1069,15 @@ struct JohoEditorHeader: View {
                 Text(JohoSymbols.maru)  // ○
                     .font(.system(size: 28, weight: .bold))
                     .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(0.4))
-                    .frame(width: 44, height: 44)
+                    .johoTouchTarget()
                     .background(canSave ? accentColor : colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                    )
+                    .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: JohoDimensions.borderMedium, borderColor: colors.border)
             }
             .disabled(!canSave)
         }
         .padding(JohoDimensions.spacingLG)  // 16pt all sides
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)  // 3pt border
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick, borderColor: colors.border)
     }
 }
 
@@ -1180,11 +1128,7 @@ struct JohoIconBadge: View {
             .foregroundStyle(JohoColors.black)  // Always black on colored backgrounds
             .frame(width: size, height: size)
             .background(zone.background)
-            .clipShape(Squircle(cornerRadius: size * 0.25))
-            .overlay(
-                Squircle(cornerRadius: size * 0.25)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-            )
+            .johoBordered(cornerRadius: size * 0.25, borderWidth: JohoDimensions.borderThin, borderColor: colors.border)
     }
 }
 
@@ -1253,7 +1197,7 @@ struct JohoSearchField: View {
                 .font(.system(size: 14, weight: .medium, design: .rounded))
                 .foregroundStyle(JohoColors.black)
 
-            if !text.isEmpty {
+            if text.isNotEmpty {
                 Button {
                     text = ""
                 } label: {
@@ -1267,11 +1211,7 @@ struct JohoSearchField: View {
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, JohoDimensions.spacingSM + 2)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: JohoDimensions.borderThin)
     }
 }
 
@@ -1367,11 +1307,7 @@ struct JohoToggleRow: View {
         }
         .padding(JohoDimensions.spacingMD)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderMedium, borderColor: colors.border)
     }
 }
 
@@ -1568,11 +1504,7 @@ struct JohoEmptyState: View {
                 .foregroundStyle(JohoColors.black)  // Always black on colored backgrounds
                 .frame(width: 80, height: 80)
                 .background(zone.background)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                )
+                .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderMedium, borderColor: colors.border)
 
             Text(title)
                 .font(JohoFont.headline)
@@ -1587,9 +1519,50 @@ struct JohoEmptyState: View {
     }
 }
 
+// MARK: - String Extensions (情報デザイン Utilities)
+
+extension String {
+    /// Trimmed string with whitespace and newlines removed
+    var trimmed: String {
+        trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    /// Check if trimmed string is empty
+    var isTrimmedEmpty: Bool {
+        trimmed.isEmpty
+    }
+}
+
+// MARK: - Collection Extensions (情報デザイン Utilities)
+
+extension Collection {
+    /// More readable alternative to !isEmpty
+    var isNotEmpty: Bool { !isEmpty }
+}
+
 // MARK: - View Extensions
 
 extension View {
+    /// 情報デザイン: Apply squircle clip with border in one modifier
+    /// Replaces the common pattern of .clipShape(Squircle(...)).overlay(Squircle(...).stroke(...))
+    func johoBordered(
+        cornerRadius: CGFloat = JohoDimensions.radiusMedium,
+        borderWidth: CGFloat = JohoDimensions.borderMedium,
+        borderColor: Color = JohoColors.black
+    ) -> some View {
+        self
+            .clipShape(Squircle(cornerRadius: cornerRadius))
+            .overlay(
+                Squircle(cornerRadius: cornerRadius)
+                    .stroke(borderColor, lineWidth: borderWidth)
+            )
+    }
+
+    /// 情報デザイン: Minimum 44×44pt touch target (Apple HIG requirement)
+    func johoTouchTarget(_ size: CGFloat = 44) -> some View {
+        frame(width: size, height: size)
+    }
+
     /// Apply dark Joho background (respects user's AMOLED preference)
     func johoBackground() -> some View {
         let savedOption = UserDefaults.standard.string(forKey: "appBackgroundColor") ?? "black"
@@ -1689,11 +1662,7 @@ struct JohoTodayBanner: View {
             }
             .padding(JohoDimensions.spacingMD)
             .background(JohoColors.yellow)  // Yellow is semantic color - always yellow
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-            )
+            .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick, borderColor: colors.border)
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Today, \(weekdayName), \(monthName) \(dayNumber), \(yearString), Week \(weekNumber)")
@@ -1722,13 +1691,9 @@ struct JohoMonthSelector: View {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
-                    .frame(width: 44, height: 44)
+                    .johoTouchTarget()
                     .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                    )
+                    .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: JohoDimensions.borderMedium, borderColor: colors.border)
             }
             .buttonStyle(.plain)
 
@@ -1751,11 +1716,7 @@ struct JohoMonthSelector: View {
                 .padding(.horizontal, JohoDimensions.spacingMD)
                 .padding(.vertical, JohoDimensions.spacingSM)
                 .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                )
+                .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderMedium, borderColor: colors.border)
             }
             .buttonStyle(.plain)
 
@@ -1764,13 +1725,9 @@ struct JohoMonthSelector: View {
                 Image(systemName: "chevron.right")
                     .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
-                    .frame(width: 44, height: 44)
+                    .johoTouchTarget()
                     .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                    )
+                    .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: JohoDimensions.borderMedium, borderColor: colors.border)
             }
             .buttonStyle(.plain)
         }
@@ -1787,11 +1744,7 @@ struct JohoCalendarContainer<Content: View>: View {
         content
             .padding(JohoDimensions.spacingSM)
             .background(JohoColors.white)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
-            )
+            .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
     }
 }
 
@@ -1954,11 +1907,7 @@ struct JohoActionButton: View {
             .foregroundStyle(JohoColors.black)
             .frame(width: size, height: size)
             .background(JohoColors.white)
-            .clipShape(Squircle(cornerRadius: size * 0.3))
-            .overlay(
-                Squircle(cornerRadius: size * 0.3)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-            )
+            .johoBordered(cornerRadius: size * 0.3, borderWidth: JohoDimensions.borderMedium)
     }
 }
 
@@ -2028,11 +1977,7 @@ struct HotelClockWidget: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(JohoDimensions.spacingMD)
         .background(JohoColors.white)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderMedium)
     }
 }
 
@@ -2120,11 +2065,7 @@ struct JohoTypeSelector: View {
                     .foregroundStyle(colors.primary)
                     .frame(width: 32, height: 32)
                     .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: 8))
-                    .overlay(
-                        Squircle(cornerRadius: 8)
-                            .stroke(colors.border, lineWidth: 1.5)
-                    )
+                    .johoBordered(cornerRadius: 8, borderWidth: 1.5, borderColor: colors.border)
 
                 // Type name
                 Text(selectedType.displayName)
@@ -2139,11 +2080,7 @@ struct JohoTypeSelector: View {
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-            )
+            .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderMedium, borderColor: colors.border)
         }
     }
 }
@@ -2197,11 +2134,7 @@ struct JohoTypeSuggestionPill: View {
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, JohoDimensions.spacingSM)
         .background(colors.primary.opacity(0.05))
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(colors.border.opacity(0.3), lineWidth: 1)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1, borderColor: colors.border.opacity(0.3))
         .transition(.move(edge: .top).combined(with: .opacity))
     }
 }

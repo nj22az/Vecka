@@ -144,12 +144,12 @@ struct SidebarIconButton: View {
                 ZStack {
                     Circle()
                         .fill(isSelected ? item.accentColor : JohoColors.inputBackground)
-                        .frame(width: 52, height: 52)
+                        .johoTouchTarget(52)
 
                     Image(systemName: item.icon)
                         .font(.system(size: 22, weight: isSelected ? .bold : .medium, design: .rounded))
                         .foregroundStyle(isSelected ? .white : JohoColors.black.opacity(0.6))
-                        .frame(width: 52, height: 52)
+                        .johoTouchTarget(52)
                 }
                 .overlay(
                     Circle()

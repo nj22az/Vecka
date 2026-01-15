@@ -148,7 +148,7 @@ struct JohoExpenseEditorSheet: View {
         guard let amountValue = Double(amount.replacingOccurrences(of: ",", with: ".")) else {
             return false
         }
-        return amountValue > 0 && !description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        return amountValue > 0 && !description.trimmed.isEmpty
     }
 
     private var selectedDate: Date {
@@ -185,7 +185,7 @@ struct JohoExpenseEditorSheet: View {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary)
-                            .frame(width: 44, height: 44)
+                            .johoTouchTarget()
                     }
 
                     // WALL
@@ -610,7 +610,7 @@ struct JohoExpenseEditorSheet: View {
 
     private func saveExpense() {
         guard let amountValue = Double(amount.replacingOccurrences(of: ",", with: ".")) else { return }
-        let trimmedDesc = description.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedDesc = description.trimmed
         guard !trimmedDesc.isEmpty else { return }
 
         let expense = ExpenseItem(

@@ -128,7 +128,7 @@ struct PhoneLibraryView: View {
             Image(systemName: "books.vertical.fill")
                 .font(.system(size: 24, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoColors.black)
-                .frame(width: 52, height: 52)
+                .johoTouchTarget(52)
                 .background(Color(hex: "FFD700"))  // Gold - Library accent
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(

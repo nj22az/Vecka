@@ -69,7 +69,7 @@ struct CountdownListView: View {
             Image(systemName: SpecialDayType.event.defaultIcon)
                 .font(.system(size: 24, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoColors.black)
-                .frame(width: 52, height: 52)
+                .johoTouchTarget(52)
                 .background(SpecialDayType.event.accentColor.opacity(0.3))
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(

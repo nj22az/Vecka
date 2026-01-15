@@ -77,7 +77,7 @@ struct DayDashboardView: View {
             return true
         }
         return notes.contains { note in
-            let trimmed = note.content.trimmingCharacters(in: .whitespacesAndNewlines)
+            let trimmed = note.content.trimmed
             return trimmed.count > 140 || trimmed.contains("\n")
         }
     }
@@ -112,7 +112,7 @@ struct DayDashboardView: View {
             }
 
             // HOLIDAYS SECTION (情報デザイン: Star Pages bento style)
-            if !holidays.isEmpty {
+            if holidays.isNotEmpty {
                 bentoSection(title: "HOLIDAYS", icon: "star.fill", zone: .holidays) {
                     ForEach(holidays.prefix(2)) { holiday in
                         bentoHolidayRow(holiday: holiday)
@@ -132,7 +132,7 @@ struct DayDashboardView: View {
             }
 
             // NOTES SECTION (情報デザイン: Star Pages bento style)
-            if !notes.isEmpty {
+            if notes.isNotEmpty {
                 bentoSection(title: "NOTES", icon: "note.text", zone: .notes) {
                     if showExpandToggle {
                         Button(expandTitle) {
@@ -169,7 +169,7 @@ struct DayDashboardView: View {
             }
 
             // EXPENSES SECTION (情報デザイン: Star Pages bento style)
-            if !expenses.isEmpty {
+            if expenses.isNotEmpty {
                 Button {
                     onOpenExpenses?(date)
                 } label: {
@@ -189,7 +189,7 @@ struct DayDashboardView: View {
             }
 
             // TRIPS SECTION (情報デザイン: Star Pages bento style)
-            if !trips.isEmpty {
+            if trips.isNotEmpty {
                 bentoSection(title: "TRIPS", icon: "airplane.departure", zone: .trips) {
                     ForEach(trips) { trip in
                         bentoTripRow(trip: trip)
@@ -200,7 +200,7 @@ struct DayDashboardView: View {
             }
 
             // PINNED COUNTDOWNS SECTION (情報デザイン: Star Pages bento style)
-            if !pinnedCountdownNotes.isEmpty {
+            if pinnedCountdownNotes.isNotEmpty {
                 bentoSection(title: "PINNED", icon: "pin.fill", zone: .calendar) {
                     if showPinnedExpandToggle {
                         Button(isPinnedExpanded ? Localization.showLess : Localization.showAll) {
@@ -262,7 +262,7 @@ struct DayDashboardView: View {
 
     private var subtitleText: String {
         let week = Localization.weekDisplayText(Calendar.iso8601.component(.weekOfYear, from: date))
-        let trimmedSecondary = (secondaryDateText ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedSecondary = (secondaryDateText ?? "").trimmed
         guard !trimmedSecondary.isEmpty else { return week }
         return "\(week) • \(trimmedSecondary)"
     }
@@ -285,7 +285,7 @@ struct DayDashboardView: View {
     }
 
     private func noteAccessibilityLabel(_ note: DailyNote) -> String {
-        let content = note.content.trimmingCharacters(in: .whitespacesAndNewlines)
+        let content = note.content.trimmed
         let firstLine = content.components(separatedBy: .newlines).first ?? content
         let truncated = firstLine.count > 50 ? String(firstLine.prefix(50)) + "..." : firstLine
         let time = (note.scheduledAt ?? note.date).formatted(date: .omitted, time: .shortened)
@@ -293,7 +293,7 @@ struct DayDashboardView: View {
     }
 
     private func pinnedNoteAccessibilityLabel(_ note: DailyNote) -> String {
-        let content = note.content.trimmingCharacters(in: .whitespacesAndNewlines)
+        let content = note.content.trimmed
         let firstLine = content.components(separatedBy: .newlines).first ?? content
         let truncated = firstLine.count > 40 ? String(firstLine.prefix(40)) + "..." : firstLine
         let days = daysUntil(note.day)
@@ -804,7 +804,7 @@ struct DayDashboardView: View {
     }
 
     private func titleAndSubtitle(from raw: String) -> (String, String?) {
-        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = raw.trimmed
         guard !trimmed.isEmpty else { return ("", nil) }
 
         if let newlineIndex = trimmed.firstIndex(where: \.isNewline) {
@@ -988,7 +988,7 @@ private struct NotePreviewRow: View {
     }
 
     private func titleAndSubtitle(from raw: String) -> (String, String?) {
-        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = raw.trimmed
         guard !trimmed.isEmpty else { return ("", nil) }
 
         if let newlineIndex = trimmed.firstIndex(where: \.isNewline) {
@@ -1095,7 +1095,7 @@ private struct PinnedCountdownRow: View {
     }
 
     private func titleAndSubtitle(from raw: String) -> (String, String?) {
-        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = raw.trimmed
         guard !trimmed.isEmpty else { return ("", nil) }
 
         if let newlineIndex = trimmed.firstIndex(where: \.isNewline) {

@@ -58,7 +58,7 @@ struct EntryTypeDetector {
     /// Analyze input text and suggest an entry type
     /// Returns nil if no strong match is found (user stays on current type)
     static func analyze(_ input: String) -> DetectionResult? {
-        let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = input.trimmed
         guard !trimmed.isEmpty, trimmed.count >= 2 else { return nil }
 
         // Priority 1: Expense patterns (highest specificity)

@@ -391,7 +391,7 @@ struct LandingPageView: View {
         ))
 
         // 3. Notes count (if any)
-        if !allNotes.isEmpty {
+        if allNotes.isNotEmpty {
             stats.append(RandomStat(
                 icon: "note.text",
                 label: "\(allNotes.count)",
@@ -509,7 +509,7 @@ struct LandingPageView: View {
                     VStack(spacing: JohoDimensions.spacingMD) {
                         pageHeader
 
-                        if !displayClocks.isEmpty {
+                        if displayClocks.isNotEmpty {
                             worldClocksCard
                         }
 
@@ -526,7 +526,7 @@ struct LandingPageView: View {
                     VStack(spacing: JohoDimensions.spacingMD) {
                         pageHeader
 
-                        if !displayClocks.isEmpty {
+                        if displayClocks.isNotEmpty {
                             worldClocksCard
                         }
 
@@ -1031,7 +1031,7 @@ struct LandingPageView: View {
             Image(systemName: icon)
                 .font(.system(size: 24, weight: .bold))
                 .foregroundStyle(color)
-                .frame(width: 44, height: 44)
+                .johoTouchTarget()
                 .background(bg)
                 .clipShape(Squircle(cornerRadius: 10))
                 .overlay(Squircle(cornerRadius: 10).stroke(JohoColors.black, lineWidth: 1.5))
@@ -1062,7 +1062,7 @@ struct LandingPageView: View {
                     .font(.system(size: 12, weight: .black, design: .rounded))
                     .tracking(1)
                 Spacer()
-                if !todayItems.isEmpty || !upcomingItems.isEmpty {
+                if todayItems.isNotEmpty || upcomingItems.isNotEmpty {
                     Text("\(todayItems.count + upcomingItems.count)")
                         .font(.system(size: 11, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.secondary)
@@ -1093,7 +1093,7 @@ struct LandingPageView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
                         // TODAY section
-                        if !todayItems.isEmpty {
+                        if todayItems.isNotEmpty {
                             HStack {
                                 Text("TODAY")
                                     .font(.system(size: 10, weight: .black, design: .rounded))
@@ -1109,7 +1109,7 @@ struct LandingPageView: View {
                         }
 
                         // THIS WEEK section
-                        if !upcomingItems.isEmpty {
+                        if upcomingItems.isNotEmpty {
                             HStack {
                                 Text("THIS WEEK")
                                     .font(.system(size: 10, weight: .black, design: .rounded))
@@ -1623,7 +1623,7 @@ struct LandingPageView: View {
                     .font(.system(size: 10, weight: .black, design: .rounded))
                     .tracking(1)
                 Spacer()
-                if !todayItems.isEmpty || !upcomingItems.isEmpty {
+                if todayItems.isNotEmpty || upcomingItems.isNotEmpty {
                     Text("\(todayItems.count + upcomingItems.count)")
                         .font(.system(size: 10, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.secondary)
@@ -1648,7 +1648,7 @@ struct LandingPageView: View {
             } else {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
-                        if !todayItems.isEmpty {
+                        if todayItems.isNotEmpty {
                             HStack {
                                 Text("TODAY")
                                     .font(.system(size: 9, weight: .black, design: .rounded))
@@ -1663,7 +1663,7 @@ struct LandingPageView: View {
                             }
                         }
 
-                        if !upcomingItems.isEmpty {
+                        if upcomingItems.isNotEmpty {
                             HStack {
                                 Text("THIS WEEK")
                                     .font(.system(size: 9, weight: .black, design: .rounded))
@@ -2161,7 +2161,7 @@ struct LandingPageView: View {
                 Button { navigateEmbeddedCalendar(by: -1); HapticManager.selection() } label: {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 14, weight: .bold))
-                        .frame(width: 44, height: 44)
+                        .johoTouchTarget()
                 }
                 Spacer()
                 VStack(spacing: 0) {
@@ -2175,7 +2175,7 @@ struct LandingPageView: View {
                 Button { navigateEmbeddedCalendar(by: 1); HapticManager.selection() } label: {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .bold))
-                        .frame(width: 44, height: 44)
+                        .johoTouchTarget()
                 }
             }
             .padding(.horizontal, JohoDimensions.spacingSM)
@@ -2228,7 +2228,7 @@ struct LandingPageView: View {
                         .font(.system(size: 10, weight: .black, design: .rounded))
                         .tracking(1)
                     Spacer()
-                    if !todayItems.isEmpty || !upcomingItems.isEmpty {
+                    if todayItems.isNotEmpty || upcomingItems.isNotEmpty {
                         Text("\(todayItems.count + upcomingItems.count)")
                             .font(.system(size: 10, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.secondary)
@@ -2254,7 +2254,7 @@ struct LandingPageView: View {
                     ScrollView {
                         VStack(spacing: 0) {
                             // TODAY sub-section
-                            if !todayItems.isEmpty {
+                            if todayItems.isNotEmpty {
                                 HStack {
                                     Text("TODAY")
                                         .font(.system(size: 9, weight: .black, design: .rounded))
@@ -2272,7 +2272,7 @@ struct LandingPageView: View {
                             }
 
                             // THIS WEEK sub-section
-                            if !upcomingItems.isEmpty {
+                            if upcomingItems.isNotEmpty {
                                 HStack {
                                     Text("THIS WEEK")
                                         .font(.system(size: 9, weight: .black, design: .rounded))
@@ -2513,7 +2513,7 @@ struct LandingPageView: View {
                 .overlay(Circle().stroke(day.isToday ? JohoColors.black : Color.clear, lineWidth: 1.5))
 
             // Event indicators
-            if !day.indicators.isEmpty && day.isCurrentMonth {
+            if day.indicators.isNotEmpty && day.isCurrentMonth {
                 HStack(spacing: 2) {
                     ForEach(Array(day.indicators.prefix(3).enumerated()), id: \.offset) { _, color in
                         Circle().fill(color).frame(width: 5, height: 5)
@@ -3852,7 +3852,7 @@ struct LandingPageView: View {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary)
-                        .frame(width: 44, height: 44)
+                        .johoTouchTarget()
                 }
 
                 Spacer()
@@ -3875,7 +3875,7 @@ struct LandingPageView: View {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary)
-                        .frame(width: 44, height: 44)
+                        .johoTouchTarget()
                 }
             }
             .padding(.horizontal, JohoDimensions.spacingSM)
@@ -4098,7 +4098,7 @@ struct LandingPageView: View {
                 )
 
             // Indicators
-            if !day.indicators.isEmpty && day.isCurrentMonth {
+            if day.indicators.isNotEmpty && day.isCurrentMonth {
                 HStack(spacing: 2) {
                     ForEach(Array(day.indicators.enumerated()), id: \.offset) { _, color in
                         Circle()
@@ -4454,7 +4454,7 @@ struct LandingPageView: View {
             .padding(.vertical, JohoDimensions.spacingMD)
 
             // Category breakdown
-            if !expenseCategoryBreakdown.isEmpty {
+            if expenseCategoryBreakdown.isNotEmpty {
                 Rectangle()
                     .fill(colors.border.opacity(0.3))
                     .frame(height: 1)

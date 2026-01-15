@@ -45,10 +45,10 @@ struct ContactListView: View {
 
     // Stats for header subtitle
     private var contactsWithPhone: Int {
-        contacts.filter { !$0.phoneNumbers.isEmpty }.count
+        contacts.filter { $0.phoneNumbers.isNotEmpty }.count
     }
     private var contactsWithEmail: Int {
-        contacts.filter { !$0.emailAddresses.isEmpty }.count
+        contacts.filter { $0.emailAddresses.isNotEmpty }.count
     }
     private var contactsWithBirthday: Int {
         contacts.filter { $0.birthday != nil }.count
@@ -68,7 +68,7 @@ struct ContactListView: View {
         var result = contacts
 
         // Filter by search text
-        if !searchText.isEmpty {
+        if searchText.isNotEmpty {
             result = result.filter { contact in
                 contact.displayName.localizedCaseInsensitiveContains(searchText) ||
                 contact.organizationName?.localizedCaseInsensitiveContains(searchText) == true ||
@@ -265,7 +265,7 @@ struct ContactListView: View {
                 HStack(spacing: 0) {
                     if isEditMode {
                         // Delete selected button (red when items selected)
-                        if !selectedForDeletion.isEmpty {
+                        if selectedForDeletion.isNotEmpty {
                             Button {
                                 deleteSelectedContacts()
                             } label: {
@@ -319,7 +319,7 @@ struct ContactListView: View {
                             Image(systemName: "pencil")
                                 .font(.system(size: 16, weight: .bold, design: .rounded))
                                 .foregroundStyle(PageHeaderColor.contacts.accent)
-                                .frame(width: 44, height: 44)
+                                .johoTouchTarget()
                                 .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
@@ -339,7 +339,7 @@ struct ContactListView: View {
                             Image(systemName: "square.and.arrow.up")
                                 .font(.system(size: 16, weight: .bold, design: .rounded))
                                 .foregroundStyle(PageHeaderColor.contacts.accent)
-                                .frame(width: 44, height: 44)
+                                .johoTouchTarget()
                                 .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
@@ -357,7 +357,7 @@ struct ContactListView: View {
                             Image(systemName: "square.and.arrow.down")
                                 .font(.system(size: 16, weight: .bold, design: .rounded))
                                 .foregroundStyle(PageHeaderColor.contacts.accent)
-                                .frame(width: 44, height: 44)
+                                .johoTouchTarget()
                                 .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
@@ -857,7 +857,7 @@ struct ContactListView: View {
                     .lineLimit(1)
 
                 // Alias/Organization as subtitle
-                if let org = contact.organizationName, !org.isEmpty {
+                if let org = contact.organizationName, org.isNotEmpty {
                     Text(org)
                         .font(.system(size: 12, weight: .medium, design: .rounded))
                         .foregroundStyle(JohoColors.black.opacity(0.6))
@@ -930,7 +930,7 @@ struct ContactListView: View {
                     .foregroundStyle(JohoColors.black)
                     .lineLimit(1)
 
-                if let org = contact.organizationName, !org.isEmpty {
+                if let org = contact.organizationName, org.isNotEmpty {
                     Text(org)
                         .font(JohoFont.labelSmall)
                         .foregroundStyle(JohoColors.black.opacity(0.6))
@@ -943,12 +943,12 @@ struct ContactListView: View {
 
             // RIGHT: Quick info indicators
             HStack(spacing: 4) {
-                if !contact.phoneNumbers.isEmpty {
+                if contact.phoneNumbers.isNotEmpty {
                     Image(systemName: "phone.fill")
                         .font(.system(size: 10, weight: .bold, design: .rounded))
                         .foregroundStyle(accentColor)
                 }
-                if !contact.emailAddresses.isEmpty {
+                if contact.emailAddresses.isNotEmpty {
                     Image(systemName: "envelope.fill")
                         .font(.system(size: 10, weight: .bold, design: .rounded))
                         .foregroundStyle(accentColor)
@@ -990,7 +990,7 @@ struct ContactListView: View {
         if contactsWithPhone > 0 { details.append("\(contactsWithPhone) phone") }
         if contactsWithBirthday > 0 { details.append("\(contactsWithBirthday) birthday\(contactsWithBirthday == 1 ? "" : "s")") }
 
-        if !details.isEmpty {
+        if details.isNotEmpty {
             parts.append("• " + details.joined(separator: " • "))
         }
 
@@ -1121,7 +1121,7 @@ struct JohoContactRow: View {
                     .lineLimit(1)
 
                 // Organization (if any)
-                if let org = contact.organizationName, !org.isEmpty {
+                if let org = contact.organizationName, org.isNotEmpty {
                     Text(org)
                         .font(JohoFont.bodySmall)
                         .foregroundStyle(JohoColors.black.opacity(0.6))
@@ -1326,7 +1326,7 @@ struct ContactImportView: View {
                                         Image(systemName: "person.badge.key")
                                             .font(.system(size: 16, weight: .bold, design: .rounded))
                                             .foregroundStyle(JohoColors.red)
-                                            .frame(width: 44, height: 44)
+                                            .johoTouchTarget()
                                             .background(JohoColors.redLight)
 
                                         // Wall
@@ -1426,7 +1426,7 @@ struct ContactImportView: View {
             Image(systemName: icon)
                 .font(.system(size: 16, weight: .bold, design: .rounded))
                 .foregroundStyle(accentColor)
-                .frame(width: 44, height: 44)
+                .johoTouchTarget()
                 .background(PageHeaderColor.contacts.lightBackground)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                 .overlay(

@@ -196,7 +196,7 @@ struct IconStripButton: View, Equatable {
                 Image(systemName: item.icon)
                     .font(.system(size: iconSize, weight: isSelected ? .bold : .medium, design: .rounded))
                     .foregroundStyle(isSelected ? item.accentColor : JohoColors.white.opacity(0.7))
-                    .frame(width: 44, height: 44)
+                    .johoTouchTarget()
 
                 Spacer()
 

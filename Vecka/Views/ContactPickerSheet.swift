@@ -128,7 +128,7 @@ struct ContactPickerSheet: View {
                             .foregroundStyle(JohoColors.black)
                     }
                 }
-                .frame(width: 44, height: 44)
+                .johoTouchTarget()
                 .background(accentColor.opacity(0.2))
                 .clipShape(Circle())
                 .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
@@ -328,7 +328,7 @@ struct ManualMergeSheet: View {
                             .foregroundStyle(JohoColors.black)
                     }
                 }
-                .frame(width: 44, height: 44)
+                .johoTouchTarget()
                 .background(accentColor.opacity(0.2))
                 .clipShape(Circle())
                 .overlay(Circle().stroke(JohoColors.black, lineWidth: isSelected ? 2 : 1.5))

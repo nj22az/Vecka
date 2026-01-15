@@ -36,7 +36,7 @@ struct TripListView: View {
                 .padding(.horizontal, JohoDimensions.spacingLG)
 
                 // Active trips section
-                if !activeTrips.isEmpty {
+                if activeTrips.isNotEmpty {
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                         JohoPill(text: "ACTIVE", style: .whiteOnBlack, size: .medium)
                             .padding(.horizontal, JohoDimensions.spacingLG)
@@ -55,7 +55,7 @@ struct TripListView: View {
                 }
 
                 // Upcoming trips section
-                if !upcomingTrips.isEmpty {
+                if upcomingTrips.isNotEmpty {
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                         JohoPill(text: "UPCOMING", style: .whiteOnBlack, size: .medium)
                             .padding(.horizontal, JohoDimensions.spacingLG)
@@ -74,7 +74,7 @@ struct TripListView: View {
                 }
 
                 // Past trips section
-                if !pastTrips.isEmpty {
+                if pastTrips.isNotEmpty {
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                         JohoPill(text: "PAST", style: .whiteOnBlack, size: .medium)
                             .padding(.horizontal, JohoDimensions.spacingLG)
@@ -158,7 +158,7 @@ struct TripRow: View {
             VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                 // Top row: Status pill and duration
                 HStack {
-                    if !status.isEmpty {
+                    if status.isNotEmpty {
                         JohoPill(text: status, style: .colored(SectionZone.trips.background), size: .small)
                     }
 
@@ -440,7 +440,7 @@ struct JohoTripEditorSheet: View {
     private var tripLightBackground: Color { SpecialDayType.trip.lightBackground }
 
     private var canSave: Bool {
-        !destination.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        !destination.trimmed.isEmpty
     }
 
     private var startDate: Date {
@@ -487,7 +487,7 @@ struct JohoTripEditorSheet: View {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.black)
-                            .frame(width: 44, height: 44)
+                            .johoTouchTarget()
                     }
 
                     // WALL
@@ -845,7 +845,7 @@ struct JohoTripEditorSheet: View {
     }
 
     private func saveTrip() {
-        let trimmedDestination = destination.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedDestination = destination.trimmed
         guard !trimmedDestination.isEmpty else { return }
 
         let trip = TravelTrip(

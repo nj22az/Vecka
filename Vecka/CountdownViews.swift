@@ -545,7 +545,7 @@ struct CustomCountdownDialog: View {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(JohoColors.black)
-                            .frame(width: 44, height: 44)
+                            .johoTouchTarget()
                     }
 
                     // WALL
@@ -1027,7 +1027,7 @@ private struct JohoIconPicker: View {
                                         .font(.system(size: 20, weight: .bold))
                                         // 情報デザイン: Accent color on light bg (NOT inverted)
                                         .foregroundStyle(selectedSymbol == symbol ? SpecialDayType.event.accentColor : JohoColors.black)
-                                        .frame(width: 52, height: 52)
+                                        .johoTouchTarget(52)
                                         .background(selectedSymbol == symbol ? SpecialDayType.event.lightBackground : JohoColors.white)
                                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                         .overlay(
@@ -1085,7 +1085,6 @@ struct IconPickerGrid: View {
                     ZStack {
                         Circle()
                             .fill(selectedIcon == name ? JohoColors.cyan.opacity(0.22) : JohoColors.black.opacity(0.5).opacity(0.08))
-                            .frame(width: 44, height: 44)
                         Image(systemName: name)
                             .font(.system(size: 18, weight: .semibold))
                             .foregroundStyle(selectedIcon == name ? JohoColors.cyan : JohoColors.black.opacity(0.7))

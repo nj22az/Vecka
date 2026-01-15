@@ -769,7 +769,7 @@ struct ContactDetailView: View {
                                 Image(systemName: "map.fill")
                                     .font(.system(size: 16, weight: .bold, design: .rounded))
                                     .foregroundStyle(JohoColors.cyan)
-                                    .frame(width: 44, height: 44)
+                                    .johoTouchTarget()
                                     .background(JohoColors.white)
                                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                     .overlay(
@@ -1257,7 +1257,7 @@ struct ContactDetailView: View {
                         Image(systemName: action.0)
                             .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundStyle(action.1)
-                            .frame(width: 44, height: 44)
+                            .johoTouchTarget()
                             .background(JohoColors.white)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(
@@ -1324,7 +1324,7 @@ struct ContactDetailView: View {
             Image(systemName: isEditMode ? "xmark" : "xmark")
                 .font(.system(size: 18, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoColors.black)
-                .frame(width: 44, height: 44)
+                .johoTouchTarget()
                 .background(JohoColors.white)
                 .clipShape(Circle())
                 .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
@@ -1342,7 +1342,7 @@ struct ContactDetailView: View {
             Image(systemName: isEditMode ? "lock.open.fill" : "lock.fill")
                 .font(.system(size: 18, weight: .bold, design: .rounded))
                 .foregroundStyle(isEditMode ? JohoColors.white : JohoColors.black.opacity(0.6))
-                .frame(width: 44, height: 44)
+                .johoTouchTarget()
                 .background(isEditMode ? accentColor : JohoColors.white)
                 .clipShape(Circle())
                 .overlay(Circle().stroke(JohoColors.black, lineWidth: isEditMode ? 2.5 : 1.5))
@@ -1378,7 +1378,7 @@ struct ContactDetailView: View {
         contact.organizationName = editCompany.trimmingCharacters(in: .whitespaces).isEmpty ? nil : editCompany.trimmingCharacters(in: .whitespaces)
 
         // Phone
-        let trimmedPhone = editPhone.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedPhone = editPhone.trimmed
         if !trimmedPhone.isEmpty {
             contact.phoneNumbers = [ContactPhoneNumber(label: "mobile", value: trimmedPhone)]
         } else {
@@ -1386,7 +1386,7 @@ struct ContactDetailView: View {
         }
 
         // Email
-        let trimmedEmail = editEmail.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedEmail = editEmail.trimmed
         if !trimmedEmail.isEmpty {
             contact.emailAddresses = [ContactEmailAddress(label: "home", value: trimmedEmail)]
         } else {
@@ -1394,9 +1394,9 @@ struct ContactDetailView: View {
         }
 
         // Address
-        let trimmedStreet = editStreet.trimmingCharacters(in: .whitespacesAndNewlines)
-        let trimmedCity = editCity.trimmingCharacters(in: .whitespacesAndNewlines)
-        let trimmedPostalCode = editPostalCode.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedStreet = editStreet.trimmed
+        let trimmedCity = editCity.trimmed
+        let trimmedPostalCode = editPostalCode.trimmed
         if !trimmedStreet.isEmpty || !trimmedCity.isEmpty || !trimmedPostalCode.isEmpty {
             contact.postalAddresses = [ContactPostalAddress(
                 label: "home",
@@ -1417,7 +1417,7 @@ struct ContactDetailView: View {
         }
 
         // Notes
-        let trimmedNotes = editNotes.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedNotes = editNotes.trimmed
         contact.note = trimmedNotes.isEmpty ? nil : trimmedNotes
 
         // Image (this is the key fix - saving directly on the contact)
@@ -1483,7 +1483,7 @@ struct ContactDetailView: View {
             .replacingOccurrences(of: "<", with: "")
             .replacingOccurrences(of: ">", with: "")
             .replacingOccurrences(of: "|", with: "-")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .trimmed
 
         let filename = (sanitizedName.isEmpty ? "Contact" : sanitizedName) + ".vcf"
         let url = tempDir.appendingPathComponent(filename)
@@ -1675,7 +1675,7 @@ struct JohoContactEditorSheet: View {
                         Text(JohoSymbols.batsu)  // ×
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.black)
-                            .frame(width: 44, height: 44)
+                            .johoTouchTarget()
                             .background(JohoColors.white)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(JohoColors.black, lineWidth: 1.5))
@@ -1691,7 +1691,7 @@ struct JohoContactEditorSheet: View {
                         Text(JohoSymbols.maru)  // ○
                             .font(.system(size: 26, weight: .bold, design: .rounded))
                             .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.6))
-                            .frame(width: 44, height: 44)
+                            .johoTouchTarget()
                             .background(canSave ? accentColor : JohoColors.white)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(JohoColors.black, lineWidth: 1.5))
@@ -2105,23 +2105,23 @@ struct JohoContactEditorSheet: View {
 
         // Create phone number if provided
         var phoneNumbers: [ContactPhoneNumber] = []
-        let trimmedPhone = phone.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedPhone = phone.trimmed
         if !trimmedPhone.isEmpty {
             phoneNumbers.append(ContactPhoneNumber(label: "mobile", value: trimmedPhone))
         }
 
         // Create email if provided
         var emailAddresses: [ContactEmailAddress] = []
-        let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedEmail = email.trimmed
         if !trimmedEmail.isEmpty {
             emailAddresses.append(ContactEmailAddress(label: "home", value: trimmedEmail))
         }
 
         // Create postal address if any address field is provided
         var postalAddresses: [ContactPostalAddress] = []
-        let trimmedStreet = street.trimmingCharacters(in: .whitespacesAndNewlines)
-        let trimmedCity = city.trimmingCharacters(in: .whitespacesAndNewlines)
-        let trimmedPostalCode = postalCode.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedStreet = street.trimmed
+        let trimmedCity = city.trimmed
+        let trimmedPostalCode = postalCode.trimmed
         if !trimmedStreet.isEmpty || !trimmedCity.isEmpty || !trimmedPostalCode.isEmpty {
             postalAddresses.append(ContactPostalAddress(
                 label: "home",
@@ -2132,7 +2132,7 @@ struct JohoContactEditorSheet: View {
         }
 
         // Notes
-        let trimmedNotes = notes.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedNotes = notes.trimmed
 
         if let existingContact = existingContact {
             // Update existing contact properties
@@ -2519,7 +2519,7 @@ private struct ContactSymbolPicker: View {
                                     Image(systemName: symbol)
                                         .font(.system(size: 22, weight: .bold, design: .rounded))
                                         .foregroundStyle(isSelected ? accentColor : JohoColors.black)
-                                        .frame(width: 52, height: 52)
+                                        .johoTouchTarget(52)
                                         .background(isSelected ? lightBackground : JohoColors.white)
                                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                                         .overlay(

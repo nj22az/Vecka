@@ -50,7 +50,7 @@ enum NotesMigration {
             var normalized = 0
 
             for note in all {
-                let trimmed = note.content.trimmingCharacters(in: .whitespacesAndNewlines)
+                let trimmed = note.content.trimmed
                 if trimmed.isEmpty {
                     context.delete(note)
                     deleted += 1

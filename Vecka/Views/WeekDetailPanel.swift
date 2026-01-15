@@ -495,25 +495,25 @@ struct CollapsibleDayCard: View {
 
     private var contentIndicatorDots: some View {
         HStack(spacing: 3) {
-            if !holidays.isEmpty {
+            if holidays.isNotEmpty {
                 Circle()
                     .fill(SpecialDayType.holiday.accentColor)
                     .frame(width: 8, height: 8)
                     .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
             }
-            if !filteredCalendarEvents.isEmpty {
+            if filteredCalendarEvents.isNotEmpty {
                 Circle()
                     .fill(SpecialDayType.event.accentColor)
                     .frame(width: 8, height: 8)
                     .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
             }
-            if !notes.isEmpty {
+            if notes.isNotEmpty {
                 Circle()
                     .fill(SpecialDayType.note.accentColor)
                     .frame(width: 8, height: 8)
                     .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
             }
-            if !trips.isEmpty {
+            if trips.isNotEmpty {
                 Circle()
                     .fill(SpecialDayType.trip.accentColor)
                     .frame(width: 8, height: 8)
@@ -529,7 +529,7 @@ struct CollapsibleDayCard: View {
         if hasContent {
             VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                 // Holidays section (pink background)
-                if !holidays.isEmpty {
+                if holidays.isNotEmpty {
                     bentoSection(
                         title: "Holidays",
                         icon: "star.fill",
@@ -547,7 +547,7 @@ struct CollapsibleDayCard: View {
                 }
 
                 // Calendar events section (purple/cyan) - filtered to remove holiday duplicates
-                if !filteredCalendarEvents.isEmpty {
+                if filteredCalendarEvents.isNotEmpty {
                     bentoSection(
                         title: "Events",
                         icon: "calendar.badge.clock",
@@ -565,7 +565,7 @@ struct CollapsibleDayCard: View {
                 }
 
                 // Notes section (yellow)
-                if !notes.isEmpty {
+                if notes.isNotEmpty {
                     bentoSection(
                         title: "Notes",
                         icon: "note.text",
@@ -582,7 +582,7 @@ struct CollapsibleDayCard: View {
                 }
 
                 // Trips section (blue/orange)
-                if !trips.isEmpty {
+                if trips.isNotEmpty {
                     bentoSection(
                         title: "Trips",
                         icon: "airplane",

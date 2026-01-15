@@ -37,81 +37,39 @@ struct VeckaWidgetProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (VeckaWidgetEntry) -> Void) {
+        // TEMP: Simple immediate snapshot for debugging
         let now = Date()
-
-        if context.isPreview {
-            // Provide sample data for previews
-            completion(VeckaWidgetEntry.preview)
-        } else {
-            let accessDenied = !isCalendarAuthorized
-            fetchCalendarEvents(for: now) { todays, week, next in
-                let (todaysHolidays, upcomingHolidays) = fetchHolidays(for: now)
-                let todaysBirthdays = fetchBirthdays(for: now)
-                let weekBirthdays = fetchWeekBirthdays(for: now)
-                completion(VeckaWidgetEntry(
-                    date: now,
-                    todaysEvents: todays,
-                    weekEvents: week,
-                    upcomingEvent: next,
-                    todaysHolidays: todaysHolidays,
-                    upcomingHolidays: upcomingHolidays,
-                    todaysBirthdays: todaysBirthdays,
-                    weekBirthdays: weekBirthdays,
-                    calendarAccessDenied: accessDenied
-                ))
-            }
-        }
+        let entry = VeckaWidgetEntry(
+            date: now,
+            todaysEvents: [],
+            weekEvents: [:],
+            upcomingEvent: nil,
+            todaysHolidays: [],
+            upcomingHolidays: [],
+            todaysBirthdays: [],
+            weekBirthdays: [:],
+            calendarAccessDenied: false
+        )
+        completion(entry)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<VeckaWidgetEntry>) -> Void) {
+        // TEMP: Simple immediate timeline for debugging
         let now = Date()
-        let calendar = Self.calendar
-        let accessDenied = !isCalendarAuthorized
-
-        fetchCalendarEvents(for: now) { todaysEvents, weekEvents, upcomingEvent in
-            let (todaysHolidays, upcomingHolidays) = fetchHolidays(for: now)
-            let todaysBirthdays = fetchBirthdays(for: now)
-            let weekBirthdays = fetchWeekBirthdays(for: now)
-            var entries: [VeckaWidgetEntry] = []
-
-            // Create hourly updates for the next 24 hours
-            for hourOffset in 0..<24 {
-                guard let entryDate = calendar.date(byAdding: .hour, value: hourOffset, to: now) else {
-                    continue
-                }
-                entries.append(VeckaWidgetEntry(
-                    date: entryDate,
-                    todaysEvents: todaysEvents,
-                    weekEvents: weekEvents,
-                    upcomingEvent: upcomingEvent,
-                    todaysHolidays: todaysHolidays,
-                    upcomingHolidays: upcomingHolidays,
-                    todaysBirthdays: todaysBirthdays,
-                    weekBirthdays: weekBirthdays,
-                    calendarAccessDenied: accessDenied
-                ))
-            }
-
-            // Ensure at least one entry exists
-            if entries.isEmpty {
-                entries.append(VeckaWidgetEntry(
-                    date: now,
-                    todaysEvents: todaysEvents,
-                    weekEvents: weekEvents,
-                    upcomingEvent: upcomingEvent,
-                    todaysHolidays: todaysHolidays,
-                    upcomingHolidays: upcomingHolidays,
-                    todaysBirthdays: todaysBirthdays,
-                    weekBirthdays: weekBirthdays,
-                    calendarAccessDenied: accessDenied
-                ))
-            }
-
-            // Request next update after 24 hours (fallback to 86400 seconds if date calculation fails)
-            let nextUpdate = calendar.date(byAdding: .day, value: 1, to: now) ?? now.addingTimeInterval(86400)
-            let timeline = Timeline(entries: entries, policy: .after(nextUpdate))
-            completion(timeline)
-        }
+        let entry = VeckaWidgetEntry(
+            date: now,
+            todaysEvents: [],
+            weekEvents: [:],
+            upcomingEvent: nil,
+            todaysHolidays: [],
+            upcomingHolidays: [],
+            todaysBirthdays: [],
+            weekBirthdays: [:],
+            calendarAccessDenied: false
+        )
+        let nextUpdate = now.addingTimeInterval(3600) // 1 hour
+        let timeline = Timeline(entries: [entry], policy: .after(nextUpdate))
+        completion(timeline)
     }
 
     // MARK: - Calendar Event Fetching

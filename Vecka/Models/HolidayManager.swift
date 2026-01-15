@@ -23,7 +23,7 @@ struct HolidayCacheItem: Identifiable, Hashable, Sendable {
 
 extension HolidayCacheItem {
     var displayTitle: String {
-        let trimmedOverride = (titleOverride ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedOverride = (titleOverride ?? "").trimmed
         if !trimmedOverride.isEmpty { return trimmedOverride }
         guard name.hasPrefix("holiday.") else { return name }
         return NSLocalizedString(name, comment: "Holiday Name")
@@ -468,7 +468,7 @@ class HolidayManager {
     }
 
     private func normalizedSymbolName(for rule: HolidayRule, context: ModelContext) -> String? {
-        let trimmed = (rule.symbolName ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = (rule.symbolName ?? "").trimmed
         if !trimmed.isEmpty { return trimmed }
 
         // Use shared icon logic

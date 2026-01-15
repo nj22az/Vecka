@@ -133,7 +133,7 @@ struct DeveloperSettingsView: View {
                         Image(systemName: "wand.and.stars")
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.cyan)
-                            .frame(width: 44, height: 44)
+                            .johoTouchTarget()
                             .background(JohoColors.cyan.opacity(0.2))
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(
@@ -240,7 +240,7 @@ struct DeveloperSettingsView: View {
                         Image(systemName: "photo.fill.on.rectangle.fill")
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.purple)
-                            .frame(width: 44, height: 44)
+                            .johoTouchTarget()
                             .background(JohoColors.purple.opacity(0.2))
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(
@@ -279,7 +279,7 @@ struct DeveloperSettingsView: View {
                     HStack(spacing: JohoDimensions.spacingSM) {
                         ForEach(0..<6, id: \.self) { index in
                             SampleAvatarPreview(index: index)
-                                .frame(width: 44, height: 44)
+                                .johoTouchTarget()
                         }
                     }
                     .padding(.horizontal, 4)
@@ -391,7 +391,7 @@ struct DeveloperSettingsView: View {
                     Image(systemName: "trash.fill")
                         .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.red)
-                        .frame(width: 44, height: 44)
+                        .johoTouchTarget()
                         .background(JohoColors.red.opacity(0.2))
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(

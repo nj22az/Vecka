@@ -101,16 +101,16 @@ struct JohoUnifiedEntrySheet: View {
     private var canSave: Bool {
         switch selectedType {
         case .note:
-            return !noteContent.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            return !noteContent.trimmed.isEmpty
         case .trip:
-            return !tripDestination.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            return !tripDestination.trimmed.isEmpty
         case .expense:
             guard let amount = Double(expenseAmount.replacingOccurrences(of: ",", with: ".")) else { return false }
-            return amount > 0 && !expenseDescription.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            return amount > 0 && !expenseDescription.trimmed.isEmpty
         case .holiday:
-            return !holidayName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            return !holidayName.trimmed.isEmpty
         case .birthday:
-            return !birthdayFirstName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            return !birthdayFirstName.trimmed.isEmpty
         }
     }
 
@@ -753,7 +753,7 @@ struct JohoUnifiedEntrySheet: View {
         Image(systemName: icon)
             .font(.system(size: 15, weight: .semibold, design: .rounded))
             .foregroundStyle(JohoColors.black.opacity(0.7))
-            .frame(width: 44, height: 44)
+            .johoTouchTarget()
             .background(color.opacity(0.3))
     }
 
@@ -786,7 +786,7 @@ struct JohoUnifiedEntrySheet: View {
             Text(label)
                 .font(.system(size: 10, weight: .black, design: .rounded))
                 .foregroundStyle(colors.primary.opacity(0.6))
-                .frame(width: 44, height: 44)
+                .johoTouchTarget()
                 .background(selectedType.color.opacity(0.15))
 
             verticalWall()
@@ -833,7 +833,7 @@ struct JohoUnifiedEntrySheet: View {
                 Text("\(day.wrappedValue)")
                     .font(.system(size: 14, weight: .bold, design: .monospaced))
                     .foregroundStyle(colors.primary)
-                    .frame(width: 44, height: 44)
+                    .johoTouchTarget()
             }
         }
     }
@@ -881,7 +881,7 @@ struct JohoUnifiedEntrySheet: View {
                 Image(systemName: currentIcon)
                     .font(.system(size: 16, weight: .semibold, design: .rounded))
                     .foregroundStyle(JohoColors.black.opacity(0.7))
-                    .frame(width: 44, height: 44)
+                    .johoTouchTarget()
                     .background(selectedType.color.opacity(0.3))
 
                 verticalWall()
@@ -937,7 +937,7 @@ struct JohoUnifiedEntrySheet: View {
     }
 
     private func saveNote() {
-        let content = noteContent.trimmingCharacters(in: .whitespacesAndNewlines)
+        let content = noteContent.trimmed
         guard !content.isEmpty else { return }
 
         let note = DailyNote(date: selectedDate, content: content, symbolName: noteSymbol)
@@ -952,7 +952,7 @@ struct JohoUnifiedEntrySheet: View {
     }
 
     private func saveTrip() {
-        let destination = tripDestination.trimmingCharacters(in: .whitespacesAndNewlines)
+        let destination = tripDestination.trimmed
         guard !destination.isEmpty else { return }
 
         let trip = TravelTrip(
@@ -974,7 +974,7 @@ struct JohoUnifiedEntrySheet: View {
 
     private func saveExpense() {
         guard let amount = Double(expenseAmount.replacingOccurrences(of: ",", with: ".")) else { return }
-        let desc = expenseDescription.trimmingCharacters(in: .whitespacesAndNewlines)
+        let desc = expenseDescription.trimmed
         guard !desc.isEmpty else { return }
 
         let expense = ExpenseItem(
@@ -997,7 +997,7 @@ struct JohoUnifiedEntrySheet: View {
     }
 
     private func saveHoliday() {
-        let name = holidayName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let name = holidayName.trimmed
         guard !name.isEmpty else { return }
 
         let rule = HolidayRule(
@@ -1020,10 +1020,10 @@ struct JohoUnifiedEntrySheet: View {
     }
 
     private func saveBirthday() {
-        let firstName = birthdayFirstName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let firstName = birthdayFirstName.trimmed
         guard !firstName.isEmpty else { return }
 
-        let lastName = birthdayLastName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let lastName = birthdayLastName.trimmed
         let birthdayDate: Date?
         if birthdayHasYear {
             birthdayDate = selectedDate

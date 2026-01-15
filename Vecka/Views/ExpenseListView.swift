@@ -187,7 +187,7 @@ struct ExpenseListView: View {
             .padding(.horizontal, JohoDimensions.spacingLG)
 
             // Multi-currency breakdown (情報デザイン: Show original currencies)
-            if !currencyBreakdown.isEmpty && currencyBreakdown.count > 1 {
+            if currencyBreakdown.isNotEmpty && currencyBreakdown.count > 1 {
                 multiCurrencyBreakdownSection
             }
         }
@@ -775,7 +775,7 @@ struct FilterOptionsSheet: View {
                     }
 
                     // Trips Section
-                    if !trips.isEmpty {
+                    if trips.isNotEmpty {
                         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                             JohoPill(text: "Trip", style: .blackOnWhite, size: .medium)
 

@@ -298,7 +298,7 @@ private struct JohoNoteEditor: View {
     private let accentColor = SpecialDayType.note.accentColor
 
     private var canSave: Bool {
-        !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        !text.trimmed.isEmpty
     }
 
     var body: some View {
@@ -322,7 +322,7 @@ private struct JohoNoteEditor: View {
                 Spacer()
 
                 Button {
-                    onSave(text.trimmingCharacters(in: .whitespacesAndNewlines))
+                    onSave(text.trimmed)
                     HapticManager.notification(.success)
                 } label: {
                     Text("Save")
@@ -439,7 +439,7 @@ struct JohoNoteEditorSheet: View {
     private var noteLightBackground: Color { SpecialDayType.note.lightBackground }
 
     private var canSave: Bool {
-        !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        !text.trimmed.isEmpty
     }
 
     private var selectedDate: Date {
@@ -493,7 +493,7 @@ struct JohoNoteEditorSheet: View {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(JohoColors.black)
-                            .frame(width: 44, height: 44)
+                            .johoTouchTarget()
                     }
 
                     // WALL
@@ -727,7 +727,7 @@ struct JohoNoteEditorSheet: View {
     }
 
     private func saveNote() {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmed = text.trimmed
         guard !trimmed.isEmpty else { return }
 
         let note = DailyNote(

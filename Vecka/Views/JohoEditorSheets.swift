@@ -137,7 +137,7 @@ struct JohoIconPickerSheet: View {
                                     Image(systemName: symbol)
                                         .font(.system(size: 20, weight: .bold, design: .rounded))
                                         .foregroundStyle(selectedSymbol == symbol ? accentColor : JohoColors.black)
-                                        .frame(width: 52, height: 52)
+                                        .johoTouchTarget(52)
                                         .background(selectedSymbol == symbol ? lightBackground : JohoColors.white)
                                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                         .overlay(
@@ -196,7 +196,7 @@ struct JohoSpecialDayEditorSheet: View {
     }
 
     private var canSave: Bool {
-        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        !name.trimmed.isEmpty
     }
 
     private var headerTitle: String {
@@ -267,7 +267,7 @@ struct JohoSpecialDayEditorSheet: View {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.black)
-                            .frame(width: 44, height: 44)
+                            .johoTouchTarget()
                     }
 
                     Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
@@ -297,8 +297,8 @@ struct JohoSpecialDayEditorSheet: View {
                     Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
 
                     Button {
-                        let notesValue = notes.trimmingCharacters(in: .whitespacesAndNewlines)
-                        onSave(name.trimmingCharacters(in: .whitespacesAndNewlines), selectedDate, selectedSymbol, nil, notesValue.isEmpty ? nil : notesValue, selectedRegion)
+                        let notesValue = notes.trimmed
+                        onSave(name.trimmed, selectedDate, selectedSymbol, nil, notesValue.isEmpty ? nil : notesValue, selectedRegion)
                         dismiss()
                     } label: {
                         Text("Save")
@@ -495,7 +495,7 @@ struct JohoAddSpecialDaySheet: View {
                     Text("×")
                         .font(.system(size: 18, weight: .black, design: .rounded))
                         .foregroundStyle(colors.primaryInverted)
-                        .frame(width: 44, height: 44)
+                        .johoTouchTarget()
                 }
             }
             .frame(height: 48)
@@ -635,7 +635,7 @@ struct JohoEventEditorSheet: View {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.black)
-                            .frame(width: 44, height: 44)
+                            .johoTouchTarget()
                     }
 
                     Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
@@ -665,7 +665,7 @@ struct JohoEventEditorSheet: View {
                     Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
 
                     Button {
-                        onSave(name.trimmingCharacters(in: .whitespacesAndNewlines), selectedDate, selectedSymbol, "#805AD5")
+                        onSave(name.trimmed, selectedDate, selectedSymbol, "#805AD5")
                         dismiss()
                     } label: {
                         Text("Save")

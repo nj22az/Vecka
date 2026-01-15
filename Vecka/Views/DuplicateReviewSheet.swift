@@ -25,7 +25,7 @@ struct DuplicateSuggestionBanner: View {
                 Image(systemName: "person.2.badge.key.fill")
                     .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(warningColor)
-                    .frame(width: 44, height: 44)
+                    .johoTouchTarget()
                     .background(warningColor.opacity(0.2))
 
                 // WALL

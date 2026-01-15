@@ -29,7 +29,7 @@ struct HolidayRegionSelection: RawRepresentable, Equatable, Hashable, Sendable {
         output.reserveCapacity(min(maxCount, input.count))
 
         for raw in input {
-            let code = raw.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+            let code = raw.trimmed.uppercased()
             guard !code.isEmpty else { continue }
             guard !seen.contains(code) else { continue }
             seen.insert(code)
@@ -49,7 +49,7 @@ struct HolidayRegionSelection: RawRepresentable, Equatable, Hashable, Sendable {
     }
 
     mutating func addRegionIfPossible(_ code: String, maxCount: Int = 2) -> Bool {
-        let normalized = code.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        let normalized = code.trimmed.uppercased()
         guard !normalized.isEmpty else { return false }
         guard !regions.contains(normalized) else { return true }
         guard regions.count < maxCount else { return false }
@@ -58,7 +58,7 @@ struct HolidayRegionSelection: RawRepresentable, Equatable, Hashable, Sendable {
     }
 
     mutating func removeRegionIfPossible(_ code: String, minimumCount: Int = 1) -> Bool {
-        let normalized = code.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        let normalized = code.trimmed.uppercased()
         guard regions.contains(normalized) else { return false }
         guard regions.count > minimumCount else { return false }
         regions.removeAll(where: { $0 == normalized })
