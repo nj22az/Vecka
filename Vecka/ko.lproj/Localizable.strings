@@ -185,3 +185,150 @@
 
 /* Dashboard */
 "dashboard.pinned" = "고정됨";
+
+/* Holidays */
+"holiday.nyarsdagen" = "새해 첫날";
+"holiday.trettondedag_jul" = "주현절";
+"holiday.forsta_maj" = "5월 1일";
+"holiday.sveriges_nationaldag" = "스웨덴 국경일";
+"holiday.juldagen" = "크리스마스";
+"holiday.annandag_jul" = "박싱 데이";
+"holiday.nyarsafton" = "새해 전날";
+"holiday.julafton" = "크리스마스 이브";
+"holiday.alla_hjartans_dag" = "발렌타인 데이";
+"holiday.internationella_kvinnodagen" = "세계 여성의 날";
+"holiday.langfredagen" = "성 금요일";
+"holiday.paskdagen" = "부활절";
+"holiday.annandag_pask" = "부활절 월요일";
+"holiday.kristi_himmelsfardsdag" = "승천일";
+"holiday.pingstdagen" = "오순절";
+"holiday.midsommardagen" = "하지";
+"holiday.midsommarafton" = "하지 전날";
+"holiday.alla_helgons_dag" = "만성절";
+"holiday.mors_dag" = "어머니의 날";
+"holiday.fars_dag" = "아버지의 날";
+
+/* Countdown */
+"holiday.virdagjamning" = "춘분";
+"holiday.sommarsolstand" = "하지";
+"holiday.hostdagjamning" = "추분";
+"holiday.vintersolstand" = "동지";
+
+"countdown.custom_event" = "사용자 지정 이벤트";
+"countdown.days_suffix" = "일";
+
+/* Settings - Region */
+"settings.region" = "지역";
+"region.sweden" = "스웨덴";
+"region.us" = "미국";
+"region.vietnam" = "베트남";
+"region.germany" = "독일";
+"region.uk" = "영국";
+"region.france" = "프랑스";
+"region.italy" = "이탈리아";
+"region.netherlands" = "네덜란드";
+"region.japan" = "일본";
+"region.hongkong" = "홍콩";
+"region.china" = "중국";
+"region.thailand" = "태국";
+
+/* PDF Content */
+"pdf.summary_title" = "요약";
+"pdf.recent_notes" = "최근 메모";
+"pdf.recent_expenses" = "최근 경비";
+"pdf.active_trips" = "활성 여행";
+"pdf.holidays" = "공휴일";
+"pdf.notes" = "메모";
+"pdf.expenses" = "경비";
+"pdf.week" = "주";
+"pdf.generated_by" = "Onsen Planner로 생성됨";
+
+/* Common UI - Extended */
+"common.total" = "총계";
+"common.duration" = "기간";
+"common.category" = "카테고리";
+"common.no_events" = "이벤트 없음";
+"common.see_all" = "모두 보기";
+"common.try_again" = "다시 시도";
+"common.retry" = "재시도";
+"common.refresh" = "새로고침";
+"common.options" = "옵션";
+"common.delete" = "삭제";
+"common.settings" = "설정";
+"common.done" = "완료";
+"common.none" = "없음";
+"common.show_all" = "모두 표시";
+"common.show_less" = "간단히 보기";
+"common.more" = "더 보기";
+"common.less" = "간단히";
+
+/* Contacts */
+"contacts.no_contacts" = "연락처 없음";
+"contacts.import" = "주소록에서 가져오거나 수동으로 연락처를 추가하세요";
+"contacts.import_from_address_book" = "주소록에서 가져오기";
+"contacts.import_options" = "가져오기 옵션";
+"contacts.new_contact" = "새 연락처";
+"contacts.import_all" = "모든 연락처 가져오기";
+"contacts.select_to_import" = "가져올 연락처 선택";
+"contacts.grant_permission" = "연락처 권한 부여";
+"contacts.export_to_ios" = "iOS 연락처로 내보내기";
+
+/* QR Code */
+"qr.scan_hint" = "이 QR 코드를 스캔하여 연락처 저장";
+"qr.point_camera" = "QR 코드에 카메라를 맞추세요";
+"qr.share" = "QR 코드 공유";
+"qr.share_as_qr" = "QR 코드로 공유";
+"qr.share_as_vcard" = "vCard로 공유";
+
+/* Trips */
+"trips.active" = "활성 여행";
+"trips.upcoming" = "예정된 여행";
+"trips.add" = "여행 추가";
+"trips.generate_report" = "보고서 생성";
+"trips.mileage" = "주행거리";
+
+/* Weather Extended */
+"weather.no_data_title" = "날씨 데이터 없음";
+"weather.enable_location" = "예보를 보려면 위치 서비스를 활성화하세요";
+"weather.unable_to_load" = "날씨를 로드할 수 없음";
+"weather.manage_locations" = "위치 관리";
+
+/* Location Extended */
+"location.current" = "현재 위치";
+"location.add" = "위치 추가";
+"location.enter_coordinates" = "좌표 수동 입력";
+"location.save" = "위치 저장";
+
+/* Expenses Extended */
+"expenses.add" = "경비 추가";
+"expenses.filter_options" = "필터 옵션";
+"expenses.all_categories" = "모든 카테고리";
+"expenses.all_trips" = "모든 여행";
+"expenses.use_template" = "템플릿 사용";
+"expenses.remove_receipt" = "영수증 제거";
+"expenses.add_receipt_photo" = "영수증 사진 추가";
+"expenses.recent" = "최근 경비";
+
+/* Notes Extended */
+"notes.search" = "메모 검색";
+"notes.unpin" = "고정 해제";
+
+/* Dashboard */
+"dashboard.upcoming_events" = "다가오는 이벤트";
+"dashboard.no_activity" = "최근 활동 없음";
+
+/* Navigation Extended */
+"navigation.detail_view" = "상세 보기";
+"navigation.calendar" = "캘린더";
+"navigation.library" = "라이브러리";
+"navigation.notes" = "메모";
+"navigation.holidays" = "공휴일";
+"navigation.observances" = "기념일";
+"navigation.contacts" = "연락처";
+"navigation.expenses" = "경비";
+"navigation.trips" = "여행";
+"navigation.weather" = "날씨";
+"navigation.select_item" = "항목 선택";
+"navigation.menu" = "메뉴";
+"navigation.holidays_section" = "공휴일 및 이벤트";
+"navigation.features" = "기능";

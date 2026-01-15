@@ -185,3 +185,150 @@
 
 /* Dashboard */
 "dashboard.pinned" = "Angepinnt";
+
+/* PDF Content */
+"pdf.summary_title" = "Zusammenfassung";
+"pdf.recent_notes" = "Aktuelle Notizen";
+"pdf.recent_expenses" = "Aktuelle Ausgaben";
+"pdf.active_trips" = "Aktive Reisen";
+"pdf.holidays" = "Feiertage";
+"pdf.notes" = "Notizen";
+"pdf.expenses" = "Ausgaben";
+"pdf.week" = "Woche";
+"pdf.generated_by" = "Erstellt von Onsen Planner";
+
+/* Common UI - Extended */
+"common.total" = "Gesamt";
+"common.duration" = "Dauer";
+"common.category" = "Kategorie";
+"common.no_events" = "Keine Ereignisse";
+"common.see_all" = "Alle anzeigen";
+"common.try_again" = "Erneut versuchen";
+"common.retry" = "Wiederholen";
+"common.refresh" = "Aktualisieren";
+"common.options" = "Optionen";
+"common.delete" = "Löschen";
+"common.settings" = "Einstellungen";
+"common.done" = "Fertig";
+"common.none" = "Keine";
+"common.show_all" = "Alle anzeigen";
+"common.show_less" = "Weniger anzeigen";
+"common.more" = "Mehr";
+"common.less" = "Weniger";
+
+/* Contacts */
+"contacts.no_contacts" = "Keine Kontakte";
+"contacts.import" = "Aus Adressbuch importieren oder Kontakte manuell hinzufügen";
+"contacts.import_from_address_book" = "Aus Adressbuch importieren";
+"contacts.import_options" = "Importoptionen";
+"contacts.new_contact" = "Neuer Kontakt";
+"contacts.import_all" = "Alle Kontakte importieren";
+"contacts.select_to_import" = "Kontakte zum Importieren auswählen";
+"contacts.grant_permission" = "Kontaktberechtigung erteilen";
+"contacts.export_to_ios" = "In iOS-Kontakte exportieren";
+
+/* QR Code */
+"qr.scan_hint" = "Scannen Sie diesen QR-Code, um den Kontakt zu speichern";
+"qr.point_camera" = "Kamera auf QR-Code richten";
+"qr.share" = "QR-Code teilen";
+"qr.share_as_qr" = "Als QR-Code teilen";
+"qr.share_as_vcard" = "Als vCard teilen";
+
+/* Trips */
+"trips.active" = "Aktive Reisen";
+"trips.upcoming" = "Bevorstehende Reisen";
+"trips.add" = "Reise hinzufügen";
+"trips.generate_report" = "Bericht erstellen";
+"trips.mileage" = "Kilometerstand";
+
+/* Weather Extended */
+"weather.no_data_title" = "Keine Wetterdaten";
+"weather.enable_location" = "Standortdienste aktivieren, um die Vorhersage anzuzeigen";
+"weather.unable_to_load" = "Wetter kann nicht geladen werden";
+"weather.manage_locations" = "Orte verwalten";
+
+/* Location Extended */
+"location.current" = "Aktueller Standort";
+"location.add" = "Standort hinzufügen";
+"location.enter_coordinates" = "Koordinaten manuell eingeben";
+"location.save" = "Standort speichern";
+
+/* Expenses Extended */
+"expenses.add" = "Ausgabe hinzufügen";
+"expenses.filter_options" = "Filteroptionen";
+"expenses.all_categories" = "Alle Kategorien";
+"expenses.all_trips" = "Alle Reisen";
+"expenses.use_template" = "Vorlage verwenden";
+"expenses.remove_receipt" = "Quittung entfernen";
+"expenses.add_receipt_photo" = "Quittungsfoto hinzufügen";
+"expenses.recent" = "Aktuelle Ausgaben";
+
+/* Notes Extended */
+"notes.search" = "Notizen durchsuchen";
+"notes.unpin" = "Loslösen";
+
+/* Dashboard */
+"dashboard.upcoming_events" = "Bevorstehende Ereignisse";
+"dashboard.no_activity" = "Keine aktuellen Aktivitäten";
+
+/* Navigation Extended */
+"navigation.detail_view" = "Detailansicht";
+"navigation.calendar" = "Kalender";
+"navigation.library" = "Bibliothek";
+"navigation.notes" = "Notizen";
+"navigation.holidays" = "Feiertage";
+"navigation.observances" = "Feierlichkeiten";
+"navigation.contacts" = "Kontakte";
+"navigation.expenses" = "Ausgaben";
+"navigation.trips" = "Reisen";
+"navigation.weather" = "Wetter";
+"navigation.select_item" = "Element auswählen";
+"navigation.menu" = "Menü";
+"navigation.holidays_section" = "Feiertage & Ereignisse";
+"navigation.features" = "Funktionen";
+
+/* Holidays */
+"holiday.nyarsdagen" = "Neujahrstag";
+"holiday.trettondedag_jul" = "Heilige Drei Könige";
+"holiday.forsta_maj" = "1. Mai";
+"holiday.sveriges_nationaldag" = "Nationalfeiertag Schwedens";
+"holiday.juldagen" = "1. Weihnachtstag";
+"holiday.annandag_jul" = "2. Weihnachtstag";
+"holiday.nyarsafton" = "Silvester";
+"holiday.julafton" = "Heiligabend";
+"holiday.alla_hjartans_dag" = "Valentinstag";
+"holiday.internationella_kvinnodagen" = "Internationaler Frauentag";
+"holiday.langfredagen" = "Karfreitag";
+"holiday.paskdagen" = "Ostersonntag";
+"holiday.annandag_pask" = "Ostermontag";
+"holiday.kristi_himmelsfardsdag" = "Christi Himmelfahrt";
+"holiday.pingstdagen" = "Pfingsten";
+"holiday.midsommardagen" = "Mittsommertag";
+"holiday.midsommarafton" = "Mittsommerabend";
+"holiday.alla_helgons_dag" = "Allerheiligen";
+"holiday.mors_dag" = "Muttertag";
+"holiday.fars_dag" = "Vatertag";
+
+/* Countdown */
+"holiday.virdagjamning" = "Frühlingstagundnachtgleiche";
+"holiday.sommarsolstand" = "Sommersonnenwende";
+"holiday.hostdagjamning" = "Herbsttagundnachtgleiche";
+"holiday.vintersolstand" = "Wintersonnenwende";
+
+"countdown.custom_event" = "EIGENES EREIGNIS";
+"countdown.days_suffix" = "TAGE";
+
+/* Settings - Region */
+"settings.region" = "Region";
+"region.sweden" = "Schweden";
+"region.us" = "Vereinigte Staaten";
+"region.vietnam" = "Vietnam";
+"region.germany" = "Deutschland";
+"region.uk" = "Vereinigtes Königreich";
+"region.france" = "Frankreich";
+"region.italy" = "Italien";
+"region.netherlands" = "Niederlande";
+"region.japan" = "Japan";
+"region.hongkong" = "Hongkong";
+"region.china" = "China";
+"region.thailand" = "Thailand";

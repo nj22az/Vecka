@@ -185,3 +185,150 @@
 
 /* Dashboard */
 "dashboard.pinned" = "Đã ghim";
+
+/* Holidays */
+"holiday.nyarsdagen" = "Tết Dương lịch";
+"holiday.trettondedag_jul" = "Lễ Hiện xuất";
+"holiday.forsta_maj" = "Ngày Quốc tế Lao động";
+"holiday.sveriges_nationaldag" = "Quốc khánh Thụy Điển";
+"holiday.juldagen" = "Lễ Giáng sinh";
+"holiday.annandag_jul" = "Ngày thứ hai Giáng sinh";
+"holiday.nyarsafton" = "Đêm giao thừa";
+"holiday.julafton" = "Đêm Giáng sinh";
+"holiday.alla_hjartans_dag" = "Lễ Tình nhân";
+"holiday.internationella_kvinnodagen" = "Ngày Quốc tế Phụ nữ";
+"holiday.langfredagen" = "Thứ Sáu Tuần Thánh";
+"holiday.paskdagen" = "Chủ nhật Phục sinh";
+"holiday.annandag_pask" = "Thứ Hai Phục sinh";
+"holiday.kristi_himmelsfardsdag" = "Lễ Thăng thiên";
+"holiday.pingstdagen" = "Lễ Ngũ tuần";
+"holiday.midsommardagen" = "Ngày hè";
+"holiday.midsommarafton" = "Đêm hè";
+"holiday.alla_helgons_dag" = "Lễ Các Thánh";
+"holiday.mors_dag" = "Ngày của Mẹ";
+"holiday.fars_dag" = "Ngày của Cha";
+
+/* Countdown */
+"holiday.virdagjamning" = "Xuân phân";
+"holiday.sommarsolstand" = "Hạ chí";
+"holiday.hostdagjamning" = "Thu phân";
+"holiday.vintersolstand" = "Đông chí";
+
+"countdown.custom_event" = "SỰ KIỆN TÙY CHỈNH";
+"countdown.days_suffix" = "NGÀY";
+
+/* Settings - Region */
+"settings.region" = "Khu vực";
+"region.sweden" = "Thụy Điển";
+"region.us" = "Hoa Kỳ";
+"region.vietnam" = "Việt Nam";
+"region.germany" = "Đức";
+"region.uk" = "Vương quốc Anh";
+"region.france" = "Pháp";
+"region.italy" = "Ý";
+"region.netherlands" = "Hà Lan";
+"region.japan" = "Nhật Bản";
+"region.hongkong" = "Hồng Kông";
+"region.china" = "Trung Quốc";
+"region.thailand" = "Thái Lan";
+
+/* PDF Content */
+"pdf.summary_title" = "Tóm tắt";
+"pdf.recent_notes" = "Ghi chú gần đây";
+"pdf.recent_expenses" = "Chi phí gần đây";
+"pdf.active_trips" = "Chuyến đi đang hoạt động";
+"pdf.holidays" = "Ngày lễ";
+"pdf.notes" = "Ghi chú";
+"pdf.expenses" = "Chi phí";
+"pdf.week" = "Tuần";
+"pdf.generated_by" = "Được tạo bởi Onsen Planner";
+
+/* Common UI - Extended */
+"common.total" = "Tổng";
+"common.duration" = "Thời lượng";
+"common.category" = "Danh mục";
+"common.no_events" = "Không có sự kiện";
+"common.see_all" = "Xem tất cả";
+"common.try_again" = "Thử lại";
+"common.retry" = "Thử lại";
+"common.refresh" = "Làm mới";
+"common.options" = "Tùy chọn";
+"common.delete" = "Xóa";
+"common.settings" = "Cài đặt";
+"common.done" = "Xong";
+"common.none" = "Không có";
+"common.show_all" = "Hiện tất cả";
+"common.show_less" = "Hiện ít hơn";
+"common.more" = "Thêm";
+"common.less" = "Ít hơn";
+
+/* Contacts */
+"contacts.no_contacts" = "Không có liên hệ";
+"contacts.import" = "Nhập từ danh bạ hoặc thêm liên hệ thủ công";
+"contacts.import_from_address_book" = "Nhập từ Danh bạ";
+"contacts.import_options" = "Tùy chọn nhập";
+"contacts.new_contact" = "Liên hệ mới";
+"contacts.import_all" = "Nhập tất cả liên hệ";
+"contacts.select_to_import" = "Chọn liên hệ để nhập";
+"contacts.grant_permission" = "Cấp quyền Danh bạ";
+"contacts.export_to_ios" = "Xuất sang Danh bạ iOS";
+
+/* QR Code */
+"qr.scan_hint" = "Quét mã QR này để lưu liên hệ";
+"qr.point_camera" = "Chỉ camera vào mã QR";
+"qr.share" = "Chia sẻ mã QR";
+"qr.share_as_qr" = "Chia sẻ dạng mã QR";
+"qr.share_as_vcard" = "Chia sẻ dạng vCard";
+
+/* Trips */
+"trips.active" = "Chuyến đi đang diễn ra";
+"trips.upcoming" = "Chuyến đi sắp tới";
+"trips.add" = "Thêm chuyến đi";
+"trips.generate_report" = "Tạo báo cáo";
+"trips.mileage" = "Số dặm";
+
+/* Weather Extended */
+"weather.no_data_title" = "Không có dữ liệu thời tiết";
+"weather.enable_location" = "Bật dịch vụ vị trí để xem dự báo";
+"weather.unable_to_load" = "Không thể tải thời tiết";
+"weather.manage_locations" = "Quản lý địa điểm";
+
+/* Location Extended */
+"location.current" = "Vị trí hiện tại";
+"location.add" = "Thêm địa điểm";
+"location.enter_coordinates" = "Nhập tọa độ thủ công";
+"location.save" = "Lưu địa điểm";
+
+/* Expenses Extended */
+"expenses.add" = "Thêm chi phí";
+"expenses.filter_options" = "Tùy chọn lọc";
+"expenses.all_categories" = "Tất cả danh mục";
+"expenses.all_trips" = "Tất cả chuyến đi";
+"expenses.use_template" = "Sử dụng mẫu";
+"expenses.remove_receipt" = "Xóa biên lai";
+"expenses.add_receipt_photo" = "Thêm ảnh biên lai";
+"expenses.recent" = "Chi phí gần đây";
+
+/* Notes Extended */
+"notes.search" = "Tìm ghi chú";
+"notes.unpin" = "Bỏ ghim";
+
+/* Dashboard */
+"dashboard.upcoming_events" = "Sự kiện sắp tới";
+"dashboard.no_activity" = "Không có hoạt động gần đây";
+
+/* Navigation Extended */
+"navigation.detail_view" = "Xem chi tiết";
+"navigation.calendar" = "Lịch";
+"navigation.library" = "Thư viện";
+"navigation.notes" = "Ghi chú";
+"navigation.holidays" = "Ngày lễ";
+"navigation.observances" = "Ngày kỷ niệm";
+"navigation.contacts" = "Liên hệ";
+"navigation.expenses" = "Chi phí";
+"navigation.trips" = "Chuyến đi";
+"navigation.weather" = "Thời tiết";
+"navigation.select_item" = "Chọn một mục";
+"navigation.menu" = "Menu";
+"navigation.holidays_section" = "Ngày lễ & Sự kiện";
+"navigation.features" = "Tính năng";

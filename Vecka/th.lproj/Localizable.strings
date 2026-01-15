@@ -185,3 +185,150 @@
 
 /* Dashboard */
 "dashboard.pinned" = "ปักหมุด";
+
+/* Holidays */
+"holiday.nyarsdagen" = "วันปีใหม่";
+"holiday.trettondedag_jul" = "วันเทศกาลเทิดพระเจ้า";
+"holiday.forsta_maj" = "วันที่ 1 พฤษภาคม";
+"holiday.sveriges_nationaldag" = "วันชาติสวีเดน";
+"holiday.juldagen" = "วันคริสต์มาส";
+"holiday.annandag_jul" = "วันรุ่งคริสต์มาส";
+"holiday.nyarsafton" = "วันก่อนปีใหม่";
+"holiday.julafton" = "วันก่อนคริสต์มาส";
+"holiday.alla_hjartans_dag" = "วันวาเลนไทน์";
+"holiday.internationella_kvinnodagen" = "วันสตรีสากล";
+"holiday.langfredagen" = "วันศุกร์ประเสริฐ";
+"holiday.paskdagen" = "วันอีสเตอร์";
+"holiday.annandag_pask" = "วันจันทร์อีสเตอร์";
+"holiday.kristi_himmelsfardsdag" = "วันเสด็จสู่สวรรค์";
+"holiday.pingstdagen" = "วันเพนเทคอสต์";
+"holiday.midsommardagen" = "วันกลางฤดูร้อน";
+"holiday.midsommarafton" = "วันก่อนกลางฤดูร้อน";
+"holiday.alla_helgons_dag" = "วันสมโภชนักบุญทั้งหลาย";
+"holiday.mors_dag" = "วันแม่";
+"holiday.fars_dag" = "วันพ่อ";
+
+/* Countdown */
+"holiday.virdagjamning" = "วันเท่าราตรีฤดูใบไม้ผลิ";
+"holiday.sommarsolstand" = "วันเที่ยงแดดฤดูร้อน";
+"holiday.hostdagjamning" = "วันเท่าราตรีฤดูใบไม้ร่วง";
+"holiday.vintersolstand" = "วันเที่ยงแดดฤดูหนาว";
+
+"countdown.custom_event" = "กิจกรรมที่กำหนดเอง";
+"countdown.days_suffix" = "วัน";
+
+/* Settings - Region */
+"settings.region" = "ภูมิภาค";
+"region.sweden" = "สวีเดน";
+"region.us" = "สหรัฐอเมริกา";
+"region.vietnam" = "เวียดนาม";
+"region.germany" = "เยอรมนี";
+"region.uk" = "สหราชอาณาจักร";
+"region.france" = "ฝรั่งเศส";
+"region.italy" = "อิตาลี";
+"region.netherlands" = "เนเธอร์แลนด์";
+"region.japan" = "ญี่ปุ่น";
+"region.hongkong" = "ฮ่องกง";
+"region.china" = "จีน";
+"region.thailand" = "ไทย";
+
+/* PDF Content */
+"pdf.summary_title" = "สรุป";
+"pdf.recent_notes" = "โน้ตล่าสุด";
+"pdf.recent_expenses" = "ค่าใช้จ่ายล่าสุด";
+"pdf.active_trips" = "การเดินทางที่ใช้งานอยู่";
+"pdf.holidays" = "วันหยุด";
+"pdf.notes" = "โน้ต";
+"pdf.expenses" = "ค่าใช้จ่าย";
+"pdf.week" = "สัปดาห์";
+"pdf.generated_by" = "สร้างโดย Onsen Planner";
+
+/* Common UI - Extended */
+"common.total" = "รวม";
+"common.duration" = "ระยะเวลา";
+"common.category" = "หมวดหมู่";
+"common.no_events" = "ไม่มีกิจกรรม";
+"common.see_all" = "ดูทั้งหมด";
+"common.try_again" = "ลองอีกครั้ง";
+"common.retry" = "ลองใหม่";
+"common.refresh" = "รีเฟรช";
+"common.options" = "ตัวเลือก";
+"common.delete" = "ลบ";
+"common.settings" = "การตั้งค่า";
+"common.done" = "เสร็จ";
+"common.none" = "ไม่มี";
+"common.show_all" = "แสดงทั้งหมด";
+"common.show_less" = "แสดงน้อยลง";
+"common.more" = "เพิ่มเติม";
+"common.less" = "น้อยลง";
+
+/* Contacts */
+"contacts.no_contacts" = "ไม่มีผู้ติดต่อ";
+"contacts.import" = "นำเข้าจากสมุดรายชือหรือเพิ่มผู้ติดต่อด้วยตนเอง";
+"contacts.import_from_address_book" = "นำเข้าจากสมุดรายชื่อ";
+"contacts.import_options" = "ตัวเลือกการนำเข้า";
+"contacts.new_contact" = "ผู้ติดต่อใหม่";
+"contacts.import_all" = "นำเข้าผู้ติดต่อทั้งหมด";
+"contacts.select_to_import" = "เลือกผู้ติดต่อที่จะนำเข้า";
+"contacts.grant_permission" = "อนุญาตการเข้าถึงผู้ติดต่อ";
+"contacts.export_to_ios" = "ส่งออกไปยังผู้ติดต่อ iOS";
+
+/* QR Code */
+"qr.scan_hint" = "สแกน QR code เพื่อบันทึกผู้ติดต่อ";
+"qr.point_camera" = "ชี้กล้องไปที่ QR code";
+"qr.share" = "แชร์ QR Code";
+"qr.share_as_qr" = "แชร์เป็น QR Code";
+"qr.share_as_vcard" = "แชร์เป็น vCard";
+
+/* Trips */
+"trips.active" = "การเดินทางที่ใช้งานอยู่";
+"trips.upcoming" = "การเดินทางที่กำลังจะมาถึง";
+"trips.add" = "เพิ่มการเดินทาง";
+"trips.generate_report" = "สร้างรายงาน";
+"trips.mileage" = "ระยะทาง";
+
+/* Weather Extended */
+"weather.no_data_title" = "ไม่มีข้อมูลสภาพอากาศ";
+"weather.enable_location" = "เปิดใช้งานบริการตำแหน่งเพื่อดูพยากรณ์อากาศ";
+"weather.unable_to_load" = "ไม่สามารถโหลดสภาพอากาศได้";
+"weather.manage_locations" = "จัดการสถานที่";
+
+/* Location Extended */
+"location.current" = "ตำแหน่งปัจจุบัน";
+"location.add" = "เพิ่มสถานที่";
+"location.enter_coordinates" = "ป้อนพิกัดด้วยตนเอง";
+"location.save" = "บันทึกสถานที่";
+
+/* Expenses Extended */
+"expenses.add" = "เพิ่มค่าใช้จ่าย";
+"expenses.filter_options" = "ตัวเลือกการกรอง";
+"expenses.all_categories" = "หมวดหมู่ทั้งหมด";
+"expenses.all_trips" = "การเดินทางทั้งหมด";
+"expenses.use_template" = "ใช้เทมเพลต";
+"expenses.remove_receipt" = "ลบใบเสร็จ";
+"expenses.add_receipt_photo" = "เพิ่มรูปภาพใบเสร็จ";
+"expenses.recent" = "ค่าใช้จ่ายล่าสุด";
+
+/* Notes Extended */
+"notes.search" = "ค้นหาโน้ต";
+"notes.unpin" = "ยกเลิกปักหมุด";
+
+/* Dashboard */
+"dashboard.upcoming_events" = "กิจกรรมที่กำลังจะมาถึง";
+"dashboard.no_activity" = "ไม่มีกิจกรรมล่าสุด";
+
+/* Navigation Extended */
+"navigation.detail_view" = "มุมมองรายละเอียด";
+"navigation.calendar" = "ปฏิทิน";
+"navigation.library" = "คลัง";
+"navigation.notes" = "โน้ต";
+"navigation.holidays" = "วันหยุด";
+"navigation.observances" = "วันสำคัญ";
+"navigation.contacts" = "ผู้ติดต่อ";
+"navigation.expenses" = "ค่าใช้จ่าย";
+"navigation.trips" = "การเดินทาง";
+"navigation.weather" = "สภาพอากาศ";
+"navigation.select_item" = "เลือกรายการ";
+"navigation.menu" = "เมนู";
+"navigation.holidays_section" = "วันหยุดและกิจกรรม";
+"navigation.features" = "ฟีเจอร์";

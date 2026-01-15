@@ -64,18 +64,64 @@
 "countdown.days" = "%d日";
 
 /* Picker */
-"picker.favorites_count" = "Favorites %d/4";
-"picker.predefined" = "Predefined";
-"picker.custom_events" = "Custom Events";
-"picker.create_custom" = "Create Custom…";
-"picker.favorite" = "Favorite";
-"picker.unfavorite" = "Unfavorite";
-"picker.remove" = "Remove";
-"picker.manage_events" = "Manage Events…";
-"picker.reorder_favorites" = "Reorder Favorites…";
-"picker.no_customs_hint" = "No custom events yet.";
-"picker.add_favorites_hint" = "Add your frequently used events to Favorites for quick access.";
-"picker.selected" = "Selected";
+"picker.favorites_count" = "お気に入り %d/4";
+"picker.predefined" = "定義済み";
+"picker.custom_events" = "カスタムイベント";
+"picker.create_custom" = "カスタムを作成…";
+"picker.favorite" = "お気に入りに追加";
+"picker.unfavorite" = "お気に入りから削除";
+"picker.remove" = "削除";
+"picker.manage_events" = "イベントを管理…";
+"picker.reorder_favorites" = "お気に入りを並べ替え…";
+"picker.no_customs_hint" = "カスタムイベントはまだありません。";
+"picker.add_favorites_hint" = "よく使うイベントをお気に入りに追加して、すぐにアクセスできます。";
+"picker.selected" = "選択済み";
+
+/* Holidays */
+"holiday.nyarsdagen" = "元日";
+"holiday.trettondedag_jul" = "公現祭";
+"holiday.forsta_maj" = "メーデー";
+"holiday.sveriges_nationaldag" = "スウェーデン建国記念日";
+"holiday.juldagen" = "クリスマス";
+"holiday.annandag_jul" = "ボクシングデー";
+"holiday.nyarsafton" = "大晦日";
+"holiday.julafton" = "クリスマスイブ";
+"holiday.alla_hjartans_dag" = "バレンタインデー";
+"holiday.internationella_kvinnodagen" = "国際女性デー";
+"holiday.langfredagen" = "聖金曜日";
+"holiday.paskdagen" = "復活祭";
+"holiday.annandag_pask" = "復活祭の月曜日";
+"holiday.kristi_himmelsfardsdag" = "キリスト昇天祭";
+"holiday.pingstdagen" = "聖霊降臨祭";
+"holiday.midsommardagen" = "夏至祭";
+"holiday.midsommarafton" = "夏至祭前日";
+"holiday.alla_helgons_dag" = "万聖節";
+"holiday.mors_dag" = "母の日";
+"holiday.fars_dag" = "父の日";
+
+/* Countdown */
+"holiday.virdagjamning" = "春分の日";
+"holiday.sommarsolstand" = "夏至";
+"holiday.hostdagjamning" = "秋分の日";
+"holiday.vintersolstand" = "冬至";
+
+"countdown.custom_event" = "カスタムイベント";
+"countdown.days_suffix" = "日";
+
+/* Settings - Region */
+"settings.region" = "地域";
+"region.sweden" = "スウェーデン";
+"region.us" = "アメリカ合衆国";
+"region.vietnam" = "ベトナム";
+"region.germany" = "ドイツ";
+"region.uk" = "イギリス";
+"region.france" = "フランス";
+"region.italy" = "イタリア";
+"region.netherlands" = "オランダ";
+"region.japan" = "日本";
+"region.hongkong" = "香港";
+"region.china" = "中国";
+"region.thailand" = "タイ";
 
 /* Weather - UI Labels */
 "weather.high" = "最高気温";
@@ -185,3 +231,104 @@
 
 /* Dashboard */
 "dashboard.pinned" = "ピン留め";
+
+/* PDF Content */
+"pdf.summary_title" = "概要";
+"pdf.recent_notes" = "最近のメモ";
+"pdf.recent_expenses" = "最近の経費";
+"pdf.active_trips" = "進行中の旅行";
+"pdf.holidays" = "祝日";
+"pdf.notes" = "メモ";
+"pdf.expenses" = "経費";
+"pdf.week" = "週";
+"pdf.generated_by" = "Onsen Plannerで生成";
+
+/* Common UI - Extended */
+"common.total" = "合計";
+"common.duration" = "期間";
+"common.category" = "カテゴリー";
+"common.no_events" = "イベントなし";
+"common.see_all" = "すべて表示";
+"common.try_again" = "再試行";
+"common.retry" = "再試行";
+"common.refresh" = "更新";
+"common.options" = "オプション";
+"common.delete" = "削除";
+"common.settings" = "設定";
+"common.done" = "完了";
+"common.none" = "なし";
+"common.show_all" = "すべて表示";
+"common.show_less" = "少なく表示";
+"common.more" = "もっと見る";
+"common.less" = "減らす";
+
+/* Contacts */
+"contacts.no_contacts" = "連絡先なし";
+"contacts.import" = "アドレス帳からインポートするか、手動で連絡先を追加してください";
+"contacts.import_from_address_book" = "アドレス帳からインポート";
+"contacts.import_options" = "インポートオプション";
+"contacts.new_contact" = "新しい連絡先";
+"contacts.import_all" = "すべての連絡先をインポート";
+"contacts.select_to_import" = "インポートする連絡先を選択";
+"contacts.grant_permission" = "連絡先の許可を付与";
+"contacts.export_to_ios" = "iOSの連絡先にエクスポート";
+
+/* QR Code */
+"qr.scan_hint" = "このQRコードをスキャンして連絡先を保存";
+"qr.point_camera" = "カメラをQRコードに向けてください";
+"qr.share" = "QRコードを共有";
+"qr.share_as_qr" = "QRコードとして共有";
+"qr.share_as_vcard" = "vCardとして共有";
+
+/* Trips */
+"trips.active" = "進行中の旅行";
+"trips.upcoming" = "今後の旅行";
+"trips.add" = "旅行を追加";
+"trips.generate_report" = "レポートを生成";
+"trips.mileage" = "走行距離";
+
+/* Weather Extended */
+"weather.no_data_title" = "天気データなし";
+"weather.enable_location" = "位置情報サービスを有効にして予報を表示";
+"weather.unable_to_load" = "天気を読み込めません";
+"weather.manage_locations" = "場所を管理";
+
+/* Location Extended */
+"location.current" = "現在地";
+"location.add" = "場所を追加";
+"location.enter_coordinates" = "座標を手動で入力";
+"location.save" = "場所を保存";
+
+/* Expenses Extended */
+"expenses.add" = "経費を追加";
+"expenses.filter_options" = "フィルターオプション";
+"expenses.all_categories" = "すべてのカテゴリー";
+"expenses.all_trips" = "すべての旅行";
+"expenses.use_template" = "テンプレートを使用";
+"expenses.remove_receipt" = "領収書を削除";
+"expenses.add_receipt_photo" = "領収書の写真を追加";
+"expenses.recent" = "最近の経費";
+
+/* Notes Extended */
+"notes.search" = "メモを検索";
+"notes.unpin" = "ピン留めを外す";
+
+/* Dashboard */
+"dashboard.upcoming_events" = "今後のイベント";
+"dashboard.no_activity" = "最近のアクティビティなし";
+
+/* Navigation Extended */
+"navigation.detail_view" = "詳細ビュー";
+"navigation.calendar" = "カレンダー";
+"navigation.library" = "ライブラリ";
+"navigation.notes" = "メモ";
+"navigation.holidays" = "祝日";
+"navigation.observances" = "記念日";
+"navigation.contacts" = "連絡先";
+"navigation.expenses" = "経費";
+"navigation.trips" = "旅行";
+"navigation.weather" = "天気";
+"navigation.select_item" = "アイテムを選択";
+"navigation.menu" = "メニュー";
+"navigation.holidays_section" = "祝日とイベント";
+"navigation.features" = "機能";

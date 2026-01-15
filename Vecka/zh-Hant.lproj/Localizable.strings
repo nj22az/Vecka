@@ -137,3 +137,198 @@
 
 /* Dashboard */
 "dashboard.pinned" = "已固定";
+
+/* Countdown */
+"countdown.select" = "選擇倒數計時";
+"countdown.ago" = "前";
+"countdown.left" = "剩";
+
+/* Weekdays */
+"weekday.mon" = "週一";
+"weekday.tue" = "週二";
+"weekday.wed" = "週三";
+"weekday.thu" = "週四";
+"weekday.fri" = "週五";
+"weekday.sat" = "週六";
+"weekday.sun" = "週日";
+
+/* Navigation */
+"navigation.previous_week" = "上一週";
+"navigation.next_week" = "下一週";
+
+/* Accessibility */
+"accessibility.selected" = "已選取";
+"accessibility.holiday" = "節假日";
+
+/* Date */
+"date.range_separator" = " – ";
+
+/* Week */
+"week.display" = "第 %d 週";
+
+/* Countdown */
+"countdown.today" = "今天";
+"countdown.tomorrow" = "明天";
+"countdown.passed" = "已過";
+"countdown.days" = "%d 天";
+
+/* Picker */
+"picker.favorites_count" = "最愛 %d/4";
+"picker.predefined" = "預設";
+"picker.custom_events" = "自訂事件";
+"picker.create_custom" = "建立自訂...";
+"picker.favorite" = "最愛";
+"picker.unfavorite" = "取消最愛";
+"picker.remove" = "移除";
+"picker.manage_events" = "管理事件...";
+"picker.reorder_favorites" = "重新排序最愛...";
+"picker.no_customs_hint" = "尚未有自訂事件。";
+"picker.add_favorites_hint" = "將常用事件加入最愛以便快速存取。";
+"picker.selected" = "已選取";
+
+/* Holidays */
+"holiday.nyarsdagen" = "元旦";
+"holiday.trettondedag_jul" = "主顯節";
+"holiday.forsta_maj" = "五一勞動節";
+"holiday.sveriges_nationaldag" = "瑞典國慶日";
+"holiday.juldagen" = "聖誕節";
+"holiday.annandag_jul" = "節禮日";
+"holiday.nyarsafton" = "除夕";
+"holiday.julafton" = "平安夜";
+"holiday.alla_hjartans_dag" = "情人節";
+"holiday.internationella_kvinnodagen" = "國際婦女節";
+"holiday.langfredagen" = "耶穌受難日";
+"holiday.paskdagen" = "復活節";
+"holiday.annandag_pask" = "復活節星期一";
+"holiday.kristi_himmelsfardsdag" = "耶穌升天節";
+"holiday.pingstdagen" = "聖靈降臨節";
+"holiday.midsommardagen" = "仲夏節";
+"holiday.midsommarafton" = "仲夏前夕";
+"holiday.alla_helgons_dag" = "萬聖節";
+"holiday.mors_dag" = "母親節";
+"holiday.fars_dag" = "父親節";
+
+/* Countdown */
+"holiday.virdagjamning" = "春分";
+"holiday.sommarsolstand" = "夏至";
+"holiday.hostdagjamning" = "秋分";
+"holiday.vintersolstand" = "冬至";
+
+"countdown.custom_event" = "自訂事件";
+"countdown.days_suffix" = "天";
+
+/* Settings - Region */
+"settings.region" = "地區";
+"region.sweden" = "瑞典";
+"region.us" = "美國";
+"region.vietnam" = "越南";
+"region.germany" = "德國";
+"region.uk" = "英國";
+"region.france" = "法國";
+"region.italy" = "義大利";
+"region.netherlands" = "荷蘭";
+"region.japan" = "日本";
+"region.hongkong" = "香港";
+"region.china" = "中國";
+"region.thailand" = "泰國";
+
+/* PDF Content */
+"pdf.summary_title" = "摘要";
+"pdf.recent_notes" = "最近筆記";
+"pdf.recent_expenses" = "最近費用";
+"pdf.active_trips" = "進行中的行程";
+"pdf.holidays" = "節假日";
+"pdf.notes" = "筆記";
+"pdf.expenses" = "費用";
+"pdf.week" = "週";
+"pdf.generated_by" = "由 Onsen Planner 產生";
+
+/* Common UI - Extended */
+"common.total" = "總計";
+"common.duration" = "期間";
+"common.category" = "類別";
+"common.no_events" = "無事件";
+"common.see_all" = "查看全部";
+"common.try_again" = "再試一次";
+"common.retry" = "重試";
+"common.refresh" = "重新整理";
+"common.options" = "選項";
+"common.delete" = "刪除";
+"common.settings" = "設定";
+"common.done" = "完成";
+"common.none" = "無";
+"common.show_all" = "顯示全部";
+"common.show_less" = "顯示較少";
+"common.more" = "更多";
+"common.less" = "較少";
+
+/* Contacts */
+"contacts.no_contacts" = "無聯絡人";
+"contacts.import" = "從通訊錄匯入或手動新增聯絡人";
+"contacts.import_from_address_book" = "從通訊錄匯入";
+"contacts.import_options" = "匯入選項";
+"contacts.new_contact" = "新聯絡人";
+"contacts.import_all" = "匯入所有聯絡人";
+"contacts.select_to_import" = "選擇要匯入的聯絡人";
+"contacts.grant_permission" = "授予聯絡人權限";
+"contacts.export_to_ios" = "匯出至 iOS 聯絡人";
+
+/* QR Code */
+"qr.scan_hint" = "掃描此 QR 碼以儲存聯絡人";
+"qr.point_camera" = "將相機對準 QR 碼";
+"qr.share" = "分享 QR 碼";
+"qr.share_as_qr" = "以 QR 碼分享";
+"qr.share_as_vcard" = "以 vCard 分享";
+
+/* Trips */
+"trips.active" = "進行中的行程";
+"trips.upcoming" = "即將到來的行程";
+"trips.add" = "新增行程";
+"trips.generate_report" = "產生報告";
+"trips.mileage" = "里程";
+
+/* Weather Extended */
+"weather.no_data_title" = "無天氣資料";
+"weather.enable_location" = "啟用位置服務以查看預報";
+"weather.unable_to_load" = "無法載入天氣";
+"weather.manage_locations" = "管理位置";
+
+/* Location Extended */
+"location.current" = "目前位置";
+"location.add" = "新增位置";
+"location.enter_coordinates" = "手動輸入座標";
+"location.save" = "儲存位置";
+
+/* Expenses Extended */
+"expenses.add" = "新增費用";
+"expenses.filter_options" = "篩選選項";
+"expenses.all_categories" = "所有類別";
+"expenses.all_trips" = "所有行程";
+"expenses.use_template" = "使用範本";
+"expenses.remove_receipt" = "移除收據";
+"expenses.add_receipt_photo" = "新增收據照片";
+"expenses.recent" = "最近費用";
+
+/* Notes Extended */
+"notes.search" = "搜尋筆記";
+"notes.unpin" = "取消固定";
+
+/* Dashboard */
+"dashboard.upcoming_events" = "即將到來的事件";
+"dashboard.no_activity" = "無最近活動";
+
+/* Navigation Extended */
+"navigation.detail_view" = "詳細檢視";
+"navigation.calendar" = "行事曆";
+"navigation.library" = "資料庫";
+"navigation.notes" = "筆記";
+"navigation.holidays" = "節假日";
+"navigation.observances" = "紀念日";
+"navigation.contacts" = "聯絡人";
+"navigation.expenses" = "費用";
+"navigation.trips" = "行程";
+"navigation.weather" = "天氣";
+"navigation.select_item" = "選擇項目";
+"navigation.menu" = "選單";
+"navigation.holidays_section" = "節假日與事件";
+"navigation.features" = "功能";
