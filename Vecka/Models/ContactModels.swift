@@ -62,13 +62,16 @@ final class Contact {
     var departmentName: String?
     var jobTitle: String?
 
-    // Phone numbers
+    // Phone numbers - @Relationship required for SwiftData to properly manage child entities
+    @Relationship(deleteRule: .cascade)
     var phoneNumbers: [ContactPhoneNumber]
 
     // Email addresses
+    @Relationship(deleteRule: .cascade)
     var emailAddresses: [ContactEmailAddress]
 
     // Postal addresses
+    @Relationship(deleteRule: .cascade)
     var postalAddresses: [ContactPostalAddress]
 
     // Dates
@@ -77,12 +80,15 @@ final class Contact {
     /// When nil or true with a birthday date, contact appears in Star page birthdays
     /// Default is true for SwiftData migration of existing records
     var birthdayKnown: Bool = true
+    @Relationship(deleteRule: .cascade)
     var dates: [ContactDate]
 
     // Social profiles
+    @Relationship(deleteRule: .cascade)
     var socialProfiles: [ContactSocialProfile]
 
     // URLs
+    @Relationship(deleteRule: .cascade)
     var urlAddresses: [ContactURL]
 
     // Notes
@@ -95,6 +101,7 @@ final class Contact {
     var symbolName: String?
 
     // Relations
+    @Relationship(deleteRule: .cascade)
     var relations: [ContactRelation]
 
     // iOS Contacts integration
