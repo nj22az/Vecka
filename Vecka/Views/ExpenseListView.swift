@@ -32,6 +32,9 @@ struct ExpenseListView: View {
     @State private var groupBy: GroupingOption = .date
     @State private var showExportSheet = false
     @State private var exportContext: PDFExportContext?
+    @State private var csvExportURL: URL?
+    @State private var showCSVShareSheet = false
+    @State private var csvExportError: String?
 
     private var isPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
 
@@ -87,13 +90,13 @@ struct ExpenseListView: View {
                             }
 
                             // PDF Export (情報デザイン: Direct access to reports)
-                            Section("Export") {
+                            Section("Export PDF") {
                                 Button {
                                     let weekInfo = WeekCalculator.shared.weekInfo(for: Date())
                                     exportContext = .expenseReportWeek(weekNumber: weekInfo.weekNumber, year: weekInfo.year, baseCurrency: baseCurrency)
                                     showExportSheet = true
                                 } label: {
-                                    Label("This Week's Expenses", systemImage: "doc.text")
+                                    Label("This Week (PDF)", systemImage: "doc.text")
                                 }
 
                                 Button {
@@ -104,7 +107,28 @@ struct ExpenseListView: View {
                                     exportContext = .expenseReportMonth(month: month, year: year, baseCurrency: baseCurrency)
                                     showExportSheet = true
                                 } label: {
-                                    Label("This Month's Expenses", systemImage: "doc.text.fill")
+                                    Label("This Month (PDF)", systemImage: "doc.text.fill")
+                                }
+                            }
+
+                            // CSV Export (情報デザイン: Spreadsheet-friendly)
+                            Section("Export CSV") {
+                                Button {
+                                    exportCSVThisWeek()
+                                } label: {
+                                    Label("This Week (CSV)", systemImage: "tablecells")
+                                }
+
+                                Button {
+                                    exportCSVThisMonth()
+                                } label: {
+                                    Label("This Month (CSV)", systemImage: "tablecells.fill")
+                                }
+
+                                Button {
+                                    exportCSVFiltered()
+                                } label: {
+                                    Label("Current View (CSV)", systemImage: "square.and.arrow.up")
                                 }
                             }
                         } label: {
@@ -150,6 +174,19 @@ struct ExpenseListView: View {
                 if let context = exportContext {
                     SimplePDFExportView(exportContext: context)
                 }
+            }
+            .sheet(isPresented: $showCSVShareSheet) {
+                if let url = csvExportURL {
+                    ShareSheet(url: url)
+                }
+            }
+            .alert("Export Error", isPresented: Binding(
+                get: { csvExportError != nil },
+                set: { if !$0 { csvExportError = nil } }
+            )) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(csvExportError ?? "Unknown error")
             }
             .onChange(of: baseCurrency) { _, _ in
                 recalculateAllExpenses()
@@ -571,6 +608,51 @@ struct ExpenseListView: View {
             try? modelContext.save()
             isRecalculating = false
             Log.i("Recalculation complete")
+        }
+    }
+
+    // MARK: - CSV Export Functions
+
+    private func exportCSVThisWeek() {
+        let weekInfo = WeekCalculator.shared.weekInfo(for: Date())
+        do {
+            let url = try CSVExportService.shared.exportExpensesForWeek(
+                weekNumber: weekInfo.weekNumber,
+                year: weekInfo.year,
+                context: modelContext
+            )
+            csvExportURL = url
+            showCSVShareSheet = true
+        } catch {
+            csvExportError = error.localizedDescription
+        }
+    }
+
+    private func exportCSVThisMonth() {
+        let calendar = Calendar.iso8601
+        let now = Date()
+        let month = calendar.component(.month, from: now)
+        let year = calendar.component(.year, from: now)
+        do {
+            let url = try CSVExportService.shared.exportExpensesForMonth(
+                month: month,
+                year: year,
+                context: modelContext
+            )
+            csvExportURL = url
+            showCSVShareSheet = true
+        } catch {
+            csvExportError = error.localizedDescription
+        }
+    }
+
+    private func exportCSVFiltered() {
+        do {
+            let url = try CSVExportService.shared.exportExpenses(filteredExpenses)
+            csvExportURL = url
+            showCSVShareSheet = true
+        } catch {
+            csvExportError = error.localizedDescription
         }
     }
 }
