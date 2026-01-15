@@ -120,7 +120,8 @@ struct VeckaLargeWidgetView: View {
                 HStack(spacing: 0) {
                     Text("W")
                         .font(.system(size: typo.micro, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
+                        // 情報デザイン: Use secondary color weight instead of opacity
+                        .foregroundStyle(JohoWidget.Colors.textSecondary)
                         .frame(width: 28)
 
                     ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { index, symbol in
@@ -138,7 +139,8 @@ struct VeckaLargeWidgetView: View {
                         // Week number (情報デザイン: functional, visible)
                         Text("\(weekNumber(for: weekIndex))")
                             .font(.system(size: typo.label, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
+                            // 情報デザイン: Use secondary color weight instead of opacity
+                            .foregroundStyle(JohoWidget.Colors.textSecondary)
                             .frame(width: 28)
 
                         ForEach(0..<7, id: \.self) { dayIndex in
@@ -222,7 +224,8 @@ struct VeckaLargeWidgetView: View {
     // MARK: - Helper Functions
 
     private func weekdayColor(for index: Int) -> Color {
-        index == 6 ? JohoWidget.Colors.alert.opacity(0.7) : JohoWidget.Colors.text.opacity(0.5)
+        // 情報デザイン: Sunday in red, weekdays in secondary text color
+        index == 6 ? JohoWidget.Colors.alert : JohoWidget.Colors.textSecondary
     }
 
     private func cellTextColor(isToday: Bool, isBankHoliday: Bool, isSunday: Bool) -> Color {

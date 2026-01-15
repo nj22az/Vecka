@@ -3,7 +3,7 @@
 //  VeckaWidget
 //
 //  情報デザイン (Jōhō Dezain) Small Widget
-//  Hokusai Great Wave motif - authentic Japanese aesthetic
+//  Clean, minimal week number display - no decorative elements
 //
 
 import SwiftUI
@@ -27,70 +27,55 @@ struct VeckaSmallWidgetView: View {
 
     private var year: String { String(entry.year) }
 
-    // 情報デザイン: Use theme constants for consistency
+    // 情報デザイン: Theme tokens
     private var borders: JohoWidget.Borders.Weights { JohoWidget.Borders.small }
     private var typo: JohoWidget.Typography.Scale { JohoWidget.Typography.small }
 
     // MARK: - Body
 
     var body: some View {
-        ZStack {
-            // Background: Hokusai wave in bottom-left corner
-            VStack {
-                Spacer()
-                HStack {
-                    Image("HokusaiWave")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 110, height: 73)
-                        .opacity(0.9)
-                    Spacer()
-                }
+        VStack(spacing: 4) {
+            Spacer()
+
+            // 情報デザイン: Week number hero (centered, prominent)
+            HStack(alignment: .firstTextBaseline, spacing: 2) {
+                Text("W")
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    // 情報デザイン: Secondary text color, no opacity
+                    .foregroundStyle(JohoWidget.Colors.textSecondary)
+                Text("\(weekNumber)")
+                    .font(.system(size: 48, weight: .black, design: .rounded))
+                    .foregroundStyle(JohoWidget.Colors.text)
             }
 
-            // Content: Information in upper-right area
-            VStack(alignment: .trailing, spacing: 2) {
-                // Week number - hero (情報デザイン: typo.weekNumber = 48pt for small)
-                HStack(alignment: .firstTextBaseline, spacing: 2) {
-                    Text("W")
-                        .font(.system(size: typo.headline, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoWidget.Colors.text.opacity(0.5))
-                    Text("\(weekNumber)")
-                        .font(.system(size: typo.weekNumber, weight: .black, design: .rounded))
+            // 情報デザイン: Today indicator - Yellow circle with black border
+            HStack(spacing: 6) {
+                Text(weekdayShort)
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    // 情報デザイン: Secondary text color, no opacity
+                    .foregroundStyle(JohoWidget.Colors.textSecondary)
+
+                ZStack {
+                    Circle()
+                        .fill(JohoWidget.Colors.now)
+                    Circle()
+                        .stroke(JohoWidget.Colors.border, lineWidth: borders.selected)
+                    Text("\(dayOfMonth)")
+                        .font(.system(size: 14, weight: .black, design: .rounded))
                         .foregroundStyle(JohoWidget.Colors.text)
                 }
-
-                // Date row
-                HStack(spacing: 4) {
-                    Text(weekdayShort)
-                        .font(.system(size: typo.headline, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
-
-                    // 情報デザイン: Today indicator with semantic NOW color + BLACK border
-                    ZStack {
-                        Circle()
-                            .fill(JohoWidget.Colors.now)
-                            .frame(width: 28, height: 28)
-                        Circle()
-                            .stroke(JohoWidget.Colors.border, lineWidth: borders.selected)
-                            .frame(width: 28, height: 28)
-                        Text("\(dayOfMonth)")
-                            .font(.system(size: typo.body, weight: .black, design: .rounded))
-                            .foregroundStyle(JohoWidget.Colors.text)
-                    }
-                }
-
-                // Month + Year
-                Text("\(monthShort) \(year)")
-                    .font(.system(size: typo.body, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.text.opacity(0.5))
-
-                Spacer()
+                .frame(width: 28, height: 28)
             }
-            .padding(.top, 8)
-            .padding(.trailing, 12)
-            .frame(maxWidth: .infinity, alignment: .trailing)
+
+            // Month + Year
+            Text("\(monthShort) \(year)")
+                .font(.system(size: 11, weight: .medium, design: .rounded))
+                // 情報デザイン: Secondary text color, no opacity
+                .foregroundStyle(JohoWidget.Colors.textSecondary)
+
+            Spacer()
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .widgetURL(URL(string: "vecka://week/\(weekNumber)/\(entry.year)"))
         .containerBackground(for: .widget) {
             JohoWidget.Colors.content

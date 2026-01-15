@@ -27,6 +27,7 @@ enum JohoWidget {
         static let content = Color.white                 // Container backgrounds
         static let canvas = Color(hex: "1A1A2E")        // Widget background
         static let text = Color.black                    // Primary text
+        static let textSecondary = Color(hex: "6B7280") // 情報デザイン: Gray-500 secondary (no opacity)
         static let textInverted = Color.white           // Text on dark backgrounds
 
         // Day-specific (for calendar grids)
@@ -351,9 +352,10 @@ extension JohoWidget {
         }
 
         private var backgroundColor: Color {
+            // 情報デザイン: Solid colors only, no opacity
             if isToday { return Colors.now }
             if isHoliday { return Colors.holiday }
-            if isSunday { return Colors.sunday.opacity(0.2) }
+            if isSunday { return Colors.saturday } // Light purple for weekends
             return Colors.content
         }
     }
@@ -416,7 +418,8 @@ extension JohoWidget {
 
                     Text(date)
                         .font(Typography.font(typo.micro, weight: .medium))
-                        .foregroundStyle(Colors.text.opacity(0.7))
+                        // 情報デザイン: Use secondary text color, no opacity
+                        .foregroundStyle(Colors.textSecondary)
                 }
 
                 Spacer(minLength: 0)
@@ -463,7 +466,8 @@ extension JohoWidget {
 
                     Text(time)
                         .font(Typography.font(typo.micro, weight: .medium))
-                        .foregroundStyle(Colors.text.opacity(0.7))
+                        // 情報デザイン: Use secondary text color, no opacity
+                        .foregroundStyle(Colors.textSecondary)
                 }
 
                 Spacer(minLength: 0)

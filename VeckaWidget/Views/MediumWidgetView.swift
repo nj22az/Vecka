@@ -120,7 +120,8 @@ struct VeckaMediumWidgetView: View {
             // Subtitle: "WEEK" (情報デザイン: visible, minimum 9pt)
             Text("WEEK")
                 .font(.system(size: typo.label, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
+                // 情報デザイン: Secondary text color, no opacity
+                .foregroundStyle(JohoWidget.Colors.textSecondary)
                 .tracking(1)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -135,7 +136,8 @@ struct VeckaMediumWidgetView: View {
             HStack {
                 Text("\(monthName) \(year)")
                     .font(.system(size: typo.caption, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
+                    // 情報デザイン: Secondary text color, no opacity
+                    .foregroundStyle(JohoWidget.Colors.textSecondary)
                     .tracking(1)
                 Spacer()
             }
@@ -178,10 +180,11 @@ struct VeckaMediumWidgetView: View {
                     // Weekday label (情報デザイン: minimum 9pt per audit)
                     Text(weekdayLabels[index])
                         .font(.system(size: typo.label, weight: .semibold, design: .rounded))
+                        // 情報デザイン: Solid colors, no opacity
                         .foregroundStyle(
                             weekDay.isSunday
-                                ? JohoWidget.Colors.alert.opacity(0.6)
-                                : JohoWidget.Colors.text.opacity(0.4)
+                                ? JohoWidget.Colors.alert
+                                : JohoWidget.Colors.textSecondary
                         )
 
                     // Day number (情報デザイン: Circle for today = NOW indicator)
@@ -195,8 +198,12 @@ struct VeckaMediumWidgetView: View {
                                 .stroke(JohoWidget.Colors.border, lineWidth: borders.selected)
                                 .frame(width: 28, height: 28)
                         } else if weekDay.isBankHoliday {
+                            // 情報デザイン: Solid pink fill with border, no opacity
                             Circle()
-                                .fill(JohoWidget.Colors.holiday.opacity(0.3))
+                                .fill(JohoWidget.Colors.holiday)
+                                .frame(width: 28, height: 28)
+                            Circle()
+                                .stroke(JohoWidget.Colors.border, lineWidth: borders.cell)
                                 .frame(width: 28, height: 28)
                         }
                         Text("\(weekDay.day)")
@@ -245,7 +252,8 @@ struct VeckaMediumWidgetView: View {
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 8)
-        .background(JohoWidget.Colors.holiday.opacity(0.2))
+        // 情報デザイン: Solid background with border, no opacity
+        .background(JohoWidget.Colors.holiday)
         .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 6, style: .continuous)
@@ -260,7 +268,7 @@ struct VeckaMediumWidgetView: View {
             // 情報デザイン: Use birthday cake icon (consistent with main app)
             Image(systemName: "birthday.cake.fill")
                 .font(.system(size: 10, weight: .bold))
-                .foregroundStyle(JohoWidget.Colors.holiday) // Pink for birthdays
+                .foregroundStyle(JohoWidget.Colors.text) // Black on pink background
 
             Text(name)
                 .font(.system(size: 12, weight: .semibold, design: .rounded))
@@ -272,7 +280,8 @@ struct VeckaMediumWidgetView: View {
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 8)
-        .background(JohoWidget.Colors.holiday.opacity(0.2))
+        // 情報デザイン: Solid background with border, no opacity
+        .background(JohoWidget.Colors.holiday)
         .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 6, style: .continuous)
@@ -283,15 +292,17 @@ struct VeckaMediumWidgetView: View {
     // MARK: - Styling Helpers
 
     private func dayTextColor(_ weekDay: WeekDay) -> Color {
+        // 情報デザイン: Solid colors, no opacity
         if weekDay.isToday { return JohoWidget.Colors.text }
         if weekDay.isBankHoliday { return JohoWidget.Colors.alert }
-        if weekDay.isSunday { return JohoWidget.Colors.alert.opacity(0.8) }
-        return JohoWidget.Colors.text.opacity(0.8)
+        if weekDay.isSunday { return JohoWidget.Colors.alert }
+        return JohoWidget.Colors.text
     }
 
     private func dayBackground(_ weekDay: WeekDay) -> Color {
+        // 情報デザイン: Solid colors only, no opacity
         if weekDay.isToday { return JohoWidget.Colors.now }
-        if weekDay.isBankHoliday { return JohoWidget.Colors.holiday.opacity(0.2) }
+        if weekDay.isBankHoliday { return JohoWidget.Colors.holiday }
         return Color.clear
     }
 }
