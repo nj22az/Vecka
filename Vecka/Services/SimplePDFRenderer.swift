@@ -383,7 +383,8 @@ struct PDFDayPage: View {
     }
 
     private var dayHolidays: [HolidayCacheItem] {
-        HolidayManager.shared.holidayCache[Calendar.iso8601.startOfDay(for: date)] ?? []
+        // Use Calendar.current to match HolidayManager cache keying
+        HolidayManager.cache[Calendar.current.startOfDay(for: date)] ?? []
     }
 
     private var dayExpenses: [ExpenseItem] {
@@ -571,7 +572,8 @@ struct PDFWeekSummaryPage: View {
 
     private var weekHolidays: [(date: Date, holidays: [HolidayCacheItem])] {
         weekDates.compactMap { date in
-            let holidays = HolidayManager.shared.holidayCache[Calendar.iso8601.startOfDay(for: date)] ?? []
+            // Use Calendar.current to match HolidayManager cache keying
+            let holidays = HolidayManager.cache[Calendar.current.startOfDay(for: date)] ?? []
             return holidays.isEmpty ? nil : (date, holidays)
         }
     }

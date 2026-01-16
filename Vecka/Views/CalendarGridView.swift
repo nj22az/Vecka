@@ -79,6 +79,14 @@ struct DayDataCheck {
     var holidayName: String?
     var holidaySymbolName: String?
 
+    /// 情報デザイン: Actual entry data for DayDetailSheet previews
+    var observanceNames: [String] = []
+    var eventNames: [String] = []
+    var birthdayNames: [String] = []
+    var noteContent: String?
+    var tripDestination: String?
+    var expenseAmount: Double?
+
     static let empty = DayDataCheck()
 }
 

@@ -325,24 +325,24 @@ struct CalendarDay: Identifiable, Hashable {
     let noteColor: String? // Added for color-coded note indicator
 
     /// Is this day a holiday (Bank Holiday)?
-    /// Note: HolidayManager.holidayCache is nonisolated and thread-safe, so no @MainActor needed
+    /// Uses static HolidayManager.cache to avoid MainActor isolation issues
     var isHoliday: Bool {
         let normalized = Calendar.current.startOfDay(for: date)
-        return (HolidayManager.shared.holidayCache[normalized] ?? []).contains(where: { $0.isBankHoliday })
+        return (HolidayManager.cache[normalized] ?? []).contains(where: { $0.isBankHoliday })
     }
 
     /// Name of the holiday (if any)
-    /// Note: HolidayManager.holidayCache is nonisolated and thread-safe, so no @MainActor needed
+    /// Uses static HolidayManager.cache to avoid MainActor isolation issues
     var holidayName: String? {
         let normalized = Calendar.current.startOfDay(for: date)
-        return HolidayManager.shared.holidayCache[normalized]?.first?.displayTitle
+        return HolidayManager.cache[normalized]?.first?.displayTitle
     }
 
     /// SF Symbol for the holiday (if any)
-    /// Note: HolidayManager.holidayCache is nonisolated and thread-safe, so no @MainActor needed
+    /// Uses static HolidayManager.cache to avoid MainActor isolation issues
     var holidaySymbolName: String? {
         let normalized = Calendar.current.startOfDay(for: date)
-        return HolidayManager.shared.holidayCache[normalized]?.first?.symbolName
+        return HolidayManager.cache[normalized]?.first?.symbolName
     }
 
     /// Is this a significant day (Named but not Red)?

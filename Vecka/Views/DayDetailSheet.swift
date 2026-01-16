@@ -148,55 +148,72 @@ struct DayDetailSheet: View {
 
             // Indicator-based content from DayDataCheck
             if let check = dataCheck {
-                if check.hasObservance && day.holidayName == nil {
-                    detailRow(
-                        title: "Observance",
-                        subtitle: "Flag day / Memorial",
-                        color: JohoColors.cyan,
-                        icon: "flag.fill",
-                        isSystem: true
-                    )
+                // Observances (can have multiple)
+                if check.hasObservance {
+                    ForEach(check.observanceNames, id: \.self) { observanceName in
+                        detailRow(
+                            title: observanceName,
+                            subtitle: "Observance",
+                            color: JohoColors.pink,
+                            icon: "sparkles",
+                            isSystem: true
+                        )
+                    }
                 }
+
+                // Events (can have multiple)
                 if check.hasEvent {
-                    detailRow(
-                        title: "Event",
-                        subtitle: "Custom event",
-                        color: JohoColors.cyan,
-                        icon: "calendar.badge.clock",
-                        isSystem: false
-                    )
+                    ForEach(check.eventNames, id: \.self) { eventName in
+                        detailRow(
+                            title: eventName,
+                            subtitle: "Event",
+                            color: JohoColors.cyan,
+                            icon: "calendar.badge.clock",
+                            isSystem: false
+                        )
+                    }
                 }
+
+                // Birthdays (can have multiple)
                 if check.hasBirthday {
-                    detailRow(
-                        title: "Birthday",
-                        subtitle: "Contact birthday",
-                        color: JohoColors.pink,
-                        icon: "gift.fill",
-                        isSystem: false
-                    )
+                    ForEach(check.birthdayNames, id: \.self) { birthdayName in
+                        detailRow(
+                            title: birthdayName,
+                            subtitle: "Birthday",
+                            color: JohoColors.pink,
+                            icon: "birthday.cake.fill",
+                            isSystem: false
+                        )
+                    }
                 }
-                if check.hasNote {
+
+                // Note (show preview of content)
+                if check.hasNote, let noteContent = check.noteContent {
                     detailRow(
-                        title: "Note",
-                        subtitle: "Personal note",
+                        title: notePreview(noteContent),
+                        subtitle: "Note",
                         color: JohoColors.yellow,
                         icon: "note.text",
                         isSystem: false
                     )
                 }
-                if check.hasTrip {
+
+                // Trip (show destination)
+                if check.hasTrip, let destination = check.tripDestination {
                     detailRow(
-                        title: "Trip",
-                        subtitle: "Travel / Trip",
+                        title: destination,
+                        subtitle: "Trip",
                         color: JohoColors.cyan,
                         icon: "airplane",
                         isSystem: false
                     )
                 }
-                if check.hasExpense {
+
+                // Expense (show total amount)
+                if check.hasExpense, let amount = check.expenseAmount {
                     detailRow(
-                        title: "Expense",
-                        subtitle: "Recorded expense",
+                        title: formatCurrency(amount),
+                        subtitle: "Expenses",
                         color: JohoColors.green,
                         icon: "dollarsign.circle.fill",
                         isSystem: false
@@ -291,6 +308,39 @@ struct DayDetailSheet: View {
         )
     }
 
+    // MARK: - Helper Functions
+
+    /// Returns a preview of note content (first line or first 40 characters)
+    private func notePreview(_ content: String) -> String {
+        let trimmed = content.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.isEmpty {
+            return "Note"
+        }
+
+        // Get first line
+        if let firstLine = trimmed.components(separatedBy: .newlines).first, !firstLine.isEmpty {
+            // Limit to 40 characters
+            if firstLine.count > 40 {
+                return String(firstLine.prefix(40)) + "..."
+            }
+            return firstLine
+        }
+
+        // Fallback to first 40 characters
+        if trimmed.count > 40 {
+            return String(trimmed.prefix(40)) + "..."
+        }
+        return trimmed
+    }
+
+    /// Formats a Double amount as currency
+    private func formatCurrency(_ amount: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = Locale.current
+        return formatter.string(from: NSNumber(value: amount)) ?? String(format: "%.2f", amount)
+    }
+
     // MARK: - Empty State
 
     private var emptyState: some View {
@@ -321,7 +371,24 @@ struct DayDetailSheet: View {
 // MARK: - Preview
 
 #Preview {
-    DayDetailSheet(
+    var dataCheck = DayDataCheck()
+    dataCheck.hasHoliday = true
+    dataCheck.holidayName = "New Year's Day"
+    dataCheck.holidaySymbolName = "star.fill"
+    dataCheck.hasEvent = true
+    dataCheck.eventNames = ["Team Meeting", "Dentist Appointment"]
+    dataCheck.hasBirthday = true
+    dataCheck.birthdayNames = ["Anna", "Erik"]
+    dataCheck.hasNote = true
+    dataCheck.noteContent = "Remember to buy groceries and pick up the dry cleaning"
+    dataCheck.hasTrip = true
+    dataCheck.tripDestination = "Tokyo"
+    dataCheck.hasExpense = true
+    dataCheck.expenseAmount = 152.50
+    dataCheck.hasObservance = true
+    dataCheck.observanceNames = ["Flag Day"]
+
+    return DayDetailSheet(
         day: CalendarDay(
             date: Date(),
             dayNumber: 15,
@@ -330,14 +397,6 @@ struct DayDetailSheet: View {
             noteColor: nil,
             secondaryDateString: nil
         ),
-        dataCheck: DayDataCheck(
-            hasHoliday: true,
-            hasObservance: false,
-            hasEvent: true,
-            hasBirthday: true,
-            hasNote: false,
-            hasTrip: false,
-            hasExpense: false
-        )
+        dataCheck: dataCheck
     )
 }

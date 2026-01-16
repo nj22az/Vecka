@@ -135,8 +135,9 @@ class PDFExportService {
         // Fetch holidays
         var holidays: [HolidayExportInfo] = []
         if options.includeHolidays {
-            let startOfDay = calendar.startOfDay(for: date)
-            if let dayHolidays = HolidayManager.shared.holidayCache[startOfDay] {
+            // Use Calendar.current to match HolidayManager cache keying
+            let startOfDay = Calendar.current.startOfDay(for: date)
+            if let dayHolidays = HolidayManager.cache[startOfDay] {
                 holidays = dayHolidays.map { holiday in
                     HolidayExportInfo(
                         name: holiday.displayTitle,

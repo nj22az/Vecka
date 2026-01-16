@@ -482,9 +482,10 @@ struct PDFExportView: View {
                 let dayStart = calendar.startOfDay(for: currentDate)
 
                 // Holidays for this day
+                // Use HolidayManager.cache to avoid MainActor isolation issues
                 var holidays: [String] = []
                 if includeHolidays {
-                    if let dayHolidays = HolidayManager.shared.holidayCache[dayStart] {
+                    if let dayHolidays = HolidayManager.cache[dayStart] {
                         holidays = dayHolidays.map { $0.displayTitle }
                     }
                 }

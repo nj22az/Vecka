@@ -66,7 +66,13 @@ class HolidayManager {
     @ObservationIgnored
     nonisolated private static let cacheStorage = HolidayCacheStorage()
 
-    /// Thread-safe access to the holiday cache
+    /// Thread-safe static access to holiday cache (avoids MainActor isolation)
+    /// Use this from non-isolated contexts like CalendarDay computed properties
+    nonisolated static var cache: [Date: [HolidayCacheItem]] {
+        cacheStorage.cache
+    }
+
+    /// Thread-safe instance access to the holiday cache (legacy, prefer static cache)
     nonisolated var holidayCache: [Date: [HolidayCacheItem]] {
         Self.cacheStorage.cache
     }

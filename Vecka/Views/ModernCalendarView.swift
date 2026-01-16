@@ -10,6 +10,14 @@
 import SwiftUI
 import SwiftData
 
+/// 情報デザイン: Combined context for day detail sheet
+/// Ensures day and dataCheck are set atomically to avoid race conditions
+struct DayDetailContext: Identifiable {
+    var id: String { day.id }
+    let day: CalendarDay
+    let dataCheck: DayDataCheck
+}
+
 struct ModernCalendarView: View {
     // State
     @State private var selectedDate = Date()
@@ -165,9 +173,8 @@ struct ModernCalendarView: View {
     @State private var showWeekDetailSheet = false
 
     // Day Detail sheet (long-press on calendar day)
-    // Note: Day detail sheet is controlled via .sheet(item: $dayDetailDay)
-    @State private var dayDetailDay: CalendarDay?
-    @State private var dayDetailDataCheck: DayDataCheck?
+    // 情報デザイン: Combined context ensures day+dataCheck are set atomically
+    @State private var dayDetailContext: DayDetailContext?
 
     // Context-aware add sheets (triggered from sidebar +)
     @State private var showExpenseEditor = false
@@ -412,8 +419,9 @@ struct ModernCalendarView: View {
             .presentationBackground(JohoColors.background)  // 情報デザイン: BLACK sheet background for AMOLED
         }
         // 情報デザイン: Day Detail Sheet (long-press on calendar day)
-        .sheet(item: $dayDetailDay) { day in
-            DayDetailSheet(day: day, dataCheck: dayDetailDataCheck)
+        // Using combined context ensures atomic state updates
+        .sheet(item: $dayDetailContext) { context in
+            DayDetailSheet(day: context.day, dataCheck: context.dataCheck)
         }
         .sheet(isPresented: $showPDFExport) {
             SimplePDFExportView(exportContext: pdfExportContext)
@@ -988,8 +996,9 @@ struct ModernCalendarView: View {
 
         // Check holidays and observances from cache
         // 情報デザイン: Pre-compute holiday info to avoid accessing computed properties during sheet presentation
-        // Access HolidayManager.shared directly (same pattern as CalendarDay computed properties)
-        if let cachedHolidays = HolidayManager.shared.holidayCache[day] {
+        // Use static HolidayManager.cache to avoid MainActor isolation issues
+        if let cachedHolidays = HolidayManager.cache[day] {
+            var observanceNames: [String] = []
             for holiday in cachedHolidays {
                 if holiday.isBankHoliday {
                     check.hasHoliday = true
@@ -1000,15 +1009,24 @@ struct ModernCalendarView: View {
                     }
                 } else {
                     check.hasObservance = true
+                    observanceNames.append(holiday.displayTitle)
                 }
             }
+            check.observanceNames = observanceNames
         }
 
-        // Check notes
-        check.hasNote = notes.contains { $0.day == day }
+        // Check notes - capture first note's content for preview
+        if let firstNote = notes.first(where: { $0.day == day }) {
+            check.hasNote = true
+            check.noteContent = firstNote.content
+        }
 
-        // Check expenses (use Calendar.current for consistency with day normalization)
-        check.hasExpense = expenses.contains { Calendar.current.startOfDay(for: $0.date) == day }
+        // Check expenses - calculate total amount for the day
+        let dayExpenses = expenses.filter { Calendar.current.startOfDay(for: $0.date) == day }
+        if !dayExpenses.isEmpty {
+            check.hasExpense = true
+            check.expenseAmount = dayExpenses.reduce(0.0) { $0 + $1.amount }
+        }
 
         // Check trips (day falls within trip range) and determine position
         for trip in trips {
@@ -1017,6 +1035,7 @@ struct ModernCalendarView: View {
 
             if day >= tripStart && day <= tripEnd {
                 check.hasTrip = true
+                check.tripDestination = trip.destination
 
                 // Determine trip position for edge indicators
                 let isSingleDay = tripStart == tripEnd
@@ -1041,17 +1060,31 @@ struct ModernCalendarView: View {
         let month = calendar.component(.month, from: day)
         let dayOfMonth = calendar.component(.day, from: day)
 
-        check.hasBirthday = contacts.contains { contact in
-            guard let birthday = contact.birthday else { return false }
+        var birthdayNames: [String] = []
+        for contact in contacts {
+            guard let birthday = contact.birthday else { continue }
             let bMonth = calendar.component(.month, from: birthday)
             let bDay = calendar.component(.day, from: birthday)
-            return bMonth == month && bDay == dayOfMonth
+            if bMonth == month && bDay == dayOfMonth {
+                birthdayNames.append(contact.displayName)
+            }
+        }
+        if !birthdayNames.isEmpty {
+            check.hasBirthday = true
+            check.birthdayNames = birthdayNames
         }
 
         // Check countdown events (match the event date)
-        check.hasEvent = countdownEvents.contains { event in
+        var eventNames: [String] = []
+        for event in countdownEvents {
             let eventDay = calendar.startOfDay(for: event.targetDate)
-            return eventDay == day
+            if eventDay == day {
+                eventNames.append(event.title)
+            }
+        }
+        if !eventNames.isEmpty {
+            check.hasEvent = true
+            check.eventNames = eventNames
         }
 
         return check
@@ -1261,28 +1294,22 @@ struct ModernCalendarView: View {
 
     /// 情報デザイン: Long-press opens day detail sheet
     private func handleDayLongPress(_ day: CalendarDay) {
-        // Debug logging
-        Log.d("handleDayLongPress: day.date = \(day.date)")
-        Log.d("handleDayLongPress: day.isHoliday = \(day.isHoliday)")
-        Log.d("handleDayLongPress: day.holidayName = \(day.holidayName ?? "nil")")
-
         // Get base data check from hasDataForDay (expenses, notes, trips, events, birthdays)
         var dataCheck = hasDataForDay(day.date)
 
+        // Debug: Check what's in the cache
         // 情報デザイン: Use CalendarDay's computed properties for holiday info
         // These are known to work (they show the red star) and are thread-safe
         if day.isHoliday {
             dataCheck.hasHoliday = true
             dataCheck.holidayName = day.holidayName
             dataCheck.holidaySymbolName = day.holidaySymbolName
-            Log.d("handleDayLongPress: Set hasHoliday=true, name=\(dataCheck.holidayName ?? "nil")")
         } else if day.isSignificant {
             dataCheck.hasObservance = true
-            Log.d("handleDayLongPress: Set hasObservance=true")
         }
 
-        dayDetailDataCheck = dataCheck
-        dayDetailDay = day  // This triggers the sheet to show via .sheet(item:)
+        // 情報デザイン: Set combined context atomically to avoid race conditions
+        dayDetailContext = DayDetailContext(day: day, dataCheck: dataCheck)
     }
 
 
