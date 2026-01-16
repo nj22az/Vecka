@@ -47,9 +47,9 @@ struct LandingPageView: View {
     @State private var randomStatIndex: Int = 0
 
     // Quirky facts for GLANCE (情報デザイン: Database-driven facts only)
-    @State private var factProvider: GlanceFactProvider?
-    @State private var glanceFacts: [GlanceFact] = []
-    @State private var selectedGlanceFact: GlanceFact?  // Tap-to-expand detail sheet
+    @State private var factProvider: RandomFactProvider?
+    @State private var randomFacts: [RandomFact] = []
+    @State private var selectedRandomFact: RandomFact?  // Tap-to-expand detail sheet
 
     // Discovery Grid state (情報デザイン: Random events from database)
     @State private var discoveryItems: [DiscoveryItem] = []
@@ -525,7 +525,7 @@ struct LandingPageView: View {
                         }
 
                         todayCard
-                        glanceCard
+                        randomFactsCard
                     }
                     .padding(.horizontal, JohoDimensions.spacingLG)
                     .padding(.top, JohoDimensions.spacingSM)
@@ -542,7 +542,7 @@ struct LandingPageView: View {
                         }
 
                         todayCard
-                        glanceCard
+                        randomFactsCard
                     }
                     .padding(.horizontal, JohoDimensions.spacingSM)
                     .padding(.top, JohoDimensions.spacingSM)
@@ -554,10 +554,10 @@ struct LandingPageView: View {
         .onAppear {
             // Initialize fact provider if needed
             if factProvider == nil {
-                factProvider = GlanceFactProvider(context: modelContext, selectedRegions: ["SE", "VN", "UK"])
+                factProvider = RandomFactProvider(context: modelContext, selectedRegions: ["SE", "VN", "UK"])
             }
             // 情報デザイン: Always refresh facts when landing page appears (tab switch, back navigation)
-            loadGlanceFacts()
+            loadRandomFacts()
         }
         .sheet(isPresented: $showTripsSheet) {
             NavigationStack {
@@ -569,8 +569,8 @@ struct LandingPageView: View {
                 ExpenseListView()
             }
         }
-        .sheet(item: $selectedGlanceFact) { fact in
-            GlanceFactDetailSheet(fact: fact)
+        .sheet(item: $selectedRandomFact) { fact in
+            RandomFactDetailSheet(fact: fact)
         }
     }
 
@@ -627,11 +627,11 @@ struct LandingPageView: View {
                 }
             }
 
-            // Horizontal wall above glance
+            // Horizontal wall above stats
             Rectangle().fill(JohoColors.black).frame(height: 2)
 
             // GLANCE ROW: Contextual non-zero stats only
-            iPadGlanceRow
+            iPadStatsRow
                 .frame(height: 44)
 
             // Horizontal wall above footer
@@ -885,10 +885,10 @@ struct LandingPageView: View {
         .frame(height: 40)
     }
 
-    // MARK: - iPad Glance Row (情報デザイン: Contextual non-zero stats only)
+    // MARK: - iPad Stats Row (情報デザイン: Contextual non-zero stats only)
 
-    /// Compact glance row showing only non-zero stats with descriptions
-    private var iPadGlanceRow: some View {
+    /// Compact stats row showing only non-zero stats with descriptions
+    private var iPadStatsRow: some View {
         HStack(spacing: 0) {
             // Header
             Image(systemName: "snowflake")
@@ -907,7 +907,7 @@ struct LandingPageView: View {
             HStack(spacing: JohoDimensions.spacingMD) {
                 // Holidays this month (with names if few)
                 if specialDaysThisMonth.holidays > 0 {
-                    glanceChip(
+                    statsChip(
                         count: specialDaysThisMonth.holidays,
                         label: specialDaysThisMonth.holidays == 1 ? "holiday" : "holidays",
                         detail: "this month",
@@ -917,7 +917,7 @@ struct LandingPageView: View {
 
                 // Contacts (only if non-zero)
                 if contacts.count > 0 {
-                    glanceChip(
+                    statsChip(
                         count: contacts.count,
                         label: contacts.count == 1 ? "contact" : "contacts",
                         detail: nil,
@@ -927,7 +927,7 @@ struct LandingPageView: View {
 
                 // Expenses (only if non-zero)
                 if allExpenses.count > 0 {
-                    glanceChip(
+                    statsChip(
                         count: allExpenses.count,
                         label: allExpenses.count == 1 ? "expense" : "expenses",
                         detail: nil,
@@ -937,7 +937,7 @@ struct LandingPageView: View {
 
                 // Trips (only if non-zero)
                 if allTrips.count > 0 {
-                    glanceChip(
+                    statsChip(
                         count: allTrips.count,
                         label: allTrips.count == 1 ? "trip" : "trips",
                         detail: nil,
@@ -959,8 +959,8 @@ struct LandingPageView: View {
         .background(JohoColors.white)
     }
 
-    /// Glance chip with count and label
-    private func glanceChip(count: Int, label: String, detail: String?, color: Color) -> some View {
+    /// Stats chip with count and label
+    private func statsChip(count: Int, label: String, detail: String?, color: Color) -> some View {
         HStack(spacing: 4) {
             Text("\(count)")
                 .font(.system(size: 12, weight: .bold, design: .rounded))
@@ -982,10 +982,10 @@ struct LandingPageView: View {
         }
     }
 
-    // MARK: - iPad Glance Section (情報デザイン: Large bento tiles)
+    // MARK: - iPad Random Facts Section (情報デザイン: Large bento tiles)
 
     /// GLANCE section - 2x3 grid of large bento tiles with key stats
-    private var iPadGlanceSection: some View {
+    private var iPadRandomFactsSection: some View {
         VStack(spacing: 0) {
             // Header
             HStack {
@@ -1468,7 +1468,7 @@ struct LandingPageView: View {
     private var iPadPortraitLayout: some View {
         VStack(spacing: 0) {
             // TOP: GLANCE section (fixed height)
-            iPadGlanceSection
+            iPadRandomFactsSection
                 .frame(height: 180)
 
             Rectangle().fill(JohoColors.black).frame(height: 2)
@@ -1595,7 +1595,7 @@ struct LandingPageView: View {
 
     // MARK: - iPad Portrait Layout (情報デザイン: Vertical stack for portrait)
 
-    /// Portrait-specific content: Calendar on top, Agenda + Glance below
+    /// Portrait-specific content: Calendar on top, Agenda + Stats below
     private var iPadPortraitContent: some View {
         VStack(spacing: 0) {
             // TOP: Calendar (compact, fills width, reasonable height)
@@ -1606,7 +1606,7 @@ struct LandingPageView: View {
             // Horizontal divider
             Rectangle().fill(JohoColors.black).frame(height: 2)
 
-            // BOTTOM: 2-column grid (Agenda + Glance side by side)
+            // BOTTOM: 2-column grid (Agenda + Stats side by side)
             HStack(spacing: 0) {
                 // LEFT: Agenda section
                 iPadPortraitAgenda
@@ -1615,8 +1615,8 @@ struct LandingPageView: View {
                 // Vertical wall
                 Rectangle().fill(JohoColors.black).frame(width: 1.5)
 
-                // RIGHT: Glance section
-                iPadPortraitGlance
+                // RIGHT: Stats section
+                iPadPortraitStats
                     .frame(maxWidth: .infinity)
             }
             .frame(height: 200)
@@ -1696,8 +1696,8 @@ struct LandingPageView: View {
         .background(JohoColors.white)
     }
 
-    /// Portrait Glance section (vertical tile stack)
-    private var iPadPortraitGlance: some View {
+    /// Portrait Stats section (vertical tile stack)
+    private var iPadPortraitStats: some View {
         VStack(spacing: 0) {
             // Header
             HStack {
@@ -1714,14 +1714,14 @@ struct LandingPageView: View {
 
             Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
 
-            // Glance tiles in 2x3 grid for portrait
+            // Stats tiles in 2x3 grid for portrait
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 6) {
-                compactGlanceTile(icon: "calendar", label: "W\(weekNumber)", color: PageHeaderColor.calendar.accent, bg: PageHeaderColor.calendar.lightBackground)
-                compactGlanceTile(icon: currentMonthTheme.icon, label: String(currentMonthTheme.name.prefix(3)).uppercased(), color: currentMonthTheme.accentColor, bg: currentMonthTheme.lightBackground)
-                compactGlanceTile(icon: "dollarsign.circle.fill", label: "\(allExpenses.count)", color: SpecialDayType.expense.accentColor, bg: SpecialDayType.expense.lightBackground)
-                compactGlanceTile(icon: "person.2.fill", label: "\(contacts.count)", color: PageHeaderColor.contacts.accent, bg: PageHeaderColor.contacts.lightBackground)
-                compactGlanceTile(icon: "airplane", label: "\(allTrips.count)", color: SpecialDayType.trip.accentColor, bg: SpecialDayType.trip.lightBackground)
-                compactGlanceTile(icon: "star.fill", label: "\(specialDaysThisMonth.holidays)", color: SpecialDayType.holiday.accentColor, bg: SpecialDayType.holiday.lightBackground)
+                compactStatsTile(icon: "calendar", label: "W\(weekNumber)", color: PageHeaderColor.calendar.accent, bg: PageHeaderColor.calendar.lightBackground)
+                compactStatsTile(icon: currentMonthTheme.icon, label: String(currentMonthTheme.name.prefix(3)).uppercased(), color: currentMonthTheme.accentColor, bg: currentMonthTheme.lightBackground)
+                compactStatsTile(icon: "dollarsign.circle.fill", label: "\(allExpenses.count)", color: SpecialDayType.expense.accentColor, bg: SpecialDayType.expense.lightBackground)
+                compactStatsTile(icon: "person.2.fill", label: "\(contacts.count)", color: PageHeaderColor.contacts.accent, bg: PageHeaderColor.contacts.lightBackground)
+                compactStatsTile(icon: "airplane", label: "\(allTrips.count)", color: SpecialDayType.trip.accentColor, bg: SpecialDayType.trip.lightBackground)
+                compactStatsTile(icon: "star.fill", label: "\(specialDaysThisMonth.holidays)", color: SpecialDayType.holiday.accentColor, bg: SpecialDayType.holiday.lightBackground)
             }
             .padding(JohoDimensions.spacingSM)
             .frame(maxHeight: .infinity)
@@ -1908,7 +1908,7 @@ struct LandingPageView: View {
         .background(JohoColors.yellow.opacity(0.3))
     }
 
-    /// Sidebar for landscape mode - Glance + Agenda
+    /// Sidebar for landscape mode - Stats + Agenda
     private var iPadSidebar: some View {
         VStack(spacing: 0) {
             // GLANCE section
@@ -1927,12 +1927,12 @@ struct LandingPageView: View {
 
                 Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
 
-                // Compact glance tiles
+                // Compact stats tiles
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 4) {
-                    compactGlanceTile(icon: "calendar", label: "W\(weekNumber)", color: PageHeaderColor.calendar.accent, bg: PageHeaderColor.calendar.lightBackground)
-                    compactGlanceTile(icon: currentMonthTheme.icon, label: String(currentMonthTheme.name.prefix(3)).uppercased(), color: currentMonthTheme.accentColor, bg: currentMonthTheme.lightBackground)
-                    compactGlanceTile(icon: "dollarsign.circle.fill", label: "\(allExpenses.count)", color: SpecialDayType.expense.accentColor, bg: SpecialDayType.expense.lightBackground)
-                    compactGlanceTile(icon: "person.2.fill", label: "\(contacts.count)", color: PageHeaderColor.contacts.accent, bg: PageHeaderColor.contacts.lightBackground)
+                    compactStatsTile(icon: "calendar", label: "W\(weekNumber)", color: PageHeaderColor.calendar.accent, bg: PageHeaderColor.calendar.lightBackground)
+                    compactStatsTile(icon: currentMonthTheme.icon, label: String(currentMonthTheme.name.prefix(3)).uppercased(), color: currentMonthTheme.accentColor, bg: currentMonthTheme.lightBackground)
+                    compactStatsTile(icon: "dollarsign.circle.fill", label: "\(allExpenses.count)", color: SpecialDayType.expense.accentColor, bg: SpecialDayType.expense.lightBackground)
+                    compactStatsTile(icon: "person.2.fill", label: "\(contacts.count)", color: PageHeaderColor.contacts.accent, bg: PageHeaderColor.contacts.lightBackground)
                 }
                 .padding(JohoDimensions.spacingXS)
             }
@@ -1996,9 +1996,9 @@ struct LandingPageView: View {
             // Horizontal divider
             Rectangle().fill(JohoColors.black).frame(height: 2)
 
-            // BOTTOM: Glance + Agenda side by side
+            // BOTTOM: Stats + Agenda side by side
             HStack(spacing: 0) {
-                // Compact Glance
+                // Compact Stats
                 VStack(spacing: 0) {
                     HStack {
                         Image(systemName: "snowflake")
@@ -2015,12 +2015,12 @@ struct LandingPageView: View {
                     Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
 
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 4) {
-                        compactGlanceTile(icon: "calendar", label: "W\(weekNumber)", color: PageHeaderColor.calendar.accent, bg: PageHeaderColor.calendar.lightBackground)
-                        compactGlanceTile(icon: currentMonthTheme.icon, label: String(currentMonthTheme.name.prefix(3)).uppercased(), color: currentMonthTheme.accentColor, bg: currentMonthTheme.lightBackground)
-                        compactGlanceTile(icon: "dollarsign.circle.fill", label: "\(allExpenses.count)", color: SpecialDayType.expense.accentColor, bg: SpecialDayType.expense.lightBackground)
-                        compactGlanceTile(icon: "person.2.fill", label: "\(contacts.count)", color: PageHeaderColor.contacts.accent, bg: PageHeaderColor.contacts.lightBackground)
-                        compactGlanceTile(icon: "airplane", label: "\(allTrips.count)", color: SpecialDayType.trip.accentColor, bg: SpecialDayType.trip.lightBackground)
-                        compactGlanceTile(icon: "star.fill", label: "\(specialDaysThisMonth.holidays)", color: SpecialDayType.holiday.accentColor, bg: SpecialDayType.holiday.lightBackground)
+                        compactStatsTile(icon: "calendar", label: "W\(weekNumber)", color: PageHeaderColor.calendar.accent, bg: PageHeaderColor.calendar.lightBackground)
+                        compactStatsTile(icon: currentMonthTheme.icon, label: String(currentMonthTheme.name.prefix(3)).uppercased(), color: currentMonthTheme.accentColor, bg: currentMonthTheme.lightBackground)
+                        compactStatsTile(icon: "dollarsign.circle.fill", label: "\(allExpenses.count)", color: SpecialDayType.expense.accentColor, bg: SpecialDayType.expense.lightBackground)
+                        compactStatsTile(icon: "person.2.fill", label: "\(contacts.count)", color: PageHeaderColor.contacts.accent, bg: PageHeaderColor.contacts.lightBackground)
+                        compactStatsTile(icon: "airplane", label: "\(allTrips.count)", color: SpecialDayType.trip.accentColor, bg: SpecialDayType.trip.lightBackground)
+                        compactStatsTile(icon: "star.fill", label: "\(specialDaysThisMonth.holidays)", color: SpecialDayType.holiday.accentColor, bg: SpecialDayType.holiday.lightBackground)
                     }
                     .padding(JohoDimensions.spacingSM)
                 }
@@ -2226,7 +2226,7 @@ struct LandingPageView: View {
     }
 
     /// Right column: AGENDA (merged Today+Upcoming) + GLANCE
-    /// 情報デザイン: Glance moved UP, combined agenda view
+    /// 情報デザイン: Stats moved UP, combined agenda view
     private var iPadRightColumn: some View {
         VStack(spacing: 0) {
             // AGENDA section (merged Today + Upcoming)
@@ -2324,13 +2324,13 @@ struct LandingPageView: View {
 
                 Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
 
-                // Glance tiles in grid
+                // Stats tiles in grid
                 HStack(spacing: 6) {
-                    compactGlanceTile(icon: "calendar", label: "W\(weekNumber)", color: PageHeaderColor.calendar.accent, bg: PageHeaderColor.calendar.lightBackground)
-                    compactGlanceTile(icon: currentMonthTheme.icon, label: String(currentMonthTheme.name.prefix(3)).uppercased(), color: currentMonthTheme.accentColor, bg: currentMonthTheme.lightBackground)
-                    compactGlanceTile(icon: "dollarsign.circle.fill", label: "\(allExpenses.count)", color: SpecialDayType.expense.accentColor, bg: SpecialDayType.expense.lightBackground)
-                    compactGlanceTile(icon: "person.2.fill", label: "\(contacts.count)", color: PageHeaderColor.contacts.accent, bg: PageHeaderColor.contacts.lightBackground)
-                    compactGlanceTile(icon: "airplane", label: "\(allTrips.count)", color: SpecialDayType.trip.accentColor, bg: SpecialDayType.trip.lightBackground)
+                    compactStatsTile(icon: "calendar", label: "W\(weekNumber)", color: PageHeaderColor.calendar.accent, bg: PageHeaderColor.calendar.lightBackground)
+                    compactStatsTile(icon: currentMonthTheme.icon, label: String(currentMonthTheme.name.prefix(3)).uppercased(), color: currentMonthTheme.accentColor, bg: currentMonthTheme.lightBackground)
+                    compactStatsTile(icon: "dollarsign.circle.fill", label: "\(allExpenses.count)", color: SpecialDayType.expense.accentColor, bg: SpecialDayType.expense.lightBackground)
+                    compactStatsTile(icon: "person.2.fill", label: "\(contacts.count)", color: PageHeaderColor.contacts.accent, bg: PageHeaderColor.contacts.lightBackground)
+                    compactStatsTile(icon: "airplane", label: "\(allTrips.count)", color: SpecialDayType.trip.accentColor, bg: SpecialDayType.trip.lightBackground)
                 }
                 .padding(JohoDimensions.spacingSM)
             }
@@ -2398,7 +2398,7 @@ struct LandingPageView: View {
         .padding(.vertical, 4)
     }
 
-    /// Footer: PROGRESS bars only (Glance moved to right column)
+    /// Footer: PROGRESS bars only (Stats moved to right column)
     /// 情報デザイン: Progress takes full width with larger, more prominent bars
     private var iPadBentoFooter: some View {
         VStack(spacing: 0) {
@@ -2485,9 +2485,9 @@ struct LandingPageView: View {
         }
     }
 
-    // MARK: - Compact Glance Tile (Used by iPad layouts)
+    // MARK: - Compact Stats Tile (Used by iPad layouts)
 
-    private func compactGlanceTile(icon: String, label: String, color: Color, bg: Color) -> some View {
+    private func compactStatsTile(icon: String, label: String, color: Color, bg: Color) -> some View {
         VStack(spacing: 2) {
             Image(systemName: icon)
                 .font(.system(size: 18, weight: .bold, design: .rounded))
@@ -2930,14 +2930,14 @@ struct LandingPageView: View {
         todayItemRowView(item, size: .regular)
     }
 
-    // MARK: - GLANCE Card (情報デザイン: Quirky Facts Grid)
+    // MARK: - RANDOM FACTS Card (情報デザイン: Quirky Facts Grid)
 
-    private var glanceCard: some View {
+    private var randomFactsCard: some View {
         VStack(spacing: 0) {
             // Header with display icon (情報デザイン: Black contour icon)
             HStack {
                 ZStack {
-                    Image(systemName: "rectangle.grid.2x3.fill")
+                    Image(systemName: "text.book.closed.fill")
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.cyan)
                 }
@@ -2949,7 +2949,7 @@ struct LandingPageView: View {
                         .stroke(JohoColors.black, lineWidth: 1)
                 )
 
-                Text("GLANCE")
+                Text("RANDOM FACTS")
                     .font(.system(size: 11, weight: .black, design: .rounded))
                     .tracking(1.5)
                     .foregroundStyle(colors.primary)
@@ -2959,7 +2959,7 @@ struct LandingPageView: View {
                 // Tap to refresh facts (情報デザイン: Visual stays small, tap area expanded)
                 Button {
                     HapticManager.impact(.light)
-                    loadGlanceFacts()
+                    loadRandomFacts()
                 } label: {
                     Image(systemName: "arrow.clockwise")
                         .font(.system(size: 11, weight: .bold, design: .rounded))
@@ -2978,12 +2978,12 @@ struct LandingPageView: View {
 
             // 3x2 Grid of quirky facts (情報デザイン: Month card style, tap to expand)
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: JohoDimensions.spacingSM) {
-                ForEach(glanceFacts) { fact in
+                ForEach(randomFacts) { fact in
                     Button {
                         HapticManager.selection()
-                        selectedGlanceFact = fact
+                        selectedRandomFact = fact
                     } label: {
-                        glanceFactTile(fact)
+                        randomFactTile(fact)
                     }
                     .buttonStyle(.plain)
                 }
@@ -2999,14 +2999,14 @@ struct LandingPageView: View {
     }
 
     /// Load 6 quirky facts from database (情報デザイン: Simple, database-driven)
-    private func loadGlanceFacts() {
+    private func loadRandomFacts() {
         guard let provider = factProvider else { return }
         provider.reset()
-        glanceFacts = (0..<6).map { _ in provider.nextFact() }
+        randomFacts = (0..<6).map { _ in provider.nextFact() }
     }
 
     /// Month card style fact tile (情報デザイン: Star page style - strong colors)
-    private func glanceFactTile(_ fact: GlanceFact) -> some View {
+    private func randomFactTile(_ fact: RandomFact) -> some View {
         VStack(spacing: 0) {
             // TOP: Icon zone (情報デザイン: Strong color like Star page month icons)
             VStack {
@@ -3573,7 +3573,7 @@ struct LandingPageView: View {
 
     /// Star Page Style GLANCE tile - matches month card design EXACTLY
     /// 情報デザイン: NO visible borders, just pastel background with subtle squircle
-    private func starStyleGlanceTile(
+    private func starStyleStatsTile(
         target: SidebarSelection,
         icon: String,
         label: String,
@@ -3635,8 +3635,8 @@ struct LandingPageView: View {
     }
 
     /// Sheet-based GLANCE tile for Trips and Expenses (情報デザイン)
-    /// Same visual style as starStyleGlanceTile but with custom action
-    private func sheetGlanceTile(
+    /// Same visual style as starStyleStatsTile but with custom action
+    private func sheetStatsTile(
         icon: String,
         label: String,
         indicator: String?,
@@ -3681,7 +3681,7 @@ struct LandingPageView: View {
 
     /// Display-only GLANCE tile for random stats (情報デザイン: Information, not navigation)
     /// Tappable to cycle through different stats
-    private func randomStatGlanceTile(stat: RandomStat) -> some View {
+    private func randomStatTile(stat: RandomStat) -> some View {
         Button {
             HapticManager.impact(.light)
             // Cycle to next stat on tap
@@ -4723,17 +4723,17 @@ extension Notification.Name {
     static let navigateToPage = Notification.Name("navigateToPage")
 }
 
-// MARK: - Glance Fact Detail Sheet (情報デザイン: Tap-to-expand detail view)
+// MARK: - Random Fact Detail Sheet (情報デザイン: Tap-to-expand detail view)
 
 /// Detail sheet shown when tapping a GLANCE fact tile
 /// 情報デザイン: Larger view with full explanation
-struct GlanceFactDetailSheet: View {
+struct RandomFactDetailSheet: View {
     @Environment(\.dismiss) private var dismiss
-    let fact: GlanceFact
+    let fact: RandomFact
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header with close button
+            // Header with share and close buttons
             HStack {
                 Text("FACT")
                     .font(.system(size: 12, weight: .black, design: .rounded))
@@ -4741,6 +4741,9 @@ struct GlanceFactDetailSheet: View {
                     .foregroundStyle(JohoColors.white)
 
                 Spacer()
+
+                // Share button (meme-style PNG export)
+                FactShareButton(fact: fact)
 
                 Button { dismiss() } label: {
                     ZStack {

@@ -165,9 +165,8 @@ struct ModernCalendarView: View {
     @State private var noteEditorDate: Date = Date()
 
 
-    // PDF Export sheet
-    @State private var showPDFExport = false
-    @State private var pdfExportContext: PDFExportContext = .summary
+    // PDF Export sheet (using optional for .sheet(item:) to fix state update issue)
+    @State private var pdfExportContext: PDFExportContext?
 
     // Week Detail sheet (iPhone only)
     @State private var showWeekDetailSheet = false
@@ -438,6 +437,14 @@ struct ModernCalendarView: View {
                                 showWeekDetailSheet = false
                             }
                         }
+                        ToolbarItem(placement: .primaryAction) {
+                            Button {
+                                showWeekDetailSheet = false
+                                pdfExportContext = .week(weekNumber: week.weekNumber, year: currentMonth.year)
+                            } label: {
+                                Image(systemName: "square.and.arrow.up")
+                            }
+                        }
                     }
                     .johoNavigation()
                 }
@@ -464,8 +471,8 @@ struct ModernCalendarView: View {
         .sheet(item: $dayDetailContext) { context in
             DayDetailSheet(day: context.day, dataCheck: context.dataCheck)
         }
-        .sheet(isPresented: $showPDFExport) {
-            SimplePDFExportView(exportContext: pdfExportContext)
+        .sheet(item: $pdfExportContext) { context in
+            SimplePDFExportView(exportContext: context)
                 .presentationCornerRadius(20)
         }
         .sheet(isPresented: $showNoteEditor) {
@@ -917,21 +924,18 @@ struct ModernCalendarView: View {
                 Menu {
                     Button {
                         pdfExportContext = .day(selectedDate)
-                        showPDFExport = true
                     } label: {
                         Label("Export Day", systemImage: "calendar.day.timeline.left")
                     }
 
                     Button {
                         pdfExportContext = .week(weekNumber: currentMonth.weeks.first { $0.days.contains { Calendar.iso8601.isDate($0.date, inSameDayAs: selectedDate) } }?.weekNumber ?? weekNumber, year: currentMonth.year)
-                        showPDFExport = true
                     } label: {
                         Label("Export Week", systemImage: "calendar")
                     }
 
                     Button {
                         pdfExportContext = .month(month: currentMonth.month, year: currentMonth.year)
-                        showPDFExport = true
                     } label: {
                         Label("Export Month", systemImage: "calendar.badge.clock")
                     }

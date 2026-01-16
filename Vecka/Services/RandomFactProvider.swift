@@ -1,8 +1,8 @@
 //
-//  GlanceFactProvider.swift
+//  RandomFactProvider.swift
 //  Vecka
 //
-//  情報デザイン: Database-driven fact provider for GLANCE tiles
+//  情報デザイン: Database-driven fact provider for RANDOM FACTS tiles
 //  Minimal code, queries SwiftData
 //
 
@@ -10,24 +10,24 @@ import Foundation
 import SwiftUI
 import SwiftData
 
-// MARK: - Glance Fact (Display Model)
+// MARK: - Random Fact (Display Model)
 
-struct GlanceFact: Identifiable, Equatable {
+struct RandomFact: Identifiable, Equatable {
     let id: String
     let text: String
     let icon: String?
     let color: Color
     let explanation: String  // 情報デザイン: Detailed explanation for tap-to-expand
 
-    static func == (lhs: GlanceFact, rhs: GlanceFact) -> Bool {
+    static func == (lhs: RandomFact, rhs: RandomFact) -> Bool {
         lhs.id == rhs.id
     }
 }
 
-// MARK: - Glance Fact Provider
+// MARK: - Random Fact Provider
 
 @MainActor
-final class GlanceFactProvider: ObservableObject {
+final class RandomFactProvider: ObservableObject {
 
     private let context: ModelContext
     private let selectedRegions: [String]
@@ -43,7 +43,7 @@ final class GlanceFactProvider: ObservableObject {
 
     // MARK: - Public API
 
-    func nextFact() -> GlanceFact {
+    func nextFact() -> RandomFact {
         // Small chance for easter egg
         if Double.random(in: 0...1) < easterEggChance,
            let egg = randomEasterEgg() {
@@ -67,7 +67,7 @@ final class GlanceFactProvider: ObservableObject {
 
     // MARK: - Database Queries
 
-    private func randomRegionFact() -> GlanceFact {
+    private func randomRegionFact() -> RandomFact {
         // Query facts for selected regions
         let regions = selectedRegions
         let descriptor = FetchDescriptor<QuirkyFact>(
@@ -79,7 +79,7 @@ final class GlanceFactProvider: ObservableObject {
         let pool = available.isEmpty ? facts : available
 
         guard !pool.isEmpty else {
-            return GlanceFact(
+            return RandomFact(
                 id: "fallback",
                 text: "Week numbers matter.",
                 icon: "calendar",
@@ -93,7 +93,7 @@ final class GlanceFactProvider: ObservableObject {
 
         usedFactIDs.insert(fact.id)
 
-        return GlanceFact(
+        return RandomFact(
             id: fact.id,
             text: fact.text,
             icon: iconFor(category: fact.factCategory),
@@ -102,7 +102,7 @@ final class GlanceFactProvider: ObservableObject {
         )
     }
 
-    private func randomEasterEgg() -> GlanceFact? {
+    private func randomEasterEgg() -> RandomFact? {
         let descriptor = FetchDescriptor<QuirkyFact>(
             predicate: #Predicate { $0.region == "XX" }
         )
@@ -116,7 +116,7 @@ final class GlanceFactProvider: ObservableObject {
 
         usedFactIDs.insert(egg.id)
 
-        return GlanceFact(
+        return RandomFact(
             id: egg.id,
             text: egg.text,
             icon: "sparkles",
@@ -127,7 +127,7 @@ final class GlanceFactProvider: ObservableObject {
 
     // MARK: - Calendar Facts (情報デザイン: Database-driven calendar information)
 
-    private func randomCalendarFact() -> GlanceFact? {
+    private func randomCalendarFact() -> RandomFact? {
         // Query all calendar facts from database
         let descriptor = FetchDescriptor<CalendarFact>()
         let allFacts = (try? context.fetch(descriptor)) ?? []
@@ -143,7 +143,7 @@ final class GlanceFactProvider: ObservableObject {
         let picked = available.randomElement()!
         usedFactIDs.insert(picked.id)
 
-        return GlanceFact(
+        return RandomFact(
             id: picked.id,
             text: picked.renderText(for: today),
             icon: picked.icon,

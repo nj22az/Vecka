@@ -100,11 +100,11 @@ actor SimplePDFExportService {
         return url
     }
 
-    /// 情報デザイン: Compact week export - single page with all 7 days
+    /// Professional week audit report - ALL 7 days with full details
     @MainActor
     static func exportWeek(weekNumber: Int, year: Int, modelContext: ModelContext) async throws -> URL {
-        // Use compact week view instead of 7 daily pages
-        let view = PDFWeekCompactPage(weekNumber: weekNumber, year: year)
+        // Use professional audit report showing all 7 days
+        let view = PDFWeekAuditReport(weekNumber: weekNumber, year: year)
             .environment(\.modelContext, modelContext)
 
         guard let url = SimplePDFRenderer.render(view) else {
@@ -113,14 +113,35 @@ actor SimplePDFExportService {
         return url
     }
 
-    /// 情報デザイン: Compact month export - calendar grid + detail pages
+    /// Professional month audit report - ALL days with full details (multi-page)
     @MainActor
     static func exportMonth(month: Int, year: Int, modelContext: ModelContext) async throws -> URL {
-        // Use compact month view with calendar grid + details
-        let view = PDFMonthCompactPage(month: month, year: year)
+        // Get all days in the month
+        let allDays = PDFMonthAuditReport.getAllMonthDates(month: month, year: year)
+
+        // Paginate: ~15 days per page for readability
+        let daysPerPage = 15
+        let totalPages = max(1, Int(ceil(Double(allDays.count) / Double(daysPerPage))))
+
+        var pages: [AnyView] = []
+        for pageNum in 1...totalPages {
+            let startIndex = (pageNum - 1) * daysPerPage
+            let endIndex = min(startIndex + daysPerPage, allDays.count)
+            let pageDays = Array(allDays[startIndex..<endIndex])
+
+            let page = PDFMonthAuditReport(
+                month: month,
+                year: year,
+                pageNumber: pageNum,
+                totalPages: totalPages,
+                daysOnThisPage: pageDays
+            )
             .environment(\.modelContext, modelContext)
 
-        guard let url = SimplePDFRenderer.render(view) else {
+            pages.append(AnyView(page))
+        }
+
+        guard let url = SimplePDFRenderer.renderPages(pages) else {
             throw PDFExportError.renderingFailed
         }
         return url
@@ -1711,5 +1732,663 @@ struct PDFMonthCompactPage: View {
         formatter.currencyCode = "SEK"
         formatter.maximumFractionDigits = 0
         return formatter.string(from: NSNumber(value: amount)) ?? "\(Int(amount)) kr"
+    }
+}
+
+// MARK: - Professional Audit Reports
+
+/// Professional Week Audit Report - Shows ALL 7 days with full details
+/// Suitable for accounting/audit purposes
+struct PDFWeekAuditReport: View {
+    let weekNumber: Int
+    let year: Int
+    let pageNumber: Int
+    let totalPages: Int
+    let days: [Date]
+
+    @Query private var notes: [DailyNote]
+    @Query private var expenses: [ExpenseItem]
+    @Query private var trips: [TravelTrip]
+    @Query private var events: [CountdownEvent]
+    @Query private var contacts: [Contact]
+
+    private let calendar = Calendar.iso8601
+    private let pageSize = CGSize(width: 595.2, height: 841.8) // A4
+
+    init(weekNumber: Int, year: Int, pageNumber: Int = 1, totalPages: Int = 1, days: [Date] = []) {
+        self.weekNumber = weekNumber
+        self.year = year
+        self.pageNumber = pageNumber
+        self.totalPages = totalPages
+        self.days = days.isEmpty ? Self.computeWeekDates(weekNumber: weekNumber, year: year) : days
+    }
+
+    private static func computeWeekDates(weekNumber: Int, year: Int) -> [Date] {
+        let calendar = Calendar.iso8601
+        var components = DateComponents()
+        components.yearForWeekOfYear = year
+        components.weekOfYear = weekNumber
+        components.weekday = 2 // Monday
+
+        guard let monday = calendar.date(from: components) else { return [] }
+        return (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: monday) }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Professional header
+            reportHeader
+
+            Divider().background(JohoColors.black)
+
+            // Data table (no ScrollView - PDF is fixed size)
+            VStack(alignment: .leading, spacing: 0) {
+                // Table header
+                tableHeader
+
+                // Daily rows - ALL days shown
+                ForEach(days, id: \.self) { date in
+                    dailyDataRow(for: date)
+                    Divider().background(JohoColors.black.opacity(0.3))
+                }
+
+                // Week totals
+                weekTotalsRow
+            }
+
+            Spacer(minLength: 8)
+
+            // Footer
+            reportFooter
+        }
+        .padding(24)
+        .frame(width: pageSize.width, height: pageSize.height)
+        .background(JohoColors.white)
+    }
+
+    // MARK: - Header
+
+    private var reportHeader: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("WEEKLY ACTIVITY REPORT")
+                        .font(.system(size: 10, weight: .semibold, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .tracking(2)
+
+                    Text("Week \(weekNumber), \(String(year))")
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black)
+
+                    Text(dateRangeString)
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                }
+
+                Spacer()
+
+                // Report metadata
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("Generated: \(formattedGenerationDate)")
+                        .font(.system(size: 9, weight: .medium, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+
+                    Text("Onsen Planner")
+                        .font(.system(size: 9, weight: .semibold, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                }
+            }
+        }
+        .padding(.bottom, 12)
+    }
+
+    // MARK: - Table Header
+
+    private var tableHeader: some View {
+        HStack(spacing: 0) {
+            Text("DATE")
+                .frame(width: 90, alignment: .leading)
+            Text("HOLIDAYS/EVENTS")
+                .frame(width: 140, alignment: .leading)
+            Text("NOTES")
+                .frame(width: 150, alignment: .leading)
+            Text("EXPENSES")
+                .frame(minWidth: 100, alignment: .trailing)
+        }
+        .font(.system(size: 8, weight: .bold, design: .rounded))
+        .foregroundStyle(JohoColors.black.opacity(0.6))
+        .padding(.vertical, 8)
+        .padding(.horizontal, 8)
+        .background(JohoColors.black.opacity(0.05))
+    }
+
+    // MARK: - Daily Data Row
+
+    private func dailyDataRow(for date: Date) -> some View {
+        let dayNotes = notes.filter { calendar.isDate($0.day, inSameDayAs: date) }
+        let dayExpenses = expenses.filter { calendar.isDate($0.date, inSameDayAs: date) }
+        let dayHolidays = HolidayManager.cache[Calendar.current.startOfDay(for: date)] ?? []
+        let dayEvents = events.filter { calendar.isDate($0.targetDate, inSameDayAs: date) }
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "EEE, MMM d"
+
+        let isEmpty = dayNotes.isEmpty && dayExpenses.isEmpty && dayHolidays.isEmpty && dayEvents.isEmpty
+
+        return HStack(alignment: .top, spacing: 0) {
+            // Date column
+            VStack(alignment: .leading, spacing: 2) {
+                Text(dateFormatter.string(from: date))
+                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+
+                if calendar.isDateInToday(date) {
+                    Text("TODAY")
+                        .font(.system(size: 7, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.white)
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 2)
+                        .background(JohoColors.black)
+                        .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+                }
+            }
+            .frame(width: 90, alignment: .leading)
+
+            // Holidays/Events column
+            VStack(alignment: .leading, spacing: 2) {
+                ForEach(dayHolidays, id: \.displayTitle) { holiday in
+                    HStack(spacing: 3) {
+                        Circle().fill(JohoColors.pink).frame(width: 5, height: 5)
+                        Text(holiday.displayTitle)
+                            .font(.system(size: 9, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
+                            .lineLimit(1)
+                    }
+                }
+                ForEach(dayEvents) { event in
+                    HStack(spacing: 3) {
+                        Circle().fill(JohoColors.cyan).frame(width: 5, height: 5)
+                        Text(event.title)
+                            .font(.system(size: 9, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
+                            .lineLimit(1)
+                    }
+                }
+                if dayHolidays.isEmpty && dayEvents.isEmpty {
+                    Text("—")
+                        .font(.system(size: 9, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.3))
+                }
+            }
+            .frame(width: 140, alignment: .leading)
+
+            // Notes column
+            VStack(alignment: .leading, spacing: 2) {
+                ForEach(dayNotes.prefix(3)) { note in
+                    HStack(spacing: 3) {
+                        Circle().fill(JohoColors.yellow).frame(width: 5, height: 5)
+                        Text(note.content.prefix(40) + (note.content.count > 40 ? "..." : ""))
+                            .font(.system(size: 9, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
+                            .lineLimit(1)
+                    }
+                }
+                if dayNotes.count > 3 {
+                    Text("+\(dayNotes.count - 3) more")
+                        .font(.system(size: 8, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                }
+                if dayNotes.isEmpty {
+                    Text("—")
+                        .font(.system(size: 9, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.3))
+                }
+            }
+            .frame(width: 150, alignment: .leading)
+
+            // Expenses column
+            VStack(alignment: .trailing, spacing: 2) {
+                ForEach(dayExpenses.prefix(3)) { expense in
+                    HStack(spacing: 3) {
+                        Text(expense.category?.name ?? "Other")
+                            .font(.system(size: 8, design: .rounded))
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                        Text(formatCurrency(expense.amount, currency: expense.currency))
+                            .font(.system(size: 9, weight: .medium, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
+                    }
+                }
+                if dayExpenses.count > 3 {
+                    Text("+\(dayExpenses.count - 3) more")
+                        .font(.system(size: 8, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                }
+                if !dayExpenses.isEmpty {
+                    Divider().frame(width: 60)
+                    Text(formatCurrency(dayExpenses.reduce(0) { $0 + $1.amount }, currency: dayExpenses.first?.currency ?? "SEK"))
+                        .font(.system(size: 9, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.green)
+                }
+                if dayExpenses.isEmpty {
+                    Text("—")
+                        .font(.system(size: 9, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.3))
+                }
+            }
+            .frame(minWidth: 100, alignment: .trailing)
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, 8)
+        .background(isEmpty ? Color.clear : JohoColors.yellow.opacity(0.05))
+    }
+
+    // MARK: - Week Totals
+
+    private var weekTotalsRow: some View {
+        let weekNotes = notes.filter { note in days.contains { calendar.isDate($0, inSameDayAs: note.day) } }
+        let weekExpenses = expenses.filter { expense in days.contains { calendar.isDate($0, inSameDayAs: expense.date) } }
+        let totalExpenses = weekExpenses.reduce(0) { $0 + $1.amount }
+
+        return HStack(spacing: 0) {
+            Text("WEEK TOTALS")
+                .font(.system(size: 9, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoColors.black)
+                .frame(width: 90, alignment: .leading)
+
+            Text("\(countHolidaysAndEvents()) holidays/events")
+                .font(.system(size: 9, weight: .medium, design: .rounded))
+                .foregroundStyle(JohoColors.black.opacity(0.7))
+                .frame(width: 140, alignment: .leading)
+
+            Text("\(weekNotes.count) notes")
+                .font(.system(size: 9, weight: .medium, design: .rounded))
+                .foregroundStyle(JohoColors.black.opacity(0.7))
+                .frame(width: 150, alignment: .leading)
+
+            Text(formatCurrency(totalExpenses, currency: weekExpenses.first?.currency ?? "SEK"))
+                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoColors.green)
+                .frame(minWidth: 100, alignment: .trailing)
+        }
+        .padding(.vertical, 12)
+        .padding(.horizontal, 8)
+        .background(JohoColors.black.opacity(0.08))
+    }
+
+    // MARK: - Footer
+
+    private var reportFooter: some View {
+        HStack {
+            Text("Confidential - For authorized use only")
+                .font(.system(size: 8, design: .rounded))
+                .foregroundStyle(JohoColors.black.opacity(0.4))
+
+            Spacer()
+
+            Text("Page \(pageNumber) of \(totalPages)")
+                .font(.system(size: 8, weight: .medium, design: .rounded))
+                .foregroundStyle(JohoColors.black.opacity(0.5))
+        }
+        .padding(.top, 8)
+    }
+
+    // MARK: - Helpers
+
+    private var dateRangeString: String {
+        guard let first = days.first, let last = days.last else { return "" }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMM"
+        return "\(formatter.string(from: first)) – \(formatter.string(from: last)), \(year)"
+    }
+
+    private var formattedGenerationDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMM yyyy, HH:mm"
+        return formatter.string(from: Date())
+    }
+
+    private func formatCurrency(_ amount: Double, currency: String) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = currency
+        formatter.maximumFractionDigits = 2
+        return formatter.string(from: NSNumber(value: amount)) ?? "\(amount) \(currency)"
+    }
+
+    private func countHolidaysAndEvents() -> Int {
+        var count = 0
+        for date in days {
+            if let holidays = HolidayManager.cache[Calendar.current.startOfDay(for: date)] {
+                count += holidays.count
+            }
+            count += events.filter { calendar.isDate($0.targetDate, inSameDayAs: date) }.count
+        }
+        return count
+    }
+}
+
+/// Professional Month Audit Report - Shows ALL days in month with full details
+/// Multi-page format suitable for accounting/audit purposes
+struct PDFMonthAuditReport: View {
+    let month: Int
+    let year: Int
+    let pageNumber: Int
+    let totalPages: Int
+    let daysOnThisPage: [Date]
+
+    @Query private var notes: [DailyNote]
+    @Query private var expenses: [ExpenseItem]
+    @Query private var trips: [TravelTrip]
+    @Query private var events: [CountdownEvent]
+    @Query private var contacts: [Contact]
+
+    private let calendar = Calendar.iso8601
+    private let pageSize = CGSize(width: 595.2, height: 841.8) // A4
+
+    init(month: Int, year: Int, pageNumber: Int = 1, totalPages: Int = 1, daysOnThisPage: [Date] = []) {
+        self.month = month
+        self.year = year
+        self.pageNumber = pageNumber
+        self.totalPages = totalPages
+        self.daysOnThisPage = daysOnThisPage
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Professional header
+            reportHeader
+
+            Divider().background(JohoColors.black)
+
+            // Data table
+            VStack(alignment: .leading, spacing: 0) {
+                // Table header
+                tableHeader
+
+                // Daily rows
+                ForEach(daysOnThisPage, id: \.self) { date in
+                    dailyDataRow(for: date)
+                    Divider().background(JohoColors.black.opacity(0.2))
+                }
+
+                // Show totals on last page
+                if pageNumber == totalPages {
+                    monthTotalsRow
+                }
+            }
+
+            Spacer(minLength: 8)
+
+            // Footer
+            reportFooter
+        }
+        .padding(24)
+        .frame(width: pageSize.width, height: pageSize.height)
+        .background(JohoColors.white)
+    }
+
+    // MARK: - Header
+
+    private var reportHeader: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("MONTHLY ACTIVITY REPORT")
+                        .font(.system(size: 10, weight: .semibold, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .tracking(2)
+
+                    Text("\(monthName) \(String(year))")
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black)
+                }
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("Generated: \(formattedGenerationDate)")
+                        .font(.system(size: 9, weight: .medium, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+
+                    Text("Onsen Planner")
+                        .font(.system(size: 9, weight: .semibold, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                }
+            }
+        }
+        .padding(.bottom, 12)
+    }
+
+    private var monthName: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM"
+        let components = DateComponents(year: year, month: month, day: 1)
+        if let date = calendar.date(from: components) {
+            return formatter.string(from: date)
+        }
+        return "Month \(month)"
+    }
+
+    // MARK: - Table Header
+
+    private var tableHeader: some View {
+        HStack(spacing: 0) {
+            Text("DATE")
+                .frame(width: 80, alignment: .leading)
+            Text("HOLIDAYS/EVENTS")
+                .frame(width: 130, alignment: .leading)
+            Text("NOTES")
+                .frame(width: 160, alignment: .leading)
+            Text("EXPENSES")
+                .frame(minWidth: 100, alignment: .trailing)
+        }
+        .font(.system(size: 8, weight: .bold, design: .rounded))
+        .foregroundStyle(JohoColors.black.opacity(0.6))
+        .padding(.vertical, 6)
+        .padding(.horizontal, 8)
+        .background(JohoColors.black.opacity(0.05))
+    }
+
+    // MARK: - Daily Data Row
+
+    private func dailyDataRow(for date: Date) -> some View {
+        let dayNotes = notes.filter { calendar.isDate($0.day, inSameDayAs: date) }
+        let dayExpenses = expenses.filter { calendar.isDate($0.date, inSameDayAs: date) }
+        let dayHolidays = HolidayManager.cache[Calendar.current.startOfDay(for: date)] ?? []
+        let dayEvents = events.filter { calendar.isDate($0.targetDate, inSameDayAs: date) }
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "EEE d"
+
+        let isEmpty = dayNotes.isEmpty && dayExpenses.isEmpty && dayHolidays.isEmpty && dayEvents.isEmpty
+        let isWeekend = calendar.isDateInWeekend(date)
+
+        return HStack(alignment: .top, spacing: 0) {
+            // Date column
+            VStack(alignment: .leading, spacing: 1) {
+                Text(dateFormatter.string(from: date))
+                    .font(.system(size: 9, weight: .semibold, design: .rounded))
+                    .foregroundStyle(isWeekend ? JohoColors.black.opacity(0.5) : JohoColors.black)
+
+                if calendar.isDateInToday(date) {
+                    Text("TODAY")
+                        .font(.system(size: 6, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.white)
+                        .padding(.horizontal, 3)
+                        .padding(.vertical, 1)
+                        .background(JohoColors.black)
+                        .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
+                }
+            }
+            .frame(width: 80, alignment: .leading)
+
+            // Holidays/Events
+            VStack(alignment: .leading, spacing: 1) {
+                ForEach(dayHolidays.prefix(2), id: \.displayTitle) { holiday in
+                    HStack(spacing: 2) {
+                        Circle().fill(JohoColors.pink).frame(width: 4, height: 4)
+                        Text(holiday.displayTitle)
+                            .font(.system(size: 8, design: .rounded))
+                            .lineLimit(1)
+                    }
+                }
+                ForEach(dayEvents.prefix(2)) { event in
+                    HStack(spacing: 2) {
+                        Circle().fill(JohoColors.cyan).frame(width: 4, height: 4)
+                        Text(event.title)
+                            .font(.system(size: 8, design: .rounded))
+                            .lineLimit(1)
+                    }
+                }
+                if dayHolidays.isEmpty && dayEvents.isEmpty {
+                    Text("—")
+                        .font(.system(size: 8, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.2))
+                }
+            }
+            .foregroundStyle(JohoColors.black)
+            .frame(width: 130, alignment: .leading)
+
+            // Notes
+            VStack(alignment: .leading, spacing: 1) {
+                ForEach(dayNotes.prefix(2)) { note in
+                    HStack(spacing: 2) {
+                        Circle().fill(JohoColors.yellow).frame(width: 4, height: 4)
+                        Text(note.content.prefix(35) + (note.content.count > 35 ? "..." : ""))
+                            .font(.system(size: 8, design: .rounded))
+                            .lineLimit(1)
+                    }
+                }
+                if dayNotes.count > 2 {
+                    Text("+\(dayNotes.count - 2) more")
+                        .font(.system(size: 7, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.4))
+                }
+                if dayNotes.isEmpty {
+                    Text("—")
+                        .font(.system(size: 8, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.2))
+                }
+            }
+            .foregroundStyle(JohoColors.black)
+            .frame(width: 160, alignment: .leading)
+
+            // Expenses
+            VStack(alignment: .trailing, spacing: 1) {
+                let dayTotal = dayExpenses.reduce(0) { $0 + $1.amount }
+                if !dayExpenses.isEmpty {
+                    Text("\(dayExpenses.count) item\(dayExpenses.count == 1 ? "" : "s")")
+                        .font(.system(size: 7, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                    Text(formatCurrency(dayTotal, currency: dayExpenses.first?.currency ?? "SEK"))
+                        .font(.system(size: 9, weight: .semibold, design: .rounded))
+                        .foregroundStyle(JohoColors.green)
+                } else {
+                    Text("—")
+                        .font(.system(size: 8, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.2))
+                }
+            }
+            .frame(minWidth: 100, alignment: .trailing)
+        }
+        .padding(.vertical, 5)
+        .padding(.horizontal, 8)
+        .background(
+            isEmpty ? (isWeekend ? JohoColors.black.opacity(0.02) : Color.clear) :
+            JohoColors.yellow.opacity(0.05)
+        )
+    }
+
+    // MARK: - Month Totals
+
+    private var monthTotalsRow: some View {
+        let allMonthDates = Self.getAllMonthDates(month: month, year: year)
+        let monthNotes = notes.filter { note in allMonthDates.contains { calendar.isDate($0, inSameDayAs: note.day) } }
+        let monthExpenses = expenses.filter { expense in allMonthDates.contains { calendar.isDate($0, inSameDayAs: expense.date) } }
+        let totalExpenses = monthExpenses.reduce(0) { $0 + $1.amount }
+
+        var holidayCount = 0
+        for date in allMonthDates {
+            if let holidays = HolidayManager.cache[Calendar.current.startOfDay(for: date)] {
+                holidayCount += holidays.count
+            }
+        }
+        let eventCount = events.filter { event in allMonthDates.contains { calendar.isDate($0, inSameDayAs: event.targetDate) } }.count
+
+        return HStack(spacing: 0) {
+            Text("MONTH TOTALS")
+                .font(.system(size: 9, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoColors.black)
+                .frame(width: 80, alignment: .leading)
+
+            Text("\(holidayCount + eventCount) holidays/events")
+                .font(.system(size: 9, weight: .medium, design: .rounded))
+                .foregroundStyle(JohoColors.black.opacity(0.7))
+                .frame(width: 130, alignment: .leading)
+
+            Text("\(monthNotes.count) notes")
+                .font(.system(size: 9, weight: .medium, design: .rounded))
+                .foregroundStyle(JohoColors.black.opacity(0.7))
+                .frame(width: 160, alignment: .leading)
+
+            VStack(alignment: .trailing, spacing: 2) {
+                Text("\(monthExpenses.count) expenses")
+                    .font(.system(size: 8, design: .rounded))
+                    .foregroundStyle(JohoColors.black.opacity(0.5))
+                Text(formatCurrency(totalExpenses, currency: monthExpenses.first?.currency ?? "SEK"))
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.green)
+            }
+            .frame(minWidth: 100, alignment: .trailing)
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 8)
+        .background(JohoColors.black.opacity(0.08))
+    }
+
+    // MARK: - Footer
+
+    private var reportFooter: some View {
+        HStack {
+            Text("Confidential - For authorized use only")
+                .font(.system(size: 8, design: .rounded))
+                .foregroundStyle(JohoColors.black.opacity(0.4))
+
+            Spacer()
+
+            Text("Page \(pageNumber) of \(totalPages)")
+                .font(.system(size: 8, weight: .medium, design: .rounded))
+                .foregroundStyle(JohoColors.black.opacity(0.5))
+        }
+        .padding(.top, 8)
+    }
+
+    // MARK: - Helpers
+
+    private var formattedGenerationDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMM yyyy, HH:mm"
+        return formatter.string(from: Date())
+    }
+
+    private func formatCurrency(_ amount: Double, currency: String) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = currency
+        formatter.maximumFractionDigits = 2
+        return formatter.string(from: NSNumber(value: amount)) ?? "\(amount) \(currency)"
+    }
+
+    static func getAllMonthDates(month: Int, year: Int) -> [Date] {
+        let calendar = Calendar.iso8601
+        var components = DateComponents(year: year, month: month, day: 1)
+        guard let startOfMonth = calendar.date(from: components) else { return [] }
+
+        let range = calendar.range(of: .day, in: .month, for: startOfMonth) ?? 1..<32
+        return range.compactMap { day in
+            components.day = day
+            return calendar.date(from: components)
+        }
     }
 }

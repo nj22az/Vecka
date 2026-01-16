@@ -140,7 +140,7 @@ struct SimplePDFExportView: View {
 
 // MARK: - Export Context
 
-enum PDFExportContext {
+enum PDFExportContext: Identifiable {
     case summary
     case day(Date)
     case week(weekNumber: Int, year: Int)
@@ -149,6 +149,19 @@ enum PDFExportContext {
     case expenseReportWeek(weekNumber: Int, year: Int, baseCurrency: String)
     case expenseReportMonth(month: Int, year: Int, baseCurrency: String)
     case expenseReportTrip(trip: TravelTrip, baseCurrency: String)
+
+    var id: String {
+        switch self {
+        case .summary: return "summary"
+        case .day(let date): return "day-\(date.timeIntervalSince1970)"
+        case .week(let week, let year): return "week-\(week)-\(year)"
+        case .month(let month, let year): return "month-\(month)-\(year)"
+        case .weekSummary(let week, let year, _): return "weekSummary-\(week)-\(year)"
+        case .expenseReportWeek(let week, let year, _): return "expenseWeek-\(week)-\(year)"
+        case .expenseReportMonth(let month, let year, _): return "expenseMonth-\(month)-\(year)"
+        case .expenseReportTrip(let trip, _): return "expenseTrip-\(trip.id)"
+        }
+    }
 
     var icon: String {
         switch self {
@@ -191,9 +204,9 @@ enum PDFExportContext {
         case .day:
             return "Daily notes, events, and activities"
         case .week:
-            return "7 days with full details"
+            return "All 7 days with full activity details"
         case .month:
-            return "Complete month overview"
+            return "All days with full activity details"
         case .weekSummary:
             return "Compact single-page week overview"
         case .expenseReportWeek:
@@ -212,16 +225,9 @@ enum PDFExportContext {
         case .day:
             return "1 page"
         case .week:
-            return "7 pages (one per day)"
-        case .month(let month, let year):
-            let calendar = Calendar.iso8601
-            let dateComponents = DateComponents(year: year, month: month, day: 1)
-            guard let date = calendar.date(from: dateComponents),
-                  let range = calendar.range(of: .day, in: .month, for: date) else {
-                return "~30 pages (one per day)"
-            }
-            let daysInMonth = range.count
-            return "\(daysInMonth) pages (one per day)"
+            return "1 page (audit report)"
+        case .month:
+            return "2-3 pages (audit report)"
         case .weekSummary:
             return "1 page (compact summary)"
         case .expenseReportWeek, .expenseReportMonth, .expenseReportTrip:
