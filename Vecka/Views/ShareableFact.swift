@@ -164,9 +164,8 @@ struct ShareableFactCard: View {
             .background(JohoColors.white)
         }
         .background(JohoColors.white)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
+            Rectangle()
                 .strokeBorder(JohoColors.black, lineWidth: 3)
         )
     }
