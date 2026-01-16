@@ -8,6 +8,11 @@ import Foundation
 struct HolidayRegionSelection: RawRepresentable, Equatable, Hashable, Sendable {
     private(set) var regions: [String]
 
+    // MARK: - Nordic Unified Region
+    /// 情報デザイン: "NORDIC" expands to Sweden, Norway, Denmark, Finland
+    static let nordicCountries = ["SE", "NO", "DK", "FI"]
+    static let nordicCode = "NORDIC"
+
     init(regions: [String]) {
         self.regions = Self.normalized(regions)
     }
@@ -38,6 +43,25 @@ struct HolidayRegionSelection: RawRepresentable, Equatable, Hashable, Sendable {
         }
 
         return output
+    }
+
+    /// Expands unified regions (like NORDIC) to their component countries
+    /// Use this when querying holidays or facts from the database
+    var expandedRegions: [String] {
+        var result: [String] = []
+        for region in regions {
+            if region == Self.nordicCode {
+                result.append(contentsOf: Self.nordicCountries)
+            } else {
+                result.append(region)
+            }
+        }
+        return result
+    }
+
+    /// Check if Nordic is selected
+    var containsNordic: Bool {
+        regions.contains(Self.nordicCode)
     }
 
     var primaryRegion: String? {

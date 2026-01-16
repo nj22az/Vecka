@@ -32,9 +32,11 @@ struct RandomFact: Identifiable, Equatable {
         case "VN": return "Vietnam"
         case "US": return "United States"
         case "UK": return "United Kingdom"
+        case "GB": return "United Kingdom"
         case "NO": return "Norway"
         case "DK": return "Denmark"
         case "FI": return "Finland"
+        case "NORDIC": return "Nordic"
         case "XX": return "Fun Fact"
         case "Calendar": return "Calendar"
         default: return source
@@ -53,10 +55,24 @@ final class RandomFactProvider: ObservableObject {
     private var usedFactIDs: Set<String> = []
     private let easterEggChance: Double = 0  // 情報デザイン: Disabled - facts must be understandable at a glance
 
-    init(context: ModelContext, selectedRegions: [String] = ["SE", "VN", "UK", "NO", "DK", "FI"], date: Date = Date()) {
+    init(context: ModelContext, selectedRegions: [String] = ["NORDIC", "VN", "UK"], date: Date = Date()) {
         self.context = context
-        self.selectedRegions = selectedRegions
+        // 情報デザイン: Expand NORDIC to individual country codes for database queries
+        self.selectedRegions = Self.expandRegions(selectedRegions)
         self.today = date
+    }
+
+    /// Expands unified regions (like NORDIC) to their component countries
+    private static func expandRegions(_ regions: [String]) -> [String] {
+        var result: [String] = []
+        for region in regions {
+            if region == "NORDIC" {
+                result.append(contentsOf: HolidayRegionSelection.nordicCountries)
+            } else {
+                result.append(region)
+            }
+        }
+        return result
     }
 
     // MARK: - Public API

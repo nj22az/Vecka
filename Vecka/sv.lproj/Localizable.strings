@@ -113,7 +113,11 @@
 
 /* Settings - Region */
 "settings.region" = "Region";
+"region.nordic" = "Norden";
 "region.sweden" = "Sverige";
+"region.norway" = "Norge";
+"region.denmark" = "Danmark";
+"region.finland" = "Finland";
 "region.us" = "USA";
 "region.vietnam" = "Vietnam";
 "region.germany" = "Tyskland";

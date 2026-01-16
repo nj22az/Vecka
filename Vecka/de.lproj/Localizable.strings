@@ -320,7 +320,11 @@
 
 /* Settings - Region */
 "settings.region" = "Region";
+"region.nordic" = "Nordische Länder";
 "region.sweden" = "Schweden";
+"region.norway" = "Norwegen";
+"region.denmark" = "Dänemark";
+"region.finland" = "Finnland";
 "region.us" = "Vereinigte Staaten";
 "region.vietnam" = "Vietnam";
 "region.germany" = "Deutschland";

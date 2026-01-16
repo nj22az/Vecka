@@ -1565,7 +1565,7 @@ struct RegionSelectionView: View {
 
     static let allRegions: [RegionOption] = [
         // Europe
-        .init(code: "SE", titleKey: "region.sweden", continent: .europe),
+        .init(code: "NORDIC", titleKey: "region.nordic", continent: .europe),  // 情報デザイン: Unified Nordic (SE, NO, DK, FI)
         .init(code: "DE", titleKey: "region.germany", continent: .europe),
         .init(code: "GB", titleKey: "region.uk", continent: .europe),
         .init(code: "FR", titleKey: "region.france", continent: .europe),

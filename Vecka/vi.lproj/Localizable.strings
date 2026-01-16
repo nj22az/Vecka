@@ -219,7 +219,11 @@
 
 /* Settings - Region */
 "settings.region" = "Khu vực";
+"region.nordic" = "Bắc Âu";
 "region.sweden" = "Thụy Điển";
+"region.norway" = "Na Uy";
+"region.denmark" = "Đan Mạch";
+"region.finland" = "Phần Lan";
 "region.us" = "Hoa Kỳ";
 "region.vietnam" = "Việt Nam";
 "region.germany" = "Đức";

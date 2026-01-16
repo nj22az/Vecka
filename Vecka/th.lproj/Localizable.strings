@@ -219,7 +219,11 @@
 
 /* Settings - Region */
 "settings.region" = "ภูมิภาค";
+"region.nordic" = "นอร์ดิก";
 "region.sweden" = "สวีเดน";
+"region.norway" = "นอร์เวย์";
+"region.denmark" = "เดนมาร์ก";
+"region.finland" = "ฟินแลนด์";
 "region.us" = "สหรัฐอเมริกา";
 "region.vietnam" = "เวียดนาม";
 "region.germany" = "เยอรมนี";

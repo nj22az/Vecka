@@ -214,7 +214,11 @@
 
 /* Settings - Region */
 "settings.region" = "地区";
+"region.nordic" = "北欧";
 "region.sweden" = "瑞典";
+"region.norway" = "挪威";
+"region.denmark" = "丹麦";
+"region.finland" = "芬兰";
 "region.us" = "美国";
 "region.vietnam" = "越南";
 "region.germany" = "德国";

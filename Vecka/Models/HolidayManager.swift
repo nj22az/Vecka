@@ -401,10 +401,12 @@ class HolidayManager {
         // Check Settings
         let showHolidays = (UserDefaults.standard.object(forKey: "showHolidays") as? Bool) ?? true
         let selectedRegions = HolidayRegionSelection(rawValue: UserDefaults.standard.string(forKey: "holidayRegions") ?? "")
-        var regions = selectedRegions.regions
+        // 情報デザイン: Use expandedRegions to handle NORDIC → [SE, NO, DK, FI]
+        var regions = selectedRegions.expandedRegions
         if regions.isEmpty {
-            let legacy = UserDefaults.standard.string(forKey: "holidayRegion") ?? "SE"
-            regions = HolidayRegionSelection.normalized([legacy], maxCount: 2)
+            let legacy = UserDefaults.standard.string(forKey: "holidayRegion") ?? "NORDIC"
+            let legacySelection = HolidayRegionSelection(regions: [legacy])
+            regions = legacySelection.expandedRegions
         }
         
         if !showHolidays {

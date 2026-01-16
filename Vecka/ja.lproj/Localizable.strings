@@ -110,7 +110,11 @@
 
 /* Settings - Region */
 "settings.region" = "地域";
+"region.nordic" = "北欧";
 "region.sweden" = "スウェーデン";
+"region.norway" = "ノルウェー";
+"region.denmark" = "デンマーク";
+"region.finland" = "フィンランド";
 "region.us" = "アメリカ合衆国";
 "region.vietnam" = "ベトナム";
 "region.germany" = "ドイツ";

@@ -1344,6 +1344,34 @@ struct CountryColorScheme {
                 borderColor: JohoColors.black,
                 code: "SWE"
             )
+        case "NORDIC": // Nordic: Dark blue pill, white text (Nordic Council colors)
+            return CountryColorScheme(
+                backgroundColor: Color(hex: "003087"),
+                textColor: Color(hex: "FFFFFF"),
+                borderColor: JohoColors.black,
+                code: "NORD"
+            )
+        case "NO": // Norway: Red pill, white text (Norwegian flag)
+            return CountryColorScheme(
+                backgroundColor: Color(hex: "BA0C2F"),
+                textColor: Color(hex: "FFFFFF"),
+                borderColor: Color(hex: "00205B"),
+                code: "NOR"
+            )
+        case "DK": // Denmark: Red pill, white text (Dannebrog)
+            return CountryColorScheme(
+                backgroundColor: Color(hex: "C8102E"),
+                textColor: Color(hex: "FFFFFF"),
+                borderColor: JohoColors.black,
+                code: "DK"
+            )
+        case "FI": // Finland: Blue pill, white text (Siniristilippu)
+            return CountryColorScheme(
+                backgroundColor: Color(hex: "003580"),
+                textColor: Color(hex: "FFFFFF"),
+                borderColor: JohoColors.black,
+                code: "FI"
+            )
         case "US": // USA: Navy blue pill, white text, black border
             return CountryColorScheme(
                 backgroundColor: Color(hex: "3C3B6E"),

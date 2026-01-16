@@ -554,7 +554,7 @@ struct LandingPageView: View {
         .onAppear {
             // Initialize fact provider if needed
             if factProvider == nil {
-                factProvider = RandomFactProvider(context: modelContext, selectedRegions: ["SE", "VN", "UK", "NO", "DK", "FI"])
+                factProvider = RandomFactProvider(context: modelContext, selectedRegions: ["NORDIC", "VN", "UK"])
             }
             // 情報デザイン: Always refresh facts when landing page appears (tab switch, back navigation)
             loadRandomFacts()
