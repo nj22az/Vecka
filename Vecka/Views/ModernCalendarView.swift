@@ -171,6 +171,7 @@ struct ModernCalendarView: View {
 
     // Context-aware add sheets (triggered from sidebar +)
     @State private var showExpenseEditor = false
+    @State private var showExpenseListSheet = false
 
     // MARK: - Helper for sidebar add action (extracted for type checking)
     // 情報デザイン: Skip intermediate menu, go directly to unified entry form
@@ -429,6 +430,12 @@ struct ModernCalendarView: View {
             ExpenseEntryView()
                 .presentationCornerRadius(20)
         }
+        .sheet(isPresented: $showExpenseListSheet) {
+            NavigationStack {
+                ExpenseListView()
+            }
+            .presentationCornerRadius(20)
+        }
         // 情報デザイン: Unified Entry sheet (Note/Trip/Expense)
         .sheet(isPresented: $showUnifiedEntry) {
             JohoUnifiedEntrySheet(selectedDate: selectedDate)
@@ -599,7 +606,9 @@ struct ModernCalendarView: View {
                         dayNotesDetent = .large
                         showDayNotesSheet = true
                     },
-                    onOpenExpenses: nil,
+                    onOpenExpenses: { _ in
+                        showExpenseListSheet = true
+                    },
                     onAddEntry: {
                         // 情報デザイン: Opens unified entry form directly (5 types)
                         noteEditorDate = dashboardDate
@@ -972,15 +981,23 @@ struct ModernCalendarView: View {
 
     /// 情報デザイン: Check all special day types for calendar indicators
     private func hasDataForDay(_ date: Date) -> DayDataCheck {
-        let day = Calendar.iso8601.startOfDay(for: date)
+        // 情報デザイン: Use Calendar.current for holiday cache lookup (matches HolidayManager key format)
+        let day = Calendar.current.startOfDay(for: date)
 
         var check = DayDataCheck()
 
         // Check holidays and observances from cache
-        if let cachedHolidays = holidayManager.holidayCache[day] {
+        // 情報デザイン: Pre-compute holiday info to avoid accessing computed properties during sheet presentation
+        // Access HolidayManager.shared directly (same pattern as CalendarDay computed properties)
+        if let cachedHolidays = HolidayManager.shared.holidayCache[day] {
             for holiday in cachedHolidays {
                 if holiday.isBankHoliday {
                     check.hasHoliday = true
+                    // Capture first bank holiday's info for the detail sheet
+                    if check.holidayName == nil {
+                        check.holidayName = holiday.displayTitle
+                        check.holidaySymbolName = holiday.symbolName
+                    }
                 } else {
                     check.hasObservance = true
                 }
@@ -990,13 +1007,13 @@ struct ModernCalendarView: View {
         // Check notes
         check.hasNote = notes.contains { $0.day == day }
 
-        // Check expenses
-        check.hasExpense = expenses.contains { Calendar.iso8601.startOfDay(for: $0.date) == day }
+        // Check expenses (use Calendar.current for consistency with day normalization)
+        check.hasExpense = expenses.contains { Calendar.current.startOfDay(for: $0.date) == day }
 
         // Check trips (day falls within trip range) and determine position
         for trip in trips {
-            let tripStart = Calendar.iso8601.startOfDay(for: trip.startDate)
-            let tripEnd = Calendar.iso8601.startOfDay(for: trip.endDate)
+            let tripStart = Calendar.current.startOfDay(for: trip.startDate)
+            let tripEnd = Calendar.current.startOfDay(for: trip.endDate)
 
             if day >= tripStart && day <= tripEnd {
                 check.hasTrip = true
@@ -1020,7 +1037,7 @@ struct ModernCalendarView: View {
         }
 
         // Check birthdays from contacts (match month/day regardless of year)
-        let calendar = Calendar.iso8601
+        let calendar = Calendar.current
         let month = calendar.component(.month, from: day)
         let dayOfMonth = calendar.component(.day, from: day)
 
@@ -1244,7 +1261,27 @@ struct ModernCalendarView: View {
 
     /// 情報デザイン: Long-press opens day detail sheet
     private func handleDayLongPress(_ day: CalendarDay) {
-        dayDetailDataCheck = hasDataForDay(day.date)
+        // Debug logging
+        Log.d("handleDayLongPress: day.date = \(day.date)")
+        Log.d("handleDayLongPress: day.isHoliday = \(day.isHoliday)")
+        Log.d("handleDayLongPress: day.holidayName = \(day.holidayName ?? "nil")")
+
+        // Get base data check from hasDataForDay (expenses, notes, trips, events, birthdays)
+        var dataCheck = hasDataForDay(day.date)
+
+        // 情報デザイン: Use CalendarDay's computed properties for holiday info
+        // These are known to work (they show the red star) and are thread-safe
+        if day.isHoliday {
+            dataCheck.hasHoliday = true
+            dataCheck.holidayName = day.holidayName
+            dataCheck.holidaySymbolName = day.holidaySymbolName
+            Log.d("handleDayLongPress: Set hasHoliday=true, name=\(dataCheck.holidayName ?? "nil")")
+        } else if day.isSignificant {
+            dataCheck.hasObservance = true
+            Log.d("handleDayLongPress: Set hasObservance=true")
+        }
+
+        dayDetailDataCheck = dataCheck
         dayDetailDay = day  // This triggers the sheet to show via .sheet(item:)
     }
 

@@ -310,16 +310,14 @@ struct CalendarWeek: Identifiable, Hashable {
 
 /// Represents a single day cell in the calendar grid
 struct CalendarDay: Identifiable, Hashable {
+    /// Thread-safe ID generation using Calendar components instead of DateFormatter
+    /// DateFormatter is NOT thread-safe and SwiftUI may access id from background threads
     var id: String {
-        return Self.idFormatter.string(from: date)
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month, .day], from: date)
+        return "\(components.year ?? 0)-\(components.month ?? 0)-\(components.day ?? 0)"
     }
-    
-    // Optimization: Reuse formatter
-    private static let idFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd"
-        return f
-    }()
+
     let date: Date
     let dayNumber: Int
     let isInCurrentMonth: Bool
@@ -327,25 +325,28 @@ struct CalendarDay: Identifiable, Hashable {
     let noteColor: String? // Added for color-coded note indicator
 
     /// Is this day a holiday (Bank Holiday)?
-    @MainActor var isHoliday: Bool {
+    /// Note: HolidayManager.holidayCache is nonisolated and thread-safe, so no @MainActor needed
+    var isHoliday: Bool {
         let normalized = Calendar.current.startOfDay(for: date)
         return (HolidayManager.shared.holidayCache[normalized] ?? []).contains(where: { $0.isBankHoliday })
     }
 
     /// Name of the holiday (if any)
-    @MainActor var holidayName: String? {
+    /// Note: HolidayManager.holidayCache is nonisolated and thread-safe, so no @MainActor needed
+    var holidayName: String? {
         let normalized = Calendar.current.startOfDay(for: date)
         return HolidayManager.shared.holidayCache[normalized]?.first?.displayTitle
     }
 
     /// SF Symbol for the holiday (if any)
-    @MainActor var holidaySymbolName: String? {
+    /// Note: HolidayManager.holidayCache is nonisolated and thread-safe, so no @MainActor needed
+    var holidaySymbolName: String? {
         let normalized = Calendar.current.startOfDay(for: date)
         return HolidayManager.shared.holidayCache[normalized]?.first?.symbolName
     }
 
     /// Is this a significant day (Named but not Red)?
-    @MainActor var isSignificant: Bool {
+    var isSignificant: Bool {
         return holidayName != nil && !isHoliday
     }
 

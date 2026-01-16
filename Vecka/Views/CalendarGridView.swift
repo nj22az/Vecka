@@ -74,6 +74,11 @@ struct DayDataCheck {
     /// 情報デザイン: Trip span position for edge indicators
     var tripPosition: TripDayPosition?
 
+    /// 情報デザイン: Pre-computed holiday info for DayDetailSheet
+    /// Avoids accessing HolidayManager computed properties during sheet presentation
+    var holidayName: String?
+    var holidaySymbolName: String?
+
     static let empty = DayDataCheck()
 }
 

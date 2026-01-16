@@ -75,11 +75,12 @@ struct DayDetailSheet: View {
                     .foregroundStyle(JohoColors.black)
 
                 // Status pills
+                // 情報デザイン: Use pre-computed dataCheck to avoid accessing HolidayManager
                 HStack(spacing: JohoDimensions.spacingSM) {
                     if day.isToday {
                         JohoPill(text: "TODAY", style: .coloredInverted(JohoColors.yellow), size: .small)
                     }
-                    if day.isHoliday {
+                    if dataCheck?.hasHoliday == true {
                         JohoPill(text: "HOLIDAY", style: .coloredInverted(JohoColors.red), size: .small)
                     }
                 }
@@ -125,22 +126,22 @@ struct DayDetailSheet: View {
     // MARK: - Content Sections
 
     private var hasAnyContent: Bool {
-        guard let check = dataCheck else { return day.holidayName != nil }
+        guard let check = dataCheck else { return false }
         return check.hasHoliday || check.hasObservance || check.hasEvent ||
-               check.hasBirthday || check.hasNote || check.hasTrip || check.hasExpense ||
-               day.holidayName != nil
+               check.hasBirthday || check.hasNote || check.hasTrip || check.hasExpense
     }
 
     @ViewBuilder
     private var contentSections: some View {
         VStack(spacing: JohoDimensions.spacingMD) {
-            // Holiday from CalendarDay (system holiday)
-            if let holidayName = day.holidayName {
+            // Holiday from pre-computed dataCheck (avoids accessing HolidayManager during sheet render)
+            // 情報デザイン: Holiday info is captured at long-press time for thread safety
+            if let check = dataCheck, check.hasHoliday, let holidayName = check.holidayName {
                 detailRow(
                     title: holidayName,
                     subtitle: "Public Holiday",
                     color: JohoColors.red,
-                    icon: day.holidaySymbolName ?? "star.fill",
+                    icon: check.holidaySymbolName ?? "star.fill",
                     isSystem: true
                 )
             }
