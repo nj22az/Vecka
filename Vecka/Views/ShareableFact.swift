@@ -54,120 +54,133 @@ struct ShareableFactSnapshot: Transferable {
 struct ShareableFactCard: View {
     let fact: RandomFact
 
+    private let cornerRadius: CGFloat = 16
+
+    private var cardShape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+    }
+
     var body: some View {
-        VStack(spacing: 0) {
-            // ═══════════════════════════════════════════════════════════════
-            // HEADER: App branding + icon
-            // ═══════════════════════════════════════════════════════════════
-            HStack(spacing: 0) {
-                // LEFT: App branding
-                HStack(spacing: JohoDimensions.spacingSM) {
-                    Image(systemName: "calendar.badge.clock")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+        // 情報デザイン: ZStack ensures white background fills corners before content
+        ZStack {
+            // Layer 1: Solid white background (fills squircle corners)
+            cardShape
+                .fill(JohoColors.white)
 
-                    Text("ONSEN PLANNER")
-                        .font(.system(size: 12, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
-                }
-                .padding(.leading, JohoDimensions.spacingMD)
+            // Layer 2: Content compartments
+            VStack(spacing: 0) {
+                // ═══════════════════════════════════════════════════════════════
+                // HEADER: App branding + icon
+                // ═══════════════════════════════════════════════════════════════
+                HStack(spacing: 0) {
+                    // LEFT: App branding
+                    HStack(spacing: JohoDimensions.spacingSM) {
+                        Image(systemName: "calendar.badge.clock")
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
 
-                Spacer()
-
-                // WALL
-                Rectangle()
-                    .fill(JohoColors.black)
-                    .frame(width: 1.5)
-                    .frame(maxHeight: .infinity)
-
-                // RIGHT: Fact icon
-                Image(systemName: fact.icon ?? "lightbulb.fill")
-                    .font(.system(size: 18, weight: .bold, design: .rounded))
-                    .foregroundStyle(fact.color)
-                    .frame(width: 48)
-                    .frame(maxHeight: .infinity)
-            }
-            .frame(height: 40)
-            .background(fact.color.opacity(0.5))
-
-            // Divider
-            Rectangle()
-                .fill(JohoColors.black)
-                .frame(height: 2)
-
-            // ═══════════════════════════════════════════════════════════════
-            // MAIN CONTENT: Large icon + fact text
-            // ═══════════════════════════════════════════════════════════════
-            HStack(spacing: 0) {
-                // LEFT: Large icon
-                VStack {
-                    Image(systemName: fact.icon ?? "lightbulb.fill")
-                        .font(.system(size: 48, weight: .bold, design: .rounded))
-                        .foregroundStyle(fact.color)
-                }
-                .frame(width: 100)
-                .frame(maxHeight: .infinity)
-
-                // WALL
-                Rectangle()
-                    .fill(JohoColors.black)
-                    .frame(width: 1.5)
-                    .frame(maxHeight: .infinity)
-
-                // RIGHT: Fact text
-                VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                    Text(fact.text)
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
-                        .lineLimit(4)
-                        .multilineTextAlignment(.leading)
-
-                    if !fact.explanation.isEmpty {
-                        Text(fact.explanation)
-                            .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
-                            .lineLimit(3)
-                            .multilineTextAlignment(.leading)
+                        Text("ONSEN PLANNER")
+                            .font(.system(size: 12, weight: .black, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
                     }
+                    .padding(.leading, JohoDimensions.spacingMD)
+
+                    Spacer()
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // RIGHT: Fact icon
+                    Image(systemName: fact.icon ?? "lightbulb.fill")
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .foregroundStyle(fact.color)
+                        .frame(width: 48)
+                        .frame(maxHeight: .infinity)
                 }
-                .padding(JohoDimensions.spacingMD)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 40)
+                .background(fact.color.opacity(0.5))
+
+                // Divider
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 2)
+
+                // ═══════════════════════════════════════════════════════════════
+                // MAIN CONTENT: Large icon + fact text
+                // ═══════════════════════════════════════════════════════════════
+                HStack(spacing: 0) {
+                    // LEFT: Large icon
+                    VStack {
+                        Image(systemName: fact.icon ?? "lightbulb.fill")
+                            .font(.system(size: 48, weight: .bold, design: .rounded))
+                            .foregroundStyle(fact.color)
+                    }
+                    .frame(width: 100)
+                    .frame(maxHeight: .infinity)
+
+                    // WALL
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // RIGHT: Fact text
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        Text(fact.text)
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
+                            .lineLimit(4)
+                            .multilineTextAlignment(.leading)
+
+                        if !fact.explanation.isEmpty {
+                            Text(fact.explanation)
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
+                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                                .lineLimit(3)
+                                .multilineTextAlignment(.leading)
+                        }
+                    }
+                    .padding(JohoDimensions.spacingMD)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .frame(height: 140)
+                .background(fact.color.opacity(0.15))
+
+                // Divider
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 2)
+
+                // ═══════════════════════════════════════════════════════════════
+                // FOOTER: Random Facts branding with source country
+                // ═══════════════════════════════════════════════════════════════
+                HStack {
+                    Text("RANDOM FACTS")
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .tracking(1)
+
+                    Spacer()
+
+                    // Source country/category
+                    Text(fact.displaySource.uppercased())
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black.opacity(0.4))
+                        .tracking(0.5)
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+                .frame(height: 32)
             }
-            .frame(height: 140)
-            .background(fact.color.opacity(0.15))
+            .clipShape(cardShape)
 
-            // Divider
-            Rectangle()
-                .fill(JohoColors.black)
-                .frame(height: 2)
-
-            // ═══════════════════════════════════════════════════════════════
-            // FOOTER: Random Facts branding with source country
-            // ═══════════════════════════════════════════════════════════════
-            HStack {
-                Text("RANDOM FACTS")
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
-                    .tracking(1)
-
-                Spacer()
-
-                // Source country/category
-                Text(fact.displaySource.uppercased())
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.4))
-                    .tracking(0.5)
-            }
-            .padding(.horizontal, JohoDimensions.spacingMD)
-            .padding(.vertical, JohoDimensions.spacingSM)
-            .frame(height: 32)
-            .background(JohoColors.white)
-        }
-        .background(JohoColors.white)
-        .overlay(
-            Rectangle()
+            // Layer 3: Border (strokeBorder keeps it inside the shape)
+            cardShape
                 .strokeBorder(JohoColors.black, lineWidth: 3)
-        )
+        }
     }
 }
 
