@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onsen Planner - A Custom Design System for iOS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <meta name="description" content="Onsen Planner - An iOS calendar app built on a custom design system inspired by Japanese Information Design. Coming Soon.">
+    <meta property="og:title" content="Onsen Planner - Coming Soon">
+    <meta property="og:description" content="A custom iOS design system inspired by Japanese Information Design.">
+    <meta property="og:image" content="screenshots/landing.png">
+</head>
+<body>
+    <div class="page">
+        <!-- Header Card -->
+        <header class="header-card">
+            <div class="header-row">
+                <div class="header-left">
+                    <!-- JohoMascot SVG - EXACT proportions from app -->
+                    <!-- 44px: eyeSize=5.3, eyeSpacing=9.7, eyeY=18.5, blush=11/33@25, mouth@27 -->
+                    <svg class="mascot-svg" viewBox="0 0 44 44" width="44" height="44">
+                        <rect x="1" y="1" width="42" height="42" rx="8" fill="#FFFFFF" stroke="#000000" stroke-width="1.5"/>
+                        <circle cx="14.5" cy="18.5" r="2.6" fill="#000000"/>
+                        <circle cx="29.5" cy="18.5" r="2.6" fill="#000000"/>
+                        <circle cx="11" cy="25" r="2.2" fill="#FECDD3" opacity="0.6"/>
+                        <circle cx="33" cy="25" r="2.2" fill="#FECDD3" opacity="0.6"/>
+                        <path d="M 16 27 Q 22 29 28 27" fill="none" stroke="#000000" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                    <span class="logo-text">ONSEN</span>
+                </div>
+                <div class="header-divider"></div>
+                <div class="header-right">
+                    <span class="status-badge">COMING SOON</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero-card">
+            <!-- Large mascot - EXACT proportions from JohoMascot -->
+            <div class="hero-mascot-container">
+                <svg class="hero-mascot-svg" viewBox="0 0 80 80" width="80" height="80">
+                    <rect x="2" y="2" width="76" height="76" rx="14" fill="#FFFFFF" stroke="#000000" stroke-width="2.5"/>
+                    <circle cx="26" cy="34" r="4.8" fill="#000000"/>
+                    <circle cx="54" cy="34" r="4.8" fill="#000000"/>
+                    <circle cx="20" cy="45" r="4" fill="#FECDD3" opacity="0.6"/>
+                    <circle cx="60" cy="45" r="4" fill="#FECDD3" opacity="0.6"/>
+                    <path d="M 29 50 Q 40 53 51 50" fill="none" stroke="#000000" stroke-width="3.2" stroke-linecap="round"/>
+                </svg>
+            </div>
+
+            <h1 class="hero-title">ONSEN PLANNER</h1>
+            <p class="hero-subtitle">Finally, a calendar that thinks in weeks.</p>
+
+            <p class="hero-description">
+                "What week is the meeting?" If you think this way, this app is for you.
+            </p>
+
+            <div class="feature-pills">
+                <span class="pill pill-yellow">Week Numbers</span>
+                <span class="pill pill-pink">Holidays</span>
+                <span class="pill pill-cyan">Events</span>
+                <span class="pill pill-orange">Trips</span>
+                <span class="pill pill-green">Expenses</span>
+                <span class="pill pill-purple">Contacts</span>
+            </div>
+        </section>
+
+        <!-- Retro Ad Image -->
+        <section class="ad-section">
+            <img src="image.png" alt="Achieve Balance with Onsen Planner" class="ad-image">
+        </section>
+
+        <!-- Why Onsen Section - App-style bento tiles with icons -->
+        <section class="why-section">
+            <div class="section-header">
+                <span class="marker">●</span>
+                <span class="section-title">WHY ONSEN?</span>
+            </div>
+
+            <div class="why-grid">
+                <!-- Week Numbers - Calendar icon -->
+                <div class="why-card why-yellow">
+                    <div class="why-icon">
+                        <svg viewBox="0 0 24 24" fill="#000000">
+                            <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
+                            <path d="M7 12h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2zm-8 4h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/>
+                        </svg>
+                    </div>
+                    <span class="why-quote">"Week 23?"</span>
+                    <span class="why-answer">ISO 8601 Standard</span>
+                </div>
+                <!-- Holidays - Globe icon -->
+                <div class="why-card why-pink">
+                    <div class="why-icon">
+                        <svg viewBox="0 0 24 24" fill="#000000">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                        </svg>
+                    </div>
+                    <span class="why-quote">Multiple Regions</span>
+                    <span class="why-answer">Global Holidays</span>
+                </div>
+                <!-- Events - Bell icon -->
+                <div class="why-card why-cyan">
+                    <div class="why-icon">
+                        <svg viewBox="0 0 24 24" fill="#000000">
+                            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+                        </svg>
+                    </div>
+                    <span class="why-quote">Home Screen</span>
+                    <span class="why-answer">Widgets Ready</span>
+                </div>
+                <!-- Special Days - Star icon -->
+                <div class="why-card why-green">
+                    <div class="why-icon">
+                        <svg viewBox="0 0 24 24" fill="#000000">
+                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                        </svg>
+                    </div>
+                    <span class="why-quote">Birthdays</span>
+                    <span class="why-answer">Never Forget</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Who Is It For - Punchy version -->
+        <section class="audience-card">
+            <div class="section-header">
+                <span class="marker">○</span>
+                <span class="section-title">BUILT FOR PEOPLE WHO...</span>
+            </div>
+            <div class="audience-list">
+                <span class="audience-tag">Think in week numbers</span>
+                <span class="audience-tag">Live between countries</span>
+                <span class="audience-tag">Hate cluttered apps</span>
+                <span class="audience-tag">Love good design</span>
+            </div>
+        </section>
+
+        <!-- Screenshots Bento -->
+        <section class="screenshots-section">
+            <div class="section-header">
+                <span class="marker">※</span>
+                <span class="section-title">IN ACTION</span>
+            </div>
+
+            <div class="bento">
+                <!-- Main Screenshot - Dashboard -->
+                <div class="bento-main">
+                    <div class="screenshot-card">
+                        <img src="screenshots/landing.png" alt="Onsen Dashboard" class="screenshot">
+                    </div>
+                    <div class="screenshot-info">
+                        <span class="screenshot-label">DASHBOARD</span>
+                        <p>Your day at a glance with bento-style widgets</p>
+                    </div>
+                </div>
+
+                <!-- Secondary Screenshots - Unique Features -->
+                <div class="bento-side">
+                    <div class="screenshot-card-sm">
+                        <img src="screenshots/star-page.png" alt="Special Days" class="screenshot">
+                        <span class="screenshot-label-sm">★ SPECIAL DAYS</span>
+                    </div>
+                    <div class="screenshot-card-sm">
+                        <img src="screenshots/calendar.png" alt="Week Calendar" class="screenshot">
+                        <span class="screenshot-label-sm">WEEK CALENDAR</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- What's Coming - App-style bento tiles (no borders, filled icons) -->
+        <section class="coming-section">
+            <div class="section-header">
+                <span class="marker">★</span>
+                <span class="section-title">FEATURES</span>
+            </div>
+
+            <div class="coming-grid">
+                <!-- Weeks - Calendar filled icon -->
+                <div class="coming-tile coming-yellow">
+                    <div class="coming-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
+                            <path d="M7 12h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2zm-8 4h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/>
+                        </svg>
+                    </div>
+                    <span class="coming-label">Weeks</span>
+                </div>
+                <!-- Holidays - Globe filled icon -->
+                <div class="coming-tile coming-pink">
+                    <div class="coming-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                        </svg>
+                    </div>
+                    <span class="coming-label">Holidays</span>
+                </div>
+                <!-- Special Days - Star filled icon -->
+                <div class="coming-tile coming-green">
+                    <div class="coming-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                        </svg>
+                    </div>
+                    <span class="coming-label">Special</span>
+                </div>
+                <!-- Widgets - Phone filled icon -->
+                <div class="coming-tile coming-cyan">
+                    <div class="coming-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/>
+                            <rect x="9" y="7" width="6" height="4" rx="1"/>
+                            <rect x="9" y="13" width="2" height="2" rx="0.5"/>
+                            <rect x="13" y="13" width="2" height="2" rx="0.5"/>
+                        </svg>
+                    </div>
+                    <span class="coming-label">Widgets</span>
+                </div>
+                <!-- Trips - Airplane filled icon -->
+                <div class="coming-tile coming-orange">
+                    <div class="coming-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
+                        </svg>
+                    </div>
+                    <span class="coming-label">Trips</span>
+                </div>
+                <!-- Contacts - People filled icon -->
+                <div class="coming-tile coming-purple">
+                    <div class="coming-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                        </svg>
+                    </div>
+                    <span class="coming-label">Contacts</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Design Philosophy - Card -->
+        <section class="design-mention">
+            <span class="design-mention-label">情報デザイン</span>
+            <span class="design-mention-text">No blur. No gradients.<br>Black borders. Solid colors.<br>Information, not decoration.</span>
+        </section>
+
+        <!-- Retro Ad 2 - Problem/Solution closer -->
+        <section class="ad-section ad-vertical">
+            <img src="image1.png" alt="Take Control with Onsen Planner" class="ad-image">
+        </section>
+
+        <!-- Updates Feed - Bento style -->
+        <section class="updates-section">
+            <div class="section-header">
+                <span class="marker">◉</span>
+                <span class="section-title">UPDATES</span>
+            </div>
+            <div class="updates-grid">
+                <!-- Add new updates here - newest first -->
+                <div class="update-tile update-yellow">
+                    <span class="update-date">2026-01-07</span>
+                    <span class="update-text">Website launched with 情報デザイン styling</span>
+                </div>
+                <div class="update-tile update-cyan">
+                    <span class="update-date">2026-01-06</span>
+                    <span class="update-text">Contacts redesigned with LINE-style actions</span>
+                </div>
+                <div class="update-tile update-pink">
+                    <span class="update-date">2026-01-05</span>
+                    <span class="update-text">12 holiday regions now supported</span>
+                </div>
+                <div class="update-tile update-green">
+                    <span class="update-date">2026-01-02</span>
+                    <span class="update-text">SwiftData migration complete</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Card -->
+        <section class="cta-card">
+            <div class="cta-mascot-container">
+                <svg class="cta-mascot-svg" viewBox="0 0 60 60" width="60" height="60">
+                    <rect x="2" y="2" width="56" height="56" rx="11" fill="#FFFFFF" stroke="#000000" stroke-width="2"/>
+                    <circle cx="20" cy="25" r="3.6" fill="#000000"/>
+                    <circle cx="40" cy="25" r="3.6" fill="#000000"/>
+                    <circle cx="15" cy="34" r="3" fill="#FECDD3" opacity="0.6"/>
+                    <circle cx="45" cy="34" r="3" fill="#FECDD3" opacity="0.6"/>
+                    <path d="M 22 37 Q 30 40 38 37" fill="none" stroke="#000000" stroke-width="2.4" stroke-linecap="round"/>
+                </svg>
+            </div>
+
+            <h2 class="cta-title">Coming to App Store</h2>
+            <p class="cta-subtitle">Follow development on GitHub</p>
+
+            <div class="tech-pills">
+                <span class="tech-pill">iOS 18+</span>
+                <span class="tech-pill">SwiftUI</span>
+                <span class="tech-pill">SwiftData</span>
+                <span class="tech-pill">WidgetKit</span>
+            </div>
+
+            <div class="social-links">
+                <a href="https://github.com/nj22az/Vecka" class="social-link github-link" target="_blank" rel="noopener">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    <span>Star on GitHub</span>
+                </a>
+                <a href="https://www.linkedin.com/in/nils-johansson-86744583/" class="social-link linkedin-link" target="_blank" rel="noopener">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                    </svg>
+                    <span>Connect</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <!-- Small mascot - EXACT proportions from JohoMascot -->
+            <!-- 32px: cornerRadius=5.8, eyeR=1.9@(11,13)/(21,13), blush=1.6@(8,18)/(24,18), mouth@20 -->
+            <svg class="footer-mascot-svg" viewBox="0 0 32 32" width="32" height="32">
+                <rect x="1" y="1" width="30" height="30" rx="6" fill="#FFFFFF" stroke="#000000" stroke-width="1.5"/>
+                <circle cx="11" cy="13" r="1.9" fill="#000000"/>
+                <circle cx="21" cy="13" r="1.9" fill="#000000"/>
+                <circle cx="8" cy="18" r="1.6" fill="#FECDD3" opacity="0.6"/>
+                <circle cx="24" cy="18" r="1.6" fill="#FECDD3" opacity="0.6"/>
+                <path d="M 11.5 20 Q 16 21.5 20.5 20" fill="none" stroke="#000000" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            <div class="footer-info">
+                <span class="footer-company">The Office of Nils Johansson</span>
+                <span class="footer-tagline">A custom design system inspired by Japanese Information Design</span>
+            </div>
+            <p class="footer-copyright">2026 All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>
