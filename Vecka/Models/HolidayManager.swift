@@ -384,6 +384,43 @@ class HolidayManager {
                 systemRule(name: "Mæðradagurinn", isBankHoliday: false, type: .nthWeekday, month: 5, weekday: 1, ordinal: 2),
                 systemRule(name: "Feðradagurinn", isBankHoliday: false, type: .nthWeekday, month: 11, weekday: 1, ordinal: 2)
             ]
+        case "GL":
+            return [
+                // Bank Holidays - Greenland (Kalaallit Nunaat)
+                systemRule(name: "Ukiortaaq", isBankHoliday: true, type: .fixed, month: 1, day: 1), // New Year's Day
+                systemRule(name: "Sisamanngorneq Illernartoq", isBankHoliday: true, type: .easterRelative, daysOffset: -3), // Maundy Thursday
+                systemRule(name: "Tallimanngorneq Illernartoq", isBankHoliday: true, type: .easterRelative, daysOffset: -2), // Good Friday
+                systemRule(name: "Poorskip ullua", isBankHoliday: true, type: .easterRelative, daysOffset: 0), // Easter Sunday
+                systemRule(name: "Poorskip aappaa", isBankHoliday: true, type: .easterRelative, daysOffset: 1), // Easter Monday
+                systemRule(name: "Qilalugaq", isBankHoliday: true, type: .easterRelative, daysOffset: 39), // Ascension Day
+                systemRule(name: "Pinikkoq", isBankHoliday: true, type: .easterRelative, daysOffset: 49), // Whit Sunday
+                systemRule(name: "Pinikkoq aappaa", isBankHoliday: true, type: .easterRelative, daysOffset: 50), // Whit Monday
+                systemRule(name: "Ullortuneq", isBankHoliday: true, type: .fixed, month: 6, day: 21), // National Day (Summer Solstice)
+                systemRule(name: "Juulli ullua", isBankHoliday: true, type: .fixed, month: 12, day: 25), // Christmas Day
+                systemRule(name: "Juulli aappaa", isBankHoliday: true, type: .fixed, month: 12, day: 26), // Second Day of Christmas
+                // Observances
+                systemRule(name: "Juulli siullia", isBankHoliday: false, type: .fixed, month: 12, day: 24), // Christmas Eve
+                systemRule(name: "Ukiortaami siullia", isBankHoliday: false, type: .fixed, month: 12, day: 31) // New Year's Eve
+            ]
+        case "FO":
+            return [
+                // Bank Holidays - Faroe Islands (Føroyar)
+                systemRule(name: "Nýggjársdagur", isBankHoliday: true, type: .fixed, month: 1, day: 1), // New Year's Day
+                systemRule(name: "Skírhósdagur", isBankHoliday: true, type: .easterRelative, daysOffset: -3), // Maundy Thursday
+                systemRule(name: "Langifríggjadagur", isBankHoliday: true, type: .easterRelative, daysOffset: -2), // Good Friday
+                systemRule(name: "Páskadagur", isBankHoliday: true, type: .easterRelative, daysOffset: 0), // Easter Sunday
+                systemRule(name: "Annar páskadagur", isBankHoliday: true, type: .easterRelative, daysOffset: 1), // Easter Monday
+                systemRule(name: "Flaggdagur", isBankHoliday: false, type: .fixed, month: 4, day: 25), // Flag Day
+                systemRule(name: "Kristi himmalsferðardagur", isBankHoliday: true, type: .easterRelative, daysOffset: 39), // Ascension Day
+                systemRule(name: "Hvítasunnudagur", isBankHoliday: true, type: .easterRelative, daysOffset: 49), // Whit Sunday
+                systemRule(name: "Annar hvítasunnudagur", isBankHoliday: true, type: .easterRelative, daysOffset: 50), // Whit Monday
+                systemRule(name: "Ólavsøkuaftan", isBankHoliday: false, type: .fixed, month: 7, day: 28), // Ólavsøka Eve
+                systemRule(name: "Ólavsøkudagur", isBankHoliday: true, type: .fixed, month: 7, day: 29), // National Day - St. Olav's Day
+                systemRule(name: "Jólafturansaftan", isBankHoliday: false, type: .fixed, month: 12, day: 24), // Christmas Eve
+                systemRule(name: "Jóladagur", isBankHoliday: true, type: .fixed, month: 12, day: 25), // Christmas Day
+                systemRule(name: "Annar jóladagur", isBankHoliday: true, type: .fixed, month: 12, day: 26), // Second Day of Christmas
+                systemRule(name: "Nýggjársaftan", isBankHoliday: false, type: .fixed, month: 12, day: 31) // New Year's Eve
+            ]
         default:
             // For other regions, return empty - they will be seeded from the main seed function
             return []
@@ -898,7 +935,46 @@ class HolidayManager {
             systemRule(name: "Gamlársdagur", region: "IS", isBankHoliday: false, type: .fixed, month: 12, day: 31),
             systemRule(name: "Dagur íslenskrar tungu", region: "IS", isBankHoliday: false, type: .fixed, month: 11, day: 16),
             systemRule(name: "Mæðradagurinn", region: "IS", isBankHoliday: false, type: .nthWeekday, month: 5, weekday: 1, ordinal: 2),
-            systemRule(name: "Feðradagurinn", region: "IS", isBankHoliday: false, type: .nthWeekday, month: 11, weekday: 1, ordinal: 2)
+            systemRule(name: "Feðradagurinn", region: "IS", isBankHoliday: false, type: .nthWeekday, month: 11, weekday: 1, ordinal: 2),
+
+            // ===============================================================
+            // GREENLAND (GL) - Kalaallit Nunaat (Public Holidays)
+            // ===============================================================
+            // Bank Holidays
+            systemRule(name: "Ukiortaaq", region: "GL", isBankHoliday: true, type: .fixed, month: 1, day: 1),
+            systemRule(name: "Sisamanngorneq Illernartoq", region: "GL", isBankHoliday: true, type: .easterRelative, daysOffset: -3),
+            systemRule(name: "Tallimanngorneq Illernartoq", region: "GL", isBankHoliday: true, type: .easterRelative, daysOffset: -2),
+            systemRule(name: "Poorskip ullua", region: "GL", isBankHoliday: true, type: .easterRelative, daysOffset: 0),
+            systemRule(name: "Poorskip aappaa", region: "GL", isBankHoliday: true, type: .easterRelative, daysOffset: 1),
+            systemRule(name: "Qilalugaq", region: "GL", isBankHoliday: true, type: .easterRelative, daysOffset: 39),
+            systemRule(name: "Pinikkoq", region: "GL", isBankHoliday: true, type: .easterRelative, daysOffset: 49),
+            systemRule(name: "Pinikkoq aappaa", region: "GL", isBankHoliday: true, type: .easterRelative, daysOffset: 50),
+            systemRule(name: "Ullortuneq", region: "GL", isBankHoliday: true, type: .fixed, month: 6, day: 21),
+            systemRule(name: "Juulli ullua", region: "GL", isBankHoliday: true, type: .fixed, month: 12, day: 25),
+            systemRule(name: "Juulli aappaa", region: "GL", isBankHoliday: true, type: .fixed, month: 12, day: 26),
+            // Observances
+            systemRule(name: "Juulli siullia", region: "GL", isBankHoliday: false, type: .fixed, month: 12, day: 24),
+            systemRule(name: "Ukiortaami siullia", region: "GL", isBankHoliday: false, type: .fixed, month: 12, day: 31),
+
+            // ===============================================================
+            // FAROE ISLANDS (FO) - Føroyar (Public Holidays)
+            // ===============================================================
+            // Bank Holidays
+            systemRule(name: "Nýggjársdagur", region: "FO", isBankHoliday: true, type: .fixed, month: 1, day: 1),
+            systemRule(name: "Skírhósdagur", region: "FO", isBankHoliday: true, type: .easterRelative, daysOffset: -3),
+            systemRule(name: "Langifríggjadagur", region: "FO", isBankHoliday: true, type: .easterRelative, daysOffset: -2),
+            systemRule(name: "Páskadagur", region: "FO", isBankHoliday: true, type: .easterRelative, daysOffset: 0),
+            systemRule(name: "Annar páskadagur", region: "FO", isBankHoliday: true, type: .easterRelative, daysOffset: 1),
+            systemRule(name: "Flaggdagur", region: "FO", isBankHoliday: false, type: .fixed, month: 4, day: 25),
+            systemRule(name: "Kristi himmalsferðardagur", region: "FO", isBankHoliday: true, type: .easterRelative, daysOffset: 39),
+            systemRule(name: "Hvítasunnudagur", region: "FO", isBankHoliday: true, type: .easterRelative, daysOffset: 49),
+            systemRule(name: "Annar hvítasunnudagur", region: "FO", isBankHoliday: true, type: .easterRelative, daysOffset: 50),
+            systemRule(name: "Ólavsøkuaftan", region: "FO", isBankHoliday: false, type: .fixed, month: 7, day: 28),
+            systemRule(name: "Ólavsøkudagur", region: "FO", isBankHoliday: true, type: .fixed, month: 7, day: 29),
+            systemRule(name: "Jólafturansaftan", region: "FO", isBankHoliday: false, type: .fixed, month: 12, day: 24),
+            systemRule(name: "Jóladagur", region: "FO", isBankHoliday: true, type: .fixed, month: 12, day: 25),
+            systemRule(name: "Annar jóladagur", region: "FO", isBankHoliday: true, type: .fixed, month: 12, day: 26),
+            systemRule(name: "Nýggjársaftan", region: "FO", isBankHoliday: false, type: .fixed, month: 12, day: 31)
         ]
 
         do {

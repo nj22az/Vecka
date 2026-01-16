@@ -219,6 +219,9 @@
 "region.norway" = "挪威";
 "region.denmark" = "丹麦";
 "region.finland" = "芬兰";
+"region.iceland" = "冰岛";
+"region.greenland" = "格陵兰";
+"region.faroeislands" = "法罗群岛";
 "region.us" = "美国";
 "region.vietnam" = "越南";
 "region.germany" = "德国";

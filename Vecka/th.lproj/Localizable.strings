@@ -224,6 +224,9 @@
 "region.norway" = "นอร์เวย์";
 "region.denmark" = "เดนมาร์ก";
 "region.finland" = "ฟินแลนด์";
+"region.iceland" = "ไอซ์แลนด์";
+"region.greenland" = "กรีนแลนด์";
+"region.faroeislands" = "หมู่เกาะแฟโร";
 "region.us" = "สหรัฐอเมริกา";
 "region.vietnam" = "เวียดนาม";
 "region.germany" = "เยอรมนี";

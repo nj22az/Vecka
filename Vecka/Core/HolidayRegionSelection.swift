@@ -9,8 +9,9 @@ struct HolidayRegionSelection: RawRepresentable, Equatable, Hashable, Sendable {
     private(set) var regions: [String]
 
     // MARK: - Nordic Unified Region
-    /// 情報デザイン: "NORDIC" expands to Sweden, Norway, Denmark, Finland
-    static let nordicCountries = ["SE", "NO", "DK", "FI"]
+    /// 情報デザイン: "NORDIC" expands to all Nordic countries and territories
+    /// SE=Sweden, NO=Norway, DK=Denmark, FI=Finland, IS=Iceland, GL=Greenland, FO=Faroe Islands
+    static let nordicCountries = ["SE", "NO", "DK", "FI", "IS", "GL", "FO"]
     static let nordicCode = "NORDIC"
 
     init(regions: [String]) {

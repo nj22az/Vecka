@@ -118,6 +118,9 @@
 "region.norway" = "Norge";
 "region.denmark" = "Danmark";
 "region.finland" = "Finland";
+"region.iceland" = "Island";
+"region.greenland" = "Grönland";
+"region.faroeislands" = "Färöarna";
 "region.us" = "USA";
 "region.vietnam" = "Vietnam";
 "region.germany" = "Tyskland";

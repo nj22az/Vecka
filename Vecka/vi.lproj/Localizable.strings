@@ -224,6 +224,9 @@
 "region.norway" = "Na Uy";
 "region.denmark" = "Đan Mạch";
 "region.finland" = "Phần Lan";
+"region.iceland" = "Iceland";
+"region.greenland" = "Greenland";
+"region.faroeislands" = "Quần đảo Faroe";
 "region.us" = "Hoa Kỳ";
 "region.vietnam" = "Việt Nam";
 "region.germany" = "Đức";
