@@ -30,6 +30,7 @@ struct ShareableFactSnapshot: Transferable {
     func renderToPNG() -> Data {
         let renderer = ImageRenderer(content: shareableView())
         renderer.scale = 3.0  // 3x for crisp sharing
+        renderer.isOpaque = false  // 情報デザイン: Allow transparency for rounded corners
 
         guard let uiImage = renderer.uiImage else {
             return Data()
@@ -166,7 +167,7 @@ struct ShareableFactCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(JohoColors.black, lineWidth: 3)
+                .strokeBorder(JohoColors.black, lineWidth: 3)
         )
     }
 }
