@@ -32,6 +32,9 @@ struct RandomFact: Identifiable, Equatable {
         case "VN": return "Vietnam"
         case "US": return "United States"
         case "UK": return "United Kingdom"
+        case "NO": return "Norway"
+        case "DK": return "Denmark"
+        case "FI": return "Finland"
         case "XX": return "Fun Fact"
         case "Calendar": return "Calendar"
         default: return source
@@ -50,7 +53,7 @@ final class RandomFactProvider: ObservableObject {
     private var usedFactIDs: Set<String> = []
     private let easterEggChance: Double = 0  // 情報デザイン: Disabled - facts must be understandable at a glance
 
-    init(context: ModelContext, selectedRegions: [String] = ["SE", "VN", "UK"], date: Date = Date()) {
+    init(context: ModelContext, selectedRegions: [String] = ["SE", "VN", "UK", "NO", "DK", "FI"], date: Date = Date()) {
         self.context = context
         self.selectedRegions = selectedRegions
         self.today = date
