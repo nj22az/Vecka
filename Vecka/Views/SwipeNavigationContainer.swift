@@ -52,8 +52,9 @@ struct SwipeNavigationContainer<Content: View>: View {
             }
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
-        // 情報デザイン: 0.25s easeInOut for smooth page transitions
-        .animation(.easeInOut(duration: 0.25), value: selection)
+        // 情報デザイン: Use spring animation for natural, smooth page transitions
+        // Native TabView paging + spring gives best feel
+        .animation(.spring(response: 0.4, dampingFraction: 0.85), value: selection)
         .onAppear {
             previousSelection = selection
         }
@@ -68,7 +69,7 @@ struct SwipeNavigationContainer<Content: View>: View {
                         DragGesture(minimumDistance: 30)
                             .onEnded { value in
                                 if value.translation.width > wrapThreshold {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
                                         selection = .settings
                                     }
                                     HapticManager.impact(.medium)
@@ -87,7 +88,7 @@ struct SwipeNavigationContainer<Content: View>: View {
                         DragGesture(minimumDistance: 30)
                             .onEnded { value in
                                 if value.translation.width < -wrapThreshold {
-                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
                                         selection = .landing
                                     }
                                     HapticManager.impact(.medium)

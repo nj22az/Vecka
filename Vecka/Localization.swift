@@ -24,7 +24,7 @@ final class LanguageManager {
 struct Localization {
     
     // MARK: - Core App Strings
-    static let appName = NSLocalizedString("app.name", value: "WEEKGRID", comment: "App name")
+    static let appName = NSLocalizedString("app.name", value: "ONSEN PLANNER", comment: "App name")
     static let today = NSLocalizedString("common.today", value: "Today", comment: "Today")
     static let goToToday = NSLocalizedString("action.go_to_today", value: "GO TO TODAY", comment: "Go to today action")
     static let cancel = NSLocalizedString("common.cancel", value: "Cancel", comment: "Cancel")

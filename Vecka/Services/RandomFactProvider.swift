@@ -17,10 +17,25 @@ struct RandomFact: Identifiable, Equatable {
     let text: String
     let icon: String?
     let color: Color
-    let explanation: String  // 情報デザイン: Detailed explanation for tap-to-expand
+    let explanation: String  // Detailed explanation for tap-to-expand
+    let source: String?  // Country or source name (e.g., "Sweden", "Vietnam", "Calendar")
 
     static func == (lhs: RandomFact, rhs: RandomFact) -> Bool {
         lhs.id == rhs.id
+    }
+
+    /// Human-readable source name for display
+    var displaySource: String {
+        guard let source = source else { return "Random Fact" }
+        switch source {
+        case "SE": return "Sweden"
+        case "VN": return "Vietnam"
+        case "US": return "United States"
+        case "UK": return "United Kingdom"
+        case "XX": return "Fun Fact"
+        case "Calendar": return "Calendar"
+        default: return source
+        }
     }
 }
 
@@ -84,11 +99,12 @@ final class RandomFactProvider: ObservableObject {
                 text: "Week numbers matter.",
                 icon: "calendar",
                 color: JohoColors.cyan,
-                explanation: "ISO 8601 week numbers are the international standard for numbering weeks. This app helps you track weeks the Swedish way."
+                explanation: "ISO 8601 week numbers are the international standard for numbering weeks. This app helps you track weeks the Swedish way.",
+                source: "Calendar"
             )
         }
 
-        // 情報デザイン: True random selection for maximum variety
+        // True random selection for maximum variety
         let fact = pool.randomElement()!
 
         usedFactIDs.insert(fact.id)
@@ -98,7 +114,8 @@ final class RandomFactProvider: ObservableObject {
             text: fact.text,
             icon: iconFor(category: fact.factCategory),
             color: colorFor(category: fact.factCategory),
-            explanation: fact.explanation.isEmpty ? fact.text : fact.explanation
+            explanation: fact.explanation.isEmpty ? fact.text : fact.explanation,
+            source: fact.region
         )
     }
 
@@ -121,7 +138,8 @@ final class RandomFactProvider: ObservableObject {
             text: egg.text,
             icon: "sparkles",
             color: JohoColors.yellow,
-            explanation: egg.explanation.isEmpty ? egg.text : egg.explanation
+            explanation: egg.explanation.isEmpty ? egg.text : egg.explanation,
+            source: "XX"
         )
     }
 
@@ -148,7 +166,8 @@ final class RandomFactProvider: ObservableObject {
             text: picked.renderText(for: today),
             icon: picked.icon,
             color: picked.color,
-            explanation: picked.explanation
+            explanation: picked.explanation,
+            source: "Calendar"
         )
     }
 

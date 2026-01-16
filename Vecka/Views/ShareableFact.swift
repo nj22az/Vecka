@@ -65,7 +65,7 @@ struct ShareableFactCard: View {
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.black)
 
-                    Text("WEEKGRID")
+                    Text("ONSEN PLANNER")
                         .font(.system(size: 12, weight: .black, design: .rounded))
                         .foregroundStyle(JohoColors.black)
                 }
@@ -141,7 +141,7 @@ struct ShareableFactCard: View {
                 .frame(height: 2)
 
             // ═══════════════════════════════════════════════════════════════
-            // FOOTER: Random Facts branding
+            // FOOTER: Random Facts branding with source country
             // ═══════════════════════════════════════════════════════════════
             HStack {
                 Text("RANDOM FACTS")
@@ -151,10 +151,11 @@ struct ShareableFactCard: View {
 
                 Spacer()
 
-                // 情報デザイン: Japanese design mark
-                Text("情報")
-                    .font(.system(size: 10, weight: .bold))
+                // Source country/category
+                Text(fact.displaySource.uppercased())
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black.opacity(0.4))
+                    .tracking(0.5)
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
@@ -215,7 +216,8 @@ struct FactShareButton: View {
                 text: "Sweden has 21 national parks covering about 730,000 hectares",
                 icon: "leaf.fill",
                 color: JohoColors.green,
-                explanation: "The first national park, Sarek, was established in 1909."
+                explanation: "The first national park, Sarek, was established in 1909.",
+                source: "SE"
             )
         )
         .frame(width: 340, height: 220)
@@ -226,7 +228,8 @@ struct FactShareButton: View {
                 text: "Week 1 always contains January 4th",
                 icon: "calendar",
                 color: JohoColors.cyan,
-                explanation: "This is how ISO 8601 defines the first week of the year."
+                explanation: "This is how ISO 8601 defines the first week of the year.",
+                source: "Calendar"
             )
         )
         .frame(width: 340, height: 220)
