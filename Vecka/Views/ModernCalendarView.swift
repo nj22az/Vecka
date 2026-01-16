@@ -273,6 +273,45 @@ struct ModernCalendarView: View {
         }
     }
 
+    // MARK: - Page Content for Swipe Navigation
+
+    /// 情報デザイン: Content for each page in swipe navigation
+    @ViewBuilder
+    private func pageContent(for page: SidebarSelection?) -> some View {
+        switch page {
+        case .landing, .none:
+            NavigationStack {
+                LandingPageView()
+                    .navigationBarHidden(true)
+                    .toolbar(.hidden, for: .navigationBar)
+            }
+        case .calendar:
+            NavigationStack {
+                calendarDetailView
+                    .navigationBarHidden(true)
+                    .toolbar(.hidden, for: .navigationBar)
+            }
+        case .specialDays:
+            NavigationStack {
+                SpecialDaysListView(isInMonthDetail: $isInSpecialDaysMonthDetail)
+                    .johoBackground()
+                    .johoNavigation()
+            }
+        case .contacts:
+            NavigationStack {
+                ContactListView()
+                    .johoBackground()
+                    .johoNavigation()
+            }
+        case .settings:
+            NavigationStack {
+                SettingsView()
+                    .johoBackground()
+                    .johoNavigation()
+            }
+        }
+    }
+
     // MARK: - iPhone Layout (Icon Strip Dock)
 
     private var iPhoneLayout: some View {
@@ -347,9 +386,11 @@ struct ModernCalendarView: View {
             // Both iPad and iPhone: Bottom dock navigation (情報デザイン)
             // User preference: unified design across devices
             VStack(spacing: 0) {
-                // Content area (dock-only navigation)
-                detailView
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                // 情報デザイン: Swipe navigation between pages
+                SwipeNavigationContainer(selection: $sidebarSelection) { page in
+                    pageContent(for: page)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                 // 情報デザイン: Thick border between content and dock
                 Rectangle()

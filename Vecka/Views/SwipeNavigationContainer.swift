@@ -14,7 +14,7 @@
 import SwiftUI
 
 /// 情報デザイン compliant paging container using TabView
-/// Provides smooth swipe navigation between pages
+/// Provides smooth swipe navigation between pages with carousel wrap-around
 struct SwipeNavigationContainer<Content: View>: View {
     @Binding var selection: SidebarSelection?
     @ViewBuilder let content: (SidebarSelection?) -> Content
@@ -22,10 +22,17 @@ struct SwipeNavigationContainer<Content: View>: View {
     /// Track previous selection for haptic feedback
     @State private var previousSelection: SidebarSelection?
 
+    /// Threshold for triggering carousel wrap-around (points)
+    private let wrapThreshold: CGFloat = 60
+
     // All pages in swipe order (5 pages - Landing IS the data dashboard)
     private let orderedPages: [SidebarSelection] = [
         .landing, .calendar, .contacts, .specialDays, .settings
     ]
+
+    /// First and last pages for carousel detection
+    private var isOnFirstPage: Bool { selection == .landing }
+    private var isOnLastPage: Bool { selection == .settings }
 
     var body: some View {
         TabView(selection: Binding(
@@ -49,6 +56,45 @@ struct SwipeNavigationContainer<Content: View>: View {
         .animation(.easeInOut(duration: 0.25), value: selection)
         .onAppear {
             previousSelection = selection
+        }
+        // 情報デザイン: Carousel wrap-around using edge overlays
+        .overlay(alignment: .leading) {
+            // Left edge detector (for Landing → Settings wrap)
+            if isOnFirstPage {
+                Color.clear
+                    .frame(width: 44)
+                    .contentShape(Rectangle())
+                    .highPriorityGesture(
+                        DragGesture(minimumDistance: 30)
+                            .onEnded { value in
+                                if value.translation.width > wrapThreshold {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        selection = .settings
+                                    }
+                                    HapticManager.impact(.medium)
+                                }
+                            }
+                    )
+            }
+        }
+        .overlay(alignment: .trailing) {
+            // Right edge detector (for Settings → Landing wrap)
+            if isOnLastPage {
+                Color.clear
+                    .frame(width: 44)
+                    .contentShape(Rectangle())
+                    .highPriorityGesture(
+                        DragGesture(minimumDistance: 30)
+                            .onEnded { value in
+                                if value.translation.width < -wrapThreshold {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        selection = .landing
+                                    }
+                                    HapticManager.impact(.medium)
+                                }
+                            }
+                    )
+            }
         }
     }
 }
