@@ -15,15 +15,14 @@ struct VeckaLargeWidgetView: View {
     let entry: VeckaWidgetEntry
     private let family: WidgetFamily = .systemLarge
 
-    private let calendar: Calendar = {
+    // 情報デザイン: Use shared calendar for memory efficiency
+    private var calendar: Calendar {
         var cal = Calendar(identifier: .iso8601)
         cal.firstWeekday = 2
         cal.minimumDaysInFirstWeek = 4
         cal.locale = .autoupdatingCurrent
         return cal
-    }()
-
-    private let holidayEngine = WidgetHolidayEngine()
+    }
 
     // MARK: - Computed Properties
 
@@ -172,7 +171,8 @@ struct VeckaLargeWidgetView: View {
         let isToday = self.isToday(day: day)
         let dayDate = dateFor(day: day)
         let dayStart = dayDate.map { calendar.startOfDay(for: $0) }
-        let holidays = dayDate.map { holidayEngine.getHolidays(for: $0) } ?? []
+        // 情報デザイン: Use pre-computed holidays from entry (O(1) lookup, no memory allocation)
+        let holidays = dayDate.map { entry.holidays(for: $0) } ?? []
         let birthdays = dayStart.flatMap { entry.weekBirthdays[$0] } ?? []
         let isBankHoliday = holidays.first?.isBankHoliday ?? false
         let isSunday = dayIndex == 6

@@ -14,15 +14,14 @@ struct VeckaMediumWidgetView: View {
     let entry: VeckaWidgetEntry
     private let family: WidgetFamily = .systemMedium
 
-    private let calendar: Calendar = {
+    // 情報デザイン: Use computed property to avoid storing Calendar instance
+    private var calendar: Calendar {
         var cal = Calendar(identifier: .iso8601)
         cal.firstWeekday = 2
         cal.minimumDaysInFirstWeek = 4
         cal.locale = .autoupdatingCurrent
         return cal
-    }()
-
-    private let holidayEngine = WidgetHolidayEngine()
+    }
 
     // MARK: - Computed Properties
 
@@ -47,7 +46,8 @@ struct VeckaMediumWidgetView: View {
             let date = calendar.date(byAdding: .day, value: offset, to: startOfWeek) ?? entry.date
             let dayStart = calendar.startOfDay(for: date)
             let day = calendar.component(.day, from: date)
-            let holidays = holidayEngine.getHolidays(for: date)
+            // 情報デザイン: Use pre-computed holidays from entry (O(1) lookup, no memory allocation)
+            let holidays = entry.holidays(for: date)
             let birthdays = entry.weekBirthdays[dayStart] ?? []
             let isToday = calendar.isDate(date, inSameDayAs: entry.date)
             let isSunday = offset == 6
