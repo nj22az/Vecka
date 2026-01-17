@@ -305,6 +305,7 @@ body {
     background: var(--white);
     border-radius: var(--radius-md);
     text-align: center;
+    border: 1.5px solid var(--black);
 }
 
 .philosophy-icon {
@@ -374,6 +375,7 @@ body {
     background: var(--white);
     border-radius: var(--radius-md);
     text-align: center;
+    border: 1.5px solid var(--black);
 }
 
 .audience-icon {
@@ -619,6 +621,7 @@ body {
     color: var(--white);
     padding: 6px 12px;
     border-radius: 20px;
+    border: 1.5px solid var(--white);
 }
 
 .social-links {
@@ -671,7 +674,7 @@ body {
 }
 
 /* ================================
-   WHY SECTION - App-style bento tiles (NO borders, just colors)
+   WHY SECTION - 情報デザイン bento tiles with BLACK BORDERS
    ================================ */
 .why-section {
     background: var(--white);
@@ -686,7 +689,7 @@ body {
     gap: var(--space-sm);
 }
 
-/* App-style tile: NO borders, just colored background */
+/* 情報デザイン tile: BLACK BORDER is mandatory */
 .why-card {
     padding: var(--space-md);
     display: flex;
@@ -697,7 +700,7 @@ body {
     min-height: 90px;
     border-radius: var(--radius-md);
     text-align: center;
-    /* NO border - matches app's starStyleGlanceTile */
+    border: 1.5px solid var(--black);
 }
 
 .why-yellow { background: var(--yellow); }
@@ -754,8 +757,8 @@ body {
 }
 
 /* ================================
-   WHAT'S COMING - App-style bento tiles (NO borders, colored backgrounds)
-   Matches LandingPageView.swift starStyleGlanceTile
+   FEATURES - 情報デザイン tiles with BLACK BORDERS
+   Every element MUST have a border. No exceptions.
    ================================ */
 .coming-section {
     background: var(--white);
@@ -770,7 +773,7 @@ body {
     gap: var(--space-sm);
 }
 
-/* App-style tile: NO borders, just colored background + rounded corners */
+/* 情報デザイン tile: colored background + BLACK BORDER (mandatory) */
 .coming-tile {
     display: flex;
     flex-direction: column;
@@ -780,7 +783,7 @@ body {
     padding: var(--space-md) var(--space-sm);
     min-height: 90px;
     border-radius: var(--radius-md);
-    /* NO border - matches app exactly */
+    border: 1.5px solid var(--black);
 }
 
 /* Tile background colors */
@@ -862,7 +865,7 @@ body {
 }
 
 /* ================================
-   UPDATES - Bento tiles like Star Page
+   UPDATES - 情報デザイン tiles with BLACK BORDERS
    ================================ */
 .updates-section {
     background: var(--white);
@@ -877,13 +880,14 @@ body {
     gap: var(--space-sm);
 }
 
-/* Bento tile - no border, colored background */
+/* 情報デザイン bento tile - BLACK BORDER mandatory */
 .update-tile {
     padding: var(--space-md);
     border-radius: var(--radius-md);
     display: flex;
     flex-direction: column;
     gap: 4px;
+    border: 1.5px solid var(--black);
 }
 
 .update-yellow { background: var(--yellow); }
