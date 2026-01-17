@@ -880,29 +880,63 @@ body {
     gap: var(--space-sm);
 }
 
-/* 情報デザイン bento tile - BLACK BORDER mandatory */
+/* 情報デザイン bento tile - Star Page style with icon zone */
 .update-tile {
-    padding: var(--space-md);
     border-radius: var(--radius-md);
     display: flex;
     flex-direction: column;
-    gap: 4px;
     border: 1.5px solid var(--black);
+    overflow: hidden;
+    min-height: 100px;
 }
 
-.update-yellow { background: var(--yellow); }
-.update-cyan { background: var(--cyan); }
-.update-pink { background: var(--pink); }
-.update-green { background: var(--green); }
-.update-orange { background: var(--orange); }
-.update-purple { background: var(--purple); }
+/* Icon zone at top - strong color */
+.update-icon-zone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-sm);
+    min-height: 44px;
+}
+
+.update-icon-zone svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--black);
+}
+
+/* Divider between icon and text */
+.update-divider {
+    height: 1.5px;
+    background: var(--black);
+    width: 100%;
+}
+
+/* Text zone - white background */
+.update-content {
+    padding: var(--space-sm);
+    background: var(--white);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* Color classes apply to icon zone */
+.update-yellow .update-icon-zone { background: var(--yellow); }
+.update-cyan .update-icon-zone { background: var(--cyan); }
+.update-pink .update-icon-zone { background: var(--pink); }
+.update-green .update-icon-zone { background: var(--green); }
+.update-orange .update-icon-zone { background: var(--orange); }
+.update-purple .update-icon-zone { background: var(--purple); }
 
 .update-date {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 900;
     color: var(--black);
-    opacity: 0.6;
+    opacity: 0.5;
     font-variant-numeric: tabular-nums;
+    letter-spacing: 0.5px;
 }
 
 .update-text {
