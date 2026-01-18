@@ -1127,13 +1127,22 @@ struct ContactDetailView: View {
     private var shareActionsSection: some View {
         johoDetailSection(title: "SHARE", icon: "square.and.arrow.up", iconColor: accentColor) {
             VStack(spacing: JohoDimensions.spacingSM) {
-                // vCard
-                Button {
-                    generateAndShareVCard()
-                } label: {
-                    johoActionRow(icon: "square.and.arrow.up", title: "Share as vCard")
+                // Share as PNG with embedded QR code (情報デザイン: Like RandomFact sharing)
+                if #available(iOS 16.0, *) {
+                    ShareLink(
+                        item: ShareableContactSnapshot(
+                            contact: contact,
+                            size: ShareableContactSnapshot.calculateSize(for: contact)
+                        ),
+                        preview: SharePreview(
+                            contact.displayName,
+                            image: Image(systemName: contact.group.icon)
+                        )
+                    ) {
+                        johoActionRow(icon: "photo", title: "Share as Image")
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
 
                 // Export to iOS Contacts
                 Button {
