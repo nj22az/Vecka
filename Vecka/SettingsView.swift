@@ -149,15 +149,9 @@ struct SettingsView: View {
                                         .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
                                 )
 
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Event Text Color")
-                                    .font(JohoFont.headline)
-                                    .foregroundStyle(colors.primary)
-
-                                Text("Japanese planner style")
-                                    .font(JohoFont.body)
-                                    .foregroundStyle(colors.secondary)
-                            }
+                            Text("Event Text Color")
+                                .font(JohoFont.headline)
+                                .foregroundStyle(colors.primary)
 
                             Spacer()
                         }
