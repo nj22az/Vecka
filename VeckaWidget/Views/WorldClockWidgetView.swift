@@ -2,230 +2,151 @@
 //  WorldClockWidgetView.swift
 //  VeckaWidget
 //
-//  情報デザイン (Jōhō Dezain) World Clock Widget
-//  Analog clocks with region-themed colors, matching Onsen landing page
+//  情報デザイン (Jōhō Dezain) Random Fact Widget
+//  Bento compartmentalized layout with daily random fact
 //
 
 import SwiftUI
 import WidgetKit
 
-/// Medium widget showing world clocks (情報デザイン style)
+/// Medium widget showing random fact (情報デザイン style - bento layout)
 struct WorldClockMediumWidgetView: View {
     let entry: VeckaWidgetEntry
     private let family: WidgetFamily = .systemMedium
 
-    // 情報デザイン: Theme constants for consistency
-    private var typo: JohoWidget.Typography.Scale { JohoWidget.Typography.medium }
-    private var borders: JohoWidget.Borders.Weights { JohoWidget.Borders.medium }
-    private var corners: JohoWidget.Corners.Radii { JohoWidget.Corners.medium }
+    // 情報デザイン: Border weights
+    private let borderContainer: CGFloat = 3
+    private let borderRow: CGFloat = 1.5
+    private let borderCell: CGFloat = 1
 
-    private var worldClocks: [SharedWorldClock] {
-        WorldClockStorage.load()
+    // Get fact based on current date (changes daily)
+    private var randomFact: WidgetRandomFact {
+        WidgetRandomFact.factForDate(entry.date)
     }
 
     var body: some View {
         GeometryReader { geo in
             HStack(spacing: 0) {
-                // LEFT: Week number hero (compact)
+                // LEFT: Week number compartment
                 weekNumberSection
-                    .frame(width: geo.size.width * 0.25)
+                    .frame(width: geo.size.width * 0.22)
 
-                // Vertical divider (情報デザイン: match border weight)
+                // 情報デザイン: Bento wall (container weight)
                 Rectangle()
                     .fill(JohoWidget.Colors.border)
-                    .frame(width: borders.container)
+                    .frame(width: borderContainer)
 
-                // RIGHT: World clocks (bento compartments)
-                worldClocksSection
+                // RIGHT: Random fact section
+                randomFactSection
                     .frame(maxWidth: .infinity)
             }
         }
-        .widgetURL(URL(string: "vecka://clocks"))
+        .widgetURL(URL(string: "vecka://facts/\(randomFact.id)"))
         .containerBackground(for: .widget) {
-            // 情報デザイン: Clean white background - iOS handles rounded corners
             JohoWidget.Colors.content
         }
     }
 
-    // MARK: - Computed Properties (情報デザイン: functional data)
-
-    private var monthShort: String {
-        entry.date.formatted(.dateTime.month(.abbreviated).locale(.autoupdatingCurrent)).uppercased()
-    }
-
-    private var year: String {
-        String(entry.year)
-    }
-
-    // MARK: - Week Number Section (情報デザイン: Day, Week, Month, Year - all functional)
+    // MARK: - Week Number Section
 
     private var weekNumberSection: some View {
-        VStack(spacing: 2) {
-            // Month + Year (情報デザイン: complete temporal context)
-            Text("\(monthShort)")
-                .font(.system(size: typo.label, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
-                .tracking(1)
-
-            Text(year)
-                .font(.system(size: typo.micro, weight: .bold, design: .rounded))
+        VStack(spacing: 4) {
+            // Month + Year
+            Text(entry.date.formatted(.dateTime.month(.abbreviated)).uppercased())
+                .font(.system(size: 10, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
 
-            Spacer(minLength: 2)
+            Text(String(entry.year))
+                .font(.system(size: 9, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
 
-            // Week number (hero) - compact version for world clock widget
+            Spacer(minLength: 4)
+
+            // Week number hero
             Text("\(entry.weekNumber)")
-                .font(.system(size: 36, weight: .black, design: .rounded))
+                .font(.system(size: 32, weight: .black, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text)
                 .minimumScaleFactor(0.7)
 
             Text("WEEK")
-                .font(.system(size: typo.micro, weight: .bold, design: .rounded))
+                .font(.system(size: 9, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
-                .tracking(1)
 
-            Spacer(minLength: 2)
+            Spacer(minLength: 4)
 
-            // Today indicator (情報デザイン: Circle like all other widgets, not RoundedRectangle)
+            // Today indicator
             ZStack {
                 Circle()
                     .fill(JohoWidget.Colors.now)
-                    .frame(width: 32, height: 32)
                 Circle()
-                    .stroke(JohoWidget.Colors.border, lineWidth: borders.selected)
-                    .frame(width: 32, height: 32)
+                    .stroke(JohoWidget.Colors.border, lineWidth: 2)
                 Text("\(entry.dayNumber)")
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoWidget.Colors.text)
             }
+            .frame(width: 28, height: 28)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.vertical, 6)
-        // 情報デザイン: WHITE background - color only on TODAY indicator
+        .padding(.vertical, 8)
     }
 
-    // MARK: - World Clocks Section
+    // MARK: - Random Fact Section (情報デザイン: Bento compartments)
 
-    private var worldClocksSection: some View {
-        HStack(spacing: 0) {
-            ForEach(Array(worldClocks.enumerated()), id: \.element.id) { index, clock in
-                if index > 0 {
-                    // 情報デザイン: Bento wall - match row border weight
-                    Rectangle()
-                        .fill(JohoWidget.Colors.border)
-                        .frame(width: borders.row)
+    private var randomFactSection: some View {
+        VStack(spacing: 0) {
+            // TOP: Header row with source
+            HStack(spacing: 0) {
+                // Icon compartment
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(randomFact.color.opacity(0.2))
+                    Image(systemName: randomFact.icon)
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(randomFact.color)
                 }
-
-                worldClockCell(clock)
-                    .frame(maxWidth: .infinity)
-            }
-        }
-    }
-
-    // MARK: - Individual Clock Cell
-
-    private func worldClockCell(_ clock: SharedWorldClock) -> some View {
-        let theme = WidgetTimezoneTheme.theme(for: clock.timezoneIdentifier)
-
-        return VStack(spacing: 3) {
-            // Country code pill (情報デザイン: Region-colored with black border)
-            Text(clock.countryCode)
-                .font(.system(size: typo.label, weight: .black, design: .rounded))
-                .foregroundStyle(.white)
-                .padding(.horizontal, 6)
-                .padding(.vertical, 2)
-                .background(theme.accentColor)
-                .clipShape(Capsule())
-                .overlay(Capsule().stroke(JohoWidget.Colors.border, lineWidth: borders.cell))
-
-            // City name
-            Text(clock.cityName)
-                .font(.system(size: typo.label, weight: .semibold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text)
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-
-            // Analog clock (情報デザイン: Station clock style)
-            WidgetAnalogClock(
-                hourAngle: clock.hourAngle,
-                minuteAngle: clock.minuteAngle,
-                accentColor: theme.accentColor,
-                size: 44
-            )
-
-            // Digital time
-            Text(clock.formattedTime)
-                .font(.system(size: typo.headline, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text)
-
-            // Day/Night + offset
-            HStack(spacing: 2) {
-                Image(systemName: clock.isDaytime ? "sun.max.fill" : "moon.fill")
-                    .font(.system(size: 8))
-                    .foregroundStyle(clock.isDaytime ? Color(hex: "F39C12") : Color(hex: "6C5CE7"))
-
-                Text(clock.offsetFromLocal)
-                    .font(.system(size: typo.micro, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.text.opacity(0.6))
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(.vertical, 4)
-        // 情報デザイン: WHITE background - semantic color only on country pill
-    }
-}
-
-// MARK: - Widget Analog Clock (Static for widgets)
-
-/// Simple analog clock for widgets (no animation, just renders current time)
-struct WidgetAnalogClock: View {
-    let hourAngle: Double
-    let minuteAngle: Double
-    let accentColor: Color
-    let size: CGFloat
-
-    var body: some View {
-        ZStack {
-            // Clock face
-            Circle()
-                .fill(Color.white)
+                .frame(width: 44, height: 44)
                 .overlay(
-                    Circle()
-                        .stroke(Color.black, lineWidth: size * 0.04)
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .stroke(JohoWidget.Colors.border, lineWidth: borderCell)
                 )
+                .padding(8)
 
-            // Hour markers
-            ForEach(0..<12) { hour in
+                // Bento wall
                 Rectangle()
-                    .fill(Color.black)
-                    .frame(
-                        width: hour % 3 == 0 ? size * 0.025 : size * 0.015,
-                        height: hour % 3 == 0 ? size * 0.1 : size * 0.05
-                    )
-                    .offset(y: -size * 0.38)
-                    .rotationEffect(.degrees(Double(hour) * 30))
+                    .fill(JohoWidget.Colors.border)
+                    .frame(width: borderCell)
+
+                // Source label
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("RANDOM FACT")
+                        .font(.system(size: 9, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.text.opacity(0.5))
+                        .tracking(0.5)
+
+                    Text(randomFact.source.uppercased())
+                        .font(.system(size: 11, weight: .black, design: .rounded))
+                        .foregroundStyle(randomFact.color)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 10)
             }
+            .frame(height: 60)
 
-            // Hour hand
-            RoundedRectangle(cornerRadius: size * 0.02)
-                .fill(Color.black)
-                .frame(width: size * 0.05, height: size * 0.25)
-                .offset(y: -size * 0.1)
-                .rotationEffect(.degrees(hourAngle))
+            // 情報デザイン: Horizontal bento wall
+            Rectangle()
+                .fill(JohoWidget.Colors.border)
+                .frame(height: borderRow)
 
-            // Minute hand
-            RoundedRectangle(cornerRadius: size * 0.015)
-                .fill(accentColor)
-                .frame(width: size * 0.03, height: size * 0.35)
-                .offset(y: -size * 0.15)
-                .rotationEffect(.degrees(minuteAngle))
-
-            // Center dot
-            Circle()
-                .fill(Color.black)
-                .frame(width: size * 0.08, height: size * 0.08)
+            // BOTTOM: Fact text
+            Text(randomFact.text)
+                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                .foregroundStyle(JohoWidget.Colors.text)
+                .multilineTextAlignment(.leading)
+                .lineLimit(3)
+                .minimumScaleFactor(0.8)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .padding(10)
         }
-        .frame(width: size, height: size)
     }
 }
 

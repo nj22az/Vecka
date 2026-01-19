@@ -30,12 +30,12 @@ struct SharedWorldClock: Codable, Identifiable, Hashable {
         Date()
     }
 
-    /// Formatted time string (e.g., "14:30")
+    /// Formatted time string with seconds (e.g., "14:30:45")
     var formattedTime: String {
-        guard let tz = timezone else { return "--:--" }
+        guard let tz = timezone else { return "--:--:--" }
         let formatter = DateFormatter()
         formatter.timeZone = tz
-        formatter.dateFormat = "HH:mm"
+        formatter.dateFormat = "HH:mm:ss"
         return formatter.string(from: currentTime)
     }
 

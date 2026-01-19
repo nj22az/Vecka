@@ -19,6 +19,7 @@ struct LandingPageView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.johoColorMode) private var colorMode
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(NavigationManager.self) private var navigationManager: NavigationManager?
 
     /// Dynamic colors based on color mode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
@@ -558,6 +559,13 @@ struct LandingPageView: View {
             }
             // 情報デザイン: Always refresh facts when landing page appears (tab switch, back navigation)
             loadRandomFacts()
+            // Check for deep link fact to show
+            checkForDeepLinkFact()
+        }
+        .onChange(of: navigationManager?.factIdToShow) { _, newFactId in
+            if newFactId != nil {
+                checkForDeepLinkFact()
+            }
         }
         .sheet(isPresented: $showTripsSheet) {
             NavigationStack {
@@ -3003,6 +3011,56 @@ struct LandingPageView: View {
         guard let provider = factProvider else { return }
         provider.reset()
         randomFacts = (0..<6).map { _ in provider.nextFact() }
+    }
+
+    /// Check for and show a fact from widget deep link
+    private func checkForDeepLinkFact() {
+        guard let factId = navigationManager?.factIdToShow else { return }
+
+        // Look up fact from database
+        let descriptor = FetchDescriptor<QuirkyFact>(
+            predicate: #Predicate { $0.id == factId }
+        )
+
+        if let quirkyFact = try? modelContext.fetch(descriptor).first {
+            // Convert to RandomFact display model
+            let fact = RandomFact(
+                id: quirkyFact.id,
+                text: quirkyFact.text,
+                icon: iconFor(category: quirkyFact.factCategory),
+                color: colorFor(category: quirkyFact.factCategory),
+                explanation: quirkyFact.explanation.isEmpty ? quirkyFact.text : quirkyFact.explanation,
+                source: quirkyFact.region
+            )
+            selectedRandomFact = fact
+        }
+
+        // Clear the deep link after handling
+        navigationManager?.factIdToShow = nil
+    }
+
+    /// Icon for fact category (matches RandomFactProvider)
+    private func iconFor(category: QuirkyFact.Category) -> String {
+        switch category {
+        case .tradition: return "person.2.fill"
+        case .food: return "fork.knife"
+        case .invention: return "lightbulb.fill"
+        case .nature: return "leaf.fill"
+        case .history: return "book.fill"
+        case .quirky: return "star.fill"
+        }
+    }
+
+    /// Color for fact category (matches RandomFactProvider)
+    private func colorFor(category: QuirkyFact.Category) -> Color {
+        switch category {
+        case .tradition: return JohoColors.purple
+        case .food: return Color(hex: "F97316")
+        case .invention: return JohoColors.yellow
+        case .nature: return JohoColors.green
+        case .history: return Color(hex: "78350F")
+        case .quirky: return JohoColors.cyan
+        }
     }
 
     /// Month card style fact tile (情報デザイン: Star page style - strong colors)

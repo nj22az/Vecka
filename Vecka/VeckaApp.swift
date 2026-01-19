@@ -156,7 +156,17 @@ struct VeckaApp: App {
         case "calendar":
             // Large widget calendar view tapped - navigate to today
             navigationManager.navigateToToday()
-            
+
+        case "facts":
+            // Random fact widget tapped - show fact detail
+            // URL format: vecka://facts/{factId}
+            let pathComponents = url.pathComponents.filter { $0 != "/" }
+            if let factId = pathComponents.first {
+                navigationManager.navigateToFact(factId)
+            } else {
+                navigationManager.navigateToLanding()
+            }
+
         default:
             // Unknown URL - navigate to today as fallback
             navigationManager.navigateToToday()
@@ -173,6 +183,7 @@ class NavigationManager {
     var shouldScrollToWeek = false
     var targetPage: SidebarSelection = .landing  // 情報デザイン: Landing is home
     var shouldNavigateToPage = false
+    var factIdToShow: String?  // Deep link from widget to show fact detail
 
     /// Navigate to landing page (情報デザイン: Onsen is home)
     func navigateToLanding() {
@@ -210,6 +221,13 @@ class NavigationManager {
             shouldNavigateToPage = true
             shouldScrollToWeek = true
         }
+    }
+
+    /// Navigate to show a specific fact from widget deep link
+    func navigateToFact(_ factId: String) {
+        targetPage = .landing
+        shouldNavigateToPage = true
+        factIdToShow = factId
     }
 }
 

@@ -89,7 +89,7 @@ struct VeckaWidgetProvider: TimelineProvider {
                 calendarAccessDenied: !self.isCalendarAuthorized
             )
 
-            // Calculate next update time: midnight or next event, whichever is sooner
+            // Calculate next update time: midnight (random fact changes daily)
             let nextMidnight = calendar.startOfDay(for: calendar.date(byAdding: .day, value: 1, to: now) ?? now)
             var nextUpdate = nextMidnight
 
@@ -98,7 +98,7 @@ struct VeckaWidgetProvider: TimelineProvider {
                 nextUpdate = event.startDate
             }
 
-            // Minimum update interval of 15 minutes to avoid excessive refreshes
+            // Minimum update interval of 15 minutes
             let minimumUpdate = now.addingTimeInterval(15 * 60)
             if nextUpdate < minimumUpdate {
                 nextUpdate = minimumUpdate
