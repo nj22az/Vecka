@@ -236,12 +236,18 @@ struct DayDashboardView: View {
                     onOpenExpenses?(date)
                 } label: {
                     bentoSection(title: "EXPENSES", icon: "dollarsign.circle.fill", zone: .expenses) {
-                        // Total row
-                        bentoTotalRow(label: "Total", amount: totalExpenseAmount, currency: baseCurrency)
-
+                        // Individual expense rows
                         ForEach(expenses) { expense in
                             bentoExpenseRow(expense: expense)
                         }
+
+                        // Horizontal divider before total
+                        Rectangle()
+                            .fill(eventBorderColor)
+                            .frame(height: 1.5)
+
+                        // Total row at bottom (情報デザイン: summary in bottom-right)
+                        bentoTotalRow(label: "Total", amount: totalExpenseAmount, currency: baseCurrency)
                     }
                 }
                 .buttonStyle(.plain)

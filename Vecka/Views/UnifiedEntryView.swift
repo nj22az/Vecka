@@ -876,14 +876,15 @@ struct JohoUnifiedEntrySheet: View {
 
     private var eventTasksRow: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Tasks header
-            HStack(spacing: JohoDimensions.spacingSM) {
+            // Tasks header (情報デザイン: spacing: 0 for tight bento walls)
+            HStack(spacing: 0) {
                 iconZone(icon: "checklist", color: selectedType.color)
                 verticalWall()
 
                 Text("PREPARATION TASKS")
                     .font(.system(size: 10, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary.opacity(0.6))
+                    .padding(.leading, JohoDimensions.spacingSM)
 
                 Spacer()
 
@@ -976,11 +977,12 @@ struct JohoUnifiedEntrySheet: View {
 
     private func iconZone(icon: String, color: Color) -> some View {
         // 情報デザイン: BLACK icon on colored tint (like Calendar header)
-        // This ensures visibility - colored icons on light tints are invisible
+        // Icon fills full row height - no white gaps
         Image(systemName: icon)
             .font(.system(size: 15, weight: .semibold, design: .rounded))
             .foregroundStyle(JohoColors.black.opacity(0.7))
-            .johoTouchTarget()
+            .frame(width: 44)
+            .frame(maxHeight: .infinity)
             .background(color.opacity(0.3))
     }
 
@@ -1104,11 +1106,12 @@ struct JohoUnifiedEntrySheet: View {
             HapticManager.selection()
         } label: {
             HStack(spacing: 0) {
-                // 情報デザイン: BLACK icon on colored tint (like Calendar header)
+                // 情報デザイン: Icon zone fills full row height
                 Image(systemName: currentIcon)
                     .font(.system(size: 16, weight: .semibold, design: .rounded))
                     .foregroundStyle(JohoColors.black.opacity(0.7))
-                    .johoTouchTarget()
+                    .frame(width: 44)
+                    .frame(maxHeight: .infinity)
                     .background(selectedType.color.opacity(0.3))
 
                 verticalWall()
@@ -1125,8 +1128,8 @@ struct JohoUnifiedEntrySheet: View {
                         .foregroundStyle(colors.primary.opacity(0.4))
                 }
                 .padding(.horizontal, JohoDimensions.spacingSM)
-                .frame(height: 44)
             }
+            .frame(height: 44)
         }
         .buttonStyle(.plain)
     }
