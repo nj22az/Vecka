@@ -235,8 +235,8 @@ struct JohoUnifiedEntrySheet: View {
                 contacts: contacts.filter { $0.birthday != nil },
                 onSelect: { contact in
                     // Populate birthday fields from selected contact
-                    birthdayFirstName = contact.givenName ?? ""
-                    birthdayLastName = contact.familyName ?? ""
+                    birthdayFirstName = contact.givenName
+                    birthdayLastName = contact.familyName
                     if let birthday = contact.birthday {
                         let calendar = Calendar.current
                         let year = calendar.component(.year, from: birthday)
