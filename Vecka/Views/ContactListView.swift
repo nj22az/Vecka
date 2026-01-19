@@ -25,7 +25,6 @@ struct ContactListView: View {
     @State private var editingContact: Contact?
     @State private var showingDuplicateReview = false
     @State private var duplicateSuggestionCount = 0
-    @State private var isIndexExpanded = false  // 情報デザイン: Collapsible letter index
     @State private var showingExportSheet = false
     @State private var exportURL: URL?
     @State private var isEditMode = false  // 情報デザイン: Edit mode for contact management
@@ -644,148 +643,61 @@ struct ContactListView: View {
         }
     }
 
-    // MARK: - Letter Picker (情報デザイン: Collapsible index with "INDEX >" toggle)
+    // MARK: - Letter Picker (情報デザイン: Always-visible horizontal scroller like iOS Contacts)
 
     private var letterPickerStrip: some View {
         let populatedLetters = allAvailableLetters
 
-        return VStack(spacing: 0) {
-            // Header row: INDEX > (tap to expand/collapse)
-            Button {
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    isIndexExpanded.toggle()
-                }
-                HapticManager.selection()
-            } label: {
-                HStack(spacing: JohoDimensions.spacingSM) {
-                    // Icon zone (情報デザイン: solid semantic background)
-                    Image(systemName: "list.bullet")
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
-                        .frame(width: 24, height: 24)
-                        .background(PageHeaderColor.contacts.lightBackground)
-                        .clipShape(Squircle(cornerRadius: 5))
-                        .overlay(
-                            Squircle(cornerRadius: 5)
-                                .stroke(JohoColors.black, lineWidth: 1)
-                        )
-
-                    Text("INDEX")
-                        .font(.system(size: 12, weight: .black, design: .rounded))
-                        .tracking(1)
-                        .foregroundStyle(JohoColors.black)
-
-                    // Chevron indicating expand/collapse state
-                    Image(systemName: isIndexExpanded ? "chevron.down" : "chevron.right")
-                        .font(.system(size: 11, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
-
-                    Spacer()
-
-                    // Show current filter badge if active
-                    if let letter = filterLetter {
-                        HStack(spacing: 4) {
-                            Text(letter)
-                                .font(.system(size: 12, weight: .black, design: .rounded))
-                            Text("(\(filteredContacts.count))")
-                                .font(.system(size: 10, weight: .bold, design: .rounded))
-                                .foregroundStyle(JohoColors.white.opacity(0.8))
-                        }
-                        .foregroundStyle(JohoColors.white)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 4)
-                        .background(accentColor)
+        return ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                // "ALL" button
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        filterLetter = nil
+                    }
+                    HapticManager.selection()
+                } label: {
+                    Text("ALL")
+                        .font(.system(size: 11, weight: .black, design: .rounded))
+                        .foregroundStyle(filterLetter == nil ? JohoColors.white : JohoColors.black)
+                        .frame(width: 36, height: 32)
+                        .background(filterLetter == nil ? accentColor : JohoColors.inputBackground)
                         .clipShape(Squircle(cornerRadius: 6))
                         .overlay(
                             Squircle(cornerRadius: 6)
-                                .stroke(JohoColors.black, lineWidth: 1.5)
+                                .stroke(JohoColors.black, lineWidth: filterLetter == nil ? 2 : 1)
                         )
-
-                        // × clear button
-                        Button {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                filterLetter = nil
-                            }
-                            HapticManager.selection()
-                        } label: {
-                            Text("×")
-                                .font(.system(size: 14, weight: .black, design: .rounded))
-                                .foregroundStyle(JohoColors.white)
-                                .frame(width: 28, height: 28)
-                                .background(JohoColors.black)
-                                .clipShape(Circle())
-                        }
-                        .accessibilityLabel("Clear filter")
-                    }
                 }
-                .padding(.horizontal, JohoDimensions.spacingMD)
-                .padding(.vertical, JohoDimensions.spacingSM)
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel(isIndexExpanded ? "Collapse index" : "Expand index")
-            .accessibilityHint("Tap to \(isIndexExpanded ? "hide" : "show") letter filter")
+                .accessibilityLabel("Show all contacts")
 
-            // Expanded: Letter grid (情報デザイン: wrapping grid, no horizontal scroll)
-            if isIndexExpanded {
-                // Thin divider (情報デザイン: solid black, reduced height)
-                Rectangle()
-                    .fill(JohoColors.black)
-                    .frame(height: 0.5)
-                    .padding(.horizontal, JohoDimensions.spacingMD)
-
-                // Letter grid using LazyVGrid for wrapping
-                let columns = Array(repeating: GridItem(.flexible(), spacing: 6), count: min(populatedLetters.count + 1, 10))
-
-                LazyVGrid(columns: columns, spacing: 6) {
-                    // "ALL" button
+                // Letter buttons
+                ForEach(populatedLetters, id: \.self) { letter in
                     Button {
                         withAnimation(.easeInOut(duration: 0.2)) {
-                            filterLetter = nil
+                            if filterLetter == letter {
+                                filterLetter = nil
+                            } else {
+                                filterLetter = letter
+                            }
                         }
                         HapticManager.selection()
                     } label: {
-                        Text("ALL")
-                            .font(.system(size: 10, weight: .black, design: .rounded))
-                            .foregroundStyle(filterLetter == nil ? JohoColors.white : JohoColors.black)
-                            .frame(minWidth: 32, minHeight: 32)
-                            .background(filterLetter == nil ? accentColor : JohoColors.inputBackground)
+                        Text(letter)
+                            .font(.system(size: 13, weight: .black, design: .rounded))
+                            .foregroundStyle(filterLetter == letter ? JohoColors.white : JohoColors.black)
+                            .frame(width: 32, height: 32)
+                            .background(filterLetter == letter ? accentColor : JohoColors.inputBackground)
                             .clipShape(Squircle(cornerRadius: 6))
                             .overlay(
                                 Squircle(cornerRadius: 6)
-                                    .stroke(JohoColors.black, lineWidth: filterLetter == nil ? 2 : 1)
+                                    .stroke(JohoColors.black, lineWidth: filterLetter == letter ? 2 : 1)
                             )
                     }
-                    .accessibilityLabel("Show all contacts")
-
-                    // Letter buttons
-                    ForEach(populatedLetters, id: \.self) { letter in
-                        Button {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                if filterLetter == letter {
-                                    filterLetter = nil
-                                } else {
-                                    filterLetter = letter
-                                }
-                            }
-                            HapticManager.selection()
-                        } label: {
-                            Text(letter)
-                                .font(.system(size: 13, weight: .black, design: .rounded))
-                                .foregroundStyle(filterLetter == letter ? JohoColors.white : JohoColors.black)
-                                .frame(minWidth: 32, minHeight: 32)
-                                .background(filterLetter == letter ? accentColor : JohoColors.inputBackground)
-                                .clipShape(Squircle(cornerRadius: 6))
-                                .overlay(
-                                    Squircle(cornerRadius: 6)
-                                        .stroke(JohoColors.black, lineWidth: filterLetter == letter ? 2 : 1)
-                                )
-                        }
-                        .accessibilityLabel("Filter by \(letter)")
-                    }
+                    .accessibilityLabel("Filter by \(letter)")
                 }
-                .padding(.horizontal, JohoDimensions.spacingMD)
-                .padding(.vertical, JohoDimensions.spacingSM)
             }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
         }
         .background(JohoColors.white)
     }
