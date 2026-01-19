@@ -526,6 +526,7 @@ struct LandingPageView: View {
                         }
 
                         todayCard
+                        upcomingCard
                         randomFactsCard
                     }
                     .padding(.horizontal, JohoDimensions.spacingLG)
@@ -543,6 +544,7 @@ struct LandingPageView: View {
                         }
 
                         todayCard
+                        upcomingCard
                         randomFactsCard
                     }
                     .padding(.horizontal, JohoDimensions.spacingSM)

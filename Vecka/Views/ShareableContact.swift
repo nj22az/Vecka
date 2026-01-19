@@ -42,8 +42,9 @@ enum QRCodeGenerator {
 
 /// A contact that can be shared as an image
 /// Inspired by ShareableFact pattern
+/// Note: @unchecked Sendable because Contact is a SwiftData model used on MainActor
 @available(iOS 16.0, *)
-struct ShareableContactSnapshot: Transferable {
+struct ShareableContactSnapshot: Transferable, @unchecked Sendable {
     let contact: Contact
     let size: CGSize
 

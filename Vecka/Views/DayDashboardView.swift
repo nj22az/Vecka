@@ -15,10 +15,17 @@ struct DayDashboardView: View {
         let symbolName: String?
     }
 
+    struct BirthdayInfo: Identifiable, Equatable {
+        let id: String
+        let name: String
+        let age: Int?  // nil if birth year unknown
+    }
+
     let date: Date
     let notes: [DailyNote]
     let pinnedNotes: [DailyNote]
     let holidays: [HolidayInfo]
+    let birthdays: [BirthdayInfo]  // 情報デザイン: Contact birthdays
     let expenses: [ExpenseItem]
     let trips: [TravelTrip]
     let secondaryDateText: String?
@@ -28,7 +35,7 @@ struct DayDashboardView: View {
 
     /// 情報デザイン: Check if day has any content
     private var hasAnyContent: Bool {
-        !holidays.isEmpty || !notes.isEmpty || !expenses.isEmpty || !trips.isEmpty
+        !holidays.isEmpty || !birthdays.isEmpty || !notes.isEmpty || !expenses.isEmpty || !trips.isEmpty
     }
 
     @State private var isExpanded = false
@@ -126,6 +133,16 @@ struct DayDashboardView: View {
                         .font(JohoFont.bodySmall)
                         .foregroundStyle(JohoColors.black.opacity(0.7))
                         .padding(.horizontal, JohoDimensions.spacingMD)
+                    }
+                }
+                .padding(.horizontal, JohoDimensions.spacingLG)
+            }
+
+            // BIRTHDAYS SECTION (情報デザイン: Contact birthdays)
+            if birthdays.isNotEmpty {
+                bentoSection(title: "BIRTHDAYS", icon: "birthday.cake.fill", zone: .birthdays) {
+                    ForEach(birthdays) { birthday in
+                        bentoBirthdayRow(birthday: birthday)
                     }
                 }
                 .padding(.horizontal, JohoDimensions.spacingLG)
@@ -498,6 +515,53 @@ struct DayDashboardView: View {
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(holiday.name)\(holiday.isBankHoliday ? ", public holiday" : "")")
+    }
+
+    /// 情報デザイン: Bento birthday row with compartments
+    @ViewBuilder
+    private func bentoBirthdayRow(birthday: BirthdayInfo) -> some View {
+        HStack(spacing: 0) {
+            // LEFT: Type indicator (pink for celebrations)
+            HStack(spacing: 3) {
+                Circle()
+                    .fill(JohoColors.pink)
+                    .frame(width: 10, height: 10)
+                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+            }
+            .frame(width: 32, alignment: .center)
+            .frame(maxHeight: .infinity)
+
+            // Vertical wall
+            Rectangle()
+                .fill(JohoColors.black)
+                .frame(width: 1.5)
+                .frame(maxHeight: .infinity)
+
+            // CENTER: Icon + Name + Age
+            HStack(spacing: JohoDimensions.spacingSM) {
+                Image(systemName: "birthday.cake.fill")
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+
+                Text(birthday.name)
+                    .font(JohoFont.body)
+                    .foregroundStyle(JohoColors.black)
+                    .lineLimit(1)
+
+                Spacer(minLength: 4)
+
+                // Age badge if available
+                if let age = birthday.age {
+                    JohoPill(text: "\(age)", style: .blackOnWhite, size: .small)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        }
+        .frame(minHeight: 36)
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(birthday.name)'s birthday\(birthday.age != nil ? ", turning \(birthday.age!)" : "")")
     }
 
     /// 情報デザイン: Bento note row with compartments
@@ -1027,6 +1091,7 @@ private struct NotePreviewRow: View {
         notes: [],
         pinnedNotes: [],
         holidays: [.init(id: "preview", name: "Holiday", isBankHoliday: true, symbolName: "flag.fill")],
+        birthdays: [.init(id: "kate", name: "Kate Bell", age: 35)],
         expenses: [],
         trips: [],
         secondaryDateText: "Lunar 1/1",

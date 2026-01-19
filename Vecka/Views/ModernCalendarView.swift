@@ -653,6 +653,7 @@ struct ModernCalendarView: View {
                     notes: notesForDay(dashboardDate),
                     pinnedNotes: pinnedNotesForDashboard,
                     holidays: holidayInfo(for: dashboardDate),
+                    birthdays: birthdaysForDay(dashboardDate),
                     expenses: expensesForDay(dashboardDate),
                     trips: tripsForDay(dashboardDate),
                     secondaryDateText: lunarDashboardText(for: dashboardDate),
@@ -1193,6 +1194,33 @@ struct ModernCalendarView: View {
                 symbolName: holiday.symbolName
             )
         }
+    }
+
+    /// 情報デザイン: Get contact birthdays matching a specific day (month/day comparison)
+    private func birthdaysForDay(_ date: Date) -> [DayDashboardView.BirthdayInfo] {
+        let calendar = Calendar.current
+        let month = calendar.component(.month, from: date)
+        let dayOfMonth = calendar.component(.day, from: date)
+        let currentYear = calendar.component(.year, from: date)
+
+        var result: [DayDashboardView.BirthdayInfo] = []
+        for contact in contacts {
+            guard let birthday = contact.birthday else { continue }
+            let bMonth = calendar.component(.month, from: birthday)
+            let bDay = calendar.component(.day, from: birthday)
+            if bMonth == month && bDay == dayOfMonth {
+                // Calculate age if birth year is known
+                let birthYear = calendar.component(.year, from: birthday)
+                // If birth year is reasonable (not 1604 placeholder), calculate age
+                let age: Int? = birthYear > 1900 ? currentYear - birthYear : nil
+                result.append(DayDashboardView.BirthdayInfo(
+                    id: contact.id.uuidString,
+                    name: contact.displayName,
+                    age: age
+                ))
+            }
+        }
+        return result
     }
 
     private struct LunarConfig: Equatable {

@@ -88,9 +88,11 @@ struct JohoUnifiedEntrySheet: View {
     // Pickers
     @State private var showingIconPicker = false
     @State private var showingCategoryPicker = false
+    @State private var showingContactPicker = false  // 情報デザイン: Contact picker for birthday
     @State private var expandedGroups: Set<ExpenseCategoryGroup> = []
 
     @Query(sort: \ExpenseCategory.sortOrder) private var categories: [ExpenseCategory]
+    @Query(sort: \Contact.familyName) private var contacts: [Contact]  // 情報デザイン: Contacts for birthday picker
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
 
     private let calendar = Calendar.current
@@ -225,6 +227,33 @@ struct JohoUnifiedEntrySheet: View {
                 expandedGroups: $expandedGroups,
                 accentColor: selectedType.color,
                 lightBackground: colors.surface
+            )
+        }
+        .sheet(isPresented: $showingContactPicker) {
+            // 情報デザイン: Contact picker for birthday - only shows contacts with birthdays
+            BirthdayContactPickerSheet(
+                contacts: contacts.filter { $0.birthday != nil },
+                onSelect: { contact in
+                    // Populate birthday fields from selected contact
+                    birthdayFirstName = contact.givenName ?? ""
+                    birthdayLastName = contact.familyName ?? ""
+                    if let birthday = contact.birthday {
+                        let calendar = Calendar.current
+                        let year = calendar.component(.year, from: birthday)
+                        let month = calendar.component(.month, from: birthday)
+                        let day = calendar.component(.day, from: birthday)
+                        // Check if year is reasonable (not a placeholder like 1604)
+                        if year > 1900 {
+                            birthdayHasYear = true
+                            selectedYear = year
+                        } else {
+                            birthdayHasYear = false
+                        }
+                        selectedMonth = month
+                        selectedDay = day
+                    }
+                    showingContactPicker = false
+                }
             )
         }
     }
@@ -685,14 +714,36 @@ struct JohoUnifiedEntrySheet: View {
 
     private var birthdayFields: some View {
         VStack(spacing: 0) {
-            fieldRow(icon: "person", color: selectedType.color) {
+            // 情報デザイン: First name row with tappable contact picker icon
+            HStack(spacing: 0) {
+                // Tappable icon to pick from contacts
+                Button {
+                    if contacts.contains(where: { $0.birthday != nil }) {
+                        showingContactPicker = true
+                        HapticManager.selection()
+                    }
+                } label: {
+                    Image(systemName: "person")
+                        .font(.system(size: 15, weight: .semibold, design: .rounded))
+                        .foregroundStyle(contacts.contains(where: { $0.birthday != nil }) ? JohoColors.black.opacity(0.7) : JohoColors.black.opacity(0.3))
+                        .johoTouchTarget()
+                        .background(selectedType.color.opacity(0.3))
+                }
+                .buttonStyle(.plain)
+                .disabled(!contacts.contains(where: { $0.birthday != nil }))
+
+                verticalWall()
+
                 TextField("First name", text: $birthdayFirstName)
                     .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
+                    .padding(.horizontal, JohoDimensions.spacingSM)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .onChange(of: birthdayFirstName) { _, newValue in
                         runSmartDetection(for: newValue)
                     }
             }
+            .frame(minHeight: 44)
 
             thinWall
 
@@ -1251,6 +1302,134 @@ struct JohoUnifiedEntrySheet: View {
             UserDefaults.standard.set(encoded, forKey: "customCountdowns")
             HapticManager.notification(.success)
         }
+    }
+}
+
+// MARK: - Birthday Contact Picker Sheet (情報デザイン)
+
+/// 情報デザイン: Simple contact picker for birthday entry
+/// Shows contacts that have birthdays, allows selecting one to auto-fill the form
+struct BirthdayContactPickerSheet: View {
+    let contacts: [Contact]
+    let onSelect: (Contact) -> Void
+
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    @State private var searchText = ""
+
+    private var filteredContacts: [Contact] {
+        if searchText.isEmpty {
+            return contacts
+        }
+        let search = searchText.lowercased()
+        return contacts.filter { contact in
+            contact.displayName.lowercased().contains(search)
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                // 情報デザイン: Search bar
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    Image(systemName: "magnifyingglass")
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.5))
+
+                    TextField("Search contacts", text: $searchText)
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                }
+                .padding(JohoDimensions.spacingSM)
+                .background(colors.surface)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                        .stroke(colors.border, lineWidth: 1)
+                )
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.vertical, JohoDimensions.spacingSM)
+
+                // 情報デザイン: Contact list
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        ForEach(filteredContacts) { contact in
+                            Button {
+                                HapticManager.selection()
+                                onSelect(contact)
+                            } label: {
+                                contactRow(contact)
+                            }
+                            .buttonStyle(.plain)
+
+                            if contact.id != filteredContacts.last?.id {
+                                Rectangle()
+                                    .fill(colors.border.opacity(0.2))
+                                    .frame(height: 0.5)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+                }
+            }
+            .johoBackground()
+            .navigationTitle("SELECT CONTACT")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                }
+            }
+        }
+    }
+
+    private func contactRow(_ contact: Contact) -> some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            // Avatar circle
+            Circle()
+                .fill(JohoColors.pink.opacity(0.3))
+                .frame(width: 36, height: 36)
+                .overlay(
+                    Text(contact.displayName.prefix(1).uppercased())
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.black)
+                )
+                .overlay(
+                    Circle()
+                        .stroke(JohoColors.black, lineWidth: 1)
+                )
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(contact.displayName)
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+
+                if let birthday = contact.birthday {
+                    let calendar = Calendar.current
+                    let month = calendar.component(.month, from: birthday)
+                    let day = calendar.component(.day, from: birthday)
+                    let year = calendar.component(.year, from: birthday)
+                    let dateStr = year > 1900 ? "\(day)/\(month)/\(year)" : "\(day)/\(month)"
+                    Text(dateStr)
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.6))
+                }
+            }
+
+            Spacer()
+
+            // Birthday cake indicator
+            Image(systemName: "birthday.cake.fill")
+                .font(.system(size: 14, weight: .medium, design: .rounded))
+                .foregroundStyle(JohoColors.pink)
+        }
+        .padding(.vertical, JohoDimensions.spacingSM)
+        .contentShape(Rectangle())
     }
 }
 
