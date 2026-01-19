@@ -259,24 +259,27 @@ struct JohoUnifiedEntrySheet: View {
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // WALL (Horizontal divider) - 情報デザイン SOFT: Gentle, not harsh
+    // WALL (Horizontal divider) - 情報デザイン: Solid black borders
     // ═══════════════════════════════════════════════════════════════
 
+    /// Section divider - 1.5pt for row-level separation
     private var wall: some View {
         Rectangle()
-            .fill(colors.border.opacity(0.3))
+            .fill(JohoColors.black)
+            .frame(height: 1.5)
+    }
+
+    /// Field divider - 1pt for cell-level separation
+    private var thinWall: some View {
+        Rectangle()
+            .fill(JohoColors.black)
             .frame(height: 1)
     }
 
-    private var thinWall: some View {
-        Rectangle()
-            .fill(colors.border.opacity(0.2))
-            .frame(height: 0.5)
-    }
-
+    /// Vertical divider - 1pt width
     private func verticalWall(width: CGFloat = 1) -> some View {
         Rectangle()
-            .fill(colors.border.opacity(0.3))
+            .fill(JohoColors.black)
             .frame(width: width)
     }
 
@@ -1366,8 +1369,8 @@ struct BirthdayContactPickerSheet: View {
 
                             if contact.id != filteredContacts.last?.id {
                                 Rectangle()
-                                    .fill(colors.border.opacity(0.2))
-                                    .frame(height: 0.5)
+                                    .fill(JohoColors.black)
+                                    .frame(height: 1)
                             }
                         }
                     }
