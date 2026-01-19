@@ -571,11 +571,10 @@ struct ContactListView: View {
         VStack(spacing: 0) {
             // Header row with two collapsible toggles
             HStack(spacing: 0) {
-                // GROUPS toggle
+                // GROUPS toggle (情報デザイン: Both filters can be active simultaneously)
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) {
                         isGroupsExpanded.toggle()
-                        if isGroupsExpanded { isIndexExpanded = false }
                     }
                     HapticManager.selection()
                 } label: {
@@ -606,11 +605,10 @@ struct ContactListView: View {
                     .fill(JohoColors.black)
                     .frame(width: 1)
 
-                // INDEX toggle
+                // INDEX toggle (情報デザイン: Both filters can be active simultaneously)
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) {
                         isIndexExpanded.toggle()
-                        if isIndexExpanded { isGroupsExpanded = false }
                     }
                     HapticManager.selection()
                 } label: {
