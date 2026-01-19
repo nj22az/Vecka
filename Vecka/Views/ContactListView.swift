@@ -498,19 +498,13 @@ struct ContactListView: View {
 
     @State private var filterLetter: String?  // 情報デザイン: Filter to show only one letter group
     @State private var selectedGroup: ContactGroup?  // 情報デザイン: Filter by contact group
+    @State private var isGroupsExpanded = false  // 情報デザイン: Collapsible group filter
+    @State private var isIndexExpanded = false  // 情報デザイン: Collapsible letter index
 
     private var contactsListContent: some View {
         VStack(spacing: 0) {
-            // 情報デザイン: Group filter strip (Family/Friends/Work/Other)
-            groupFilterStrip
-
-            // Thin divider (情報デザイン: solid black, reduced height)
-            Rectangle()
-                .fill(JohoColors.black)
-                .frame(height: 0.5)
-
-            // 情報デザイン: Always-visible horizontal letter strip (like iOS Contacts)
-            letterPickerStrip
+            // 情報デザイン: Collapsible filter header (GROUPS | INDEX)
+            filterHeaderRow
 
             // Horizontal divider
             Rectangle()
@@ -571,134 +565,219 @@ struct ContactListView: View {
         }
     }
 
-    // MARK: - Group Filter Strip (情報デザイン: Filter by contact group)
+    // MARK: - Filter Header Row (情報デザイン: Collapsible GROUPS and INDEX)
 
-    private var groupFilterStrip: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                // "All" button
+    private var filterHeaderRow: some View {
+        VStack(spacing: 0) {
+            // Header row with two collapsible toggles
+            HStack(spacing: 0) {
+                // GROUPS toggle
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) {
-                        selectedGroup = nil
+                        isGroupsExpanded.toggle()
+                        if isGroupsExpanded { isIndexExpanded = false }
+                    }
+                    HapticManager.selection()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "folder.fill")
+                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                        Text("GROUPS")
+                            .font(.system(size: 11, weight: .black, design: .rounded))
+                            .tracking(0.5)
+                        if let group = selectedGroup {
+                            Text("• \(group.localizedName)")
+                                .font(.system(size: 10, weight: .bold, design: .rounded))
+                                .foregroundStyle(Color(hex: group.color))
+                        }
+                        Spacer()
+                        Image(systemName: isGroupsExpanded ? "chevron.up" : "chevron.down")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                    }
+                    .foregroundStyle(JohoColors.black)
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+                    .padding(.vertical, JohoDimensions.spacingSM)
+                }
+                .buttonStyle(.plain)
+
+                // Vertical divider
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(width: 1)
+
+                // INDEX toggle
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isIndexExpanded.toggle()
+                        if isIndexExpanded { isGroupsExpanded = false }
+                    }
+                    HapticManager.selection()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "textformat.abc")
+                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                        Text("INDEX")
+                            .font(.system(size: 11, weight: .black, design: .rounded))
+                            .tracking(0.5)
+                        if let letter = filterLetter {
+                            Text("• \(letter)")
+                                .font(.system(size: 11, weight: .black, design: .rounded))
+                                .foregroundStyle(accentColor)
+                        }
+                        Spacer()
+                        Image(systemName: isIndexExpanded ? "chevron.up" : "chevron.down")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                    }
+                    .foregroundStyle(JohoColors.black)
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+                    .padding(.vertical, JohoDimensions.spacingSM)
+                }
+                .buttonStyle(.plain)
+            }
+            .frame(height: 40)
+            .background(JohoColors.white)
+
+            // Expanded: Group filter grid
+            if isGroupsExpanded {
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 0.5)
+
+                groupFilterGrid
+            }
+
+            // Expanded: Letter index grid
+            if isIndexExpanded {
+                Rectangle()
+                    .fill(JohoColors.black)
+                    .frame(height: 0.5)
+
+                letterIndexGrid
+            }
+        }
+        .background(JohoColors.white)
+    }
+
+    // MARK: - Group Filter Grid (情報デザイン: Wrapping grid, no scroll)
+
+    private var groupFilterGrid: some View {
+        let columns = Array(repeating: GridItem(.flexible(), spacing: 8), count: 3)
+
+        return LazyVGrid(columns: columns, spacing: 8) {
+            // "All" button
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    selectedGroup = nil
+                }
+                HapticManager.selection()
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "person.3.fill")
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                    Text("All")
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                }
+                .foregroundStyle(selectedGroup == nil ? JohoColors.white : JohoColors.black)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+                .background(selectedGroup == nil ? accentColor : JohoColors.inputBackground)
+                .clipShape(Squircle(cornerRadius: 8))
+                .overlay(
+                    Squircle(cornerRadius: 8)
+                        .stroke(JohoColors.black, lineWidth: selectedGroup == nil ? 2 : 1)
+                )
+            }
+
+            // Group buttons
+            ForEach(ContactGroup.allCases, id: \.self) { group in
+                let count = contacts.filter { $0.group == group }.count
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        selectedGroup = selectedGroup == group ? nil : group
                     }
                     HapticManager.selection()
                 } label: {
                     HStack(spacing: 4) {
-                        Image(systemName: "person.3.fill")
+                        Image(systemName: group.icon)
                             .font(.system(size: 10, weight: .bold, design: .rounded))
-                        Text("All")
+                        Text(group.localizedName)
                             .font(.system(size: 11, weight: .bold, design: .rounded))
+                        if count > 0 {
+                            Text("\(count)")
+                                .font(.system(size: 9, weight: .medium, design: .rounded))
+                                .foregroundStyle(selectedGroup == group ? JohoColors.white.opacity(0.7) : JohoColors.black.opacity(0.5))
+                        }
                     }
-                    .foregroundStyle(selectedGroup == nil ? JohoColors.white : JohoColors.black)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(selectedGroup == nil ? accentColor : JohoColors.white)
-                    .clipShape(Capsule())
+                    .foregroundStyle(selectedGroup == group ? JohoColors.white : JohoColors.black)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .background(selectedGroup == group ? Color(hex: group.color) : JohoColors.inputBackground)
+                    .clipShape(Squircle(cornerRadius: 8))
                     .overlay(
-                        Capsule()
-                            .stroke(JohoColors.black, lineWidth: selectedGroup == nil ? 2 : 1)
+                        Squircle(cornerRadius: 8)
+                            .stroke(JohoColors.black, lineWidth: selectedGroup == group ? 2 : 1)
                     )
                 }
-                .accessibilityLabel("Show all contacts")
-
-                // Group buttons
-                ForEach(ContactGroup.allCases, id: \.self) { group in
-                    let count = contacts.filter { $0.group == group }.count
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            if selectedGroup == group {
-                                selectedGroup = nil
-                            } else {
-                                selectedGroup = group
-                            }
-                        }
-                        HapticManager.selection()
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: group.icon)
-                                .font(.system(size: 10, weight: .bold, design: .rounded))
-                            Text(group.localizedName)
-                                .font(.system(size: 11, weight: .bold, design: .rounded))
-                            if count > 0 {
-                                Text("(\(count))")
-                                    .font(.system(size: 9, weight: .medium, design: .rounded))
-                                    .foregroundStyle(selectedGroup == group ? JohoColors.white.opacity(0.8) : JohoColors.black.opacity(0.5))
-                            }
-                        }
-                        .foregroundStyle(selectedGroup == group ? JohoColors.white : JohoColors.black)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .background(selectedGroup == group ? Color(hex: group.color) : JohoColors.white)
-                        .clipShape(Capsule())
-                        .overlay(
-                            Capsule()
-                                .stroke(JohoColors.black, lineWidth: selectedGroup == group ? 2 : 1)
-                        )
-                    }
-                    .accessibilityLabel("Filter by \(group.localizedName)")
-                }
             }
-            .padding(.horizontal, JohoDimensions.spacingMD)
-            .padding(.vertical, JohoDimensions.spacingSM)
         }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
+        .background(JohoColors.white)
     }
 
-    // MARK: - Letter Picker (情報デザイン: Always-visible horizontal scroller like iOS Contacts)
+    // MARK: - Letter Index Grid (情報デザイン: Wrapping grid, no scroll)
 
-    private var letterPickerStrip: some View {
+    private var letterIndexGrid: some View {
         let populatedLetters = allAvailableLetters
+        let columns = Array(repeating: GridItem(.flexible(), spacing: 6), count: 8)
 
-        return ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 6) {
-                // "ALL" button
+        return LazyVGrid(columns: columns, spacing: 6) {
+            // "ALL" button
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    filterLetter = nil
+                }
+                HapticManager.selection()
+            } label: {
+                Text("ALL")
+                    .font(.system(size: 10, weight: .black, design: .rounded))
+                    .foregroundStyle(filterLetter == nil ? JohoColors.white : JohoColors.black)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 32)
+                    .background(filterLetter == nil ? accentColor : JohoColors.inputBackground)
+                    .clipShape(Squircle(cornerRadius: 6))
+                    .overlay(
+                        Squircle(cornerRadius: 6)
+                            .stroke(JohoColors.black, lineWidth: filterLetter == nil ? 2 : 1)
+                    )
+            }
+
+            // Letter buttons
+            ForEach(populatedLetters, id: \.self) { letter in
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) {
-                        filterLetter = nil
+                        filterLetter = filterLetter == letter ? nil : letter
                     }
                     HapticManager.selection()
                 } label: {
-                    Text("ALL")
-                        .font(.system(size: 11, weight: .black, design: .rounded))
-                        .foregroundStyle(filterLetter == nil ? JohoColors.white : JohoColors.black)
-                        .frame(width: 36, height: 32)
-                        .background(filterLetter == nil ? accentColor : JohoColors.inputBackground)
+                    Text(letter)
+                        .font(.system(size: 13, weight: .black, design: .rounded))
+                        .foregroundStyle(filterLetter == letter ? JohoColors.white : JohoColors.black)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 32)
+                        .background(filterLetter == letter ? accentColor : JohoColors.inputBackground)
                         .clipShape(Squircle(cornerRadius: 6))
                         .overlay(
                             Squircle(cornerRadius: 6)
-                                .stroke(JohoColors.black, lineWidth: filterLetter == nil ? 2 : 1)
+                                .stroke(JohoColors.black, lineWidth: filterLetter == letter ? 2 : 1)
                         )
                 }
-                .accessibilityLabel("Show all contacts")
-
-                // Letter buttons
-                ForEach(populatedLetters, id: \.self) { letter in
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            if filterLetter == letter {
-                                filterLetter = nil
-                            } else {
-                                filterLetter = letter
-                            }
-                        }
-                        HapticManager.selection()
-                    } label: {
-                        Text(letter)
-                            .font(.system(size: 13, weight: .black, design: .rounded))
-                            .foregroundStyle(filterLetter == letter ? JohoColors.white : JohoColors.black)
-                            .frame(width: 32, height: 32)
-                            .background(filterLetter == letter ? accentColor : JohoColors.inputBackground)
-                            .clipShape(Squircle(cornerRadius: 6))
-                            .overlay(
-                                Squircle(cornerRadius: 6)
-                                    .stroke(JohoColors.black, lineWidth: filterLetter == letter ? 2 : 1)
-                            )
-                    }
-                    .accessibilityLabel("Filter by \(letter)")
-                }
             }
-            .padding(.horizontal, JohoDimensions.spacingMD)
-            .padding(.vertical, JohoDimensions.spacingSM)
         }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
         .background(JohoColors.white)
     }
 
