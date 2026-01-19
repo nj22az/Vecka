@@ -143,6 +143,12 @@ struct JohoUnifiedEntrySheet: View {
         return Array((current - 10)...(current + 10))
     }
 
+    /// Extended year range for birthdays (1920 to current year)
+    private var birthdayYearRange: [Int] {
+        let current = calendar.component(.year, from: Date())
+        return Array(1920...current).reversed()
+    }
+
     // ═══════════════════════════════════════════════════════════════
     // INIT
     // ═══════════════════════════════════════════════════════════════
@@ -763,7 +769,7 @@ struct JohoUnifiedEntrySheet: View {
             thinWall
 
             if birthdayHasYear {
-                dateRow(year: $selectedYear, month: $selectedMonth, day: $selectedDay)
+                birthdayDateRow(year: $selectedYear, month: $selectedMonth, day: $selectedDay)
             } else {
                 monthDayRow(month: $selectedMonth, day: $selectedDay)
             }
@@ -1010,6 +1016,16 @@ struct JohoUnifiedEntrySheet: View {
         .frame(height: 44)
     }
 
+    /// Birthday-specific date row with extended year range (1920-current)
+    private func birthdayDateRow(year: Binding<Int>, month: Binding<Int>, day: Binding<Int>) -> some View {
+        HStack(spacing: 0) {
+            iconZone(icon: "calendar", color: selectedType.color)
+            verticalWall()
+            birthdayDatePickerCells(year: year, month: month, day: day)
+        }
+        .frame(height: 44)
+    }
+
     private func labeledDateRow(label: String, year: Binding<Int>, month: Binding<Int>, day: Binding<Int>) -> some View {
         HStack(spacing: 0) {
             Text(label)
@@ -1028,6 +1044,50 @@ struct JohoUnifiedEntrySheet: View {
         HStack(spacing: 0) {
             Menu {
                 ForEach(yearRange, id: \.self) { y in
+                    Button { year.wrappedValue = y } label: { Text(String(y)) }
+                }
+            } label: {
+                Text(String(year.wrappedValue))
+                    .font(.system(size: 14, weight: .bold, design: .monospaced))
+                    .foregroundStyle(colors.primary)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+            }
+
+            verticalWall(width: 1)
+
+            Menu {
+                ForEach(1...12, id: \.self) { m in
+                    Button { month.wrappedValue = m } label: { Text(monthName(m)) }
+                }
+            } label: {
+                Text(monthName(month.wrappedValue))
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 44)
+            }
+
+            verticalWall(width: 1)
+
+            Menu {
+                ForEach(1...daysInMonth(month.wrappedValue, year: year.wrappedValue), id: \.self) { d in
+                    Button { day.wrappedValue = d } label: { Text("\(d)") }
+                }
+            } label: {
+                Text("\(day.wrappedValue)")
+                    .font(.system(size: 14, weight: .bold, design: .monospaced))
+                    .foregroundStyle(colors.primary)
+                    .johoTouchTarget()
+            }
+        }
+    }
+
+    /// Birthday date picker with extended year range (1920-current, newest first)
+    private func birthdayDatePickerCells(year: Binding<Int>, month: Binding<Int>, day: Binding<Int>) -> some View {
+        HStack(spacing: 0) {
+            Menu {
+                ForEach(birthdayYearRange, id: \.self) { y in
                     Button { year.wrappedValue = y } label: { Text(String(y)) }
                 }
             } label: {
