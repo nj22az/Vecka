@@ -2173,34 +2173,28 @@ struct JohoTypeSelector: View {
 
     var body: some View {
         Menu {
+            // 情報デザイン: Text-only menu items - icon is already visible in selector
             ForEach(EntryType.allCases) { type in
                 Button {
                     selectedType = type
                     onTypeChange?(type)
                     HapticManager.selection()
                 } label: {
-                    Label(type.displayName, systemImage: type.icon)
+                    Text(type.displayName)
                 }
             }
         } label: {
             HStack(spacing: JohoDimensions.spacingSM) {
-                // Icon in squircle (neutral - no color)
+                // Icon (no nested border - simpler, no flashing)
                 Image(systemName: selectedType.icon)
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
-                    .frame(width: 32, height: 32)
-                    .background(colors.surface)
-                    .johoBordered(cornerRadius: 8, borderWidth: 1.5, borderColor: colors.border)
-
-                // Type name
-                Text(selectedType.displayName)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primary)
+                    .frame(width: 28, height: 28)
 
                 // Chevron
                 Image(systemName: "chevron.down")
                     .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primary.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(0.6))
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)

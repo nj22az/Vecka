@@ -7,6 +7,39 @@
 
 import SwiftUI
 
+// MARK: - Event Text Color Setting
+
+/// 情報デザイン: Classic Japanese planner text colors
+enum EventTextColor: String, CaseIterable {
+    case black = "black"
+    case red = "red"
+    case blue = "blue"
+
+    var color: Color {
+        switch self {
+        case .black: return JohoColors.black
+        case .red: return Color(hex: "D32F2F")  // Deep red
+        case .blue: return Color(hex: "1976D2")  // Deep blue
+        }
+    }
+
+    var darkModeColor: Color {
+        switch self {
+        case .black: return JohoColors.white
+        case .red: return Color(hex: "EF5350")  // Lighter red for dark mode
+        case .blue: return Color(hex: "42A5F5")  // Lighter blue for dark mode
+        }
+    }
+
+    var displayName: String {
+        switch self {
+        case .black: return "Black"
+        case .red: return "Red"
+        case .blue: return "Blue"
+        }
+    }
+}
+
 struct DayDashboardView: View {
     struct HolidayInfo: Identifiable, Equatable {
         let id: String
@@ -43,9 +76,21 @@ struct DayDashboardView: View {
 
     @Environment(\.locale) private var locale
     @Environment(\.johoColorMode) private var colorMode
+    @AppStorage("eventTextColor") private var eventTextColorRaw = "black"
 
     /// Dynamic colors based on color mode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    /// 情報デザイン: Event text color respecting dark mode
+    private var eventTextColor: Color {
+        let setting = EventTextColor(rawValue: eventTextColorRaw) ?? .black
+        return colorMode == .dark ? setting.darkModeColor : setting.color
+    }
+
+    /// 情報デザイン: Border color for dark mode (white borders)
+    private var eventBorderColor: Color {
+        colorMode == .dark ? JohoColors.white : JohoColors.black
+    }
 
     private let previewLimit = 3
     private let pinnedPreviewLimit = 2
@@ -438,14 +483,14 @@ struct DayDashboardView: View {
 
                 // Vertical wall
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(eventBorderColor)
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
                 // Icon compartment
                 Image(systemName: icon)
                     .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(eventBorderColor)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
             }
@@ -454,111 +499,72 @@ struct DayDashboardView: View {
 
             // Horizontal divider
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(eventBorderColor)
                 .frame(height: 1.5)
 
-            // CONTENT
+            // CONTENT: Clean white/dark background for text
             VStack(alignment: .leading, spacing: 0) {
                 content()
             }
-            .padding(.vertical, JohoDimensions.spacingXS)
+            .background(colorMode == .dark ? colors.surface : JohoColors.white)
         }
-        .background(zone.background)
+        .background(colorMode == .dark ? colors.surface : zone.background)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(eventBorderColor, lineWidth: JohoDimensions.borderMedium)
         )
     }
 
-    /// 情報デザイン: Bento holiday row with compartments
+    /// 情報デザイン: Clean holiday row - just text, Japanese planner style
     @ViewBuilder
     private func bentoHolidayRow(holiday: HolidayInfo) -> some View {
-        HStack(spacing: 0) {
-            // LEFT: Type indicator
-            HStack(spacing: 3) {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            // 情報デザイン: Simple bullet for bank holidays
+            if holiday.isBankHoliday {
                 Circle()
-                    .fill(SpecialDayType.holiday.accentColor)
-                    .frame(width: 10, height: 10)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
-
-                if holiday.isBankHoliday {
-                    Image(systemName: "building.columns.fill")
-                        .font(.system(size: 7, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
-                }
+                    .fill(eventTextColor)
+                    .frame(width: 6, height: 6)
             }
-            .frame(width: 32, alignment: .center)
-            .frame(maxHeight: .infinity)
 
-            // Vertical wall
-            Rectangle()
-                .fill(JohoColors.black)
-                .frame(width: 1.5)
-                .frame(maxHeight: .infinity)
+            // Name only - clean Japanese planner style
+            Text(holiday.name)
+                .font(JohoFont.body)
+                .foregroundStyle(eventTextColor)
+                .lineLimit(1)
 
-            // CENTER: Icon + Name
-            HStack(spacing: JohoDimensions.spacingSM) {
-                Image(systemName: holiday.symbolName ?? (holiday.isBankHoliday ? "flag.fill" : "flag"))
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
-
-                Text(holiday.name)
-                    .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
-                    .lineLimit(1)
-            }
-            .padding(.horizontal, JohoDimensions.spacingSM)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            Spacer()
         }
-        .frame(minHeight: 36)
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
+        .frame(minHeight: 32)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(holiday.name)\(holiday.isBankHoliday ? ", public holiday" : "")")
     }
 
-    /// 情報デザイン: Bento birthday row with compartments
+    /// 情報デザイン: Clean birthday row - just text + age, Japanese planner style
     @ViewBuilder
     private func bentoBirthdayRow(birthday: BirthdayInfo) -> some View {
-        HStack(spacing: 0) {
-            // LEFT: Type indicator (pink for celebrations)
-            HStack(spacing: 3) {
-                Circle()
-                    .fill(JohoColors.pink)
-                    .frame(width: 10, height: 10)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+        HStack(spacing: JohoDimensions.spacingSM) {
+            // Name only - clean Japanese planner style
+            Text(birthday.name)
+                .font(JohoFont.body)
+                .foregroundStyle(eventTextColor)
+                .lineLimit(1)
+
+            Spacer(minLength: 4)
+
+            // Age in parentheses if available - simple text, not a badge
+            if let age = birthday.age {
+                Text("(\(age))")
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(eventTextColor.opacity(0.6))
             }
-            .frame(width: 32, alignment: .center)
-            .frame(maxHeight: .infinity)
-
-            // Vertical wall
-            Rectangle()
-                .fill(JohoColors.black)
-                .frame(width: 1.5)
-                .frame(maxHeight: .infinity)
-
-            // CENTER: Icon + Name + Age
-            HStack(spacing: JohoDimensions.spacingSM) {
-                Image(systemName: "birthday.cake.fill")
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
-
-                Text(birthday.name)
-                    .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
-                    .lineLimit(1)
-
-                Spacer(minLength: 4)
-
-                // Age badge if available
-                if let age = birthday.age {
-                    JohoPill(text: "\(age)", style: .blackOnWhite, size: .small)
-                }
-            }
-            .padding(.horizontal, JohoDimensions.spacingSM)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         }
-        .frame(minHeight: 36)
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
+        .frame(minHeight: 32)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(birthday.name)'s birthday\(birthday.age != nil ? ", turning \(birthday.age!)" : "")")

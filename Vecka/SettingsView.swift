@@ -20,6 +20,7 @@ struct SettingsView: View {
     @AppStorage("johoColorMode") private var johoColorMode = "light"
     @AppStorage("showLunarCalendar") private var showLunarCalendar = false  // For Vietnamese holidays
     @AppStorage("customLandingTitle") private var customLandingTitle = ""
+    @AppStorage("eventTextColor") private var eventTextColor = "black"  // 情報デザイン: Japanese planner text color
     // PDF Export settings (情報デザイン: User-configurable branding)
     @AppStorage("pdfExportTitle") private var pdfExportTitle = "Contact Directory"
     @AppStorage("pdfExportFooter") private var pdfExportFooter = ""  // Empty = page number only
@@ -133,6 +134,65 @@ struct SettingsView: View {
                         )
                     }
                     .buttonStyle(.plain)
+
+                    // 情報デザイン: Event text color picker (Japanese planner style)
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        HStack(spacing: JohoDimensions.spacingMD) {
+                            Image(systemName: "textformat")
+                                .font(.system(size: 20, weight: .bold))
+                                .foregroundStyle(colors.primary)
+                                .johoTouchTarget()
+                                .background(JohoColors.white)
+                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                .overlay(
+                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                        .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
+                                )
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Event Text Color")
+                                    .font(JohoFont.headline)
+                                    .foregroundStyle(colors.primary)
+
+                                Text("Japanese planner style")
+                                    .font(JohoFont.body)
+                                    .foregroundStyle(colors.secondary)
+                            }
+
+                            Spacer()
+                        }
+
+                        // Color options
+                        HStack(spacing: JohoDimensions.spacingSM) {
+                            ForEach(EventTextColor.allCases, id: \.rawValue) { color in
+                                Button {
+                                    eventTextColor = color.rawValue
+                                    HapticManager.selection()
+                                } label: {
+                                    Text(color.displayName)
+                                        .font(JohoFont.body)
+                                        .foregroundStyle(color.color)
+                                        .padding(.horizontal, JohoDimensions.spacingMD)
+                                        .padding(.vertical, JohoDimensions.spacingSM)
+                                        .frame(maxWidth: .infinity)
+                                        .background(eventTextColor == color.rawValue ? color.color.opacity(0.15) : colors.surface)
+                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                        .overlay(
+                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                                .stroke(eventTextColor == color.rawValue ? color.color : colors.border, lineWidth: eventTextColor == color.rawValue ? 2 : 1)
+                                        )
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+                    .padding(JohoDimensions.spacingMD)
+                    .background(colors.surface)
+                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                    .overlay(
+                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+                    )
                 }
                 .padding(JohoDimensions.spacingLG)
                 .background(colors.surface)

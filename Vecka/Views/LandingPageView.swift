@@ -516,40 +516,48 @@ struct LandingPageView: View {
         Group {
             if isRegularWidth {
                 // iPad: Same layout as iPhone, scaled to fill screen
-                // 情報デザイン: Identical components, just larger
-                ScrollView {
-                    VStack(spacing: JohoDimensions.spacingMD) {
-                        pageHeader
+                // 情報デザイン: Fixed header + scrollable content
+                VStack(spacing: 0) {
+                    pageHeader
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, JohoDimensions.spacingLG)
+                        .padding(.top, JohoDimensions.spacingSM)
+                        .padding(.bottom, JohoDimensions.spacingMD)
 
-                        if displayClocks.isNotEmpty {
-                            worldClocksCard
+                    ScrollView {
+                        VStack(spacing: JohoDimensions.spacingMD) {
+                            if displayClocks.isNotEmpty {
+                                worldClocksCard
+                            }
+
+                            agendaCard
+                            randomFactsCard
                         }
-
-                        todayCard
-                        upcomingCard
-                        randomFactsCard
+                        .padding(.horizontal, JohoDimensions.spacingLG)
+                        .padding(.bottom, JohoDimensions.spacingXL)
                     }
-                    .padding(.horizontal, JohoDimensions.spacingLG)
-                    .padding(.top, JohoDimensions.spacingSM)
-                    .padding(.bottom, JohoDimensions.spacingXL)
                 }
             } else {
-                // iPhone/iPad mini: Scrollable stacked layout
-                ScrollView {
-                    VStack(spacing: JohoDimensions.spacingMD) {
-                        pageHeader
+                // iPhone/iPad mini: Fixed header + scrollable content
+                VStack(spacing: 0) {
+                    pageHeader
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, JohoDimensions.spacingSM)
+                        .padding(.top, JohoDimensions.spacingSM)
+                        .padding(.bottom, JohoDimensions.spacingMD)
 
-                        if displayClocks.isNotEmpty {
-                            worldClocksCard
+                    ScrollView {
+                        VStack(spacing: JohoDimensions.spacingMD) {
+                            if displayClocks.isNotEmpty {
+                                worldClocksCard
+                            }
+
+                            agendaCard
+                            randomFactsCard
                         }
-
-                        todayCard
-                        upcomingCard
-                        randomFactsCard
+                        .padding(.horizontal, JohoDimensions.spacingSM)
+                        .padding(.bottom, JohoDimensions.spacingXL)
                     }
-                    .padding(.horizontal, JohoDimensions.spacingSM)
-                    .padding(.top, JohoDimensions.spacingSM)
-                    .padding(.bottom, JohoDimensions.spacingXL)
                 }
             }
         }
@@ -3102,7 +3110,357 @@ struct LandingPageView: View {
         )
     }
 
-    // MARK: - UPCOMING Card (情報デザイン: Next 7 days overview)
+    // MARK: - AGENDA Card (情報デザイン: Unified Today/Upcoming/Recent)
+
+    /// Agenda mode determines what content to show
+    private enum AgendaMode {
+        case today      // Has items today
+        case upcoming   // Nothing today, show next 7 days
+        case recent     // Nothing upcoming, show what happened recently
+
+        var icon: String {
+            switch self {
+            case .today: return "sun.max.fill"
+            case .upcoming: return "arrow.right.circle.fill"
+            case .recent: return "clock.arrow.circlepath"
+            }
+        }
+
+        var title: String {
+            switch self {
+            case .today: return "TODAY"
+            case .upcoming: return "UPCOMING"
+            case .recent: return "RECENT"
+            }
+        }
+
+        var accentColor: Color {
+            switch self {
+            case .today: return JohoColors.yellow
+            case .upcoming: return JohoColors.cyan
+            case .recent: return JohoColors.purple
+            }
+        }
+
+        var emptyMessage: String {
+            switch self {
+            case .today: return "Nothing scheduled"
+            case .upcoming: return "Nothing in the next 7 days"
+            case .recent: return "No recent activity"
+            }
+        }
+    }
+
+    /// Determine which agenda mode to show
+    private var agendaMode: AgendaMode {
+        if !todayItems.isEmpty {
+            return .today
+        } else if !upcomingItemsExcludingToday.isEmpty {
+            return .upcoming
+        } else {
+            return .recent
+        }
+    }
+
+    /// Upcoming items excluding today (for when today is empty)
+    private var upcomingItemsExcludingToday: [UpcomingItem] {
+        upcomingItems.filter { !$0.isToday }
+    }
+
+    /// Recent items from yesterday and before (last 7 days)
+    private var recentItems: [TodayItem] {
+        let calendar = Calendar.iso8601
+        var items: [TodayItem] = []
+
+        // Look back 7 days
+        for dayOffset in 1...7 {
+            guard let date = calendar.date(byAdding: .day, value: -dayOffset, to: todayStart) else { continue }
+
+            // Holidays
+            if let holidays = holidayManager.holidayCache[date] {
+                for holiday in holidays {
+                    let color = holiday.isBankHoliday ? JohoColors.red : JohoColors.cyan
+                    let badge = holiday.isBankHoliday ? "HOL" : "OBS"
+                    items.append(TodayItem(
+                        title: holiday.displayTitle,
+                        subtitle: formatRelativeDate(date),
+                        icon: holiday.isBankHoliday ? "star.fill" : "sparkles",
+                        color: color,
+                        typeBadge: badge
+                    ))
+                }
+            }
+
+            // Birthdays
+            let month = calendar.component(.month, from: date)
+            let day = calendar.component(.day, from: date)
+            for contact in contacts {
+                guard let birthday = contact.birthday else { continue }
+                let bMonth = calendar.component(.month, from: birthday)
+                let bDay = calendar.component(.day, from: birthday)
+                if bMonth == month && bDay == day {
+                    let name = contact.displayName.isEmpty ? "Someone" : contact.displayName
+                    items.append(TodayItem(
+                        title: "\(name)'s Birthday",
+                        subtitle: formatRelativeDate(date),
+                        icon: "birthday.cake.fill",
+                        color: JohoColors.pink,
+                        typeBadge: "BDY"
+                    ))
+                }
+            }
+
+            // Notes
+            for note in allNotes {
+                let noteDate = calendar.startOfDay(for: note.date)
+                if noteDate == date {
+                    let preview = String(note.content.prefix(30))
+                    items.append(TodayItem(
+                        title: preview + (note.content.count > 30 ? "..." : ""),
+                        subtitle: formatRelativeDate(date),
+                        icon: "note.text",
+                        color: JohoColors.yellow,
+                        typeBadge: "NTE"
+                    ))
+                }
+            }
+        }
+
+        return items
+    }
+
+    /// Format relative date (Yesterday, 2 days ago, etc.)
+    private func formatRelativeDate(_ date: Date) -> String {
+        let calendar = Calendar.iso8601
+        let daysDiff = calendar.dateComponents([.day], from: date, to: todayStart).day ?? 0
+
+        if daysDiff == 1 {
+            return "Yesterday"
+        } else if daysDiff < 7 {
+            return "\(daysDiff) days ago"
+        } else {
+            return date.formatted(.dateTime.month(.abbreviated).day())
+        }
+    }
+
+    /// Unified agenda card - shows Today, Upcoming, or Recent based on content
+    private var agendaCard: some View {
+        let mode = agendaMode
+
+        return VStack(spacing: 0) {
+            // Header
+            HStack {
+                Circle()
+                    .fill(mode.accentColor)
+                    .frame(width: 10, height: 10)
+                    .overlay(Circle().stroke(colors.border, lineWidth: 1))
+
+                Text(mode.title)
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .tracking(1.5)
+                    .foregroundStyle(colors.primary)
+
+                Spacer()
+
+                // Item count
+                let count = agendaItemCount(for: mode)
+                if count > 0 {
+                    Text("\(count)")
+                        .font(JohoFont.labelSmall)
+                        .foregroundStyle(colors.secondary)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            // Content based on mode
+            switch mode {
+            case .today:
+                todayContent
+
+            case .upcoming:
+                upcomingContent
+
+            case .recent:
+                recentContent
+            }
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+        )
+    }
+
+    /// Item count for agenda mode
+    private func agendaItemCount(for mode: AgendaMode) -> Int {
+        switch mode {
+        case .today: return todayItems.count
+        case .upcoming: return upcomingItemsExcludingToday.count
+        case .recent: return recentItems.count
+        }
+    }
+
+    /// Today content for agenda card
+    private var todayContent: some View {
+        Group {
+            if todayItems.isEmpty {
+                Text("Nothing scheduled")
+                    .font(JohoFont.body)
+                    .foregroundStyle(colors.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(JohoDimensions.spacingMD)
+            } else {
+                VStack(spacing: 0) {
+                    ForEach(Array(todayItems.prefix(5).enumerated()), id: \.element.id) { index, item in
+                        if index > 0 {
+                            Rectangle()
+                                .fill(colors.border.opacity(0.2))
+                                .frame(height: 1)
+                                .padding(.horizontal, JohoDimensions.spacingMD)
+                        }
+                        todayItemRow(item)
+                    }
+
+                    if todayItems.count > 5 {
+                        Rectangle()
+                            .fill(colors.border.opacity(0.2))
+                            .frame(height: 1)
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+
+                        Text("+\(todayItems.count - 5) more")
+                            .font(JohoFont.labelSmall)
+                            .foregroundStyle(colors.secondary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, JohoDimensions.spacingSM)
+                    }
+                }
+            }
+        }
+    }
+
+    /// Upcoming content for agenda card
+    private var upcomingContent: some View {
+        Group {
+            let items = upcomingItemsExcludingToday
+            if items.isEmpty {
+                Text("Nothing in the next 7 days")
+                    .font(JohoFont.body)
+                    .foregroundStyle(colors.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(JohoDimensions.spacingMD)
+            } else {
+                VStack(spacing: 0) {
+                    ForEach(Array(items.prefix(5).enumerated()), id: \.element.id) { index, item in
+                        if index > 0 {
+                            Rectangle()
+                                .fill(colors.border.opacity(0.2))
+                                .frame(height: 1)
+                                .padding(.horizontal, JohoDimensions.spacingMD)
+                        }
+                        upcomingItemRow(item)
+                    }
+
+                    if items.count > 5 {
+                        Rectangle()
+                            .fill(colors.border.opacity(0.2))
+                            .frame(height: 1)
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+
+                        Text("+\(items.count - 5) more")
+                            .font(JohoFont.labelSmall)
+                            .foregroundStyle(colors.secondary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.vertical, JohoDimensions.spacingSM)
+                    }
+                }
+            }
+        }
+    }
+
+    /// Recent content for agenda card
+    private var recentContent: some View {
+        Group {
+            let items = recentItems
+            if items.isEmpty {
+                VStack(spacing: JohoDimensions.spacingSM) {
+                    Image(systemName: "checkmark.circle")
+                        .font(.system(size: 24, weight: .medium))
+                        .foregroundStyle(colors.secondary.opacity(0.4))
+
+                    Text("All caught up!")
+                        .font(JohoFont.body)
+                        .foregroundStyle(colors.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(JohoDimensions.spacingMD)
+            } else {
+                VStack(spacing: 0) {
+                    ForEach(Array(items.prefix(5).enumerated()), id: \.element.id) { index, item in
+                        if index > 0 {
+                            Rectangle()
+                                .fill(colors.border.opacity(0.2))
+                                .frame(height: 1)
+                                .padding(.horizontal, JohoDimensions.spacingMD)
+                        }
+                        recentItemRow(item)
+                    }
+                }
+            }
+        }
+    }
+
+    /// Recent item row (similar to today but with subtitle for date)
+    private func recentItemRow(_ item: TodayItem) -> some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            // Type indicator
+            Circle()
+                .fill(item.color)
+                .frame(width: 8, height: 8)
+                .overlay(Circle().stroke(colors.border, lineWidth: 1))
+
+            // Icon
+            Image(systemName: item.icon)
+                .font(.system(size: 12, weight: .medium, design: .rounded))
+                .foregroundStyle(item.color)
+                .frame(width: 16)
+
+            // Title + subtitle
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.title)
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(colors.primary)
+                    .lineLimit(1)
+
+                if let subtitle = item.subtitle {
+                    Text(subtitle)
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+            }
+
+            Spacer()
+
+            // Type badge
+            Text(item.typeBadge)
+                .font(.system(size: 8, weight: .bold, design: .rounded))
+                .foregroundStyle(item.color)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(item.color.opacity(0.15))
+                .clipShape(Capsule())
+        }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
+    }
+
+    // MARK: - UPCOMING Card (情報デザイン: Next 7 days overview) - LEGACY
 
     private var upcomingCard: some View {
         VStack(spacing: 0) {
