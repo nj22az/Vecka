@@ -1334,29 +1334,26 @@ struct BirthdayContactPickerSheet: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // 情報デザイン: Search bar
-                HStack(spacing: JohoDimensions.spacingSM) {
-                    Image(systemName: "magnifyingglass")
-                        .font(.system(size: 14, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.5))
+            ScrollView {
+                VStack(spacing: 0) {
+                    // 情報デザイン: Search bar
+                    HStack(spacing: JohoDimensions.spacingSM) {
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundStyle(JohoColors.black.opacity(0.5))
 
-                    TextField("Search contacts", text: $searchText)
-                        .font(.system(size: 14, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary)
-                }
-                .padding(JohoDimensions.spacingSM)
-                .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .stroke(colors.border, lineWidth: 1)
-                )
-                .padding(.horizontal, JohoDimensions.spacingLG)
-                .padding(.vertical, JohoDimensions.spacingSM)
+                        TextField("Search contacts", text: $searchText)
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundStyle(JohoColors.black)
+                    }
+                    .padding(JohoDimensions.spacingSM)
+                    .background(JohoColors.white)
 
-                // 情報デザイン: Contact list
-                ScrollView {
+                    Rectangle()
+                        .fill(JohoColors.black)
+                        .frame(height: 1.5)
+
+                    // 情報デザイン: Contact list
                     LazyVStack(spacing: 0) {
                         ForEach(filteredContacts) { contact in
                             Button {
@@ -1374,9 +1371,17 @@ struct BirthdayContactPickerSheet: View {
                             }
                         }
                     }
-                    .padding(.horizontal, JohoDimensions.spacingLG)
                 }
+                .background(JohoColors.white)
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+                .overlay(
+                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                        .stroke(JohoColors.black, lineWidth: 3)
+                )
+                .padding(.horizontal, JohoDimensions.spacingSM)
+                .padding(.top, JohoDimensions.spacingSM)
             }
+            .scrollContentBackground(.hidden)
             .johoBackground()
             .navigationTitle("SELECT CONTACT")
             .navigationBarTitleDisplayMode(.inline)
@@ -1410,7 +1415,7 @@ struct BirthdayContactPickerSheet: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(contact.displayName)
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
-                    .foregroundStyle(colors.primary)
+                    .foregroundStyle(JohoColors.black)
 
                 if let birthday = contact.birthday {
                     let calendar = Calendar.current
@@ -1420,7 +1425,7 @@ struct BirthdayContactPickerSheet: View {
                     let dateStr = year > 1900 ? "\(day)/\(month)/\(year)" : "\(day)/\(month)"
                     Text(dateStr)
                         .font(.system(size: 11, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(JohoColors.black.opacity(0.6))
                 }
             }
 
