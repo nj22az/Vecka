@@ -596,7 +596,8 @@ struct ContactListView: View {
                     }
                     .foregroundStyle(JohoColors.black)
                     .padding(.horizontal, JohoDimensions.spacingMD)
-                    .padding(.vertical, JohoDimensions.spacingSM)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
 
@@ -630,7 +631,8 @@ struct ContactListView: View {
                     }
                     .foregroundStyle(JohoColors.black)
                     .padding(.horizontal, JohoDimensions.spacingMD)
-                    .padding(.vertical, JohoDimensions.spacingSM)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }
