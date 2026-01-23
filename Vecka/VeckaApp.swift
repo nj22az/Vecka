@@ -65,6 +65,8 @@ struct VeckaApp: App {
             QuirkyFact.self,
             // Calendar facts (情報デザイン: Database-driven calendar information)
             CalendarFact.self,
+            // Unified Memo model (MUJI paper planner style)
+            Memo.self,
         ])
 
         // CloudKit sync disabled: SwiftData models need inverse relationships,

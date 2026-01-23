@@ -504,28 +504,30 @@ struct DeveloperSettingsView: View {
 
     private func generateDummyNotes() {
         let noteContents = [
-            "Meeting with design team about 情報デザイン implementation",
-            "Review SwiftUI performance optimizations",
-            "Call dentist for appointment",
-            "Buy groceries: milk, bread, eggs, coffee",
-            "Prepare presentation for Friday",
-            "Update project documentation",
-            "Book flight tickets for vacation",
-            "Research new Swift 6 features",
-            "Fix bug in calendar view",
-            "Plan birthday surprise for Lisa"
+            ("Morning Standup", "Meeting with design team about 情報デザイン implementation", MemoPriority.high),
+            ("Code Review", "Review SwiftUI performance optimizations", MemoPriority.normal),
+            ("Personal", "Call dentist for appointment", MemoPriority.low),
+            ("Shopping List", "Buy groceries: milk, bread, eggs, coffee", MemoPriority.normal),
+            ("Work", "Prepare presentation for Friday", MemoPriority.high),
+            ("Documentation", "Update project documentation", MemoPriority.normal),
+            ("Travel", "Book flight tickets for vacation", MemoPriority.normal),
+            ("Learning", "Research new Swift 6 features", MemoPriority.low),
+            ("Bug Fix", "Fix bug in calendar view", MemoPriority.high),
+            ("Surprise", "Plan birthday surprise for Lisa", MemoPriority.normal)
         ]
 
         let calendar = Calendar.current
-        for i in 0..<10 {
+        for (title, content, priority) in noteContents {
             let daysAgo = Int.random(in: 0...30)
             let date = calendar.date(byAdding: .day, value: -daysAgo, to: Date()) ?? Date()
 
-            let note = DailyNote(
+            let memo = Memo.note(
+                title: title,
+                body: content,
                 date: date,
-                content: noteContents[i]
+                priority: priority
             )
-            modelContext.insert(note)
+            modelContext.insert(memo)
         }
 
         try? modelContext.save()
@@ -535,33 +537,32 @@ struct DeveloperSettingsView: View {
     }
 
     private func generateDummyExpenses() {
-        let descriptions = [
-            "Lunch at restaurant",
-            "Uber ride",
-            "Netflix subscription",
-            "New headphones",
-            "Electricity bill",
-            "Gym membership",
-            "Coffee",
-            "Train ticket",
-            "Movie tickets",
-            "Groceries"
+        let expenses: [(description: String, category: String, minAmount: Double, maxAmount: Double)] = [
+            ("Lunch at restaurant", "food", 80, 250),
+            ("Uber ride", "transport", 50, 200),
+            ("Netflix subscription", "entertainment", 99, 99),
+            ("New headphones", "shopping", 500, 2000),
+            ("Electricity bill", "utilities", 300, 800),
+            ("Gym membership", "health", 299, 499),
+            ("Coffee at Espresso House", "food", 35, 75),
+            ("Train ticket to Malmö", "transport", 150, 400),
+            ("Movie tickets", "entertainment", 100, 200),
+            ("Weekly groceries", "food", 500, 1200)
         ]
-        let merchants = ["McDonald's", "Uber", "Netflix", "Apple Store", "Vattenfall", "SATS", "Espresso House", "SJ", "SF Bio", "ICA"]
 
         let calendar = Calendar.current
-        for i in 0..<10 {
+        for expense in expenses {
             let daysAgo = Int.random(in: 0...30)
             let date = calendar.date(byAdding: .day, value: -daysAgo, to: Date()) ?? Date()
 
-            let expense = ExpenseItem(
-                date: date,
-                amount: Double.random(in: 50...500),
+            let memo = Memo.expense(
+                description: expense.description,
+                amount: Double.random(in: expense.minAmount...expense.maxAmount).rounded(),
                 currency: "SEK",
-                merchantName: merchants[i],
-                itemDescription: descriptions[i]
+                category: expense.category,
+                date: date
             )
-            modelContext.insert(expense)
+            modelContext.insert(memo)
         }
 
         try? modelContext.save()
@@ -571,31 +572,30 @@ struct DeveloperSettingsView: View {
     }
 
     private func generateDummyTrips() {
-        let destinations = [
-            ("Tokyo", "Japan"),
-            ("Paris", "France"),
-            ("New York", "USA"),
-            ("London", "UK"),
-            ("Barcelona", "Spain")
+        let trips: [(city: String, country: String, tripType: TripType)] = [
+            ("Tokyo", "Japan", .personal),
+            ("Paris", "France", .personal),
+            ("New York", "USA", .business),
+            ("London", "UK", .mixed),
+            ("Barcelona", "Spain", .personal)
         ]
 
         let calendar = Calendar.current
-        for (city, country) in destinations {
+        for trip in trips {
             let startOffset = Int.random(in: -30...60)
             let duration = Int.random(in: 3...14)
 
             let startDate = calendar.date(byAdding: .day, value: startOffset, to: Date()) ?? Date()
             let endDate = calendar.date(byAdding: .day, value: duration, to: startDate) ?? startDate
 
-            let trip = TravelTrip(
-                tripName: "\(city) Adventure",
-                destination: "\(city), \(country)",
+            let memo = Memo.trip(
+                name: "\(trip.city) Adventure",
+                destination: "\(trip.city), \(trip.country)",
                 startDate: startDate,
                 endDate: endDate,
-                purpose: "Test trip for developer features",
-                tripType: [TripType.business, .personal, .mixed].randomElement() ?? .personal
+                tripType: trip.tripType
             )
-            modelContext.insert(trip)
+            modelContext.insert(memo)
         }
 
         try? modelContext.save()
@@ -605,30 +605,29 @@ struct DeveloperSettingsView: View {
     }
 
     private func generateDummyCountdowns() {
-        let events = [
-            ("Summer Vacation", 45, "airplane"),
-            ("Birthday Party", 12, "gift.fill"),
-            ("Conference Talk", 30, "mic.fill"),
-            ("Product Launch", 60, "rocket.fill"),
-            ("Wedding Anniversary", 90, "heart.fill")
+        let countdowns = [
+            ("Summer Vacation", 45, "airplane", "A5F3FC"),      // Cyan
+            ("Birthday Party", 12, "gift.fill", "FECDD3"),     // Pink
+            ("Conference Talk", 30, "mic.fill", "FFE566"),     // Yellow
+            ("Product Launch", 60, "rocket.fill", "E9D5FF"),   // Purple
+            ("Wedding Anniversary", 90, "heart.fill", "BBF7D0") // Green
         ]
-        let colorHexes = ["FFD700", "FF6B6B", "4ECDC4", "45B7D1", "96CEB4"]
 
         let calendar = Calendar.current
-        for (index, (title, daysUntil, icon)) in events.enumerated() {
+        for (title, daysUntil, icon, colorHex) in countdowns {
             let targetDate = calendar.date(byAdding: .day, value: daysUntil, to: Date()) ?? Date()
 
-            let event = CountdownEvent(
+            let memo = Memo.countdown(
                 title: title,
                 targetDate: targetDate,
                 icon: icon,
-                colorHex: colorHexes[index % colorHexes.count]
+                colorHex: colorHex
             )
-            modelContext.insert(event)
+            modelContext.insert(memo)
         }
 
         try? modelContext.save()
-        successMessage = "Generated 5 test events!"
+        successMessage = "Generated 5 test countdowns!"
         showingSuccessMessage = true
         HapticManager.notification(.success)
     }
@@ -666,6 +665,8 @@ struct DeveloperSettingsView: View {
         // Delete all user data
         do {
             try modelContext.delete(model: Contact.self)
+            try modelContext.delete(model: Memo.self)
+            // Legacy models (keep for migration compatibility)
             try modelContext.delete(model: DailyNote.self)
             try modelContext.delete(model: ExpenseItem.self)
             try modelContext.delete(model: TravelTrip.self)
@@ -1027,7 +1028,7 @@ struct GeometricPattern: Shape {
 
 #Preview {
     DeveloperSettingsView()
-        .modelContainer(for: [Contact.self, DailyNote.self, ExpenseItem.self, TravelTrip.self, CountdownEvent.self, HolidayRule.self])
+        .modelContainer(for: [Contact.self, Memo.self, DailyNote.self, ExpenseItem.self, TravelTrip.self, CountdownEvent.self, HolidayRule.self])
 }
 
 #Preview("Sample Avatars") {

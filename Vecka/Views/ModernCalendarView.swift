@@ -492,9 +492,9 @@ struct ModernCalendarView: View {
             }
             .presentationCornerRadius(20)
         }
-        // 情報デザイン: Unified Entry sheet (Note/Trip/Expense)
+        // 情報デザイン: Unified Memo Editor (Note/Trip/Expense/Mileage/Event/Countdown)
         .sheet(isPresented: $showUnifiedEntry) {
-            JohoUnifiedEntrySheet(selectedDate: selectedDate)
+            MemoEditorView(date: selectedDate)
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
                 .presentationCornerRadius(20)
