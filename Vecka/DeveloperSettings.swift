@@ -504,50 +504,45 @@ struct DeveloperSettingsView: View {
 
     private func generateDummyNotes() {
         let noteContents = [
-            ("Morning Standup", "Meeting with design team about 情報デザイン implementation", MemoPriority.high),
-            ("Code Review", "Review SwiftUI performance optimizations", MemoPriority.normal),
-            ("Personal", "Call dentist for appointment", MemoPriority.low),
-            ("Shopping List", "Buy groceries: milk, bread, eggs, coffee", MemoPriority.normal),
-            ("Work", "Prepare presentation for Friday", MemoPriority.high),
-            ("Documentation", "Update project documentation", MemoPriority.normal),
-            ("Travel", "Book flight tickets for vacation", MemoPriority.normal),
-            ("Learning", "Research new Swift 6 features", MemoPriority.low),
-            ("Bug Fix", "Fix bug in calendar view", MemoPriority.high),
-            ("Surprise", "Plan birthday surprise for Lisa", MemoPriority.normal)
+            "Morning standup - design team 情報デザイン",
+            "Code review: SwiftUI performance",
+            "Call dentist for appointment",
+            "Shopping: milk, bread, eggs, coffee",
+            "Prepare presentation for Friday",
+            "Update project documentation",
+            "Book flight tickets for vacation",
+            "Research new Swift 6 features",
+            "Fix bug in calendar view",
+            "Plan birthday surprise for Lisa"
         ]
 
         let calendar = Calendar.current
-        for (title, content, priority) in noteContents {
+        for content in noteContents {
             let daysAgo = Int.random(in: 0...30)
             let date = calendar.date(byAdding: .day, value: -daysAgo, to: Date()) ?? Date()
 
-            let memo = Memo.note(
-                title: title,
-                body: content,
-                date: date,
-                priority: priority
-            )
+            let memo = Memo.quick(content, date: date)
             modelContext.insert(memo)
         }
 
         try? modelContext.save()
-        successMessage = "Generated 10 test notes!"
+        successMessage = "Generated 10 test memos!"
         showingSuccessMessage = true
         HapticManager.notification(.success)
     }
 
     private func generateDummyExpenses() {
-        let expenses: [(description: String, category: String, minAmount: Double, maxAmount: Double)] = [
-            ("Lunch at restaurant", "food", 80, 250),
-            ("Uber ride", "transport", 50, 200),
-            ("Netflix subscription", "entertainment", 99, 99),
-            ("New headphones", "shopping", 500, 2000),
-            ("Electricity bill", "utilities", 300, 800),
-            ("Gym membership", "health", 299, 499),
-            ("Coffee at Espresso House", "food", 35, 75),
-            ("Train ticket to Malmö", "transport", 150, 400),
-            ("Movie tickets", "entertainment", 100, 200),
-            ("Weekly groceries", "food", 500, 1200)
+        let expenses: [(description: String, minAmount: Double, maxAmount: Double)] = [
+            ("Lunch at restaurant", 80, 250),
+            ("Uber ride", 50, 200),
+            ("Netflix subscription", 99, 99),
+            ("New headphones", 500, 2000),
+            ("Electricity bill", 300, 800),
+            ("Gym membership", 299, 499),
+            ("Coffee at Espresso House", 35, 75),
+            ("Train ticket to Malmö", 150, 400),
+            ("Movie tickets", 100, 200),
+            ("Weekly groceries", 500, 1200)
         ]
 
         let calendar = Calendar.current
@@ -555,11 +550,10 @@ struct DeveloperSettingsView: View {
             let daysAgo = Int.random(in: 0...30)
             let date = calendar.date(byAdding: .day, value: -daysAgo, to: Date()) ?? Date()
 
-            let memo = Memo.expense(
-                description: expense.description,
+            let memo = Memo.withAmount(
+                expense.description,
                 amount: Double.random(in: expense.minAmount...expense.maxAmount).rounded(),
                 currency: "SEK",
-                category: expense.category,
                 date: date
             )
             modelContext.insert(memo)
@@ -572,28 +566,23 @@ struct DeveloperSettingsView: View {
     }
 
     private func generateDummyTrips() {
-        let trips: [(city: String, country: String, tripType: TripType)] = [
-            ("Tokyo", "Japan", .personal),
-            ("Paris", "France", .personal),
-            ("New York", "USA", .business),
-            ("London", "UK", .mixed),
-            ("Barcelona", "Spain", .personal)
+        let trips = [
+            ("Tokyo", "Japan"),
+            ("Paris", "France"),
+            ("New York", "USA"),
+            ("London", "UK"),
+            ("Barcelona", "Spain")
         ]
 
         let calendar = Calendar.current
-        for trip in trips {
+        for (city, country) in trips {
             let startOffset = Int.random(in: -30...60)
-            let duration = Int.random(in: 3...14)
+            let date = calendar.date(byAdding: .day, value: startOffset, to: Date()) ?? Date()
 
-            let startDate = calendar.date(byAdding: .day, value: startOffset, to: Date()) ?? Date()
-            let endDate = calendar.date(byAdding: .day, value: duration, to: startDate) ?? startDate
-
-            let memo = Memo.trip(
-                name: "\(trip.city) Adventure",
-                destination: "\(trip.city), \(trip.country)",
-                startDate: startDate,
-                endDate: endDate,
-                tripType: trip.tripType
+            let memo = Memo.withPlace(
+                "\(city) trip",
+                place: "\(city), \(country)",
+                date: date
             )
             modelContext.insert(memo)
         }
@@ -606,28 +595,23 @@ struct DeveloperSettingsView: View {
 
     private func generateDummyCountdowns() {
         let countdowns = [
-            ("Summer Vacation", 45, "airplane", "A5F3FC"),      // Cyan
-            ("Birthday Party", 12, "gift.fill", "FECDD3"),     // Pink
-            ("Conference Talk", 30, "mic.fill", "FFE566"),     // Yellow
-            ("Product Launch", 60, "rocket.fill", "E9D5FF"),   // Purple
-            ("Wedding Anniversary", 90, "heart.fill", "BBF7D0") // Green
+            ("Summer Vacation", 45),
+            ("Birthday Party", 12),
+            ("Conference Talk", 30),
+            ("Product Launch", 60),
+            ("Wedding Anniversary", 90)
         ]
 
         let calendar = Calendar.current
-        for (title, daysUntil, icon, colorHex) in countdowns {
+        for (title, daysUntil) in countdowns {
             let targetDate = calendar.date(byAdding: .day, value: daysUntil, to: Date()) ?? Date()
 
-            let memo = Memo.countdown(
-                title: title,
-                targetDate: targetDate,
-                icon: icon,
-                colorHex: colorHex
-            )
+            let memo = Memo.quick(title, date: targetDate)
             modelContext.insert(memo)
         }
 
         try? modelContext.save()
-        successMessage = "Generated 5 test countdowns!"
+        successMessage = "Generated 5 test events!"
         showingSuccessMessage = true
         HapticManager.notification(.success)
     }

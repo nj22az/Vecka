@@ -107,14 +107,6 @@ final class Contact {
     // iOS Contacts integration
     var cnContactIdentifier: String?
 
-    // ═══════════════════════════════════════════════════════════════════
-    // MARK: - Debt Tracking (Linked Memos)
-    // ═══════════════════════════════════════════════════════════════════
-
-    /// Memos linked to this contact (for debt tracking)
-    @Relationship(deleteRule: .nullify, inverse: \Memo.linkedContact)
-    var linkedMemos: [Memo]?
-
     // Group (情報デザイン: Categorize contacts)
     /// Contact group for organization (Family, Friends, Work, Other)
     var groupRawValue: String = ContactGroup.other.rawValue
@@ -177,43 +169,6 @@ final class Contact {
     /// Only shows when birthdayKnown is true AND birthday date exists
     var hasBirthdayForStarPage: Bool {
         birthdayKnown && birthday != nil
-    }
-
-    // ═══════════════════════════════════════════════════════════════════
-    // MARK: - Debt Computed Properties
-    // ═══════════════════════════════════════════════════════════════════
-
-    /// Outstanding debt memos (not settled)
-    var outstandingDebts: [Memo] {
-        (linkedMemos ?? []).filter { memo in
-            memo.hasFeature(.debt) && !memo.isDebtSettled
-        }
-    }
-
-    /// Total amount owed TO this contact (I owe them)
-    var totalOwedToContact: Double {
-        outstandingDebts
-            .filter { $0.debtDirection == .iOwe }
-            .compactMap { $0.amount }
-            .reduce(0, +)
-    }
-
-    /// Total amount owed BY this contact (they owe me)
-    var totalOwedByContact: Double {
-        outstandingDebts
-            .filter { $0.debtDirection == .theyOwe }
-            .compactMap { $0.amount }
-            .reduce(0, +)
-    }
-
-    /// Net balance with this contact (positive = they owe me, negative = I owe them)
-    var debtBalance: Double {
-        totalOwedByContact - totalOwedToContact
-    }
-
-    /// True if there are any outstanding debts with this contact
-    var hasOutstandingDebts: Bool {
-        !outstandingDebts.isEmpty
     }
 }
 
