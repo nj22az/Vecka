@@ -65,6 +65,10 @@ struct MemoEditorView: View {
     @State private var startLocation: String = ""
     @State private var endLocation: String = ""
     @State private var isRoundTrip: Bool = false
+    @State private var odometerStart: String = ""
+    @State private var odometerEnd: String = ""
+    @State private var vehicleId: String = ""
+    @State private var useOdometer: Bool = true  // Default to odometer mode
 
     // Note-specific
     @State private var priority: MemoPriority = .normal
@@ -77,10 +81,13 @@ struct MemoEditorView: View {
     @State private var showingDeleteConfirmation = false
     @State private var showIconPicker = false
     @State private var showColorPicker = false
+    @State private var showDatePicker = false
     @FocusState private var focusedField: Field?
 
     // 情報デザイン: Collapsible section states (ContactListView pattern)
+    @State private var isFeaturesExpanded = true  // Features start expanded
     @State private var isMoneyExpanded = true
+    @State private var isMileageExpanded = true
     @State private var isDebtExpanded = true
     @State private var isMoreExpanded = false
 
@@ -89,6 +96,7 @@ struct MemoEditorView: View {
 
     enum Field: Hashable {
         case title, body, amount, destination, distance, startLocation, endLocation, category, tags
+        case odometerStart, odometerEnd, vehicleId
     }
 
     // MARK: - Init
@@ -99,10 +107,13 @@ struct MemoEditorView: View {
         self.parentMemo = parentMemo
     }
 
-    // MARK: - Body (情報デザイン: Single white container, no scroll, collapsible sections)
+    // MARK: - Body (情報デザイン: Custom header, NO NavigationStack glass)
 
     var body: some View {
-        NavigationStack {
+        VStack(spacing: 0) {
+            // 情報デザイン: Custom header (NO glass)
+            johoHeader
+
             // 情報デザイン: Single white container with all content
             VStack(spacing: 0) {
                 mainContentCard
@@ -110,15 +121,12 @@ struct MemoEditorView: View {
             .padding(.horizontal, JohoDimensions.spacingSM)
             .padding(.top, JohoDimensions.spacingSM)
             .frame(maxHeight: .infinity, alignment: .top)
-            .johoBackground()
-            .navigationTitle(isEditing ? "Edit Memo" : "Add Memo")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(JohoColors.black, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarColorScheme(.dark, for: .navigationBar)
-            .toolbar { toolbarContent }
-            .onAppear { loadExistingMemo() }
         }
+        .background(JohoColors.black)
+        .onAppear { loadExistingMemo() }
+        // 情報デザイン: Solid black background, NO glass/blur
+        .presentationBackground(JohoColors.black)
+        .presentationDragIndicator(.hidden)
         .alert("Delete Memo?", isPresented: $showingDeleteConfirmation) {
             Button("Cancel", role: .cancel) { }
             Button("Delete", role: .destructive) { deleteMemo() }
@@ -127,31 +135,104 @@ struct MemoEditorView: View {
         }
         .sheet(isPresented: $showIconPicker) {
             iconPickerSheet
+                .presentationBackground(JohoColors.black)
         }
         .sheet(isPresented: $showColorPicker) {
             colorPickerSheet
+                .presentationBackground(JohoColors.black)
         }
         .sheet(isPresented: $showContactPicker) {
             contactPickerSheet
+                .presentationBackground(JohoColors.black)
+        }
+        .sheet(isPresented: $showDatePicker) {
+            datePickerSheet
+                .presentationBackground(JohoColors.black)
+                .presentationDetents([.medium])
         }
     }
 
-    // MARK: - Toolbar
+    // MARK: - Date Picker Sheet (情報デザイン: NO glass)
 
-    @ToolbarContentBuilder
-    private var toolbarContent: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
+    private var datePickerSheet: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Button("Cancel") {
+                    showDatePicker = false
+                }
+                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                .foregroundStyle(JohoColors.white)
+
+                Spacer()
+
+                Text("Select Date")
+                    .font(.system(size: 17, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.white)
+
+                Spacer()
+
+                Button("Done") {
+                    showDatePicker = false
+                }
+                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoColors.white)
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .background(JohoColors.black)
+
+            // Date picker in white container
+            VStack {
+                DatePicker("", selection: $startDate, displayedComponents: .date)
+                    .datePickerStyle(.graphical)
+                    .labelsHidden()
+                    .tint(Color(hex: selectedColorHex))
+            }
+            .padding(JohoDimensions.spacingMD)
+            .background(colors.surface)
+            .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous)
+                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+            )
+            .padding(JohoDimensions.spacingSM)
+
+            Spacer()
+        }
+        .background(JohoColors.black)
+    }
+
+    // MARK: - Custom Header (情報デザイン: NO glass, solid black)
+
+    private var johoHeader: some View {
+        HStack {
+            // Cancel button
             Button("Cancel") { dismiss() }
                 .font(.system(size: 16, weight: .semibold, design: .rounded))
-                .foregroundStyle(colors.primary)
-        }
+                .foregroundStyle(JohoColors.white)
+                .frame(minWidth: 44, minHeight: 44)
 
-        ToolbarItem(placement: .topBarTrailing) {
+            Spacer()
+
+            // Title
+            Text(isEditing ? "Edit Memo" : "Add Memo")
+                .font(.system(size: 17, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoColors.white)
+
+            Spacer()
+
+            // Save button
             Button("Save") { saveMemo() }
                 .font(.system(size: 16, weight: .bold, design: .rounded))
-                .foregroundStyle(canSave ? colors.primary : colors.secondary.opacity(0.5))
+                .foregroundStyle(canSave ? JohoColors.white : JohoColors.white.opacity(0.4))
+                .frame(minWidth: 44, minHeight: 44)
                 .disabled(!canSave)
         }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.top, 8)
+        .padding(.bottom, JohoDimensions.spacingSM)
+        .background(JohoColors.black)
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -174,7 +255,13 @@ struct MemoEditorView: View {
                 collapsibleMoneyRow
             }
 
-            // Row 4: Debt fields (collapsible, if .debt active)
+            // Row 4: Mileage fields (collapsible, if .mileage active)
+            if showsLocationFields {
+                dividerLine
+                collapsibleMileageRow
+            }
+
+            // Row 5: Debt fields (collapsible, if .debt active)
             if showsDebtFields {
                 dividerLine
                 collapsibleDebtRow
@@ -205,50 +292,18 @@ struct MemoEditorView: View {
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // MARK: - Collapsible Feature Row
+    // MARK: - Collapsible Feature Row (情報デザイン: NO horizontal scroll)
     // ═══════════════════════════════════════════════════════════════════════════
 
     private var collapsibleFeatureRow: some View {
-        VStack(spacing: 0) {
-            // Header: FEATURES | count
-            HStack(spacing: JohoDimensions.spacingSM) {
-                Image(systemName: "square.grid.2x2")
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
-                Text("FEATURES")
-                    .font(.system(size: 12, weight: .black, design: .rounded))
-                    .tracking(0.5)
-
-                Spacer()
-
-                Text("\(activeFeatures.count) ACTIVE")
-                    .font(.system(size: 11, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color(hex: selectedColorHex))
-            }
-            .foregroundStyle(colors.primary)
-            .padding(.horizontal, JohoDimensions.spacingMD)
-            .padding(.vertical, JohoDimensions.spacingSM)
-
-            // Feature chips
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 6) {
-                    ForEach(MemoFeature.allCases) { feature in
-                        JohoFeatureChip(
-                            feature: feature,
-                            isActive: activeFeatures.contains(feature),
-                            action: {
-                                if activeFeatures.contains(feature) {
-                                    activeFeatures.remove(feature)
-                                } else {
-                                    activeFeatures.insert(feature)
-                                }
-                                updateTypeFromFeatures(activeFeatures)
-                            }
-                        )
-                    }
-                }
-                .padding(.horizontal, JohoDimensions.spacingMD)
-                .padding(.bottom, JohoDimensions.spacingSM)
-            }
+        JohoFeatureChipRow(
+            activeFeatures: $activeFeatures,
+            isExpanded: $isFeaturesExpanded
+        )
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
+        .onChange(of: activeFeatures) { _, newFeatures in
+            updateTypeFromFeatures(newFeatures)
         }
     }
 
@@ -271,15 +326,30 @@ struct MemoEditorView: View {
                 .foregroundStyle(colors.primary)
                 .focused($focusedField, equals: .title)
 
-            // Date row
+            // 情報デザイン: Date row with custom button (NO glass)
             HStack {
                 Text("DATE")
                     .font(.system(size: 10, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.secondary)
                 Spacer()
-                DatePicker("", selection: $startDate, displayedComponents: .date)
-                    .labelsHidden()
-                    .tint(Color(hex: selectedColorHex))
+                // Custom date button - NO system DatePicker glass
+                Button {
+                    showDatePicker = true
+                    HapticManager.impact(.light)
+                } label: {
+                    Text(startDate.formatted(date: .abbreviated, time: .omitted))
+                        .font(.system(size: 15, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(colors.surface)
+                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .stroke(JohoColors.black, lineWidth: 1.5)
+                        )
+                }
+                .buttonStyle(.plain)
             }
         }
         .padding(JohoDimensions.spacingMD)
@@ -362,6 +432,224 @@ struct MemoEditorView: View {
                 .padding(.bottom, JohoDimensions.spacingSM)
             }
         }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // MARK: - Collapsible Mileage Row (Odometer + Distance)
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    private var collapsibleMileageRow: some View {
+        VStack(spacing: 0) {
+            // Header toggle
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isMileageExpanded.toggle()
+                }
+                HapticManager.selection()
+            } label: {
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    Image(systemName: "car")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                    Text("MILEAGE")
+                        .font(.system(size: 12, weight: .black, design: .rounded))
+                        .tracking(0.5)
+                    // Show calculated distance if available
+                    if let calc = calculatedDistance, calc > 0 {
+                        Text("• \(String(format: "%.1f", calc)) km")
+                            .font(.system(size: 11, weight: .medium, design: .rounded))
+                            .foregroundStyle(JohoColors.green)
+                    }
+                    Spacer()
+                    Image(systemName: isMileageExpanded ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+                .foregroundStyle(colors.primary)
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
+            // Expanded content
+            if isMileageExpanded {
+                VStack(spacing: JohoDimensions.spacingSM) {
+                    // Toggle: Odometer vs Direct Distance
+                    HStack(spacing: 0) {
+                        Button {
+                            useOdometer = true
+                            HapticManager.selection()
+                        } label: {
+                            HStack {
+                                Image(systemName: "gauge.with.needle")
+                                Text("ODOMETER")
+                            }
+                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .foregroundStyle(useOdometer ? colors.surfaceInverted : colors.primary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .background(useOdometer ? JohoColors.green : colors.surface)
+                        }
+                        .buttonStyle(.plain)
+
+                        Button {
+                            useOdometer = false
+                            HapticManager.selection()
+                        } label: {
+                            HStack {
+                                Image(systemName: "ruler")
+                                Text("DIRECT")
+                            }
+                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .foregroundStyle(!useOdometer ? colors.surfaceInverted : colors.primary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .background(!useOdometer ? JohoColors.green : colors.surface)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
+                            .stroke(colors.border, lineWidth: 1)
+                    )
+
+                    if useOdometer {
+                        // Odometer readings
+                        HStack(spacing: JohoDimensions.spacingSM) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("ODOMETER START")
+                                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                                    .foregroundStyle(colors.secondary)
+                                TextField("e.g. 45230", text: $odometerStart)
+                                    .font(.system(size: 16, weight: .medium, design: .rounded))
+                                    .keyboardType(.decimalPad)
+                                    .foregroundStyle(colors.primary)
+                            }
+                            .frame(maxWidth: .infinity)
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("ODOMETER END")
+                                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                                    .foregroundStyle(colors.secondary)
+                                TextField("e.g. 45280", text: $odometerEnd)
+                                    .font(.system(size: 16, weight: .medium, design: .rounded))
+                                    .keyboardType(.decimalPad)
+                                    .foregroundStyle(colors.primary)
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+
+                        // Auto-calculated distance display
+                        if let calc = calculatedDistance, calc > 0 {
+                            HStack {
+                                Image(systemName: "arrow.right")
+                                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                                Text("DISTANCE:")
+                                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                                Spacer()
+                                Text("\(String(format: "%.1f", calc)) km")
+                                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                                    .foregroundStyle(JohoColors.green)
+                            }
+                            .foregroundStyle(colors.secondary)
+                            .padding(JohoDimensions.spacingSM)
+                            .background(JohoColors.green.opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
+                        }
+                    } else {
+                        // Direct distance entry
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("DISTANCE (KM)")
+                                .font(.system(size: 10, weight: .bold, design: .rounded))
+                                .foregroundStyle(colors.secondary)
+                            TextField("0", text: $distance)
+                                .font(.system(size: 16, weight: .medium, design: .rounded))
+                                .keyboardType(.decimalPad)
+                                .foregroundStyle(colors.primary)
+                        }
+                    }
+
+                    // From/To locations
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("FROM")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.secondary)
+                        TextField("Starting address...", text: $startLocation)
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.primary)
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("TO")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.secondary)
+                        TextField("Destination...", text: $endLocation)
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.primary)
+                    }
+
+                    // Round trip toggle
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("ROUND TRIP")
+                                .font(.system(size: 10, weight: .bold, design: .rounded))
+                                .foregroundStyle(colors.secondary)
+                            Text("Double the distance")
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
+                                .foregroundStyle(colors.secondary)
+                        }
+                        Spacer()
+                        Toggle("", isOn: $isRoundTrip)
+                            .labelsHidden()
+                            .tint(JohoColors.green)
+                    }
+
+                    // Total with round trip
+                    if let total = totalMileageDistance, total > 0 {
+                        HStack {
+                            Text("TOTAL:")
+                                .font(.system(size: 10, weight: .bold, design: .rounded))
+                                .foregroundStyle(colors.secondary)
+                            Spacer()
+                            Text("\(String(format: "%.1f", total)) km")
+                                .font(.system(size: 16, weight: .bold, design: .rounded))
+                                .foregroundStyle(JohoColors.green)
+                            if isRoundTrip {
+                                Text("(×2)")
+                                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                                    .foregroundStyle(colors.secondary)
+                            }
+                        }
+                        .padding(JohoDimensions.spacingSM)
+                        .background(JohoColors.green.opacity(0.15))
+                        .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
+                    }
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.bottom, JohoDimensions.spacingSM)
+            }
+        }
+    }
+
+    /// Calculate distance from odometer readings
+    private var calculatedDistance: Double? {
+        guard let start = Double(odometerStart),
+              let end = Double(odometerEnd),
+              end > start else { return nil }
+        return end - start
+    }
+
+    /// Total mileage considering round trip
+    private var totalMileageDistance: Double? {
+        let base: Double?
+        if useOdometer {
+            base = calculatedDistance
+        } else {
+            base = Double(distance)
+        }
+        guard let d = base, d > 0 else { return nil }
+        return isRoundTrip ? d * 2 : d
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -621,44 +909,6 @@ struct MemoEditorView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-    }
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // MARK: - Feature Chip Selector (Combinable Features) - LEGACY
-    // ═══════════════════════════════════════════════════════════════════════════
-
-    private var typeFlagSelector: some View {
-        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-            // Label row
-            HStack {
-                Text("FEATURES")
-                    .font(.system(size: 10, weight: .black, design: .rounded))
-                    .foregroundStyle(colors.secondary)
-                    .tracking(1)
-
-                Spacer()
-
-                // Active features count
-                // 情報デザイン: Use squircle, not Capsule
-                Text("\(activeFeatures.count) ACTIVE")
-                    .font(.system(size: 9, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.secondary)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
-                    .background(colors.surface)
-                    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 6, style: .continuous)
-                            .stroke(colors.border, lineWidth: 1)
-                    )
-            }
-
-            // Feature chips (horizontal scroll, multi-select)
-            JohoFeatureChipRow(activeFeatures: $activeFeatures)
-                .onChange(of: activeFeatures) { _, newFeatures in
-                    updateTypeFromFeatures(newFeatures)
-                }
-        }
     }
 
     /// Update memoType based on primary feature
@@ -1769,6 +2019,15 @@ struct MemoEditorView: View {
         startLocation = memo.startLocation ?? ""
         endLocation = memo.endLocation ?? ""
         isRoundTrip = memo.isRoundTrip ?? false
+        if let oStart = memo.odometerStart {
+            odometerStart = String(format: "%.0f", oStart)
+        }
+        if let oEnd = memo.odometerEnd {
+            odometerEnd = String(format: "%.0f", oEnd)
+        }
+        vehicleId = memo.vehicleId ?? ""
+        // If odometer values exist, default to odometer mode
+        useOdometer = memo.odometerStart != nil || memo.odometerEnd != nil
         priority = memo.priority ?? .normal
 
         // Debt tracking
@@ -1814,11 +2073,25 @@ struct MemoEditorView: View {
         }
 
         if activeFeatures.contains(.mileage) {
-            memo.distance = Double(distance)
             memo.startLocation = startLocation
             memo.endLocation = endLocation
             memo.isRoundTrip = isRoundTrip
+            memo.vehicleId = vehicleId.isEmpty ? nil : vehicleId
             memo.parent = parentMemo
+
+            // Handle distance: from odometer or direct entry
+            if useOdometer {
+                memo.odometerStart = Double(odometerStart)
+                memo.odometerEnd = Double(odometerEnd)
+                // Calculate distance from odometer readings
+                if let start = Double(odometerStart), let end = Double(odometerEnd), end > start {
+                    memo.distance = end - start
+                }
+            } else {
+                memo.distance = Double(distance)
+                memo.odometerStart = nil
+                memo.odometerEnd = nil
+            }
         }
 
         // Debt tracking

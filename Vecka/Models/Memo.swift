@@ -114,18 +114,22 @@ enum MemoFeature: String, Codable, CaseIterable, Identifiable {
         }
     }
 
-    /// Short label for chips (3 chars max)
-    var shortLabel: String {
+    /// Chip label - full word for clarity (情報デザイン: no abbreviations)
+    var chipLabel: String {
         switch self {
-        case .note: return "NTE"
-        case .expense: return "EXP"
-        case .trip: return "TRP"
-        case .mileage: return "MIL"
-        case .event: return "EVT"
-        case .countdown: return "CDN"
-        case .debt: return "DBT"
+        case .note: return "Note"
+        case .expense: return "Expense"
+        case .trip: return "Trip"
+        case .mileage: return "Mileage"
+        case .event: return "Event"
+        case .countdown: return "Countdown"
+        case .debt: return "Debt"
         }
     }
+
+    /// Legacy short label (deprecated - use chipLabel)
+    @available(*, deprecated, message: "Use chipLabel for full words")
+    var shortLabel: String { chipLabel }
 
     /// Joho semantic color hex
     var colorHex: String {
@@ -317,7 +321,7 @@ final class Memo {
     // MARK: - Mileage Fields (type == .mileage)
     // ═══════════════════════════════════════════════════════════════════
 
-    /// Distance traveled (in kilometers)
+    /// Distance traveled (in kilometers) - can be entered directly or calculated from odometer
     var distance: Double?
 
     /// Starting location/address
@@ -328,6 +332,15 @@ final class Memo {
 
     /// Is this a round trip? (doubles the distance)
     var isRoundTrip: Bool?
+
+    /// Odometer reading at start (km) - for accurate mileage tracking
+    var odometerStart: Double?
+
+    /// Odometer reading at end (km) - for accurate mileage tracking
+    var odometerEnd: Double?
+
+    /// Vehicle identifier (for multi-vehicle tracking)
+    var vehicleId: String?
 
     // ═══════════════════════════════════════════════════════════════════
     // MARK: - Note/Event Fields
@@ -623,8 +636,11 @@ final class Memo {
     static func mileage(
         from startLocation: String,
         to endLocation: String,
-        distance: Double,
+        distance: Double? = nil,
+        odometerStart: Double? = nil,
+        odometerEnd: Double? = nil,
         isRoundTrip: Bool = false,
+        vehicleId: String? = nil,
         date: Date = Date(),
         parent: Memo? = nil,
         tags: [String]? = nil
@@ -632,9 +648,18 @@ final class Memo {
         let memo = Memo(type: .mileage, body: "\(startLocation) → \(endLocation)", startDate: date, tags: tags)
         memo.startLocation = startLocation
         memo.endLocation = endLocation
-        memo.distance = distance
+        memo.odometerStart = odometerStart
+        memo.odometerEnd = odometerEnd
+        memo.vehicleId = vehicleId
         memo.isRoundTrip = isRoundTrip
         memo.parent = parent
+
+        // Calculate distance from odometer if not provided directly
+        if let distance = distance {
+            memo.distance = distance
+        } else if let start = odometerStart, let end = odometerEnd, end > start {
+            memo.distance = end - start
+        }
         return memo
     }
 

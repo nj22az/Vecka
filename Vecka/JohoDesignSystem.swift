@@ -650,6 +650,223 @@ struct JohoIndicatorCircle: View {
     }
 }
 
+// MARK: - Feature Chip (機能チップ)
+// 情報デザイン: Toggleable feature indicator for combinable memo features
+// Capsule shape with filled/outlined state for active/inactive
+
+struct JohoFeatureChip: View {
+    let feature: MemoFeature
+    let isActive: Bool
+    let action: () -> Void
+
+    @Environment(\.johoColorMode) private var colorMode
+
+    /// Dynamic colors based on color mode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    private var featureColor: Color {
+        Color(hex: feature.colorHex)
+    }
+
+    var body: some View {
+        Button(action: {
+            action()
+            HapticManager.impact(.light)
+        }) {
+            HStack(spacing: 6) {
+                // Status indicator - larger for visibility
+                Circle()
+                    .fill(isActive ? featureColor : Color.clear)
+                    .frame(width: 8, height: 8)
+                    .overlay(
+                        Circle()
+                            .stroke(isActive ? colors.border : colors.secondary, lineWidth: 1.5)
+                    )
+
+                // 情報デザイン: Full word labels, no abbreviations
+                Text(feature.chipLabel)
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundStyle(isActive ? colors.primary : colors.secondary)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            // 情報デザイン: Squircle, not Capsule
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(isActive ? featureColor.opacity(0.25) : colors.surface)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(JohoColors.black, lineWidth: isActive ? 2 : 1.5)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(feature.displayName) feature")
+        .accessibilityAddTraits(isActive ? .isSelected : [])
+        .accessibilityHint(isActive ? "Double tap to disable" : "Double tap to enable")
+    }
+}
+
+// MARK: - Feature Chip Row (機能チップ行)
+// 情報デザイン: Smart expandable row
+// - Collapsed: Shows selected features that fit in one row
+// - Expanded: Shows all features in wrapped layout
+// - Selected features stay visible when collapsing
+
+struct JohoFeatureChipRow: View {
+    @Binding var activeFeatures: Set<MemoFeature>
+    @Binding var isExpanded: Bool
+    var availableFeatures: [MemoFeature] = MemoFeature.allCases
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    /// Features sorted: active first, then by priority
+    private var sortedFeatures: [MemoFeature] {
+        availableFeatures.sorted { a, b in
+            let aActive = activeFeatures.contains(a)
+            let bActive = activeFeatures.contains(b)
+            if aActive != bActive { return aActive }
+            return a.priority < b.priority
+        }
+    }
+
+    /// Validation: some features require others
+    private func validateSelection(_ feature: MemoFeature) {
+        var current = activeFeatures
+
+        // Debt requires expense
+        if feature == .debt && current.contains(.debt) && !current.contains(.expense) {
+            current.insert(.expense)
+        }
+
+        // Event and countdown are mutually exclusive
+        if feature == .event && current.contains(.event) {
+            current.remove(.countdown)
+        }
+        if feature == .countdown && current.contains(.countdown) {
+            current.remove(.event)
+        }
+
+        activeFeatures = current
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Header row (always visible) - tap to expand/collapse
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isExpanded.toggle()
+                }
+                HapticManager.impact(.light)
+            } label: {
+                HStack {
+                    Image(systemName: "square.grid.2x2")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(colors.primary)
+
+                    Text("FEATURES")
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+
+                    Spacer()
+
+                    // Active count badge
+                    Text("\(activeFeatures.count) ACTIVE")
+                        .font(.system(size: 9, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(colors.surface)
+                        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                .stroke(colors.border, lineWidth: 1)
+                        )
+
+                    // Expand/collapse chevron
+                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(colors.secondary)
+                }
+                .frame(minHeight: 44)
+            }
+            .buttonStyle(.plain)
+
+            // Chips: Show active first (sorted), all when expanded
+            FlowLayout(spacing: 6) {
+                ForEach(sortedFeatures) { feature in
+                    // When collapsed, only show active features
+                    if isExpanded || activeFeatures.contains(feature) {
+                        JohoFeatureChip(
+                            feature: feature,
+                            isActive: activeFeatures.contains(feature),
+                            action: {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    if activeFeatures.contains(feature) {
+                                        activeFeatures.remove(feature)
+                                    } else {
+                                        activeFeatures.insert(feature)
+                                        validateSelection(feature)
+                                    }
+                                }
+                            }
+                        )
+                        .transition(.opacity.combined(with: .scale))
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Flow Layout (Wrapping horizontal layout)
+// 情報デザイン: Chips wrap to next line instead of scrolling
+
+struct FlowLayout: Layout {
+    var spacing: CGFloat = 6
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let result = arrange(proposal: proposal, subviews: subviews)
+        return result.size
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let result = arrange(proposal: proposal, subviews: subviews)
+
+        for (index, position) in result.positions.enumerated() {
+            subviews[index].place(at: CGPoint(x: bounds.minX + position.x, y: bounds.minY + position.y), proposal: .unspecified)
+        }
+    }
+
+    private func arrange(proposal: ProposedViewSize, subviews: Subviews) -> (size: CGSize, positions: [CGPoint]) {
+        let maxWidth = proposal.width ?? .infinity
+        var positions: [CGPoint] = []
+        var currentX: CGFloat = 0
+        var currentY: CGFloat = 0
+        var lineHeight: CGFloat = 0
+        var totalWidth: CGFloat = 0
+
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+
+            // Wrap to next line if needed
+            if currentX + size.width > maxWidth && currentX > 0 {
+                currentX = 0
+                currentY += lineHeight + spacing
+                lineHeight = 0
+            }
+
+            positions.append(CGPoint(x: currentX, y: currentY))
+            lineHeight = max(lineHeight, size.height)
+            currentX += size.width + spacing
+            totalWidth = max(totalWidth, currentX - spacing)
+        }
+
+        return (CGSize(width: totalWidth, height: currentY + lineHeight), positions)
+    }
+}
+
 // MARK: - Section Box (区画)
 // Colored compartment with title pill and thick border
 
