@@ -748,29 +748,8 @@ struct JohoNoteEditorSheet: View {
     }
 }
 
-// MARK: - Note Priority (情報デザイン マルバツ hierarchy)
-
-enum NotePriority: String, CaseIterable {
-    case high = "high"
-    case normal = "normal"
-    case low = "low"
-
-    var symbol: String {
-        switch self {
-        case .high: return "◎"    // Primary - most important
-        case .normal: return "○"  // Secondary - standard
-        case .low: return "△"     // Tertiary - optional
-        }
-    }
-
-    var label: String {
-        switch self {
-        case .high: return "High"
-        case .normal: return "Normal"
-        case .low: return "Low"
-        }
-    }
-}
+// MARK: - Note Priority
+// Note: NotePriority enum is defined in Note.swift
 
 #Preview {
     NavigationStack {
