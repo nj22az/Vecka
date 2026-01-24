@@ -847,8 +847,7 @@ struct PDFWeekSummaryPage: View {
     }
 
     private var expensesByCategory: [(category: String, total: Double)] {
-        // Memo doesn't have categories, group by month instead
-        let calendar = Calendar.iso8601
+        // Memo doesn't have categories, group by day instead
         let grouped = Dictionary(grouping: weekExpenses) { expense in
             let formatter = DateFormatter()
             formatter.dateFormat = "EEE"
