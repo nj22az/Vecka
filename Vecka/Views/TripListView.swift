@@ -8,16 +8,6 @@
 import SwiftUI
 import SwiftData
 
-/// Trip type for purpose classification
-/// Used by JohoTripEditorSheet for the segmented type picker
-enum TripType: String, CaseIterable, Identifiable {
-    case business = "Business"
-    case personal = "Personal"
-    case mixed = "Mixed"
-
-    var id: String { rawValue }
-}
-
 struct TripListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
@@ -363,7 +353,7 @@ struct JohoTripEditorSheet: View {
     @State private var endYear: Int
     @State private var endMonth: Int
     @State private var endDay: Int
-    @State private var tripType: TripType = .business
+    @State private var notes: String = ""
 
     private let calendar = Calendar.current
 
@@ -702,11 +692,11 @@ struct JohoTripEditorSheet: View {
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
-                // TYPE ROW: [icon] | Business | Personal | Mixed (segmented)
+                // NOTES ROW: [icon] | Notes text field (optional)
                 // ═══════════════════════════════════════════════════════════════
                 HStack(spacing: 0) {
-                    // LEFT: Type icon (40pt)
-                    Image(systemName: "briefcase.fill")
+                    // LEFT: Notes icon (40pt)
+                    Image(systemName: "note.text")
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(tripAccentColor)
                         .frame(width: 40)
@@ -718,29 +708,12 @@ struct JohoTripEditorSheet: View {
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
-                    // CENTER: Segmented type picker
-                    HStack(spacing: 0) {
-                        ForEach(Array([TripType.business, TripType.personal, TripType.mixed].enumerated()), id: \.element) { index, type in
-                            Button {
-                                tripType = type
-                                HapticManager.selection()
-                            } label: {
-                                Text(type.rawValue.uppercased())
-                                    .font(.system(size: 12, weight: .bold, design: .rounded))
-                                    .foregroundStyle(tripType == type ? JohoColors.white : JohoColors.black.opacity(0.6))
-                                    .frame(maxWidth: .infinity)
-                                    .frame(maxHeight: .infinity)
-                                    .background(tripType == type ? tripAccentColor : Color.clear)
-                            }
-
-                            if index < 2 {
-                                Rectangle()
-                                    .fill(JohoColors.black)
-                                    .frame(width: 1.5)
-                                    .frame(maxHeight: .infinity)
-                            }
-                        }
-                    }
+                    // CENTER: Notes field
+                    TextField("Notes (optional)", text: $notes)
+                        .font(JohoFont.body)
+                        .foregroundStyle(JohoColors.black)
+                        .padding(.horizontal, JohoDimensions.spacingMD)
+                        .frame(maxHeight: .infinity)
                 }
                 .frame(height: 48)
                 .background(tripLightBackground)
@@ -780,13 +753,13 @@ struct JohoTripEditorSheet: View {
         let trimmedDestination = destination.trimmed
         guard !trimmedDestination.isEmpty else { return }
 
-        // Create trip as Memo
+        // Create trip as Memo - just destination + dates, optionally notes
         let memo = Memo.trip(
             name.isEmpty ? trimmedDestination : name,
             startDate: startDate,
             endDate: endDate,
             destination: trimmedDestination,
-            purpose: tripType.rawValue
+            purpose: notes.trimmed.isEmpty ? nil : notes.trimmed
         )
         modelContext.insert(memo)
 

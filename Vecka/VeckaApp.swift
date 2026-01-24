@@ -53,8 +53,6 @@ struct VeckaApp: App {
             // Facts
             QuirkyFact.self,
             CalendarFact.self,
-            // Currency exchange rate cache
-            ExchangeRate.self,
             // Unified Memo model (notes, expenses, trips, countdowns)
             Memo.self,
         ])

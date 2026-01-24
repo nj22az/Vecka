@@ -112,14 +112,11 @@ final class Memo {
     var color: String?
 
     // ═══════════════════════════════════════════════════════════════════
-    // MARK: - Countdown (from CountdownEvent)
+    // MARK: - Countdown
     // ═══════════════════════════════════════════════════════════════════
 
     /// Is this a countdown event?
     var isCountdown: Bool?
-
-    /// SF Symbol for countdown display
-    var countdownIcon: String?
 
     /// Is this a system-generated countdown (like "Next Christmas")?
     var isSystemCountdown: Bool?
@@ -262,7 +259,7 @@ final class Memo {
     static func countdown(_ title: String, targetDate: Date, icon: String = "star.fill", colorHex: String? = nil) -> Memo {
         let memo = Memo(text: title, date: targetDate)
         memo.isCountdown = true
-        memo.countdownIcon = icon
+        memo.symbolName = icon
         memo.color = colorHex
         memo.type = .countdown
         return memo
