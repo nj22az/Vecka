@@ -24,8 +24,8 @@ enum AppInitializer {
 
         UserDefaults.standard.register(defaults: [
             "showHolidays": true,
-            "holidayRegion": "SE",
-            "holidayRegions": "SE"
+            "holidayRegion": "",
+            "holidayRegions": ""
         ])
 
         if UserDefaults.standard.string(forKey: "holidayRegions") == nil {
@@ -35,24 +35,16 @@ enum AppInitializer {
 
         Log.i("AppInitializer: Starting initialization...")
 
-        NotesMigration.runIfNeeded(context: context)
-        CountdownMigration.cleanupIfNeeded(context: context)
-
         // Initialize managers in dependency order
         CalendarManager.shared.initialize(context: context)
         HolidayManager.shared.initialize(context: context)
 
-        // Initialize expense system
-        do {
-            try ExpenseManager.shared.seedDefaults(context: context)
-            Log.i("AppInitializer: Expense system initialized")
-        } catch {
-            Log.w("AppInitializer: Failed to initialize expense system: \(error)")
-        }
-
         // Initialize configuration system (database-driven architecture)
         ConfigurationManager.shared.seedDefaultConfiguration(context: context)
         Log.i("AppInitializer: Configuration system initialized")
+
+        // Migrate legacy models to unified Memo (one-time)
+        MemoMigrationService.migrateIfNeeded(context: context)
 
         isInitialized = true
         Log.i("AppInitializer: Initialization complete")

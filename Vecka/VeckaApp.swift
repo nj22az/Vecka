@@ -26,19 +26,11 @@ struct VeckaApp: App {
     /// Requires: iCloud capability + CloudKit container in Xcode project settings
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            DailyNote.self,
+            // Holiday system
             HolidayRule.self,
-            HolidayChangeLog.self,  // 情報デザイン: Audit trail for holiday changes
+            HolidayChangeLog.self,
             CalendarRule.self,
-            CountdownEvent.self,
-            // Expense system models
-            ExpenseCategory.self,
-            ExpenseTemplate.self,
-            ExpenseItem.self,
-            TravelTrip.self,
-            MileageEntry.self,
-            ExchangeRate.self,
-            // Contact system models
+            // Contact system (8 models)
             Contact.self,
             ContactPhoneNumber.self,
             ContactEmailAddress.self,
@@ -47,9 +39,19 @@ struct VeckaApp: App {
             ContactSocialProfile.self,
             ContactURL.self,
             ContactRelation.self,
-            // Duplicate contact detection
             DuplicateSuggestion.self,
-            // Configuration models (database-driven architecture)
+            // Legacy notes (will migrate to Memo)
+            DailyNote.self,
+            // Legacy countdowns (will migrate to Memo)
+            CountdownEvent.self,
+            // Legacy expenses (will migrate to Memo)
+            ExpenseCategory.self,
+            ExpenseTemplate.self,
+            ExpenseItem.self,
+            TravelTrip.self,
+            MileageEntry.self,
+            ExchangeRate.self,
+            // Configuration models (used by ConfigurationManager)
             AppConfiguration.self,
             ValidationRule.self,
             AlgorithmParameter.self,
@@ -57,15 +59,12 @@ struct VeckaApp: App {
             TypographyScale.self,
             SpacingScale.self,
             IconCatalogItem.self,
-            // Location
-            SavedLocation.self,
-            // World Clocks (Onsen landing page)
+            // World Clocks
             WorldClock.self,
-            // Quirky facts (情報デザイン: Database-driven content)
+            // Facts
             QuirkyFact.self,
-            // Calendar facts (情報デザイン: Database-driven calendar information)
             CalendarFact.self,
-            // Unified Memo model (MUJI paper planner style)
+            // Unified Memo model (target for consolidation)
             Memo.self,
         ])
 
