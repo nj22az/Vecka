@@ -1755,7 +1755,7 @@ struct RegionSelectionView: View {
 
                     // Selected count badge
                     HStack(spacing: 4) {
-                        Text("\(selectedRegions.regions.count)/2")
+                        Text("\(selectedRegions.regions.count)/5")
                             .font(.system(size: 12, weight: .black, design: .rounded))
                         Text("selected")
                             .font(.system(size: 10, weight: .bold, design: .rounded))
