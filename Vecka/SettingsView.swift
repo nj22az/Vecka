@@ -13,7 +13,6 @@ import WidgetKit
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.johoColorMode) private var colorMode
-    @AppStorage("baseCurrency") private var baseCurrency = "SEK"
     @AppStorage("showHolidays") private var showHolidays = true
     @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
     @AppStorage("appBackgroundColor") private var appBackgroundColor = "black"
@@ -194,69 +193,6 @@ struct SettingsView: View {
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
 
-                // Preferences Section
-                VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
-                    // Section label
-                    JohoPill(text: "PREFERENCES", style: .whiteOnBlack, size: .small)
-
-                    // Currency picker row
-                    NavigationLink {
-                        CurrencyPickerView(selectedCurrency: $baseCurrency)
-                    } label: {
-                        HStack(spacing: JohoDimensions.spacingMD) {
-                            // Icon zone (40pt with color)
-                            Image(systemName: "dollarsign.circle")
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundStyle(colors.primary)
-                                .johoTouchTarget()
-                                .background(SectionZone.expenses.background)
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                                )
-
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Base Currency")
-                                    .font(JohoFont.headline)
-                                    .foregroundStyle(colors.primary)
-
-                                Text(currencyDisplayName)
-                                    .font(JohoFont.body)
-                                    .foregroundStyle(colors.secondary)
-                            }
-
-                            Spacer()
-
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundStyle(JohoColors.black.opacity(0.6))
-                        }
-                        .padding(JohoDimensions.spacingMD)
-                        .background(colors.surface)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                        )
-                    }
-                    .buttonStyle(.plain)
-
-                    // Footer text
-                    Text("Base currency is used for expense calculations and reports.")
-                        .font(JohoFont.caption)
-                        .foregroundStyle(colors.secondary)
-                        .padding(.horizontal, JohoDimensions.spacingSM)
-                }
-                .padding(JohoDimensions.spacingLG)
-                .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-                )
-                .padding(.horizontal, JohoDimensions.spacingLG)
-
                 // Display Section (AMOLED-friendly background options)
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
                     JohoPill(text: "DISPLAY", style: .whiteOnBlack, size: .small)
@@ -424,13 +360,6 @@ struct SettingsView: View {
         .sheet(isPresented: $showDeveloperSettings) {
             DeveloperSettingsView()
         }
-    }
-
-    private var currencyDisplayName: String {
-        if let currency = CurrencyDefinition.defaultCurrencies.first(where: { $0.code == baseCurrency }) {
-            return "\(currency.code) - \(currency.name)"
-        }
-        return baseCurrency
     }
 
     private var regionSummary: String {
