@@ -63,7 +63,7 @@ struct DeveloperSettingsView: View {
                 resetAllData()
             }
         } message: {
-            Text("This will delete ALL user data including contacts, notes, expenses, trips, and custom holidays. This cannot be undone.")
+            Text("This will delete ALL user data including contacts, memos, and custom holidays. This cannot be undone.")
         }
         .alert("Success", isPresented: $showingSuccessMessage) {
             Button("OK", role: .cancel) { }
@@ -146,7 +146,7 @@ struct DeveloperSettingsView: View {
                                 .font(JohoFont.headline)
                                 .foregroundStyle(colors.primary)
 
-                            Text("Contacts, notes, expenses, trips, events")
+                            Text("Contacts and memos (notes, expenses, trips)")
                                 .font(JohoFont.caption)
                                 .foregroundStyle(colors.secondary)
                         }
@@ -650,11 +650,6 @@ struct DeveloperSettingsView: View {
         do {
             try modelContext.delete(model: Contact.self)
             try modelContext.delete(model: Memo.self)
-            // Legacy models (keep for migration compatibility)
-            try modelContext.delete(model: DailyNote.self)
-            try modelContext.delete(model: ExpenseItem.self)
-            try modelContext.delete(model: TravelTrip.self)
-            try modelContext.delete(model: CountdownEvent.self)
             try modelContext.delete(model: HolidayRule.self, where: #Predicate { $0.region == "custom" })
             try modelContext.save()
 
@@ -1012,7 +1007,7 @@ struct GeometricPattern: Shape {
 
 #Preview {
     DeveloperSettingsView()
-        .modelContainer(for: [Contact.self, Memo.self, DailyNote.self, ExpenseItem.self, TravelTrip.self, CountdownEvent.self, HolidayRule.self])
+        .modelContainer(for: [Contact.self, Memo.self, HolidayRule.self])
 }
 
 #Preview("Sample Avatars") {

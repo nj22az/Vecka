@@ -18,22 +18,29 @@ import SwiftUI
 
 // MARK: - Special Day Type
 
+/// 情報デザイン: Simplified type system after Memo consolidation
+/// - holiday/observance: From HolidayManager
+/// - birthday: From Contact model
+/// - memo: User entries (replaces event, note, trip, expense)
+/// - Legacy types (trip, expense, note, event): For backwards compatibility
 enum SpecialDayType: String, CaseIterable {
     case holiday    // Red days (isBankHoliday = true)
     case observance // Non-red days (isBankHoliday = false)
-    case event      // Personal events (countdowns, etc.)
     case birthday   // Birthdays from contacts
-    case note       // Daily notes
-    case trip       // Travel trips
-    case expense    // Expenses
+    case memo       // User memos (can have money/place/person enrichments)
+
+    // Legacy types for backwards compatibility with LandingPageView
+    case trip       // → Now Memo with place (cyan)
+    case expense    // → Now Memo with amount (green)
+    case note       // → Now Memo (yellow)
+    case event      // → Now Memo (yellow)
 
     var title: String {
         switch self {
         case .holiday: return NSLocalizedString("library.bank_holidays", value: "Bank Holidays", comment: "Bank Holidays")
         case .observance: return NSLocalizedString("library.observances", value: "Observances", comment: "Observances")
-        case .event: return NSLocalizedString("library.events", value: "Events", comment: "Events")
         case .birthday: return NSLocalizedString("library.birthdays", value: "Birthdays", comment: "Birthdays")
-        case .note: return NSLocalizedString("library.notes", value: "Notes", comment: "Notes")
+        case .memo, .note, .event: return NSLocalizedString("library.memos", value: "Memos", comment: "Memos")
         case .trip: return NSLocalizedString("library.trips", value: "Trips", comment: "Trips")
         case .expense: return NSLocalizedString("library.expenses", value: "Expenses", comment: "Expenses")
         }
@@ -43,11 +50,10 @@ enum SpecialDayType: String, CaseIterable {
         switch self {
         case .holiday: return "●"    // Filled circle
         case .observance: return "○" // Outlined circle
-        case .event: return "◆"      // Diamond
-        case .birthday: return "★"   // Star (情報デザイン: SF Pro only)
-        case .note: return "□"       // Square for notes
-        case .trip: return "✈"       // Airplane
-        case .expense: return "¤"    // Currency
+        case .birthday: return "★"   // Star
+        case .memo, .note, .event: return "□"       // Square
+        case .trip: return "◇"       // Diamond
+        case .expense: return "◆"    // Filled diamond
         }
     }
 
@@ -55,11 +61,11 @@ enum SpecialDayType: String, CaseIterable {
         switch self {
         case .holiday: return "star.fill"
         case .observance: return "sparkles"
-        case .event: return "calendar.badge.clock"
         case .birthday: return "birthday.cake.fill"
-        case .note: return "note.text"
+        case .memo, .note: return "note.text"
         case .trip: return "airplane"
-        case .expense: return "dollarsign.circle.fill"
+        case .expense: return "yensign.circle.fill"
+        case .event: return "calendar.badge.clock"
         }
     }
 
@@ -68,24 +74,22 @@ enum SpecialDayType: String, CaseIterable {
         switch self {
         case .holiday: return Color(hex: "E53E3E")    // Red - "day off!"
         case .observance: return Color(hex: "ED8936") // Orange - celebration
-        case .event: return Color(hex: "805AD5")      // Purple - personal
-        case .birthday: return Color(hex: "78350F")   // Warm Brown - matches contacts (people)
-        case .note: return Color(hex: "ECC94B")       // Yellow - notes
-        case .trip: return Color(hex: "3182CE")       // Blue - travel
-        case .expense: return Color(hex: "38A169")    // Green - money
+        case .birthday: return Color(hex: "D53F8C")   // Pink - birthdays
+        case .memo, .note, .event: return Color(hex: "ECC94B")  // Yellow - memos
+        case .trip: return Color(hex: "22D3EE")       // Cyan - trips (予定)
+        case .expense: return Color(hex: "4ADE80")    // Green - money (金)
         }
     }
 
-    /// 情報デザイン: Light background tints for icon zones (matches MonthTheme pattern)
+    /// 情報デザイン: Light background tints for icon zones
     var lightBackground: Color {
         switch self {
         case .holiday: return Color(hex: "FDE8E8")    // Light red
         case .observance: return Color(hex: "FEEBC8") // Light orange
-        case .event: return Color(hex: "E9D8FD")      // Light purple
-        case .birthday: return Color(hex: "F5EBDA")   // Light tan - matches contacts
-        case .note: return Color(hex: "FEFCBF")       // Light yellow
-        case .trip: return Color(hex: "BEE3F8")       // Light blue
-        case .expense: return Color(hex: "C6F6D5")    // Light green
+        case .birthday: return Color(hex: "FECDD3")   // Light pink
+        case .memo, .note, .event: return Color(hex: "FFE566")  // Light yellow
+        case .trip: return Color(hex: "A5F3FC")       // Light cyan
+        case .expense: return Color(hex: "BBF7D0")    // Light green
         }
     }
 
@@ -93,16 +97,17 @@ enum SpecialDayType: String, CaseIterable {
         self == .holiday
     }
 
-    /// 情報デザイン: 3-letter type codes (database-driven)
+    /// 情報デザイン: 3-letter type codes
     var code: String {
         switch self {
         case .holiday: return "HOL"
         case .observance: return "OBS"
-        case .event: return "EVT"
         case .birthday: return "BDY"
-        case .note: return "NTE"
+        case .memo: return "MEM"
         case .trip: return "TRP"
         case .expense: return "EXP"
+        case .note: return "NOT"
+        case .event: return "EVT"
         }
     }
 }
@@ -277,7 +282,7 @@ enum DayCardSize {
 
 struct SpecialDayRow: Identifiable {
     let id: String
-    let ruleID: String        // HolidayRule ID or CountdownEvent ID
+    let ruleID: String        // HolidayRule ID or Memo ID
     let region: String
     let date: Date
     let title: String
@@ -286,19 +291,20 @@ struct SpecialDayRow: Identifiable {
     let iconColor: String?
     let notes: String?
     let isCustom: Bool
-    let isCountdown: Bool     // True if this is a countdown event
+    let isMemo: Bool          // True if this is a memo
     let originalBirthday: Date?  // For birthdays: the original birth date (to calculate age)
     let turningAge: Int?         // For birthdays: the age they're turning
 
     /// Determine category based on holiday characteristics
     var category: HolidayCategory {
-        if type == .holiday {
-            return .redDay
+        switch type {
+        case .holiday: return .redDay
+        case .birthday: return .personal
+        case .memo, .note, .event: return .personal
+        case .observance: return .cultural
+        case .trip: return .cultural
+        case .expense: return .personal
         }
-        if type == .event || type == .birthday {
-            return .personal
-        }
-        return .cultural
     }
 
     /// Days until this event (for countdowns)

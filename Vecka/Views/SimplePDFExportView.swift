@@ -148,7 +148,7 @@ enum PDFExportContext: Identifiable {
     case weekSummary(weekNumber: Int, year: Int, baseCurrency: String)
     case expenseReportWeek(weekNumber: Int, year: Int, baseCurrency: String)
     case expenseReportMonth(month: Int, year: Int, baseCurrency: String)
-    case expenseReportTrip(trip: TravelTrip, baseCurrency: String)
+    case expenseReportTrip(trip: Memo, baseCurrency: String)
 
     var id: String {
         switch self {
@@ -193,7 +193,7 @@ enum PDFExportContext: Identifiable {
             let monthName = DateFormatterCache.monthName.monthSymbols[month - 1]
             return "Expense Report – \(monthName) \(year)"
         case .expenseReportTrip(let trip, _):
-            return "Trip Expenses – \(trip.tripName)"
+            return "Trip Expenses – \(trip.text)"
         }
     }
 
@@ -214,7 +214,7 @@ enum PDFExportContext: Identifiable {
         case .expenseReportMonth:
             return "Monthly expense breakdown by category"
         case .expenseReportTrip(let trip, _):
-            return "Expenses for \(trip.destination)"
+            return "Expenses for \(trip.place ?? "Trip")"
         }
     }
 

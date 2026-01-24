@@ -66,6 +66,7 @@ enum MemoMigrationService {
             memo.pinnedToDashboard = note.pinnedToDashboard
             memo.color = note.color
             memo.priorityRaw = note.priority
+            memo.type = .note  // Set type discriminator
 
             context.insert(memo)
             count += 1
@@ -91,6 +92,7 @@ enum MemoMigrationService {
             memo.countdownIcon = countdown.icon
             memo.color = countdown.colorHex.replacingOccurrences(of: "#", with: "")
             memo.isSystemCountdown = countdown.isSystem
+            memo.type = .countdown  // Set type discriminator
 
             context.insert(memo)
             count += 1
@@ -116,6 +118,7 @@ enum MemoMigrationService {
             memo.amount = expense.amount
             memo.currency = expense.currency
             memo.place = expense.merchantName
+            memo.type = .expense  // Set type discriminator
 
             // Add notes as extended text if present
             if let notes = expense.notes, !notes.isEmpty {
@@ -145,6 +148,7 @@ enum MemoMigrationService {
             memo.tripEndDate = trip.endDate
             memo.place = trip.destination
             memo.tripPurpose = trip.purpose
+            memo.type = .trip  // Set type discriminator
 
             context.insert(memo)
             count += 1

@@ -4,6 +4,7 @@
 //
 //  Comprehensive expense list with authentic Japanese Jōhō Dezain packaging
 //  GREEN zone for financial tracking
+//  Migrated to use unified Memo model
 //
 
 import SwiftUI
@@ -11,24 +12,27 @@ import SwiftData
 
 struct ExpenseListView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \ExpenseItem.date, order: .reverse) private var allExpenses: [ExpenseItem]
-    @Query(sort: \ExpenseCategory.sortOrder) private var categories: [ExpenseCategory]
-    @Query(sort: \TravelTrip.startDate, order: .reverse) private var trips: [TravelTrip]
+
+    // Query all memos, filter to expenses in computed property
+    @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
+
+    // Filter to expense type only
+    private var allExpenses: [Memo] {
+        allMemos.filter { $0.type == .expense }
+    }
 
     // Base Currency
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
     @State private var isRecalculating = false
 
-    // Filtering
+    // Filtering (simplified - Memo doesn't have categories)
     @State private var selectedFilter: ExpenseFilter = .all
-    @State private var selectedCategory: ExpenseCategory?
-    @State private var selectedTrip: TravelTrip?
     @State private var selectedDateRange: DateRange = .thisMonth
 
     // UI State
     @State private var showAddExpense = false
     @State private var showFilterSheet = false
-    @State private var selectedExpense: ExpenseItem?
+    @State private var selectedExpense: Memo?
     @State private var groupBy: GroupingOption = .date
     @State private var showExportSheet = false
     @State private var exportContext: PDFExportContext?
@@ -69,15 +73,9 @@ struct ExpenseListView: View {
                                 }
 
                                 Button {
-                                    groupBy = .category
+                                    groupBy = .merchant
                                 } label: {
-                                    Label("Category", systemImage: groupBy == .category ? "checkmark" : "")
-                                }
-
-                                Button {
-                                    groupBy = .trip
-                                } label: {
-                                    Label("Trip", systemImage: groupBy == .trip ? "checkmark" : "")
+                                    Label("Merchant", systemImage: groupBy == .merchant ? "checkmark" : "")
                                 }
                             }
 
@@ -161,13 +159,9 @@ struct ExpenseListView: View {
                 ExpenseDetailView(expense: expense)
             }
             .sheet(isPresented: $showFilterSheet) {
-                FilterOptionsSheet(
+                SimplifiedFilterSheet(
                     selectedFilter: $selectedFilter,
-                    selectedCategory: $selectedCategory,
-                    selectedTrip: $selectedTrip,
-                    selectedDateRange: $selectedDateRange,
-                    categories: categories,
-                    trips: trips
+                    selectedDateRange: $selectedDateRange
                 )
             }
             .sheet(isPresented: $showExportSheet) {
@@ -234,10 +228,11 @@ struct ExpenseListView: View {
 
     /// Breakdown of expenses by original currency
     private var currencyBreakdown: [(currency: String, total: Double, convertedTotal: Double, count: Int)] {
-        let grouped = Dictionary(grouping: filteredExpenses) { $0.currency }
+        let grouped = Dictionary(grouping: filteredExpenses) { $0.currency ?? "SEK" }
         return grouped.map { (currency, expenses) in
-            let total = expenses.reduce(0.0) { $0 + $1.amount }
-            let convertedTotal = expenses.reduce(0.0) { $0 + ($1.convertedAmount ?? $1.amount) }
+            let total = expenses.reduce(0.0) { $0 + ($1.amount ?? 0) }
+            // Memo doesn't have convertedAmount, use original amount
+            let convertedTotal = total
             return (currency, total, convertedTotal, expenses.count)
         }.sorted { $0.convertedTotal > $1.convertedTotal }
     }
@@ -375,24 +370,29 @@ struct ExpenseListView: View {
     }
 
     private var categorySummaries: [(name: String, amount: String)] {
+        // Memo doesn't have categories, show expense breakdown by month
+        let calendar = Calendar.iso8601
         let grouped = Dictionary(grouping: filteredExpenses) { expense in
-            expense.category?.name ?? "Other"
+            let components = calendar.dateComponents([.year, .month], from: expense.date)
+            let monthFormatter = DateFormatter()
+            monthFormatter.dateFormat = "MMM"
+            return calendar.date(from: components).map { monthFormatter.string(from: $0) } ?? "Other"
         }
 
-        let sorted = grouped.map { (category, expenses) -> (String, Double) in
+        let sorted = grouped.map { (month, expenses) -> (String, Double) in
             let total = expenses.reduce(0.0) { sum, expense in
-                sum + (expense.convertedAmount ?? expense.amount)
+                sum + (expense.amount ?? 0)
             }
-            return (category, total)
+            return (month, total)
         }.sorted { $0.1 > $1.1 }
 
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.maximumFractionDigits = 0
 
-        return sorted.prefix(3).map { category, total in
+        return sorted.prefix(3).map { month, total in
             let formatted = formatter.string(from: NSNumber(value: total)) ?? "0"
-            return (category, formatted)
+            return (month, formatted)
         }
     }
 
@@ -406,8 +406,6 @@ struct ExpenseListView: View {
                     isSelected: selectedFilter == .all
                 ) {
                     selectedFilter = .all
-                    selectedCategory = nil
-                    selectedTrip = nil
                 }
 
                 FilterChip(
@@ -422,26 +420,6 @@ struct ExpenseListView: View {
                     isSelected: selectedDateRange == .thisMonth
                 ) {
                     selectedDateRange = .thisMonth
-                }
-
-                if let category = selectedCategory {
-                    FilterChip(
-                        title: category.name,
-                        icon: category.iconName,
-                        isSelected: true
-                    ) {
-                        selectedCategory = nil
-                    }
-                }
-
-                if let trip = selectedTrip {
-                    FilterChip(
-                        title: trip.tripName,
-                        icon: "airplane",
-                        isSelected: true
-                    ) {
-                        selectedTrip = nil
-                    }
                 }
             }
             .padding(.horizontal, JohoDimensions.spacingLG)
@@ -470,9 +448,9 @@ struct ExpenseListView: View {
         LazyVStack(spacing: JohoDimensions.spacingSM) {
             ForEach(filteredExpenses.prefix(20)) { expense in
                 JohoListRow(
-                    title: expense.itemDescription,
+                    title: expense.text,
                     subtitle: subtitleText(for: expense),
-                    icon: expense.category?.iconName ?? "creditcard.fill",
+                    icon: "creditcard.fill",  // Category removed in Memo
                     zone: .expenses,
                     badge: formattedAmount(for: expense),
                     showChevron: true
@@ -480,17 +458,17 @@ struct ExpenseListView: View {
                 .onTapGesture {
                     selectedExpense = expense
                 }
-                .accessibilityLabel("\(expense.itemDescription), \(formattedAmount(for: expense))")
+                .accessibilityLabel("\(expense.text), \(formattedAmount(for: expense))")
                 .accessibilityAddTraits(.isButton)
             }
         }
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
-    private func subtitleText(for expense: ExpenseItem) -> String {
+    private func subtitleText(for expense: Memo) -> String {
         var components: [String] = []
 
-        if let merchant = expense.merchantName {
+        if let merchant = expense.place {
             components.append(merchant)
         }
 
@@ -501,8 +479,8 @@ struct ExpenseListView: View {
         return components.joined(separator: " • ")
     }
 
-    private func formattedAmount(for expense: ExpenseItem) -> String {
-        let amount = expense.convertedAmount ?? expense.amount
+    private func formattedAmount(for expense: Memo) -> String {
+        let amount = expense.amount ?? 0
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.maximumFractionDigits = 0
@@ -521,18 +499,11 @@ struct ExpenseListView: View {
 
     // MARK: - Computed Properties
 
-    private var filteredExpenses: [ExpenseItem] {
+    private var filteredExpenses: [Memo] {
         var expenses = allExpenses
 
-        // Filter by category
-        if let category = selectedCategory {
-            expenses = expenses.filter { $0.category?.id == category.id }
-        }
-
-        // Filter by trip
-        if let trip = selectedTrip {
-            expenses = expenses.filter { $0.trip?.id == trip.id }
-        }
+        // Note: Category/Trip filters disabled for Memo-based expenses
+        // They use legacy models that will be removed in Phase 8
 
         // Filter by date range
         let calendar = Calendar.iso8601
@@ -555,24 +526,22 @@ struct ExpenseListView: View {
         return expenses
     }
 
-    private var groupedExpenses: [String: [ExpenseItem]] {
+    private var groupedExpenses: [String: [Memo]] {
         Dictionary(grouping: filteredExpenses) { expense in
             switch groupBy {
             case .date:
                 let formatter = DateFormatter()
                 formatter.dateStyle = .medium
                 return formatter.string(from: expense.date)
-            case .category:
-                return expense.category?.name ?? "Uncategorized"
-            case .trip:
-                return expense.trip?.tripName ?? "No Trip"
+            case .merchant:
+                return expense.place ?? "Unknown"  // Group by merchant/place
             }
         }
     }
 
     private var totalAmount: Double {
         filteredExpenses.reduce(0) { total, expense in
-            total + (expense.convertedAmount ?? expense.amount)
+            total + (expense.amount ?? 0)
         }
     }
 
@@ -581,34 +550,12 @@ struct ExpenseListView: View {
     }
     
     // MARK: - Recalculation
-    
+
     private func recalculateAllExpenses() {
-        guard !isRecalculating else { return }
-        isRecalculating = true
-        
-        Task { @MainActor in
-            Log.i("Recalculating all expenses for new base currency: \(baseCurrency)")
-            for expense in allExpenses {
-                 if expense.currency != baseCurrency {
-                     let rate = try? await CurrencyService.shared.getRate(
-                         from: expense.currency, 
-                         to: baseCurrency, 
-                         date: expense.date, 
-                         context: modelContext
-                     )
-                     if let rate {
-                         expense.exchangeRate = rate
-                         expense.convertedAmount = expense.amount * rate
-                     }
-                 } else {
-                     expense.exchangeRate = 1.0
-                     expense.convertedAmount = expense.amount
-                 }
-            }
-            try? modelContext.save()
-            isRecalculating = false
-            Log.i("Recalculation complete")
-        }
+        // Note: Memo doesn't have exchangeRate/convertedAmount
+        // Currency conversion would need to be done differently
+        // For now, expenses are stored in original currency only
+        Log.i("Currency recalculation skipped - Memo stores original currency only")
     }
 
     // MARK: - CSV Export Functions
@@ -648,52 +595,12 @@ struct ExpenseListView: View {
 
     private func exportCSVFiltered() {
         do {
-            let url = try CSVExportService.shared.exportExpenses(filteredExpenses)
+            let url = try CSVExportService.shared.exportMemoExpenses(filteredExpenses)
             csvExportURL = url
             showCSVShareSheet = true
         } catch {
             csvExportError = error.localizedDescription
         }
-    }
-}
-
-// MARK: - Expense Row (Legacy - keeping for compatibility)
-
-struct ExpenseRow: View {
-    @AppStorage("baseCurrency") private var baseCurrency = "SEK"
-    let expense: ExpenseItem
-
-    var body: some View {
-        JohoListRow(
-            title: expense.itemDescription,
-            subtitle: subtitleText,
-            icon: expense.category?.iconName ?? "creditcard.fill",
-            zone: .expenses,
-            badge: formattedAmount,
-            showChevron: true
-        )
-    }
-
-    private var subtitleText: String {
-        var components: [String] = []
-
-        if let merchant = expense.merchantName {
-            components.append(merchant)
-        }
-
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        components.append(formatter.string(from: expense.date))
-
-        return components.joined(separator: " • ")
-    }
-
-    private var formattedAmount: String {
-        let amount = expense.convertedAmount ?? expense.amount
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "0"
     }
 }
 
@@ -736,24 +643,19 @@ struct FilterChip: View {
     }
 }
 
-// MARK: - Filter Options Sheet
+// MARK: - Simplified Filter Sheet (Date Range Only)
 
-struct FilterOptionsSheet: View {
+struct SimplifiedFilterSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     @Binding var selectedFilter: ExpenseFilter
-    @Binding var selectedCategory: ExpenseCategory?
-    @Binding var selectedTrip: TravelTrip?
     @Binding var selectedDateRange: DateRange
-
-    let categories: [ExpenseCategory]
-    let trips: [TravelTrip]
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: JohoDimensions.spacingLG) {
-                    // 情報デザイン: Status bar safe zone - prevents content from scrolling under status bar icons
+                    // 情報デザイン: Status bar safe zone
                     Spacer().frame(height: 44)
 
                     // Date Range Section
@@ -791,148 +693,12 @@ struct FilterOptionsSheet: View {
                             }
                         }
                     }
-
-                    // Category Section
-                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                        JohoPill(text: "Category", style: .blackOnWhite, size: .medium)
-
-                        VStack(spacing: JohoDimensions.spacingXS) {
-                            Button {
-                                selectedCategory = nil
-                            } label: {
-                                HStack {
-                                    Text("All Categories")
-                                        .font(JohoFont.body)
-                                        .foregroundStyle(JohoColors.black)
-                                    Spacer()
-                                    if selectedCategory == nil {
-                                        Image(systemName: "checkmark.circle.fill")
-                                            .font(JohoFont.body)
-                                            .foregroundStyle(JohoColors.black)
-                                    }
-                                }
-                                .padding(JohoDimensions.spacingMD)
-                                .background(JohoColors.white)
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                                .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                        .stroke(
-                                            selectedCategory == nil ? JohoColors.black : JohoColors.black.opacity(0.3),
-                                            lineWidth: selectedCategory == nil ? JohoDimensions.borderMedium : JohoDimensions.borderThin
-                                        )
-                                )
-                            }
-                            .buttonStyle(.plain)
-
-                            ForEach(categories) { category in
-                                Button {
-                                    selectedCategory = category
-                                } label: {
-                                    HStack(spacing: JohoDimensions.spacingSM) {
-                                        JohoIconBadge(icon: category.iconName, zone: .expenses, size: 32)
-                                        Text(category.name)
-                                            .font(JohoFont.body)
-                                            .foregroundStyle(JohoColors.black)
-                                        Spacer()
-                                        if selectedCategory?.id == category.id {
-                                            Image(systemName: "checkmark.circle.fill")
-                                                .font(JohoFont.body)
-                                                .foregroundStyle(JohoColors.black)
-                                        }
-                                    }
-                                    .padding(JohoDimensions.spacingMD)
-                                    .background(JohoColors.white)
-                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                                    .overlay(
-                                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                            .stroke(
-                                                selectedCategory?.id == category.id ? JohoColors.black : JohoColors.black.opacity(0.3),
-                                                lineWidth: selectedCategory?.id == category.id ? JohoDimensions.borderMedium : JohoDimensions.borderThin
-                                            )
-                                    )
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                    }
-
-                    // Trips Section
-                    if trips.isNotEmpty {
-                        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                            JohoPill(text: "Trip", style: .blackOnWhite, size: .medium)
-
-                            VStack(spacing: JohoDimensions.spacingXS) {
-                                Button {
-                                    selectedTrip = nil
-                                } label: {
-                                    HStack {
-                                        Text("All Trips")
-                                            .font(JohoFont.body)
-                                            .foregroundStyle(JohoColors.black)
-                                        Spacer()
-                                        if selectedTrip == nil {
-                                            Image(systemName: "checkmark.circle.fill")
-                                                .font(JohoFont.body)
-                                                .foregroundStyle(JohoColors.black)
-                                        }
-                                    }
-                                    .padding(JohoDimensions.spacingMD)
-                                    .background(JohoColors.white)
-                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                                    .overlay(
-                                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                            .stroke(
-                                                selectedTrip == nil ? JohoColors.black : JohoColors.black.opacity(0.3),
-                                                lineWidth: selectedTrip == nil ? JohoDimensions.borderMedium : JohoDimensions.borderThin
-                                            )
-                                    )
-                                }
-                                .buttonStyle(.plain)
-
-                                ForEach(trips) { trip in
-                                    Button {
-                                        selectedTrip = trip
-                                    } label: {
-                                        HStack(spacing: JohoDimensions.spacingSM) {
-                                            JohoIconBadge(icon: "airplane", zone: .trips, size: 32)
-                                            VStack(alignment: .leading, spacing: 2) {
-                                                Text(trip.tripName)
-                                                    .font(JohoFont.body)
-                                                    .foregroundStyle(JohoColors.black)
-                                                Text(trip.destination)
-                                                    .font(JohoFont.bodySmall)
-                                                    .foregroundStyle(JohoColors.black.opacity(0.6))
-                                            }
-                                            Spacer()
-                                            if selectedTrip?.id == trip.id {
-                                                Image(systemName: "checkmark.circle.fill")
-                                                    .font(JohoFont.body)
-                                                    .foregroundStyle(JohoColors.black)
-                                            }
-                                        }
-                                        .padding(JohoDimensions.spacingMD)
-                                        .background(JohoColors.white)
-                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                                        .overlay(
-                                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                                .stroke(
-                                                    selectedTrip?.id == trip.id ? JohoColors.black : JohoColors.black.opacity(0.3),
-                                                    lineWidth: selectedTrip?.id == trip.id ? JohoDimensions.borderMedium : JohoDimensions.borderThin
-                                                )
-                                        )
-                                    }
-                                    .buttonStyle(.plain)
-                                }
-                            }
-                        }
-                    }
                 }
                 .padding(JohoDimensions.spacingLG)
             }
             .johoBackground()
             .toolbar(.hidden, for: .navigationBar)
             .safeAreaInset(edge: .top) {
-                // Inline header with done button (情報デザイン)
                 HStack {
                     JohoPageHeader(title: "Filter Options", badge: "FILTER")
 
@@ -952,19 +718,19 @@ struct FilterOptionsSheet: View {
     }
 }
 
-// MARK: - Expense Detail View
+// MARK: - Expense Detail View (Memo-based)
 
 struct ExpenseDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
     @State private var showEditSheet = false
-    let expense: ExpenseItem
+    let expense: Memo
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: JohoDimensions.spacingLG) {
-                    // 情報デザイン: Status bar safe zone - prevents content from scrolling under status bar icons
+                    // 情報デザイン: Status bar safe zone
                     Spacer().frame(height: 44)
 
                     // Amount Card - Hero display
@@ -972,15 +738,9 @@ struct ExpenseDetailView: View {
                         VStack(spacing: JohoDimensions.spacingMD) {
                             JohoPill(text: "Amount", style: .blackOnWhite)
 
-                            Text(expense.amount, format: .currency(code: expense.currency))
+                            Text(expense.amount ?? 0, format: .currency(code: expense.currency ?? "SEK"))
                                 .font(JohoFont.displayLarge)
                                 .foregroundStyle(JohoColors.black)
-
-                            if let converted = expense.convertedAmount, expense.currency != baseCurrency {
-                                Text("\(converted, format: .currency(code: baseCurrency)) (converted)")
-                                    .font(JohoFont.body)
-                                    .foregroundStyle(JohoColors.black.opacity(0.7))
-                            }
                         }
                         .frame(maxWidth: .infinity)
                     }
@@ -988,58 +748,13 @@ struct ExpenseDetailView: View {
                     // Details Section
                     JohoSectionBox(title: "Details", zone: .expenses) {
                         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                            JohoMetricRow(label: "Description", value: expense.itemDescription, zone: .expenses)
+                            JohoMetricRow(label: "Description", value: expense.text, zone: .expenses)
 
-                            if let merchant = expense.merchantName {
+                            if let merchant = expense.place {
                                 JohoMetricRow(label: "Merchant", value: merchant, zone: .expenses)
                             }
 
-                            if let category = expense.category {
-                                HStack(spacing: JohoDimensions.spacingSM) {
-                                    Text("Category")
-                                        .font(JohoFont.body)
-                                        .foregroundStyle(JohoColors.black)
-                                    Spacer()
-                                    HStack(spacing: JohoDimensions.spacingXS) {
-                                        JohoIconBadge(icon: category.iconName, zone: .expenses, size: 24)
-                                        Text(category.name)
-                                            .font(JohoFont.body)
-                                            .foregroundStyle(JohoColors.black)
-                                    }
-                                }
-                                .padding(.horizontal, JohoDimensions.spacingMD)
-                                .padding(.vertical, JohoDimensions.spacingSM)
-                                .background(SectionZone.expenses.background.opacity(0.3))
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            }
-
                             JohoMetricRow(label: "Date", value: expense.date.formatted(date: .long, time: .omitted), zone: .expenses)
-
-                            if let notes = expense.notes {
-                                VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
-                                    Text("Notes")
-                                        .font(JohoFont.body)
-                                        .foregroundStyle(JohoColors.black.opacity(0.7))
-                                    Text(notes)
-                                        .font(JohoFont.body)
-                                        .foregroundStyle(JohoColors.black)
-                                }
-                                .padding(.horizontal, JohoDimensions.spacingMD)
-                                .padding(.vertical, JohoDimensions.spacingSM)
-                                .background(SectionZone.expenses.background.opacity(0.3))
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            }
-                        }
-                    }
-
-                    // Receipt Section
-                    if let imageData = expense.receiptImageData,
-                       let uiImage = UIImage(data: imageData) {
-                        JohoSectionBox(title: "Receipt", zone: .expenses) {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFit()
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         }
                     }
                 }
@@ -1095,13 +810,12 @@ enum DateRange: String, CaseIterable {
 
 enum GroupingOption {
     case date
-    case category
-    case trip
+    case merchant  // Group by place/merchant (replaces category)
 }
 
 // MARK: - Preview
 
 #Preview {
     ExpenseListView()
-        .modelContainer(for: [ExpenseItem.self, ExpenseCategory.self, TravelTrip.self], inMemory: true)
+        .modelContainer(for: [Memo.self], inMemory: true)
 }

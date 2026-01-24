@@ -3,6 +3,7 @@
 //  Vecka
 //
 //  Inline "dashboard" beneath the month grid - Japanese Packaging Design
+//  Updated to work with unified Memo model
 //
 
 import SwiftUI
@@ -46,6 +47,20 @@ struct DayDashboardView: View {
         let name: String
         let isBankHoliday: Bool
         let symbolName: String?
+        let regionCode: String?  // ISO country code (SE, JP, US, etc.)
+
+        /// 情報デザイン: Flag emoji from region code
+        var flag: String? {
+            guard let code = regionCode?.uppercased(), code.count == 2 else { return nil }
+            let base: UInt32 = 127397
+            var emoji = ""
+            for scalar in code.unicodeScalars {
+                if let flagScalar = UnicodeScalar(base + scalar.value) {
+                    emoji.append(Character(flagScalar))
+                }
+            }
+            return emoji.isEmpty ? nil : emoji
+        }
     }
 
     struct BirthdayInfo: Identifiable, Equatable {
@@ -55,24 +70,19 @@ struct DayDashboardView: View {
     }
 
     let date: Date
-    let notes: [DailyNote]
-    let pinnedNotes: [DailyNote]
+    let memos: [Memo]
     let holidays: [HolidayInfo]
     let birthdays: [BirthdayInfo]  // 情報デザイン: Contact birthdays
-    let expenses: [ExpenseItem]
-    let trips: [TravelTrip]
     let secondaryDateText: String?
-    let onOpenNotes: (_ date: Date) -> Void
-    let onOpenExpenses: ((_ date: Date) -> Void)?
+    let onOpenMemos: (_ date: Date) -> Void
     var onAddEntry: (() -> Void)? = nil  // 情報デザイン: Opens add entry menu
 
     /// 情報デザイン: Check if day has any content
     private var hasAnyContent: Bool {
-        !holidays.isEmpty || !birthdays.isEmpty || !notes.isEmpty || !expenses.isEmpty || !trips.isEmpty
+        !holidays.isEmpty || !birthdays.isEmpty || !memos.isEmpty
     }
 
     @State private var isExpanded = false
-    @State private var isPinnedExpanded = false
 
     @Environment(\.locale) private var locale
     @Environment(\.johoColorMode) private var colorMode
@@ -93,225 +103,343 @@ struct DayDashboardView: View {
     }
 
     private let previewLimit = 3
-    private let pinnedPreviewLimit = 2
 
     // Base Currency
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
 
-    private var referenceDay: Date {
-        Calendar.current.startOfDay(for: date)
+    // Computed memo categories
+    private var noteMemos: [Memo] {
+        memos.filter { !$0.hasMoney && !$0.hasPlace }
     }
 
-    private var pinnedCountdownNotes: [DailyNote] {
-        let referenceDay = self.referenceDay
-
-        return pinnedNotes
-            .filter { $0.pinnedToDashboard == true }
-            .filter { $0.day > referenceDay }
-            .sorted(by: { lhs, rhs in
-                if lhs.day != rhs.day { return lhs.day < rhs.day }
-                let lhsTime = lhs.scheduledAt ?? lhs.date
-                let rhsTime = rhs.scheduledAt ?? rhs.date
-                return lhsTime < rhsTime
-            })
+    private var expenseMemos: [Memo] {
+        memos.filter { $0.hasMoney }
     }
 
-    private var visiblePinnedNotes: [DailyNote] {
-        isPinnedExpanded ? pinnedCountdownNotes : Array(pinnedCountdownNotes.prefix(pinnedPreviewLimit))
+    private var tripMemos: [Memo] {
+        memos.filter { $0.hasPlace && !$0.hasMoney }
     }
 
-    private var showPinnedExpandToggle: Bool {
-        pinnedCountdownNotes.count > pinnedPreviewLimit
-    }
-
-    private var hasExpandableContent: Bool {
-        if notes.count > previewLimit {
-            return true
-        }
-        return notes.contains { note in
-            let trimmed = note.content.trimmed
-            return trimmed.count > 140 || trimmed.contains("\n")
-        }
-    }
-
-    private var visibleNotes: [DailyNote] {
-        isExpanded ? notes : Array(notes.prefix(previewLimit))
+    private var visibleMemos: [Memo] {
+        isExpanded ? noteMemos : Array(noteMemos.prefix(previewLimit))
     }
 
     private var showExpandToggle: Bool {
-        hasExpandableContent
-    }
-
-    private var expandTitle: String {
-        if notes.count > previewLimit {
-            return isExpanded ? Localization.showLess : Localization.showAll
-        }
-        return isExpanded ? Localization.less : Localization.more
+        noteMemos.count > previewLimit
     }
 
     // MARK: - Joho Design System Body
+    // 情報デザイン: Single Bento containing header + content grid
 
     var body: some View {
-        VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
-            // HEADER with + button - 情報デザイン: Day title with add entry action
-            dayHeader
-                .padding(.horizontal, JohoDimensions.spacingLG)
+        VStack(spacing: 0) {
+            // Single combined Bento
+            dayBento
+        }
+    }
 
-            // EMPTY STATE - 情報デザイン: Show when no entries
+    // MARK: - Combined Day Bento (情報デザイン: Grid compartments like RANDOM FACTS)
+
+    private var dayBento: some View {
+        VStack(spacing: 0) {
+            // Top row: Date header cell + Add button
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Date compartment (squircle cell)
+                dateCell
+
+                Spacer()
+
+                // Add button
+                if let onAddEntry {
+                    Button(action: onAddEntry) {
+                        Image(systemName: "plus")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(colors.primary)
+                    }
+                    .frame(width: 40, height: 40)
+                    .background(colors.surface)
+                    .clipShape(Squircle(cornerRadius: 10))
+                    .overlay(
+                        Squircle(cornerRadius: 10)
+                            .stroke(colors.border, lineWidth: 1.5)
+                    )
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(JohoDimensions.spacingSM)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1)
+
+            // Content grid: empty state OR item cells
             if !hasAnyContent {
-                emptyStateView
-                    .padding(.horizontal, JohoDimensions.spacingLG)
+                emptyStateContent
+                    .padding(JohoDimensions.spacingSM)
+            } else {
+                contentCellGrid
+                    .padding(JohoDimensions.spacingSM)
             }
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+        )
+    }
 
-            // HOLIDAYS SECTION (情報デザイン: Star Pages bento style)
-            if holidays.isNotEmpty {
-                bentoSection(title: "HOLIDAYS", icon: "star.fill", zone: .holidays) {
-                    ForEach(holidays.prefix(2)) { holiday in
-                        bentoHolidayRow(holiday: holiday)
-                    }
+    // MARK: - Date Cell (情報デザイン: Header compartment)
 
-                    if holidays.count > 2 {
-                        Text(String.localizedStringWithFormat(
-                            NSLocalizedString("holiday.more_count", value: "+%d more", comment: "Additional holidays count"),
-                            holidays.count - 2
-                        ))
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
-                        .padding(.horizontal, JohoDimensions.spacingMD)
-                    }
-                }
-                .padding(.horizontal, JohoDimensions.spacingLG)
-            }
+    private var dateCell: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(formattedDate)
+                .font(.system(size: 20, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
 
-            // BIRTHDAYS SECTION (情報デザイン: Contact birthdays)
-            if birthdays.isNotEmpty {
-                bentoSection(title: "BIRTHDAYS", icon: "birthday.cake.fill", zone: .birthdays) {
-                    ForEach(birthdays) { birthday in
-                        bentoBirthdayRow(birthday: birthday)
-                    }
-                }
-                .padding(.horizontal, JohoDimensions.spacingLG)
-            }
+            Text(subtitleText ?? "")
+                .font(.system(size: 11, weight: .medium, design: .rounded))
+                .foregroundStyle(colors.secondary)
+        }
+        .padding(.horizontal, JohoDimensions.spacingSM)
+        .padding(.vertical, 6)
+        .background(
+            Calendar.current.isDateInToday(date) ? JohoColors.yellow.opacity(0.3) : Color.clear
+        )
+        .clipShape(Squircle(cornerRadius: 8))
+    }
 
-            // NOTES SECTION (情報デザイン: Star Pages bento style)
-            if notes.isNotEmpty {
-                bentoSection(title: "NOTES", icon: "note.text", zone: .notes) {
-                    if showExpandToggle {
-                        Button(expandTitle) {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
-                                isExpanded.toggle()
-                            }
-                        }
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black)
-                        .padding(.horizontal, JohoDimensions.spacingMD)
-                        .accessibilityLabel(expandTitle)
-                    }
+    // MARK: - Content Cell Grid (情報デザイン: 2-column grid of compartments)
 
-                    ForEach(visibleNotes) { note in
-                        Button(action: { onOpenNotes(date) }) {
-                            bentoNoteRow(note: note, expanded: isExpanded)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(noteAccessibilityLabel(note))
-                        .accessibilityHint("Double tap to edit")
-                    }
+    private var contentCellGrid: some View {
+        let allItems = buildGridItems()
+        let columns = [GridItem(.flexible()), GridItem(.flexible())]
 
-                    if !isExpanded, notes.count > previewLimit {
-                        Text(String.localizedStringWithFormat(
-                            NSLocalizedString("note.more_count", value: "+%d more", comment: "Additional notes count"),
-                            notes.count - previewLimit
-                        ))
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
-                        .padding(.horizontal, JohoDimensions.spacingMD)
-                    }
-                }
-                .padding(.horizontal, JohoDimensions.spacingLG)
-            }
-
-            // EXPENSES SECTION (情報デザイン: Star Pages bento style)
-            if expenses.isNotEmpty {
-                Button {
-                    onOpenExpenses?(date)
-                } label: {
-                    bentoSection(title: "EXPENSES", icon: "dollarsign.circle.fill", zone: .expenses) {
-                        // Individual expense rows
-                        ForEach(expenses) { expense in
-                            bentoExpenseRow(expense: expense)
-                        }
-
-                        // Horizontal divider before total
-                        Rectangle()
-                            .fill(eventBorderColor)
-                            .frame(height: 1.5)
-
-                        // Total row at bottom (情報デザイン: summary in bottom-right)
-                        bentoTotalRow(label: "Total", amount: totalExpenseAmount, currency: baseCurrency)
-                    }
-                }
-                .buttonStyle(.plain)
-                .padding(.horizontal, JohoDimensions.spacingLG)
-                .accessibilityLabel("\(expenses.count) expenses, total \(totalExpenseAmount.formatted(.currency(code: baseCurrency)))")
-                .accessibilityHint("Double tap to view expenses")
-            }
-
-            // TRIPS SECTION (情報デザイン: Star Pages bento style)
-            if trips.isNotEmpty {
-                bentoSection(title: "TRIPS", icon: "airplane.departure", zone: .trips) {
-                    ForEach(trips) { trip in
-                        bentoTripRow(trip: trip)
-                    }
-                }
-                .padding(.horizontal, JohoDimensions.spacingLG)
-                .accessibilityLabel("\(trips.count) active trips")
-            }
-
-            // PINNED COUNTDOWNS SECTION (情報デザイン: Star Pages bento style)
-            if pinnedCountdownNotes.isNotEmpty {
-                bentoSection(title: "PINNED", icon: "pin.fill", zone: .calendar) {
-                    if showPinnedExpandToggle {
-                        Button(isPinnedExpanded ? Localization.showLess : Localization.showAll) {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.9)) {
-                                isPinnedExpanded.toggle()
-                            }
-                        }
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black)
-                        .padding(.horizontal, JohoDimensions.spacingMD)
-                    }
-
-                    ForEach(visiblePinnedNotes) { note in
-                        Button(action: { onOpenNotes(note.day) }) {
-                            bentoPinnedRow(note: note, daysRemaining: daysUntil(note.day))
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(pinnedNoteAccessibilityLabel(note))
-                        .accessibilityHint("Double tap to view")
-                    }
-
-                    if !isPinnedExpanded, pinnedCountdownNotes.count > pinnedPreviewLimit {
-                        Text(String.localizedStringWithFormat(
-                            NSLocalizedString("pinned.more_count", value: "+%d more", comment: "Additional pinned notes count"),
-                            pinnedCountdownNotes.count - pinnedPreviewLimit
-                        ))
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
-                        .padding(.horizontal, JohoDimensions.spacingMD)
-                    }
-                }
-                .padding(.horizontal, JohoDimensions.spacingLG)
+        return LazyVGrid(columns: columns, spacing: JohoDimensions.spacingSM) {
+            ForEach(allItems) { item in
+                gridCell(item: item)
             }
         }
     }
 
-    // MARK: - Header Helpers
+    // MARK: - Grid Item Model
+
+    private struct DayGridItem: Identifiable {
+        let id: String
+        let title: String
+        let subtitle: String?
+        let flag: String?        // Country code or category
+        let badge: String?       // HOLIDAY/OBSERVANCE, amount, etc.
+        let zone: BentoZone
+        let action: (() -> Void)?
+    }
+
+    private func buildGridItems() -> [DayGridItem] {
+        var items: [DayGridItem] = []
+
+        // Holidays
+        for holiday in holidays.prefix(4) {
+            items.append(DayGridItem(
+                id: "h-\(holiday.id)",
+                title: holiday.name,
+                subtitle: nil,
+                flag: holiday.regionCode?.uppercased(),
+                badge: holiday.isBankHoliday ? "HOLIDAY" : "OBSERVANCE",
+                zone: .holidays,
+                action: nil
+            ))
+        }
+
+        // Birthdays
+        for birthday in birthdays.prefix(2) {
+            let ageText = birthday.age.map { "TURNS \($0)" }
+            items.append(DayGridItem(
+                id: "b-\(birthday.id)",
+                title: birthday.name,
+                subtitle: ageText,
+                flag: nil,
+                badge: nil,
+                zone: .birthdays,
+                action: nil
+            ))
+        }
+
+        // Expenses
+        for memo in expenseMemos.prefix(2) {
+            let amountText = memo.amount.map { String(format: "%.0f", $0) }
+            items.append(DayGridItem(
+                id: "e-\(memo.id)",
+                title: memo.preview,
+                subtitle: nil,
+                flag: memo.currency ?? baseCurrency,
+                badge: amountText,
+                zone: .expenses,
+                action: { onOpenMemos(date) }
+            ))
+        }
+
+        // Trips
+        for memo in tripMemos.prefix(2) {
+            items.append(DayGridItem(
+                id: "t-\(memo.id)",
+                title: memo.place ?? memo.preview,
+                subtitle: memo.place != nil ? memo.preview : nil,
+                flag: nil,
+                badge: nil,
+                zone: .trips,
+                action: { onOpenMemos(date) }
+            ))
+        }
+
+        // Notes
+        for memo in noteMemos.prefix(2) {
+            items.append(DayGridItem(
+                id: "n-\(memo.id)",
+                title: memo.preview,
+                subtitle: nil,
+                flag: memo.priority.symbol,
+                badge: nil,
+                zone: .notes,
+                action: { onOpenMemos(date) }
+            ))
+        }
+
+        return items
+    }
+
+    // MARK: - Grid Cell (情報デザイン: Colored compartment with flag/badge)
+
+    private func gridCell(item: DayGridItem) -> some View {
+        Button {
+            item.action?()
+        } label: {
+            VStack(alignment: .leading, spacing: 4) {
+                // Top row: flag + badge
+                HStack {
+                    if let flag = item.flag {
+                        Text(flag)
+                            .font(.system(size: 9, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.secondary)
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 2)
+                            .background(colors.surface)
+                            .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                                    .stroke(colors.border.opacity(0.5), lineWidth: 0.5)
+                            )
+                    }
+
+                    Spacer()
+
+                    if let badge = item.badge {
+                        Text(badge)
+                            .font(.system(size: 8, weight: .bold, design: .rounded))
+                            .foregroundStyle(item.zone == .holidays ? colors.surfaceInverted : item.zone.accentColor)
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 2)
+                            .background(item.zone == .holidays && item.badge == "HOLIDAY" ? JohoColors.red : colors.surface)
+                            .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+                    }
+                }
+
+                Spacer()
+
+                // Title
+                Text(item.title)
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+
+                // Subtitle
+                if let subtitle = item.subtitle {
+                    Text(subtitle)
+                        .font(.system(size: 9, weight: .regular, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                        .lineLimit(1)
+                }
+            }
+            .padding(JohoDimensions.spacingSM)
+            .frame(maxWidth: .infinity, minHeight: 70, alignment: .topLeading)
+            .background(item.zone.accentColor.opacity(colorMode == .dark ? 0.2 : 0.3))
+            .clipShape(Squircle(cornerRadius: 10))
+            .overlay(
+                Squircle(cornerRadius: 10)
+                    .stroke(colors.border, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+
+    // MARK: - Empty State Content (情報デザイン: Inside combined Bento)
+
+    private var emptyStateContent: some View {
+        VStack(spacing: JohoDimensions.spacingSM) {
+            Image(systemName: "checkmark.circle")
+                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.secondary)
+
+            Text(Localization.noSpecialDays)
+                .font(JohoFont.bodySmall)
+                .foregroundStyle(colors.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, JohoDimensions.spacingMD)
+    }
+
+    // MARK: - Day Header Row (情報デザイン: Inside combined Bento)
+
+    private var dayHeaderRow: some View {
+        HStack(alignment: .center) {
+            VStack(alignment: .leading, spacing: 2) {
+                // Date badge
+                Text(headerBadge)
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.surfaceInverted)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(colors.primary)
+                    .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+
+                // Main date
+                Text(formattedDate)
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+
+                // Subtitle (week + secondary)
+                if let subtitle = subtitleText, !subtitle.isEmpty {
+                    Text(subtitle)
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+            }
+
+            Spacer()
+
+            // Add button
+            if let onAddEntry {
+                Button(action: onAddEntry) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundStyle(colors.primary)
+                        .frame(width: 44, height: 44)
+                        .background(colors.surface)
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                                .stroke(colors.border, lineWidth: 2)
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
 
     private var headerBadge: String {
-        if Calendar.current.isDateInToday(date) {
-            return "TODAY"
-        }
-        return weekdayName
+        Calendar.current.isDateInToday(date) ? "TODAY" : weekdayName
     }
 
     private var formattedDate: String {
@@ -325,940 +453,223 @@ struct DayDashboardView: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "EEEE"
         formatter.locale = locale
-        return formatter.string(from: date)
+        return formatter.string(from: date).uppercased()
     }
 
-    private var subtitleText: String {
+    private var subtitleText: String? {
         let week = Localization.weekDisplayText(Calendar.iso8601.component(.weekOfYear, from: date))
-        let trimmedSecondary = (secondaryDateText ?? "").trimmed
-        guard !trimmedSecondary.isEmpty else { return week }
-        return "\(week) • \(trimmedSecondary)"
+        let secondary = (secondaryDateText ?? "").trimmingCharacters(in: .whitespaces)
+        if secondary.isEmpty { return week }
+        return "\(week) • \(secondary)"
     }
 
-    private var dateHeadline: String {
-        let formatted = date.formatted(date: .complete, time: .omitted)
-        let language = locale.language.languageCode?.identifier
-        if language == "sv" {
-            return formatted.capitalized(with: locale)
-        }
-        return formatted
-    }
+    // MARK: - Bento Section
 
-    private func daysUntil(_ targetDay: Date) -> Int {
-        ViewUtilities.daysUntil(from: referenceDay, to: targetDay)
-    }
+    enum BentoZone {
+        case holidays
+        case birthdays
+        case notes
+        case expenses
+        case trips
 
-    private var totalExpenseAmount: Double {
-        expenses.reduce(0) { $0 + ($1.convertedAmount ?? $1.amount) }
-    }
-
-    private func noteAccessibilityLabel(_ note: DailyNote) -> String {
-        let content = note.content.trimmed
-        let firstLine = content.components(separatedBy: .newlines).first ?? content
-        let truncated = firstLine.count > 50 ? String(firstLine.prefix(50)) + "..." : firstLine
-        let time = (note.scheduledAt ?? note.date).formatted(date: .omitted, time: .shortened)
-        return "\(truncated), at \(time)"
-    }
-
-    private func pinnedNoteAccessibilityLabel(_ note: DailyNote) -> String {
-        let content = note.content.trimmed
-        let firstLine = content.components(separatedBy: .newlines).first ?? content
-        let truncated = firstLine.count > 40 ? String(firstLine.prefix(40)) + "..." : firstLine
-        let days = daysUntil(note.day)
-        let daysText = days == 1 ? "1 day left" : "\(days) days left"
-        return "\(truncated), \(daysText)"
-    }
-
-    // MARK: - Day Header with + Button (情報デザイン)
-
-    /// 情報デザイン: Compartmentalized header with visual separation
-    /// Layout: [TODAY] │ Date │ [+ ADD]
-    private var dayHeader: some View {
-        HStack(spacing: 0) {
-            // LEFT COMPARTMENT: TODAY/Weekday badge
-            JohoPill(text: headerBadge, style: Calendar.current.isDateInToday(date) ? .coloredInverted(JohoColors.yellow) : .whiteOnBlack, size: .small)
-                .padding(.horizontal, JohoDimensions.spacingSM)
-                .padding(.vertical, JohoDimensions.spacingSM)
-
-            // VERTICAL DIVIDER
-            Rectangle()
-                .fill(colors.border)
-                .frame(width: JohoDimensions.borderMedium)
-                .frame(maxHeight: .infinity)
-
-            // CENTER COMPARTMENT: Formatted date
-            Text(formattedDate)
-                .font(.system(size: 18, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, JohoDimensions.spacingMD)
-                .padding(.vertical, JohoDimensions.spacingSM)
-
-            // VERTICAL DIVIDER (only if ADD button exists)
-            if onAddEntry != nil {
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(width: JohoDimensions.borderMedium)
-                    .frame(maxHeight: .infinity)
-            }
-
-            // RIGHT COMPARTMENT: + ADD Button
-            if let onAddEntry {
-                Button {
-                    HapticManager.selection()
-                    onAddEntry()
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "plus")
-                            .font(.system(size: 14, weight: .black, design: .rounded))
-                        Text("ADD")
-                            .font(.system(size: 12, weight: .black, design: .rounded))
-                            .tracking(0.5)
-                    }
-                    .foregroundStyle(colors.primaryInverted)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    .background(colors.surfaceInverted)
-                    .clipShape(Squircle(cornerRadius: 10))
-                }
-                .buttonStyle(.plain)
-                .padding(.horizontal, JohoDimensions.spacingSM)
-                .padding(.vertical, JohoDimensions.spacingSM)
+        var accentColor: Color {
+            switch self {
+            case .holidays: return JohoColors.pink
+            case .birthdays: return JohoColors.pink
+            case .notes: return JohoColors.yellow
+            case .expenses: return JohoColors.green
+            case .trips: return JohoColors.cyan
             }
         }
-        .frame(minHeight: 52)
-        .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
     }
 
-    // MARK: - Empty State (情報デザイン)
-
-    private var emptyStateView: some View {
-        // Empty state background: slightly different from surface for visual distinction
-        let emptyBg = colorMode == .dark ? Color(hex: "1A1A1A") : JohoColors.inputBackground
-
-        return VStack(spacing: JohoDimensions.spacingMD) {
-            // Icon
-            Image(systemName: "calendar.badge.plus")
-                .font(.system(size: 32, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.primary.opacity(0.3))
-
-            // Text
-            Text("NO ENTRIES")
-                .font(.system(size: 14, weight: .black, design: .rounded))
-                .tracking(1)
-                .foregroundStyle(colors.primary.opacity(0.4))
-
-            // Hint
-            Text("Tap + to add holidays, notes, events, or more")
-                .font(.system(size: 12, weight: .medium, design: .rounded))
-                .foregroundStyle(colors.primary.opacity(0.3))
-                .multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, JohoDimensions.spacingXL)
-        .background(emptyBg)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border.opacity(0.2), lineWidth: 1)
-        )
-    }
-
-    // MARK: - Star Pages Bento Helpers (情報デザイン)
-
-    /// 情報デザイン: Bento section box with vertical wall and icon compartment
-    @ViewBuilder
+    // 情報デザイン: Flat section - just label + content (no nested box/border/divider)
     private func bentoSection<Content: View>(
         title: String,
         icon: String,
-        zone: SectionZone,
+        zone: BentoZone,
         @ViewBuilder content: () -> Content
     ) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // HEADER: Title pill | vertical wall | icon compartment
-            HStack(spacing: 0) {
-                JohoPill(text: title, style: .whiteOnBlack, size: .small)
-                    .padding(.leading, JohoDimensions.spacingMD)
+        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+            // Section label with colored dot
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(zone.accentColor)
+                    .frame(width: 8, height: 8)
+
+                Text(title)
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .tracking(0.5)
+                    .foregroundStyle(colors.secondary)
+            }
+
+            // Content rows
+            VStack(alignment: .leading, spacing: 2) {
+                content()
+            }
+        }
+    }
+
+    // MARK: - Row Views
+
+    private func bentoHolidayRow(holiday: HolidayInfo) -> some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            // Country code badge (情報デザイン: Minimal text, not emoji flags)
+            if let code = holiday.regionCode?.uppercased() {
+                Text(code)
+                    .font(.system(size: 9, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.secondary)
+                    .frame(width: 22)
+            }
+
+            // Holiday name
+            Text(holiday.name)
+                .font(JohoFont.bodySmall)
+                .foregroundStyle(eventTextColor)
+                .lineLimit(1)
+
+            // Holiday type badge
+            Text(holiday.isBankHoliday ? "HOLIDAY" : "OBSERVANCE")
+                .font(.system(size: 8, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.surfaceInverted)
+                .padding(.horizontal, 4)
+                .padding(.vertical, 2)
+                .background(holiday.isBankHoliday ? JohoColors.red : JohoColors.cyan)
+                .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
+
+            Spacer()
+        }
+        .padding(.vertical, 2)
+    }
+
+    private func bentoBirthdayRow(birthday: BirthdayInfo) -> some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            Text(birthday.name)
+                .font(JohoFont.bodySmall)
+                .foregroundStyle(eventTextColor)
+                .lineLimit(1)
+
+            if let age = birthday.age, age > 0 {
+                Text("TURNS \(age)")
+                    .font(.system(size: 9, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.secondary)
+            }
+
+            Spacer()
+        }
+        .padding(.vertical, 2)
+    }
+
+    private func bentoExpenseRow(memo: Memo) -> some View {
+        Button {
+            onOpenMemos(date)
+        } label: {
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Description
+                Text(memo.preview)
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(eventTextColor)
+                    .lineLimit(1)
 
                 Spacer()
 
-                // Vertical wall
-                Rectangle()
-                    .fill(eventBorderColor)
-                    .frame(width: 1.5)
-                    .frame(maxHeight: .infinity)
-
-                // Icon compartment
-                Image(systemName: icon)
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(eventBorderColor)
-                    .frame(width: 40)
-                    .frame(maxHeight: .infinity)
+                // Amount
+                if let amount = memo.amount {
+                    Text(String(format: "%.0f %@", amount, memo.currency ?? baseCurrency))
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.green)
+                }
             }
-            .frame(height: 32)
-            .background(zone.background.opacity(0.5))
-
-            // Horizontal divider
-            Rectangle()
-                .fill(eventBorderColor)
-                .frame(height: 1.5)
-
-            // CONTENT: Clean white/dark background for text
-            VStack(alignment: .leading, spacing: 0) {
-                content()
-            }
-            .background(colorMode == .dark ? colors.surface : JohoColors.white)
+            .padding(.vertical, 2)
         }
-        .background(colorMode == .dark ? colors.surface : zone.background)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(eventBorderColor, lineWidth: JohoDimensions.borderMedium)
-        )
+        .buttonStyle(.plain)
     }
 
-    /// 情報デザイン: Clean holiday row - just text, Japanese planner style
-    @ViewBuilder
-    private func bentoHolidayRow(holiday: HolidayInfo) -> some View {
-        HStack(spacing: JohoDimensions.spacingSM) {
-            // 情報デザイン: Simple bullet for bank holidays
-            if holiday.isBankHoliday {
+    private func bentoTripRow(memo: Memo) -> some View {
+        Button {
+            onOpenMemos(date)
+        } label: {
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Place
+                Text(memo.place ?? memo.preview)
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(eventTextColor)
+                    .lineLimit(1)
+
+                Spacer()
+
+                // Note preview
+                if memo.place != nil && !memo.text.isEmpty {
+                    Text(memo.preview)
+                        .font(.system(size: 11, weight: .regular, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                        .lineLimit(1)
+                }
+            }
+            .padding(.vertical, 2)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func bentoNoteRow(memo: Memo) -> some View {
+        Button {
+            onOpenMemos(date)
+        } label: {
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Priority symbol
+                Text(memo.priority.symbol)
+                    .font(.system(size: 12))
+
+                // Color indicator
                 Circle()
-                    .fill(eventTextColor)
-                    .frame(width: 6, height: 6)
-            }
+                    .fill(Color(hex: memo.colorHex))
+                    .frame(width: 8, height: 8)
+                    .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
 
-            // Name only - clean Japanese planner style
-            Text(holiday.name)
-                .font(JohoFont.body)
-                .foregroundStyle(eventTextColor)
-                .lineLimit(1)
-
-            Spacer()
-        }
-        .padding(.horizontal, JohoDimensions.spacingMD)
-        .padding(.vertical, JohoDimensions.spacingSM)
-        .frame(minHeight: 32)
-        .contentShape(Rectangle())
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(holiday.name)\(holiday.isBankHoliday ? ", public holiday" : "")")
-    }
-
-    /// 情報デザイン: Clean birthday row - just text + age, Japanese planner style
-    @ViewBuilder
-    private func bentoBirthdayRow(birthday: BirthdayInfo) -> some View {
-        HStack(spacing: JohoDimensions.spacingSM) {
-            // Name only - clean Japanese planner style
-            Text(birthday.name)
-                .font(JohoFont.body)
-                .foregroundStyle(eventTextColor)
-                .lineLimit(1)
-
-            Spacer(minLength: 4)
-
-            // Age in parentheses if available - simple text, not a badge
-            if let age = birthday.age {
-                Text("(\(age))")
+                // Text
+                Text(memo.preview)
                     .font(JohoFont.bodySmall)
-                    .foregroundStyle(eventTextColor.opacity(0.6))
-            }
-        }
-        .padding(.horizontal, JohoDimensions.spacingMD)
-        .padding(.vertical, JohoDimensions.spacingSM)
-        .frame(minHeight: 32)
-        .contentShape(Rectangle())
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(birthday.name)'s birthday\(birthday.age != nil ? ", turning \(birthday.age!)" : "")")
-    }
+                    .foregroundStyle(eventTextColor)
+                    .lineLimit(isExpanded ? 3 : 1)
 
-    /// 情報デザイン: Bento note row with compartments
-    @ViewBuilder
-    private func bentoNoteRow(note: DailyNote, expanded: Bool) -> some View {
-        let (title, subtitle) = titleAndSubtitle(from: note.content)
-        let timeSource = note.scheduledAt ?? note.date
+                Spacer()
 
-        HStack(spacing: 0) {
-            // LEFT: Type indicator + color
-            HStack(spacing: 3) {
-                if let colorName = note.color {
+                // Person indicator
+                if memo.hasPerson {
                     Circle()
-                        .fill(colorForName(colorName))
-                        .frame(width: 10, height: 10)
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
-                } else {
-                    Circle()
-                        .fill(SpecialDayType.note.accentColor)
-                        .frame(width: 10, height: 10)
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
-                }
-
-                if note.pinnedToDashboard == true {
-                    Image(systemName: "pin.fill")
-                        .font(.system(size: 7, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .fill(JohoColors.purple)
+                        .frame(width: 6, height: 6)
                 }
             }
-            .frame(width: 32, alignment: .center)
-            .frame(maxHeight: .infinity)
-
-            // Vertical wall
-            Rectangle()
-                .fill(JohoColors.black)
-                .frame(width: 1.5)
-                .frame(maxHeight: .infinity)
-
-            // CENTER: Content
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: JohoDimensions.spacingSM) {
-                    Image(systemName: note.symbolName ?? "note.text")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
-
-                    Text(title)
-                        .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
-                        .lineLimit(1)
-
-                    Spacer(minLength: 4)
-
-                    Text(timeSource.formatted(date: .omitted, time: .shortened))
-                        .font(JohoFont.monoSmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
-                }
-
-                if let subtitle, !subtitle.isEmpty {
-                    Text(subtitle)
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
-                        .lineLimit(expanded ? 8 : 2)
-                }
-            }
-            .padding(.horizontal, JohoDimensions.spacingSM)
-            .padding(.vertical, JohoDimensions.spacingXS)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 2)
         }
-        .frame(minHeight: 36)
-        .contentShape(Rectangle())
-    }
-
-    /// 情報デザイン: Bento expense total row
-    @ViewBuilder
-    private func bentoTotalRow(label: String, amount: Double, currency: String) -> some View {
-        HStack(spacing: 0) {
-            // LEFT: Indicator
-            Circle()
-                .fill(SpecialDayType.expense.accentColor)
-                .frame(width: 10, height: 10)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
-                .frame(width: 32, alignment: .center)
-                .frame(maxHeight: .infinity)
-
-            // Vertical wall
-            Rectangle()
-                .fill(JohoColors.black)
-                .frame(width: 1.5)
-                .frame(maxHeight: .infinity)
-
-            // CENTER: Label
-            Text(label)
-                .font(JohoFont.body)
-                .foregroundStyle(JohoColors.black)
-                .padding(.horizontal, JohoDimensions.spacingSM)
-
-            Spacer()
-
-            // Vertical wall
-            Rectangle()
-                .fill(JohoColors.black)
-                .frame(width: 1.5)
-                .frame(maxHeight: .infinity)
-
-            // RIGHT: Amount
-            Text(amount, format: .currency(code: currency))
-                .font(JohoFont.monoMedium)
-                .foregroundStyle(JohoColors.black)
-                .padding(.horizontal, JohoDimensions.spacingSM)
-                .frame(maxHeight: .infinity)
-        }
-        .frame(minHeight: 36)
-        .background(JohoColors.white.opacity(0.3))
-    }
-
-    /// 情報デザイン: Bento expense item row
-    @ViewBuilder
-    private func bentoExpenseRow(expense: ExpenseItem) -> some View {
-        HStack(spacing: 0) {
-            // LEFT: Category icon
-            if let category = expense.category {
-                Image(systemName: category.iconName)
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
-                    .frame(width: 32, alignment: .center)
-                    .frame(maxHeight: .infinity)
-            } else {
-                Image(systemName: "creditcard")
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
-                    .frame(width: 32, alignment: .center)
-                    .frame(maxHeight: .infinity)
-            }
-
-            // Vertical wall
-            Rectangle()
-                .fill(JohoColors.black)
-                .frame(width: 1.5)
-                .frame(maxHeight: .infinity)
-
-            // CENTER: Description
-            VStack(alignment: .leading, spacing: 2) {
-                Text(expense.itemDescription)
-                    .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
-                    .lineLimit(1)
-
-                if let merchant = expense.merchantName {
-                    Text(merchant)
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
-                        .lineLimit(1)
-                }
-            }
-            .padding(.horizontal, JohoDimensions.spacingSM)
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            // Vertical wall
-            Rectangle()
-                .fill(JohoColors.black)
-                .frame(width: 1.5)
-                .frame(maxHeight: .infinity)
-
-            // RIGHT: Amount
-            Text(expense.amount, format: .currency(code: expense.currency))
-                .font(JohoFont.monoSmall)
-                .foregroundStyle(JohoColors.black)
-                .padding(.horizontal, JohoDimensions.spacingSM)
-                .frame(maxHeight: .infinity)
-        }
-        .frame(minHeight: 36)
-        .contentShape(Rectangle())
-    }
-
-    /// 情報デザイン: Bento trip row
-    @ViewBuilder
-    private func bentoTripRow(trip: TravelTrip) -> some View {
-        HStack(spacing: 0) {
-            // LEFT: Trip indicator
-            Circle()
-                .fill(SpecialDayType.trip.accentColor)
-                .frame(width: 10, height: 10)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
-                .frame(width: 32, alignment: .center)
-                .frame(maxHeight: .infinity)
-
-            // Vertical wall
-            Rectangle()
-                .fill(JohoColors.black)
-                .frame(width: 1.5)
-                .frame(maxHeight: .infinity)
-
-            // CENTER: Trip info
-            VStack(alignment: .leading, spacing: 2) {
-                Text(trip.tripName)
-                    .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
-
-                HStack(spacing: 4) {
-                    Text(trip.destination)
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
-
-                    Text("•")
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
-
-                    Text("\(trip.duration) days")
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
-                }
-            }
-            .padding(.horizontal, JohoDimensions.spacingSM)
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            // Vertical wall
-            Rectangle()
-                .fill(JohoColors.black)
-                .frame(width: 1.5)
-                .frame(maxHeight: .infinity)
-
-            // RIGHT: Date range
-            VStack(alignment: .trailing, spacing: 2) {
-                Text(trip.startDate.formatted(date: .abbreviated, time: .omitted))
-                    .font(JohoFont.monoSmall)
-                    .foregroundStyle(JohoColors.black)
-
-                Text("→ \(trip.endDate.formatted(date: .abbreviated, time: .omitted))")
-                    .font(JohoFont.monoSmall)
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
-            }
-            .padding(.horizontal, JohoDimensions.spacingSM)
-            .frame(maxHeight: .infinity)
-        }
-        .frame(minHeight: 44)
-        .contentShape(Rectangle())
-    }
-
-    /// 情報デザイン: Bento pinned countdown row
-    @ViewBuilder
-    private func bentoPinnedRow(note: DailyNote, daysRemaining: Int) -> some View {
-        let (title, _) = titleAndSubtitle(from: note.content)
-        let badgeText = countdownBadgeText(days: daysRemaining)
-
-        HStack(spacing: 0) {
-            // LEFT: Pin indicator
-            Image(systemName: "pin.fill")
-                .font(.system(size: 10, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
-                .frame(width: 32, alignment: .center)
-                .frame(maxHeight: .infinity)
-
-            // Vertical wall
-            Rectangle()
-                .fill(JohoColors.black)
-                .frame(width: 1.5)
-                .frame(maxHeight: .infinity)
-
-            // CENTER: Content
-            HStack(spacing: JohoDimensions.spacingSM) {
-                Image(systemName: note.symbolName ?? "note.text")
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
-                        .lineLimit(1)
-
-                    Text(note.day.formatted(date: .abbreviated, time: .omitted))
-                        .font(JohoFont.monoSmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
-                }
-
-                Spacer(minLength: 4)
-            }
-            .padding(.horizontal, JohoDimensions.spacingSM)
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            // Vertical wall
-            Rectangle()
-                .fill(JohoColors.black)
-                .frame(width: 1.5)
-                .frame(maxHeight: .infinity)
-
-            // RIGHT: Countdown badge
-            JohoPill(text: badgeText, style: .whiteOnBlack, size: .small)
-                .padding(.horizontal, JohoDimensions.spacingSM)
-                .frame(maxHeight: .infinity)
-        }
-        .frame(minHeight: 44)
-        .contentShape(Rectangle())
-    }
-
-    private func countdownBadgeText(days: Int) -> String {
-        if days <= 0 { return Localization.today }
-
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.day]
-        formatter.unitsStyle = .short
-        formatter.maximumUnitCount = 1
-        return formatter.string(from: TimeInterval(days) * 86_400) ?? "\(days)"
-    }
-
-    private func titleAndSubtitle(from raw: String) -> (String, String?) {
-        let trimmed = raw.trimmed
-        guard !trimmed.isEmpty else { return ("", nil) }
-
-        if let newlineIndex = trimmed.firstIndex(where: \.isNewline) {
-            let firstLine = String(trimmed[..<newlineIndex])
-            let remainder = String(trimmed[trimmed.index(after: newlineIndex)...])
-                .replacingOccurrences(of: "\n", with: " ")
-                .trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-            return (firstLine, remainder.isEmpty ? nil : remainder)
-        }
-
-        let maxTitleLength = 80
-        guard trimmed.count > maxTitleLength else {
-            return (trimmed, nil)
-        }
-
-        let hardSplitIndex = trimmed.index(trimmed.startIndex, offsetBy: maxTitleLength)
-        let prefix = trimmed[..<hardSplitIndex]
-        let wordBoundaryIndex = prefix.lastIndex(where: { $0.isWhitespace })
-
-        let splitIndex: String.Index
-        if let wordBoundaryIndex, trimmed.distance(from: trimmed.startIndex, to: wordBoundaryIndex) >= 40 {
-            splitIndex = wordBoundaryIndex
-        } else {
-            splitIndex = hardSplitIndex
-        }
-
-        let title = String(trimmed[..<splitIndex]).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        let subtitle = String(trimmed[splitIndex...]).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        return (title, subtitle.isEmpty ? nil : subtitle)
-    }
-
-    private func colorForName(_ name: String) -> Color {
-        switch name {
-        case "red": return JohoColors.pink
-        case "blue": return JohoColors.cyan
-        case "green": return JohoColors.green
-        case "orange": return JohoColors.cyan
-        case "purple": return Color(hex: "B19CD9")
-        case "yellow": return JohoColors.yellow
-        default: return JohoColors.cyan
-        }
+        .buttonStyle(.plain)
     }
 }
 
-// MARK: - Expense Day Row (Joho Design)
-
-private struct ExpenseDayRow: View {
-    @AppStorage("baseCurrency") private var baseCurrency = "SEK"
-    let expense: ExpenseItem
-
-    var body: some View {
-        HStack(spacing: JohoDimensions.spacingSM) {
-            // Category icon
-            if let category = expense.category {
-                Image(systemName: category.iconName)
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
-                    .frame(width: 28, height: 28)
-            } else {
-                Image(systemName: "creditcard")
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
-                    .frame(width: 28, height: 28)
-            }
-
-            // Description
-            VStack(alignment: .leading, spacing: 2) {
-                Text(expense.itemDescription)
-                    .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
-                    .lineLimit(1)
-
-                if let merchant = expense.merchantName {
-                    Text(merchant)
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
-                        .lineLimit(1)
-                }
-            }
-
-            Spacer(minLength: 0)
-
-            // Amount
-            VStack(alignment: .trailing, spacing: 2) {
-                Text(expense.amount, format: .currency(code: expense.currency))
-                    .font(JohoFont.monoMedium)
-                    .foregroundStyle(JohoColors.black)
-
-                if let converted = expense.convertedAmount, expense.currency != baseCurrency {
-                    Text(converted, format: .currency(code: baseCurrency))
-                        .font(JohoFont.monoSmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
-                }
-            }
-        }
-        .padding(JohoDimensions.spacingSM)
-        .background(JohoColors.white.opacity(0.4))
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
-        )
-    }
-}
-
-private struct NotePreviewRow: View {
-    let note: DailyNote
-    let expanded: Bool
-
-    var body: some View {
-        // Check if this is a birthday note
-        let birthdayInfo = PersonnummerParser.extractBirthdayInfo(from: note.content)
-        let (title, subtitle): (String, String?) = if let info = birthdayInfo {
-            ("🎂 \(info.localizedDescription)", nil)
-        } else {
-            titleAndSubtitle(from: note.content)
-        }
-        let timeSource = note.scheduledAt ?? note.date
-
-        VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
-            HStack(spacing: JohoDimensions.spacingSM) {
-                Text(timeSource.formatted(date: .omitted, time: .shortened))
-                    .font(JohoFont.monoSmall)
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
-
-                Spacer(minLength: 0)
-
-                if note.pinnedToDashboard == true {
-                    Image(systemName: "pin.fill")
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
-                }
-
-                if let color = note.color {
-                    Circle()
-                        .fill(colorForName(color))
-                        .frame(width: 10, height: 10)
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
-                }
-            }
-
-            HStack(spacing: JohoDimensions.spacingSM) {
-                Image(systemName: note.symbolName ?? "note.text")
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
-
-                Text(title)
-                    .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
-                    .lineLimit(1)
-
-                Spacer(minLength: 0)
-            }
-
-            if let subtitle, !subtitle.isEmpty {
-                Text(subtitle)
-                    .font(JohoFont.bodySmall)
-                    .foregroundStyle(JohoColors.black.opacity(0.7))
-                    .lineLimit(expanded ? 8 : 2)
-            }
-        }
-        .padding(JohoDimensions.spacingSM)
-        .background(JohoColors.white.opacity(0.4))
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
-        )
-    }
-
-    private func colorForName(_ name: String) -> Color {
-        switch name {
-        case "red": return JohoColors.pink
-        case "blue": return JohoColors.cyan
-        case "green": return JohoColors.green
-        case "orange": return JohoColors.cyan
-        case "purple": return Color(hex: "B19CD9")
-        case "yellow": return JohoColors.yellow
-        default: return JohoColors.cyan
-        }
-    }
-
-    private func titleAndSubtitle(from raw: String) -> (String, String?) {
-        let trimmed = raw.trimmed
-        guard !trimmed.isEmpty else { return ("", nil) }
-
-        if let newlineIndex = trimmed.firstIndex(where: \.isNewline) {
-            let firstLine = String(trimmed[..<newlineIndex])
-            let remainder = String(trimmed[trimmed.index(after: newlineIndex)...])
-                .replacingOccurrences(of: "\n", with: " ")
-                .trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-            return (firstLine, remainder.isEmpty ? nil : remainder)
-        }
-
-        let maxTitleLength = 80
-        guard trimmed.count > maxTitleLength else {
-            return (trimmed, nil)
-        }
-
-        let hardSplitIndex = trimmed.index(trimmed.startIndex, offsetBy: maxTitleLength)
-        let prefix = trimmed[..<hardSplitIndex]
-        let wordBoundaryIndex = prefix.lastIndex(where: { $0.isWhitespace })
-
-        let splitIndex: String.Index
-        if let wordBoundaryIndex, trimmed.distance(from: trimmed.startIndex, to: wordBoundaryIndex) >= 40 {
-            splitIndex = wordBoundaryIndex
-        } else {
-            splitIndex = hardSplitIndex
-        }
-
-        let title = String(trimmed[..<splitIndex]).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        let subtitle = String(trimmed[splitIndex...]).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        return (title, subtitle.isEmpty ? nil : subtitle)
-    }
-}
+// MARK: - Preview
 
 #Preview {
-    DayDashboardView(
+    let memo1 = Memo(text: "Buy groceries for dinner", date: Date())
+    let memo2 = Memo(text: "Lunch meeting", date: Date())
+    memo2.amount = 145
+    memo2.currency = "SEK"
+    let memo3 = Memo(text: "Team sync", date: Date())
+    memo3.place = "Office"
+
+    return DayDashboardView(
         date: Date(),
-        notes: [],
-        pinnedNotes: [],
-        holidays: [.init(id: "preview", name: "Holiday", isBankHoliday: true, symbolName: "flag.fill")],
-        birthdays: [.init(id: "kate", name: "Kate Bell", age: 35)],
-        expenses: [],
-        trips: [],
-        secondaryDateText: "Lunar 1/1",
-        onOpenNotes: { _ in },
-        onOpenExpenses: { _ in }
+        memos: [memo1, memo2, memo3],
+        holidays: [
+            DayDashboardView.HolidayInfo(id: "1", name: "Midsummer Eve", isBankHoliday: true, symbolName: "sun.max.fill", regionCode: "SE"),
+            DayDashboardView.HolidayInfo(id: "2", name: "元日", isBankHoliday: true, symbolName: nil, regionCode: "JP")
+        ],
+        birthdays: [
+            DayDashboardView.BirthdayInfo(id: "1", name: "Anna", age: 30)
+        ],
+        secondaryDateText: nil,
+        onOpenMemos: { _ in }
     )
-}
-
-private struct PinnedCountdownRow: View {
-    let note: DailyNote
-    let daysRemaining: Int
-
-    var body: some View {
-        let (title, subtitle) = titleAndSubtitle(from: note.content)
-        let scheduleText = scheduleLine(for: note)
-        let badgeText = countdownBadgeText(days: daysRemaining)
-
-        HStack(spacing: JohoDimensions.spacingSM) {
-            Image(systemName: note.symbolName ?? "note.text")
-                .font(.system(size: 20, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
-                .frame(width: 32, alignment: .center)
-
-            VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
-                Text(title)
-                    .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
-                    .lineLimit(1)
-
-                Text([scheduleText, subtitle].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " • "))
-                    .font(JohoFont.bodySmall)
-                    .foregroundStyle(JohoColors.black.opacity(0.7))
-                    .lineLimit(2)
-            }
-
-            Spacer(minLength: 0)
-
-            JohoPill(text: badgeText, style: .whiteOnBlack, size: .small)
-        }
-        .padding(JohoDimensions.spacingSM)
-        .background(JohoColors.white.opacity(0.4))
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
-        )
-    }
-
-    private func scheduleLine(for note: DailyNote) -> String {
-        let dayText = note.day.formatted(date: .abbreviated, time: .omitted)
-        if let scheduledAt = note.scheduledAt {
-            let timeText = scheduledAt.formatted(date: .omitted, time: .shortened)
-            return "\(dayText) • \(timeText)"
-        }
-        return dayText
-    }
-
-    private func countdownBadgeText(days: Int) -> String {
-        if days <= 0 { return Localization.today }
-
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.day]
-        formatter.unitsStyle = .short
-        formatter.maximumUnitCount = 1
-        return formatter.string(from: TimeInterval(days) * 86_400) ?? "\(days)"
-    }
-
-    private func titleAndSubtitle(from raw: String) -> (String, String?) {
-        let trimmed = raw.trimmed
-        guard !trimmed.isEmpty else { return ("", nil) }
-
-        if let newlineIndex = trimmed.firstIndex(where: \.isNewline) {
-            let firstLine = String(trimmed[..<newlineIndex])
-            let remainder = String(trimmed[trimmed.index(after: newlineIndex)...])
-                .replacingOccurrences(of: "\n", with: " ")
-                .trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-            return (firstLine, remainder.isEmpty ? nil : remainder)
-        }
-
-        let maxTitleLength = 80
-        guard trimmed.count > maxTitleLength else {
-            return (trimmed, nil)
-        }
-
-        let hardSplitIndex = trimmed.index(trimmed.startIndex, offsetBy: maxTitleLength)
-        let prefix = trimmed[..<hardSplitIndex]
-        let wordBoundaryIndex = prefix.lastIndex(where: { $0.isWhitespace })
-
-        let splitIndex: String.Index
-        if let wordBoundaryIndex, trimmed.distance(from: trimmed.startIndex, to: wordBoundaryIndex) >= 40 {
-            splitIndex = wordBoundaryIndex
-        } else {
-            splitIndex = hardSplitIndex
-        }
-
-        let title = String(trimmed[..<splitIndex]).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        let subtitle = String(trimmed[splitIndex...]).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
-        return (title, subtitle.isEmpty ? nil : subtitle)
-    }
-}
-
-// MARK: - Trip Day Row (Joho Design)
-
-private struct TripDayRow: View {
-    let trip: TravelTrip
-
-    var body: some View {
-        HStack(spacing: JohoDimensions.spacingSM) {
-            // Trip icon
-            JohoIconBadge(icon: "airplane.departure", zone: .trips, size: 36)
-
-            // Trip info
-            VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
-                Text(trip.tripName)
-                    .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
-
-                HStack(spacing: 4) {
-                    Text(trip.destination)
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
-
-                    Text("•")
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
-
-                    Text("\(trip.duration) days")
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
-                }
-            }
-
-            Spacer()
-
-            // Date range badge
-            VStack(alignment: .trailing, spacing: 2) {
-                Text(trip.startDate.formatted(date: .abbreviated, time: .omitted))
-                    .font(JohoFont.monoSmall)
-                    .foregroundStyle(JohoColors.black)
-
-                Text("→")
-                    .font(JohoFont.bodySmall)
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
-
-                Text(trip.endDate.formatted(date: .abbreviated, time: .omitted))
-                    .font(JohoFont.monoSmall)
-                    .foregroundStyle(JohoColors.black)
-            }
-        }
-        .padding(JohoDimensions.spacingSM)
-        .background(JohoColors.white.opacity(0.4))
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
-        )
-    }
+    .modelContainer(for: Memo.self, inMemory: true)
+    .padding()
 }

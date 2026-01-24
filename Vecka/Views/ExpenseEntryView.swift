@@ -108,6 +108,8 @@ enum ExpenseCategoryGroup: String, CaseIterable, Identifiable {
 /// Used when creating expenses from the + menu
 struct JohoExpenseEditorSheet: View {
     let initialDate: Date
+    let existingExpense: Memo?  // For editing existing expenses
+
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(\.johoColorMode) private var colorMode
@@ -144,6 +146,8 @@ struct JohoExpenseEditorSheet: View {
 
     private let calendar = Calendar.current
 
+    private var isEditing: Bool { existingExpense != nil }
+
     private var canSave: Bool {
         guard let amountValue = Double(amount.replacingOccurrences(of: ",", with: ".")) else {
             return false
@@ -161,12 +165,23 @@ struct JohoExpenseEditorSheet: View {
         return Array((current - 10)...(current + 10))
     }
 
-    init(selectedDate: Date = Date()) {
-        self.initialDate = selectedDate
+    init(selectedDate: Date = Date(), existingExpense: Memo? = nil) {
+        self.existingExpense = existingExpense
+        let dateToUse = existingExpense?.date ?? selectedDate
+        self.initialDate = dateToUse
+
         let calendar = Calendar.current
-        _selectedYear = State(initialValue: calendar.component(.year, from: selectedDate))
-        _selectedMonth = State(initialValue: calendar.component(.month, from: selectedDate))
-        _selectedDay = State(initialValue: calendar.component(.day, from: selectedDate))
+        _selectedYear = State(initialValue: calendar.component(.year, from: dateToUse))
+        _selectedMonth = State(initialValue: calendar.component(.month, from: dateToUse))
+        _selectedDay = State(initialValue: calendar.component(.day, from: dateToUse))
+
+        // Initialize from existing expense if editing
+        if let expense = existingExpense {
+            _amount = State(initialValue: String(format: "%.2f", expense.amount ?? 0))
+            _currency = State(initialValue: expense.currency ?? "SEK")
+            _description = State(initialValue: expense.text)
+            _merchant = State(initialValue: expense.place ?? "")
+        }
     }
 
     var body: some View {
@@ -613,16 +628,24 @@ struct JohoExpenseEditorSheet: View {
         let trimmedDesc = description.trimmed
         guard !trimmedDesc.isEmpty else { return }
 
-        let expense = ExpenseItem(
-            date: selectedDate,
-            amount: amountValue,
-            currency: currency,
-            merchantName: merchant.isEmpty ? nil : merchant,
-            itemDescription: trimmedDesc,
-            notes: nil
-        )
-        expense.category = selectedCategory
-        modelContext.insert(expense)
+        if let existing = existingExpense {
+            // Update existing expense
+            existing.text = trimmedDesc
+            existing.amount = amountValue
+            existing.currency = currency
+            existing.place = merchant.isEmpty ? nil : merchant
+            existing.date = selectedDate
+        } else {
+            // Create new Memo expense (unified model)
+            let expense = Memo.expense(
+                trimmedDesc,
+                amount: amountValue,
+                currency: currency,
+                merchant: merchant.isEmpty ? nil : merchant,
+                date: selectedDate
+            )
+            modelContext.insert(expense)
+        }
 
         do {
             try modelContext.save()
@@ -885,93 +908,19 @@ struct JohoCollapsibleCategoryPicker: View {
     }
 }
 
-// Legacy ExpenseEntryView for backwards compatibility with full features
+// Legacy ExpenseEntryView for backwards compatibility - now uses Memo
 struct ExpenseEntryView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Environment(\.dismiss) private var dismiss
-
     let initialDate: Date
-    let trip: TravelTrip?
+    let existingExpense: Memo?
 
-    // Form fields
-    @State private var amount = ""
-    @State private var currency = "SEK"
-    @State private var merchant = ""
-    @State private var description = ""
-    @State private var selectedCategory: ExpenseCategory?
-    @State private var selectedDate: Date
-    @State private var notes = ""
-
-    // Date components (情報デザイン)
-    @State private var selectedDay: Int
-    @State private var selectedMonth: Int
-    @State private var selectedYear: Int
-
-    // Receipt
-    @State private var receiptImage: UIImage?
-    @State private var showImagePicker = false
-
-    // Template
-    @State private var showTemplatePicker = false
-
-    // Categories
-    @Query(sort: \ExpenseCategory.sortOrder) private var categories: [ExpenseCategory]
-
-    // Validation
-    @State private var showError = false
-    @State private var errorMessage = ""
-
-    // Focus management
-    @FocusState private var focusedField: ExpenseField?
-    @State private var exchangeRateString: String = "1.0"
-
-    // Base Currency
-    @AppStorage("baseCurrency") private var baseCurrency = "SEK"
-
-    // Edit Mode
-    let existingExpense: ExpenseItem?
-
-    enum ExpenseField {
-        case amount, merchant, description, notes
-    }
-
-    init(date: Date = Date(), trip: TravelTrip? = nil, existingExpense: ExpenseItem? = nil) {
-        self.initialDate = date
-        self.trip = trip
+    init(date: Date = Date(), existingExpense: Memo? = nil) {
+        self.initialDate = existingExpense?.date ?? date
         self.existingExpense = existingExpense
-
-        let calendar = Calendar.iso8601
-        let dateToUse = existingExpense?.date ?? date
-
-        if let expense = existingExpense {
-            _amount = State(initialValue: String(format: "%.2f", expense.amount))
-            _currency = State(initialValue: expense.currency)
-            _merchant = State(initialValue: expense.merchantName ?? "")
-            _description = State(initialValue: expense.itemDescription)
-            _selectedCategory = State(initialValue: expense.category)
-            _selectedDate = State(initialValue: expense.date)
-            _notes = State(initialValue: expense.notes ?? "")
-
-            let rate = expense.exchangeRate ?? 1.0
-            _exchangeRateString = State(initialValue: String(format: "%.4f", rate))
-
-            if let data = expense.receiptImageData {
-                _receiptImage = State(initialValue: UIImage(data: data))
-            }
-        } else {
-            _selectedDate = State(initialValue: date)
-            _currency = State(initialValue: "SEK")
-        }
-
-        // Initialize date components
-        _selectedDay = State(initialValue: calendar.component(.day, from: dateToUse))
-        _selectedMonth = State(initialValue: calendar.component(.month, from: dateToUse))
-        _selectedYear = State(initialValue: calendar.component(.year, from: dateToUse))
     }
 
     var body: some View {
         // Redirect to new simplified sheet
-        JohoExpenseEditorSheet(selectedDate: initialDate)
+        JohoExpenseEditorSheet(selectedDate: initialDate, existingExpense: existingExpense)
     }
 }
 
@@ -1206,5 +1155,5 @@ struct ImagePicker: UIViewControllerRepresentable {
 
 #Preview {
     ExpenseEntryView()
-        .modelContainer(for: [ExpenseItem.self, ExpenseCategory.self], inMemory: true)
+        .modelContainer(for: [Memo.self], inMemory: true)
 }

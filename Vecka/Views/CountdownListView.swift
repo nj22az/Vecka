@@ -66,11 +66,11 @@ struct CountdownListView: View {
     private var headerSection: some View {
         HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
             // Icon zone (52×52pt) - matches Star Page month detail pattern
-            Image(systemName: SpecialDayType.event.defaultIcon)
+            Image(systemName: "calendar.badge.clock")
                 .font(.system(size: 24, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoColors.black)
                 .johoTouchTarget(52)
-                .background(SpecialDayType.event.accentColor.opacity(0.3))
+                .background(JohoColors.purple.opacity(0.3))
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusMedium)
@@ -492,6 +492,8 @@ struct CountdownListView: View {
         HapticManager.notification(.warning)
     }
 }
+
+// Note: CustomCountdownDialog is defined in CountdownViews.swift
 
 // MARK: - Preview
 

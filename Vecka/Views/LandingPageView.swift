@@ -30,13 +30,30 @@ struct LandingPageView: View {
     // Personalized title (情報デザイン: User can customize their landing page)
     @AppStorage("customLandingTitle") private var customLandingTitle = ""
 
-    // Data queries
-    @Query(sort: \DailyNote.date, order: .reverse) private var allNotes: [DailyNote]
-    @Query(sort: \ExpenseItem.date, order: .reverse) private var allExpenses: [ExpenseItem]
-    @Query private var allTrips: [TravelTrip]
+    // Unified Memo query - filter by type in computed properties
+    @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
     @Query private var contacts: [Contact]
-    @Query private var countdownEvents: [CountdownEvent]
     @Query(sort: \WorldClock.sortOrder) private var worldClocks: [WorldClock]
+
+    /// Filtered notes from Memo
+    private var allNotes: [Memo] {
+        allMemos.filter { $0.type == .note }
+    }
+
+    /// Filtered expenses from Memo
+    private var allExpenses: [Memo] {
+        allMemos.filter { $0.type == .expense }
+    }
+
+    /// Filtered trips from Memo
+    private var allTrips: [Memo] {
+        allMemos.filter { $0.type == .trip }
+    }
+
+    /// Filtered countdown events from Memo
+    private var countdownMemos: [Memo] {
+        allMemos.filter { $0.type == .countdown }
+    }
 
     private var holidayManager = HolidayManager.shared
 
@@ -212,19 +229,19 @@ struct LandingPageView: View {
         // Add trips
         for trip in allTrips {
             items.append(DiscoveryItem(
-                date: trip.startDate,
-                title: trip.destination,
+                date: trip.date,
+                title: trip.place ?? "",
                 type: .trip,
-                subtitle: trip.purpose
+                subtitle: trip.tripPurpose
             ))
         }
 
         // Add expenses
         for expense in allExpenses.prefix(50) {
-            let amountStr = String(format: "%.0f %@", expense.amount, expense.currency)
+            let amountStr = String(format: "%.0f %@", expense.amount ?? 0, expense.currency ?? "SEK")
             items.append(DiscoveryItem(
                 date: expense.date,
-                title: expense.itemDescription,
+                title: expense.text,
                 type: .expense,
                 subtitle: amountStr
             ))
@@ -232,10 +249,10 @@ struct LandingPageView: View {
 
         // Add notes
         for note in allNotes.prefix(50) {
-            if !note.content.isEmpty {
+            if !note.text.isEmpty {
                 items.append(DiscoveryItem(
                     date: note.date,
-                    title: String(note.content.prefix(30)),
+                    title: String(note.text.prefix(30)),
                     type: .note,
                     subtitle: nil
                 ))
@@ -243,10 +260,10 @@ struct LandingPageView: View {
         }
 
         // Add countdown events
-        for event in countdownEvents {
+        for event in countdownMemos {
             items.append(DiscoveryItem(
-                date: event.targetDate,
-                title: event.title,
+                date: event.date,
+                title: event.text,
                 type: .event,
                 subtitle: nil
             ))
@@ -432,12 +449,12 @@ struct LandingPageView: View {
         ))
 
         // 6. Countdown events (if any)
-        if let nextEvent = countdownEvents.filter({ $0.targetDate > today }).min(by: { $0.targetDate < $1.targetDate }) {
-            let daysUntil = calendar.dateComponents([.day], from: today, to: nextEvent.targetDate).day ?? 0
+        if let nextEvent = countdownMemos.filter({ $0.date > today }).min(by: { $0.date < $1.date }) {
+            let daysUntil = calendar.dateComponents([.day], from: today, to: nextEvent.date).day ?? 0
             stats.append(RandomStat(
                 icon: "clock.fill",
                 label: "\(daysUntil)d",
-                indicator: nextEvent.title.prefix(8).lowercased(),
+                indicator: nextEvent.text.prefix(8).lowercased(),
                 iconColor: JohoColors.cyan,
                 bgColor: JohoColors.purple.opacity(0.15)
             ))
@@ -3214,9 +3231,9 @@ struct LandingPageView: View {
             for note in allNotes {
                 let noteDate = calendar.startOfDay(for: note.date)
                 if noteDate == date {
-                    let preview = String(note.content.prefix(30))
+                    let preview = String(note.text.prefix(30))
                     items.append(TodayItem(
-                        title: preview + (note.content.count > 30 ? "..." : ""),
+                        title: preview + (note.text.count > 30 ? "..." : ""),
                         subtitle: formatRelativeDate(date),
                         icon: "note.text",
                         color: JohoColors.yellow,
@@ -3644,15 +3661,15 @@ struct LandingPageView: View {
             }
 
             // Countdown events
-            for event in countdownEvents {
-                let eventDate = calendar.startOfDay(for: event.targetDate)
+            for event in countdownMemos {
+                let eventDate = calendar.startOfDay(for: event.date)
                 if eventDate == date {
                     items.append(UpcomingItem(
                         date: date,
                         dayName: dayName,
                         dayNumber: dayNumber,
                         isToday: isToday,
-                        title: event.title,
+                        title: event.text,
                         color: JohoColors.cyan,
                         typeBadge: "EVT"
                     ))
@@ -3661,14 +3678,14 @@ struct LandingPageView: View {
 
             // Trips starting
             for trip in allTrips {
-                let tripStart = calendar.startOfDay(for: trip.startDate)
+                let tripStart = calendar.startOfDay(for: trip.date)
                 if tripStart == date {
                     items.append(UpcomingItem(
                         date: date,
                         dayName: dayName,
                         dayNumber: dayNumber,
                         isToday: isToday,
-                        title: trip.tripName,
+                        title: trip.text,
                         color: SpecialDayType.trip.accentColor,
                         typeBadge: "TRP"
                     ))
@@ -3812,16 +3829,17 @@ struct LandingPageView: View {
             }
 
             // Countdown events
-            for event in countdownEvents {
-                if calendar.startOfDay(for: event.targetDate) == dayStart {
+            for event in countdownMemos {
+                if calendar.startOfDay(for: event.date) == dayStart {
                     indicators.append(JohoColors.cyan)
                 }
             }
 
             // Active trips
             for trip in allTrips {
-                let tripStart = calendar.startOfDay(for: trip.startDate)
-                let tripEnd = calendar.startOfDay(for: trip.endDate)
+                guard let endDate = trip.tripEndDate else { continue }
+                let tripStart = calendar.startOfDay(for: trip.date)
+                let tripEnd = calendar.startOfDay(for: endDate)
                 if dayStart >= tripStart && dayStart <= tripEnd {
                     indicators.append(SpecialDayType.trip.accentColor)
                 }
@@ -3960,15 +3978,16 @@ struct LandingPageView: View {
     private var activeTripsIndicator: String? {
         let today = Calendar.iso8601.startOfDay(for: Date())
         let active = allTrips.filter { trip in
-            let start = Calendar.iso8601.startOfDay(for: trip.startDate)
-            let end = Calendar.iso8601.startOfDay(for: trip.endDate)
+            guard let tripEnd = trip.tripEndDate else { return false }
+            let start = Calendar.iso8601.startOfDay(for: trip.date)
+            let end = Calendar.iso8601.startOfDay(for: tripEnd)
             return start <= today && today <= end
         }.count
         if active > 0 { return "✈ \(active)" }
 
         // Check for upcoming trips in next 7 days
         let upcoming = allTrips.filter { trip in
-            let start = Calendar.iso8601.startOfDay(for: trip.startDate)
+            let start = Calendar.iso8601.startOfDay(for: trip.date)
             let daysUntil = Calendar.iso8601.dateComponents([.day], from: today, to: start).day ?? 0
             return daysUntil > 0 && daysUntil <= 7
         }.count
@@ -3984,7 +4003,7 @@ struct LandingPageView: View {
         let thisMonthExpenses = allExpenses.filter { $0.date >= startOfMonth }
         if thisMonthExpenses.isEmpty { return nil }
         let total = thisMonthExpenses.reduce(into: 0.0) { result, expense in
-            result += expense.amount
+            result += expense.amount ?? 0
         }
         return "¤\(Int(total))"
     }
@@ -4204,11 +4223,11 @@ struct LandingPageView: View {
         }
 
         // 3. Countdown events today
-        for event in countdownEvents {
-            let eventDate = calendar.startOfDay(for: event.targetDate)
+        for event in countdownMemos {
+            let eventDate = calendar.startOfDay(for: event.date)
             if eventDate == todayStart {
                 items.append(TodayItem(
-                    title: event.title,
+                    title: event.text,
                     subtitle: nil,
                     icon: "calendar.badge.clock",
                     color: JohoColors.cyan,
@@ -4221,9 +4240,9 @@ struct LandingPageView: View {
         for note in allNotes {
             let noteDate = calendar.startOfDay(for: note.date)
             if noteDate == todayStart {
-                let preview = String(note.content.prefix(30))
+                let preview = String(note.text.prefix(30))
                 items.append(TodayItem(
-                    title: preview + (note.content.count > 30 ? "..." : ""),
+                    title: preview + (note.text.count > 30 ? "..." : ""),
                     subtitle: nil,
                     icon: "note.text",
                     color: JohoColors.yellow,
@@ -4234,12 +4253,13 @@ struct LandingPageView: View {
 
         // 5. Active trips
         for trip in allTrips {
-            let tripStart = calendar.startOfDay(for: trip.startDate)
-            let tripEnd = calendar.startOfDay(for: trip.endDate)
+            guard let endDate = trip.tripEndDate else { continue }
+            let tripStart = calendar.startOfDay(for: trip.date)
+            let tripEnd = calendar.startOfDay(for: endDate)
 
             if todayStart >= tripStart && todayStart <= tripEnd {
                 items.append(TodayItem(
-                    title: trip.tripName,
+                    title: trip.text,
                     subtitle: nil,
                     icon: "airplane",
                     color: JohoColors.cyan,
@@ -4253,7 +4273,7 @@ struct LandingPageView: View {
             let expenseDate = calendar.startOfDay(for: expense.date)
             if expenseDate == todayStart {
                 items.append(TodayItem(
-                    title: expense.itemDescription,
+                    title: expense.text,
                     subtitle: nil,
                     icon: "dollarsign.circle.fill",
                     color: JohoColors.green,
@@ -4454,8 +4474,8 @@ struct LandingPageView: View {
                 }
 
                 // Events
-                for event in countdownEvents {
-                    if calendar.startOfDay(for: event.targetDate) == dayStart {
+                for event in countdownMemos {
+                    if calendar.startOfDay(for: event.date) == dayStart {
                         indicators.append(JohoColors.cyan)
                         break
                     }
@@ -4547,7 +4567,7 @@ struct LandingPageView: View {
     // MARK: - NOTES STREAM Card (情報デザイン: Recent notes with color/symbol indicators)
 
     /// Recent notes (last 5, sorted by date)
-    private var recentNotes: [DailyNote] {
+    private var recentNotes: [Memo] {
         Array(allNotes.prefix(5))
     }
 
@@ -4617,7 +4637,7 @@ struct LandingPageView: View {
     }
 
     /// Note stream row
-    private func noteStreamRow(_ note: DailyNote) -> some View {
+    private func noteStreamRow(_ note: Memo) -> some View {
         let noteColor = note.color.map { Color(hex: $0) } ?? JohoColors.yellow
         let isPinned = note.pinnedToDashboard == true
 
@@ -4630,10 +4650,11 @@ struct LandingPageView: View {
                     .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
 
                 // Priority marker (情報デザイン: マルバツ)
-                if let priority = note.priority {
-                    Text(priority == "high" ? "◎" : priority == "low" ? "△" : "")
+                let priority = note.priority
+                if priority != .normal {
+                    Text(priority.symbol)
                         .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(priority == "high" ? JohoColors.red : JohoColors.black.opacity(0.4))
+                        .foregroundStyle(priority == .high ? JohoColors.red : JohoColors.black.opacity(0.4))
                 }
             }
             .frame(width: 16)
@@ -4648,7 +4669,7 @@ struct LandingPageView: View {
 
             // Content preview
             VStack(alignment: .leading, spacing: 2) {
-                Text(note.content.prefix(50) + (note.content.count > 50 ? "..." : ""))
+                Text(note.text.prefix(50) + (note.text.count > 50 ? "..." : ""))
                     .font(JohoFont.bodySmall)
                     .foregroundStyle(colors.primary)
                     .lineLimit(1)
@@ -4812,7 +4833,7 @@ struct LandingPageView: View {
     // MARK: - MONTHLY EXPENSE SUMMARY Card (情報デザイン: Spending overview)
 
     /// This month's expenses
-    private var thisMonthExpenses: [ExpenseItem] {
+    private var thisMonthExpenses: [Memo] {
         let calendar = Calendar.iso8601
         guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: today)) else {
             return []
@@ -4825,14 +4846,15 @@ struct LandingPageView: View {
         var breakdown: [String: (icon: String, color: Color, total: Double)] = [:]
 
         for expense in thisMonthExpenses {
-            let categoryName = expense.category?.name ?? "Other"
-            let icon = expense.category?.iconName ?? "creditcard.fill"
-            let color = expense.category?.color ?? JohoColors.green
+            // Note: Categories dropped in Memo migration - use generic "Expense" for now
+            let categoryName = "Expense"
+            let icon = "creditcard.fill"
+            let color = JohoColors.green
 
             if let existing = breakdown[categoryName] {
-                breakdown[categoryName] = (existing.icon, existing.color, existing.total + expense.amount)
+                breakdown[categoryName] = (existing.icon, existing.color, existing.total + (expense.amount ?? 0))
             } else {
-                breakdown[categoryName] = (icon, color, expense.amount)
+                breakdown[categoryName] = (icon, color, expense.amount ?? 0)
             }
         }
 
@@ -4841,7 +4863,7 @@ struct LandingPageView: View {
     }
 
     private var monthlyExpenseSummaryCard: some View {
-        let total = thisMonthExpenses.reduce(0) { $0 + $1.amount }
+        let total = thisMonthExpenses.reduce(0) { $0 + ($1.amount ?? 0) }
         let primaryCurrency = thisMonthExpenses.first?.currency ?? "SEK"
 
         return VStack(spacing: 0) {
@@ -5133,12 +5155,6 @@ struct LandingPageView: View {
         }
         .padding(.vertical, 4)
     }
-}
-
-// MARK: - Navigation Notification
-
-extension Notification.Name {
-    static let navigateToPage = Notification.Name("navigateToPage")
 }
 
 // MARK: - Random Fact Detail Sheet (情報デザイン: Tap-to-expand detail view)

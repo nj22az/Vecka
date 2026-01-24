@@ -243,7 +243,7 @@ private struct SidebarLegendView: View {
     @Environment(\.dismiss) private var dismiss
 
     private let legendItems: [(code: String, label: String, icon: String, color: Color)] = [
-        ("HOL", "BANK HOLIDAY", "star.fill", Color(hex: "E53E3E")),
+        ("HOL", "HOLIDAY", "star.fill", Color(hex: "E53E3E")),
         ("OBS", "OBSERVANCE", "sparkles", Color(hex: "ED8936")),
         ("EVT", "EVENT", "calendar.badge.clock", Color(hex: "805AD5")),
         ("BDY", "BIRTHDAY", "birthday.cake.fill", Color(hex: "78350F")),

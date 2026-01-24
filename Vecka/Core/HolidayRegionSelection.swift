@@ -29,7 +29,7 @@ struct HolidayRegionSelection: RawRepresentable, Equatable, Hashable, Sendable {
         regions.joined(separator: ",")
     }
 
-    static func normalized(_ input: [String], maxCount: Int = 2) -> [String] {
+    static func normalized(_ input: [String], maxCount: Int = 5) -> [String] {
         var seen = Set<String>()
         var output: [String] = []
         output.reserveCapacity(min(maxCount, input.count))
@@ -73,7 +73,7 @@ struct HolidayRegionSelection: RawRepresentable, Equatable, Hashable, Sendable {
         regions.contains("VN")
     }
 
-    mutating func addRegionIfPossible(_ code: String, maxCount: Int = 2) -> Bool {
+    mutating func addRegionIfPossible(_ code: String, maxCount: Int = 5) -> Bool {
         let normalized = code.trimmed.uppercased()
         guard !normalized.isEmpty else { return false }
         guard !regions.contains(normalized) else { return true }

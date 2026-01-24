@@ -10,6 +10,17 @@
 import Foundation
 import SwiftData
 
+// MARK: - Memo Type (Type Discriminator)
+
+/// Type discriminator for filtering Memo by purpose
+/// Allows views to query specific memo types efficiently
+enum MemoType: String, Codable, CaseIterable {
+    case note       // Plain text memo (default)
+    case expense    // Has amount/currency
+    case trip       // Has tripEndDate
+    case countdown  // Has isCountdown=true
+}
+
 // MARK: - Priority (マルバツ)
 
 /// Simple priority - like circling something important
@@ -55,6 +66,15 @@ final class Memo {
 
     /// When created
     var createdAt: Date
+
+    /// Type discriminator (stored as string for SwiftData compatibility)
+    var memoTypeRaw: String?
+
+    /// Memo type with getter/setter
+    var type: MemoType {
+        get { MemoType(rawValue: memoTypeRaw ?? "") ?? .note }
+        set { memoTypeRaw = newValue.rawValue }
+    }
 
     // ═══════════════════════════════════════════════════════════════════
     // MARK: - Optional Details (Add if needed)
@@ -208,14 +228,17 @@ final class Memo {
 
     /// Quick memo
     static func quick(_ text: String, date: Date = Date()) -> Memo {
-        Memo(text: text, date: date)
+        let memo = Memo(text: text, date: date)
+        memo.type = .note
+        return memo
     }
 
-    /// Memo with amount
+    /// Memo with amount (expense)
     static func withAmount(_ text: String, amount: Double, currency: String = "SEK", date: Date = Date()) -> Memo {
         let memo = Memo(text: text, date: date)
         memo.amount = amount
         memo.currency = currency
+        memo.type = .expense
         return memo
     }
 
@@ -223,6 +246,7 @@ final class Memo {
     static func withPlace(_ text: String, place: String, date: Date = Date()) -> Memo {
         let memo = Memo(text: text, date: date)
         memo.place = place
+        memo.type = .note
         return memo
     }
 
@@ -230,6 +254,7 @@ final class Memo {
     static func withPerson(_ text: String, person: String, date: Date = Date()) -> Memo {
         let memo = Memo(text: text, date: date)
         memo.person = person
+        memo.type = .note
         return memo
     }
 
@@ -239,6 +264,7 @@ final class Memo {
         memo.isCountdown = true
         memo.countdownIcon = icon
         memo.color = colorHex
+        memo.type = .countdown
         return memo
     }
 
@@ -246,6 +272,7 @@ final class Memo {
     static func systemCountdown(_ title: String, targetDate: Date, icon: String) -> Memo {
         let memo = countdown(title, targetDate: targetDate, icon: icon)
         memo.isSystemCountdown = true
+        // type already set by countdown()
         return memo
     }
 
@@ -255,6 +282,17 @@ final class Memo {
         memo.tripEndDate = endDate
         memo.place = destination
         memo.tripPurpose = purpose
+        memo.type = .trip
+        return memo
+    }
+
+    /// Expense memo
+    static func expense(_ text: String, amount: Double, currency: String = "SEK", merchant: String? = nil, date: Date = Date()) -> Memo {
+        let memo = Memo(text: text, date: date)
+        memo.amount = amount
+        memo.currency = currency
+        memo.place = merchant
+        memo.type = .expense
         return memo
     }
 
@@ -264,6 +302,7 @@ final class Memo {
         memo.scheduledAt = time
         memo.duration = duration
         memo.symbolName = symbol
+        memo.type = .note
         return memo
     }
 
@@ -272,6 +311,7 @@ final class Memo {
         let memo = Memo(text: text, date: date)
         memo.pinnedToDashboard = true
         memo.priority = .high
+        memo.type = .note
         return memo
     }
 }
@@ -379,6 +419,76 @@ extension Memo {
     static func all(in context: ModelContext) -> [Memo] {
         let descriptor = FetchDescriptor<Memo>(
             sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+
+        return (try? context.fetch(descriptor)) ?? []
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // MARK: - Type-Filtered Queries
+    // ═══════════════════════════════════════════════════════════════════
+
+    /// Fetch all notes (memoType == "note")
+    static func notes(in context: ModelContext) -> [Memo] {
+        let noteType = MemoType.note.rawValue
+        let descriptor = FetchDescriptor<Memo>(
+            predicate: #Predicate<Memo> { memo in
+                memo.memoTypeRaw == noteType
+            },
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+
+        return (try? context.fetch(descriptor)) ?? []
+    }
+
+    /// Fetch all expenses (memoType == "expense")
+    static func expenses(in context: ModelContext) -> [Memo] {
+        let expenseType = MemoType.expense.rawValue
+        let descriptor = FetchDescriptor<Memo>(
+            predicate: #Predicate<Memo> { memo in
+                memo.memoTypeRaw == expenseType
+            },
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+
+        return (try? context.fetch(descriptor)) ?? []
+    }
+
+    /// Fetch all trips (memoType == "trip")
+    static func tripsQuery(in context: ModelContext) -> [Memo] {
+        let tripType = MemoType.trip.rawValue
+        let descriptor = FetchDescriptor<Memo>(
+            predicate: #Predicate<Memo> { memo in
+                memo.memoTypeRaw == tripType
+            },
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+
+        return (try? context.fetch(descriptor)) ?? []
+    }
+
+    /// Fetch all countdown events (memoType == "countdown")
+    static func countdownEvents(in context: ModelContext) -> [Memo] {
+        let countdownType = MemoType.countdown.rawValue
+        let descriptor = FetchDescriptor<Memo>(
+            predicate: #Predicate<Memo> { memo in
+                memo.memoTypeRaw == countdownType
+            },
+            sortBy: [SortDescriptor(\.date)]
+        )
+
+        return (try? context.fetch(descriptor)) ?? []
+    }
+
+    /// Fetch future countdown events
+    static func futureCountdownEvents(in context: ModelContext) -> [Memo] {
+        let countdownType = MemoType.countdown.rawValue
+        let now = Date()
+        let descriptor = FetchDescriptor<Memo>(
+            predicate: #Predicate<Memo> { memo in
+                memo.memoTypeRaw == countdownType && memo.date > now
+            },
+            sortBy: [SortDescriptor(\.date)]
         )
 
         return (try? context.fetch(descriptor)) ?? []

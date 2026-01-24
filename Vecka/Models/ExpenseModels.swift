@@ -390,32 +390,10 @@ final class ExchangeRate {
     }
 }
 
-// MARK: - Currency Definition
-
-struct CurrencyDefinition: Identifiable, Hashable {
-    let code: String
-    let name: String
-    let symbol: String
-    let flagEmoji: String?
-
-    var id: String { code }
-}
-
-// MARK: - Default Currencies
+// MARK: - Currency Helpers
+// Note: CurrencyDefinition is defined in Localization.swift
 
 extension CurrencyDefinition {
-    static let defaultCurrencies: [CurrencyDefinition] = [
-        CurrencyDefinition(code: "SEK", name: "Swedish Krona", symbol: "kr", flagEmoji: "🇸🇪"),
-        CurrencyDefinition(code: "NOK", name: "Norwegian Krone", symbol: "kr", flagEmoji: "🇳🇴"),
-        CurrencyDefinition(code: "DKK", name: "Danish Krone", symbol: "kr", flagEmoji: "🇩🇰"),
-        CurrencyDefinition(code: "EUR", name: "Euro", symbol: "€", flagEmoji: "🇪🇺"),
-        CurrencyDefinition(code: "USD", name: "US Dollar", symbol: "$", flagEmoji: "🇺🇸"),
-        CurrencyDefinition(code: "GBP", name: "British Pound", symbol: "£", flagEmoji: "🇬🇧"),
-        CurrencyDefinition(code: "JPY", name: "Japanese Yen", symbol: "¥", flagEmoji: "🇯🇵"),
-        CurrencyDefinition(code: "VND", name: "Vietnamese Dong", symbol: "₫", flagEmoji: "🇻🇳"),
-        CurrencyDefinition(code: "THB", name: "Thai Baht", symbol: "฿", flagEmoji: "🇹🇭")
-    ]
-
     static func symbol(for code: String) -> String {
         defaultCurrencies.first { $0.code == code }?.symbol ?? code
     }

@@ -314,18 +314,29 @@ struct MemoEditorView: View {
                 Text("CURRENCY")
                     .font(.system(size: 10, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.secondary)
-                Picker("", selection: $currency) {
-                    Text("SEK").tag("SEK")
-                    Text("EUR").tag("EUR")
-                    Text("USD").tag("USD")
-                }
-                .pickerStyle(.segmented)
+                TextField("SEK", text: $currency)
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .textInputAutocapitalization(.characters)
+                    .frame(width: 60)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 6)
+                    .background(colors.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            .stroke(JohoColors.black, lineWidth: 1.5)
+                    )
             }
-            .frame(width: 140)
         }
         .padding(10)
-        .background(JohoColors.green.opacity(0.15))
+        .background(JohoColors.greenLight)
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(JohoColors.black, lineWidth: 1.5)
+        )
     }
 
     private var placeField: some View {
@@ -338,8 +349,12 @@ struct MemoEditorView: View {
                 .foregroundStyle(colors.primary)
         }
         .padding(10)
-        .background(JohoColors.cyan.opacity(0.15))
+        .background(JohoColors.cyanLight)
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(JohoColors.black, lineWidth: 1.5)
+        )
     }
 
     private var personField: some View {
@@ -352,8 +367,12 @@ struct MemoEditorView: View {
                 .foregroundStyle(colors.primary)
         }
         .padding(10)
-        .background(JohoColors.purple.opacity(0.15))
+        .background(JohoColors.purpleLight)
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(JohoColors.black, lineWidth: 1.5)
+        )
     }
 
     // MARK: - Delete Button
@@ -361,6 +380,7 @@ struct MemoEditorView: View {
     private var deleteButton: some View {
         Button {
             showDeleteConfirm = true
+            HapticManager.impact(.medium)
         } label: {
             HStack {
                 Image(systemName: "trash")
@@ -368,8 +388,7 @@ struct MemoEditorView: View {
             }
             .font(.system(size: 14, weight: .bold, design: .rounded))
             .foregroundStyle(JohoColors.red)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity, minHeight: 44)
         }
         .buttonStyle(.plain)
     }

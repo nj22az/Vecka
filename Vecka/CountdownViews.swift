@@ -891,13 +891,12 @@ struct CustomCountdownDialog: View {
     @Environment(\.modelContext) private var modelContext
 
     private func saveCustomCountdown() {
-        // Save to SwiftData as CountdownEvent (the source of truth for event display)
-        let event = CountdownEvent(
-            title: name,
+        // Save to SwiftData as Memo countdown
+        let event = Memo.countdown(
+            name,
             targetDate: date,
             icon: iconName,
-            colorHex: "#805AD5",  // 情報デザイン: Events ALWAYS use purple
-            isSystem: false
+            colorHex: "#805AD5"  // 情報デザイン: Events ALWAYS use purple
         )
         modelContext.insert(event)
         do {

@@ -10,9 +10,20 @@ import SwiftUI
 import SwiftData
 
 struct NotesListView: View {
-    @Query(sort: [SortDescriptor(\DailyNote.day, order: .reverse), SortDescriptor(\DailyNote.date, order: .reverse)])
-    private var notes: [DailyNote]
+    // Query all memos, filter to notes type in computed property
+    @Query(sort: [SortDescriptor(\Memo.date, order: .reverse)])
+    private var allMemos: [Memo]
     @Environment(\.modelContext) private var modelContext
+
+    // Filter to notes only
+    private var notes: [Memo] {
+        allMemos.filter { $0.type == .note }
+    }
+
+    // Helper to get day from memo date
+    private func dayFor(_ memo: Memo) -> Date {
+        Calendar.iso8601.startOfDay(for: memo.date)
+    }
 
     @State private var searchText = ""
     @State private var showingNewNoteFlow = false
@@ -57,9 +68,9 @@ struct NotesListView: View {
 
                         ForEach(pinnedUpcomingNotes) { note in
                             NavigationLink {
-                                DailyNotesView(selectedDate: note.day, isModal: false)
+                                DailyNotesView(selectedDate: dayFor(note), isModal: false)
                             } label: {
-                                PinnedNoteRow(note: note, daysRemaining: daysUntil(note.day))
+                                MemoPinnedNoteRow(note: note, daysRemaining: daysUntil(dayFor(note)))
                             }
                             .buttonStyle(PlainButtonStyle())
                             .padding(.horizontal, JohoDimensions.spacingLG)
@@ -136,20 +147,22 @@ struct NotesListView: View {
         searchText.trimmed
     }
 
-    private var filteredNotes: [DailyNote] {
+    private var filteredNotes: [Memo] {
         guard trimmedSearch.isNotEmpty else { return notes }
-        return notes.filter { $0.content.localizedCaseInsensitiveContains(trimmedSearch) }
+        return notes.filter { $0.text.localizedCaseInsensitiveContains(trimmedSearch) }
     }
 
-    private var pinnedUpcomingNotes: [DailyNote] {
+    private var pinnedUpcomingNotes: [Memo] {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
 
         return filteredNotes
             .filter { $0.pinnedToDashboard == true }
-            .filter { $0.day >= today }
+            .filter { dayFor($0) >= today }
             .sorted(by: { lhs, rhs in
-                if lhs.day != rhs.day { return lhs.day < rhs.day }
+                let lhsDay = dayFor(lhs)
+                let rhsDay = dayFor(rhs)
+                if lhsDay != rhsDay { return lhsDay < rhsDay }
                 let lhsTime = lhs.scheduledAt ?? lhs.date
                 let rhsTime = rhs.scheduledAt ?? rhs.date
                 return lhsTime < rhsTime
@@ -157,11 +170,11 @@ struct NotesListView: View {
     }
 
     private var groupedDays: [NotesDayGroup] {
-        let groups = Dictionary(grouping: filteredNotes) { $0.day }
+        let groups = Dictionary(grouping: filteredNotes) { dayFor($0) }
         return groups
             .map { (day, notes) in
                 let latest = notes.max(by: { $0.date < $1.date })
-                let preview = latest?.content.trimmed
+                let preview = latest?.text.trimmed
                 return NotesDayGroup(
                     day: day,
                     count: notes.count,
@@ -199,18 +212,18 @@ struct NotesListView: View {
         ViewUtilities.daysUntil(to: targetDay)
     }
 
-    private func unpin(_ note: DailyNote) {
+    private func unpin(_ note: Memo) {
         note.pinnedToDashboard = false
         try? modelContext.save()
     }
 
-    private func delete(_ note: DailyNote) {
+    private func delete(_ note: Memo) {
         modelContext.delete(note)
         try? modelContext.save()
     }
 
     private func deleteDay(_ day: Date) {
-        let toDelete = notes.filter { $0.day == day }
+        let toDelete = notes.filter { dayFor($0) == day }
         for note in toDelete {
             modelContext.delete(note)
         }
@@ -286,12 +299,17 @@ private struct NotesDayRow: View {
     }
 }
 
-private struct PinnedNoteRow: View {
-    let note: DailyNote
+private struct MemoPinnedNoteRow: View {
+    let note: Memo
     let daysRemaining: Int
 
+    // Helper to get day from memo date
+    private var noteDay: Date {
+        Calendar.iso8601.startOfDay(for: note.date)
+    }
+
     var body: some View {
-        let title = titleLine(from: note.content)
+        let title = titleLine(from: note.text)
         let dateText = scheduleLine(for: note)
         let badgeText = countdownBadgeText(days: daysRemaining)
 
@@ -365,8 +383,8 @@ private struct PinnedNoteRow: View {
         return trimmed.isEmpty ? Localization.untitled : trimmed
     }
 
-    private func scheduleLine(for note: DailyNote) -> String {
-        let dayText = note.day.formatted(date: .abbreviated, time: .omitted)
+    private func scheduleLine(for note: Memo) -> String {
+        let dayText = noteDay.formatted(date: .abbreviated, time: .omitted)
         if let scheduledAt = note.scheduledAt {
             let timeText = scheduledAt.formatted(date: .omitted, time: .shortened)
             return "\(dayText) • \(timeText)"

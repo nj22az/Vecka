@@ -29,11 +29,8 @@ struct SettingsView: View {
 
     // Database statistics queries
     @Query private var holidayRules: [HolidayRule]
-    @Query private var dailyNotes: [DailyNote]
+    @Query private var memos: [Memo]
     @Query private var contacts: [Contact]
-    @Query private var countdownEvents: [CountdownEvent]
-    @Query private var trips: [TravelTrip]
-    @Query private var expenses: [ExpenseItem]
     @Query(sort: \WorldClock.sortOrder) private var worldClocks: [WorldClock]
 
     // World clocks state
@@ -1237,45 +1234,18 @@ struct SettingsView: View {
 
                     starStyleCard(
                         icon: "note.text",
-                        label: "NOTES",
-                        count: dailyNotes.count,
-                        color: SpecialDayType.note.accentColor,
-                        lightBg: SpecialDayType.note.lightBackground
+                        label: "MEMOS",
+                        count: memos.count,
+                        color: JohoColors.yellow,
+                        lightBg: JohoColors.yellow.opacity(0.3)
                     )
 
                     starStyleCard(
                         icon: "person.2.fill",
                         label: "CONTACTS",
                         count: contacts.count,
-                        color: SpecialDayType.birthday.accentColor,
-                        lightBg: SpecialDayType.birthday.lightBackground
-                    )
-                }
-
-                // Row 2: Events, Trips, Expenses
-                HStack(spacing: JohoDimensions.spacingSM) {
-                    starStyleCard(
-                        icon: "calendar.badge.clock",
-                        label: "EVENTS",
-                        count: countdownEvents.count,
-                        color: SpecialDayType.event.accentColor,
-                        lightBg: SpecialDayType.event.lightBackground
-                    )
-
-                    starStyleCard(
-                        icon: "airplane",
-                        label: "TRIPS",
-                        count: trips.count,
-                        color: SpecialDayType.trip.accentColor,
-                        lightBg: SpecialDayType.trip.lightBackground
-                    )
-
-                    starStyleCard(
-                        icon: "dollarsign.circle.fill",
-                        label: "EXPENSES",
-                        count: expenses.count,
-                        color: SpecialDayType.expense.accentColor,
-                        lightBg: SpecialDayType.expense.lightBackground
+                        color: JohoColors.purple,
+                        lightBg: JohoColors.purple.opacity(0.3)
                     )
                 }
             }
@@ -1373,13 +1343,7 @@ struct SettingsView: View {
     }
 
     private var totalEntries: Int {
-        let custom = customHolidayCount
-        let notes = dailyNotes.count
-        let people = contacts.count
-        let events = countdownEvents.count
-        let travel = trips.count
-        let money = expenses.count
-        return custom + notes + people + events + travel + money
+        customHolidayCount + memos.count + contacts.count
     }
 
     // MARK: - Database Health (情報デザイン: Honest limits)
@@ -1582,6 +1546,7 @@ struct RegionSelectionView: View {
     // MARK: - Continent Enum (情報デザイン: No colored globes, use SF Symbols)
 
     enum Continent: String, CaseIterable, Identifiable {
+        case nordic = "Nordic"
         case europe = "Europe"
         case asia = "Asia"
         case americas = "Americas"
@@ -1591,17 +1556,19 @@ struct RegionSelectionView: View {
         /// 情報デザイン: Black SF Symbols only, no colored globes
         var symbol: String {
             switch self {
-            case .europe: return "building.columns"
-            case .asia: return "sun.horizon"
-            case .americas: return "mountain.2"
+                case .nordic: return "snowflake"
+                case .europe: return "building.columns"
+                case .asia: return "sun.horizon"
+                case .americas: return "mountain.2"
             }
         }
 
         var shortCode: String {
             switch self {
-            case .europe: return "EU"
-            case .asia: return "AS"
-            case .americas: return "AM"
+                case .nordic: return "NO"
+                case .europe: return "EU"
+                case .asia: return "AS"
+                case .americas: return "AM"
             }
         }
     }
@@ -1618,8 +1585,15 @@ struct RegionSelectionView: View {
     }
 
     static let allRegions: [RegionOption] = [
-        // Europe
-        .init(code: "NORDIC", titleKey: "region.nordic", continent: .europe),  // 情報デザイン: Unified Nordic (SE, NO, DK, FI)
+        // Nordic countries (now separate category)
+        .init(code: "SE", titleKey: "region.sweden", continent: .nordic),
+        .init(code: "NO", titleKey: "region.norway", continent: .nordic),
+        .init(code: "DK", titleKey: "region.denmark", continent: .nordic),
+        .init(code: "FI", titleKey: "region.finland", continent: .nordic),
+        .init(code: "IS", titleKey: "region.iceland", continent: .nordic),
+        .init(code: "GL", titleKey: "region.greenland", continent: .nordic),
+        .init(code: "FO", titleKey: "region.faroeislands", continent: .nordic),
+        // Europe (excluding Nordic)
         .init(code: "DE", titleKey: "region.germany", continent: .europe),
         .init(code: "GB", titleKey: "region.uk", continent: .europe),
         .init(code: "FR", titleKey: "region.france", continent: .europe),
@@ -1679,7 +1653,7 @@ struct RegionSelectionView: View {
                 JohoPageHeader(
                     title: NSLocalizedString("settings.region", comment: "Region"),
                     badge: "SELECT",
-                    subtitle: "Select up to two regions"
+                    subtitle: "Select up to five regions"
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.top, JohoDimensions.spacingSM)
@@ -1739,7 +1713,7 @@ struct RegionSelectionView: View {
         .alert("Limit Reached", isPresented: $showSelectionLimitAlert) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("You can select up to two regions.")
+            Text("You can select up to five regions.")
         }
     }
 
@@ -1979,9 +1953,9 @@ struct RegionSelectionView: View {
                     .tracking(1)
                     .foregroundStyle(colors.primary)
 
-                // Selected count badge
+                // Selected count badge - shows selected/total for clarity
                 if selectedInContinent > 0 {
-                    Text("○ \(selectedInContinent)")
+                    Text("\(selectedInContinent)/\(regionsInContinent.count)")
                         .font(.system(size: 10, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primaryInverted)
                         .padding(.horizontal, 6)
@@ -2085,7 +2059,7 @@ struct RegionSelectionView: View {
                 HapticManager.selection()
             }
         } else {
-            if selectedRegions.addRegionIfPossible(code, maxCount: 2) {
+            if selectedRegions.addRegionIfPossible(code, maxCount: 5) {
                 HapticManager.selection()
             } else {
                 showSelectionLimitAlert = true

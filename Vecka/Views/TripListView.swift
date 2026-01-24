@@ -10,10 +10,15 @@ import SwiftData
 
 struct TripListView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \TravelTrip.startDate, order: .reverse) private var allTrips: [TravelTrip]
+    @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
 
     @State private var showAddTrip = false
-    @State private var selectedTrip: TravelTrip?
+    @State private var selectedTrip: Memo?
+
+    /// Filtered trips from Memo
+    private var allTrips: [Memo] {
+        allMemos.filter { $0.type == .trip }
+    }
 
     var body: some View {
         ScrollView {
@@ -42,13 +47,13 @@ struct TripListView: View {
                             .padding(.horizontal, JohoDimensions.spacingLG)
 
                         ForEach(activeTrips, id: \.id) { trip in
-                            TripRow(trip: trip, status: "ACTIVE")
+                            MemoTripRow(memo: trip, status: "ACTIVE")
                                 .padding(.horizontal, JohoDimensions.spacingLG)
                                 .contentShape(Rectangle())
                                 .onTapGesture {
                                     selectedTrip = trip
                                 }
-                                .accessibilityLabel("\(trip.tripName), active trip to \(trip.destination)")
+                                .accessibilityLabel("\(trip.text), active trip to \(trip.place ?? "")")
                                 .accessibilityAddTraits(.isButton)
                         }
                     }
@@ -61,13 +66,13 @@ struct TripListView: View {
                             .padding(.horizontal, JohoDimensions.spacingLG)
 
                         ForEach(upcomingTrips, id: \.id) { trip in
-                            TripRow(trip: trip, status: "UPCOMING")
+                            MemoTripRow(memo: trip, status: "UPCOMING")
                                 .padding(.horizontal, JohoDimensions.spacingLG)
                                 .contentShape(Rectangle())
                                 .onTapGesture {
                                     selectedTrip = trip
                                 }
-                                .accessibilityLabel("\(trip.tripName), upcoming trip to \(trip.destination)")
+                                .accessibilityLabel("\(trip.text), upcoming trip to \(trip.place ?? "")")
                                 .accessibilityAddTraits(.isButton)
                         }
                     }
@@ -80,13 +85,13 @@ struct TripListView: View {
                             .padding(.horizontal, JohoDimensions.spacingLG)
 
                         ForEach(pastTrips, id: \.id) { trip in
-                            TripRow(trip: trip, status: "PAST")
+                            MemoTripRow(memo: trip, status: "PAST")
                                 .padding(.horizontal, JohoDimensions.spacingLG)
                                 .contentShape(Rectangle())
                                 .onTapGesture {
                                     selectedTrip = trip
                                 }
-                                .accessibilityLabel("\(trip.tripName), past trip to \(trip.destination)")
+                                .accessibilityLabel("\(trip.text), past trip to \(trip.place ?? "")")
                                 .accessibilityAddTraits(.isButton)
                         }
                     }
@@ -115,29 +120,35 @@ struct TripListView: View {
         }
         .sheet(item: $selectedTrip) { trip in
             NavigationStack {
-                TripDetailView(trip: trip)
+                MemoTripDetailView(memo: trip)
             }
         }
     }
-    
+
     // MARK: - Helpers
-    
-    private var activeTrips: [TravelTrip] {
+
+    private var activeTrips: [Memo] {
         let now = Date()
-        return allTrips.filter { $0.startDate <= now && $0.endDate >= now }
+        return allTrips.filter { memo in
+            guard let endDate = memo.tripEndDate else { return false }
+            return memo.date <= now && endDate >= now
+        }
     }
-    
-    private var upcomingTrips: [TravelTrip] {
+
+    private var upcomingTrips: [Memo] {
         let now = Date()
-        return allTrips.filter { $0.startDate > now }.sorted(by: { $0.startDate < $1.startDate })
+        return allTrips.filter { $0.date > now }.sorted(by: { $0.date < $1.date })
     }
-    
-    private var pastTrips: [TravelTrip] {
+
+    private var pastTrips: [Memo] {
         let now = Date()
-        return allTrips.filter { $0.endDate < now }
+        return allTrips.filter { memo in
+            guard let endDate = memo.tripEndDate else { return false }
+            return endDate < now
+        }
     }
-    
-    private func delete(_ trip: TravelTrip) {
+
+    private func delete(_ trip: Memo) {
         modelContext.delete(trip)
         try? modelContext.save()
     }
@@ -145,12 +156,14 @@ struct TripListView: View {
 
 // MARK: - Subviews
 
-struct TripRow: View {
-    let trip: TravelTrip
+/// Trip row using Memo model
+struct MemoTripRow: View {
+    let memo: Memo
     var status: String = ""
 
     private var durationText: String {
-        "\(trip.duration)d"
+        guard let duration = memo.tripDuration else { return "0d" }
+        return "\(duration)d"
     }
 
     var body: some View {
@@ -168,74 +181,64 @@ struct TripRow: View {
                 }
 
                 // Trip name
-                Text(trip.tripName)
+                Text(memo.text)
                     .font(JohoFont.headline)
                     .foregroundStyle(JohoColors.black)
 
                 // Destination
-                HStack(spacing: JohoDimensions.spacingXS) {
-                    Image(systemName: "airplane.departure")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                if let destination = memo.place {
+                    HStack(spacing: JohoDimensions.spacingXS) {
+                        Image(systemName: "airplane.departure")
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
 
-                    Text(trip.destination)
-                        .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black.opacity(0.8))
+                        Text(destination)
+                            .font(JohoFont.body)
+                            .foregroundStyle(JohoColors.black.opacity(0.8))
+                    }
                 }
 
                 // Date range
-                HStack(spacing: JohoDimensions.spacingXS) {
-                    Text(trip.startDate.formatted(.dateTime.month(.abbreviated).day()))
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                if let endDate = memo.tripEndDate {
+                    HStack(spacing: JohoDimensions.spacingXS) {
+                        Text(memo.date.formatted(.dateTime.month(.abbreviated).day()))
+                            .font(JohoFont.bodySmall)
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
 
-                    Text("→")
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        Text("→")
+                            .font(JohoFont.bodySmall)
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
 
-                    Text(trip.endDate.formatted(.dateTime.month(.abbreviated).day()))
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        Text(endDate.formatted(.dateTime.month(.abbreviated).day()))
+                            .font(JohoFont.bodySmall)
+                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                    }
                 }
 
-                // Trip type if not business
-                if trip.tripType != .business {
-                    JohoPill(text: trip.tripType.rawValue, style: .blackOnWhite, size: .small)
+                // Trip type/purpose
+                if let purpose = memo.tripPurpose, !purpose.isEmpty {
+                    JohoPill(text: purpose, style: .blackOnWhite, size: .small)
                 }
             }
         }
     }
 }
 
-struct TripDetailView: View {
-    let trip: TravelTrip
+/// Trip detail view using Memo model
+struct MemoTripDetailView: View {
+    let memo: Memo
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    @State private var showExpenseList = false
-    @State private var showMileageList = false
-    @State private var showTripReport = false
-
-    private var expenseCount: Int {
-        trip.expenses?.count ?? 0
-    }
-
-    private var mileageCount: Int {
-        trip.mileageEntries?.count ?? 0
-    }
-
-    private var totalMileage: Double {
-        trip.mileageEntries?.reduce(0) { $0 + $1.totalDistance } ?? 0
-    }
 
     var body: some View {
         ScrollView {
             VStack(spacing: JohoDimensions.spacingLG) {
-                // 情報デザイン: Status bar safe zone - prevents content from scrolling under status bar icons
+                // 情報デザイン: Status bar safe zone
                 Spacer().frame(height: 44)
 
                 // Page header
                 JohoPageHeader(
-                    title: trip.tripName,
+                    title: memo.text,
                     badge: "TRIP DETAILS"
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
@@ -244,149 +247,82 @@ struct TripDetailView: View {
                 JohoSectionBox(title: "Trip Info", zone: .trips) {
                     VStack(spacing: JohoDimensions.spacingSM) {
                         // Destination
-                        HStack {
-                            Text("Destination")
-                                .font(JohoFont.body)
-                                .foregroundStyle(JohoColors.black)
-                            Spacer()
-                            Text(trip.destination)
-                                .font(JohoFont.body)
-                                .foregroundStyle(JohoColors.black)
-                                .bold()
-                        }
+                        if let destination = memo.place {
+                            HStack {
+                                Text("Destination")
+                                    .font(JohoFont.body)
+                                    .foregroundStyle(JohoColors.black)
+                                Spacer()
+                                Text(destination)
+                                    .font(JohoFont.body)
+                                    .foregroundStyle(JohoColors.black)
+                                    .bold()
+                            }
 
-                        JohoDivider()
+                            JohoDivider()
+                        }
 
                         // Duration
-                        HStack {
-                            Text("Duration")
-                                .font(JohoFont.body)
-                                .foregroundStyle(JohoColors.black)
-                            Spacer()
-                            Text("\(trip.duration) days")
-                                .font(JohoFont.monoMedium)
-                                .foregroundStyle(JohoColors.black)
-                        }
+                        if let duration = memo.tripDuration {
+                            HStack {
+                                Text("Duration")
+                                    .font(JohoFont.body)
+                                    .foregroundStyle(JohoColors.black)
+                                Spacer()
+                                Text("\(duration) days")
+                                    .font(JohoFont.monoMedium)
+                                    .foregroundStyle(JohoColors.black)
+                            }
 
-                        JohoDivider()
+                            JohoDivider()
+                        }
 
                         // Date range
-                        VStack(spacing: JohoDimensions.spacingXS) {
-                            HStack {
-                                Text("Start")
-                                    .font(JohoFont.bodySmall)
-                                    .foregroundStyle(JohoColors.black.opacity(0.7))
-                                Spacer()
-                                Text(trip.startDate.formatted(.dateTime.month(.abbreviated).day().year()))
-                                    .font(JohoFont.monoMedium)
-                                    .foregroundStyle(JohoColors.black)
+                        if let endDate = memo.tripEndDate {
+                            VStack(spacing: JohoDimensions.spacingXS) {
+                                HStack {
+                                    Text("Start")
+                                        .font(JohoFont.bodySmall)
+                                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                                    Spacer()
+                                    Text(memo.date.formatted(.dateTime.month(.abbreviated).day().year()))
+                                        .font(JohoFont.monoMedium)
+                                        .foregroundStyle(JohoColors.black)
+                                }
+
+                                HStack {
+                                    Text("End")
+                                        .font(JohoFont.bodySmall)
+                                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                                    Spacer()
+                                    Text(endDate.formatted(.dateTime.month(.abbreviated).day().year()))
+                                        .font(JohoFont.monoMedium)
+                                        .foregroundStyle(JohoColors.black)
+                                }
                             }
 
+                            JohoDivider()
+                        }
+
+                        // Trip type/purpose
+                        if let purpose = memo.tripPurpose, !purpose.isEmpty {
                             HStack {
-                                Text("End")
-                                    .font(JohoFont.bodySmall)
-                                    .foregroundStyle(JohoColors.black.opacity(0.7))
-                                Spacer()
-                                Text(trip.endDate.formatted(.dateTime.month(.abbreviated).day().year()))
-                                    .font(JohoFont.monoMedium)
+                                Text("Type")
+                                    .font(JohoFont.body)
                                     .foregroundStyle(JohoColors.black)
+                                Spacer()
+                                JohoPill(text: purpose, style: .whiteOnBlack, size: .small)
                             }
                         }
-
-                        JohoDivider()
-
-                        // Trip type
-                        HStack {
-                            Text("Type")
-                                .font(JohoFont.body)
-                                .foregroundStyle(JohoColors.black)
-                            Spacer()
-                            JohoPill(text: trip.tripType.rawValue, style: .whiteOnBlack, size: .small)
-                        }
                     }
                 }
                 .padding(.horizontal, JohoDimensions.spacingLG)
-
-                // Stats Section
-                HStack(spacing: JohoDimensions.spacingMD) {
-                    // Expenses stat
-                    Button {
-                        showExpenseList = true
-                    } label: {
-                        JohoStatBox(
-                            value: "\(expenseCount)",
-                            label: "Expenses",
-                            zone: .expenses
-                        )
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Expenses: \(expenseCount) items")
-                    .accessibilityHint("Double tap to view expense list")
-
-                    // Mileage stat
-                    Button {
-                        showMileageList = true
-                    } label: {
-                        JohoStatBox(
-                            value: "\(mileageCount)",
-                            label: "Mileage",
-                            zone: .trips
-                        )
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Mileage: \(mileageCount) entries")
-                    .accessibilityHint("Double tap to view mileage log")
-                }
-                .padding(.horizontal, JohoDimensions.spacingLG)
-
-                // Expense total if any
-                if expenseCount > 0 {
-                    JohoSectionBox(title: "Total Expenses", zone: .expenses) {
-                        Text(String(format: "%.0f SEK", trip.totalExpenses))
-                            .font(JohoFont.displaySmall)
-                            .foregroundStyle(JohoColors.black)
-                    }
-                    .padding(.horizontal, JohoDimensions.spacingLG)
-                }
-
-                // Mileage total if any
-                if mileageCount > 0 {
-                    JohoSectionBox(title: "Total Distance", zone: .trips) {
-                        Text(String(format: "%.1f km", totalMileage))
-                            .font(JohoFont.displaySmall)
-                            .foregroundStyle(JohoColors.black)
-                    }
-                    .padding(.horizontal, JohoDimensions.spacingLG)
-                }
-
-                // Generate Report Button
-                Button {
-                    showTripReport = true
-                } label: {
-                    HStack(spacing: JohoDimensions.spacingSM) {
-                        Image(systemName: "doc.text.fill")
-                            .font(.system(size: 18, weight: .bold, design: .rounded))
-
-                        Text("Generate Report")
-                            .font(JohoFont.headline)
-                    }
-                    .foregroundStyle(JohoColors.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(JohoDimensions.spacingMD)
-                    .background(JohoColors.black)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                }
-                .buttonStyle(.plain)
-                .padding(.horizontal, JohoDimensions.spacingLG)
-                .accessibilityLabel("Generate trip report")
-                .accessibilityHint("Double tap to create PDF report with expenses and mileage")
             }
             .padding(.vertical, JohoDimensions.spacingLG)
         }
         .johoBackground()
         .toolbar(.hidden, for: .navigationBar)
         .safeAreaInset(edge: .top) {
-            // Inline close button (情報デザイン)
             HStack {
                 Button { dismiss() } label: {
                     JohoActionButton(icon: "xmark")
@@ -397,20 +333,6 @@ struct TripDetailView: View {
             .padding(.top, JohoDimensions.spacingSM)
             .background(JohoColors.background)
         }
-        .sheet(isPresented: $showExpenseList) {
-            NavigationStack {
-                ExpenseListView()
-            }
-        }
-        // TODO: Restore MileageListView and TripReportPreviewView for database-driven architecture
-        // .sheet(isPresented: $showMileageList) {
-        //     NavigationStack {
-        //         MileageListView(trip: trip)
-        //     }
-        // }
-        // .sheet(isPresented: $showTripReport) {
-        //     TripReportPreviewView(trip: trip)
-        // }
     }
 }
 
@@ -435,9 +357,9 @@ struct JohoTripEditorSheet: View {
 
     private let calendar = Calendar.current
 
-    // 情報デザイン: Trips ALWAYS use blue color scheme
-    private var tripAccentColor: Color { SpecialDayType.trip.accentColor }
-    private var tripLightBackground: Color { SpecialDayType.trip.lightBackground }
+    // 情報デザイン: Trips use cyan (予定/place) color scheme
+    private var tripAccentColor: Color { JohoColors.cyan }
+    private var tripLightBackground: Color { JohoColors.cyanLight }
 
     private var canSave: Bool {
         !destination.trimmed.isEmpty
@@ -848,15 +770,15 @@ struct JohoTripEditorSheet: View {
         let trimmedDestination = destination.trimmed
         guard !trimmedDestination.isEmpty else { return }
 
-        let trip = TravelTrip(
-            tripName: name.isEmpty ? trimmedDestination : name,
-            destination: trimmedDestination,
+        // Create trip as Memo
+        let memo = Memo.trip(
+            name.isEmpty ? trimmedDestination : name,
             startDate: startDate,
             endDate: endDate,
-            purpose: nil,
-            tripType: tripType
+            destination: trimmedDestination,
+            purpose: tripType.rawValue
         )
-        modelContext.insert(trip)
+        modelContext.insert(memo)
 
         do {
             try modelContext.save()

@@ -4,6 +4,7 @@
 //
 //  CSV export for expenses and mileage data
 //  Spreadsheet-friendly format for accounting/reporting
+//  Migrated to support unified Memo model
 //
 
 import Foundation
@@ -16,9 +17,58 @@ class CSVExportService {
     static let shared = CSVExportService()
     private init() {}
 
-    // MARK: - Expense Export
+    // MARK: - Memo Expense Export (New - Unified Model)
 
-    /// Export expenses to CSV
+    /// Export Memo expenses to CSV
+    func exportMemoExpenses(_ expenses: [Memo]) throws -> URL {
+        guard !expenses.isEmpty else {
+            throw CSVExportError.noData
+        }
+
+        var csv = "Date,Amount,Currency,Merchant,Description,Notes\n"
+
+        let sortedExpenses = expenses.sorted { $0.date < $1.date }
+
+        for expense in sortedExpenses {
+            let row = [
+                formatDate(expense.date),
+                String(format: "%.2f", expense.amount ?? 0),
+                expense.currency ?? "SEK",
+                escapeCSV(expense.place ?? ""),
+                escapeCSV(expense.text),
+                ""  // Notes field - Memo doesn't have separate notes
+            ]
+            csv += row.joined(separator: ",") + "\n"
+        }
+
+        return try saveCSV(csv, filename: "Expenses")
+    }
+
+    /// Export Memo expenses for a date range
+    func exportMemoExpenses(
+        from startDate: Date,
+        to endDate: Date,
+        context: ModelContext
+    ) throws -> URL {
+        let calendar = Calendar.iso8601
+        let start = calendar.startOfDay(for: startDate)
+        let end = calendar.startOfDay(for: endDate).addingTimeInterval(86400)
+
+        let expenseType = MemoType.expense.rawValue
+        let descriptor = FetchDescriptor<Memo>(
+            predicate: #Predicate { memo in
+                memo.memoTypeRaw == expenseType && memo.date >= start && memo.date < end
+            },
+            sortBy: [SortDescriptor(\Memo.date)]
+        )
+
+        let expenses = try context.fetch(descriptor)
+        return try exportMemoExpenses(expenses)
+    }
+
+    // MARK: - Legacy Expense Export (For backward compatibility)
+
+    /// Export expenses to CSV (Legacy - ExpenseItem)
     /// - Parameters:
     ///   - expenses: Array of expenses to export
     ///   - includeReceipts: Whether to include receipt filename column
@@ -37,6 +87,12 @@ class CSVExportService {
         }
 
         return try saveCSV(csv, filename: "Expenses")
+    }
+
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: date)
     }
 
     /// Export expenses for a date range

@@ -10,13 +10,27 @@ import SwiftUI
 import SwiftData
 
 struct PhoneLibraryView: View {
-    // Data queries for counts
-    @Query private var notes: [DailyNote]
+    // Unified memo query - filter by type in computed properties
+    @Query private var memos: [Memo]
     @Query private var holidays: [HolidayRule]
-    @Query private var trips: [TravelTrip]
-    @Query private var expenses: [ExpenseItem]
     @Query private var contacts: [Contact]
-    @Query private var customCountdowns: [CountdownEvent]
+
+    // Computed: Filter memos by type
+    private var notes: [Memo] {
+        memos.filter { $0.type == .note }
+    }
+
+    private var trips: [Memo] {
+        memos.filter { $0.type == .trip }
+    }
+
+    private var expenses: [Memo] {
+        memos.filter { $0.type == .expense }
+    }
+
+    private var countdowns: [Memo] {
+        memos.filter { $0.type == .countdown }
+    }
 
     var body: some View {
         ScrollView {
@@ -223,12 +237,9 @@ struct PhoneLibraryView: View {
     NavigationStack {
         PhoneLibraryView()
             .modelContainer(for: [
-                DailyNote.self,
+                Memo.self,
                 HolidayRule.self,
-                TravelTrip.self,
-                ExpenseItem.self,
-                Contact.self,
-                CountdownEvent.self
+                Contact.self
             ])
     }
 }

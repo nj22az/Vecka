@@ -17,7 +17,18 @@ struct DailyNotesView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
 
-    @Query private var dayNotes: [DailyNote]
+    // Query all memos, filter to notes for this day
+    @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
+
+    // Filter to notes for this specific day
+    private var dayNotes: [Memo] {
+        let noteType = MemoType.note
+        let day = Calendar.iso8601.startOfDay(for: selectedDate)
+        let nextDay = Calendar.iso8601.date(byAdding: .day, value: 1, to: day) ?? day
+        return allMemos.filter { memo in
+            memo.type == noteType && memo.date >= day && memo.date < nextDay
+        }
+    }
 
     @State private var isCreating = false
     @State private var didAppear = false
@@ -26,15 +37,6 @@ struct DailyNotesView: View {
         self.selectedDate = selectedDate
         self.isModal = isModal
         self.startCreating = startCreating
-
-        let day = Calendar.iso8601.startOfDay(for: selectedDate)
-        _dayNotes = Query(
-            filter: #Predicate<DailyNote> { note in
-                note.day == day
-            },
-            sort: \.date,
-            order: .reverse
-        )
     }
 
     var body: some View {
@@ -207,13 +209,10 @@ struct DailyNotesView: View {
     private func createNote(content: String) {
         guard !content.isEmpty else { return }
 
-        let note = DailyNote(
-            date: Date(),
-            content: content,
-            scheduledAt: nil
-        )
-        note.day = Calendar.iso8601.startOfDay(for: selectedDate)
-        modelContext.insert(note)
+        // Create Memo with date set to start of selected day
+        let day = Calendar.iso8601.startOfDay(for: selectedDate)
+        let memo = Memo.quick(content, date: day)
+        modelContext.insert(memo)
 
         do {
             try modelContext.save()
@@ -226,7 +225,7 @@ struct DailyNotesView: View {
 // MARK: - 情報デザイン Note Card (Display only - edit/delete in month card)
 
 private struct JohoNoteCard: View {
-    let note: DailyNote
+    let note: Memo
 
     // Category color from note, or default yellow
     private var categoryColor: Color {
@@ -238,11 +237,11 @@ private struct JohoNoteCard: View {
 
     // Priority symbol (情報デザイン マルバツ)
     private var prioritySymbol: String? {
-        guard let priority = note.priority else { return nil }
+        let priority = note.priority
         switch priority {
-        case "high": return "◎"
-        case "low": return "△"
-        default: return nil  // Normal priority doesn't need symbol
+        case .high: return "◎"
+        case .low: return "△"
+        case .normal: return nil  // Normal priority doesn't need symbol
         }
     }
 
@@ -262,7 +261,7 @@ private struct JohoNoteCard: View {
             }
 
             // Note content
-            Text(note.content)
+            Text(note.text)
                 .font(JohoFont.body)
                 .foregroundStyle(JohoColors.black)
                 .lineLimit(2)
@@ -731,13 +730,11 @@ struct JohoNoteEditorSheet: View {
         let trimmed = text.trimmed
         guard !trimmed.isEmpty else { return }
 
-        let note = DailyNote(
-            date: Date(),
-            content: trimmed,
-            scheduledAt: nil
-        )
-        note.day = Calendar.iso8601.startOfDay(for: selectedDate)
-        modelContext.insert(note)
+        // Create Memo with date set to start of selected day
+        let day = Calendar.iso8601.startOfDay(for: selectedDate)
+        let memo = Memo.quick(trimmed, date: day)
+        memo.symbolName = selectedSymbol
+        modelContext.insert(memo)
 
         do {
             try modelContext.save()
@@ -749,11 +746,11 @@ struct JohoNoteEditorSheet: View {
 }
 
 // MARK: - Note Priority
-// Note: NotePriority enum is defined in Note.swift
+// Note: MemoPriority enum is defined in Memo.swift
 
 #Preview {
     NavigationStack {
         DailyNotesView(selectedDate: Date(), isModal: true)
-            .modelContainer(for: DailyNote.self, inMemory: true)
+            .modelContainer(for: Memo.self, inMemory: true)
     }
 }

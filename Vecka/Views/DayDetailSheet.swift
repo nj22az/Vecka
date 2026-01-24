@@ -14,8 +14,6 @@ struct DayDetailSheet: View {
     let day: CalendarDay
     let dataCheck: DayDataCheck?
     @Environment(\.dismiss) private var dismiss
-    @State private var showPDFExport = false
-
     var body: some View {
         ScrollView {
             VStack(spacing: JohoDimensions.spacingLG) {
@@ -40,10 +38,6 @@ struct DayDetailSheet: View {
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
         .presentationCornerRadius(20)
-        .sheet(isPresented: $showPDFExport) {
-            SimplePDFExportView(exportContext: .day(day.date))
-                .presentationCornerRadius(20)
-        }
     }
 
     // MARK: - Date Header
@@ -86,19 +80,6 @@ struct DayDetailSheet: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-
-            // Export button
-            Button {
-                showPDFExport = true
-            } label: {
-                Image(systemName: "square.and.arrow.up")
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
-                    .frame(width: 32, height: 32)
-                    .background(JohoColors.white)
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
-            }
 
             // Close button
             Button {

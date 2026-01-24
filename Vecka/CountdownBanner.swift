@@ -11,31 +11,37 @@ import SwiftData
 // MARK: - Countdown Banner
 struct CountdownBanner: View {
     let selectedDate: Date
-    
-    @Query(sort: \CountdownEvent.targetDate) private var events: [CountdownEvent]
+
+    // Query all memos, filter to countdowns in computed property
+    @Query(sort: \Memo.date) private var allMemos: [Memo]
     @AppStorage("selectedCountdownID") private var selectedCountdownID: String = ""
-    
+
+    /// Filtered countdown events
+    private var events: [Memo] {
+        allMemos.filter { $0.type == .countdown }
+    }
+
     var body: some View {
         Group {
             if let event = activeEvent {
                 Menu {
                     Picker(Localization.selectCountdown, selection: $selectedCountdownID) {
                         ForEach(events) { event in
-                            Label(event.title, systemImage: event.icon)
-                                .tag(event.id)
+                            Label(event.text, systemImage: event.countdownIcon ?? "star.fill")
+                                .tag(event.id.uuidString)
                         }
                     }
                 } label: {
                     // Compact single-line layout for decluttered UI
                     HStack(spacing: 10) {
                         // Icon
-                        Image(systemName: event.icon)
+                        Image(systemName: event.countdownIcon ?? "star.fill")
                             .font(.body.weight(.semibold))
                             .foregroundStyle(Color(hex: event.colorHex))
                             .frame(width: 24, height: 24)
 
                         // Title
-                        Text(event.title)
+                        Text(event.text)
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(JohoColors.black)
                             .lineLimit(1)
@@ -45,7 +51,7 @@ struct CountdownBanner: View {
                             .foregroundStyle(JohoColors.black.opacity(0.7))
 
                         // Days
-                        let days = daysRemaining(to: event.targetDate)
+                        let days = daysRemaining(to: event.date)
                         Text("\(abs(days)) \(days == 1 ? Localization.daySingular : Localization.dayPlural)")
                             .font(.subheadline.weight(.medium))
                             .foregroundStyle(JohoColors.black.opacity(0.7))
@@ -58,7 +64,7 @@ struct CountdownBanner: View {
                              .foregroundStyle(days < 0 ? .secondary : Color(hex: event.colorHex))
 
                         Spacer(minLength: 0)
-                        
+
                         // Chevron to indicate menu
                         Image(systemName: "chevron.up.chevron.down")
                             .font(.caption2)
@@ -76,7 +82,7 @@ struct CountdownBanner: View {
                     )
                 }
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel("\(event.title), \(daysRemaining(to: event.targetDate)) days left")
+                .accessibilityLabel("\(event.text), \(daysRemaining(to: event.date)) days left")
             } else if events.isEmpty {
                 EmptyView()
             } else {
@@ -84,17 +90,17 @@ struct CountdownBanner: View {
                 Text("Select Event")
                     .onAppear {
                         if let first = events.first {
-                            selectedCountdownID = first.id
+                            selectedCountdownID = first.id.uuidString
                         }
                     }
             }
         }
     }
-    
-    private var activeEvent: CountdownEvent? {
-        events.first { $0.id == selectedCountdownID } ?? events.first
+
+    private var activeEvent: Memo? {
+        events.first { $0.id.uuidString == selectedCountdownID } ?? events.first
     }
-    
+
     private func daysRemaining(to targetDate: Date) -> Int {
         ViewUtilities.daysUntil(from: selectedDate, to: targetDate)
     }

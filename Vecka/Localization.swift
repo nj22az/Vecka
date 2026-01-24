@@ -166,6 +166,8 @@ struct Localization {
     static let showLess = NSLocalizedString("common.show_less", value: "Show Less", comment: "Show less")
     static let more = NSLocalizedString("common.more", value: "More", comment: "More")
     static let less = NSLocalizedString("common.less", value: "Less", comment: "Less")
+    static let noSpecialDays = NSLocalizedString("dashboard.no_special_days", value: "No special days", comment: "No special days placeholder")
+    static let tapPlusToAdd = NSLocalizedString("dashboard.tap_plus", value: "Tap + to add", comment: "Tap plus to add hint")
 
     // MARK: - Countdown Management
     static let systemCountdowns = NSLocalizedString("countdown.system", value: "System Countdowns", comment: "System countdowns header")
@@ -388,3 +390,38 @@ extension DateFormatterCache {
 // MARK: - Localized WeekInfo
 // WeekInfo initialization is now handled by WeekCalculator.shared.weekInfo(for:)
 // The production implementation in Core/WeekCalculator.swift provides complete functionality
+
+// MARK: - Currency Definition
+
+/// Simple currency definition for picker views
+struct CurrencyDefinition: Identifiable, Hashable {
+    let id: String
+    let code: String
+    let name: String
+    let symbol: String
+
+    init(code: String, name: String, symbol: String) {
+        self.id = code
+        self.code = code
+        self.name = name
+        self.symbol = symbol
+    }
+
+    /// Common currencies
+    static let defaultCurrencies: [CurrencyDefinition] = [
+        CurrencyDefinition(code: "SEK", name: "Swedish Krona", symbol: "kr"),
+        CurrencyDefinition(code: "EUR", name: "Euro", symbol: "€"),
+        CurrencyDefinition(code: "USD", name: "US Dollar", symbol: "$"),
+        CurrencyDefinition(code: "GBP", name: "British Pound", symbol: "£"),
+        CurrencyDefinition(code: "JPY", name: "Japanese Yen", symbol: "¥"),
+        CurrencyDefinition(code: "NOK", name: "Norwegian Krone", symbol: "kr"),
+        CurrencyDefinition(code: "DKK", name: "Danish Krone", symbol: "kr"),
+        CurrencyDefinition(code: "CHF", name: "Swiss Franc", symbol: "Fr"),
+        CurrencyDefinition(code: "CNY", name: "Chinese Yuan", symbol: "¥"),
+        CurrencyDefinition(code: "THB", name: "Thai Baht", symbol: "฿"),
+        CurrencyDefinition(code: "VND", name: "Vietnamese Dong", symbol: "₫"),
+        CurrencyDefinition(code: "KRW", name: "South Korean Won", symbol: "₩"),
+        CurrencyDefinition(code: "AUD", name: "Australian Dollar", symbol: "A$"),
+        CurrencyDefinition(code: "CAD", name: "Canadian Dollar", symbol: "C$"),
+    ]
+}

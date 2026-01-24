@@ -10,6 +10,28 @@ import UIKit
 import PDFKit
 import SwiftData
 
+// MARK: - PDF Export Error
+
+enum PDFExportError: LocalizedError {
+    case renderingFailed
+    case saveFailed
+    case invalidData
+    case noData
+
+    var errorDescription: String? {
+        switch self {
+        case .renderingFailed:
+            return "Failed to render PDF"
+        case .saveFailed:
+            return "Failed to save PDF"
+        case .invalidData:
+            return "Invalid data for PDF export"
+        case .noData:
+            return "No data available to export"
+        }
+    }
+}
+
 @MainActor
 class SimplePDFRenderer {
 
@@ -164,7 +186,7 @@ actor SimplePDFExportService {
 
     @MainActor
     static func exportExpenseReport(
-        expenses: [ExpenseItem],
+        expenses: [Memo],
         baseCurrency: String,
         title: String,
         dateRange: String
@@ -198,10 +220,11 @@ actor SimplePDFExportService {
 
         let calendar = Calendar.iso8601
         let weekEnd = calendar.date(byAdding: .day, value: 1, to: end) ?? end
+        let expenseType = MemoType.expense.rawValue
 
-        let descriptor = FetchDescriptor<ExpenseItem>(
-            predicate: #Predicate { expense in
-                expense.date >= start && expense.date < weekEnd
+        let descriptor = FetchDescriptor<Memo>(
+            predicate: #Predicate { memo in
+                memo.memoTypeRaw == expenseType && memo.date >= start && memo.date < weekEnd
             },
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
@@ -237,9 +260,10 @@ actor SimplePDFExportService {
             throw PDFExportError.noData
         }
 
-        let descriptor = FetchDescriptor<ExpenseItem>(
-            predicate: #Predicate { expense in
-                expense.date >= monthStart && expense.date < monthEnd
+        let expenseType = MemoType.expense.rawValue
+        let descriptor = FetchDescriptor<Memo>(
+            predicate: #Predicate { memo in
+                memo.memoTypeRaw == expenseType && memo.date >= monthStart && memo.date < monthEnd
             },
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
@@ -264,22 +288,36 @@ actor SimplePDFExportService {
 
     @MainActor
     static func exportExpenseReportForTrip(
-        trip: TravelTrip,
+        trip: Memo,
         baseCurrency: String,
         modelContext: ModelContext
     ) async throws -> URL {
-        let expenses = trip.expenses ?? []
+        // For Memo trips, we need to find expenses within the trip date range
+        guard let endDate = trip.tripEndDate else {
+            throw PDFExportError.noData
+        }
+
+        let expenseType = MemoType.expense.rawValue
+        let startDate = trip.date
+        let descriptor = FetchDescriptor<Memo>(
+            predicate: #Predicate { memo in
+                memo.memoTypeRaw == expenseType && memo.date >= startDate && memo.date <= endDate
+            },
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+
+        let expenses = try modelContext.fetch(descriptor)
 
         guard !expenses.isEmpty else {
             throw PDFExportError.noData
         }
 
-        let dateRange = "\(trip.startDate.formatted(date: .abbreviated, time: .omitted)) – \(trip.endDate.formatted(date: .abbreviated, time: .omitted))"
+        let dateRange = "\(trip.date.formatted(date: .abbreviated, time: .omitted)) – \(endDate.formatted(date: .abbreviated, time: .omitted))"
 
         return try await exportExpenseReport(
-            expenses: Array(expenses).sorted { $0.date > $1.date },
+            expenses: expenses,
             baseCurrency: baseCurrency,
-            title: "Trip Expenses – \(trip.tripName)",
+            title: "Trip Expenses – \(trip.text)",
             dateRange: dateRange
         )
     }
@@ -289,10 +327,13 @@ actor SimplePDFExportService {
 
 struct PDFSummaryPage: View {
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \TravelTrip.startDate) private var trips: [TravelTrip]
-    @Query(sort: \ExpenseItem.date, order: .reverse) private var expenses: [ExpenseItem]
-    @Query(sort: \DailyNote.date, order: .reverse) private var notes: [DailyNote]
-    @Query private var countdowns: [CountdownEvent]
+    @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
+
+    // Filter by type
+    private var trips: [Memo] { allMemos.filter { $0.type == .trip } }
+    private var expenses: [Memo] { allMemos.filter { $0.type == .expense } }
+    private var notes: [Memo] { allMemos.filter { $0.type == .note } }
+    private var countdowns: [Memo] { allMemos.filter { $0.type == .countdown } }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -309,10 +350,14 @@ struct PDFSummaryPage: View {
             Divider()
 
             // Active Trips
-            if !trips.filter({ $0.startDate <= Date() && $0.endDate >= Date() }).isEmpty {
+            let activeTrips = trips.filter { trip in
+                guard let endDate = trip.tripEndDate else { return false }
+                return trip.date <= Date() && endDate >= Date()
+            }
+            if !activeTrips.isEmpty {
                 PDFSection(title: NSLocalizedString("pdf.active_trips", value: "Active Trips", comment: ""), icon: "suitcase.fill") {
-                    ForEach(trips.filter({ $0.startDate <= Date() && $0.endDate >= Date() })) { trip in
-                        Text("📍 \(trip.destination)")
+                    ForEach(activeTrips) { trip in
+                        Text("📍 \(trip.place ?? trip.text)")
                             .font(.system(size: 12))
                     }
                 }
@@ -323,10 +368,10 @@ struct PDFSummaryPage: View {
                 PDFSection(title: NSLocalizedString("pdf.recent_expenses", value: "Recent Expenses", comment: ""), icon: "dollarsign.circle.fill") {
                     ForEach(Array(expenses.prefix(5)), id: \.id) { expense in
                         HStack {
-                            Text(expense.itemDescription)
+                            Text(expense.text)
                                 .font(.system(size: 12))
                             Spacer()
-                            Text(expense.amount, format: .currency(code: expense.currency))
+                            Text(expense.amount ?? 0, format: .currency(code: expense.currency ?? "SEK"))
                                 .font(.system(size: 12, weight: .medium))
                         }
                     }
@@ -337,13 +382,13 @@ struct PDFSummaryPage: View {
             if !notes.prefix(5).isEmpty {
                 PDFSection(title: NSLocalizedString("pdf.recent_notes", value: "Recent Notes", comment: ""), icon: "note.text") {
                     ForEach(Array(notes.prefix(5)), id: \.id) { note in
-                        if let birthdayInfo = PersonnummerParser.extractBirthdayInfo(from: note.content) {
+                        if let birthdayInfo = PersonnummerParser.extractBirthdayInfo(from: note.text) {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("🎂 \(birthdayInfo.localizedDescription)")
                                     .font(.system(size: 12, weight: .medium))
                             }
                         } else {
-                            Text("• \(note.content)")
+                            Text("• \(note.text)")
                                 .font(.system(size: 12))
                                 .lineLimit(2)
                         }
@@ -369,14 +414,15 @@ struct PDFDayPage: View {
 
     @Environment(\.modelContext) private var modelContext
 
-    private var dayNotes: [DailyNote] {
+    private var dayNotes: [Memo] {
         let calendar = Calendar.iso8601
         let startOfDay = calendar.startOfDay(for: date)
         let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
+        let noteType = MemoType.note.rawValue
 
-        let descriptor = FetchDescriptor<DailyNote>(
-            predicate: #Predicate<DailyNote> { note in
-                note.date >= startOfDay && note.date < endOfDay
+        let descriptor = FetchDescriptor<Memo>(
+            predicate: #Predicate<Memo> { memo in
+                memo.memoTypeRaw == noteType && memo.date >= startOfDay && memo.date < endOfDay
             },
             sortBy: [SortDescriptor(\.date)]
         )
@@ -388,27 +434,33 @@ struct PDFDayPage: View {
         HolidayManager.cache[Calendar.current.startOfDay(for: date)] ?? []
     }
 
-    private var dayExpenses: [ExpenseItem] {
+    private var dayExpenses: [Memo] {
         let calendar = Calendar.iso8601
         let startOfDay = calendar.startOfDay(for: date)
         let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
+        let expenseType = MemoType.expense.rawValue
 
-        let descriptor = FetchDescriptor<ExpenseItem>(
-            predicate: #Predicate<ExpenseItem> { expense in
-                expense.date >= startOfDay && expense.date < endOfDay
+        let descriptor = FetchDescriptor<Memo>(
+            predicate: #Predicate<Memo> { memo in
+                memo.memoTypeRaw == expenseType && memo.date >= startOfDay && memo.date < endOfDay
             },
             sortBy: [SortDescriptor(\.date)]
         )
         return (try? modelContext.fetch(descriptor)) ?? []
     }
 
-    private var activeTrips: [TravelTrip] {
-        let descriptor = FetchDescriptor<TravelTrip>(
-            predicate: #Predicate<TravelTrip> { trip in
-                trip.startDate <= date && trip.endDate >= date
+    private var activeTrips: [Memo] {
+        let tripType = MemoType.trip.rawValue
+        let descriptor = FetchDescriptor<Memo>(
+            predicate: #Predicate<Memo> { memo in
+                memo.memoTypeRaw == tripType && memo.date <= date && memo.tripEndDate != nil
             }
         )
-        return (try? modelContext.fetch(descriptor)) ?? []
+        let allTrips = (try? modelContext.fetch(descriptor)) ?? []
+        return allTrips.filter { trip in
+            guard let endDate = trip.tripEndDate else { return false }
+            return trip.date <= date && endDate >= date
+        }
     }
 
     var body: some View {
@@ -435,10 +487,10 @@ struct PDFDayPage: View {
                     PDFSection(title: NSLocalizedString("pdf.active_trips", value: "Active Trips", comment: ""), icon: "suitcase.fill") {
                         ForEach(activeTrips, id: \.id) { trip in
                             HStack {
-                                Text(trip.tripName)
+                                Text(trip.text)
                                     .font(.system(size: 12, weight: .medium))
                                 Spacer()
-                                Text(trip.destination)
+                                Text(trip.place ?? "")
                                     .font(.system(size: 12))
                                     .foregroundStyle(.secondary)
                             }
@@ -464,15 +516,15 @@ struct PDFDayPage: View {
                 if !dayNotes.isEmpty {
                     PDFSection(title: NSLocalizedString("pdf.notes", value: "Notes", comment: ""), icon: "note.text") {
                         ForEach(dayNotes, id: \.id) { note in
-                            if !note.content.isEmpty {
-                                if let birthdayInfo = PersonnummerParser.extractBirthdayInfo(from: note.content) {
+                            if !note.text.isEmpty {
+                                if let birthdayInfo = PersonnummerParser.extractBirthdayInfo(from: note.text) {
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text("🎂 \(birthdayInfo.localizedDescription)")
                                             .font(.system(size: 12, weight: .medium))
                                             .padding(.vertical, 4)
                                     }
                                 } else {
-                                    Text(note.content)
+                                    Text(note.text)
                                         .font(.system(size: 12))
                                         .padding(.vertical, 4)
                                 }
@@ -486,10 +538,10 @@ struct PDFDayPage: View {
                     PDFSection(title: NSLocalizedString("pdf.expenses", value: "Expenses", comment: ""), icon: "dollarsign.circle.fill") {
                         ForEach(dayExpenses, id: \.id) { expense in
                             HStack {
-                                Text(expense.itemDescription)
+                                Text(expense.text)
                                     .font(.system(size: 12))
                                 Spacer()
-                                Text(expense.amount, format: .currency(code: expense.currency))
+                                Text(expense.amount ?? 0, format: .currency(code: expense.currency ?? "SEK"))
                                     .font(.system(size: 12, weight: .medium))
                             }
                         }
@@ -541,33 +593,37 @@ struct PDFWeekSummaryPage: View {
     let baseCurrency: String
 
     @Environment(\.modelContext) private var modelContext
-    @Query(sort: \ExpenseItem.date, order: .reverse) private var allExpenses: [ExpenseItem]
-    @Query(sort: \DailyNote.date, order: .reverse) private var allNotes: [DailyNote]
-    @Query(sort: \TravelTrip.startDate, order: .reverse) private var allTrips: [TravelTrip]
-    @Query private var allCountdowns: [CountdownEvent]
+    @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
+
+    // Filter by type
+    private var allExpenses: [Memo] { allMemos.filter { $0.type == .expense } }
+    private var allNotes: [Memo] { allMemos.filter { $0.type == .note } }
+    private var allTrips: [Memo] { allMemos.filter { $0.type == .trip } }
+    private var allCountdowns: [Memo] { allMemos.filter { $0.type == .countdown } }
 
     private var weekDates: [Date] {
         WeekCalculator.shared.dates(in: weekNumber, year: year)
     }
 
-    private var weekExpenses: [ExpenseItem] {
+    private var weekExpenses: [Memo] {
         guard let start = weekDates.first, let end = weekDates.last else { return [] }
         let calendar = Calendar.iso8601
         let weekEnd = calendar.date(byAdding: .day, value: 1, to: end) ?? end
         return allExpenses.filter { $0.date >= start && $0.date < weekEnd }
     }
 
-    private var weekNotes: [DailyNote] {
+    private var weekNotes: [Memo] {
         guard let start = weekDates.first, let end = weekDates.last else { return [] }
         let calendar = Calendar.iso8601
         let weekEnd = calendar.date(byAdding: .day, value: 1, to: end) ?? end
         return allNotes.filter { $0.date >= start && $0.date < weekEnd }
     }
 
-    private var activeTrips: [TravelTrip] {
+    private var activeTrips: [Memo] {
         guard let start = weekDates.first, let end = weekDates.last else { return [] }
         return allTrips.filter { trip in
-            (trip.startDate <= end && trip.endDate >= start)
+            guard let endDate = trip.tripEndDate else { return false }
+            return trip.date <= end && endDate >= start
         }
     }
 
@@ -675,10 +731,10 @@ struct PDFWeekSummaryPage: View {
 
                     ForEach(activeTrips, id: \.id) { trip in
                         HStack {
-                            Text(trip.tripName)
+                            Text(trip.text)
                                 .font(.system(size: 12, weight: .medium))
                             Spacer()
-                            Text(trip.destination)
+                            Text(trip.place ?? "")
                                 .font(.system(size: 12))
                                 .foregroundStyle(.secondary)
                         }
@@ -741,7 +797,7 @@ struct PDFWeekSummaryPage: View {
                                 .font(.system(size: 10, weight: .medium))
                                 .foregroundStyle(.secondary)
                                 .frame(width: 60, alignment: .leading)
-                            Text(note.content)
+                            Text(note.text)
                                 .font(.system(size: 11))
                                 .lineLimit(1)
                         }
@@ -778,23 +834,29 @@ struct PDFWeekSummaryPage: View {
     // MARK: - Computed Properties
 
     private var totalExpenseFormatted: String {
-        let total = weekExpenses.reduce(0.0) { $0 + ($1.convertedAmount ?? $1.amount) }
+        let total = weekExpenses.reduce(0.0) { $0 + ($1.amount ?? 0) }
         return formatAmount(total, currency: baseCurrency)
     }
 
     private var expensesByCurrency: [(currency: String, total: Double)] {
-        let grouped = Dictionary(grouping: weekExpenses) { $0.currency }
+        let grouped = Dictionary(grouping: weekExpenses) { $0.currency ?? "SEK" }
         return grouped.map { (currency, expenses) in
-            let total = expenses.reduce(0.0) { $0 + $1.amount }
+            let total = expenses.reduce(0.0) { $0 + ($1.amount ?? 0) }
             return (currency, total)
         }.sorted { $0.total > $1.total }
     }
 
     private var expensesByCategory: [(category: String, total: Double)] {
-        let grouped = Dictionary(grouping: weekExpenses) { $0.category?.name ?? "Other" }
-        return grouped.map { (category, expenses) in
-            let total = expenses.reduce(0.0) { $0 + ($1.convertedAmount ?? $1.amount) }
-            return (category, total)
+        // Memo doesn't have categories, group by month instead
+        let calendar = Calendar.iso8601
+        let grouped = Dictionary(grouping: weekExpenses) { expense in
+            let formatter = DateFormatter()
+            formatter.dateFormat = "EEE"
+            return formatter.string(from: expense.date)
+        }
+        return grouped.map { (day, expenses) in
+            let total = expenses.reduce(0.0) { $0 + ($1.amount ?? 0) }
+            return (day, total)
         }.sorted { $0.total > $1.total }
     }
 
@@ -810,7 +872,7 @@ struct PDFWeekSummaryPage: View {
 // MARK: - Expense Report PDF (情報デザイン: Detailed financial report)
 
 struct PDFExpenseReportPage: View {
-    let expenses: [ExpenseItem]
+    let expenses: [Memo]
     let baseCurrency: String
     let dateRange: String
     let title: String
@@ -951,14 +1013,15 @@ struct PDFExpenseReportPage: View {
                             .foregroundStyle(.secondary)
                             .frame(width: 60, alignment: .leading)
 
-                        Text(expense.itemDescription)
+                        Text(expense.text)
                             .font(.system(size: 10))
                             .lineLimit(1)
 
                         Spacer()
 
-                        if expense.currency != baseCurrency {
-                            Text(formatAmount(expense.amount, currency: expense.currency))
+                        let expenseCurrency = expense.currency ?? "SEK"
+                        if expenseCurrency != baseCurrency {
+                            Text(formatAmount(expense.amount ?? 0, currency: expenseCurrency))
                                 .font(.system(size: 9))
                                 .foregroundStyle(.secondary)
                             Text("→")
@@ -966,7 +1029,7 @@ struct PDFExpenseReportPage: View {
                                 .foregroundStyle(.secondary)
                         }
 
-                        Text(formatAmount(expense.convertedAmount ?? expense.amount, currency: baseCurrency))
+                        Text(formatAmount(expense.amount ?? 0, currency: baseCurrency))
                             .font(.system(size: 10, weight: .medium))
                     }
                 }
@@ -1001,26 +1064,28 @@ struct PDFExpenseReportPage: View {
     // MARK: - Computed Properties
 
     private var formatTotal: String {
-        let total = expenses.reduce(0.0) { $0 + ($1.convertedAmount ?? $1.amount) }
+        let total = expenses.reduce(0.0) { $0 + ($1.amount ?? 0) }
         return formatAmount(total, currency: baseCurrency)
     }
 
     private var currencyBreakdown: [(currency: String, total: Double, converted: Double, count: Int)] {
-        let grouped = Dictionary(grouping: expenses) { $0.currency }
+        let grouped = Dictionary(grouping: expenses) { $0.currency ?? "SEK" }
         return grouped.map { (currency, items) in
-            let total = items.reduce(0.0) { $0 + $1.amount }
-            let converted = items.reduce(0.0) { $0 + ($1.convertedAmount ?? $1.amount) }
+            let total = items.reduce(0.0) { $0 + ($1.amount ?? 0) }
+            // Memo doesn't have convertedAmount, use original
+            let converted = total
             return (currency, total, converted, items.count)
         }.sorted { $0.converted > $1.converted }
     }
 
     private var categoryBreakdown: [(category: String, total: Double, percentage: Double)] {
-        let total = expenses.reduce(0.0) { $0 + ($1.convertedAmount ?? $1.amount) }
-        let grouped = Dictionary(grouping: expenses) { $0.category?.name ?? "Other" }
-        return grouped.map { (category, items) in
-            let categoryTotal = items.reduce(0.0) { $0 + ($1.convertedAmount ?? $1.amount) }
-            let percentage = total > 0 ? (categoryTotal / total) * 100 : 0
-            return (category, categoryTotal, percentage)
+        let total = expenses.reduce(0.0) { $0 + ($1.amount ?? 0) }
+        // Memo doesn't have categories, group by merchant/place instead
+        let grouped = Dictionary(grouping: expenses) { $0.place ?? "Other" }
+        return grouped.map { (merchant, items) in
+            let merchantTotal = items.reduce(0.0) { $0 + ($1.amount ?? 0) }
+            let percentage = total > 0 ? (merchantTotal / total) * 100 : 0
+            return (merchant, merchantTotal, percentage)
         }.sorted { $0.total > $1.total }
     }
 
@@ -1040,11 +1105,14 @@ struct PDFWeekCompactPage: View {
     let weekNumber: Int
     let year: Int
 
-    @Query private var notes: [DailyNote]
-    @Query private var expenses: [ExpenseItem]
-    @Query private var trips: [TravelTrip]
+    @Query private var allMemos: [Memo]
     @Query private var contacts: [Contact]
-    @Query private var events: [CountdownEvent]
+
+    // Filter by type
+    private var notes: [Memo] { allMemos.filter { $0.type == .note } }
+    private var expenses: [Memo] { allMemos.filter { $0.type == .expense } }
+    private var trips: [Memo] { allMemos.filter { $0.type == .trip } }
+    private var events: [Memo] { allMemos.filter { $0.type == .countdown } }
 
     private let calendar = Calendar.iso8601
     private let pageSize = CGSize(width: 595.2, height: 841.8) // A4
@@ -1336,15 +1404,15 @@ struct PDFWeekCompactPage: View {
             data.holidays = holidays.map { $0.displayTitle }
         }
 
-        // Notes
-        let dayNotes = notes.filter { calendar.isDate($0.day, inSameDayAs: date) }
-        data.notes = dayNotes.map { $0.content }
+        // Notes (Memo)
+        let dayNotes = notes.filter { calendar.isDate($0.date, inSameDayAs: date) }
+        data.notes = dayNotes.map { $0.text }
         data.noteCount = dayNotes.count
 
-        // Expenses
+        // Expenses (Memo)
         let dayExpenses = expenses.filter { calendar.isDate($0.date, inSameDayAs: date) }
         data.expenseCount = dayExpenses.count
-        data.expenseTotal = dayExpenses.reduce(0) { $0 + $1.amount }
+        data.expenseTotal = dayExpenses.reduce(0) { $0 + ($1.amount ?? 0) }
 
         // Birthdays
         let month = calendar.component(.month, from: date)
@@ -1356,8 +1424,8 @@ struct PDFWeekCompactPage: View {
             return contact.displayName
         }
 
-        // Events
-        data.events = events.filter { calendar.isDate($0.targetDate, inSameDayAs: date) }.map { $0.title }
+        // Events (Memo countdowns)
+        data.events = events.filter { calendar.isDate($0.date, inSameDayAs: date) }.map { $0.text }
 
         return data
     }
@@ -1378,11 +1446,14 @@ struct PDFMonthCompactPage: View {
     let month: Int
     let year: Int
 
-    @Query private var notes: [DailyNote]
-    @Query private var expenses: [ExpenseItem]
-    @Query private var trips: [TravelTrip]
+    @Query private var allMemos: [Memo]
     @Query private var contacts: [Contact]
-    @Query private var events: [CountdownEvent]
+
+    // Filter by type
+    private var notes: [Memo] { allMemos.filter { $0.type == .note } }
+    private var expenses: [Memo] { allMemos.filter { $0.type == .expense } }
+    private var trips: [Memo] { allMemos.filter { $0.type == .trip } }
+    private var events: [Memo] { allMemos.filter { $0.type == .countdown } }
 
     private let calendar = Calendar.iso8601
     private let pageSize = CGSize(width: 595.2, height: 841.8) // A4
@@ -1666,17 +1737,17 @@ struct PDFMonthCompactPage: View {
         return (0..<range.count).compactMap { calendar.date(byAdding: .day, value: $0, to: firstOfMonth) }
     }
 
-    private var monthNotes: [DailyNote] {
-        notes.filter { calendar.component(.month, from: $0.day) == month && calendar.component(.year, from: $0.day) == year }
+    private var monthNotes: [Memo] {
+        notes.filter { calendar.component(.month, from: $0.date) == month && calendar.component(.year, from: $0.date) == year }
     }
 
     private var monthExpenseTotal: Double {
         expenses.filter { calendar.component(.month, from: $0.date) == month && calendar.component(.year, from: $0.date) == year }
-            .reduce(0) { $0 + $1.amount }
+            .reduce(0) { $0 + ($1.amount ?? 0) }
     }
 
-    private var monthEvents: [CountdownEvent] {
-        events.filter { calendar.component(.month, from: $0.targetDate) == month && calendar.component(.year, from: $0.targetDate) == year }
+    private var monthEvents: [Memo] {
+        events.filter { calendar.component(.month, from: $0.date) == month && calendar.component(.year, from: $0.date) == year }
     }
 
     private var monthHolidays: [String] {
@@ -1704,14 +1775,14 @@ struct PDFMonthCompactPage: View {
             data.hasHoliday = true
         }
 
-        // Notes
-        data.hasNotes = notes.contains { calendar.isDate($0.day, inSameDayAs: date) }
+        // Notes (Memo)
+        data.hasNotes = notes.contains { calendar.isDate($0.date, inSameDayAs: date) }
 
-        // Expenses
+        // Expenses (Memo)
         data.hasExpenses = expenses.contains { calendar.isDate($0.date, inSameDayAs: date) }
 
-        // Events (including birthdays)
-        data.hasEvents = events.contains { calendar.isDate($0.targetDate, inSameDayAs: date) }
+        // Events (Memo countdowns)
+        data.hasEvents = events.contains { calendar.isDate($0.date, inSameDayAs: date) }
 
         // Birthdays
         let month = calendar.component(.month, from: date)
@@ -1746,11 +1817,14 @@ struct PDFWeekAuditReport: View {
     let totalPages: Int
     let days: [Date]
 
-    @Query private var notes: [DailyNote]
-    @Query private var expenses: [ExpenseItem]
-    @Query private var trips: [TravelTrip]
-    @Query private var events: [CountdownEvent]
+    @Query private var allMemos: [Memo]
     @Query private var contacts: [Contact]
+
+    // Filter by type
+    private var notes: [Memo] { allMemos.filter { $0.type == .note } }
+    private var expenses: [Memo] { allMemos.filter { $0.type == .expense } }
+    private var trips: [Memo] { allMemos.filter { $0.type == .trip } }
+    private var events: [Memo] { allMemos.filter { $0.type == .countdown } }
 
     private let calendar = Calendar.iso8601
     private let pageSize = CGSize(width: 595.2, height: 841.8) // A4
@@ -1866,10 +1940,10 @@ struct PDFWeekAuditReport: View {
     // MARK: - Daily Data Row
 
     private func dailyDataRow(for date: Date) -> some View {
-        let dayNotes = notes.filter { calendar.isDate($0.day, inSameDayAs: date) }
+        let dayNotes = notes.filter { calendar.isDate($0.date, inSameDayAs: date) }
         let dayExpenses = expenses.filter { calendar.isDate($0.date, inSameDayAs: date) }
         let dayHolidays = HolidayManager.cache[Calendar.current.startOfDay(for: date)] ?? []
-        let dayEvents = events.filter { calendar.isDate($0.targetDate, inSameDayAs: date) }
+        let dayEvents = events.filter { calendar.isDate($0.date, inSameDayAs: date) }
 
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "EEE, MMM d"
@@ -1909,7 +1983,7 @@ struct PDFWeekAuditReport: View {
                 ForEach(dayEvents) { event in
                     HStack(spacing: 3) {
                         Circle().fill(JohoColors.cyan).frame(width: 5, height: 5)
-                        Text(event.title)
+                        Text(event.text)
                             .font(.system(size: 9, design: .rounded))
                             .foregroundStyle(JohoColors.black)
                             .lineLimit(1)
@@ -1928,7 +2002,7 @@ struct PDFWeekAuditReport: View {
                 ForEach(dayNotes.prefix(3)) { note in
                     HStack(spacing: 3) {
                         Circle().fill(JohoColors.yellow).frame(width: 5, height: 5)
-                        Text(note.content.prefix(40) + (note.content.count > 40 ? "..." : ""))
+                        Text(note.text.prefix(40) + (note.text.count > 40 ? "..." : ""))
                             .font(.system(size: 9, design: .rounded))
                             .foregroundStyle(JohoColors.black)
                             .lineLimit(1)
@@ -1951,10 +2025,10 @@ struct PDFWeekAuditReport: View {
             VStack(alignment: .trailing, spacing: 2) {
                 ForEach(dayExpenses.prefix(3)) { expense in
                     HStack(spacing: 3) {
-                        Text(expense.category?.name ?? "Other")
+                        Text(expense.place ?? "Other")
                             .font(.system(size: 8, design: .rounded))
                             .foregroundStyle(JohoColors.black.opacity(0.6))
-                        Text(formatCurrency(expense.amount, currency: expense.currency))
+                        Text(formatCurrency(expense.amount ?? 0, currency: expense.currency ?? "SEK"))
                             .font(.system(size: 9, weight: .medium, design: .rounded))
                             .foregroundStyle(JohoColors.black)
                     }
@@ -1966,7 +2040,7 @@ struct PDFWeekAuditReport: View {
                 }
                 if !dayExpenses.isEmpty {
                     Divider().frame(width: 60)
-                    Text(formatCurrency(dayExpenses.reduce(0) { $0 + $1.amount }, currency: dayExpenses.first?.currency ?? "SEK"))
+                    Text(formatCurrency(dayExpenses.reduce(0) { $0 + ($1.amount ?? 0) }, currency: dayExpenses.first?.currency ?? "SEK"))
                         .font(.system(size: 9, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.green)
                 }
@@ -1986,9 +2060,9 @@ struct PDFWeekAuditReport: View {
     // MARK: - Week Totals
 
     private var weekTotalsRow: some View {
-        let weekNotes = notes.filter { note in days.contains { calendar.isDate($0, inSameDayAs: note.day) } }
+        let weekNotes = notes.filter { note in days.contains { calendar.isDate($0, inSameDayAs: note.date) } }
         let weekExpenses = expenses.filter { expense in days.contains { calendar.isDate($0, inSameDayAs: expense.date) } }
-        let totalExpenses = weekExpenses.reduce(0) { $0 + $1.amount }
+        let totalExpenses = weekExpenses.reduce(0) { $0 + ($1.amount ?? 0) }
 
         return HStack(spacing: 0) {
             Text("WEEK TOTALS")
@@ -2062,7 +2136,7 @@ struct PDFWeekAuditReport: View {
             if let holidays = HolidayManager.cache[Calendar.current.startOfDay(for: date)] {
                 count += holidays.count
             }
-            count += events.filter { calendar.isDate($0.targetDate, inSameDayAs: date) }.count
+            count += events.filter { calendar.isDate($0.date, inSameDayAs: date) }.count
         }
         return count
     }
@@ -2077,11 +2151,14 @@ struct PDFMonthAuditReport: View {
     let totalPages: Int
     let daysOnThisPage: [Date]
 
-    @Query private var notes: [DailyNote]
-    @Query private var expenses: [ExpenseItem]
-    @Query private var trips: [TravelTrip]
-    @Query private var events: [CountdownEvent]
+    @Query private var allMemos: [Memo]
     @Query private var contacts: [Contact]
+
+    // Filter by type
+    private var notes: [Memo] { allMemos.filter { $0.type == .note } }
+    private var expenses: [Memo] { allMemos.filter { $0.type == .expense } }
+    private var trips: [Memo] { allMemos.filter { $0.type == .trip } }
+    private var events: [Memo] { allMemos.filter { $0.type == .countdown } }
 
     private let calendar = Calendar.iso8601
     private let pageSize = CGSize(width: 595.2, height: 841.8) // A4
@@ -2193,10 +2270,10 @@ struct PDFMonthAuditReport: View {
     // MARK: - Daily Data Row
 
     private func dailyDataRow(for date: Date) -> some View {
-        let dayNotes = notes.filter { calendar.isDate($0.day, inSameDayAs: date) }
+        let dayNotes = notes.filter { calendar.isDate($0.date, inSameDayAs: date) }
         let dayExpenses = expenses.filter { calendar.isDate($0.date, inSameDayAs: date) }
         let dayHolidays = HolidayManager.cache[Calendar.current.startOfDay(for: date)] ?? []
-        let dayEvents = events.filter { calendar.isDate($0.targetDate, inSameDayAs: date) }
+        let dayEvents = events.filter { calendar.isDate($0.date, inSameDayAs: date) }
 
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "EEE d"
@@ -2236,7 +2313,7 @@ struct PDFMonthAuditReport: View {
                 ForEach(dayEvents.prefix(2)) { event in
                     HStack(spacing: 2) {
                         Circle().fill(JohoColors.cyan).frame(width: 4, height: 4)
-                        Text(event.title)
+                        Text(event.text)
                             .font(.system(size: 8, design: .rounded))
                             .lineLimit(1)
                     }
@@ -2255,7 +2332,7 @@ struct PDFMonthAuditReport: View {
                 ForEach(dayNotes.prefix(2)) { note in
                     HStack(spacing: 2) {
                         Circle().fill(JohoColors.yellow).frame(width: 4, height: 4)
-                        Text(note.content.prefix(35) + (note.content.count > 35 ? "..." : ""))
+                        Text(note.text.prefix(35) + (note.text.count > 35 ? "..." : ""))
                             .font(.system(size: 8, design: .rounded))
                             .lineLimit(1)
                     }
@@ -2276,7 +2353,7 @@ struct PDFMonthAuditReport: View {
 
             // Expenses
             VStack(alignment: .trailing, spacing: 1) {
-                let dayTotal = dayExpenses.reduce(0) { $0 + $1.amount }
+                let dayTotal = dayExpenses.reduce(0) { $0 + ($1.amount ?? 0) }
                 if !dayExpenses.isEmpty {
                     Text("\(dayExpenses.count) item\(dayExpenses.count == 1 ? "" : "s")")
                         .font(.system(size: 7, design: .rounded))
@@ -2304,9 +2381,9 @@ struct PDFMonthAuditReport: View {
 
     private var monthTotalsRow: some View {
         let allMonthDates = Self.getAllMonthDates(month: month, year: year)
-        let monthNotes = notes.filter { note in allMonthDates.contains { calendar.isDate($0, inSameDayAs: note.day) } }
+        let monthNotes = notes.filter { note in allMonthDates.contains { calendar.isDate($0, inSameDayAs: note.date) } }
         let monthExpenses = expenses.filter { expense in allMonthDates.contains { calendar.isDate($0, inSameDayAs: expense.date) } }
-        let totalExpenses = monthExpenses.reduce(0) { $0 + $1.amount }
+        let totalExpenses = monthExpenses.reduce(0) { $0 + ($1.amount ?? 0) }
 
         var holidayCount = 0
         for date in allMonthDates {
@@ -2314,7 +2391,7 @@ struct PDFMonthAuditReport: View {
                 holidayCount += holidays.count
             }
         }
-        let eventCount = events.filter { event in allMonthDates.contains { calendar.isDate($0, inSameDayAs: event.targetDate) } }.count
+        let eventCount = events.filter { event in allMonthDates.contains { calendar.isDate($0, inSameDayAs: event.date) } }.count
 
         return HStack(spacing: 0) {
             Text("MONTH TOTALS")

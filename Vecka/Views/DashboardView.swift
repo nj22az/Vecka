@@ -16,12 +16,9 @@ import SwiftData
 struct DashboardView: View {
     @Environment(\.modelContext) private var modelContext
 
-    // Data queries
-    @Query(sort: \DailyNote.date, order: .reverse) private var allNotes: [DailyNote]
-    @Query(sort: \ExpenseItem.date, order: .reverse) private var allExpenses: [ExpenseItem]
-    @Query private var allTrips: [TravelTrip]
+    // Unified Memo query - filter by type in computed properties
+    @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
     @Query private var contacts: [Contact]
-    @Query private var countdownEvents: [CountdownEvent]
 
     // Managers
     private var holidayManager = HolidayManager.shared
@@ -29,10 +26,30 @@ struct DashboardView: View {
     // Random spotlight state - changes each view appearance
     @State private var spotlightItem: SpotlightItem?
 
+    // Computed: Filter memos by type
+    private var allNotes: [Memo] {
+        allMemos.filter { $0.type == .note }
+    }
+
+    private var allExpenses: [Memo] {
+        allMemos.filter { $0.type == .expense }
+    }
+
+    private var allTrips: [Memo] {
+        allMemos.filter { $0.type == .trip }
+    }
+
+    private var countdownMemos: [Memo] {
+        allMemos.filter { $0.type == .countdown }
+    }
+
     // Computed active trips (end date >= today)
-    private var activeTrips: [TravelTrip] {
+    private var activeTrips: [Memo] {
         let today = Calendar.iso8601.startOfDay(for: Date())
-        return allTrips.filter { Calendar.iso8601.startOfDay(for: $0.endDate) >= today }
+        return allTrips.filter { memo in
+            guard let endDate = memo.tripEndDate else { return false }
+            return Calendar.iso8601.startOfDay(for: endDate) >= today
+        }
     }
 
     // Computed stats for stats row
@@ -460,7 +477,7 @@ struct DashboardView: View {
                         HStack {
                             JohoIndicatorCircle(color: JohoColors.yellow, size: .small)
 
-                            Text(note.content.prefix(25) + (note.content.count > 25 ? "..." : ""))
+                            Text(note.text.prefix(25) + (note.text.count > 25 ? "..." : ""))
                                 .font(JohoFont.caption)
                                 .foregroundStyle(JohoColors.black)
                                 .lineLimit(1)
@@ -481,7 +498,7 @@ struct DashboardView: View {
 
     private var expenseSummaryCard: some View {
         let thisMonth = getThisMonthExpenses()
-        let total = thisMonth.reduce(0) { $0 + $1.amount }
+        let total = thisMonth.reduce(0) { $0 + ($1.amount ?? 0) }
 
         return DataCard(title: "EXPENSES", icon: "dollarsign.circle", zone: .expenses) {
             VStack(spacing: JohoDimensions.spacingSM) {
@@ -508,17 +525,17 @@ struct DashboardView: View {
             return AnyView(EmptyView())
         }
 
-        let daysLeft = Calendar.iso8601.dateComponents([.day], from: Date(), to: trip.endDate).day ?? 0
+        let daysLeft = Calendar.iso8601.dateComponents([.day], from: Date(), to: trip.tripEndDate ?? Date()).day ?? 0
 
         return AnyView(
             DataCard(title: "ACTIVE TRIP", icon: "airplane", zone: .trips) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(trip.tripName)
+                        Text(trip.text)
                             .font(JohoFont.body)
                             .foregroundStyle(JohoColors.black)
 
-                        Text(trip.destination)
+                        Text(trip.place ?? "")
                             .font(JohoFont.caption)
                             .foregroundStyle(JohoColors.black.opacity(0.7))
                     }
@@ -601,12 +618,12 @@ struct DashboardView: View {
             }
         }
 
-        // 3. Countdown events
-        for event in countdownEvents {
-            let eventDate = calendar.startOfDay(for: event.targetDate)
+        // 3. Countdown events (from Memo)
+        for event in countdownMemos {
+            let eventDate = calendar.startOfDay(for: event.date)
             if eventDate > today {
                 let days = calendar.dateComponents([.day], from: today, to: eventDate).day ?? 0
-                items.append(SpotlightItem(name: event.title, daysUntil: days, color: JohoColors.cyan, typeLabel: "EVENT"))
+                items.append(SpotlightItem(name: event.text, daysUntil: days, color: JohoColors.cyan, typeLabel: "EVENT"))
             }
         }
 
@@ -647,7 +664,7 @@ struct DashboardView: View {
         return Array(holidays.sorted { $0.date < $1.date }.prefix(limit))
     }
 
-    private func getThisMonthExpenses() -> [ExpenseItem] {
+    private func getThisMonthExpenses() -> [Memo] {
         let calendar = Calendar.iso8601
         let today = Date()
         let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: today))!

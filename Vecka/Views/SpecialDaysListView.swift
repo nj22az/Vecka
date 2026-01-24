@@ -47,18 +47,11 @@ struct SpecialDaysListView: View {
     @Environment(\.locale) private var locale
     private var holidayManager = HolidayManager.shared
 
-    // Query countdown events (now called "events")
-    @Query private var countdownEvents: [CountdownEvent]
-
     // Query contacts for birthdays
     @Query private var contacts: [Contact]
 
-    // Query daily notes
-    @Query private var dailyNotes: [DailyNote]
-
-    // Query trips and expenses
-    @Query private var trips: [TravelTrip]
-    @Query private var expenses: [ExpenseItem]
+    // Query memos (unified: notes, events, trips, expenses)
+    @Query(sort: \Memo.date) private var memos: [Memo]
 
     @AppStorage("showHolidays") private var showHolidays = true
     @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
@@ -85,11 +78,8 @@ struct SpecialDaysListView: View {
     @State private var showUndoToast = false
 
     // Type-specific editors
-    @State private var editingEvent: CountdownEvent?
     @State private var editingContact: Contact?  // For BDY (birthday)
-    @State private var editingNote: DailyNote?
-    @State private var editingTrip: TravelTrip?
-    @State private var editingExpense: ExpenseItem?
+    @State private var editingMemo: Memo?         // For unified memos
 
     // Item expansion state (情報デザイン: tap to show details)
     @State private var expandedItemID: String?
@@ -110,23 +100,23 @@ struct SpecialDaysListView: View {
     private func rows(for type: SpecialDayType) -> [SpecialDayRow] {
         let calendar = Calendar.current
 
-        // Handle event type (formerly countdown)
-        if type == .event {
-            return countdownEvents
-                .filter { calendar.component(.year, from: $0.targetDate) == selectedYear }
-                .map { event in
+        // Handle memo type (unified: notes, events, trips, expenses)
+        if type == .memo {
+            return memos
+                .filter { calendar.component(.year, from: $0.date) == selectedYear }
+                .map { memo in
                     SpecialDayRow(
-                        id: "event-\(event.id)",
-                        ruleID: event.id,
+                        id: "memo-\(memo.id.uuidString)",
+                        ruleID: memo.id.uuidString,
                         region: "",
-                        date: event.targetDate,
-                        title: event.title,
-                        type: .event,
-                        symbolName: event.icon,
-                        iconColor: event.colorHex.replacingOccurrences(of: "#", with: ""),
-                        notes: nil,
-                        isCustom: !event.isSystem,
-                        isCountdown: true,
+                        date: memo.date,
+                        title: memo.preview,
+                        type: .memo,
+                        symbolName: memo.hasMoney ? "yensign.circle.fill" : (memo.hasPlace ? "mappin.circle.fill" : "note.text"),
+                        iconColor: memo.colorHex,
+                        notes: memo.text,
+                        isCustom: true,
+                        isMemo: true,
                         originalBirthday: nil,
                         turningAge: nil
                     )
@@ -167,90 +157,9 @@ struct SpecialDaysListView: View {
                         iconColor: "D53F8C",  // Pink
                         notes: nil,
                         isCustom: false,
-                        isCountdown: true,
+                        isMemo: false,
                         originalBirthday: birthday,
                         turningAge: ageAtBirthday
-                    )
-                }
-                .sorted { $0.date < $1.date }
-        }
-
-        // Handle notes type
-        if type == .note {
-            return dailyNotes
-                .filter { calendar.component(.year, from: $0.date) == selectedYear }
-                .map { note in
-                    // Get first line of content as title
-                    let firstLine = note.content.components(separatedBy: .newlines).first ?? note.content
-                    let title = firstLine.isEmpty ? "Note" : String(firstLine.prefix(50))
-
-                    // Create unique ID from date + content hash
-                    let noteId = "note-\(note.date.timeIntervalSinceReferenceDate)-\(note.content.hashValue)"
-
-                    return SpecialDayRow(
-                        id: noteId,
-                        ruleID: noteId,
-                        region: "",
-                        date: note.date,
-                        title: title,
-                        type: .note,
-                        symbolName: note.symbolName ?? "note.text",
-                        iconColor: note.color ?? "ECC94B",
-                        notes: note.content,
-                        isCustom: true,
-                        isCountdown: false,
-                        originalBirthday: nil,
-                        turningAge: nil
-                    )
-                }
-                .sorted { $0.date < $1.date }
-        }
-
-        // Handle trip type
-        if type == .trip {
-            return trips
-                .filter { calendar.component(.year, from: $0.startDate) == selectedYear ||
-                          calendar.component(.year, from: $0.endDate) == selectedYear }
-                .map { trip in
-                    SpecialDayRow(
-                        id: "trip-\(trip.id.uuidString)",
-                        ruleID: trip.id.uuidString,
-                        region: "",
-                        date: trip.startDate,
-                        title: trip.tripName,
-                        type: .trip,
-                        symbolName: "airplane",
-                        iconColor: "3182CE",  // Blue
-                        notes: trip.destination,
-                        isCustom: true,
-                        isCountdown: false,
-                        originalBirthday: nil,
-                        turningAge: nil
-                    )
-                }
-                .sorted { $0.date < $1.date }
-        }
-
-        // Handle expense type
-        if type == .expense {
-            return expenses
-                .filter { calendar.component(.year, from: $0.date) == selectedYear }
-                .map { expense in
-                    let amountText = String(format: "%.2f %@", expense.amount, expense.currency)
-                    return SpecialDayRow(
-                        id: "expense-\(expense.id.uuidString)",
-                        ruleID: expense.id.uuidString,
-                        region: "",
-                        date: expense.date,
-                        title: expense.itemDescription,
-                        type: .expense,
-                        symbolName: expense.category?.iconName ?? "dollarsign.circle.fill",
-                        iconColor: "38A169",  // Green
-                        notes: amountText,
-                        isCustom: true,
-                        isCountdown: false,
-                        originalBirthday: nil,
-                        turningAge: nil
                     )
                 }
                 .sorted { $0.date < $1.date }
@@ -275,7 +184,7 @@ struct SpecialDaysListView: View {
                         iconColor: holiday.iconColor,
                         notes: holiday.notes,
                         isCustom: holiday.isCustom,
-                        isCountdown: false,
+                        isMemo: false,
                         originalBirthday: nil,
                         turningAge: nil
                     )
@@ -285,22 +194,16 @@ struct SpecialDaysListView: View {
 
     private var holidayCount: Int { rows(for: .holiday).count }
     private var observanceCount: Int { rows(for: .observance).count }
-    private var eventCount: Int { rows(for: .event).count }
     private var birthdayCount: Int { rows(for: .birthday).count }
-    private var noteCount: Int { rows(for: .note).count }
-    private var tripCount: Int { rows(for: .trip).count }
-    private var expenseCount: Int { rows(for: .expense).count }
+    private var memoCount: Int { rows(for: .memo).count }
 
     /// 情報デザイン: Compact subtitle that fits iPhone screens
     private var compactSubtitle: String {
         var parts: [String] = []
         if holidayCount > 0 { parts.append("\(holidayCount) holidays") }
         if observanceCount > 0 { parts.append("\(observanceCount) observances") }
-        if eventCount > 0 { parts.append("\(eventCount) events") }
         if birthdayCount > 0 { parts.append("\(birthdayCount) birthdays") }
-        if noteCount > 0 { parts.append("\(noteCount) notes") }
-        if tripCount > 0 { parts.append("\(tripCount) trips") }
-        if expenseCount > 0 { parts.append("\(expenseCount) expenses") }
+        if memoCount > 0 { parts.append("\(memoCount) memos") }
 
         if parts.isEmpty {
             return "No entries yet"
@@ -311,16 +214,13 @@ struct SpecialDaysListView: View {
     }
 
     /// Get counts for a specific month
-    private func monthCounts(for month: Int) -> (holidays: Int, observances: Int, events: Int, birthdays: Int, notes: Int, trips: Int, expenses: Int) {
+    private func monthCounts(for month: Int) -> (holidays: Int, observances: Int, birthdays: Int, memos: Int) {
         let calendar = Calendar.current
         let allHolidays = rows(for: .holiday).filter { calendar.component(.month, from: $0.date) == month }
         let allObservances = rows(for: .observance).filter { calendar.component(.month, from: $0.date) == month }
-        let allEvents = rows(for: .event).filter { calendar.component(.month, from: $0.date) == month }
         let allBirthdays = rows(for: .birthday).filter { calendar.component(.month, from: $0.date) == month }
-        let allNotes = rows(for: .note).filter { calendar.component(.month, from: $0.date) == month }
-        let allTrips = rows(for: .trip).filter { calendar.component(.month, from: $0.date) == month }
-        let allExpenses = rows(for: .expense).filter { calendar.component(.month, from: $0.date) == month }
-        return (allHolidays.count, allObservances.count, allEvents.count, allBirthdays.count, allNotes.count, allTrips.count, allExpenses.count)
+        let allMemos = rows(for: .memo).filter { calendar.component(.month, from: $0.date) == month }
+        return (allHolidays.count, allObservances.count, allBirthdays.count, allMemos.count)
     }
 
     /// Get rows for a specific month
@@ -328,12 +228,9 @@ struct SpecialDaysListView: View {
         let calendar = Calendar.current
         let holidays = rows(for: .holiday).filter { calendar.component(.month, from: $0.date) == month }
         let observances = rows(for: .observance).filter { calendar.component(.month, from: $0.date) == month }
-        let events = rows(for: .event).filter { calendar.component(.month, from: $0.date) == month }
         let birthdays = rows(for: .birthday).filter { calendar.component(.month, from: $0.date) == month }
-        let notes = rows(for: .note).filter { calendar.component(.month, from: $0.date) == month }
-        let tripsForMonth = rows(for: .trip).filter { calendar.component(.month, from: $0.date) == month }
-        let expensesForMonth = rows(for: .expense).filter { calendar.component(.month, from: $0.date) == month }
-        return (holidays + observances + events + birthdays + notes + tripsForMonth + expensesForMonth).sorted { $0.date < $1.date }
+        let memosForMonth = rows(for: .memo).filter { calendar.component(.month, from: $0.date) == month }
+        return (holidays + observances + birthdays + memosForMonth).sorted { $0.date < $1.date }
     }
 
     /// Group rows by date into DayCardData (情報デザイン: same-day holidays combine)
@@ -368,10 +265,7 @@ struct SpecialDaysListView: View {
             .sheet(isPresented: $isPresentingNewSpecialDay) { newSpecialDaySheet }
             .sheet(item: $editingSpecialDay) { specialDay in editSpecialDaySheet(specialDay) }
             .sheet(item: $editingContact) { contact in contactEditorSheet(contact) }
-            .sheet(item: $editingExpense) { expense in expenseEditorSheet(expense) }
-            .sheet(item: $editingNote) { note in noteEditorSheet(note) }
-            .sheet(item: $editingTrip) { trip in tripEditorSheet(trip) }
-            .sheet(item: $editingEvent) { event in eventEditorSheet(event) }
+            .sheet(item: $editingMemo) { memo in memoEditorSheet(memo) }
             .sheet(isPresented: $showingDatabaseExplorer) { HolidayDatabaseExplorer() }
             .overlay(alignment: .bottom) { undoToastOverlay }
     }
@@ -450,38 +344,9 @@ struct SpecialDaysListView: View {
             .presentationCornerRadius(20)
     }
 
-    private func expenseEditorSheet(_ expense: ExpenseItem) -> some View {
-        ExpenseEntryView(existingExpense: expense)
+    private func memoEditorSheet(_ memo: Memo) -> some View {
+        MemoEditorView(date: memo.date, existingMemo: memo)
             .presentationCornerRadius(20)
-    }
-
-    private func noteEditorSheet(_ note: DailyNote) -> some View {
-        NavigationStack {
-            DailyNotesView(selectedDate: note.day, isModal: true)
-        }
-        .presentationCornerRadius(20)
-        .presentationBackground(JohoColors.white)  // 情報デザイン: WHITE sheet background
-    }
-
-    private func tripEditorSheet(_ trip: TravelTrip) -> some View {
-        NavigationStack {
-            TripDetailView(trip: trip)
-        }
-        .presentationCornerRadius(20)
-    }
-
-    private func eventEditorSheet(_ event: CountdownEvent) -> some View {
-        JohoEventEditorSheet(
-            event: event,
-            onSave: { title, date, icon, colorHex in
-                event.title = title
-                event.targetDate = date
-                event.icon = icon
-                event.colorHex = colorHex
-                try? modelContext.save()
-            }
-        )
-        .presentationCornerRadius(20)
     }
 
     @ViewBuilder
@@ -623,7 +488,7 @@ struct SpecialDaysListView: View {
     private var bentoStatsRow: some View {
         HStack(spacing: JohoDimensions.spacingMD) {
             // 情報デザイン: Tappable stat indicators - tap to see type name
-            // Priority order: HOL > BDY > OBS > EVT > NTE > TRP > EXP
+            // Priority order: HOL > BDY > OBS > MEM
             if holidayCount > 0 {
                 statIndicator(type: .holiday, count: holidayCount)
             }
@@ -633,21 +498,12 @@ struct SpecialDaysListView: View {
             if observanceCount > 0 {
                 statIndicator(type: .observance, count: observanceCount)
             }
-            if eventCount > 0 {
-                statIndicator(type: .event, count: eventCount)
-            }
-            if noteCount > 0 {
-                statIndicator(type: .note, count: noteCount)
-            }
-            if tripCount > 0 {
-                statIndicator(type: .trip, count: tripCount)
-            }
-            if expenseCount > 0 {
-                statIndicator(type: .expense, count: expenseCount)
+            if memoCount > 0 {
+                statIndicator(type: .memo, count: memoCount)
             }
 
             // Show empty state only when no entries exist
-            let totalCount = holidayCount + observanceCount + birthdayCount + noteCount + tripCount + expenseCount + eventCount
+            let totalCount = holidayCount + observanceCount + birthdayCount + memoCount
             if totalCount == 0 {
                 Text("No entries yet")
                     .font(JohoFont.bodySmall)
@@ -773,7 +629,7 @@ struct SpecialDaysListView: View {
     private func monthFlipcard(for month: Int) -> some View {
         let theme = MonthTheme.theme(for: month)
         let counts = monthCounts(for: month)
-        let totalCount = counts.holidays + counts.observances + counts.events + counts.birthdays + counts.notes + counts.trips + counts.expenses
+        let totalCount = counts.holidays + counts.observances + counts.birthdays + counts.memos
         let hasItems = totalCount > 0
 
         Button {
@@ -808,7 +664,7 @@ struct SpecialDaysListView: View {
                         .minimumScaleFactor(0.8)
 
                     // 情報デザイン: Simple colored dots for clean symmetry
-                    // Order: HOL > BDY > OBS > EVT > NTE > TRP > EXP
+                    // Order: HOL > BDY > OBS > MEM
                     if hasItems {
                         HStack(spacing: 6) {
                             if counts.holidays > 0 {
@@ -820,17 +676,8 @@ struct SpecialDaysListView: View {
                             if counts.observances > 0 {
                                 monthCardDot(type: .observance, count: counts.observances)
                             }
-                            if counts.events > 0 {
-                                monthCardDot(type: .event, count: counts.events)
-                            }
-                            if counts.notes > 0 {
-                                monthCardDot(type: .note, count: counts.notes)
-                            }
-                            if counts.trips > 0 {
-                                monthCardDot(type: .trip, count: counts.trips)
-                            }
-                            if counts.expenses > 0 {
-                                monthCardDot(type: .expense, count: counts.expenses)
+                            if counts.memos > 0 {
+                                monthCardDot(type: .memo, count: counts.memos)
                             }
                         }
                     } else {
@@ -977,20 +824,11 @@ struct CollapsibleSpecialDayCard: View {
     private var observances: [SpecialDayRow] {
         dayCard.items.filter { $0.type == .observance }
     }
-    private var events: [SpecialDayRow] {
-        dayCard.items.filter { $0.type == .event }
-    }
     private var birthdays: [SpecialDayRow] {
         dayCard.items.filter { $0.type == .birthday }
     }
-    private var notes: [SpecialDayRow] {
-        dayCard.items.filter { $0.type == .note }
-    }
-    private var tripsForDay: [SpecialDayRow] {
-        dayCard.items.filter { $0.type == .trip }
-    }
-    private var expensesForDay: [SpecialDayRow] {
-        dayCard.items.filter { $0.type == .expense }
+    private var memosForDay: [SpecialDayRow] {
+        dayCard.items.filter { $0.type == .memo }
     }
 
     private var isToday: Bool {
@@ -1118,30 +956,15 @@ struct CollapsibleSpecialDayCard: View {
                     .font(.system(size: 8, weight: .semibold, design: .rounded))
                     .foregroundStyle(SpecialDayType.observance.accentColor)
             }
-            if events.isNotEmpty {
-                Image(systemName: SpecialDayType.event.defaultIcon)
-                    .font(.system(size: 8, weight: .semibold, design: .rounded))
-                    .foregroundStyle(SpecialDayType.event.accentColor)
-            }
             if birthdays.isNotEmpty {
                 Image(systemName: SpecialDayType.birthday.defaultIcon)
                     .font(.system(size: 8, weight: .semibold, design: .rounded))
                     .foregroundStyle(SpecialDayType.birthday.accentColor)
             }
-            if notes.isNotEmpty {
-                Image(systemName: SpecialDayType.note.defaultIcon)
+            if memosForDay.isNotEmpty {
+                Image(systemName: SpecialDayType.memo.defaultIcon)
                     .font(.system(size: 8, weight: .semibold, design: .rounded))
-                    .foregroundStyle(SpecialDayType.note.accentColor)
-            }
-            if tripsForDay.isNotEmpty {
-                Image(systemName: SpecialDayType.trip.defaultIcon)
-                    .font(.system(size: 8, weight: .semibold, design: .rounded))
-                    .foregroundStyle(SpecialDayType.trip.accentColor)
-            }
-            if expensesForDay.isNotEmpty {
-                Image(systemName: SpecialDayType.expense.defaultIcon)
-                    .font(.system(size: 8, weight: .semibold, design: .rounded))
-                    .foregroundStyle(SpecialDayType.expense.accentColor)
+                    .foregroundStyle(SpecialDayType.memo.accentColor)
             }
         }
     }
@@ -1171,16 +994,6 @@ struct CollapsibleSpecialDayCard: View {
                 )
             }
 
-            // Events section (purple tint - matches type color)
-            if events.isNotEmpty {
-                specialDaySection(
-                    title: "Events",
-                    items: events,
-                    zone: .events,
-                    icon: "calendar.badge.clock"
-                )
-            }
-
             // Birthdays section (pink tint - matches type color)
             if birthdays.isNotEmpty {
                 specialDaySection(
@@ -1191,33 +1004,13 @@ struct CollapsibleSpecialDayCard: View {
                 )
             }
 
-            // Notes section (yellow tint - matches type color)
-            if notes.isNotEmpty {
+            // Memos section (yellow tint - unified notes/events/trips/expenses)
+            if memosForDay.isNotEmpty {
                 specialDaySection(
-                    title: "Notes",
-                    items: notes,
+                    title: "Memos",
+                    items: memosForDay,
                     zone: .notes,
                     icon: "note.text"
-                )
-            }
-
-            // Trips section (blue tint - matches type color)
-            if tripsForDay.isNotEmpty {
-                specialDaySection(
-                    title: "Trips",
-                    items: tripsForDay,
-                    zone: .trips,
-                    icon: "airplane"
-                )
-            }
-
-            // Expenses section (green tint - matches type color)
-            if expensesForDay.isNotEmpty {
-                specialDaySection(
-                    title: "Expenses",
-                    items: expensesForDay,
-                    zone: .expenses,
-                    icon: "dollarsign.circle.fill"
                 )
             }
         }
@@ -1654,7 +1447,8 @@ extension SpecialDaysListView {
         let iconColor: Color = row.type.accentColor
 
         Button {
-            if !row.isCountdown {
+            // Only holidays/observances use the special day editor
+            if row.type == .holiday || row.type == .observance {
                 editingSpecialDay = EditingSpecialDay(
                     id: row.id,
                     ruleID: row.ruleID,
@@ -1734,7 +1528,7 @@ extension SpecialDaysListView {
                             .font(.system(size: 9, weight: .medium, design: .monospaced))
                             .foregroundStyle(JohoColors.black.opacity(0.5))
                             .padding(.vertical, 6)
-                    } else if row.isCountdown {
+                    } else if row.isMemo {
                         Rectangle().fill(JohoColors.black.opacity(0.1)).frame(height: 1)
                         let daysText = row.daysUntil == 0 ? "TODAY" :
                                        row.daysUntil == 1 ? "IN 1 DAY" :
@@ -1882,21 +1676,15 @@ extension SpecialDaysListView {
     // MARK: - Data Operations
 
     private func createSpecialDay(type: SpecialDayType, name: String, date: Date, symbol: String, iconColor: String?, notes: String?, region: String) {
-        // Events are stored as CountdownEvent, not HolidayRule
-        if type == .event {
-            let event = CountdownEvent(
-                title: name,
-                targetDate: date,
-                icon: symbol,
-                colorHex: iconColor.map { "#\($0)" } ?? "#805AD5",
-                isSystem: false
-            )
-            modelContext.insert(event)
+        // Memos are stored as Memo
+        if type == .memo {
+            let memo = Memo(text: name, date: date)
+            modelContext.insert(memo)
             do {
                 try modelContext.save()
                 HapticManager.notification(.success)
             } catch {
-                Log.w("Failed to create event: \(error.localizedDescription)")
+                Log.w("Failed to create memo: \(error.localizedDescription)")
                 HapticManager.notification(.error)
             }
             return
@@ -1933,25 +1721,7 @@ extension SpecialDaysListView {
     }
 
     private func updateSpecialDay(ruleID: String, type: SpecialDayType, name: String, date: Date, symbol: String, iconColor: String?, notes: String?, region: String) {
-        // Events are stored as CountdownEvent
-        if type == .event {
-            do {
-                let descriptor = FetchDescriptor<CountdownEvent>(predicate: #Predicate<CountdownEvent> { $0.id == ruleID })
-                if let event = try modelContext.fetch(descriptor).first {
-                    event.title = name
-                    event.targetDate = date
-                    event.icon = symbol
-                    event.colorHex = iconColor.map { "#\($0)" } ?? "#805AD5"
-
-                    try modelContext.save()
-                    HapticManager.notification(.success)
-                }
-            } catch {
-                Log.w("Failed to update event: \(error.localizedDescription)")
-                HapticManager.notification(.error)
-            }
-            return
-        }
+        // Note: Memos are updated via MemoEditorView, not this function
 
         // Holidays and observances are stored as HolidayRule
         do {
@@ -1986,7 +1756,7 @@ extension SpecialDaysListView {
         switch row.type {
         case .holiday, .observance:
             return row.isCustom  // Only user-created holidays/observances
-        case .event, .birthday, .note, .trip, .expense:
+        case .birthday, .memo, .note, .event, .trip, .expense:
             return true  // Always editable
         }
     }
@@ -2010,12 +1780,6 @@ extension SpecialDaysListView {
                 region: row.region
             )
 
-        case .event:
-            // Fetch CountdownEvent by ruleID
-            let ruleId = row.ruleID
-            let descriptor = FetchDescriptor<CountdownEvent>(predicate: #Predicate<CountdownEvent> { $0.id == ruleId })
-            editingEvent = try? modelContext.fetch(descriptor).first
-
         case .birthday:
             // Fetch Contact by UUID
             if let uuid = UUID(uuidString: row.ruleID) {
@@ -2023,22 +1787,11 @@ extension SpecialDaysListView {
                 editingContact = try? modelContext.fetch(descriptor).first
             }
 
-        case .note:
-            // Fetch DailyNote by date
-            let targetDate = row.date
-            let descriptor = FetchDescriptor<DailyNote>(predicate: #Predicate<DailyNote> { $0.day == targetDate })
-            editingNote = try? modelContext.fetch(descriptor).first
-
-        case .trip:
+        case .memo, .note, .event, .trip, .expense:
+            // Fetch Memo by UUID
             if let uuid = UUID(uuidString: row.ruleID) {
-                let descriptor = FetchDescriptor<TravelTrip>(predicate: #Predicate<TravelTrip> { $0.id == uuid })
-                editingTrip = try? modelContext.fetch(descriptor).first
-            }
-
-        case .expense:
-            if let uuid = UUID(uuidString: row.ruleID) {
-                let descriptor = FetchDescriptor<ExpenseItem>(predicate: #Predicate<ExpenseItem> { $0.id == uuid })
-                editingExpense = try? modelContext.fetch(descriptor).first
+                let descriptor = FetchDescriptor<Memo>(predicate: #Predicate<Memo> { $0.id == uuid })
+                editingMemo = try? modelContext.fetch(descriptor).first
             }
         }
     }
@@ -2048,7 +1801,7 @@ extension SpecialDaysListView {
     /// Deletes a row based on its type
     private func deleteRow(_ row: SpecialDayRow) {
         switch row.type {
-        case .holiday, .observance, .event:
+        case .holiday, .observance:
             // Use existing deleteWithUndo for these types
             deleteWithUndo(row: row)
 
@@ -2063,31 +1816,12 @@ extension SpecialDaysListView {
                 }
             }
 
-        case .note:
-            // Delete the note by date
-            let targetDate = row.date
-            let descriptor = FetchDescriptor<DailyNote>(predicate: #Predicate<DailyNote> { $0.day == targetDate })
-            if let note = try? modelContext.fetch(descriptor).first {
-                modelContext.delete(note)
-                try? modelContext.save()
-                HapticManager.notification(.success)
-            }
-
-        case .trip:
+        case .memo, .note, .event, .trip, .expense:
+            // Delete the memo
             if let uuid = UUID(uuidString: row.ruleID) {
-                let descriptor = FetchDescriptor<TravelTrip>(predicate: #Predicate<TravelTrip> { $0.id == uuid })
-                if let trip = try? modelContext.fetch(descriptor).first {
-                    modelContext.delete(trip)
-                    try? modelContext.save()
-                    HapticManager.notification(.success)
-                }
-            }
-
-        case .expense:
-            if let uuid = UUID(uuidString: row.ruleID) {
-                let descriptor = FetchDescriptor<ExpenseItem>(predicate: #Predicate<ExpenseItem> { $0.id == uuid })
-                if let expense = try? modelContext.fetch(descriptor).first {
-                    modelContext.delete(expense)
+                let descriptor = FetchDescriptor<Memo>(predicate: #Predicate<Memo> { $0.id == uuid })
+                if let memo = try? modelContext.fetch(descriptor).first {
+                    modelContext.delete(memo)
                     try? modelContext.save()
                     HapticManager.notification(.success)
                 }
@@ -2108,31 +1842,6 @@ extension SpecialDaysListView {
         )
 
         let ruleId = row.ruleID
-
-        // Events are stored as CountdownEvent
-        if row.type == .event {
-            do {
-                let descriptor = FetchDescriptor<CountdownEvent>(predicate: #Predicate<CountdownEvent> { $0.id == ruleId })
-                if let event = try modelContext.fetch(descriptor).first {
-                    modelContext.delete(event)
-                    try modelContext.save()
-                    HapticManager.notification(.warning)
-
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        showUndoToast = true
-                    }
-
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
-                        withAnimation {
-                            showUndoToast = false
-                        }
-                    }
-                }
-            } catch {
-                Log.w("Failed to delete event: \(error.localizedDescription)")
-            }
-            return
-        }
 
         // Holidays and observances are stored as HolidayRule
         do {
@@ -2192,7 +1901,7 @@ extension SpecialDaysListView {
 
 #Preview {
     if let container = try? ModelContainer(
-        for: HolidayRule.self, CalendarRule.self, DailyNote.self,
+        for: HolidayRule.self, CalendarRule.self, Memo.self, Contact.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     ) {
         NavigationStack {
