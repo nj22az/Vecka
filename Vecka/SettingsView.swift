@@ -1585,7 +1585,9 @@ struct RegionSelectionView: View {
     }
 
     static let allRegions: [RegionOption] = [
-        // Nordic countries (now separate category)
+        // Nordic unified region (expands to all Nordic countries for holiday fetching)
+        .init(code: "NORDIC", titleKey: "region.nordic", continent: .nordic),
+        // Nordic countries (individual selection)
         .init(code: "SE", titleKey: "region.sweden", continent: .nordic),
         .init(code: "NO", titleKey: "region.norway", continent: .nordic),
         .init(code: "DK", titleKey: "region.denmark", continent: .nordic),
