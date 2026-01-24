@@ -8,6 +8,7 @@ import SwiftUI
 struct RegionSelectionView: View {
     @Binding var selectedRegions: HolidayRegionSelection
     @State private var showSelectionLimitAlert = false
+    @State private var expandedContinents: Set<Continent> = [.nordic] // Nordic expanded by default
     @Environment(\.johoColorMode) private var colorMode
 
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
@@ -78,6 +79,11 @@ struct RegionSelectionView: View {
         return selectedRegions.regions.filter { validCodes.contains($0) }.count
     }
 
+    private func selectedCount(for continent: Continent) -> Int {
+        let continentCodes = regionsByContinent[continent]?.map { $0.code } ?? []
+        return selectedRegions.regions.filter { continentCodes.contains($0) }.count
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: JohoDimensions.spacingMD) {
@@ -85,7 +91,7 @@ struct RegionSelectionView: View {
                 JohoPageHeader(
                     title: NSLocalizedString("settings.region", comment: "Region"),
                     badge: "\(selectedCount)/5",
-                    subtitle: "Tap to select regions"
+                    subtitle: "Tap headers to expand"
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.top, JohoDimensions.spacingSM)
@@ -94,18 +100,14 @@ struct RegionSelectionView: View {
                 VStack(spacing: 0) {
                     ForEach(Continent.allCases) { continent in
                         if let regions = regionsByContinent[continent] {
-                            // Continent header
-                            continentHeader(continent)
-
-                            // Region chips in a flow layout
-                            regionChips(regions)
+                            // Collapsible continent section
+                            continentSection(continent, regions: regions)
 
                             // Divider (except after last)
                             if continent != Continent.allCases.last {
                                 Rectangle()
                                     .fill(colors.border.opacity(0.5))
                                     .frame(height: 1)
-                                    .padding(.horizontal, JohoDimensions.spacingMD)
                             }
                         }
                     }
@@ -129,27 +131,74 @@ struct RegionSelectionView: View {
         }
     }
 
-    // MARK: - Continent Header
+    // MARK: - Continent Section (Collapsible)
 
-    private func continentHeader(_ continent: Continent) -> some View {
-        HStack(spacing: JohoDimensions.spacingSM) {
-            Image(systemName: continent.symbol)
-                .font(.system(size: 12, weight: .bold))
-                .foregroundStyle(colors.primaryInverted)
-                .frame(width: 24, height: 24)
-                .background(colors.primary)
-                .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+    private func continentSection(_ continent: Continent, regions: [RegionOption]) -> some View {
+        let isExpanded = expandedContinents.contains(continent)
+        let selected = selectedCount(for: continent)
 
-            Text(continent.rawValue.uppercased())
-                .font(.system(size: 11, weight: .black, design: .rounded))
-                .tracking(1)
-                .foregroundStyle(colors.primary)
+        return VStack(spacing: 0) {
+            // Tappable header
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    if isExpanded {
+                        expandedContinents.remove(continent)
+                    } else {
+                        expandedContinents.insert(continent)
+                    }
+                }
+                HapticManager.selection()
+            } label: {
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    // Chevron
+                    Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .frame(width: 16)
 
-            Spacer()
+                    // Continent icon
+                    Image(systemName: continent.symbol)
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(colors.primaryInverted)
+                        .frame(width: 24, height: 24)
+                        .background(colors.primary)
+                        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+
+                    // Continent name
+                    Text(continent.rawValue.uppercased())
+                        .font(.system(size: 11, weight: .black, design: .rounded))
+                        .tracking(1)
+                        .foregroundStyle(colors.primary)
+
+                    // Selected badge
+                    if selected > 0 {
+                        Text("\(selected)")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primaryInverted)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(accentColor)
+                            .clipShape(Capsule())
+                    }
+
+                    Spacer()
+
+                    // Region count
+                    Text("\(regions.count)")
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.4))
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
+            // Expanded content
+            if isExpanded {
+                regionChips(regions)
+            }
         }
-        .padding(.horizontal, JohoDimensions.spacingMD)
-        .padding(.top, JohoDimensions.spacingMD)
-        .padding(.bottom, JohoDimensions.spacingSM)
     }
 
     // MARK: - Region Chips (Horizontal Flow)
