@@ -40,17 +40,6 @@ struct VeckaApp: App {
             ContactURL.self,
             ContactRelation.self,
             DuplicateSuggestion.self,
-            // Legacy notes (will migrate to Memo)
-            DailyNote.self,
-            // Legacy countdowns (will migrate to Memo)
-            CountdownEvent.self,
-            // Legacy expenses (will migrate to Memo)
-            ExpenseCategory.self,
-            ExpenseTemplate.self,
-            ExpenseItem.self,
-            TravelTrip.self,
-            MileageEntry.self,
-            ExchangeRate.self,
             // Configuration models (used by ConfigurationManager)
             AppConfiguration.self,
             ValidationRule.self,
@@ -64,7 +53,9 @@ struct VeckaApp: App {
             // Facts
             QuirkyFact.self,
             CalendarFact.self,
-            // Unified Memo model (target for consolidation)
+            // Currency exchange rate cache
+            ExchangeRate.self,
+            // Unified Memo model (notes, expenses, trips, countdowns)
             Memo.self,
         ])
 

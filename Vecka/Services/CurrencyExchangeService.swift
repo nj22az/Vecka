@@ -209,8 +209,8 @@ extension Double {
             return formatted
         }
 
-        // Fallback
-        let symbol = CurrencyDefinition.symbol(for: currency)
+        // Fallback - lookup symbol from currency definitions
+        let symbol = CurrencyDefinition.defaultCurrencies.first { $0.code == currency }?.symbol ?? currency
         return "\(symbol) \(String(format: "%.2f", self))"
     }
 

@@ -2,9 +2,8 @@
 //  CSVExportService.swift
 //  Vecka
 //
-//  CSV export for expenses and mileage data
+//  CSV export for expenses using unified Memo model
 //  Spreadsheet-friendly format for accounting/reporting
-//  Migrated to support unified Memo model
 //
 
 import Foundation
@@ -17,7 +16,7 @@ class CSVExportService {
     static let shared = CSVExportService()
     private init() {}
 
-    // MARK: - Memo Expense Export (New - Unified Model)
+    // MARK: - Memo Expense Export
 
     /// Export Memo expenses to CSV
     func exportMemoExpenses(_ expenses: [Memo]) throws -> URL {
@@ -25,7 +24,7 @@ class CSVExportService {
             throw CSVExportError.noData
         }
 
-        var csv = "Date,Amount,Currency,Merchant,Description,Notes\n"
+        var csv = "Date,Amount,Currency,Merchant,Description\n"
 
         let sortedExpenses = expenses.sorted { $0.date < $1.date }
 
@@ -35,8 +34,7 @@ class CSVExportService {
                 String(format: "%.2f", expense.amount ?? 0),
                 expense.currency ?? "SEK",
                 escapeCSV(expense.place ?? ""),
-                escapeCSV(expense.text),
-                ""  // Notes field - Memo doesn't have separate notes
+                escapeCSV(expense.text)
             ]
             csv += row.joined(separator: ",") + "\n"
         }
@@ -66,56 +64,8 @@ class CSVExportService {
         return try exportMemoExpenses(expenses)
     }
 
-    // MARK: - Legacy Expense Export (For backward compatibility)
-
-    /// Export expenses to CSV (Legacy - ExpenseItem)
-    /// - Parameters:
-    ///   - expenses: Array of expenses to export
-    ///   - includeReceipts: Whether to include receipt filename column
-    /// - Returns: URL to generated CSV file
-    func exportExpenses(_ expenses: [ExpenseItem], includeReceipts: Bool = false) throws -> URL {
-        guard !expenses.isEmpty else {
-            throw CSVExportError.noData
-        }
-
-        var csv = buildExpenseHeader(includeReceipts: includeReceipts)
-
-        let sortedExpenses = expenses.sorted { $0.date < $1.date }
-
-        for expense in sortedExpenses {
-            csv += buildExpenseRow(expense, includeReceipts: includeReceipts)
-        }
-
-        return try saveCSV(csv, filename: "Expenses")
-    }
-
-    private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: date)
-    }
-
-    /// Export expenses for a date range
-    func exportExpenses(
-        from startDate: Date,
-        to endDate: Date,
-        context: ModelContext
-    ) throws -> URL {
-        let calendar = Calendar.iso8601
-        let start = calendar.startOfDay(for: startDate)
-        let end = calendar.startOfDay(for: endDate).addingTimeInterval(86400) // Include end day
-
-        let descriptor = FetchDescriptor<ExpenseItem>(
-            predicate: #Predicate { $0.date >= start && $0.date < end },
-            sortBy: [SortDescriptor(\ExpenseItem.date)]
-        )
-
-        let expenses = try context.fetch(descriptor)
-        return try exportExpenses(expenses)
-    }
-
-    /// Export expenses for a specific week
-    func exportExpensesForWeek(
+    /// Export Memo expenses for a specific week
+    func exportMemoExpensesForWeek(
         weekNumber: Int,
         year: Int,
         context: ModelContext
@@ -131,11 +81,11 @@ class CSVExportService {
             throw CSVExportError.invalidDateRange
         }
 
-        return try exportExpenses(from: startOfWeek, to: endOfWeek, context: context)
+        return try exportMemoExpenses(from: startOfWeek, to: endOfWeek, context: context)
     }
 
-    /// Export expenses for a specific month
-    func exportExpensesForMonth(
+    /// Export Memo expenses for a specific month
+    func exportMemoExpensesForMonth(
         month: Int,
         year: Int,
         context: ModelContext
@@ -151,101 +101,16 @@ class CSVExportService {
             throw CSVExportError.invalidDateRange
         }
 
-        return try exportExpenses(from: startOfMonth, to: endOfMonth, context: context)
-    }
-
-    /// Export expenses for a trip
-    func exportExpensesForTrip(_ trip: TravelTrip) throws -> URL {
-        guard let expenses = trip.expenses, !expenses.isEmpty else {
-            throw CSVExportError.noData
-        }
-        return try exportExpenses(expenses)
-    }
-
-    // MARK: - Mileage Export
-
-    /// Export mileage entries to CSV
-    func exportMileage(_ entries: [MileageEntry]) throws -> URL {
-        guard !entries.isEmpty else {
-            throw CSVExportError.noData
-        }
-
-        var csv = buildMileageHeader()
-
-        let sortedEntries = entries.sorted { $0.date < $1.date }
-
-        for entry in sortedEntries {
-            csv += buildMileageRow(entry)
-        }
-
-        return try saveCSV(csv, filename: "Mileage")
-    }
-
-    /// Export mileage for a trip
-    func exportMileageForTrip(_ trip: TravelTrip) throws -> URL {
-        guard let entries = trip.mileageEntries, !entries.isEmpty else {
-            throw CSVExportError.noData
-        }
-        return try exportMileage(entries)
-    }
-
-    // MARK: - CSV Building
-
-    private func buildExpenseHeader(includeReceipts: Bool) -> String {
-        var header = "Date,Amount,Currency,Category,Merchant,Description,Notes,Reimbursable,Personal,Status"
-        if includeReceipts {
-            header += ",Receipt"
-        }
-        header += "\n"
-        return header
-    }
-
-    private func buildExpenseRow(_ expense: ExpenseItem, includeReceipts: Bool) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-
-        var row = [
-            dateFormatter.string(from: expense.date),
-            String(format: "%.2f", expense.amount),
-            expense.currency,
-            escapeCSV(expense.category?.name ?? "Uncategorized"),
-            escapeCSV(expense.merchantName ?? ""),
-            escapeCSV(expense.itemDescription),
-            escapeCSV(expense.notes ?? ""),
-            expense.isReimbursable ? "Yes" : "No",
-            expense.isPersonal ? "Yes" : "No",
-            expense.status.rawValue
-        ]
-
-        if includeReceipts {
-            row.append(escapeCSV(expense.receiptFileName ?? ""))
-        }
-
-        return row.joined(separator: ",") + "\n"
-    }
-
-    private func buildMileageHeader() -> String {
-        return "Date,Distance (km),Start Location,End Location,Purpose,Round Trip,Tracking Method\n"
-    }
-
-    private func buildMileageRow(_ entry: MileageEntry) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-
-        let row = [
-            dateFormatter.string(from: entry.date),
-            String(format: "%.1f", entry.distance),
-            escapeCSV(entry.startLocation ?? ""),
-            escapeCSV(entry.endLocation ?? ""),
-            escapeCSV(entry.purpose ?? ""),
-            entry.isRoundTrip ? "Yes" : "No",
-            entry.trackingMethod.rawValue
-        ]
-
-        return row.joined(separator: ",") + "\n"
+        return try exportMemoExpenses(from: startOfMonth, to: endOfMonth, context: context)
     }
 
     // MARK: - Helpers
+
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: date)
+    }
 
     /// Escape CSV special characters
     private func escapeCSV(_ value: String) -> String {

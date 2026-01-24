@@ -378,6 +378,11 @@ struct DeveloperSettingsView: View {
         .background(JohoColors.inputBackground)
     }
 
+    private func showSuccess(_ message: String) {
+        successMessage = message
+        showingSuccessMessage = true
+    }
+
     // MARK: - Danger Zone
 
     private var dangerZoneSection: some View {

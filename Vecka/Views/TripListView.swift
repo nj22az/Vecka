@@ -8,6 +8,16 @@
 import SwiftUI
 import SwiftData
 
+/// Trip type for purpose classification
+/// Used by JohoTripEditorSheet for the segmented type picker
+enum TripType: String, CaseIterable, Identifiable {
+    case business = "Business"
+    case personal = "Personal"
+    case mixed = "Mixed"
+
+    var id: String { rawValue }
+}
+
 struct TripListView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]

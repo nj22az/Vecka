@@ -4953,7 +4953,7 @@ struct LandingPageView: View {
 
     /// Format currency amount
     private func formatCurrency(_ amount: Double, currency: String) -> String {
-        let symbol = CurrencyDefinition.symbol(for: currency)
+        let symbol = CurrencyDefinition.defaultCurrencies.first { $0.code == currency }?.symbol ?? currency
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.maximumFractionDigits = 0

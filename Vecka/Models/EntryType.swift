@@ -10,11 +10,12 @@
 import SwiftUI
 
 /// Entry type for unified form
-/// Each type maps to an existing SwiftData model:
-/// - .note → DailyNote
-/// - .trip → TravelTrip
-/// - .expense → ExpenseItem
-/// - .holiday → HolidayRule
+/// All entry types use the unified Memo model with type discriminator:
+/// - .note → Memo (type: .note)
+/// - .trip → Memo (type: .trip)
+/// - .expense → Memo (type: .expense)
+/// - .event → Memo (type: .countdown)
+/// - .holiday → HolidayRule (separate model)
 /// - .birthday → Contact (birthday field)
 enum EntryType: String, CaseIterable, Identifiable {
     case note = "note"

@@ -563,7 +563,7 @@ struct ExpenseListView: View {
     private func exportCSVThisWeek() {
         let weekInfo = WeekCalculator.shared.weekInfo(for: Date())
         do {
-            let url = try CSVExportService.shared.exportExpensesForWeek(
+            let url = try CSVExportService.shared.exportMemoExpensesForWeek(
                 weekNumber: weekInfo.weekNumber,
                 year: weekInfo.year,
                 context: modelContext
@@ -581,7 +581,7 @@ struct ExpenseListView: View {
         let month = calendar.component(.month, from: now)
         let year = calendar.component(.year, from: now)
         do {
-            let url = try CSVExportService.shared.exportExpensesForMonth(
+            let url = try CSVExportService.shared.exportMemoExpensesForMonth(
                 month: month,
                 year: year,
                 context: modelContext

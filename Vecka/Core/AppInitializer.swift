@@ -43,9 +43,6 @@ enum AppInitializer {
         ConfigurationManager.shared.seedDefaultConfiguration(context: context)
         Log.i("AppInitializer: Configuration system initialized")
 
-        // Migrate legacy models to unified Memo (one-time)
-        MemoMigrationService.migrateIfNeeded(context: context)
-
         isInitialized = true
         Log.i("AppInitializer: Initialization complete")
     }
