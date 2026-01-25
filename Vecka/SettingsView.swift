@@ -13,7 +13,6 @@ import WidgetKit
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.johoColorMode) private var colorMode
-    @AppStorage("showHolidays") private var showHolidays = true
     @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
     @AppStorage("appBackgroundColor") private var appBackgroundColor = "black"
     @AppStorage("johoColorMode") private var johoColorMode = "light"
@@ -48,88 +47,9 @@ struct SettingsView: View {
                     .padding(.horizontal, JohoDimensions.spacingLG)
                     .padding(.top, JohoDimensions.spacingSM)
 
-                // Calendar Section (Show Holidays + Region)
+                // Calendar Section (Event Text Color)
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
                     JohoPill(text: "CALENDAR", style: .whiteOnBlack, size: .small)
-
-                    // Show Holidays Toggle
-                    HStack(spacing: JohoDimensions.spacingMD) {
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 20, weight: .bold))
-                            .foregroundStyle(colors.primary)
-                            .johoTouchTarget()
-                            .background(Color(hex: "FFD700"))
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                            )
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Show Holidays")
-                                .font(JohoFont.headline)
-                                .foregroundStyle(colors.primary)
-
-                            Text(showHolidays ? "Visible in calendar" : "Hidden")
-                                .font(JohoFont.body)
-                                .foregroundStyle(colors.secondary)
-                        }
-
-                        Spacer()
-
-                        Toggle("", isOn: $showHolidays)
-                            .labelsHidden()
-                            .tint(Color(hex: "E53E3E"))
-                    }
-                    .padding(JohoDimensions.spacingMD)
-                    .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                    )
-
-                    // Region Selection
-                    NavigationLink {
-                        RegionSelectionView(selectedRegions: $holidayRegions)
-                    } label: {
-                        HStack(spacing: JohoDimensions.spacingMD) {
-                            Image(systemName: regionSymbolName)
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundStyle(colors.primary)
-                                .johoTouchTarget()
-                                .background(SectionZone.holidays.background)
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                                )
-
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Holiday Regions")
-                                    .font(JohoFont.headline)
-                                    .foregroundStyle(colors.primary)
-
-                                Text(regionSummary)
-                                    .font(JohoFont.body)
-                                    .foregroundStyle(colors.secondary)
-                            }
-
-                            Spacer()
-
-                            Image(systemName: "chevron.right")
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundStyle(JohoColors.black.opacity(0.6))
-                        }
-                        .padding(JohoDimensions.spacingMD)
-                        .background(colors.surface)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                        )
-                    }
-                    .buttonStyle(.plain)
 
                     // 情報デザイン: Event text color picker (Japanese planner style)
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
@@ -362,23 +282,6 @@ struct SettingsView: View {
         }
     }
 
-    private var regionSummary: String {
-        let names = holidayRegions.regions.compactMap { code in
-            RegionSelectionView.allRegions.first(where: { $0.code == code })?.displayName
-        }
-        if names.isEmpty { return "None selected" }
-        return names.joined(separator: ", ")
-    }
-
-    private var regionSymbolName: String {
-        if holidayRegions.regions.count == 1,
-           let code = holidayRegions.regions.first,
-           let option = RegionSelectionView.allRegions.first(where: { $0.code == code }) {
-            // Use continent symbol for single region
-            return option.continent.symbol
-        }
-        return "globe"
-    }
 
     // MARK: - Settings Page Header (情報デザイン: Golden Standard Pattern)
 

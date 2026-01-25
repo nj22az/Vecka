@@ -90,6 +90,12 @@ struct SpecialDaysListView: View {
     // 情報デザイン: Holiday Database Explorer
     @State private var showingDatabaseExplorer = false
 
+    // 情報デザイン: Special day detail sheet
+    @State private var selectedDetailItem: SpecialDayRow?
+
+    // 情報デザイン: Region quick picker expansion
+    @State private var isRegionPickerExpanded = false
+
     private var years: [Int] {
         let current = Calendar.current.component(.year, from: Date())
         return Array((current - 20)...(current + 20))
@@ -267,6 +273,7 @@ struct SpecialDaysListView: View {
             .sheet(item: $editingContact) { contact in contactEditorSheet(contact) }
             .sheet(item: $editingMemo) { memo in memoEditorSheet(memo) }
             .sheet(isPresented: $showingDatabaseExplorer) { HolidayDatabaseExplorer() }
+            .sheet(item: $selectedDetailItem) { item in SpecialDayDetailSheet(item: item) }
             .overlay(alignment: .bottom) { undoToastOverlay }
     }
 
@@ -276,6 +283,12 @@ struct SpecialDaysListView: View {
         ScrollView {
             VStack(spacing: JohoDimensions.spacingLG) {
                 headerWithYearPicker
+
+                // 情報デザイン: Inline region picker (replaces globe navigation)
+                if selectedMonth == nil && showHolidays {
+                    regionQuickPickerSection
+                }
+
                 if !showHolidays {
                     disabledState
                 } else if let month = selectedMonth {
@@ -511,20 +524,14 @@ struct SpecialDaysListView: View {
             }
 
             Spacer()
-
-            // 情報デザイン: Database explorer button (icon only)
-            Button {
-                showingDatabaseExplorer = true
-                HapticManager.selection()
-            } label: {
-                Image(systemName: "globe")
-                    .font(.system(size: 16, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.7))
-                    .frame(width: 32, height: 32)
-                    .background(JohoColors.black.opacity(0.05))
-                    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-            }
         }
+    }
+
+    // MARK: - Region Quick Picker Section
+
+    private var regionQuickPickerSection: some View {
+        RegionQuickPicker(selectedRegions: $holidayRegions)
+            .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
     /// 情報デザイン: Icon-only stat indicator with popover details
@@ -730,6 +737,7 @@ struct SpecialDaysListView: View {
                             isEditable: isEditable,
                             deleteRow: deleteRow,
                             openEditor: openEditor,
+                            showDetail: { item in selectedDetailItem = item },
                             expandedItemID: $expandedItemID
                         )
                     }
@@ -793,6 +801,7 @@ struct CollapsibleSpecialDayCard: View {
     let isEditable: (SpecialDayRow) -> Bool
     let deleteRow: (SpecialDayRow) -> Void
     let openEditor: (SpecialDayRow) -> Void
+    let showDetail: (SpecialDayRow) -> Void
 
     // Item expansion state (情報デザイン: tap row to show details)
     @Binding var expandedItemID: String?
@@ -1209,6 +1218,13 @@ struct CollapsibleSpecialDayCard: View {
         }
         .frame(minHeight: 36)
         .contentShape(Rectangle())
+        // 情報デザイン: Tap shows detail sheet for first item in consolidated group
+        .onTapGesture {
+            if let firstItem = item.sourceRows.first {
+                showDetail(firstItem)
+                HapticManager.selection()
+            }
+        }
     }
 
     // MARK: - Item Row (情報デザイン Bento: Compartmentalized with walls)
@@ -1301,12 +1317,17 @@ struct CollapsibleSpecialDayCard: View {
                 .frame(maxHeight: .infinity)
             }
             .frame(minHeight: 36)
-            // 情報デザイン: Tap gesture ONLY on main row, not expanded details
+            // 情報デザイン: Tap shows detail sheet, long-press expands inline
             .contentShape(Rectangle())
             .onTapGesture {
+                showDetail(item)
+                HapticManager.selection()
+            }
+            .onLongPressGesture(minimumDuration: 0.3) {
                 withAnimation(.easeInOut(duration: 0.2)) {
                     expandedItemID = isExpanded ? nil : item.id
                 }
+                HapticManager.impact(.light)
             }
 
             // EXPANDED DETAILS (情報デザイン: tap to reveal)

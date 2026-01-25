@@ -338,6 +338,7 @@ struct ConsolidatedHoliday: Identifiable {
     let names: [String: String]         // ["SE": "Nyårsdagen", "US": "New Year's Day", "VN": "Tết Dương lịch"]
     let icons: [String: String]         // ["SE": "snowflake", "US": "fireworks", "VN": "sparkles"]
     let isSystemHoliday: Bool           // All source rows are system holidays
+    let sourceRows: [SpecialDayRow]     // Original rows for detail sheet display
 
     /// Get the best display name for the current locale
     /// 情報デザイン: Show the user's locale name, fallback to English, then first available
@@ -372,7 +373,8 @@ struct ConsolidatedHoliday: Identifiable {
                 let icon = holiday.symbolName ?? SpecialDayType.holiday.defaultIcon
                 return (holiday.region, icon)
             }),
-            isSystemHoliday: holidays.allSatisfy { $0.isSystem }
+            isSystemHoliday: holidays.allSatisfy { $0.isSystem },
+            sourceRows: holidays
         )
     }
 }
