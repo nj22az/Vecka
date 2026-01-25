@@ -34,6 +34,12 @@ struct MemoEditorView: View {
     @State private var showAmount = false
     @State private var showPlace = false
     @State private var showPerson = false
+    @State private var showContactLink = false
+
+    // Linked contact
+    @State private var linkedContactID: UUID?
+    @State private var linkedContactName: String = ""
+    @State private var showContactPicker = false
 
     // UI state
     @State private var showDatePicker = false
@@ -150,6 +156,12 @@ struct MemoEditorView: View {
                     .padding(12)
             }
 
+            if showContactLink {
+                divider
+                contactLinkField
+                    .padding(12)
+            }
+
             // Delete button
             if isEditing {
                 divider
@@ -256,6 +268,7 @@ struct MemoEditorView: View {
                 .font(.system(size: 10, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.secondary)
 
+            // First row of chips
             HStack(spacing: 8) {
                 detailChip("yensign.circle", "Amount", isActive: showAmount, color: JohoColors.green) {
                     withAnimation(.easeInOut(duration: 0.2)) { showAmount.toggle() }
@@ -267,6 +280,13 @@ struct MemoEditorView: View {
 
                 detailChip("person", "Person", isActive: showPerson, color: JohoColors.purple) {
                     withAnimation(.easeInOut(duration: 0.2)) { showPerson.toggle() }
+                }
+            }
+
+            // Second row: Link Contact chip (情報デザイン: memo-contact linking)
+            HStack(spacing: 8) {
+                detailChip("person.crop.circle.badge.checkmark", "Link Contact", isActive: showContactLink, color: JohoColors.pink) {
+                    withAnimation(.easeInOut(duration: 0.2)) { showContactLink.toggle() }
                 }
             }
         }
@@ -375,6 +395,75 @@ struct MemoEditorView: View {
         )
     }
 
+    // MARK: - Contact Link Field (情報デザイン: memo-contact linking)
+
+    private var contactLinkField: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("LINKED CONTACT")
+                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.secondary)
+
+            Button {
+                showContactPicker = true
+                HapticManager.impact(.light)
+            } label: {
+                HStack {
+                    if linkedContactID != nil {
+                        Image(systemName: "person.crop.circle.fill.badge.checkmark")
+                            .foregroundStyle(JohoColors.pink)
+                        Text(linkedContactName.isEmpty ? "Contact linked" : linkedContactName)
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.primary)
+                    } else {
+                        Image(systemName: "person.crop.circle.badge.plus")
+                            .foregroundStyle(colors.secondary)
+                        Text("Select a contact...")
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.secondary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(colors.secondary)
+                }
+                .padding(.vertical, 8)
+            }
+            .buttonStyle(.plain)
+
+            // Clear button when contact is linked
+            if linkedContactID != nil {
+                Button {
+                    linkedContactID = nil
+                    linkedContactName = ""
+                    HapticManager.selection()
+                } label: {
+                    HStack {
+                        Image(systemName: "xmark.circle.fill")
+                        Text("Remove link")
+                    }
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .foregroundStyle(JohoColors.red)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(10)
+        .background(JohoColors.pinkLight)
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(JohoColors.black, lineWidth: 1.5)
+        )
+        .sheet(isPresented: $showContactPicker) {
+            MemoContactPicker(
+                selectedContactID: $linkedContactID,
+                selectedContactName: $linkedContactName
+            )
+            .presentationBackground(JohoColors.black)
+            .presentationDetents([.medium, .large])
+        }
+    }
+
     // MARK: - Delete Button
 
     private var deleteButton: some View {
@@ -464,6 +553,23 @@ struct MemoEditorView: View {
             person = per
             showPerson = true
         }
+
+        // Linked contact
+        if let contactID = memo.linkedContactID {
+            linkedContactID = contactID
+            showContactLink = true
+            // Load contact name from database
+            loadContactName(for: contactID)
+        }
+    }
+
+    private func loadContactName(for contactID: UUID) {
+        let descriptor = FetchDescriptor<Contact>(
+            predicate: #Predicate<Contact> { $0.id == contactID }
+        )
+        if let contact = try? modelContext.fetch(descriptor).first {
+            linkedContactName = contact.displayName
+        }
     }
 
     private func saveMemo() {
@@ -478,6 +584,9 @@ struct MemoEditorView: View {
         memo.currency = showAmount ? currency : nil
         memo.place = showPlace && !place.isEmpty ? place : nil
         memo.person = showPerson && !person.isEmpty ? person : nil
+
+        // Linked contact (情報デザイン: memo-contact linking)
+        memo.linkedContactID = showContactLink ? linkedContactID : nil
 
         if existingMemo == nil {
             modelContext.insert(memo)
@@ -494,6 +603,116 @@ struct MemoEditorView: View {
         try? modelContext.save()
         HapticManager.notification(.warning)
         dismiss()
+    }
+}
+
+// MARK: - Memo Contact Picker (情報デザイン: memo-contact linking)
+
+struct MemoContactPicker: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+    @Environment(\.dismiss) private var dismiss
+
+    @Query(sort: \Contact.familyName) private var contacts: [Contact]
+
+    @Binding var selectedContactID: UUID?
+    @Binding var selectedContactName: String
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Button("Cancel") { dismiss() }
+                    .font(.system(size: 16, weight: .semibold, design: .rounded))
+                    .foregroundStyle(JohoColors.white)
+                    .frame(minWidth: 44, minHeight: 44)
+
+                Spacer()
+
+                Text("Link Contact")
+                    .font(.system(size: 17, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.white)
+
+                Spacer()
+
+                // Spacer for symmetry
+                Color.clear.frame(width: 60, height: 44)
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
+            .padding(.bottom, 8)
+            .background(JohoColors.black)
+
+            // Contact list
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    if contacts.isEmpty {
+                        Text("No contacts available")
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.secondary)
+                            .padding(32)
+                    } else {
+                        ForEach(contacts) { contact in
+                            contactRow(contact)
+                        }
+                    }
+                }
+                .padding(8)
+            }
+            .background(colors.surface)
+        }
+        .background(JohoColors.black)
+    }
+
+    private func contactRow(_ contact: Contact) -> some View {
+        Button {
+            selectedContactID = contact.id
+            selectedContactName = contact.displayName
+            HapticManager.selection()
+            dismiss()
+        } label: {
+            HStack(spacing: 12) {
+                // Avatar
+                ZStack {
+                    Circle()
+                        .fill(JohoColors.pink.opacity(0.2))
+                        .frame(width: 40, height: 40)
+
+                    Text(contact.initials)
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.pink)
+                }
+
+                // Name
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(contact.displayName)
+                        .font(.system(size: 15, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary)
+
+                    if contact.birthday != nil {
+                        Text("Has birthday")
+                            .font(.system(size: 11, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.secondary)
+                    }
+                }
+
+                Spacer()
+
+                // Checkmark if selected
+                if selectedContactID == contact.id {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(JohoColors.pink)
+                        .font(.system(size: 20))
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(selectedContactID == contact.id ? JohoColors.pink.opacity(0.1) : colors.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        }
+        .buttonStyle(.plain)
     }
 }
 

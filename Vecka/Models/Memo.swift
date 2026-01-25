@@ -92,6 +92,10 @@ final class Memo {
     /// Person (who)
     var person: String?
 
+    /// Optional link to a Contact (for birthday memos)
+    /// 情報デザイン: Enables memo-contact linking for birthday tracking
+    var linkedContactID: UUID?
+
     // ═══════════════════════════════════════════════════════════════════
     // MARK: - Scheduling (from DailyNote)
     // ═══════════════════════════════════════════════════════════════════
@@ -143,6 +147,9 @@ final class Memo {
 
     /// Does this memo have a person?
     var hasPerson: Bool { person != nil && !person!.isEmpty }
+
+    /// Does this memo have a linked contact?
+    var hasLinkedContact: Bool { linkedContactID != nil }
 
     /// Is this a countdown?
     var hasCountdown: Bool { isCountdown == true }

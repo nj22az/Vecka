@@ -16,6 +16,40 @@
 
 import SwiftUI
 
+// MARK: - Display Category (情報デザイン: 3-category visual hierarchy)
+
+/// 情報デザイン: 3-category icon system for visual hierarchy
+/// Shape = meaning, Color = state
+/// - holiday (祝日): Circle outline - Official/authoritative (most stable shape)
+/// - observance (記念日): Diamond outline - Cultural waypoint (secondary shape)
+/// - memo (メモ): Doc outline - Personal (includes birthdays, informal shape)
+enum DisplayCategory: String, CaseIterable {
+    case holiday     // 祝日 - Circle outline
+    case observance  // 記念日 - Diamond outline
+    case memo        // メモ - Doc outline (includes birthdays)
+
+    /// SF Symbol for outline icon (black stroke, no fill)
+    var outlineIcon: String {
+        switch self {
+        case .holiday: return "circle"
+        case .observance: return "diamond"
+        case .memo: return "doc.text"
+        }
+    }
+
+    /// Localized label for display
+    var localizedLabel: String {
+        switch self {
+        case .holiday:
+            return NSLocalizedString("category.holidays", value: "Holidays", comment: "Holiday category label")
+        case .observance:
+            return NSLocalizedString("category.observances", value: "Observances", comment: "Observance category label")
+        case .memo:
+            return NSLocalizedString("category.memos", value: "Memos", comment: "Memo category label")
+        }
+    }
+}
+
 // MARK: - Special Day Type
 
 /// 情報デザイン: Simplified type system after Memo consolidation
@@ -95,6 +129,15 @@ enum SpecialDayType: String, CaseIterable {
 
     var isBankHoliday: Bool {
         self == .holiday
+    }
+
+    /// 情報デザイン: Maps to 3-category display system
+    var displayCategory: DisplayCategory {
+        switch self {
+        case .holiday: return .holiday
+        case .observance: return .observance
+        case .birthday, .memo, .note, .event, .trip, .expense: return .memo
+        }
     }
 
     /// 情報デザイン: 3-letter type codes

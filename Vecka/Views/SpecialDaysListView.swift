@@ -496,27 +496,34 @@ struct SpecialDaysListView: View {
         .padding(.top, JohoDimensions.spacingSM)
     }
 
-    // MARK: - Bento Stats Row
+    // MARK: - Bento Stats Row (情報デザイン: 3-category outline icons)
+
+    /// 情報デザイン: Calculate counts by DisplayCategory
+    private var displayCategoryCounts: (holidays: Int, observances: Int, memos: Int) {
+        // Memos category includes: birthdays + memos
+        let memoTotal = birthdayCount + memoCount
+        return (holidayCount, observanceCount, memoTotal)
+    }
 
     private var bentoStatsRow: some View {
-        HStack(spacing: JohoDimensions.spacingMD) {
-            // 情報デザイン: Tappable stat indicators - tap to see type name
-            // Priority order: HOL > BDY > OBS > MEM
-            if holidayCount > 0 {
-                statIndicator(type: .holiday, count: holidayCount)
+        let counts = displayCategoryCounts
+        let totalCount = counts.holidays + counts.observances + counts.memos
+
+        return HStack(spacing: JohoDimensions.spacingMD) {
+            // 情報デザイン: 3-category outline icons with counts
+            // [○ 19]  [◇ 18]  [📄 5]
+            //  祝日    記念日    メモ
+            if counts.holidays > 0 {
+                categoryIndicator(category: .holiday, count: counts.holidays)
             }
-            if birthdayCount > 0 {
-                statIndicator(type: .birthday, count: birthdayCount)
+            if counts.observances > 0 {
+                categoryIndicator(category: .observance, count: counts.observances)
             }
-            if observanceCount > 0 {
-                statIndicator(type: .observance, count: observanceCount)
-            }
-            if memoCount > 0 {
-                statIndicator(type: .memo, count: memoCount)
+            if counts.memos > 0 {
+                categoryIndicator(category: .memo, count: counts.memos)
             }
 
             // Show empty state only when no entries exist
-            let totalCount = holidayCount + observanceCount + birthdayCount + memoCount
             if totalCount == 0 {
                 Text("No entries yet")
                     .font(JohoFont.bodySmall)
@@ -534,7 +541,73 @@ struct SpecialDaysListView: View {
             .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
-    /// 情報デザイン: Icon-only stat indicator with popover details
+    /// 情報デザイン: Active popover tracking for categories
+    @State private var activePopoverCategory: DisplayCategory?
+
+    /// 情報デザイン: 3-category outline icon indicator
+    /// Black outline icons + black count numerals
+    private func categoryIndicator(category: DisplayCategory, count: Int) -> some View {
+        Button {
+            HapticManager.selection()
+            activePopoverCategory = category
+        } label: {
+            HStack(spacing: 4) {
+                // Outline icon (black stroke, no fill)
+                Image(systemName: category.outlineIcon)
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
+
+                // Black count numeral
+                Text(String(count))
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(JohoColors.black)
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+        }
+        .buttonStyle(.plain)
+        .popover(isPresented: Binding(
+            get: { activePopoverCategory == category },
+            set: { if !$0 { activePopoverCategory = nil } }
+        )) {
+            categoryPopover(category: category, count: count)
+        }
+        .accessibilityLabel("\(category.localizedLabel): \(count)")
+        .accessibilityHint("Tap for details")
+    }
+
+    /// 情報デザイン: Compact popover showing category details
+    private func categoryPopover(category: DisplayCategory, count: Int) -> some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            Image(systemName: category.outlineIcon)
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoColors.black)
+                .frame(width: 32, height: 32)
+                .background(JohoColors.inputBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .stroke(JohoColors.black, lineWidth: 1.5)
+                )
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(category.localizedLabel.uppercased())
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .tracking(0.5)
+                    .foregroundStyle(JohoColors.black)
+
+                Text("\(count) in " + String(selectedYear))
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                    .foregroundStyle(JohoColors.black.opacity(0.7))
+            }
+        }
+        .padding(JohoDimensions.spacingMD)
+        .background(JohoColors.white)
+        .presentationCompactAdaptation(.popover)
+    }
+
+    /// 情報デザイン: Icon-only stat indicator with popover details (legacy)
     @State private var activePopoverType: SpecialDayType?
 
     private func statIndicator(type: SpecialDayType, count: Int) -> some View {
@@ -598,7 +671,45 @@ struct SpecialDaysListView: View {
         .presentationCompactAdaptation(.popover)
     }
 
-    /// 情報デザイン: Clean colored dot for month cards (maintains symmetry)
+    /// 情報デザイン: Density-based dots for month cards
+    /// Color represents activity level, not category
+    /// | Count | Dots | Color |
+    /// | 0     | —    | Gray  |
+    /// | 1-3   | ●    | Yellow (light activity) |
+    /// | 4-7   | ●●   | Cyan (moderate) |
+    /// | 8+    | ●●●  | Pink (busy) |
+    private func monthDensityDots(count: Int) -> some View {
+        HStack(spacing: 3) {
+            let (dotCount, dotColor) = densityConfig(for: count)
+            ForEach(0..<dotCount, id: \.self) { _ in
+                Circle()
+                    .fill(dotColor)
+                    .frame(width: 6, height: 6)
+                    .overlay(
+                        Circle()
+                            .stroke(JohoColors.black, lineWidth: 0.5)
+                    )
+            }
+        }
+        .accessibilityLabel("\(count) special days")
+    }
+
+    /// Returns (dotCount, color) based on activity density
+    /// Uses neutral black color - dot COUNT indicates density, not color
+    private func densityConfig(for count: Int) -> (Int, Color) {
+        switch count {
+        case 0:
+            return (0, JohoColors.black.opacity(0.3))
+        case 1...3:
+            return (1, JohoColors.black) // 1 dot
+        case 4...7:
+            return (2, JohoColors.black) // 2 dots
+        default:
+            return (3, JohoColors.black) // 3 dots
+        }
+    }
+
+    /// 情報デザイン: Clean colored dot for month cards (legacy - maintains symmetry)
     private func monthCardDot(type: SpecialDayType, count: Int) -> some View {
         Circle()
             .fill(type.accentColor)
@@ -670,23 +781,9 @@ struct SpecialDaysListView: View {
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
 
-                    // 情報デザイン: Simple colored dots for clean symmetry
-                    // Order: HOL > BDY > OBS > MEM
+                    // 情報デザイン: Density-based dots (color = activity level, not category)
                     if hasItems {
-                        HStack(spacing: 6) {
-                            if counts.holidays > 0 {
-                                monthCardDot(type: .holiday, count: counts.holidays)
-                            }
-                            if counts.birthdays > 0 {
-                                monthCardDot(type: .birthday, count: counts.birthdays)
-                            }
-                            if counts.observances > 0 {
-                                monthCardDot(type: .observance, count: counts.observances)
-                            }
-                            if counts.memos > 0 {
-                                monthCardDot(type: .memo, count: counts.memos)
-                            }
-                        }
+                        monthDensityDots(count: totalCount)
                     } else {
                         Text("—")
                             .font(.system(size: 12, weight: .medium, design: .rounded))
@@ -950,76 +1047,70 @@ struct CollapsibleSpecialDayCard: View {
         )
     }
 
-    // MARK: - Content Indicator Icons (情報デザイン: Colored SF Symbol icons)
+    // MARK: - Content Indicator Icons (情報デザイン: Black outline shapes)
 
     private var contentIndicatorDots: some View {
         HStack(spacing: 3) {
-            // 情報デザイン: Colored SF Symbol icons for each type
+            // 情報デザイン: Black outline shapes by DisplayCategory
+            // Shape = meaning (circle=holiday, diamond=observance, doc=memo)
             if holidays.isNotEmpty {
-                Image(systemName: SpecialDayType.holiday.defaultIcon)
-                    .font(.system(size: 8, weight: .semibold, design: .rounded))
-                    .foregroundStyle(SpecialDayType.holiday.accentColor)
+                Image(systemName: DisplayCategory.holiday.outlineIcon)
+                    .font(.system(size: 8, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
             }
             if observances.isNotEmpty {
-                Image(systemName: SpecialDayType.observance.defaultIcon)
-                    .font(.system(size: 8, weight: .semibold, design: .rounded))
-                    .foregroundStyle(SpecialDayType.observance.accentColor)
+                Image(systemName: DisplayCategory.observance.outlineIcon)
+                    .font(.system(size: 8, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
             }
-            if birthdays.isNotEmpty {
-                Image(systemName: SpecialDayType.birthday.defaultIcon)
-                    .font(.system(size: 8, weight: .semibold, design: .rounded))
-                    .foregroundStyle(SpecialDayType.birthday.accentColor)
-            }
-            if memosForDay.isNotEmpty {
-                Image(systemName: SpecialDayType.memo.defaultIcon)
-                    .font(.system(size: 8, weight: .semibold, design: .rounded))
-                    .foregroundStyle(SpecialDayType.memo.accentColor)
+            // Birthdays + Memos both use memo category (doc outline)
+            if birthdays.isNotEmpty || memosForDay.isNotEmpty {
+                Image(systemName: DisplayCategory.memo.outlineIcon)
+                    .font(.system(size: 8, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.black)
             }
         }
     }
 
     // MARK: - Expanded Content
 
+    /// Combined birthdays + memos for 情報デザイン 3-category system
+    private var combinedMemos: [SpecialDayRow] {
+        // Birthdays + memos combined under メモ category
+        (birthdays + memosForDay).sorted { $0.date < $1.date }
+    }
+
     @ViewBuilder
     private var expandedContent: some View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-            // Holidays section (pink background) - uses consolidated view
+            // 情報デザイン: 3-category sections with localized labels
+            // Holidays - Circle outline
             if consolidatedHolidays.isNotEmpty {
                 consolidatedHolidaySection(
-                    title: "Holidays",
+                    title: DisplayCategory.holiday.localizedLabel,
                     items: consolidatedHolidays,
                     zone: .holidays,
-                    icon: "star.fill"
+                    icon: DisplayCategory.holiday.outlineIcon
                 )
             }
 
-            // Observances section (orange tint - matches type color)
+            // Observances - Diamond outline
             if observances.isNotEmpty {
                 specialDaySection(
-                    title: "Observances",
+                    title: DisplayCategory.observance.localizedLabel,
                     items: observances,
                     zone: .observances,
-                    icon: "sparkles"
+                    icon: DisplayCategory.observance.outlineIcon
                 )
             }
 
-            // Birthdays section (pink tint - matches type color)
-            if birthdays.isNotEmpty {
+            // Memos - Doc outline (includes birthdays)
+            if combinedMemos.isNotEmpty {
                 specialDaySection(
-                    title: "Birthdays",
-                    items: birthdays,
-                    zone: .birthdays,
-                    icon: "birthday.cake.fill"
-                )
-            }
-
-            // Memos section (yellow tint - unified notes/events/trips/expenses)
-            if memosForDay.isNotEmpty {
-                specialDaySection(
-                    title: "Memos",
-                    items: memosForDay,
+                    title: DisplayCategory.memo.localizedLabel,
+                    items: combinedMemos,
                     zone: .notes,
-                    icon: "note.text"
+                    icon: DisplayCategory.memo.outlineIcon
                 )
             }
         }
@@ -1418,14 +1509,14 @@ struct CollapsibleSpecialDayCard: View {
         return formatter.string(from: date)
     }
 
-    // MARK: - Type Indicator Dot (情報デザイン: RED icons for visibility)
-    // Icons use RED for maximum contrast against colored backgrounds
+    // MARK: - Type Indicator Dot (情報デザイン: Black outline shapes)
+    // Shape = meaning (circle=holiday, diamond=observance, doc=memo)
 
     @ViewBuilder
     private func typeIndicatorDot(for type: SpecialDayType) -> some View {
-        Image(systemName: type.defaultIcon)
-            .font(.system(size: 10, weight: .semibold, design: .rounded))
-            .foregroundStyle(JohoColors.red)
+        Image(systemName: type.displayCategory.outlineIcon)
+            .font(.system(size: 10, weight: .bold, design: .rounded))
+            .foregroundStyle(JohoColors.black)
     }
 
     // MARK: - Formatters
@@ -1668,13 +1759,13 @@ extension SpecialDaysListView {
         .shadow(color: JohoColors.black.opacity(0.05), radius: 2, x: 0, y: 1)
     }
 
-    // MARK: - Type Indicator Icon (情報デザイン: Colored SF Symbol icons)
+    // MARK: - Type Indicator Icon (情報デザイン: Black outline shapes)
 
     @ViewBuilder
     private func typeIndicatorDot(for type: SpecialDayType) -> some View {
-        Image(systemName: type.defaultIcon)
-            .font(.system(size: 10, weight: .semibold, design: .rounded))
-            .foregroundStyle(type.accentColor)
+        Image(systemName: type.displayCategory.outlineIcon)
+            .font(.system(size: 10, weight: .bold, design: .rounded))
+            .foregroundStyle(JohoColors.black)
     }
 }
 
