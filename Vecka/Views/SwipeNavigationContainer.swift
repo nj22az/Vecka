@@ -19,6 +19,9 @@ struct SwipeNavigationContainer<Content: View>: View {
     @Binding var selection: SidebarSelection?
     @ViewBuilder let content: (SidebarSelection?) -> Content
 
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     /// Track previous selection for haptic feedback
     @State private var previousSelection: SidebarSelection?
 
@@ -52,9 +55,8 @@ struct SwipeNavigationContainer<Content: View>: View {
             }
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
-        // 情報デザイン: Use spring animation for natural, smooth page transitions
-        // Native TabView paging + spring gives best feel
-        .animation(.spring(response: 0.4, dampingFraction: 0.85), value: selection)
+        // 情報デザイン: Use easeInOut animation for smooth page transitions
+        .animation(.easeInOut(duration: 0.2), value: selection)
         .onAppear {
             previousSelection = selection
         }
@@ -69,7 +71,7 @@ struct SwipeNavigationContainer<Content: View>: View {
                         DragGesture(minimumDistance: 30)
                             .onEnded { value in
                                 if value.translation.width > wrapThreshold {
-                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+                                    withAnimation(.easeInOut(duration: 0.2)) {
                                         selection = .settings
                                     }
                                     HapticManager.impact(.medium)
@@ -88,7 +90,7 @@ struct SwipeNavigationContainer<Content: View>: View {
                         DragGesture(minimumDistance: 30)
                             .onEnded { value in
                                 if value.translation.width < -wrapThreshold {
-                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+                                    withAnimation(.easeInOut(duration: 0.2)) {
                                         selection = .landing
                                     }
                                     HapticManager.impact(.medium)
@@ -105,6 +107,8 @@ struct SwipeNavigationContainer<Content: View>: View {
 #Preview("Swipe Navigation") {
     struct PreviewWrapper: View {
         @State private var selection: SidebarSelection? = .calendar
+        @Environment(\.johoColorMode) private var colorMode
+        private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
         var body: some View {
             VStack(spacing: 0) {
@@ -114,10 +118,10 @@ struct SwipeNavigationContainer<Content: View>: View {
                             .font(JohoFont.headline)
                         Text("Swipe left/right")
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .background(JohoColors.white)
+                    .background(colors.surface)
                 }
 
                 // Mock dock
@@ -127,13 +131,13 @@ struct SwipeNavigationContainer<Content: View>: View {
                             selection = item
                         } label: {
                             Image(systemName: item.icon)
-                                .foregroundStyle(selection == item ? item.accentColor : JohoColors.black.opacity(0.6))
+                                .foregroundStyle(selection == item ? item.accentColor : colors.primary.opacity(0.6))
                         }
                         .frame(maxWidth: .infinity)
                     }
                 }
                 .padding()
-                .background(JohoColors.black)
+                .background(colors.primary)
             }
         }
     }

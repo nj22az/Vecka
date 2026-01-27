@@ -10,7 +10,10 @@ import SwiftData
 
 struct TripListView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
     @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     @State private var showAddTrip = false
     @State private var selectedTrip: Memo?
@@ -160,6 +163,9 @@ struct TripListView: View {
 struct MemoTripRow: View {
     let memo: Memo
     var status: String = ""
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private var durationText: String {
         guard let duration = memo.tripDuration else { return "0d" }
@@ -183,18 +189,18 @@ struct MemoTripRow: View {
                 // Trip name
                 Text(memo.text)
                     .font(JohoFont.headline)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 // Destination
                 if let destination = memo.place {
                     HStack(spacing: JohoDimensions.spacingXS) {
                         Image(systemName: "airplane.departure")
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
 
                         Text(destination)
                             .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black.opacity(0.8))
+                            .foregroundStyle(colors.primary.opacity(0.8))
                     }
                 }
 
@@ -203,15 +209,15 @@ struct MemoTripRow: View {
                     HStack(spacing: JohoDimensions.spacingXS) {
                         Text(memo.date.formatted(.dateTime.month(.abbreviated).day()))
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
 
                         Text("→")
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
 
                         Text(endDate.formatted(.dateTime.month(.abbreviated).day()))
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
                     }
                 }
 
@@ -229,6 +235,9 @@ struct MemoTripDetailView: View {
     let memo: Memo
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         ScrollView {
@@ -251,11 +260,11 @@ struct MemoTripDetailView: View {
                             HStack {
                                 Text("Destination")
                                     .font(JohoFont.body)
-                                    .foregroundStyle(JohoColors.black)
+                                    .foregroundStyle(colors.primary)
                                 Spacer()
                                 Text(destination)
                                     .font(JohoFont.body)
-                                    .foregroundStyle(JohoColors.black)
+                                    .foregroundStyle(colors.primary)
                                     .bold()
                             }
 
@@ -267,11 +276,11 @@ struct MemoTripDetailView: View {
                             HStack {
                                 Text("Duration")
                                     .font(JohoFont.body)
-                                    .foregroundStyle(JohoColors.black)
+                                    .foregroundStyle(colors.primary)
                                 Spacer()
                                 Text("\(duration) days")
                                     .font(JohoFont.monoMedium)
-                                    .foregroundStyle(JohoColors.black)
+                                    .foregroundStyle(colors.primary)
                             }
 
                             JohoDivider()
@@ -283,21 +292,21 @@ struct MemoTripDetailView: View {
                                 HStack {
                                     Text("Start")
                                         .font(JohoFont.bodySmall)
-                                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                                        .foregroundStyle(colors.primary.opacity(0.7))
                                     Spacer()
                                     Text(memo.date.formatted(.dateTime.month(.abbreviated).day().year()))
                                         .font(JohoFont.monoMedium)
-                                        .foregroundStyle(JohoColors.black)
+                                        .foregroundStyle(colors.primary)
                                 }
 
                                 HStack {
                                     Text("End")
                                         .font(JohoFont.bodySmall)
-                                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                                        .foregroundStyle(colors.primary.opacity(0.7))
                                     Spacer()
                                     Text(endDate.formatted(.dateTime.month(.abbreviated).day().year()))
                                         .font(JohoFont.monoMedium)
-                                        .foregroundStyle(JohoColors.black)
+                                        .foregroundStyle(colors.primary)
                                 }
                             }
 
@@ -309,7 +318,7 @@ struct MemoTripDetailView: View {
                             HStack {
                                 Text("Type")
                                     .font(JohoFont.body)
-                                    .foregroundStyle(JohoColors.black)
+                                    .foregroundStyle(colors.primary)
                                 Spacer()
                                 JohoPill(text: purpose, style: .whiteOnBlack, size: .small)
                             }
@@ -331,7 +340,7 @@ struct MemoTripDetailView: View {
             }
             .padding(.horizontal, JohoDimensions.spacingLG)
             .padding(.top, JohoDimensions.spacingSM)
-            .background(JohoColors.background)
+            .background(colors.canvas)
         }
     }
 }
@@ -344,6 +353,9 @@ struct JohoTripEditorSheet: View {
     let selectedDate: Date
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     @State private var name: String = ""
     @State private var destination: String = ""
@@ -408,13 +420,13 @@ struct JohoTripEditorSheet: View {
                     Button { dismiss() } label: {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .johoTouchTarget()
                     }
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -427,15 +439,15 @@ struct JohoTripEditorSheet: View {
                             .frame(width: 36, height: 36)
                             .background(tripLightBackground)
                             .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+                            .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text("NEW TRIP")
                                 .font(.system(size: 16, weight: .black, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                             Text("Set destination & dates")
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(0.6))
                         }
 
                         Spacer()
@@ -445,7 +457,7 @@ struct JohoTripEditorSheet: View {
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -456,11 +468,11 @@ struct JohoTripEditorSheet: View {
                     } label: {
                         Text("Save")
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                            .foregroundStyle(canSave ? colors.surface : colors.primary.opacity(0.4))
                             .frame(width: 56, height: 32)
-                            .background(canSave ? tripAccentColor : JohoColors.white)
+                            .background(canSave ? tripAccentColor : colors.surface)
                             .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+                            .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
                     }
                     .disabled(!canSave)
                     .frame(width: 72)
@@ -471,7 +483,7 @@ struct JohoTripEditorSheet: View {
 
                 // Thick divider after header
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -487,14 +499,14 @@ struct JohoTripEditorSheet: View {
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
                     // CENTER: Destination field
                     TextField("Where are you going?", text: $destination)
                         .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .frame(maxHeight: .infinity)
                 }
@@ -503,7 +515,7 @@ struct JohoTripEditorSheet: View {
 
                 // Row divider
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -514,20 +526,20 @@ struct JohoTripEditorSheet: View {
                     Circle()
                         .fill(tripAccentColor)
                         .frame(width: 10, height: 10)
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
                     // CENTER: Name field (optional)
                     TextField("Trip name (optional)", text: $name)
                         .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .frame(maxHeight: .infinity)
                 }
@@ -536,7 +548,7 @@ struct JohoTripEditorSheet: View {
 
                 // Row divider
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -546,13 +558,13 @@ struct JohoTripEditorSheet: View {
                     // LEFT: Calendar icon (40pt)
                     Image(systemName: "calendar")
                         .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -564,14 +576,14 @@ struct JohoTripEditorSheet: View {
                     } label: {
                         Text(String(startYear))
                             .font(.system(size: 14, weight: .bold, design: .monospaced))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
                     }
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -583,14 +595,14 @@ struct JohoTripEditorSheet: View {
                     } label: {
                         Text(monthName(startMonth))
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
                     }
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -602,7 +614,7 @@ struct JohoTripEditorSheet: View {
                     } label: {
                         Text("\(startDay)")
                             .font(.system(size: 14, weight: .bold, design: .monospaced))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(width: 44)
                             .frame(maxHeight: .infinity)
                     }
@@ -612,7 +624,7 @@ struct JohoTripEditorSheet: View {
 
                 // Row divider
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -622,13 +634,13 @@ struct JohoTripEditorSheet: View {
                     // LEFT: Calendar icon (40pt)
                     Image(systemName: "calendar")
                         .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -640,14 +652,14 @@ struct JohoTripEditorSheet: View {
                     } label: {
                         Text(String(endYear))
                             .font(.system(size: 14, weight: .bold, design: .monospaced))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
                     }
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -659,14 +671,14 @@ struct JohoTripEditorSheet: View {
                     } label: {
                         Text(monthName(endMonth))
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
                     }
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -678,7 +690,7 @@ struct JohoTripEditorSheet: View {
                     } label: {
                         Text("\(endDay)")
                             .font(.system(size: 14, weight: .bold, design: .monospaced))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(width: 44)
                             .frame(maxHeight: .infinity)
                     }
@@ -688,7 +700,7 @@ struct JohoTripEditorSheet: View {
 
                 // Row divider
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -704,25 +716,25 @@ struct JohoTripEditorSheet: View {
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
                     // CENTER: Notes field
                     TextField("Notes (optional)", text: $notes)
                         .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .frame(maxHeight: .infinity)
                 }
                 .frame(height: 48)
                 .background(tripLightBackground)
             }
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
             )
             .padding(.horizontal, JohoDimensions.spacingLG)
 

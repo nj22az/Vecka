@@ -38,17 +38,17 @@ struct RegionDatabase: Identifiable {
     ]
 
     /// Color for the region (情報デザイン semantic colors)
-    var accentColor: Color {
+    func accentColor(colors: JohoScheme) -> Color {
         switch continent {
         case "Nordic": return JohoColors.cyan
         case "Asia": return JohoColors.pink
         case "Americas": return JohoColors.cyan
-        default: return JohoColors.black
+        default: return colors.primary
         }
     }
 
-    var lightBackground: Color {
-        accentColor.opacity(0.15)
+    func lightBackground(colors: JohoScheme) -> Color {
+        accentColor(colors: colors).opacity(0.15)
     }
 }
 
@@ -57,6 +57,9 @@ struct RegionDatabase: Identifiable {
 struct HolidayDatabaseExplorer: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     @Query(sort: \HolidayRule.name) private var allRules: [HolidayRule]
 
@@ -147,18 +150,18 @@ struct HolidayDatabaseExplorer: View {
                     // Back button when in region detail
                     if selectedRegion != nil {
                         Button {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                            withAnimation(.easeInOut(duration: 0.2)) {
                                 selectedRegion = nil
                             }
                             HapticManager.selection()
                         } label: {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 14, weight: .bold, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                                 .frame(width: 32, height: 32)
                                 .background(JohoColors.inputBackground)
                                 .clipShape(Circle())
-                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                                .overlay(Circle().stroke(colors.border, lineWidth: 1))
                         }
                     }
 
@@ -167,13 +170,13 @@ struct HolidayDatabaseExplorer: View {
                        let region = RegionDatabase.all.first(where: { $0.id == regionID }) {
                         Image(systemName: region.icon)
                             .font(.system(size: 20, weight: .bold, design: .rounded))
-                            .foregroundStyle(region.accentColor)
+                            .foregroundStyle(region.accentColor(colors: colors))
                             .frame(width: 40, height: 40)
-                            .background(region.lightBackground)
+                            .background(region.lightBackground(colors: colors))
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(
                                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(JohoColors.black, lineWidth: 1.5)
+                                    .stroke(colors.border, lineWidth: 1.5)
                             )
                     } else {
                         Image(systemName: "globe")
@@ -184,7 +187,7 @@ struct HolidayDatabaseExplorer: View {
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(
                                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(JohoColors.black, lineWidth: 1.5)
+                                    .stroke(colors.border, lineWidth: 1.5)
                             )
                     }
 
@@ -194,15 +197,15 @@ struct HolidayDatabaseExplorer: View {
                         VStack(alignment: .leading, spacing: 0) {
                             Text(region.name.uppercased())
                                 .font(JohoFont.headline)
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                             Text(region.localName)
                                 .font(.system(size: 12, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(0.6))
                         }
                     } else {
                         Text("HOLIDAY DATABASE")
                             .font(JohoFont.headline)
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                     }
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -211,7 +214,7 @@ struct HolidayDatabaseExplorer: View {
 
                 // VERTICAL WALL
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.primary)
                     .frame(width: 1.5)
 
                 // RIGHT COMPARTMENT: Actions
@@ -223,7 +226,7 @@ struct HolidayDatabaseExplorer: View {
                     } label: {
                         Image(systemName: "clock.arrow.circlepath")
                             .font(.system(size: 16, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                     }
 
                     // Done button
@@ -232,10 +235,10 @@ struct HolidayDatabaseExplorer: View {
                     } label: {
                         Text("Done")
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.white)
+                            .foregroundStyle(colors.surface)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .background(JohoColors.black)
+                            .background(colors.primary)
                             .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
                     }
                 }
@@ -245,7 +248,7 @@ struct HolidayDatabaseExplorer: View {
 
             // HORIZONTAL DIVIDER
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.primary)
                 .frame(height: 1.5)
 
             // STATS ROW
@@ -255,7 +258,7 @@ struct HolidayDatabaseExplorer: View {
                     let oCount = observanceCount(for: regionID)
                     Text("\(hCount) holidays, \(oCount) observances")
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                        .foregroundStyle(colors.primary.opacity(0.7))
 
                     Spacer()
 
@@ -273,18 +276,18 @@ struct HolidayDatabaseExplorer: View {
                 } else {
                     Text("\(RegionDatabase.all.count) regions available")
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                        .foregroundStyle(colors.primary.opacity(0.7))
                     Spacer()
                 }
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: 2)
+                .stroke(colors.border, lineWidth: 2)
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
         .padding(.top, JohoDimensions.spacingSM)
@@ -318,7 +321,7 @@ struct HolidayDatabaseExplorer: View {
         let isActive = isActiveRegion(region.id)
 
         Button {
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+            withAnimation(.easeInOut(duration: 0.2)) {
                 selectedRegion = region.id
             }
             HapticManager.selection()
@@ -328,7 +331,7 @@ struct HolidayDatabaseExplorer: View {
                 ZStack {
                     Image(systemName: region.icon)
                         .font(.system(size: 22, weight: .bold, design: .rounded))
-                        .foregroundStyle(hasItems ? region.accentColor : JohoColors.black.opacity(0.6))
+                        .foregroundStyle(hasItems ? region.accentColor(colors: colors) : colors.primary.opacity(0.6))
 
                     // Active indicator (top-right corner)
                     if isActive {
@@ -346,11 +349,11 @@ struct HolidayDatabaseExplorer: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 48)
-                .background(hasItems ? region.lightBackground : JohoColors.inputBackground)
+                .background(hasItems ? region.lightBackground(colors: colors) : JohoColors.inputBackground)
 
                 // Horizontal divider
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.primary)
                     .frame(height: 1.5)
 
                 // BOTTOM COMPARTMENT: Data zone
@@ -358,12 +361,12 @@ struct HolidayDatabaseExplorer: View {
                     // Region code (bold, prominent)
                     Text(region.id)
                         .font(.system(size: 14, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     // Local name
                     Text(region.localName)
                         .font(.system(size: 10, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
 
@@ -378,7 +381,7 @@ struct HolidayDatabaseExplorer: View {
                                         .foregroundStyle(SpecialDayType.holiday.accentColor)
                                     Text("\(hCount)")
                                         .font(.system(size: 9, weight: .bold, design: .rounded))
-                                        .foregroundStyle(JohoColors.black)
+                                        .foregroundStyle(colors.primary)
                                 }
                             }
 
@@ -390,25 +393,25 @@ struct HolidayDatabaseExplorer: View {
                                         .foregroundStyle(SpecialDayType.observance.accentColor)
                                     Text("\(oCount)")
                                         .font(.system(size: 9, weight: .bold, design: .rounded))
-                                        .foregroundStyle(JohoColors.black)
+                                        .foregroundStyle(colors.primary)
                                 }
                             }
                         }
                     } else {
                         Text("—")
                             .font(.system(size: 12, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(0.5))
                     }
                 }
                 .padding(.vertical, 8)
                 .frame(maxWidth: .infinity)
             }
             .frame(height: 110)
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(isActive ? JohoColors.green : (hasItems ? JohoColors.black : JohoColors.black.opacity(0.3)),
+                    .stroke(isActive ? JohoColors.green : (hasItems ? colors.primary : colors.primary.opacity(0.3)),
                             lineWidth: isActive ? 2.5 : (hasItems ? JohoDimensions.borderMedium : JohoDimensions.borderThin))
             )
         }
@@ -453,7 +456,7 @@ struct HolidayDatabaseExplorer: View {
                     title: "DISABLED",
                     subtitle: "Hidden from calendar",
                     icon: "eye.slash",
-                    color: JohoColors.black.opacity(0.3),
+                    color: colors.primary.opacity(0.3),
                     rules: disabled
                 )
             }
@@ -480,20 +483,20 @@ struct HolidayDatabaseExplorer: View {
                     // Icon zone
                     Image(systemName: icon)
                         .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(width: 24, height: 24)
                         .background(color.opacity(0.3))
                         .clipShape(Squircle(cornerRadius: 5))
-                        .overlay(Squircle(cornerRadius: 5).stroke(JohoColors.black, lineWidth: 1))
+                        .overlay(Squircle(cornerRadius: 5).stroke(colors.border, lineWidth: 1))
 
                     VStack(alignment: .leading, spacing: 0) {
                         Text(title)
                             .font(.system(size: 12, weight: .black, design: .rounded))
                             .tracking(0.5)
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                         Text(subtitle)
                             .font(.system(size: 10, weight: .regular, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(0.5))
                     }
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -503,14 +506,14 @@ struct HolidayDatabaseExplorer: View {
 
                 // Wall
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.primary)
                     .frame(width: 1.5)
 
                 // Count compartment
                 Text("\(rules.count)")
                     .font(.system(size: 16, weight: .bold, design: .rounded))
                     .monospacedDigit()
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .frame(width: 50)
             }
             .frame(height: 52)
@@ -518,7 +521,7 @@ struct HolidayDatabaseExplorer: View {
 
             // Divider
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.primary)
                 .frame(height: 1.5)
 
             // Rules list
@@ -528,18 +531,18 @@ struct HolidayDatabaseExplorer: View {
 
                     if rule.id != rules.last?.id {
                         Rectangle()
-                            .fill(JohoColors.black.opacity(0.15))
+                            .fill(colors.primary.opacity(0.15))
                             .frame(height: 1)
                             .padding(.leading, JohoDimensions.spacingMD)
                     }
                 }
             }
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
     }
 
@@ -570,21 +573,21 @@ struct HolidayDatabaseExplorer: View {
                     if let localName = rule.localName, !localName.isEmpty {
                         Text(localName)
                             .font(.system(size: 14, weight: .semibold, design: .rounded))
-                            .foregroundStyle(rule.isEnabled ? JohoColors.black : JohoColors.black.opacity(0.4))
+                            .foregroundStyle(rule.isEnabled ? colors.primary : colors.primary.opacity(0.4))
                             .lineLimit(1)
                         // Secondary: English translation
                         Text(displayName(for: rule))
                             .font(.system(size: 11, weight: .regular, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(0.5))
                     } else {
                         Text(displayName(for: rule))
                             .font(.system(size: 14, weight: .medium, design: .rounded))
-                            .foregroundStyle(rule.isEnabled ? JohoColors.black : JohoColors.black.opacity(0.4))
+                            .foregroundStyle(rule.isEnabled ? colors.primary : colors.primary.opacity(0.4))
                             .lineLimit(1)
                         // Type description
                         Text(ruleTypeDescription(rule))
                             .font(.system(size: 11, weight: .regular, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(0.5))
                     }
                 }
 
@@ -600,7 +603,7 @@ struct HolidayDatabaseExplorer: View {
                 // Chevron
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.3))
+                    .foregroundStyle(colors.primary.opacity(0.3))
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
@@ -616,24 +619,24 @@ struct HolidayDatabaseExplorer: View {
         VStack(spacing: JohoDimensions.spacingMD) {
             Image(systemName: "tray")
                 .font(.system(size: 48, weight: .light, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.2))
+                .foregroundStyle(colors.primary.opacity(0.2))
 
             Text("No holidays in database")
                 .font(.system(size: 16, weight: .semibold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
 
             Text("Tap 'Load Defaults' to add holidays for this region")
                 .font(.system(size: 14, weight: .regular, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.6))
+                .foregroundStyle(colors.primary.opacity(0.6))
                 .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity)
         .padding(JohoDimensions.spacingXL)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black.opacity(0.2), lineWidth: 1)
+                .stroke(colors.primary.opacity(0.2), lineWidth: 1)
         )
     }
 
@@ -665,14 +668,14 @@ struct HolidayDatabaseExplorer: View {
                 Text("Load Defaults")
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
             }
-            .foregroundStyle(JohoColors.black)
+            .foregroundStyle(colors.primary)
             .frame(maxWidth: .infinity)
             .padding(.vertical, JohoDimensions.spacingMD)
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(JohoColors.black, lineWidth: 1.5)
+                    .stroke(colors.border, lineWidth: 1.5)
             )
         }
         .buttonStyle(.plain)
@@ -688,14 +691,14 @@ struct HolidayDatabaseExplorer: View {
                 Text("Apply to Calendar")
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
             }
-            .foregroundStyle(JohoColors.white)
+            .foregroundStyle(colors.surface)
             .frame(maxWidth: .infinity)
             .padding(.vertical, JohoDimensions.spacingMD)
             .background(JohoColors.green)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(JohoColors.black, lineWidth: 1.5)
+                    .stroke(colors.border, lineWidth: 1.5)
             )
         }
         .buttonStyle(.plain)
@@ -760,6 +763,8 @@ struct HolidayDatabaseExplorer: View {
 struct HolidayRuleEditorSheet: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     let rule: HolidayRule
 
@@ -776,7 +781,7 @@ struct HolidayRuleEditorSheet: View {
     var body: some View {
         NavigationStack {
             editorContent
-                .background(JohoColors.white)
+                .background(colors.surface)
                 .navigationTitle(displayName)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar { editorToolbar }
@@ -860,12 +865,12 @@ struct HolidayRuleEditorSheet: View {
                 HStack {
                     Image(systemName: isEnabled ? "eye" : "eye.slash")
                         .font(.system(size: 16, weight: .medium, design: .rounded))
-                        .foregroundStyle(isEnabled ? JohoColors.black : JohoColors.black.opacity(0.4))
+                        .foregroundStyle(isEnabled ? colors.primary : colors.primary.opacity(0.4))
                         .frame(width: 24)
 
                     Text(isEnabled ? "Visible on Calendar" : "Hidden from Calendar")
                         .font(.system(size: 14, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     Spacer()
 
@@ -892,10 +897,10 @@ struct HolidayRuleEditorSheet: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(ruleDescription)
                     .font(.system(size: 14, weight: .regular, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                    .foregroundStyle(colors.primary.opacity(0.7))
                 Text("Rule type cannot be changed")
                     .font(.system(size: 11, weight: .regular, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.4))
+                    .foregroundStyle(colors.primary.opacity(0.4))
             }
             .padding(JohoDimensions.spacingSM)
         }
@@ -949,16 +954,16 @@ struct HolidayRuleEditorSheet: View {
         VStack(alignment: .leading, spacing: 0) {
             Text(title)
                 .font(.system(size: 11, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.5))
+                .foregroundStyle(colors.primary.opacity(0.5))
                 .padding(.horizontal, JohoDimensions.spacingSM)
                 .padding(.bottom, 4)
 
             content()
-                .background(JohoColors.white)
+                .background(colors.surface)
                 .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
-                        .stroke(JohoColors.black.opacity(0.2), lineWidth: 1)
+                        .stroke(colors.primary.opacity(0.2), lineWidth: 1)
                 )
         }
     }
@@ -967,14 +972,14 @@ struct HolidayRuleEditorSheet: View {
         Button(action: action) {
             Text(title)
                 .font(.system(size: 14, weight: .medium, design: .rounded))
-                .foregroundStyle(isSelected ? JohoColors.white : JohoColors.black)
+                .foregroundStyle(isSelected ? colors.surface : colors.primary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)
-                .background(isSelected ? JohoColors.black : JohoColors.white)
+                .background(isSelected ? colors.primary : colors.surface)
                 .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 6, style: .continuous)
-                        .stroke(JohoColors.black, lineWidth: 1)
+                        .stroke(colors.border, lineWidth: 1)
                 )
         }
         .buttonStyle(.plain)

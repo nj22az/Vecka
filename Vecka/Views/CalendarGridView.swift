@@ -393,20 +393,25 @@ extension CalendarGridView {
         }
     }
 
-    /// Returns max 3 indicators + overflow badge based on priority
+    /// Returns max 3 colored dots + overflow badge based on priority
     /// Priority order: HOL > BDY > OBS > EVT > NTE > TRP > EXP
-    /// Uses SF Symbol icons for consistency with Star page and Database
+    /// 情報デザイン: Simple colored dots are more readable than tiny icons
     @ViewBuilder
     private func priorityIndicators(for day: CalendarDay, dataCheck: DayDataCheck?) -> some View {
         let indicators = collectIndicators(for: day, dataCheck: dataCheck)
         let displayIndicators = Array(indicators.prefix(3))
         let overflow = indicators.count - 3
 
-        HStack(spacing: 2) {
+        HStack(spacing: 3) {
             ForEach(displayIndicators, id: \.self) { info in
-                Image(systemName: info.icon)
-                    .font(.system(size: 8, weight: .bold, design: .rounded))
-                    .foregroundStyle(info.color)
+                // 情報デザイン: Simple colored dots with black outline
+                Circle()
+                    .fill(info.color)
+                    .frame(width: 6, height: 6)
+                    .overlay(
+                        Circle()
+                            .stroke(day.isToday ? JohoColors.black.opacity(0.3) : colors.border.opacity(0.5), lineWidth: 0.5)
+                    )
             }
 
             // Overflow badge when >3 indicators
@@ -527,7 +532,8 @@ extension CalendarGridView {
     // MARK: - Layout Constants
 
     // 情報デザイン: Unified sizing across all devices (iPhone golden standard)
-    private var weekColumnWidth: CGFloat { 44 }
+    // Week column narrower to give more space to day columns
+    private var weekColumnWidth: CGFloat { 32 }
     private var cellSize: CGFloat { 48 }
 
     private func color(for colorName: String) -> Color {

@@ -185,24 +185,23 @@ struct ViewUtilities {
 /// Consistent animation values following Apple HIG
 enum AnimationConstants {
     // Base values
-    static let springResponse: Double = 0.4
-    static let springDampingFraction: Double = 0.8
+    static let standardDuration: Double = 0.2
 
     // Named animations for common use cases
-    /// Quick, snappy spring for selection feedback (0.3s, 0.7 damping)
-    static let quickSpring = Animation.spring(response: 0.3, dampingFraction: 0.7, blendDuration: 0.1)
-    /// Standard spring for general transitions (0.4s, 0.8 damping)
-    static let standardSpring = Animation.spring(response: springResponse, dampingFraction: springDampingFraction, blendDuration: 0.1)
-    /// Gentle spring for subtle movements (0.5s, 0.9 damping)
-    static let gentleSpring = Animation.spring(response: 0.5, dampingFraction: 0.9, blendDuration: 0.2)
+    /// Quick transition for selection feedback (0.15s)
+    static let quickTransition = Animation.easeInOut(duration: 0.15)
+    /// Standard transition for general UI changes (0.2s)
+    static let standardTransition = Animation.easeInOut(duration: 0.2)
+    /// Gentle transition for subtle movements (0.25s)
+    static let gentleTransition = Animation.easeInOut(duration: 0.25)
 
     // UI-specific animations
-    /// Sidebar/navigation selection spring (0.3s, 0.8 damping)
-    static let sidebarSpring = Animation.spring(response: 0.3, dampingFraction: 0.8)
-    /// Calendar navigation spring (0.35s, 0.85 damping)
-    static let calendarSpring = Animation.spring(response: 0.35, dampingFraction: 0.85)
-    /// Dashboard card expansion spring (0.35s, 0.9 damping)
-    static let dashboardSpring = Animation.spring(response: 0.35, dampingFraction: 0.9)
+    /// Sidebar/navigation selection (0.2s)
+    static let sidebarTransition = Animation.easeInOut(duration: 0.2)
+    /// Calendar navigation (0.2s)
+    static let calendarTransition = Animation.easeInOut(duration: 0.2)
+    /// Dashboard card expansion (0.2s)
+    static let dashboardTransition = Animation.easeInOut(duration: 0.2)
     /// Button press feedback (0.15s ease)
     static let buttonPress = Animation.easeInOut(duration: 0.15)
 }

@@ -318,6 +318,37 @@ final class Memo {
         memo.type = .note
         return memo
     }
+
+    /// Birthday memo (情報デザイン: Links to Contact for birthday tracking)
+    static func birthday(_ name: String, date: Date, contactID: UUID? = nil) -> Memo {
+        let memo = Memo(text: "\(name)'s Birthday", date: date)
+        memo.person = name
+        memo.linkedContactID = contactID
+        memo.symbolName = "birthday.cake.fill"
+        memo.color = "FECDD3"  // Pink (祝) - CELEBRATION
+        memo.type = .note
+        return memo
+    }
+
+    /// Meeting/appointment memo (情報デザイン: Scheduled with person)
+    static func meeting(_ title: String, date: Date, time: Date, person: String? = nil, duration: TimeInterval = 3600) -> Memo {
+        let memo = Memo(text: title, date: date)
+        memo.scheduledAt = time
+        memo.duration = duration
+        memo.person = person
+        memo.symbolName = "person.2.fill"
+        memo.type = .note
+        return memo
+    }
+
+    /// Task memo with priority (情報デザイン: Actionable item)
+    static func task(_ text: String, date: Date = Date(), priority: MemoPriority = .normal) -> Memo {
+        let memo = Memo(text: text, date: date)
+        memo.priority = priority
+        memo.symbolName = "checklist"
+        memo.type = .note
+        return memo
+    }
 }
 
 // MARK: - Queries

@@ -65,6 +65,10 @@ struct ShareableCountdownCard: View {
     let isAnnual: Bool
     let tasks: [EventTask]
 
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     // 情報デザイン: Event color (purple/cyan)
     private var accentColor: Color { JohoColors.cyan }
     private var lightBackground: Color { JohoColors.cyan.opacity(0.15) }
@@ -87,11 +91,11 @@ struct ShareableCountdownCard: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: "calendar.badge.clock")
                         .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     Text("ONSEN PLANNER")
                         .font(.system(size: 12, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                 }
                 .padding(.leading, JohoDimensions.spacingMD)
 
@@ -99,7 +103,7 @@ struct ShareableCountdownCard: View {
 
                 // WALL
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
@@ -115,7 +119,7 @@ struct ShareableCountdownCard: View {
 
             // Divider
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 2)
 
             // ═══════════════════════════════════════════════════════════════
@@ -127,15 +131,15 @@ struct ShareableCountdownCard: View {
                     if daysRemaining == 0 {
                         Text("TODAY")
                             .font(.system(size: 32, weight: .black, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                     } else {
                         Text("\(daysRemaining)")
                             .font(.system(size: 56, weight: .black, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
 
                         Text(daysRemaining == 1 ? "DAY" : "DAYS")
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(0.7))
                     }
                 }
                 .frame(width: 120)
@@ -143,7 +147,7 @@ struct ShareableCountdownCard: View {
 
                 // WALL
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
@@ -152,13 +156,13 @@ struct ShareableCountdownCard: View {
                     // Event name
                     Text(name)
                         .font(.system(size: 20, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .lineLimit(2)
 
                     // Target date
                     Text(targetDate.formatted(.dateTime.month(.wide).day().year()))
                         .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
 
                     // Annual indicator
                     if isAnnual {
@@ -168,7 +172,7 @@ struct ShareableCountdownCard: View {
                             Text("ANNUAL")
                                 .font(.system(size: 10, weight: .bold, design: .rounded))
                         }
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(0.5))
                     }
 
                     // Task progress (if has tasks)
@@ -176,11 +180,11 @@ struct ShareableCountdownCard: View {
                         HStack(spacing: 6) {
                             Image(systemName: completedTasks == totalTasks ? "checkmark.circle.fill" : "circle.dotted")
                                 .font(.system(size: 12, weight: .bold))
-                                .foregroundStyle(completedTasks == totalTasks ? accentColor : JohoColors.black.opacity(0.5))
+                                .foregroundStyle(completedTasks == totalTasks ? accentColor : colors.primary.opacity(0.5))
 
                             Text("\(completedTasks)/\(totalTasks) TASKS")
                                 .font(.system(size: 10, weight: .bold, design: .monospaced))
-                                .foregroundStyle(completedTasks == totalTasks ? accentColor : JohoColors.black.opacity(0.5))
+                                .foregroundStyle(completedTasks == totalTasks ? accentColor : colors.primary.opacity(0.5))
                         }
                         .padding(.top, 4)
                     }
@@ -193,7 +197,7 @@ struct ShareableCountdownCard: View {
 
             // Divider
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 2)
 
             // ═══════════════════════════════════════════════════════════════
@@ -202,25 +206,25 @@ struct ShareableCountdownCard: View {
             HStack {
                 Text(countdownMessage)
                     .font(.system(size: 11, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                    .foregroundStyle(colors.primary.opacity(0.7))
 
                 Spacer()
 
                 // 情報デザイン: Japanese design mark
                 Text("情報")
                     .font(.system(size: 10, weight: .bold))
-                    .foregroundStyle(JohoColors.black.opacity(0.4))
+                    .foregroundStyle(colors.primary.opacity(0.4))
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
             .frame(height: 32)
-            .background(JohoColors.white)
+            .background(colors.surface)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(JohoColors.black, lineWidth: 3)
+                .stroke(colors.border, lineWidth: 3)
         )
     }
 

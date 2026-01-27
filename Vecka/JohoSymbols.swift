@@ -223,6 +223,10 @@ struct JohoPhotoContainer: View {
     let size: CGFloat
     let borderWidth: CGFloat
 
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     init(
         image: Image? = nil,
         initials: String? = nil,
@@ -265,7 +269,7 @@ struct JohoPhotoContainer: View {
                 // Initials fallback
                 Text(initials.prefix(2).uppercased())
                     .font(.system(size: size * 0.35, weight: .heavy, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
             } else if let symbol = fallbackSymbol {
                 // Symbol fallback
                 Text(symbol)
@@ -274,12 +278,12 @@ struct JohoPhotoContainer: View {
                 // Category SF Symbol fallback
                 Image(systemName: category.sfSymbol)
                     .font(.system(size: size * 0.4, weight: .bold))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
             } else {
                 // Default person icon
                 Image(systemName: JohoSymbols.SFIcon.person.rawValue)
                     .font(.system(size: size * 0.4))
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(0.5))
             }
 
             // Category badge (bottom-right corner)
@@ -290,13 +294,13 @@ struct JohoPhotoContainer: View {
                         Spacer()
                         Image(systemName: category.sfSymbol)
                             .font(.system(size: size * 0.15, weight: .bold))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .padding(4)
                             .background(category.color)
                             .clipShape(Squircle(cornerRadius: 4))
                             .overlay(
                                 Squircle(cornerRadius: 4)
-                                    .stroke(JohoColors.black, lineWidth: 1)
+                                    .stroke(colors.border, lineWidth: 1)
                             )
                             .offset(x: 4, y: 4)
                     }
@@ -307,7 +311,7 @@ struct JohoPhotoContainer: View {
         .clipShape(Squircle(cornerRadius: cornerRadius))
         .overlay(
             Squircle(cornerRadius: cornerRadius)
-                .stroke(JohoColors.black, lineWidth: borderWidth)
+                .stroke(colors.border, lineWidth: borderWidth)
         )
     }
 }
@@ -507,6 +511,10 @@ struct JohoContactAvatarRow: View {
     let category: JohoSymbols.ContactCategory?
     let status: JohoSymbols.Status?
 
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     init(
         name: String,
         subtitle: String? = nil,
@@ -547,12 +555,12 @@ struct JohoContactAvatarRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(name)
                     .font(JohoFont.body.weight(.semibold))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 if let subtitle = subtitle {
                     Text(subtitle)
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                 }
             }
 
@@ -562,27 +570,27 @@ struct JohoContactAvatarRow: View {
             if let status = status {
                 Text(status.symbol)
                     .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .padding(JohoDimensions.spacingSM)
                     .background(status.color)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(JohoColors.black, lineWidth: 1.5)
+                            .stroke(colors.border, lineWidth: 1.5)
                     )
             }
 
             // Chevron
             Image(systemName: "chevron.right")
                 .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(JohoColors.black.opacity(0.5))
+                .foregroundStyle(colors.primary.opacity(0.5))
         }
         .padding(JohoDimensions.spacingMD)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: 1.5)
+                .stroke(colors.border, lineWidth: 1.5)
         )
     }
 }

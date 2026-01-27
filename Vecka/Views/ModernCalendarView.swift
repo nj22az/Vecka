@@ -190,9 +190,6 @@ struct ModernCalendarView: View {
     // Star page month detail state (for smart + button)
     @State private var isInSpecialDaysMonthDetail = false
 
-    // NavigationSplitView column visibility
-    // .automatic lets the system decide based on device orientation and size
-    @State private var columnVisibility: NavigationSplitViewVisibility = .automatic
     @State private var sidebarSelection: SidebarSelection? = .landing  // 情報デザイン: Landing page first
 
     @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
@@ -286,59 +283,6 @@ struct ModernCalendarView: View {
         }
     }
 
-    // MARK: - iPhone Layout (Icon Strip Dock)
-
-    private var iPhoneLayout: some View {
-        VStack(spacing: 0) {
-            // Content area
-            Group {
-                switch sidebarSelection {
-                case .landing, .none:
-                    NavigationStack {
-                        LandingPageView()
-                            .navigationBarHidden(true)
-                            .toolbar(.hidden, for: .navigationBar)
-                    }
-                case .calendar:
-                    NavigationStack {
-                        calendarDetailView
-                            .navigationBarHidden(true)
-                            .toolbar(.hidden, for: .navigationBar)
-                    }
-                case .contacts:
-                    NavigationStack {
-                        ContactListView()
-                            .johoBackground()
-                            .johoNavigation()
-                    }
-                case .specialDays:
-                    NavigationStack {
-                        SpecialDaysListView(isInMonthDetail: $isInSpecialDaysMonthDetail)
-                            .johoBackground()
-                            .johoNavigation()
-                    }
-                case .settings:
-                    NavigationStack {
-                        SettingsView()
-                            .johoBackground()
-                            .johoNavigation()
-                    }
-                }
-            }
-            .frame(maxHeight: .infinity)
-
-            // Bottom dock (5 navigation items only)
-            IconStripDock(selection: $sidebarSelection)
-        }
-        .johoBackground()
-        .onAppear {
-            // Initialize sidebarSelection for iPhone if nil
-            if sidebarSelection == nil {
-                sidebarSelection = .calendar
-            }
-        }
-    }
-
     /// Add action for iPhone dock (context-aware)
     /// 情報デザイン: Skip intermediate menu, go directly to unified entry form
     private var iPhoneDockAddAction: (() -> Void)? {
@@ -401,13 +345,13 @@ struct ModernCalendarView: View {
                 holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: newYear)
             }
             .onChange(of: navigationManager.targetDate) { _, newDate in
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                withAnimation(.easeInOut(duration: 0.2)) {
                     selectedDate = newDate
                 }
             }
             .onChange(of: navigationManager.shouldNavigateToPage) { _, shouldNavigate in
                 if shouldNavigate {
-                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                    withAnimation(.easeInOut(duration: 0.2)) {
                         sidebarSelection = navigationManager.targetPage
                     }
                     navigationManager.shouldNavigateToPage = false
@@ -417,7 +361,42 @@ struct ModernCalendarView: View {
 
     // MARK: - Main Content (Extracted for Type-Checker)
 
+    @ViewBuilder
     private var mainContent: some View {
+        if horizontalSizeClass == .regular {
+            iPadLayout
+        } else {
+            iPhoneSwipeLayout
+        }
+    }
+
+    // MARK: - iPad Layout (NavigationSplitView)
+
+    private var iPadLayout: some View {
+        NavigationSplitView {
+            AppSidebar(selection: $sidebarSelection)
+                .johoBackground()
+        } detail: {
+            detailView
+        }
+        .johoBackground()
+        .onAppear {
+            if sidebarSelection == nil {
+                sidebarSelection = .landing
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .navigateToPage)) { notification in
+            if let page = notification.object as? SidebarSelection {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    sidebarSelection = page
+                }
+            }
+        }
+    }
+
+    // MARK: - iPhone Layout (Swipe Navigation)
+
+    private var iPhoneSwipeLayout: some View {
         VStack(spacing: 0) {
             SwipeNavigationContainer(selection: $sidebarSelection) { page in
                 pageContent(for: page)
@@ -1127,7 +1106,7 @@ struct ModernCalendarView: View {
     private func handleDayTap(_ day: CalendarDay) {
         // 情報デザイン: Single tap selects day, shows day content below
         // Use + button in DayDashboard to add entries
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+        withAnimation(.easeInOut(duration: 0.2)) {
             selectedDate = day.date
             selectedDay = day
             if let week = currentMonth.weeks.first(where: { $0.days.contains(where: { $0.id == day.id }) }) {
@@ -1159,7 +1138,7 @@ struct ModernCalendarView: View {
 
 
     private func handleWeekTap(_ week: CalendarWeek) {
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+        withAnimation(.easeInOut(duration: 0.2)) {
             selectedWeek = week
             if let today = week.today {
                 selectedDay = today

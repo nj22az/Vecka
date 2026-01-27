@@ -22,18 +22,15 @@ struct MemoEditorView: View {
     // Core state
     @State private var text: String = ""
     @State private var date: Date = Date()
-    @State private var priority: MemoPriority = .normal
 
     // Optional details (progressive disclosure)
     @State private var amount: String = ""
     @State private var currency: String = "SEK"
     @State private var place: String = ""
-    @State private var person: String = ""
 
     // Expansion state
     @State private var showAmount = false
     @State private var showPlace = false
-    @State private var showPerson = false
     @State private var showContactLink = false
 
     // Linked contact
@@ -127,12 +124,6 @@ struct MemoEditorView: View {
 
             divider
 
-            // Priority row
-            priorityRow
-                .padding(12)
-
-            divider
-
             // Add details section
             detailChips
                 .padding(12)
@@ -147,12 +138,6 @@ struct MemoEditorView: View {
             if showPlace {
                 divider
                 placeField
-                    .padding(12)
-            }
-
-            if showPerson {
-                divider
-                personField
                     .padding(12)
             }
 
@@ -228,38 +213,6 @@ struct MemoEditorView: View {
         }
     }
 
-    // MARK: - Priority Row
-
-    private var priorityRow: some View {
-        HStack {
-            Text("PRIORITY")
-                .font(.system(size: 10, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.secondary)
-
-            Spacer()
-
-            HStack(spacing: 0) {
-                ForEach(MemoPriority.allCases, id: \.self) { p in
-                    Button {
-                        priority = p
-                        HapticManager.selection()
-                    } label: {
-                        Text(p.symbol)
-                            .font(.system(size: 18))
-                            .frame(width: 44, height: 36)
-                            .background(priority == p ? JohoColors.yellow : colors.surface)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(colors.border, lineWidth: 1)
-            )
-        }
-    }
-
     // MARK: - Detail Chips (Progressive Disclosure)
 
     private var detailChips: some View {
@@ -268,31 +221,24 @@ struct MemoEditorView: View {
                 .font(.system(size: 10, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.secondary)
 
-            // First row of chips
+            // Chips row - no semantic colors, neutral styling
             HStack(spacing: 8) {
-                detailChip("yensign.circle", "Amount", isActive: showAmount, color: JohoColors.green) {
+                detailChip("yensign.circle", "Amount", isActive: showAmount) {
                     withAnimation(.easeInOut(duration: 0.2)) { showAmount.toggle() }
                 }
 
-                detailChip("mappin", "Place", isActive: showPlace, color: JohoColors.cyan) {
+                detailChip("mappin", "Place", isActive: showPlace) {
                     withAnimation(.easeInOut(duration: 0.2)) { showPlace.toggle() }
                 }
 
-                detailChip("person", "Person", isActive: showPerson, color: JohoColors.purple) {
-                    withAnimation(.easeInOut(duration: 0.2)) { showPerson.toggle() }
-                }
-            }
-
-            // Second row: Link Contact chip (情報デザイン: memo-contact linking)
-            HStack(spacing: 8) {
-                detailChip("person.crop.circle.badge.checkmark", "Link Contact", isActive: showContactLink, color: JohoColors.pink) {
+                detailChip("person.crop.circle", "Contact", isActive: showContactLink) {
                     withAnimation(.easeInOut(duration: 0.2)) { showContactLink.toggle() }
                 }
             }
         }
     }
 
-    private func detailChip(_ icon: String, _ label: String, isActive: Bool, color: Color, action: @escaping () -> Void) -> some View {
+    private func detailChip(_ icon: String, _ label: String, isActive: Bool, action: @escaping () -> Void) -> some View {
         Button(action: {
             action()
             HapticManager.selection()
@@ -303,10 +249,10 @@ struct MemoEditorView: View {
                 Text(label)
                     .font(.system(size: 11, weight: .bold, design: .rounded))
             }
-            .foregroundStyle(isActive ? colors.surfaceInverted : colors.primary)
+            .foregroundStyle(isActive ? JohoColors.white : colors.primary)
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
-            .background(isActive ? color : colors.surface)
+            .background(isActive ? JohoColors.black : colors.surface)
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
@@ -351,7 +297,7 @@ struct MemoEditorView: View {
             }
         }
         .padding(10)
-        .background(JohoColors.greenLight)
+        .background(colors.surface)
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 8, style: .continuous)
@@ -369,7 +315,7 @@ struct MemoEditorView: View {
                 .foregroundStyle(colors.primary)
         }
         .padding(10)
-        .background(JohoColors.cyanLight)
+        .background(colors.surface)
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 8, style: .continuous)
@@ -377,25 +323,7 @@ struct MemoEditorView: View {
         )
     }
 
-    private var personField: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("PERSON")
-                .font(.system(size: 10, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.secondary)
-            TextField("Who...", text: $person)
-                .font(.system(size: 14, weight: .medium, design: .rounded))
-                .foregroundStyle(colors.primary)
-        }
-        .padding(10)
-        .background(JohoColors.purpleLight)
-        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(JohoColors.black, lineWidth: 1.5)
-        )
-    }
-
-    // MARK: - Contact Link Field (情報デザイン: memo-contact linking)
+    // MARK: - Contact Link Field
 
     private var contactLinkField: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -410,7 +338,7 @@ struct MemoEditorView: View {
                 HStack {
                     if linkedContactID != nil {
                         Image(systemName: "person.crop.circle.fill.badge.checkmark")
-                            .foregroundStyle(JohoColors.pink)
+                            .foregroundStyle(colors.primary)
                         Text(linkedContactName.isEmpty ? "Contact linked" : linkedContactName)
                             .font(.system(size: 14, weight: .medium, design: .rounded))
                             .foregroundStyle(colors.primary)
@@ -448,7 +376,7 @@ struct MemoEditorView: View {
             }
         }
         .padding(10)
-        .background(JohoColors.pinkLight)
+        .background(colors.surface)
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 8, style: .continuous)
@@ -535,7 +463,6 @@ struct MemoEditorView: View {
 
         text = memo.text
         date = memo.date
-        priority = memo.priority
 
         // Optional details
         if let amt = memo.amount {
@@ -547,11 +474,6 @@ struct MemoEditorView: View {
         if let p = memo.place, !p.isEmpty {
             place = p
             showPlace = true
-        }
-
-        if let per = memo.person, !per.isEmpty {
-            person = per
-            showPerson = true
         }
 
         // Linked contact
@@ -577,15 +499,13 @@ struct MemoEditorView: View {
 
         memo.text = text
         memo.date = date
-        memo.priority = priority
 
         // Optional details
         memo.amount = showAmount ? Double(amount) : nil
         memo.currency = showAmount ? currency : nil
         memo.place = showPlace && !place.isEmpty ? place : nil
-        memo.person = showPerson && !person.isEmpty ? person : nil
 
-        // Linked contact (情報デザイン: memo-contact linking)
+        // Linked contact
         memo.linkedContactID = showContactLink ? linkedContactID : nil
 
         if existingMemo == nil {
@@ -677,12 +597,13 @@ struct MemoContactPicker: View {
                 // Avatar
                 ZStack {
                     Circle()
-                        .fill(JohoColors.pink.opacity(0.2))
+                        .fill(JohoColors.black.opacity(0.1))
                         .frame(width: 40, height: 40)
+                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
 
                     Text(contact.initials)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.pink)
+                        .foregroundStyle(colors.primary)
                 }
 
                 // Name
@@ -703,13 +624,13 @@ struct MemoContactPicker: View {
                 // Checkmark if selected
                 if selectedContactID == contact.id {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(JohoColors.pink)
+                        .foregroundStyle(JohoColors.black)
                         .font(.system(size: 20))
                 }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
-            .background(selectedContactID == contact.id ? JohoColors.pink.opacity(0.1) : colors.surface)
+            .background(selectedContactID == contact.id ? JohoColors.black.opacity(0.1) : colors.surface)
             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
         .buttonStyle(.plain)

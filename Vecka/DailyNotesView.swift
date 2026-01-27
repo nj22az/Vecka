@@ -16,6 +16,9 @@ struct DailyNotesView: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     // Query all memos, filter to notes for this day
     @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
@@ -50,10 +53,10 @@ struct DailyNotesView: View {
                         }
                         Text(selectedDate.formatted(.dateTime.weekday(.wide)))
                             .font(JohoFont.headline)
-                            .foregroundStyle(JohoColors.white)
+                            .foregroundStyle(colors.surface)
                         Text(selectedDate.formatted(date: .long, time: .omitted))
                             .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.white.opacity(0.7))
+                            .foregroundStyle(colors.surface.opacity(0.7))
                     }
 
                     Spacer()
@@ -64,9 +67,9 @@ struct DailyNotesView: View {
                         } label: {
                             Image(systemName: "xmark")
                                 .font(.system(size: 14, weight: .bold))
-                                .foregroundStyle(JohoColors.white)
+                                .foregroundStyle(colors.surface)
                                 .frame(width: 32, height: 32)
-                                .background(JohoColors.white.opacity(0.2))
+                                .background(colors.surface.opacity(0.2))
                                 .clipShape(Circle())
                         }
                     }
@@ -88,7 +91,7 @@ struct DailyNotesView: View {
 
                                         Text(holiday.displayTitle)
                                             .font(JohoFont.body)
-                                            .foregroundStyle(JohoColors.black)
+                                            .foregroundStyle(colors.primary)
 
                                         Spacer()
 
@@ -106,7 +109,7 @@ struct DailyNotesView: View {
                 // Add Note Button (情報デザイン: Yellow accent for notes)
                 if !isCreating {
                     Button {
-                        withAnimation(AnimationConstants.quickSpring) {
+                        withAnimation(AnimationConstants.quickTransition) {
                             isCreating = true
                         }
                     } label: {
@@ -123,7 +126,7 @@ struct DailyNotesView: View {
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                         )
                     }
                     .padding(.horizontal, JohoDimensions.spacingLG)
@@ -135,12 +138,12 @@ struct DailyNotesView: View {
                         day: selectedDate,
                         onSave: { content in
                             createNote(content: content)
-                            withAnimation(AnimationConstants.quickSpring) {
+                            withAnimation(AnimationConstants.quickTransition) {
                                 isCreating = false
                             }
                         },
                         onCancel: {
-                            withAnimation(AnimationConstants.quickSpring) {
+                            withAnimation(AnimationConstants.quickTransition) {
                                 isCreating = false
                             }
                         }
@@ -171,10 +174,10 @@ struct DailyNotesView: View {
                                 .foregroundStyle(JohoColors.yellow)
                             Text("No Notes")
                                 .font(JohoFont.headline)
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                             Text("Tap 'Add Note' to create your first note for this day.")
                                 .font(JohoFont.body)
-                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(0.6))
                                 .multilineTextAlignment(.center)
                         }
                         .padding(JohoDimensions.spacingLG)
@@ -193,7 +196,7 @@ struct DailyNotesView: View {
             guard !didAppear else { return }
             didAppear = true
             if startCreating {
-                withAnimation(AnimationConstants.quickSpring) {
+                withAnimation(AnimationConstants.quickTransition) {
                     isCreating = true
                 }
             }
@@ -227,6 +230,9 @@ struct DailyNotesView: View {
 private struct JohoNoteCard: View {
     let note: Memo
 
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     // Category color from note, or default yellow
     private var categoryColor: Color {
         if let hex = note.color {
@@ -251,19 +257,19 @@ private struct JohoNoteCard: View {
             Circle()
                 .fill(categoryColor)
                 .frame(width: 12, height: 12)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
 
             // Priority symbol if high or low
             if let symbol = prioritySymbol {
                 Text(symbol)
                     .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
             }
 
             // Note content
             Text(note.text)
                 .font(JohoFont.body)
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
                 .lineLimit(2)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -271,15 +277,15 @@ private struct JohoNoteCard: View {
             if let scheduledAt = note.scheduledAt {
                 Text(scheduledAt.formatted(date: .omitted, time: .shortened))
                     .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(0.6))
             }
         }
         .padding(JohoDimensions.spacingMD)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
     }
 }
@@ -293,6 +299,9 @@ private struct JohoNoteEditor: View {
 
     @State private var text: String = ""
     @FocusState private var isFocused: Bool
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     // Note accent color (cream/yellow from design system)
     private let accentColor = SpecialDayType.note.accentColor
@@ -308,14 +317,14 @@ private struct JohoNoteEditor: View {
                 Button(action: onCancel) {
                     Text("Cancel")
                         .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .padding(.vertical, JohoDimensions.spacingMD)
-                        .background(JohoColors.white)
+                        .background(colors.surface)
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                         )
                 }
 
@@ -327,14 +336,14 @@ private struct JohoNoteEditor: View {
                 } label: {
                     Text("Save")
                         .font(JohoFont.body.bold())
-                        .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                        .foregroundStyle(canSave ? JohoColors.white : colors.primary.opacity(0.4))
                         .padding(.horizontal, JohoDimensions.spacingLG)
                         .padding(.vertical, JohoDimensions.spacingMD)
-                        .background(canSave ? accentColor : JohoColors.white)
+                        .background(canSave ? accentColor : colors.surface)
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                         )
                 }
                 .disabled(!canSave)
@@ -347,10 +356,10 @@ private struct JohoNoteEditor: View {
                     Circle()
                         .fill(accentColor)
                         .frame(width: 20, height: 20)
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+                        .overlay(Circle().stroke(colors.border, lineWidth: 2))
                     Text("New Note")
                         .font(JohoFont.displaySmall)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -359,7 +368,7 @@ private struct JohoNoteEditor: View {
                     Circle()
                         .fill(accentColor.opacity(0.2))
                         .frame(width: 60, height: 60)
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+                        .overlay(Circle().stroke(colors.border, lineWidth: 2))
 
                     Image(systemName: "note.text")
                         .font(.system(size: 24, weight: .bold))
@@ -375,33 +384,33 @@ private struct JohoNoteEditor: View {
                             .focused($isFocused)
                             .scrollContentBackground(.hidden)
                             .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(minHeight: 100)
 
                         if text.isEmpty {
                             Text("What's on your mind?")
                                 .font(JohoFont.body)
-                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(0.6))
                                 .padding(.top, 8)
                                 .padding(.leading, 4)
                                 .allowsHitTesting(false)
                         }
                     }
                     .padding(JohoDimensions.spacingSM)
-                    .background(JohoColors.white)
+                    .background(colors.surface)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                     )
                 }
             }
             .padding(JohoDimensions.spacingLG)
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
             )
         }
         .onAppear {
@@ -419,6 +428,9 @@ struct JohoNoteEditorSheet: View {
     let initialDate: Date
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     @State private var text: String = ""
     @FocusState private var isFocused: Bool
@@ -492,13 +504,13 @@ struct JohoNoteEditorSheet: View {
                     Button { dismiss() } label: {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(JohoColors.white)
                             .johoTouchTarget()
                     }
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(JohoColors.white)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -511,15 +523,15 @@ struct JohoNoteEditorSheet: View {
                             .frame(width: 36, height: 36)
                             .background(noteLightBackground)
                             .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.white, lineWidth: 1.5))
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text("NEW NOTE")
                                 .font(.system(size: 16, weight: .black, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(JohoColors.white)
                             Text("Set date & details")
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                                .foregroundStyle(JohoColors.white.opacity(0.6))
                         }
 
                         Spacer()
@@ -529,7 +541,7 @@ struct JohoNoteEditorSheet: View {
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(JohoColors.white)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -540,11 +552,11 @@ struct JohoNoteEditorSheet: View {
                     } label: {
                         Text("Save")
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.white.opacity(0.4))
                             .frame(width: 56, height: 32)
-                            .background(canSave ? noteAccentColor : JohoColors.white)
+                            .background(canSave ? noteAccentColor : JohoColors.white.opacity(0.2))
                             .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.white, lineWidth: 1.5))
                     }
                     .disabled(!canSave)
                     .frame(width: 72)
@@ -555,7 +567,7 @@ struct JohoNoteEditorSheet: View {
 
                 // Thick divider after header
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -566,13 +578,13 @@ struct JohoNoteEditorSheet: View {
                         .focused($isFocused)
                         .scrollContentBackground(.hidden)
                         .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .padding(JohoDimensions.spacingMD)
 
                     if text.isEmpty {
                         Text("What's on your mind?")
                             .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
                             .padding(.top, JohoDimensions.spacingMD + 8)
                             .padding(.leading, JohoDimensions.spacingMD + 4)
                             .allowsHitTesting(false)
@@ -583,7 +595,7 @@ struct JohoNoteEditorSheet: View {
 
                 // 情報デザイン: Row divider (solid black)
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -593,13 +605,13 @@ struct JohoNoteEditorSheet: View {
                     // LEFT: Calendar icon (40pt)
                     Image(systemName: "calendar")
                         .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -611,14 +623,14 @@ struct JohoNoteEditorSheet: View {
                     } label: {
                         Text(String(selectedYear))
                             .font(.system(size: 14, weight: .bold, design: .monospaced))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
                     }
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -630,14 +642,14 @@ struct JohoNoteEditorSheet: View {
                     } label: {
                         Text(monthName(selectedMonth))
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
                     }
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -649,7 +661,7 @@ struct JohoNoteEditorSheet: View {
                     } label: {
                         Text("\(selectedDay)")
                             .font(.system(size: 14, weight: .bold, design: .monospaced))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(width: 44)
                             .frame(maxHeight: .infinity)
                     }
@@ -659,7 +671,7 @@ struct JohoNoteEditorSheet: View {
 
                 // 情報デザイン: Row divider (solid black)
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -679,21 +691,21 @@ struct JohoNoteEditorSheet: View {
 
                         // WALL
                         Rectangle()
-                            .fill(JohoColors.black)
+                            .fill(colors.border)
                             .frame(width: 1.5)
                             .frame(maxHeight: .infinity)
 
                         // CENTER: Hint text
                         Text("Tap to change icon")
                             .font(JohoFont.caption)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
                             .padding(.leading, JohoDimensions.spacingMD)
 
                         Spacer()
 
                         Image(systemName: "chevron.right")
                             .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(JohoColors.black.opacity(0.4))
+                            .foregroundStyle(colors.primary.opacity(0.4))
                             .padding(.trailing, JohoDimensions.spacingMD)
                     }
                     .frame(height: 48)
@@ -701,11 +713,11 @@ struct JohoNoteEditorSheet: View {
                 }
                 .buttonStyle(.plain)
             }
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
             )
             .padding(.horizontal, JohoDimensions.spacingLG)
 

@@ -40,14 +40,6 @@ struct VeckaApp: App {
             ContactURL.self,
             ContactRelation.self,
             DuplicateSuggestion.self,
-            // Configuration models (used by ConfigurationManager)
-            AppConfiguration.self,
-            ValidationRule.self,
-            AlgorithmParameter.self,
-            UITheme.self,
-            TypographyScale.self,
-            SpacingScale.self,
-            IconCatalogItem.self,
             // World Clocks
             WorldClock.self,
             // Facts
@@ -243,19 +235,17 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         return Self.orientationLock
     }
     
-    /// Configures UIKit appearance for Apple Glass design compliance
+    /// Configures UIKit appearance with opaque backgrounds (情報デザイン: no glass/blur)
     private func configureGlassAppearance() {
-        // Tab Bar: Enable translucent glass effect
+        // Tab Bar: Opaque background (情報デザイン forbids blur/glass)
         let tabBarAppearance = UITabBarAppearance()
-        tabBarAppearance.configureWithDefaultBackground()
-        tabBarAppearance.backgroundEffect = UIBlurEffect(style: .systemMaterial)
+        tabBarAppearance.configureWithOpaqueBackground()
         UITabBar.appearance().standardAppearance = tabBarAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
-        
-        // Navigation Bar: Enable translucent glass effect
+
+        // Navigation Bar: Opaque background (情報デザイン forbids blur/glass)
         let navBarAppearance = UINavigationBarAppearance()
-        navBarAppearance.configureWithDefaultBackground()
-        navBarAppearance.backgroundEffect = UIBlurEffect(style: .systemMaterial)
+        navBarAppearance.configureWithOpaqueBackground()
         UINavigationBar.appearance().standardAppearance = navBarAppearance
         UINavigationBar.appearance().scrollEdgeAppearance = navBarAppearance
         UINavigationBar.appearance().compactAppearance = navBarAppearance

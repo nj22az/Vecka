@@ -15,6 +15,8 @@ import SwiftData
 struct ContactPickerSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
     @Query(sort: \Contact.familyName) private var allContacts: [Contact]
 
     let excludeContact: Contact
@@ -46,18 +48,18 @@ struct ContactPickerSheet: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: "magnifyingglass")
                         .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(0.5))
 
                     TextField("Search contacts...", text: $searchText)
                         .font(.system(size: 14, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                 }
                 .padding(JohoDimensions.spacingMD)
-                .background(JohoColors.white)
+                .background(colors.surface)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(JohoColors.black, lineWidth: 1.5)
+                        .stroke(colors.border, lineWidth: 1.5)
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.vertical, JohoDimensions.spacingSM)
@@ -70,11 +72,11 @@ struct ContactPickerSheet: View {
 
                         Image(systemName: searchText.isEmpty ? "person.crop.circle.badge.questionmark" : "magnifyingglass")
                             .font(.system(size: 40, weight: .light, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.3))
+                            .foregroundStyle(colors.primary.opacity(0.3))
 
                         Text(searchText.isEmpty ? "No other contacts available" : "No contacts match '\(searchText)'")
                             .font(.system(size: 14, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(0.5))
 
                         Spacer()
                     }
@@ -104,7 +106,7 @@ struct ContactPickerSheet: View {
                         dismiss()
                     }
                     .font(.system(size: 15, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                 }
             }
         }
@@ -125,31 +127,31 @@ struct ContactPickerSheet: View {
                     } else {
                         Text(contact.initials)
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                     }
                 }
                 .johoTouchTarget()
                 .background(accentColor.opacity(0.2))
                 .clipShape(Circle())
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
 
                 // Info
                 VStack(alignment: .leading, spacing: 2) {
                     Text(contact.displayName)
                         .font(.system(size: 15, weight: .semibold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .lineLimit(1)
 
                     // Subtitle: phone or email
                     if let phone = contact.phoneNumbers.first?.value {
                         Text(phone)
                             .font(.system(size: 12, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(0.5))
                             .lineLimit(1)
                     } else if let email = contact.emailAddresses.first?.value {
                         Text(email)
                             .font(.system(size: 12, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(0.5))
                             .lineLimit(1)
                     }
                 }
@@ -159,7 +161,7 @@ struct ContactPickerSheet: View {
                 // Chevron
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.3))
+                    .foregroundStyle(colors.primary.opacity(0.3))
             }
             .padding(.vertical, JohoDimensions.spacingSM)
         }
@@ -173,6 +175,8 @@ struct ContactPickerSheet: View {
 struct ManualMergeSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     let contact1: Contact
     let contact2: Contact
@@ -197,16 +201,16 @@ struct ManualMergeSheet: View {
                             .clipShape(Squircle(cornerRadius: 16))
                             .overlay(
                                 Squircle(cornerRadius: 16)
-                                    .stroke(JohoColors.black, lineWidth: 2)
+                                    .stroke(colors.border, lineWidth: 2)
                             )
 
                         Text("MERGE CONTACTS")
                             .font(.system(size: 18, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
 
                         Text("Select which contact to keep as primary")
                             .font(.system(size: 13, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
                             .multilineTextAlignment(.center)
                     }
                     .padding(.top, JohoDimensions.spacingSM)
@@ -215,7 +219,7 @@ struct ManualMergeSheet: View {
                     VStack(spacing: JohoDimensions.spacingSM) {
                         Text("TAP TO SELECT PRIMARY")
                             .font(.system(size: 11, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(0.5))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, JohoDimensions.spacingMD)
 
@@ -248,11 +252,11 @@ struct ManualMergeSheet: View {
 
                                 Text("'\(secondary.displayName)' will be deleted.")
                                     .font(.system(size: 13, weight: .medium, design: .rounded))
-                                    .foregroundStyle(JohoColors.black)
+                                    .foregroundStyle(colors.primary)
 
                                 Text("Their data (phone, email, address, notes) will be added to '\(primary.displayName)'.")
                                     .font(.system(size: 12, weight: .medium, design: .rounded))
-                                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                                    .foregroundStyle(colors.primary.opacity(0.7))
                             }
                             .padding(JohoDimensions.spacingMD)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -260,7 +264,7 @@ struct ManualMergeSheet: View {
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                             .overlay(
                                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                    .stroke(JohoColors.black, lineWidth: 1)
+                                    .stroke(colors.border, lineWidth: 1)
                             )
                         }
                     }
@@ -277,14 +281,14 @@ struct ManualMergeSheet: View {
                             Text("Merge Contacts")
                                 .font(.system(size: 15, weight: .bold, design: .rounded))
                         }
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(maxWidth: .infinity)
                         .frame(height: 50)
-                        .background(selectedPrimary != nil ? accentColor : JohoColors.black.opacity(0.1))
+                        .background(selectedPrimary != nil ? accentColor : colors.primary.opacity(0.1))
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                .stroke(JohoColors.black, lineWidth: 2)
+                                .stroke(colors.border, lineWidth: 2)
                         )
                     }
                     .disabled(selectedPrimary == nil)
@@ -301,7 +305,7 @@ struct ManualMergeSheet: View {
                         dismiss()
                     }
                     .font(.system(size: 15, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                 }
             }
         }
@@ -325,7 +329,7 @@ struct ManualMergeSheet: View {
                     } else {
                         Text(contact.initials)
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                     }
                 }
                 .johoTouchTarget()
@@ -337,7 +341,7 @@ struct ManualMergeSheet: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(contact.displayName)
                         .font(.system(size: 15, weight: .semibold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .lineLimit(1)
 
                     // Details count
@@ -350,7 +354,7 @@ struct ManualMergeSheet: View {
                     if !details.isEmpty {
                         Text(details.joined(separator: " • "))
                             .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(0.5))
                             .lineLimit(1)
                     }
                 }
@@ -361,12 +365,12 @@ struct ManualMergeSheet: View {
                 if isSelected {
                     Text("PRIMARY")
                         .font(.system(size: 9, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
                         .background(accentColor)
                         .clipShape(Capsule())
-                        .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
+                        .overlay(Capsule().stroke(colors.border, lineWidth: 1))
                 }
             }
             .padding(JohoDimensions.spacingMD)

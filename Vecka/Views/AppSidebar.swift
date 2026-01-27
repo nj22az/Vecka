@@ -72,6 +72,8 @@ enum SidebarSelection: String, Hashable, Identifiable, CaseIterable {
 // MARK: - App Sidebar (3x3 Icon Grid with Liquid Glass)
 
 struct AppSidebar: View {
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
     @Binding var selection: SidebarSelection?
 
     private let columns = [
@@ -85,7 +87,7 @@ struct AppSidebar: View {
             // Header (情報デザイン: Black text on white)
             Text("Onsen Planner")
                 .font(JohoFont.headline)
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.top, JohoDimensions.spacingSM)
 
@@ -103,11 +105,11 @@ struct AppSidebar: View {
                 }
             }
             .padding(JohoDimensions.spacingMD)
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
             )
             .padding(.horizontal, JohoDimensions.spacingMD)
 
@@ -117,15 +119,15 @@ struct AppSidebar: View {
             VStack(spacing: 4) {
                 Text("Onsen Planner")
                     .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                    .foregroundStyle(colors.primary.opacity(0.7))
                 Text("© 2025 The Office of Nils Johansson")
                     .font(JohoFont.labelSmall)
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(0.5))
             }
             .frame(maxWidth: .infinity)
             .padding(.bottom, JohoDimensions.spacingMD)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .navigationBarHidden(true)
     }
 }
@@ -133,6 +135,8 @@ struct AppSidebar: View {
 // MARK: - Sidebar Icon Button (情報デザイン: Solid colors + borders, NO glass)
 
 struct SidebarIconButton: View {
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
     let item: SidebarSelection
     let isSelected: Bool
     let action: () -> Void
@@ -148,18 +152,18 @@ struct SidebarIconButton: View {
 
                     Image(systemName: item.icon)
                         .font(.system(size: 22, weight: isSelected ? .bold : .medium, design: .rounded))
-                        .foregroundStyle(isSelected ? .white : JohoColors.black.opacity(0.6))
+                        .foregroundStyle(isSelected ? .white : colors.primary.opacity(0.6))
                         .johoTouchTarget(52)
                 }
                 .overlay(
                     Circle()
-                        .stroke(isSelected ? JohoColors.black : JohoColors.black.opacity(0.2), lineWidth: isSelected ? 2 : 1)
+                        .stroke(isSelected ? colors.border : colors.border.opacity(0.2), lineWidth: isSelected ? 2 : 1)
                 )
 
                 // Label
                 Text(item.label)
                     .font(.caption)
-                    .foregroundStyle(isSelected ? JohoColors.black : JohoColors.black.opacity(0.6))
+                    .foregroundStyle(isSelected ? colors.primary : colors.primary.opacity(0.6))
                     .lineLimit(1)
             }
         }

@@ -8,6 +8,8 @@ struct MonthPickerSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.locale) private var locale
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
     @State private var month: Int
     @State private var year: Int
     let onSave: (Int, Int) -> Void
@@ -44,7 +46,7 @@ struct MonthPickerSheet: View {
                 Button(action: { dismiss() }) {
                     Text(cancelLabel)
                         .font(.system(size: 16, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                 }
 
                 Spacer()
@@ -55,7 +57,7 @@ struct MonthPickerSheet: View {
                 }) {
                     Text(doneLabel)
                         .font(.system(size: 16, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                 }
             }
             .padding(.horizontal, 20)
@@ -63,7 +65,7 @@ struct MonthPickerSheet: View {
 
             // Thick black divider
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 3)
 
             // 情報デザイン: Month and Year in balanced bento layout
@@ -85,11 +87,11 @@ struct MonthPickerSheet: View {
                     }
                     .padding(JohoDimensions.spacingSM)
                 }
-                .background(JohoColors.white)
+                .background(colors.surface)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                        .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
                 )
 
                 // RIGHT: Year Grid (2x5 visible) - fills 35% width
@@ -121,11 +123,11 @@ struct MonthPickerSheet: View {
                         }
                     }
                 }
-                .background(JohoColors.white)
+                .background(colors.surface)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                        .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
                 )
             }
             .padding(JohoDimensions.spacingSM)
@@ -141,14 +143,14 @@ struct MonthPickerSheet: View {
         Button(action: { month = m }) {
             Text(localizedMonthAbbrev(for: m))
                 .font(.system(size: 14, weight: month == m ? .bold : .medium, design: .rounded))
-                .foregroundStyle(month == m ? JohoColors.white : JohoColors.black)
+                .foregroundStyle(month == m ? JohoColors.white : colors.primary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 10)
-                .background(month == m ? JohoColors.black : Color.clear)
+                .background(month == m ? colors.primary : Color.clear)
                 .clipShape(Squircle(cornerRadius: 8))
                 .overlay(
                     Squircle(cornerRadius: 8)
-                        .stroke(JohoColors.black, lineWidth: month == m ? 0 : 1)
+                        .stroke(colors.border, lineWidth: month == m ? 0 : 1)
                 )
         }
         .buttonStyle(.plain)
@@ -159,14 +161,14 @@ struct MonthPickerSheet: View {
             Text(String(y))
                 .font(.system(size: 14, weight: year == y ? .bold : .medium, design: .rounded))
                 .monospacedDigit()
-                .foregroundStyle(year == y ? JohoColors.white : JohoColors.black)
+                .foregroundStyle(year == y ? JohoColors.white : colors.primary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)
-                .background(year == y ? JohoColors.black : Color.clear)
+                .background(year == y ? colors.primary : Color.clear)
                 .clipShape(Squircle(cornerRadius: 6))
                 .overlay(
                     Squircle(cornerRadius: 6)
-                        .stroke(JohoColors.black, lineWidth: year == y ? 0 : 1)
+                        .stroke(colors.border, lineWidth: year == y ? 0 : 1)
                 )
         }
         .buttonStyle(.plain)

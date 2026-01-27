@@ -7,12 +7,13 @@ import SwiftUI
 
 struct RegionSelectionView: View {
     @Binding var selectedRegions: HolidayRegionSelection
+    @AppStorage("showHolidays") private var showHolidays = true
     @State private var showSelectionLimitAlert = false
-    @State private var expandedContinents: Set<Continent> = [.nordic] // Nordic expanded by default
+    @State private var expandedContinents: Set<Continent> = [.nordic]
     @Environment(\.johoColorMode) private var colorMode
 
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
-    private var accentColor: Color { JohoColors.pink }
+    private var selectedColor: Color { JohoColors.red }
 
     // MARK: - Continent Enum
 
@@ -84,26 +85,50 @@ struct RegionSelectionView: View {
         return selectedRegions.regions.filter { continentCodes.contains($0) }.count
     }
 
+    private var subtitleText: String {
+        if !showHolidays {
+            return "Hidden from calendar"
+        } else if selectedCount == 0 {
+            return "No regions selected"
+        } else {
+            return "\(selectedCount) region\(selectedCount == 1 ? "" : "s") active"
+        }
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: JohoDimensions.spacingMD) {
-                // Header with selection count
-                JohoPageHeader(
-                    title: NSLocalizedString("settings.region", comment: "Region"),
-                    badge: "\(selectedCount)/5",
-                    subtitle: "Tap headers to expand"
-                )
+                // Page Header with inline toggle (情報デザイン: Bento style)
+                HStack(alignment: .top) {
+                    JohoPageHeader(
+                        title: "Holidays",
+                        badge: "\(selectedCount)/5",
+                        subtitle: subtitleText
+                    )
+
+                    Spacer()
+
+                    // Toggle with border (情報デザイン: Action zone)
+                    Toggle("", isOn: $showHolidays)
+                        .labelsHidden()
+                        .tint(selectedColor)
+                        .padding(8)
+                        .background(colors.surface)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+                        )
+                }
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.top, JohoDimensions.spacingSM)
 
-                // All regions in one container
+                // Regions container (情報デザイン: Collapsible sections)
                 VStack(spacing: 0) {
                     ForEach(Continent.allCases) { continent in
                         if let regions = regionsByContinent[continent] {
-                            // Collapsible continent section
                             continentSection(continent, regions: regions)
 
-                            // Divider (except after last)
                             if continent != Continent.allCases.last {
                                 Rectangle()
                                     .fill(colors.border.opacity(0.5))
@@ -120,7 +145,7 @@ struct RegionSelectionView: View {
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
             }
-            .padding(.bottom, JohoDimensions.spacingXL)
+            .padding(.bottom, JohoDimensions.spacingLG)
         }
         .johoBackground()
         .toolbar(.hidden, for: .navigationBar)
@@ -131,14 +156,13 @@ struct RegionSelectionView: View {
         }
     }
 
-    // MARK: - Continent Section (Collapsible)
+    // MARK: - Continent Section
 
     private func continentSection(_ continent: Continent, regions: [RegionOption]) -> some View {
         let isExpanded = expandedContinents.contains(continent)
         let selected = selectedCount(for: continent)
 
         return VStack(spacing: 0) {
-            // Tappable header
             Button {
                 withAnimation(.easeInOut(duration: 0.2)) {
                     if isExpanded {
@@ -149,35 +173,35 @@ struct RegionSelectionView: View {
                 }
                 HapticManager.selection()
             } label: {
-                HStack(spacing: JohoDimensions.spacingSM) {
+                HStack(spacing: 8) {
                     // Chevron
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(colors.primary.opacity(0.5))
-                        .frame(width: 16)
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(colors.primary.opacity(0.4))
+                        .frame(width: 12)
 
                     // Continent icon
                     Image(systemName: continent.symbol)
-                        .font(.system(size: 12, weight: .bold))
+                        .font(.system(size: 10, weight: .bold))
                         .foregroundStyle(colors.primaryInverted)
-                        .frame(width: 24, height: 24)
+                        .frame(width: 20, height: 20)
                         .background(colors.primary)
-                        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                        .clipShape(Squircle(cornerRadius: 4))
 
                     // Continent name
                     Text(continent.rawValue.uppercased())
-                        .font(.system(size: 11, weight: .black, design: .rounded))
-                        .tracking(1)
+                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .tracking(0.5)
                         .foregroundStyle(colors.primary)
 
                     // Selected badge
                     if selected > 0 {
                         Text("\(selected)")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundStyle(colors.primaryInverted)
-                            .padding(.horizontal, 6)
+                            .font(.system(size: 9, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.white)
+                            .padding(.horizontal, 5)
                             .padding(.vertical, 2)
-                            .background(accentColor)
+                            .background(selectedColor)
                             .clipShape(Capsule())
                     }
 
@@ -185,32 +209,31 @@ struct RegionSelectionView: View {
 
                     // Region count
                     Text("\(regions.count)")
-                        .font(.system(size: 10, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.4))
+                        .font(.system(size: 9, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.3))
                 }
-                .padding(.horizontal, JohoDimensions.spacingMD)
-                .padding(.vertical, JohoDimensions.spacingSM)
+                .padding(.horizontal, JohoDimensions.spacingSM)
+                .padding(.vertical, 10)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
 
-            // Expanded content
             if isExpanded {
                 regionChips(regions)
             }
         }
     }
 
-    // MARK: - Region Chips (Horizontal Flow)
+    // MARK: - Region Chips
 
     private func regionChips(_ regions: [RegionOption]) -> some View {
-        FlowLayout(spacing: JohoDimensions.spacingSM) {
+        FlowLayout(spacing: 6) {
             ForEach(regions) { region in
                 regionChip(region)
             }
         }
-        .padding(.horizontal, JohoDimensions.spacingMD)
-        .padding(.bottom, JohoDimensions.spacingMD)
+        .padding(.horizontal, JohoDimensions.spacingSM)
+        .padding(.bottom, JohoDimensions.spacingSM)
     }
 
     private func regionChip(_ region: RegionOption) -> some View {
@@ -219,21 +242,21 @@ struct RegionSelectionView: View {
         return Button {
             toggle(region.code)
         } label: {
-            HStack(spacing: 6) {
+            HStack(spacing: 4) {
                 Text(region.code)
-                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .font(.system(size: 10, weight: .black, design: .rounded))
 
                 Text(region.displayName)
-                    .font(.system(size: 13, weight: .medium, design: .rounded))
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
             }
-            .foregroundStyle(isSelected ? colors.primaryInverted : colors.primary)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .background(isSelected ? accentColor : colors.surface)
-            .clipShape(Squircle(cornerRadius: 10))
+            .foregroundStyle(isSelected ? JohoColors.white : colors.primary)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .background(isSelected ? selectedColor : colors.surface)
+            .clipShape(Squircle(cornerRadius: 8))
             .overlay(
-                Squircle(cornerRadius: 10)
-                    .stroke(isSelected ? accentColor : colors.border, lineWidth: isSelected ? 2 : 1)
+                Squircle(cornerRadius: 8)
+                    .stroke(colors.border, lineWidth: isSelected ? JohoDimensions.borderMedium : JohoDimensions.borderThin)
             )
         }
         .buttonStyle(.plain)
@@ -243,7 +266,8 @@ struct RegionSelectionView: View {
 
     private func toggle(_ code: String) {
         if selectedRegions.regions.contains(code) {
-            if selectedRegions.removeRegionIfPossible(code, minimumCount: 1) {
+            // Allow deselecting down to zero
+            if selectedRegions.removeRegionIfPossible(code, minimumCount: 0) {
                 HapticManager.selection()
             }
         } else {

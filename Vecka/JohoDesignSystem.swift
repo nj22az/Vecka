@@ -142,6 +142,11 @@ enum PageHeaderColor {
     var textColor: Color {
         JohoColors.black
     }
+
+    /// Text color for the specified color mode
+    func textColor(for mode: JohoColorMode) -> Color {
+        JohoScheme.colors(for: mode).primary
+    }
 }
 
 // MARK: - App Background Options (AMOLED-friendly)
@@ -485,17 +490,20 @@ struct JohoContainer<Content: View>: View {
         self.content = content()
     }
 
+    @Environment(\.johoColorMode) private var colorMode
+
     private var fillColor: Color {
         if let bg = backgroundColor { return bg }
-        if let z = zone { return z.background }
-        return JohoColors.white
+        if let z = zone { return z.background(for: colorMode) }
+        return JohoScheme.colors(for: colorMode).surface
     }
 
     var body: some View {
+        let colors = JohoScheme.colors(for: colorMode)
         content
             .padding(padding)
             .background(fillColor)
-            .johoBordered(cornerRadius: cornerRadius, borderWidth: borderWidth)
+            .johoBordered(cornerRadius: cornerRadius, borderWidth: borderWidth, borderColor: colors.border)
     }
 }
 
@@ -723,7 +731,7 @@ struct JohoSectionBox<Content: View>: View {
         }
         .padding(JohoDimensions.spacingMD)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(zone.background)
+        .background(zone.background(for: colorMode))
         .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick, borderColor: colors.border)
     }
 }
@@ -1533,7 +1541,7 @@ struct JohoToggle: View {
 
     var body: some View {
         Button {
-            withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
+            withAnimation(.easeInOut(duration: 0.2)) {
                 isOn.toggle()
             }
             HapticManager.selection()
@@ -1735,31 +1743,19 @@ extension View {
         frame(width: size, height: size)
     }
 
-    /// Apply dark Joho background (respects user's AMOLED preference)
+    /// Apply dark Joho background (respects user's AMOLED preference and color mode)
     func johoBackground() -> some View {
-        let savedOption = UserDefaults.standard.string(forKey: "appBackgroundColor") ?? "black"
-        let option = AppBackgroundOption(rawValue: savedOption) ?? .trueBlack
-        return self
-            .background(option.color)
-            .scrollContentBackground(.hidden)
+        modifier(JohoBackgroundModifier())
     }
 
     /// Standard Joho navigation bar styling
     func johoNavigation(title: String = "") -> some View {
-        self
-            .navigationTitle(title)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(JohoColors.black, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarColorScheme(.dark, for: .navigationBar)
+        modifier(JohoNavigationModifier(title: title))
     }
 
     /// Joho List styling
     func johoListStyle() -> some View {
-        self
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            .background(JohoColors.background)
+        modifier(JohoListStyleModifier())
     }
 }
 
@@ -2307,6 +2303,47 @@ struct JohoTypeSuggestionPill: View {
 
 // MARK: - 情報デザイン ViewModifier Implementations
 // Pattern from Swift Playgrounds "Laying Out Views" ThemeViews.swift
+
+/// Background modifier that adapts to color mode
+struct JohoBackgroundModifier: ViewModifier {
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    func body(content: Content) -> some View {
+        content
+            .background(colors.canvas)
+            .scrollContentBackground(.hidden)
+    }
+}
+
+/// Navigation bar modifier that adapts to color mode
+struct JohoNavigationModifier: ViewModifier {
+    let title: String
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    func body(content: Content) -> some View {
+        content
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(colors.primary, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(colorMode == .dark ? .light : .dark, for: .navigationBar)
+    }
+}
+
+/// List style modifier that adapts to color mode
+struct JohoListStyleModifier: ViewModifier {
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    func body(content: Content) -> some View {
+        content
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .background(colors.canvas)
+    }
+}
 
 /// Bento box card modifier - white background with black border
 struct JohoBentoModifier: ViewModifier {

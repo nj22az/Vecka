@@ -14,6 +14,9 @@ struct NotesListView: View {
     @Query(sort: [SortDescriptor(\Memo.date, order: .reverse)])
     private var allMemos: [Memo]
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     // Filter to notes only
     private var notes: [Memo] {
@@ -139,7 +142,7 @@ struct NotesListView: View {
             }
             .presentationDetents([.large])
             .presentationDragIndicator(.visible)
-            .presentationBackground(JohoColors.white)  // 情報デザイン: WHITE sheet background
+            .presentationBackground(colors.surface)  // 情報デザイン: Surface sheet background
         }
     }
 
@@ -247,6 +250,9 @@ private struct NotesMonthSection: Identifiable {
 
 private struct NotesDayRow: View {
     let dayGroup: NotesDayGroup
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         HStack(spacing: JohoDimensions.spacingMD) {
@@ -261,12 +267,12 @@ private struct NotesDayRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(dayGroup.day.formatted(date: .abbreviated, time: .omitted))
                     .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 if let preview = dayGroup.preview, preview.isNotEmpty {
                     Text(preview)
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                         .lineLimit(2)
                 }
             }
@@ -287,14 +293,14 @@ private struct NotesDayRow: View {
             // Chevron
             Image(systemName: "chevron.right")
                 .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
         }
         .padding(JohoDimensions.spacingMD)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
     }
 }
@@ -302,6 +308,9 @@ private struct NotesDayRow: View {
 private struct MemoPinnedNoteRow: View {
     let note: Memo
     let daysRemaining: Int
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     // Helper to get day from memo date
     private var noteDay: Date {
@@ -325,21 +334,21 @@ private struct MemoPinnedNoteRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .lineLimit(1)
 
                 HStack(spacing: JohoDimensions.spacingXS) {
                     Text(dateText)
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
 
                     if let duration = note.duration, duration > 0 {
                         Text("•")
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
                         Text(formatDuration(duration))
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
                     }
                 }
             }
@@ -352,14 +361,14 @@ private struct MemoPinnedNoteRow: View {
             // Chevron
             Image(systemName: "chevron.right")
                 .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
         }
         .padding(JohoDimensions.spacingMD)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
         )
     }
 

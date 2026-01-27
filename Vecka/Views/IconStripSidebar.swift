@@ -13,6 +13,9 @@ import SwiftUI
 struct IconStripSidebar: View {
     @Binding var selection: SidebarSelection?
 
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     /// Action for the + button (context-aware based on current selection)
     var onAdd: (() -> Void)?
 
@@ -44,7 +47,7 @@ struct IconStripSidebar: View {
         VStack(spacing: 0) {
             // App logo/icon at top - TAPPABLE, navigates to calendar dashboard
             Button {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                withAnimation(.easeInOut(duration: 0.2)) {
                     selection = .calendar
                 }
             } label: {
@@ -63,9 +66,10 @@ struct IconStripSidebar: View {
                         isSelected: selection == item,
                         activeBarWidth: activeBarWidth,
                         iconSize: iconSize,
-                        itemHeight: itemHeight
+                        itemHeight: itemHeight,
+                        colors: colors
                     ) {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        withAnimation(.easeInOut(duration: 0.2)) {
                             selection = item
                         }
                     }
@@ -78,7 +82,7 @@ struct IconStripSidebar: View {
             if showRepackButton, let repackAction = onRepack {
                 JohoIconButton(
                     icon: "arrow.up.left.and.arrow.down.right.circle.fill",
-                    color: JohoColors.black,
+                    color: colors.primary,
                     foregroundColor: JohoColors.cyan,
                     borderColor: JohoColors.cyan,
                     size: 44,
@@ -106,7 +110,7 @@ struct IconStripSidebar: View {
             if let exportAction = onExport {
                 JohoIconButton(
                     icon: "square.and.arrow.up",
-                    color: JohoColors.black,
+                    color: colors.primary,
                     size: 44,
                     borderWidth: 2
                 ) { exportAction() }
@@ -117,7 +121,7 @@ struct IconStripSidebar: View {
             // Legend info button
             JohoIconButton(
                 icon: "info.circle",
-                color: JohoColors.black,
+                color: colors.primary,
                 size: 44,
                 borderWidth: 2
             ) { showLegend = true }
@@ -129,7 +133,7 @@ struct IconStripSidebar: View {
 
             // Divider before settings - 情報デザイン: solid black or subtle white
             Rectangle()
-                .fill(JohoColors.white.opacity(0.3))
+                .fill(colors.surface.opacity(0.3))
                 .frame(height: 1.5)
                 .padding(.horizontal, JohoDimensions.spacingSM)
                 .padding(.vertical, JohoDimensions.spacingSM)
@@ -140,16 +144,17 @@ struct IconStripSidebar: View {
                 isSelected: selection == .settings,
                 activeBarWidth: activeBarWidth,
                 iconSize: iconSize,
-                itemHeight: itemHeight
+                itemHeight: itemHeight,
+                colors: colors
             ) {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                withAnimation(.easeInOut(duration: 0.2)) {
                     selection = .settings
                 }
             }
             .padding(.bottom, JohoDimensions.spacingLG)
         }
         .frame(width: sidebarWidth)
-        .background(JohoColors.black)
+        .background(colors.primary)
     }
 
     // MARK: - App Icon Header
@@ -170,6 +175,7 @@ struct IconStripButton: View, Equatable {
     let activeBarWidth: CGFloat
     let iconSize: CGFloat
     let itemHeight: CGFloat
+    let colors: JohoScheme
     let action: () -> Void
 
     // Equatable conformance - closures not compared (always redraws on action change)
@@ -195,7 +201,7 @@ struct IconStripButton: View, Equatable {
                 // 情報デザイン: min 0.7 opacity for readability
                 Image(systemName: item.icon)
                     .font(.system(size: iconSize, weight: isSelected ? .bold : .medium, design: .rounded))
-                    .foregroundStyle(isSelected ? item.accentColor : JohoColors.white.opacity(0.7))
+                    .foregroundStyle(isSelected ? item.accentColor : colors.surface.opacity(0.7))
                     .johoTouchTarget()
 
                 Spacer()
@@ -216,24 +222,40 @@ struct IconStripButton: View, Equatable {
 // MARK: - Preview
 
 #Preview("Icon Strip Sidebar") {
-    HStack(spacing: 0) {
-        IconStripSidebar(selection: .constant(.calendar))
+    struct PreviewWrapper: View {
+        @Environment(\.johoColorMode) private var colorMode
+        private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
-        Rectangle()
-            .fill(JohoColors.background)
+        var body: some View {
+            HStack(spacing: 0) {
+                IconStripSidebar(selection: .constant(.calendar))
+
+                Rectangle()
+                    .fill(colors.canvas)
+            }
+            .frame(width: 400, height: 600)
+        }
     }
-    .frame(width: 400, height: 600)
+    return PreviewWrapper()
 }
 
 #Preview("Icon Strip - All States") {
-    HStack(spacing: 20) {
-        ForEach([SidebarSelection.calendar, .contacts, .settings], id: \.self) { selected in
-            IconStripSidebar(selection: .constant(selected))
-                .frame(height: 500)
+    struct PreviewWrapper: View {
+        @Environment(\.johoColorMode) private var colorMode
+        private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+        var body: some View {
+            HStack(spacing: 20) {
+                ForEach([SidebarSelection.calendar, .contacts, .settings], id: \.self) { selected in
+                    IconStripSidebar(selection: .constant(selected))
+                        .frame(height: 500)
+                }
+            }
+            .padding()
+            .background(colors.canvas)
         }
     }
-    .padding()
-    .background(JohoColors.background)
+    return PreviewWrapper()
 }
 
 // MARK: - Sidebar Legend View
@@ -241,6 +263,8 @@ struct IconStripButton: View, Equatable {
 /// 情報デザイン: Compact legend popover showing all entry types
 private struct SidebarLegendView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private let legendItems: [(code: String, label: String, icon: String, color: Color)] = [
         ("HOL", "HOLIDAY", "star.fill", Color(hex: "E53E3E")),
@@ -259,10 +283,10 @@ private struct SidebarLegendView: View {
                 Text("LEGEND")
                     .font(.system(size: 12, weight: .black, design: .rounded))
                     .tracking(1)
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.surface)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 4)
-                    .background(JohoColors.black)
+                    .background(colors.primary)
                     .clipShape(Capsule())
 
                 Spacer()
@@ -270,9 +294,9 @@ private struct SidebarLegendView: View {
                 Button { dismiss() } label: {
                     Image(systemName: "xmark")
                         .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(width: 24, height: 24)
-                        .background(JohoColors.black.opacity(0.1))
+                        .background(colors.primary.opacity(0.1))
                         .clipShape(Circle())
                 }
                 .buttonStyle(.plain)
@@ -281,18 +305,18 @@ private struct SidebarLegendView: View {
             .padding(.vertical, JohoDimensions.spacingSM)
 
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 1.5)
 
             // Legend rows
             VStack(spacing: 0) {
                 ForEach(Array(legendItems.enumerated()), id: \.element.code) { index, item in
                     HStack(spacing: JohoDimensions.spacingMD) {
-                        // Colored indicator circle with BLACK border
+                        // Colored indicator circle with border
                         Circle()
                             .fill(item.color)
                             .frame(width: 12, height: 12)
-                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                            .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
 
                         // Icon
                         Image(systemName: item.icon)
@@ -300,20 +324,20 @@ private struct SidebarLegendView: View {
                             .foregroundStyle(item.color)
                             .frame(width: 20)
 
-                        // Code pill
+                        // Code pill (keep on colored background, so JohoColors.black is correct)
                         Text(item.code)
                             .font(.system(size: 9, weight: .black, design: .rounded))
                             .foregroundStyle(item.color)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
-                            .background(JohoColors.white)
+                            .background(colors.surface)
                             .clipShape(Capsule())
                             .overlay(Capsule().stroke(item.color, lineWidth: 1))
 
                         // Label
                         Text(item.label)
                             .font(.system(size: 11, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
 
                         Spacer()
                     }
@@ -322,7 +346,7 @@ private struct SidebarLegendView: View {
 
                     if index < legendItems.count - 1 {
                         Rectangle()
-                            .fill(JohoColors.black.opacity(0.1))
+                            .fill(colors.border.opacity(0.3))
                             .frame(height: 1)
                             .padding(.horizontal, JohoDimensions.spacingMD)
                     }
@@ -330,11 +354,11 @@ private struct SidebarLegendView: View {
             }
             .padding(.vertical, JohoDimensions.spacingSM)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
         .frame(width: 260)
         .padding(JohoDimensions.spacingMD)

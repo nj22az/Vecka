@@ -82,6 +82,10 @@ struct RegionQuickPicker: View {
                             .padding(.vertical, 3)
                             .background(selectedColor)
                             .clipShape(Capsule())
+                            .overlay(
+                                Capsule()
+                                    .stroke(JohoColors.black, lineWidth: 1)
+                            )
                     }
 
                     // Overflow indicator
@@ -93,6 +97,10 @@ struct RegionQuickPicker: View {
                             .padding(.vertical, 3)
                             .background(JohoColors.black.opacity(0.1))
                             .clipShape(Capsule())
+                            .overlay(
+                                Capsule()
+                                    .stroke(JohoColors.black, lineWidth: 1)
+                            )
                     }
                 }
 

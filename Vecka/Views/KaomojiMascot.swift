@@ -134,6 +134,10 @@ struct JohoMascot: View {
     var showBlink: Bool = true
     var autoOnsen: Bool = false  // Enable random ♨️ transformation
 
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     // MARK: - State
 
     @State private var isActive = false  // Memory safety: prevents async callbacks after disappear
@@ -192,12 +196,12 @@ struct JohoMascot: View {
                     .scaleEffect(puff.scale)
             }
 
-            // Container squircle (情報デザイン: white + black border)
+            // Container squircle (情報デザイン: surface + border)
             Squircle(cornerRadius: cornerRadius)
-                .fill(isOnsenMode ? JohoColors.cyan.opacity(0.3) : JohoColors.white)
+                .fill(isOnsenMode ? JohoColors.cyan.opacity(0.3) : colors.surface)
                 .overlay(
                     Squircle(cornerRadius: cornerRadius)
-                        .stroke(JohoColors.black, lineWidth: borderWidth)
+                        .stroke(colors.border, lineWidth: borderWidth)
                 )
                 .frame(width: size, height: size)
 
@@ -228,7 +232,7 @@ struct JohoMascot: View {
             HapticManager.selection()
 
             if isOnsenMode {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                withAnimation(.easeInOut(duration: 0.2)) {
                     isOnsenMode = false
                     steamPuffs.removeAll()
                 }
@@ -262,7 +266,7 @@ struct JohoMascot: View {
                 .frame(width: size * 0.7, height: size * 0.25)
                 .overlay(
                     Ellipse()
-                        .stroke(JohoColors.black, lineWidth: borderWidth * 0.5)
+                        .stroke(colors.border, lineWidth: borderWidth * 0.5)
                 )
                 .offset(y: size * 0.15)
                 .scaleEffect(1.0 + waterRipple * 0.05)
@@ -304,11 +308,11 @@ struct JohoMascot: View {
                 HStack(spacing: eyeSpacing) {
                     // Closed eye arc (^)
                     WinkEyeShape()
-                        .stroke(JohoColors.black, style: StrokeStyle(lineWidth: size * 0.035, lineCap: .round))
+                        .stroke(colors.primary, style: StrokeStyle(lineWidth: size * 0.035, lineCap: .round))
                         .frame(width: eyeSize * 1.3, height: eyeSize * 0.6)
 
                     WinkEyeShape()
-                        .stroke(JohoColors.black, style: StrokeStyle(lineWidth: size * 0.035, lineCap: .round))
+                        .stroke(colors.primary, style: StrokeStyle(lineWidth: size * 0.035, lineCap: .round))
                         .frame(width: eyeSize * 1.3, height: eyeSize * 0.6)
                 }
                 .offset(y: size * -0.12)
@@ -338,7 +342,7 @@ struct JohoMascot: View {
                 if let symbol = displayedMood.accentSymbol {
                     Image(systemName: symbol)
                         .font(.system(size: size * 0.12, weight: .bold))
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(0.5))
                         .symbolEffect(.bounce, options: .repeating.speed(0.3), value: heartBounce)
                         .offset(x: size * 0.28, y: size * -0.28)
                 }
@@ -355,7 +359,7 @@ struct JohoMascot: View {
         } else {
             // Normal circle eyes
             Circle()
-                .fill(JohoColors.black)
+                .fill(colors.primary)
                 .frame(width: eyeSize, height: eyeSize)
                 .scaleEffect(y: isBlinking ? 0.1 : 1.0)
                 .animation(.easeInOut(duration: 0.08), value: isBlinking)
@@ -370,7 +374,7 @@ struct JohoMascot: View {
         case .onsen:
             // ♨️ Onsen steam wavy eyes
             OnsenEyeShape()
-                .stroke(JohoColors.black, style: StrokeStyle(lineWidth: size * 0.025, lineCap: .round))
+                .stroke(colors.primary, style: StrokeStyle(lineWidth: size * 0.025, lineCap: .round))
                 .frame(width: eyeSize * 1.2, height: eyeSize * 1.4)
                 .scaleEffect(y: isBlinking ? 0.1 : 1.0)
                 .animation(.easeInOut(duration: 0.08), value: isBlinking)
@@ -379,7 +383,7 @@ struct JohoMascot: View {
             // ★ Star eyes
             Image(systemName: "star.fill")
                 .font(.system(size: eyeSize * 1.1, weight: .bold))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
                 .scaleEffect(y: isBlinking ? 0.1 : 1.0)
                 .animation(.easeInOut(duration: 0.08), value: isBlinking)
 
@@ -387,14 +391,14 @@ struct JohoMascot: View {
             // Wink - left eye open, right eye closed (^)
             if isLeft {
                 Circle()
-                    .fill(JohoColors.black)
+                    .fill(colors.primary)
                     .frame(width: eyeSize, height: eyeSize)
                     .scaleEffect(y: isBlinking ? 0.1 : 1.0)
                     .animation(.easeInOut(duration: 0.08), value: isBlinking)
             } else {
                 // Closed eye arc (^)
                 WinkEyeShape()
-                    .stroke(JohoColors.black, style: StrokeStyle(lineWidth: size * 0.03, lineCap: .round))
+                    .stroke(colors.primary, style: StrokeStyle(lineWidth: size * 0.03, lineCap: .round))
                     .frame(width: eyeSize * 1.2, height: eyeSize * 0.6)
             }
         }
@@ -412,7 +416,7 @@ struct JohoMascot: View {
 
     private var mouthView: some View {
         MascotMouth(curve: displayedMood.mouthCurve, isSurprised: displayedMood == .surprised)
-            .stroke(JohoColors.black, style: StrokeStyle(lineWidth: size * 0.04, lineCap: .round))
+            .stroke(colors.primary, style: StrokeStyle(lineWidth: size * 0.04, lineCap: .round))
             .frame(width: mouthWidth, height: mouthWidth * 0.5)
     }
 
@@ -471,7 +475,7 @@ struct JohoMascot: View {
 
     private func triggerOnsenTransform() {
         // Transform to ♨️ onsen face
-        withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+        withAnimation(.easeInOut(duration: 0.2)) {
             isOnsenMode = true
         }
 
@@ -486,7 +490,7 @@ struct JohoMascot: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [self] in
             guard isActive else { return }  // Memory safety: stop if view disappeared
 
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+            withAnimation(.easeInOut(duration: 0.2)) {
                 isOnsenMode = false
                 waterRipple = 0
             }
@@ -513,7 +517,7 @@ struct JohoMascot: View {
             guard isActive else { return }  // Memory safety: stop if view disappeared
 
             // Show sparkle
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+            withAnimation(.easeInOut(duration: 0.2)) {
                 sparkleVisible = true
             }
 
@@ -538,7 +542,7 @@ struct JohoMascot: View {
         let xOffset = CGFloat.random(in: -size * 0.3...size * 0.3)
         let heart = FloatingHeart(xOffset: xOffset)
 
-        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+        withAnimation(.easeInOut(duration: 0.2)) {
             floatingHearts.append(heart)
         }
 
@@ -570,7 +574,7 @@ struct JohoMascot: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.3) { [self] in
                 guard isActive else { return }  // Memory safety: stop if view disappeared
 
-                withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                withAnimation(.easeInOut(duration: 0.2)) {
                     steamPuffs.append(puff)
                 }
 

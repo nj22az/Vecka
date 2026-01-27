@@ -10,6 +10,8 @@ import SwiftUI
 
 struct OnboardingView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
     @Binding var hasCompletedOnboarding: Bool
 
     @State private var currentPage = 0
@@ -62,7 +64,7 @@ struct OnboardingView: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     ForEach(0..<pages.count, id: \.self) { index in
                         Circle()
-                            .fill(index == currentPage ? JohoColors.black : JohoColors.black.opacity(0.2))
+                            .fill(index == currentPage ? colors.primary : colors.primary.opacity(0.2))
                             .frame(width: 8, height: 8)
                     }
                 }
@@ -83,7 +85,7 @@ struct OnboardingView: View {
                         .foregroundStyle(JohoColors.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, JohoDimensions.spacingMD)
-                        .background(JohoColors.black)
+                        .background(colors.primary)
                         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 }
                 .padding(.horizontal, JohoDimensions.spacingLG)
@@ -95,14 +97,14 @@ struct OnboardingView: View {
                     } label: {
                         Text("Skip")
                             .font(.system(size: 14, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
                     }
                     .padding(.top, JohoDimensions.spacingXS)
                 }
             }
             .padding(.bottom, JohoDimensions.spacingXL)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     private func completeOnboarding() {
@@ -124,6 +126,8 @@ struct OnboardingPage {
 // MARK: - Onboarding Page View
 
 struct OnboardingPageView: View {
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
     let page: OnboardingPage
 
     var body: some View {
@@ -137,39 +141,39 @@ struct OnboardingPageView: View {
                     .frame(width: 120, height: 120)
 
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
-                    .stroke(JohoColors.black, lineWidth: 2)
+                    .stroke(colors.border, lineWidth: 2)
                     .frame(width: 120, height: 120)
 
                 Image(systemName: page.icon)
                     .font(.system(size: 48, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
             }
 
             // Title
             Text(page.title)
                 .font(.system(size: 24, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
                 .multilineTextAlignment(.center)
                 .padding(.top, JohoDimensions.spacingSM)
 
             // Subtitle
             Text(page.subtitle)
                 .font(.system(size: 16, weight: .medium, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.7))
+                .foregroundStyle(colors.primary.opacity(0.7))
                 .multilineTextAlignment(.center)
 
             // Description (情報デザイン: Info box with border)
             Text(page.description)
                 .font(.system(size: 14, weight: .medium, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.8))
+                .foregroundStyle(colors.primary.opacity(0.8))
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
                 .padding(JohoDimensions.spacingMD)
-                .background(JohoColors.black.opacity(0.03))
+                .background(colors.primary.opacity(0.03))
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .stroke(JohoColors.black.opacity(0.1), lineWidth: 1)
+                        .stroke(colors.primary.opacity(0.1), lineWidth: 1)
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
 

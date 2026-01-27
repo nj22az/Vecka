@@ -25,6 +25,10 @@ struct OnsenRobotMascot: View {
     var showAntenna: Bool = true
     var showHand: Bool = true
 
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     // MARK: - Animation State
 
     @State private var isActive = false  // Memory safety: prevents async callbacks after disappear
@@ -83,11 +87,11 @@ struct OnsenRobotMascot: View {
             Circle()
                 .fill(accentColor)
                 .frame(width: size * 0.08, height: size * 0.08)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: borderWidth * 0.5))
+                .overlay(Circle().stroke(colors.border, lineWidth: borderWidth * 0.5))
 
             // Antenna stick
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.primary)
                 .frame(width: size * 0.025, height: size * 0.12)
         }
         .overlay(
@@ -104,13 +108,13 @@ struct OnsenRobotMascot: View {
 
     private var robotBody: some View {
         ZStack {
-            // TV body shape (情報デザイン: squircle + black border)
+            // TV body shape (情報デザイン: squircle + border)
             Squircle(cornerRadius: cornerRadius)
-                .fill(JohoColors.white)
+                .fill(colors.surface)
                 .frame(width: bodyWidth, height: bodyHeight)
                 .overlay(
                     Squircle(cornerRadius: cornerRadius)
-                        .stroke(JohoColors.black, lineWidth: borderWidth)
+                        .stroke(colors.border, lineWidth: borderWidth)
                 )
 
             // Screen area (slightly inset)
@@ -119,7 +123,7 @@ struct OnsenRobotMascot: View {
                 .frame(width: bodyWidth * 0.85, height: bodyHeight * 0.75)
                 .overlay(
                     Squircle(cornerRadius: cornerRadius * 0.7)
-                        .stroke(JohoColors.black, lineWidth: borderWidth * 0.5)
+                        .stroke(colors.border, lineWidth: borderWidth * 0.5)
                 )
 
             // Face elements
@@ -144,7 +148,7 @@ struct OnsenRobotMascot: View {
 
             // Mouth (simple smile)
             MascotMouth(curve: 0.4, isSurprised: false)
-                .stroke(JohoColors.black, style: StrokeStyle(lineWidth: borderWidth, lineCap: .round))
+                .stroke(colors.primary, style: StrokeStyle(lineWidth: borderWidth, lineCap: .round))
                 .frame(width: size * 0.2, height: size * 0.08)
         }
     }
@@ -153,15 +157,15 @@ struct OnsenRobotMascot: View {
 
     private var eyeView: some View {
         ZStack {
-            // Eye background (white)
+            // Eye background (surface)
             Circle()
-                .fill(JohoColors.white)
+                .fill(colors.surface)
                 .frame(width: eyeSize * 1.4, height: eyeSize * 1.4)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: borderWidth * 0.5))
+                .overlay(Circle().stroke(colors.border, lineWidth: borderWidth * 0.5))
 
-            // Pupil (black, blinks)
+            // Pupil (blinks)
             Circle()
-                .fill(JohoColors.black)
+                .fill(colors.primary)
                 .frame(width: eyeSize, height: eyeSize)
                 .scaleEffect(y: isBlinking ? 0.1 : 1.0)
                 .animation(.easeInOut(duration: 0.08), value: isBlinking)
@@ -174,9 +178,9 @@ struct OnsenRobotMascot: View {
         HStack(spacing: size * 0.03) {
             ForEach(0..<3, id: \.self) { index in
                 Circle()
-                    .fill(index == 1 ? accentColor : JohoColors.black.opacity(0.3))
+                    .fill(index == 1 ? accentColor : colors.primary.opacity(0.3))
                     .frame(width: size * 0.035, height: size * 0.035)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
+                    .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
             }
         }
     }
@@ -189,9 +193,9 @@ struct OnsenRobotMascot: View {
             .foregroundStyle(JohoColors.yellow)
             .background(
                 Circle()
-                    .fill(JohoColors.white)
+                    .fill(colors.surface)
                     .frame(width: handSize * 1.1, height: handSize * 1.1)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: borderWidth * 0.6))
+                    .overlay(Circle().stroke(colors.border, lineWidth: borderWidth * 0.6))
             )
             .rotationEffect(
                 .degrees(isWaving ? -15 : 15),
@@ -256,6 +260,10 @@ struct CompactRobotMascot: View {
     var size: CGFloat = 44
     var accentColor: Color = JohoColors.cyan
 
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     @State private var isActive = false  // Memory safety: prevents async callbacks after disappear
     @State private var isBlinking = false
     @State private var blinkTimer: Timer?
@@ -264,11 +272,11 @@ struct CompactRobotMascot: View {
         ZStack {
             // Simple squircle body
             Squircle(cornerRadius: size * 0.2)
-                .fill(JohoColors.white)
+                .fill(colors.surface)
                 .frame(width: size, height: size)
                 .overlay(
                     Squircle(cornerRadius: size * 0.2)
-                        .stroke(JohoColors.black, lineWidth: 1.5)
+                        .stroke(colors.border, lineWidth: 1.5)
                 )
 
             // Screen tint
@@ -279,12 +287,12 @@ struct CompactRobotMascot: View {
             // Eyes
             HStack(spacing: size * 0.18) {
                 Circle()
-                    .fill(JohoColors.black)
+                    .fill(colors.primary)
                     .frame(width: size * 0.12, height: size * 0.12)
                     .scaleEffect(y: isBlinking ? 0.1 : 1.0)
 
                 Circle()
-                    .fill(JohoColors.black)
+                    .fill(colors.primary)
                     .frame(width: size * 0.12, height: size * 0.12)
                     .scaleEffect(y: isBlinking ? 0.1 : 1.0)
             }
@@ -293,7 +301,7 @@ struct CompactRobotMascot: View {
 
             // Smile
             MascotMouth(curve: 0.35, isSurprised: false)
-                .stroke(JohoColors.black, style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
+                .stroke(colors.primary, style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
                 .frame(width: size * 0.25, height: size * 0.1)
                 .offset(y: size * 0.12)
 
@@ -301,7 +309,7 @@ struct CompactRobotMascot: View {
             Circle()
                 .fill(accentColor)
                 .frame(width: size * 0.1, height: size * 0.1)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
+                .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
                 .offset(y: -size * 0.42)
         }
         .onAppear {

@@ -13,6 +13,9 @@ import SwiftData
 /// A non-aggressive banner that appears when potential duplicate contacts are detected
 /// 情報デザイン: Orange accent for warnings, tappable to review
 struct DuplicateSuggestionBanner: View {
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     let suggestionCount: Int
     let onTap: () -> Void
 
@@ -30,18 +33,18 @@ struct DuplicateSuggestionBanner: View {
 
                 // WALL
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
 
                 // CENTER: Message
                 VStack(alignment: .leading, spacing: 2) {
                     Text("POSSIBLE DUPLICATES")
                         .font(.system(size: 12, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     Text("\(suggestionCount) contact\(suggestionCount == 1 ? "" : "s") may be duplicated")
                         .font(.system(size: 10, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
 
@@ -56,16 +59,16 @@ struct DuplicateSuggestionBanner: View {
                         .padding(.vertical, 4)
                         .background(warningColor)
                         .clipShape(Capsule())
-                        .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1.5))
+                        .overlay(Capsule().stroke(colors.border, lineWidth: 1.5))
 
                     Image(systemName: "chevron.right")
                         .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                 }
                 .padding(.trailing, JohoDimensions.spacingMD)
             }
             .frame(height: 56)
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
@@ -82,6 +85,8 @@ struct DuplicateSuggestionBanner: View {
 struct DuplicateReviewSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
     @Query(sort: \Contact.familyName) private var contacts: [Contact]
 
     @State private var suggestions: [DuplicateSuggestion] = []
@@ -162,12 +167,12 @@ struct DuplicateReviewSheet: View {
                                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                 .overlay(
                                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(JohoColors.black, lineWidth: 1.5)
+                                        .stroke(colors.border, lineWidth: 1.5)
                                 )
 
                             Text("REVIEW DUPLICATES")
                                 .font(JohoFont.headline)
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
 
                             Spacer()
 
@@ -179,13 +184,13 @@ struct DuplicateReviewSheet: View {
                                 .padding(.vertical, 4)
                                 .background(warningColor)
                                 .clipShape(Capsule())
-                                .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1.5))
+                                .overlay(Capsule().stroke(colors.border, lineWidth: 1.5))
                         }
                         .padding(JohoDimensions.spacingMD)
 
                         // Divider
                         Rectangle()
-                            .fill(JohoColors.black)
+                            .fill(colors.border)
                             .frame(height: 1.5)
 
                         // Clusters list (grouped duplicates)
@@ -200,7 +205,7 @@ struct DuplicateReviewSheet: View {
                             .padding(JohoDimensions.spacingMD)
                         }
                     }
-                    .background(JohoColors.white)
+                    .background(colors.surface)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusLarge)
@@ -243,14 +248,14 @@ struct DuplicateReviewSheet: View {
             } label: {
                 Text("Done")
                     .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .padding(.horizontal, JohoDimensions.spacingMD)
                     .padding(.vertical, JohoDimensions.spacingMD)
-                    .background(JohoColors.white)
+                    .background(colors.surface)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(JohoColors.black, lineWidth: 1.5)
+                            .stroke(colors.border, lineWidth: 1.5)
                     )
             }
             .buttonStyle(.plain)
@@ -269,11 +274,11 @@ struct DuplicateReviewSheet: View {
 
             Text("NO DUPLICATES")
                 .font(JohoFont.headline)
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
 
             Text("All contacts are unique")
                 .font(JohoFont.bodySmall)
-                .foregroundStyle(JohoColors.black.opacity(0.6))
+                .foregroundStyle(colors.primary.opacity(0.6))
         }
         .frame(minHeight: 200)
         .frame(maxWidth: .infinity)
@@ -297,24 +302,24 @@ struct DuplicateReviewSheet: View {
                         .frame(width: 24, height: 24)
                         .background(warningColor)
                         .clipShape(Circle())
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
 
                     Text("POSSIBLE DUPLICATES")
                         .font(.system(size: 11, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     Spacer()
 
                     Image(systemName: "chevron.right")
                         .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                 }
                 .padding(JohoDimensions.spacingSM)
                 .background(warningColor.opacity(0.1))
 
                 // Divider
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1)
 
                 // Contact previews (stack all in cluster)
@@ -329,18 +334,18 @@ struct DuplicateReviewSheet: View {
                         // Divider between contacts (not after last)
                         if idx < cluster.count - 1 {
                             Rectangle()
-                                .fill(JohoColors.black.opacity(0.2))
+                                .fill(colors.primary.opacity(0.2))
                                 .frame(height: 1)
                                 .padding(.horizontal, JohoDimensions.spacingSM)
                         }
                     }
                 }
             }
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(JohoColors.black, lineWidth: 1.5)
+                    .stroke(colors.border, lineWidth: 1.5)
             )
         }
         .buttonStyle(.plain)
@@ -355,13 +360,13 @@ struct DuplicateReviewSheet: View {
             VStack(alignment: .leading, spacing: 1) {
                 Text(contact.displayName)
                     .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .lineLimit(1)
 
                 if !contact.phoneNumbers.isEmpty {
                     Text(contact.phoneNumbers[0].value)
                         .font(.system(size: 9, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                         .lineLimit(1)
                 }
             }
@@ -438,6 +443,8 @@ struct DuplicateReviewSheet: View {
 /// Sheet to confirm and choose primary contact for merging
 struct MergeContactSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     let suggestion: DuplicateSuggestion
     let contact1: Contact
@@ -471,17 +478,17 @@ struct MergeContactSheet: View {
                                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                 .overlay(
                                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(JohoColors.black, lineWidth: 1.5)
+                                        .stroke(colors.border, lineWidth: 1.5)
                                 )
 
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("MERGE CONTACTS")
                                     .font(JohoFont.headline)
-                                    .foregroundStyle(JohoColors.black)
+                                    .foregroundStyle(colors.primary)
 
                                 Text("Select the primary contact to keep")
                                     .font(JohoFont.labelSmall)
-                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                                    .foregroundStyle(colors.primary.opacity(0.6))
                             }
 
                             Spacer()
@@ -490,7 +497,7 @@ struct MergeContactSheet: View {
 
                         // Divider
                         Rectangle()
-                            .fill(JohoColors.black)
+                            .fill(colors.border)
                             .frame(height: 1.5)
 
                         // Contact selection
@@ -507,7 +514,7 @@ struct MergeContactSheet: View {
 
                         // Divider
                         Rectangle()
-                            .fill(JohoColors.black)
+                            .fill(colors.border)
                             .frame(height: 1.5)
 
                         // Merge preview
@@ -518,12 +525,12 @@ struct MergeContactSheet: View {
                         } else {
                             Text("Select a contact above to see merge preview")
                                 .font(JohoFont.bodySmall)
-                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(0.6))
                                 .frame(maxWidth: .infinity)
                                 .padding(JohoDimensions.spacingLG)
                         }
                     }
-                    .background(JohoColors.white)
+                    .background(colors.surface)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusLarge)
@@ -549,14 +556,14 @@ struct MergeContactSheet: View {
             } label: {
                 Text("Not Duplicates")
                     .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .padding(.horizontal, JohoDimensions.spacingMD)
                     .padding(.vertical, JohoDimensions.spacingMD)
-                    .background(JohoColors.white)
+                    .background(colors.surface)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(JohoColors.black, lineWidth: 1.5)
+                            .stroke(colors.border, lineWidth: 1.5)
                     )
             }
             .buttonStyle(.plain)
@@ -572,14 +579,14 @@ struct MergeContactSheet: View {
             } label: {
                 Text("Merge")
                     .font(JohoFont.body.bold())
-                    .foregroundStyle(selectedPrimary != nil ? JohoColors.white : JohoColors.black.opacity(0.4))
+                    .foregroundStyle(selectedPrimary != nil ? JohoColors.white : colors.primary.opacity(0.4))
                     .padding(.horizontal, JohoDimensions.spacingLG)
                     .padding(.vertical, JohoDimensions.spacingMD)
-                    .background(selectedPrimary != nil ? accentColor : JohoColors.white)
+                    .background(selectedPrimary != nil ? accentColor : colors.surface)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(JohoColors.black, lineWidth: 1.5)
+                            .stroke(colors.border, lineWidth: 1.5)
                     )
             }
             .buttonStyle(.plain)
@@ -595,9 +602,9 @@ struct MergeContactSheet: View {
                 // Selection indicator
                 ZStack {
                     Circle()
-                        .fill(isSelected ? accentColor : JohoColors.white)
+                        .fill(isSelected ? accentColor : colors.surface)
                         .frame(width: 24, height: 24)
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+                        .overlay(Circle().stroke(colors.border, lineWidth: 2))
 
                     if isSelected {
                         Image(systemName: "checkmark")
@@ -613,12 +620,12 @@ struct MergeContactSheet: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(contact.displayName)
                         .font(JohoFont.body.bold())
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     if let org = contact.organizationName, !org.isEmpty {
                         Text(org)
                             .font(JohoFont.labelSmall)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
                     }
 
                     // Stats
@@ -656,7 +663,7 @@ struct MergeContactSheet: View {
             Text("\(count)")
                 .font(.system(size: 9, weight: .bold, design: .rounded))
         }
-        .foregroundStyle(JohoColors.black.opacity(0.6))
+        .foregroundStyle(colors.primary.opacity(0.6))
     }
 
     // MARK: - Merge Preview
@@ -696,7 +703,7 @@ struct MergeContactSheet: View {
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                    .stroke(JohoColors.black, lineWidth: 1)
+                    .stroke(colors.border, lineWidth: 1)
             )
 
             Text("The secondary contact will be deleted after merge.")
@@ -709,11 +716,11 @@ struct MergeContactSheet: View {
         HStack {
             Text(label)
                 .font(.system(size: 11, weight: .medium, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.6))
+                .foregroundStyle(colors.primary.opacity(0.6))
             Spacer()
             Text(value)
                 .font(.system(size: 11, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
         }
     }
 }
@@ -723,6 +730,8 @@ struct MergeContactSheet: View {
 /// Sheet to merge multiple duplicate contacts at once
 struct ClusterMergeSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     let cluster: [Contact]
     let onMerge: (Contact, [Contact]) -> Void  // (primary, secondaries)
@@ -754,17 +763,17 @@ struct ClusterMergeSheet: View {
                                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                 .overlay(
                                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(JohoColors.black, lineWidth: 1.5)
+                                        .stroke(colors.border, lineWidth: 1.5)
                                 )
 
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("MERGE \(cluster.count) CONTACTS")
                                     .font(JohoFont.headline)
-                                    .foregroundStyle(JohoColors.black)
+                                    .foregroundStyle(colors.primary)
 
                                 Text("Select the primary contact to keep")
                                     .font(JohoFont.labelSmall)
-                                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                                    .foregroundStyle(colors.primary.opacity(0.6))
                             }
 
                             Spacer()
@@ -773,7 +782,7 @@ struct ClusterMergeSheet: View {
 
                         // Divider
                         Rectangle()
-                            .fill(JohoColors.black)
+                            .fill(colors.border)
                             .frame(height: 1.5)
 
                         // Contact selection (all contacts in cluster)
@@ -788,7 +797,7 @@ struct ClusterMergeSheet: View {
 
                         // Divider
                         Rectangle()
-                            .fill(JohoColors.black)
+                            .fill(colors.border)
                             .frame(height: 1.5)
 
                         // Merge preview
@@ -799,12 +808,12 @@ struct ClusterMergeSheet: View {
                         } else {
                             Text("Select a contact above to see merge preview")
                                 .font(JohoFont.bodySmall)
-                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(0.6))
                                 .frame(maxWidth: .infinity)
                                 .padding(JohoDimensions.spacingLG)
                         }
                     }
-                    .background(JohoColors.white)
+                    .background(colors.surface)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusLarge)
@@ -830,14 +839,14 @@ struct ClusterMergeSheet: View {
             } label: {
                 Text("Not Duplicates")
                     .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .padding(.horizontal, JohoDimensions.spacingMD)
                     .padding(.vertical, JohoDimensions.spacingMD)
-                    .background(JohoColors.white)
+                    .background(colors.surface)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(JohoColors.black, lineWidth: 1.5)
+                            .stroke(colors.border, lineWidth: 1.5)
                     )
             }
             .buttonStyle(.plain)
@@ -859,14 +868,14 @@ struct ClusterMergeSheet: View {
                     }
                 }
                 .font(JohoFont.body.bold())
-                .foregroundStyle(selectedPrimary != nil ? JohoColors.white : JohoColors.black.opacity(0.4))
+                .foregroundStyle(selectedPrimary != nil ? JohoColors.white : colors.primary.opacity(0.4))
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.vertical, JohoDimensions.spacingMD)
                 .background(selectedPrimary != nil ? accentColor : JohoColors.white)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .stroke(JohoColors.black, lineWidth: 1.5)
+                        .stroke(colors.border, lineWidth: 1.5)
                 )
             }
             .buttonStyle(.plain)
@@ -882,9 +891,9 @@ struct ClusterMergeSheet: View {
                 // Selection indicator
                 ZStack {
                     Circle()
-                        .fill(isSelected ? accentColor : JohoColors.white)
+                        .fill(isSelected ? accentColor : colors.surface)
                         .frame(width: 24, height: 24)
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+                        .overlay(Circle().stroke(colors.border, lineWidth: 2))
 
                     if isSelected {
                         Image(systemName: "checkmark")
@@ -900,12 +909,12 @@ struct ClusterMergeSheet: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(contact.displayName)
                         .font(JohoFont.body.bold())
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     if let org = contact.organizationName, !org.isEmpty {
                         Text(org)
                             .font(JohoFont.labelSmall)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
                     }
 
                     // Stats
@@ -948,7 +957,7 @@ struct ClusterMergeSheet: View {
             Text("\(count)")
                 .font(.system(size: 9, weight: .bold, design: .rounded))
         }
-        .foregroundStyle(JohoColors.black.opacity(0.6))
+        .foregroundStyle(colors.primary.opacity(0.6))
     }
 
     // MARK: - Merge Preview
@@ -991,7 +1000,7 @@ struct ClusterMergeSheet: View {
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                    .stroke(JohoColors.black, lineWidth: 1)
+                    .stroke(colors.border, lineWidth: 1)
             )
 
             Text("\(secondaries.count) contact\(secondaries.count == 1 ? "" : "s") will be deleted after merge.")
@@ -1004,11 +1013,11 @@ struct ClusterMergeSheet: View {
         HStack {
             Text(label)
                 .font(.system(size: 11, weight: .medium, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.6))
+                .foregroundStyle(colors.primary.opacity(0.6))
             Spacer()
             Text(value)
                 .font(.system(size: 11, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
         }
     }
 }

@@ -12,6 +12,9 @@ import SwiftData
 
 struct ExpenseListView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     // Query all memos, filter to expenses in computed property
     @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
@@ -198,19 +201,19 @@ struct ExpenseListView: View {
 
                     Text(formattedTotal)
                         .font(JohoFont.displayLarge)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     HStack(spacing: JohoDimensions.spacingXS) {
                         Text(baseCurrency)
                             .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(0.7))
 
                         Text("•")
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(0.5))
 
                         Text("\(filteredExpenses.count) transactions")
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(JohoColors.black.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(0.7))
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -245,7 +248,7 @@ struct ExpenseListView: View {
                 Spacer()
                 Text("\(currencyBreakdown.count) currencies")
                     .font(JohoFont.labelSmall)
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(0.5))
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.top, JohoDimensions.spacingSM)
@@ -258,17 +261,17 @@ struct ExpenseListView: View {
 
                     if index < currencyBreakdown.count - 1 {
                         Rectangle()
-                            .fill(JohoColors.black.opacity(0.1))
+                            .fill(colors.primary.opacity(0.1))
                             .frame(height: 1)
                             .padding(.horizontal, JohoDimensions.spacingMD)
                     }
                 }
             }
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
             )
         }
         .padding(.horizontal, JohoDimensions.spacingLG)
@@ -280,26 +283,26 @@ struct ExpenseListView: View {
             // Currency badge (情報デザイン: Green expense zone)
             Text(item.currency)
                 .font(.system(size: 10, weight: .black, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(SectionZone.expenses.background)
                 .clipShape(Capsule())
                 .overlay(
                     Capsule()
-                        .stroke(JohoColors.black, lineWidth: 1)
+                        .stroke(colors.border, lineWidth: 1)
                 )
 
             VStack(alignment: .leading, spacing: 2) {
                 // Original amount
                 Text(formatCurrency(item.total, code: item.currency))
                     .font(JohoFont.headline)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 // Transaction count
                 Text("\(item.count) transaction\(item.count == 1 ? "" : "s")")
                     .font(JohoFont.labelSmall)
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(0.5))
             }
 
             Spacer()
@@ -309,14 +312,14 @@ struct ExpenseListView: View {
                 VStack(alignment: .trailing, spacing: 2) {
                     Text("→ \(formatCurrency(item.convertedTotal, code: baseCurrency))")
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                        .foregroundStyle(colors.primary.opacity(0.7))
 
                     // Show approximate rate
                     if item.total > 0 {
                         let rate = item.convertedTotal / item.total
                         Text("≈ \(String(format: "%.2f", rate)) \(baseCurrency)")
                             .font(.system(size: 9, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.4))
+                            .foregroundStyle(colors.primary.opacity(0.4))
                     }
                 }
             }
@@ -611,6 +614,9 @@ struct FilterChip: View {
     var icon: String?
     let isSelected: Bool
     let action: () -> Void
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         Button(action: action) {
@@ -618,25 +624,25 @@ struct FilterChip: View {
                 if let icon = icon {
                     Image(systemName: icon)
                         .font(JohoFont.labelSmall)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                 }
 
                 Text(title)
                     .font(JohoFont.label)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 if isSelected {
                     Image(systemName: "xmark.circle")
                         .font(JohoFont.labelSmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                 }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
-            .background(JohoColors.white, in: Capsule())
+            .background(colors.surface, in: Capsule())
             .overlay(
                 Capsule()
-                    .stroke(JohoColors.black, lineWidth: isSelected ? JohoDimensions.borderMedium : JohoDimensions.borderThin)
+                    .stroke(colors.border, lineWidth: isSelected ? JohoDimensions.borderMedium : JohoDimensions.borderThin)
             )
         }
         .buttonStyle(.plain)
@@ -647,6 +653,9 @@ struct FilterChip: View {
 
 struct SimplifiedFilterSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     @Binding var selectedFilter: ExpenseFilter
     @Binding var selectedDateRange: DateRange
@@ -670,21 +679,21 @@ struct SimplifiedFilterSheet: View {
                                     HStack {
                                         Text(range.rawValue)
                                             .font(JohoFont.body)
-                                            .foregroundStyle(JohoColors.black)
+                                            .foregroundStyle(colors.primary)
                                         Spacer()
                                         if selectedDateRange == range {
                                             Image(systemName: "checkmark.circle.fill")
                                                 .font(JohoFont.body)
-                                                .foregroundStyle(JohoColors.black)
+                                                .foregroundStyle(colors.primary)
                                         }
                                     }
                                     .padding(JohoDimensions.spacingMD)
-                                    .background(JohoColors.white)
+                                    .background(colors.surface)
                                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                                     .overlay(
                                         Squircle(cornerRadius: JohoDimensions.radiusMedium)
                                             .stroke(
-                                                selectedDateRange == range ? JohoColors.black : JohoColors.black.opacity(0.3),
+                                                selectedDateRange == range ? colors.primary : colors.primary.opacity(0.3),
                                                 lineWidth: selectedDateRange == range ? JohoDimensions.borderMedium : JohoDimensions.borderThin
                                             )
                                     )
@@ -712,7 +721,7 @@ struct SimplifiedFilterSheet: View {
                 }
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.top, JohoDimensions.spacingSM)
-                .background(JohoColors.background)
+                .background(colors.canvas)
             }
         }
     }
@@ -722,9 +731,12 @@ struct SimplifiedFilterSheet: View {
 
 struct ExpenseDetailView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
     @State private var showEditSheet = false
     let expense: Memo
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         NavigationStack {
@@ -740,7 +752,7 @@ struct ExpenseDetailView: View {
 
                             Text(expense.amount ?? 0, format: .currency(code: expense.currency ?? "SEK"))
                                 .font(JohoFont.displayLarge)
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                         }
                         .frame(maxWidth: .infinity)
                     }
@@ -781,7 +793,7 @@ struct ExpenseDetailView: View {
                 }
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.top, JohoDimensions.spacingSM)
-                .background(JohoColors.background)
+                .background(colors.canvas)
             }
             .sheet(isPresented: $showEditSheet) {
                 ExpenseEntryView(existingExpense: expense)

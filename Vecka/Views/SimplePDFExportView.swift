@@ -11,6 +11,9 @@ import SwiftData
 struct SimplePDFExportView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     let exportContext: PDFExportContext
 
@@ -27,29 +30,29 @@ struct SimplePDFExportView: View {
                     // Icon zone
                     Image(systemName: exportContext.icon)
                         .font(.system(size: 48, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(width: 80, height: 80)
                         .background(JohoColors.cyan.opacity(0.2))
                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                         .overlay(
                             RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .stroke(JohoColors.black, lineWidth: 1.5)
+                                .stroke(colors.border, lineWidth: 1.5)
                         )
 
                     Text(exportContext.title)
                         .font(.system(size: 18, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     Text(exportContext.subtitle)
                         .font(.system(size: 14, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
 
                     Text(exportContext.pageCountDescription)
                         .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.4))
+                        .foregroundStyle(colors.primary.opacity(0.4))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(JohoColors.black.opacity(0.05))
+                        .background(colors.primary.opacity(0.05))
                         .clipShape(Capsule())
                 }
                 .padding(.top, JohoDimensions.spacingSM)

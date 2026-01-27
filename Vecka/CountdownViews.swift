@@ -15,7 +15,10 @@ struct CountdownCard: View {
     let isSelected: Bool
     let action: () -> Void
     var titleOverride: String? = nil
-    
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     var body: some View {
         Button(action: action) {
             VStack(spacing: 12) {
@@ -39,7 +42,7 @@ struct CountdownCard: View {
             .shadow(color: shadowColor, radius: isSelected ? 6 : 3, x: 0, y: isSelected ? 3 : 1)
         }
         .buttonStyle(PlainButtonStyle())
-        .animation(AnimationConstants.quickSpring, value: isSelected)
+        .animation(AnimationConstants.quickTransition, value: isSelected)
         .accessibilityLabel(accessibilityLabel)
     }
     
@@ -69,8 +72,8 @@ struct CountdownCard: View {
         if isSelected {
             return JohoColors.cyan
         }
-        
-        return JohoColors.black.opacity(0.7)
+
+        return colors.primary.opacity(0.7)
     }
     
     // MARK: - Text Content
@@ -78,7 +81,7 @@ struct CountdownCard: View {
     private var countdownTitle: some View {
         Text(titleText)
             .font(JohoFont.body)
-            .foregroundStyle(JohoColors.black)
+            .foregroundStyle(colors.primary)
             .lineLimit(2)
             .multilineTextAlignment(.center)
     }
@@ -86,7 +89,7 @@ struct CountdownCard: View {
     private var countdownSubtitle: some View {
         Text(subtitleText)
             .font(JohoFont.labelSmall)
-            .foregroundStyle(JohoColors.black.opacity(0.7))
+            .foregroundStyle(colors.primary.opacity(0.7))
             .lineLimit(1)
             .textCase(.uppercase)
             .tracking(0.5)
@@ -137,20 +140,20 @@ struct CountdownCard: View {
     
     private var cardBackground: some View {
         Squircle(cornerRadius: LayoutConstants.cornerRadius)
-            .fill(JohoColors.white)
+            .fill(colors.surface)
     }
-    
+
     private var cardBorder: some View {
         RoundedRectangle(cornerRadius: LayoutConstants.cornerRadius)
             .stroke(borderColor, lineWidth: isSelected ? 1.5 : 0.5)
     }
-    
+
     private var borderColor: Color {
         if isSelected {
             return JohoColors.cyan.opacity(0.6)
         }
-        
-        return Color.white.opacity(0.2)
+
+        return colors.border.opacity(0.2)
     }
     
     private var shadowColor: Color {
@@ -202,6 +205,9 @@ struct CountdownPickerSheet: View {
     @State private var favorites: [SavedCountdown] = []
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     let onSave: () -> Void
     
@@ -345,9 +351,9 @@ struct CountdownPickerSheet: View {
         let icon = (type == .custom ? (custom?.iconName ?? type.icon) : type.icon)
         let title = (type == .custom ? (custom?.name ?? "Custom") : type.displayName)
         HStack {
-            Image(systemName: icon).foregroundStyle(JohoColors.black.opacity(0.7))
+            Image(systemName: icon).foregroundStyle(colors.primary.opacity(0.7))
             Text(title)
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
             Spacer()
@@ -381,8 +387,8 @@ struct CountdownPickerSheet: View {
         let icon = (type == .custom ? (custom?.iconName ?? type.icon) : type.icon)
         let title = (type == .custom ? (custom?.name ?? "Custom") : type.displayName)
         HStack {
-            Image(systemName: icon).foregroundStyle(JohoColors.black.opacity(0.7))
-            Text(title).foregroundStyle(JohoColors.black)
+            Image(systemName: icon).foregroundStyle(colors.primary.opacity(0.7))
+            Text(title).foregroundStyle(colors.primary)
             Spacer()
             if isSelectedRow { Image(systemName: "checkmark").foregroundStyle(JohoColors.cyan) }
         }
@@ -439,9 +445,9 @@ struct CountdownPickerSheet: View {
     @ViewBuilder
     private func favoriteRow(_ fav: SavedCountdown) -> some View {
         HStack {
-            Image(systemName: fav.icon).foregroundStyle(JohoColors.black.opacity(0.7))
+            Image(systemName: fav.icon).foregroundStyle(colors.primary.opacity(0.7))
             Text(fav.displayName)
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
             Spacer()
@@ -477,9 +483,9 @@ struct CountdownPickerSheet: View {
             }
         }()
         return HStack {
-            Image(systemName: current.icon).foregroundStyle(JohoColors.black.opacity(0.7))
+            Image(systemName: current.icon).foregroundStyle(colors.primary.opacity(0.7))
             Text(current.displayName)
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
             Spacer()
@@ -496,6 +502,9 @@ struct CustomCountdownDialog: View {
     @Binding var isAnnual: Bool
     @Binding var selectedCountdown: CountdownType
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     let onSave: () -> Void
 
@@ -547,13 +556,13 @@ struct CustomCountdownDialog: View {
                     Button { dismiss() } label: {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(JohoColors.white)
                             .johoTouchTarget()
                     }
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(JohoColors.white)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -566,15 +575,15 @@ struct CustomCountdownDialog: View {
                             .frame(width: 36, height: 36)
                             .background(eventLightBackground)
                             .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.white, lineWidth: 1.5))
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text("NEW EVENT")
                                 .font(.system(size: 16, weight: .black, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(JohoColors.white)
                             Text("Set date & details")
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                                .foregroundStyle(JohoColors.white.opacity(0.6))
                         }
 
                         Spacer()
@@ -584,7 +593,7 @@ struct CustomCountdownDialog: View {
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(JohoColors.white)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -597,11 +606,11 @@ struct CustomCountdownDialog: View {
                     } label: {
                         Text("Save")
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.white.opacity(0.4))
                             .frame(width: 56, height: 32)
-                            .background(canSave ? eventAccentColor : JohoColors.white)
+                            .background(canSave ? eventAccentColor : JohoColors.white.opacity(0.2))
                             .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.white, lineWidth: 1.5))
                     }
                     .disabled(!canSave)
                     .frame(width: 72)
@@ -612,7 +621,7 @@ struct CustomCountdownDialog: View {
 
                 // Thick divider after header
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -623,20 +632,20 @@ struct CustomCountdownDialog: View {
                     Circle()
                         .fill(eventAccentColor)
                         .frame(width: 10, height: 10)
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
                     // CENTER: Name field (full width - no EVT pill needed)
                     TextField("Event name", text: $name)
                         .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .frame(maxHeight: .infinity)
                 }
@@ -645,7 +654,7 @@ struct CustomCountdownDialog: View {
 
                 // 情報デザイン: Row divider (solid black)
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -655,13 +664,13 @@ struct CustomCountdownDialog: View {
                     // LEFT: Calendar icon (40pt)
                     Image(systemName: "calendar")
                         .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -675,14 +684,14 @@ struct CustomCountdownDialog: View {
                     } label: {
                         Text(String(selectedYear))
                             .font(.system(size: 14, weight: .bold, design: .monospaced))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
                     }
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -696,14 +705,14 @@ struct CustomCountdownDialog: View {
                     } label: {
                         Text(monthName(selectedMonth))
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
                     }
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -717,7 +726,7 @@ struct CustomCountdownDialog: View {
                     } label: {
                         Text("\(selectedDay)")
                             .font(.system(size: 14, weight: .bold, design: .monospaced))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(width: 44)
                             .frame(maxHeight: .infinity)
                     }
@@ -727,7 +736,7 @@ struct CustomCountdownDialog: View {
 
                 // 情報デザイン: Row divider (solid black)
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -737,13 +746,13 @@ struct CustomCountdownDialog: View {
                     // LEFT: Repeat icon (40pt)
                     Image(systemName: "repeat")
                         .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -751,30 +760,30 @@ struct CustomCountdownDialog: View {
                     HStack {
                         Text("Repeat annually")
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
 
                         Spacer()
 
                         // 情報デザイン toggle
                         Button {
-                            withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
+                            withAnimation(.easeInOut(duration: 0.2)) {
                                 isAnnual.toggle()
                             }
                             HapticManager.selection()
                         } label: {
                             ZStack(alignment: isAnnual ? .trailing : .leading) {
                                 Capsule()
-                                    .fill(isAnnual ? eventAccentColor : JohoColors.black.opacity(0.2))
+                                    .fill(isAnnual ? eventAccentColor : colors.primary.opacity(0.2))
                                     .frame(width: 50, height: 28)
                                     .overlay(
                                         Capsule()
-                                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                                     )
 
                                 Circle()
-                                    .fill(JohoColors.white)
+                                    .fill(colors.surface)
                                     .frame(width: 22, height: 22)
-                                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                                    .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
                                     .padding(3)
                             }
                         }
@@ -788,7 +797,7 @@ struct CustomCountdownDialog: View {
 
                 // 情報デザイン: Row divider (solid black)
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -808,21 +817,21 @@ struct CustomCountdownDialog: View {
 
                         // WALL
                         Rectangle()
-                            .fill(JohoColors.black)
+                            .fill(colors.border)
                             .frame(width: 1.5)
                             .frame(maxHeight: .infinity)
 
                         // CENTER: Hint text
                         Text("Tap to change icon")
                             .font(JohoFont.caption)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
                             .padding(.leading, JohoDimensions.spacingMD)
 
                         Spacer()
 
                         Image(systemName: "chevron.right")
                             .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(JohoColors.black.opacity(0.4))
+                            .foregroundStyle(colors.primary.opacity(0.4))
                             .padding(.trailing, JohoDimensions.spacingMD)
                     }
                     .frame(height: 48)
@@ -830,11 +839,11 @@ struct CustomCountdownDialog: View {
                 }
                 .buttonStyle(.plain)
             }
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
             )
             .padding(.horizontal, JohoDimensions.spacingLG)
 
@@ -966,6 +975,9 @@ private struct JohoIconPicker: View {
     /// 情報デザイン: Icons to exclude from picker (category defaults should not be selectable)
     var excludedSymbols: Set<String> = []
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private let symbolCategories: [(name: String, symbols: [String])] = [
         ("MARU-BATSU", ["circle", "circle.fill", "xmark", "xmark.circle.fill", "triangle", "triangle.fill", "square", "square.fill", "diamond", "diamond.fill"]),
@@ -993,14 +1005,14 @@ private struct JohoIconPicker: View {
                         Button { dismiss() } label: {
                             Text("Cancel")
                                 .font(JohoFont.body)
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                                 .padding(.horizontal, JohoDimensions.spacingMD)
                                 .padding(.vertical, JohoDimensions.spacingSM)
-                                .background(JohoColors.white)
+                                .background(colors.surface)
                                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                 .overlay(
                                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                        .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                                 )
                         }
                         Spacer()
@@ -1008,15 +1020,15 @@ private struct JohoIconPicker: View {
 
                     Text("Choose Icon")
                         .font(JohoFont.displaySmall)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(JohoDimensions.spacingLG)
-                .background(JohoColors.white)
+                .background(colors.surface)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                        .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.top, JohoDimensions.spacingLG)
@@ -1036,24 +1048,24 @@ private struct JohoIconPicker: View {
                                     Image(systemName: symbol)
                                         .font(.system(size: 20, weight: .bold))
                                         // 情報デザイン: Accent color on light bg (NOT inverted)
-                                        .foregroundStyle(selectedSymbol == symbol ? SpecialDayType.event.accentColor : JohoColors.black)
+                                        .foregroundStyle(selectedSymbol == symbol ? SpecialDayType.event.accentColor : colors.primary)
                                         .johoTouchTarget(52)
-                                        .background(selectedSymbol == symbol ? SpecialDayType.event.lightBackground : JohoColors.white)
+                                        .background(selectedSymbol == symbol ? SpecialDayType.event.lightBackground : colors.surface)
                                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                         .overlay(
                                             Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                                .stroke(JohoColors.black, lineWidth: selectedSymbol == symbol ? JohoDimensions.borderMedium : JohoDimensions.borderThin)
+                                                .stroke(colors.border, lineWidth: selectedSymbol == symbol ? JohoDimensions.borderMedium : JohoDimensions.borderThin)
                                         )
                                 }
                             }
                         }
                     }
                     .padding(JohoDimensions.spacingMD)
-                    .background(JohoColors.white)
+                    .background(colors.surface)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                     )
                     .padding(.horizontal, JohoDimensions.spacingLG)
                 }
@@ -1087,17 +1099,20 @@ enum LucidIcon: String, CaseIterable {
 struct IconPickerGrid: View {
     @Binding var selectedIcon: String
     private let columns = [GridItem(.adaptive(minimum: 44), spacing: 12)]
-    
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     var body: some View {
         LazyVGrid(columns: columns, spacing: 12) {
             ForEach(LucidIcon.allNames, id: \.self) { name in
                 Button(action: { selectedIcon = name; HapticManager.selection() }) {
                     ZStack {
                         Circle()
-                            .fill(selectedIcon == name ? JohoColors.cyan.opacity(0.22) : JohoColors.black.opacity(0.5).opacity(0.08))
+                            .fill(selectedIcon == name ? JohoColors.cyan.opacity(0.22) : colors.primary.opacity(0.08))
                         Image(systemName: name)
                             .font(.system(size: 18, weight: .semibold))
-                            .foregroundStyle(selectedIcon == name ? JohoColors.cyan : JohoColors.black.opacity(0.7))
+                            .foregroundStyle(selectedIcon == name ? JohoColors.cyan : colors.primary.opacity(0.7))
                     }
                 }
                 .buttonStyle(.plain)

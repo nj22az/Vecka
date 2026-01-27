@@ -40,11 +40,26 @@ fileprivate struct DeletedSpecialDay {
     let region: String
 }
 
+/// 情報デザイン: Wrapper for month customization editing (makes Int identifiable for sheet binding)
+fileprivate struct MonthLabelEdit: Identifiable {
+    let id: Int  // Month number (1-12)
+    var month: Int { id }
+}
+
+/// 情報デザイン: Custom icon, color, and message for a month card
+struct MonthCustomization: Codable, Equatable {
+    var icon: String?      // SF Symbol name (nil = use default seasonal icon)
+    var colorHex: String?  // Background color hex (nil = use default seasonal color)
+    var message: String?   // Personal note (nil = no message)
+}
+
 // MARK: - Special Days List View (情報デザイン Redesign)
 
 struct SpecialDaysListView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.locale) private var locale
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
     private var holidayManager = HolidayManager.shared
 
     // Query contacts for birthdays
@@ -55,6 +70,7 @@ struct SpecialDaysListView: View {
 
     @AppStorage("showHolidays") private var showHolidays = true
     @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
+    @AppStorage("monthCustomizations") private var monthCustomizationsData: Data = Data()  // 情報デザイン: Custom icon + color per month
 
     // View mode - exposed via binding for sidebar integration
     @Binding var isInMonthDetail: Bool
@@ -96,9 +112,47 @@ struct SpecialDaysListView: View {
     // 情報デザイン: Region quick picker expansion
     @State private var isRegionPickerExpanded = false
 
+    // 情報デザイン: Personal month label editing
+    @State private var editingMonthLabel: MonthLabelEdit? = nil
+
     private var years: [Int] {
         let current = Calendar.current.component(.year, from: Date())
         return Array((current - 20)...(current + 20))
+    }
+
+    // 情報デザイン: Month customization storage helpers
+    private var monthCustomizations: [Int: MonthCustomization] {
+        get {
+            guard !monthCustomizationsData.isEmpty,
+                  let decoded = try? JSONDecoder().decode([Int: MonthCustomization].self, from: monthCustomizationsData) else {
+                return [:]
+            }
+            return decoded
+        }
+    }
+
+    private func setMonthCustomization(_ customization: MonthCustomization?, for month: Int) {
+        var customizations = monthCustomizations
+        if let customization = customization {
+            customizations[month] = customization
+        } else {
+            customizations.removeValue(forKey: month)
+        }
+        if let encoded = try? JSONEncoder().encode(customizations) {
+            monthCustomizationsData = encoded
+        }
+    }
+
+    private func customIcon(for month: Int) -> String? {
+        monthCustomizations[month]?.icon
+    }
+
+    private func customColor(for month: Int) -> String? {
+        monthCustomizations[month]?.colorHex
+    }
+
+    private func customMessage(for month: Int) -> String? {
+        monthCustomizations[month]?.message
     }
 
     // MARK: - Computed Data
@@ -274,6 +328,7 @@ struct SpecialDaysListView: View {
             .sheet(item: $editingMemo) { memo in memoEditorSheet(memo) }
             .sheet(isPresented: $showingDatabaseExplorer) { HolidayDatabaseExplorer() }
             .sheet(item: $selectedDetailItem) { item in SpecialDayDetailSheet(item: item) }
+            .sheet(item: $editingMonthLabel) { edit in monthLabelEditorSheet(for: edit.month) }
             .overlay(alignment: .bottom) { undoToastOverlay }
     }
 
@@ -362,6 +417,32 @@ struct SpecialDaysListView: View {
             .presentationCornerRadius(20)
     }
 
+    // 情報デザイン: Personal month label editor
+    private func monthLabelEditorSheet(for month: Int) -> some View {
+        MonthCustomizationSheet(
+            month: month,
+            currentCustomization: monthCustomizations[month] ?? MonthCustomization(),
+            onSave: { customization in
+                // Only save if something changed from default
+                if customization.icon != nil || customization.colorHex != nil {
+                    setMonthCustomization(customization, for: month)
+                } else {
+                    setMonthCustomization(nil, for: month)
+                }
+                editingMonthLabel = nil
+            },
+            onCancel: {
+                editingMonthLabel = nil
+            },
+            onReset: {
+                setMonthCustomization(nil, for: month)
+                editingMonthLabel = nil
+            }
+        )
+        .presentationDetents([.height(520)])
+        .presentationCornerRadius(20)
+    }
+
     @ViewBuilder
     private var undoToastOverlay: some View {
         if showUndoToast {
@@ -389,7 +470,7 @@ struct SpecialDaysListView: View {
                     // Back button when in month detail
                     if selectedMonth != nil {
                         Button {
-                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                            withAnimation(.easeInOut(duration: 0.2)) {
                                 selectedMonth = nil
                             }
                             HapticManager.selection()
@@ -397,11 +478,11 @@ struct SpecialDaysListView: View {
                             // 情報デザイン: Minimum 44pt touch target
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 14, weight: .bold, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                                 .johoTouchTarget()
                                 .background(JohoColors.inputBackground)
                                 .clipShape(Circle())
-                                .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
+                                .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
                         }
                     }
 
@@ -416,7 +497,7 @@ struct SpecialDaysListView: View {
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(
                                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                             )
                     } else {
                         Image(systemName: "star.fill")
@@ -427,7 +508,7 @@ struct SpecialDaysListView: View {
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(
                                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                             )
                     }
 
@@ -435,11 +516,11 @@ struct SpecialDaysListView: View {
                     if let theme = theme {
                         Text(verbatim: "\(theme.name.uppercased())")
                             .font(JohoFont.headline)
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                     } else {
                         Text("SPECIAL DAYS")
                             .font(JohoFont.headline)
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                     }
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -448,7 +529,7 @@ struct SpecialDaysListView: View {
 
                 // VERTICAL WALL (separator)
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
 
                 // RIGHT COMPARTMENT: Year Picker
@@ -459,7 +540,7 @@ struct SpecialDaysListView: View {
                     Text(String(selectedYear))
                         .font(JohoFont.headline)
                         .monospacedDigit()
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .lineLimit(1)
                         .fixedSize(horizontal: true, vertical: false)
                         .frame(width: 100)
@@ -469,7 +550,7 @@ struct SpecialDaysListView: View {
 
             // HORIZONTAL DIVIDER
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 1.5)
 
             // STATS ROW (full width)
@@ -477,7 +558,7 @@ struct SpecialDaysListView: View {
                 if let _ = theme {
                     Text("\(monthRows.count) special days")
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                        .foregroundStyle(colors.primary.opacity(0.7))
                 } else {
                     bentoStatsRow
                 }
@@ -486,11 +567,11 @@ struct SpecialDaysListView: View {
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: 2)
+                .stroke(colors.border, lineWidth: 2)
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
         .padding(.top, JohoDimensions.spacingSM)
@@ -527,7 +608,7 @@ struct SpecialDaysListView: View {
             if totalCount == 0 {
                 Text("No entries yet")
                     .font(JohoFont.bodySmall)
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(0.5))
             }
 
             Spacer()
@@ -544,27 +625,29 @@ struct SpecialDaysListView: View {
     /// 情報デザイン: Active popover tracking for categories
     @State private var activePopoverCategory: DisplayCategory?
 
-    /// 情報デザイン: 3-category outline icon indicator
-    /// Black outline icons + black count numerals
+    /// 情報デザイン: Compact category indicator (subtitle-style)
+    /// Colored dot + count - matches header subtitle aesthetic
     private func categoryIndicator(category: DisplayCategory, count: Int) -> some View {
         Button {
             HapticManager.selection()
             activePopoverCategory = category
         } label: {
-            HStack(spacing: 4) {
-                // Outline icon (black stroke, no fill)
-                Image(systemName: category.outlineIcon)
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+            HStack(spacing: 3) {
+                // Colored filled dot (category color)
+                Circle()
+                    .fill(category.accentColor)
+                    .frame(width: 8, height: 8)
+                    .overlay(
+                        Circle()
+                            .stroke(colors.border, lineWidth: 0.5)
+                    )
 
-                // Black count numeral
+                // Count numeral (smaller, subtitle-style)
                 Text(String(count))
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
                     .monospacedDigit()
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
             }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
         }
         .buttonStyle(.plain)
         .popover(isPresented: Binding(
@@ -582,28 +665,28 @@ struct SpecialDaysListView: View {
         HStack(spacing: JohoDimensions.spacingSM) {
             Image(systemName: category.outlineIcon)
                 .font(.system(size: 18, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
                 .frame(width: 32, height: 32)
                 .background(JohoColors.inputBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .stroke(JohoColors.black, lineWidth: 1.5)
+                        .stroke(colors.border, lineWidth: 1.5)
                 )
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(category.localizedLabel.uppercased())
                     .font(.system(size: 11, weight: .black, design: .rounded))
                     .tracking(0.5)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 Text("\(count) in " + String(selectedYear))
                     .font(.system(size: 11, weight: .semibold, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                    .foregroundStyle(colors.primary.opacity(0.7))
             }
         }
         .padding(JohoDimensions.spacingMD)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .presentationCompactAdaptation(.popover)
     }
 
@@ -623,7 +706,7 @@ struct SpecialDaysListView: View {
                 Text(String(count))
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .monospacedDigit()
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
@@ -659,7 +742,7 @@ struct SpecialDaysListView: View {
                 Text(type.title.uppercased())
                     .font(.system(size: 11, weight: .black, design: .rounded))
                     .tracking(0.5)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 Text("\(count) in " + String(selectedYear))
                     .font(.system(size: 13, weight: .semibold, design: .rounded))
@@ -667,45 +750,33 @@ struct SpecialDaysListView: View {
             }
         }
         .padding(JohoDimensions.spacingMD)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .presentationCompactAdaptation(.popover)
     }
 
-    /// 情報デザイン: Density-based dots for month cards
-    /// Color represents activity level, not category
-    /// | Count | Dots | Color |
-    /// | 0     | —    | Gray  |
-    /// | 1-3   | ●    | Yellow (light activity) |
-    /// | 4-7   | ●●   | Cyan (moderate) |
-    /// | 8+    | ●●●  | Pink (busy) |
-    private func monthDensityDots(count: Int) -> some View {
+    /// 情報デザイン: Category-colored dots for month cards
+    /// Each dot represents a category present in this month:
+    /// - Pink = holidays, Cyan = observances, Yellow = memos
+    private func monthCategoryDots(holidays: Int, observances: Int, memos: Int) -> some View {
         HStack(spacing: 3) {
-            let (dotCount, dotColor) = densityConfig(for: count)
-            ForEach(0..<dotCount, id: \.self) { _ in
+            if holidays > 0 {
                 Circle()
-                    .fill(dotColor)
+                    .fill(DisplayCategory.holiday.accentColor)
                     .frame(width: 6, height: 6)
-                    .overlay(
-                        Circle()
-                            .stroke(JohoColors.black, lineWidth: 0.5)
-                    )
+                    .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
             }
-        }
-        .accessibilityLabel("\(count) special days")
-    }
-
-    /// Returns (dotCount, color) based on activity density
-    /// Uses neutral black color - dot COUNT indicates density, not color
-    private func densityConfig(for count: Int) -> (Int, Color) {
-        switch count {
-        case 0:
-            return (0, JohoColors.black.opacity(0.3))
-        case 1...3:
-            return (1, JohoColors.black) // 1 dot
-        case 4...7:
-            return (2, JohoColors.black) // 2 dots
-        default:
-            return (3, JohoColors.black) // 3 dots
+            if observances > 0 {
+                Circle()
+                    .fill(DisplayCategory.observance.accentColor)
+                    .frame(width: 6, height: 6)
+                    .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
+            }
+            if memos > 0 {
+                Circle()
+                    .fill(DisplayCategory.memo.accentColor)
+                    .frame(width: 6, height: 6)
+                    .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
+            }
         }
     }
 
@@ -716,7 +787,7 @@ struct SpecialDaysListView: View {
             .frame(width: 8, height: 8)
             .overlay(
                 Circle()
-                    .stroke(JohoColors.black, lineWidth: 0.5)
+                    .stroke(colors.border, lineWidth: 0.5)
             )
             .accessibilityLabel("\(count) \(type.title)")
     }
@@ -750,59 +821,102 @@ struct SpecialDaysListView: View {
         let totalCount = counts.holidays + counts.observances + counts.birthdays + counts.memos
         let hasItems = totalCount > 0
 
-        Button {
-            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+        // 情報デザイン: Allow custom icon, background color, and message
+        let displayIcon = customIcon(for: month) ?? theme.icon
+        // 情報デザイン: Use vibrant accent color with opacity (like Random Facts) not muted pastels
+        let displayColor = customColor(for: month).flatMap { Color(hex: $0) } ?? theme.accentColor.opacity(0.2)
+        let message = customMessage(for: month)
+
+        VStack(spacing: 0) {
+            // TOP: Icon zone (情報デザイン: Strong accent color on light tint background)
+            VStack {
+                Image(systemName: displayIcon)
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .foregroundStyle(hasItems ? theme.accentColor : JohoColors.black.opacity(0.4))
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)
+            .background(hasItems ? displayColor : JohoColors.inputBackground)
+
+            // Divider (情報デザイン: Black wall between compartments)
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            // BOTTOM: Centered text with stacked dots in corner
+            HStack(spacing: 0) {
+                Spacer(minLength: 16)
+
+                // Centered text
+                VStack(spacing: 2) {
+                    Text(theme.name.uppercased())
+                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .multilineTextAlignment(.center)
+
+                    // Custom message
+                    if let msg = message, !msg.isEmpty {
+                        Text(msg)
+                            .font(.system(size: 9, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .lineLimit(2)
+                            .multilineTextAlignment(.center)
+                    }
+                }
+
+                Spacer(minLength: 16)
+            }
+            .frame(maxWidth: .infinity, minHeight: 52)
+            .overlay(alignment: .bottomTrailing) {
+                // 情報デザイン: Vertical dot stack with black borders (holidays → observances → memos)
+                if hasItems {
+                    VStack(spacing: 3) {
+                        if counts.holidays > 0 {
+                            Circle()
+                                .fill(DisplayCategory.holiday.accentColor)
+                                .frame(width: 7, height: 7)
+                                .overlay(Circle().stroke(colors.border, lineWidth: 1))
+                        }
+                        if counts.observances > 0 {
+                            Circle()
+                                .fill(DisplayCategory.observance.accentColor)
+                                .frame(width: 7, height: 7)
+                                .overlay(Circle().stroke(colors.border, lineWidth: 1))
+                        }
+                        if (counts.birthdays + counts.memos) > 0 {
+                            Circle()
+                                .fill(DisplayCategory.memo.accentColor)
+                                .frame(width: 7, height: 7)
+                                .overlay(Circle().stroke(colors.border, lineWidth: 1))
+                        }
+                    }
+                    .padding(.trailing, 6)
+                    .padding(.bottom, 6)
+                }
+            }
+        }
+        .background(colors.surface)
+        .frame(height: 110)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(colors.border, lineWidth: 1.5)
+        )
+        .contentShape(Rectangle())
+        .opacity(hasItems ? 1.0 : 0.7)
+        .simultaneousGesture(
+            LongPressGesture(minimumDuration: 0.5)
+                .onEnded { _ in
+                    HapticManager.impact(.medium)
+                    editingMonthLabel = MonthLabelEdit(id: month)
+                }
+        )
+        .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.2)) {
                 selectedMonth = month
             }
             HapticManager.selection()
-        } label: {
-            VStack(spacing: 0) {
-                // TOP COMPARTMENT: Icon zone (情報デザイン: distinct visual anchor)
-                VStack {
-                    Image(systemName: theme.icon)
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
-                        .foregroundStyle(hasItems ? theme.accentColor : JohoColors.black.opacity(0.6))
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 48)
-                .background(hasItems ? theme.lightBackground : JohoColors.inputBackground)
-
-                // Horizontal divider
-                Rectangle()
-                    .fill(JohoColors.black)
-                    .frame(height: 1.5)
-
-                // BOTTOM COMPARTMENT: Data zone
-                VStack(spacing: 6) {
-                    // Month name (full name, bold)
-                    Text(theme.name.uppercased())
-                        .font(.system(size: 11, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-
-                    // 情報デザイン: Density-based dots (color = activity level, not category)
-                    if hasItems {
-                        monthDensityDots(count: totalCount)
-                    } else {
-                        Text("—")
-                            .font(.system(size: 12, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
-                    }
-                }
-                .padding(.vertical, 10)
-                .frame(maxWidth: .infinity)
-            }
-            .frame(height: 110)
-            .background(JohoColors.white)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(hasItems ? JohoColors.black : JohoColors.black.opacity(0.3), lineWidth: hasItems ? JohoDimensions.borderMedium : JohoDimensions.borderThin)
-            )
         }
-        .buttonStyle(.plain)
-        .opacity(hasItems ? 1.0 : 0.7)
     }
 
     // MARK: - Month Detail View (情報デザイン: Collapsible Timeline)
@@ -905,6 +1019,8 @@ struct CollapsibleSpecialDayCard: View {
 
     // Locale for displaying localized holiday names (情報デザイン: show user's locale name)
     @Environment(\.locale) private var locale
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private let calendar = Calendar.iso8601
 
@@ -973,7 +1089,7 @@ struct CollapsibleSpecialDayCard: View {
             if isExpanded {
                 // Thin divider
                 Rectangle()
-                    .fill(JohoColors.black.opacity(0.15))
+                    .fill(colors.border.opacity(0.15))
                     .frame(height: 1)
 
                 expandedContent
@@ -981,11 +1097,11 @@ struct CollapsibleSpecialDayCard: View {
                     .padding(.bottom, JohoDimensions.spacingMD)
             }
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: isToday ? JohoDimensions.borderThick : JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: isToday ? JohoDimensions.borderThick : JohoDimensions.borderMedium)
         )
     }
 
@@ -1000,7 +1116,7 @@ struct CollapsibleSpecialDayCard: View {
                 // Full date: January 1, 2026
                 Text(fullDateText)
                     .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 Spacer()
 
@@ -1017,7 +1133,7 @@ struct CollapsibleSpecialDayCard: View {
                     // Expand/collapse chevron
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
                         .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(width: 24, height: 24)
                 }
             }
@@ -1036,14 +1152,14 @@ struct CollapsibleSpecialDayCard: View {
             Text("\(dayCard.day)")
                 .font(JohoFont.headline)
         }
-        .foregroundStyle(isToday ? JohoColors.black : JohoColors.black)
+        .foregroundStyle(isToday ? JohoColors.black : colors.primary)
         .padding(.horizontal, JohoDimensions.spacingSM)
         .padding(.vertical, JohoDimensions.spacingXS)
-        .background(isToday ? JohoColors.yellow : JohoColors.white)
+        .background(isToday ? JohoColors.yellow : colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
         )
     }
 
@@ -1056,18 +1172,18 @@ struct CollapsibleSpecialDayCard: View {
             if holidays.isNotEmpty {
                 Image(systemName: DisplayCategory.holiday.outlineIcon)
                     .font(.system(size: 8, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
             }
             if observances.isNotEmpty {
                 Image(systemName: DisplayCategory.observance.outlineIcon)
                     .font(.system(size: 8, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
             }
             // Birthdays + Memos both use memo category (doc outline)
             if birthdays.isNotEmpty || memosForDay.isNotEmpty {
                 Image(systemName: DisplayCategory.memo.outlineIcon)
                     .font(.system(size: 8, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
             }
         }
     }
@@ -1132,14 +1248,14 @@ struct CollapsibleSpecialDayCard: View {
 
                 // WALL (vertical divider)
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
                 // RIGHT: Icon compartment
                 Image(systemName: icon)
                     .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
             }
@@ -1148,7 +1264,7 @@ struct CollapsibleSpecialDayCard: View {
 
             // Horizontal divider between header and items
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 1.5)
 
             // Items in VStack for pixel-perfect 情報デザイン layout
@@ -1159,7 +1275,7 @@ struct CollapsibleSpecialDayCard: View {
                     // Divider between items (not after last)
                     if index < items.count - 1 {
                         Rectangle()
-                            .fill(JohoColors.black.opacity(0.3))
+                            .fill(colors.border.opacity(0.3))
                             .frame(height: 1)
                             .padding(.horizontal, 6)
                     }
@@ -1171,7 +1287,7 @@ struct CollapsibleSpecialDayCard: View {
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
     }
 
@@ -1196,14 +1312,14 @@ struct CollapsibleSpecialDayCard: View {
 
                 // WALL (vertical divider)
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
                 // RIGHT: Icon compartment
                 Image(systemName: icon)
                     .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
             }
@@ -1212,7 +1328,7 @@ struct CollapsibleSpecialDayCard: View {
 
             // Horizontal divider between header and items
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 1.5)
 
             // Items in VStack for pixel-perfect 情報デザイン layout
@@ -1223,7 +1339,7 @@ struct CollapsibleSpecialDayCard: View {
                     // Divider between items (not after last)
                     if index < items.count - 1 {
                         Rectangle()
-                            .fill(JohoColors.black.opacity(0.3))
+                            .fill(colors.border.opacity(0.3))
                             .frame(height: 1)
                             .padding(.horizontal, 6)
                     }
@@ -1235,7 +1351,7 @@ struct CollapsibleSpecialDayCard: View {
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
     }
 
@@ -1255,7 +1371,7 @@ struct CollapsibleSpecialDayCard: View {
                 if item.isSystemHoliday {
                     Image(systemName: "lock.fill")
                         .font(.system(size: 7, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(0.5))
                 }
             }
             .frame(width: 32, alignment: .center)
@@ -1263,7 +1379,7 @@ struct CollapsibleSpecialDayCard: View {
 
             // WALL (vertical divider)
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
@@ -1271,7 +1387,7 @@ struct CollapsibleSpecialDayCard: View {
             // 情報デザイン: Display locale-appropriate name (Swedish user sees "Nyårsdagen", English sees "New Year's Day")
             Text(item.displayName(for: locale))
                 .font(JohoFont.bodySmall)
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
                 .lineLimit(1)
                 .padding(.horizontal, 8)
                 .frame(maxHeight: .infinity, alignment: .leading)
@@ -1280,7 +1396,7 @@ struct CollapsibleSpecialDayCard: View {
 
             // WALL (vertical divider)
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
@@ -1299,7 +1415,7 @@ struct CollapsibleSpecialDayCard: View {
                                 .frame(width: 20, height: 20)
                                 .background(item.type.accentColor.opacity(0.15))
                                 .clipShape(Squircle(cornerRadius: 5))
-                                .overlay(Squircle(cornerRadius: 5).stroke(JohoColors.black, lineWidth: 1))
+                                .overlay(Squircle(cornerRadius: 5).stroke(colors.border, lineWidth: 1))
                         }
                     }
                 }
@@ -1345,7 +1461,7 @@ struct CollapsibleSpecialDayCard: View {
                     if !canEdit {
                         Image(systemName: "lock.fill")
                             .font(.system(size: 7, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(0.5))
                     }
                 }
                 .frame(width: 32, alignment: .center)
@@ -1353,7 +1469,7 @@ struct CollapsibleSpecialDayCard: View {
 
                 // WALL (vertical divider) - must have maxHeight to expand
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
@@ -1361,7 +1477,7 @@ struct CollapsibleSpecialDayCard: View {
                 HStack(spacing: JohoDimensions.spacingXS) {
                     Text(item.title)
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .lineLimit(1)
 
                     Spacer(minLength: 4)
@@ -1372,7 +1488,7 @@ struct CollapsibleSpecialDayCard: View {
                         // 情報デザイン: Age 0 means birth year - show contextual message
                         Text(birthdayDisplayText(age: age, date: item.date))
                             .font(.system(size: 9, weight: .bold, design: .monospaced))
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
                     }
                 }
                 .padding(.horizontal, 8)
@@ -1380,7 +1496,7 @@ struct CollapsibleSpecialDayCard: View {
 
                 // WALL (vertical divider) - must have maxHeight to expand
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
@@ -1401,7 +1517,7 @@ struct CollapsibleSpecialDayCard: View {
                             .frame(width: 24, height: 24)
                             .background(item.type.accentColor.opacity(0.15))
                             .clipShape(Squircle(cornerRadius: 6))
-                            .overlay(Squircle(cornerRadius: 6).stroke(JohoColors.black, lineWidth: 1))
+                            .overlay(Squircle(cornerRadius: 6).stroke(colors.border, lineWidth: 1))
                     }
                 }
                 .frame(width: 72, alignment: .center)
@@ -1425,7 +1541,7 @@ struct CollapsibleSpecialDayCard: View {
             if isExpanded {
                 // Horizontal divider
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 // Details area - separate from tap gesture
@@ -1441,7 +1557,7 @@ struct CollapsibleSpecialDayCard: View {
                         if !additionalLines.isEmpty {
                             Text(additionalLines)
                                 .font(.system(size: 12, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.black.opacity(0.8))
+                                .foregroundStyle(colors.primary.opacity(0.8))
                                 .lineLimit(2)
                         }
                     }
@@ -1451,10 +1567,10 @@ struct CollapsibleSpecialDayCard: View {
                     // Date badge
                     Text(formatDate(item.date))
                         .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                         .padding(.horizontal, 6)
                         .padding(.vertical, 3)
-                        .background(JohoColors.black.opacity(0.05))
+                        .background(colors.border.opacity(0.05))
                         .clipShape(Capsule())
 
                     // Edit button (for user entries) - 情報デザイン: 44pt touch target
@@ -1472,7 +1588,7 @@ struct CollapsibleSpecialDayCard: View {
                             .padding(.vertical, 6)
                             .background(JohoColors.cyan)
                             .clipShape(Capsule())
-                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1.5))
+                            .overlay(Capsule().stroke(colors.border, lineWidth: 1.5))
                         }
                         .buttonStyle(.borderless)
                     }
@@ -1516,7 +1632,7 @@ struct CollapsibleSpecialDayCard: View {
     private func typeIndicatorDot(for type: SpecialDayType) -> some View {
         Image(systemName: type.displayCategory.outlineIcon)
             .font(.system(size: 10, weight: .bold, design: .rounded))
-            .foregroundStyle(JohoColors.black)
+            .foregroundStyle(colors.primary)
     }
 
     // MARK: - Formatters
@@ -1586,7 +1702,7 @@ extension SpecialDaysListView {
 
                         Text("\(day)")
                             .font(.system(size: 20, weight: .black, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                     }
                     .padding(.leading, 10)
 
@@ -1596,7 +1712,7 @@ extension SpecialDaysListView {
                     Text(monthName)
                         .font(.system(size: 8, weight: .bold, design: .monospaced))
                         .tracking(2)
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(0.5))
                         .padding(.trailing, 10)
                 }
                 .frame(maxWidth: .infinity)
@@ -1605,7 +1721,7 @@ extension SpecialDaysListView {
 
                 // Thin divider (情報デザイン: 1px distinct border)
                 Rectangle()
-                    .fill(JohoColors.black.opacity(0.3))
+                    .fill(colors.border.opacity(0.3))
                     .frame(height: 1)
 
                 // BODY: Event row (white background)
@@ -1618,7 +1734,7 @@ extension SpecialDaysListView {
                         // Event name (sans-serif for human data)
                         Text(row.title)
                             .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .lineLimit(2)
                             .minimumScaleFactor(0.8)
 
@@ -1635,31 +1751,31 @@ extension SpecialDaysListView {
                     // Metadata row (monospace for technical data) - intelligent tense
                     // 情報デザイン: Age 0 = birth year, show contextual "born on this day" message
                     if row.type == .birthday, let age = row.turningAge {
-                        Rectangle().fill(JohoColors.black.opacity(0.1)).frame(height: 1)
+                        Rectangle().fill(colors.border.opacity(0.1)).frame(height: 1)
                         Text(birthdayExpandedDisplayText(age: age, date: row.date, daysUntil: row.daysUntil))
                             .font(.system(size: 9, weight: .medium, design: .monospaced))
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(0.5))
                             .padding(.vertical, 6)
                     } else if row.isMemo {
-                        Rectangle().fill(JohoColors.black.opacity(0.1)).frame(height: 1)
+                        Rectangle().fill(colors.border.opacity(0.1)).frame(height: 1)
                         let daysText = row.daysUntil == 0 ? "TODAY" :
                                        row.daysUntil == 1 ? "IN 1 DAY" :
                                        "IN \(row.daysUntil) DAYS"
                         Text(daysText)
                             .font(.system(size: 9, weight: .medium, design: .monospaced))
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(0.5))
                             .padding(.vertical, 6)
                     }
                 }
                 .frame(maxWidth: .infinity)
             }
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                    .stroke(JohoColors.black.opacity(0.2), lineWidth: 1)  // Thin technical border
+                    .stroke(colors.border.opacity(0.2), lineWidth: 1)  // Thin technical border
             )
-            .shadow(color: JohoColors.black.opacity(0.05), radius: 2, x: 0, y: 1)
+            .shadow(color: colors.border.opacity(0.05), radius: 2, x: 0, y: 1)
         }
         .buttonStyle(.plain)
     }
@@ -1697,7 +1813,7 @@ extension SpecialDaysListView {
 
                     Text("\(dayCard.day)")
                         .font(.system(size: 20, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                 }
                 .padding(.leading, 10)
 
@@ -1706,7 +1822,7 @@ extension SpecialDaysListView {
                 Text(monthName)
                     .font(.system(size: 8, weight: .bold, design: .monospaced))
                     .tracking(2)
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(0.5))
                     .padding(.trailing, 10)
             }
             .frame(maxWidth: .infinity)
@@ -1715,7 +1831,7 @@ extension SpecialDaysListView {
 
             // Thin divider
             Rectangle()
-                .fill(JohoColors.black.opacity(0.3))
+                .fill(colors.border.opacity(0.3))
                 .frame(height: 1)
 
             // BODY: List of events with hairline dividers
@@ -1724,7 +1840,7 @@ extension SpecialDaysListView {
                     // Hairline divider between items (not before first)
                     if index > 0 {
                         Rectangle()
-                            .fill(JohoColors.black.opacity(0.08))
+                            .fill(colors.border.opacity(0.08))
                             .frame(height: 1)
                             .padding(.horizontal, 10)
                     }
@@ -1735,7 +1851,7 @@ extension SpecialDaysListView {
 
                         Text(item.title)
                             .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
 
@@ -1750,13 +1866,13 @@ extension SpecialDaysListView {
                 }
             }
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(JohoColors.black.opacity(0.2), lineWidth: 1)
+                .stroke(colors.border.opacity(0.2), lineWidth: 1)
         )
-        .shadow(color: JohoColors.black.opacity(0.05), radius: 2, x: 0, y: 1)
+        .shadow(color: colors.border.opacity(0.05), radius: 2, x: 0, y: 1)
     }
 
     // MARK: - Type Indicator Icon (情報デザイン: Black outline shapes)
@@ -1765,7 +1881,7 @@ extension SpecialDaysListView {
     private func typeIndicatorDot(for type: SpecialDayType) -> some View {
         Image(systemName: type.displayCategory.outlineIcon)
             .font(.system(size: 10, weight: .bold, design: .rounded))
-            .foregroundStyle(JohoColors.black)
+            .foregroundStyle(colors.primary)
     }
 }
 
@@ -2008,6 +2124,223 @@ extension SpecialDaysListView {
 // Note: JohoUndoToast, JohoSpecialDayEditorSheet, JohoIconPickerSheet,
 // JohoAddSpecialDaySheet, and JohoEventEditorSheet have been extracted to
 // Views/JohoEditorSheets.swift for 情報デザイン spritesheet reuse.
+
+// MARK: - Month Label Editor Sheet (情報デザイン: Personal notes for months)
+
+/// Simple editor sheet for adding personal labels to months
+/// Long-press on a month card in Star page to trigger
+/// 情報デザイン: Month customization sheet for icon and background color
+struct MonthCustomizationSheet: View {
+    let month: Int
+    let currentCustomization: MonthCustomization
+    let onSave: (MonthCustomization) -> Void
+    let onCancel: () -> Void
+    let onReset: () -> Void
+
+    @State private var selectedIcon: String?
+    @State private var selectedColor: String?
+    @State private var messageText: String = ""
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    private var monthTheme: MonthTheme {
+        MonthTheme.theme(for: month)
+    }
+
+    // 情報デザイン: Curated icon set for months
+    private let iconOptions: [String] = [
+        // Seasonal
+        "snowflake", "heart.fill", "leaf.fill", "sun.max.fill", "cloud.rain.fill", "flame.fill",
+        // Nature
+        "tree.fill", "flower.fill", "moon.fill", "star.fill", "sparkles", "wind",
+        // Objects
+        "gift.fill", "flag.fill", "bell.fill", "airplane", "car.fill", "house.fill",
+        // Abstract
+        "circle.fill", "square.fill", "triangle.fill", "hexagon.fill", "seal.fill", "burst.fill"
+    ]
+
+    // 情報デザイン: 6-color palette
+    private let colorOptions: [(name: String, hex: String, color: Color)] = [
+        ("Yellow", "FFE566", JohoColors.yellow),
+        ("Cyan", "A5F3FC", JohoColors.cyan),
+        ("Pink", "FECDD3", JohoColors.pink),
+        ("Green", "BBF7D0", JohoColors.green),
+        ("Purple", "E9D5FF", JohoColors.purple),
+        ("White", "FFFFFF", JohoColors.white)
+    ]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Button {
+                    onCancel()
+                } label: {
+                    Text("Cancel")
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.6))
+                }
+                .buttonStyle(.plain)
+
+                Spacer()
+
+                Text(monthTheme.name.uppercased())
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .foregroundStyle(colors.primary)
+
+                Spacer()
+
+                Button {
+                    let trimmedMessage = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
+                    onSave(MonthCustomization(
+                        icon: selectedIcon,
+                        colorHex: selectedColor,
+                        message: trimmedMessage.isEmpty ? nil : trimmedMessage
+                    ))
+                } label: {
+                    Text("Save")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.surface)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(colors.primary)
+                        .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.top, JohoDimensions.spacingLG)
+            .padding(.bottom, JohoDimensions.spacingMD)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
+                    // Icon picker
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("ICON")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.5))
+
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 6), spacing: 8) {
+                            ForEach(iconOptions, id: \.self) { icon in
+                                iconButton(icon)
+                            }
+                        }
+                    }
+
+                    // Color picker
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("BACKGROUND")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.5))
+
+                        HStack(spacing: 8) {
+                            ForEach(colorOptions, id: \.hex) { option in
+                                colorButton(option)
+                            }
+                        }
+                    }
+
+                    // Message field (情報デザイン: personal note)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("MESSAGE")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.5))
+
+                        TextField("e.g., Birthday month...", text: $messageText)
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.primary)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 10)
+                            .background(JohoColors.inputBackground)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                    .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
+                            )
+                    }
+
+                    // Reset button
+                    Button {
+                        HapticManager.selection()
+                        onReset()
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "arrow.counterclockwise")
+                                .font(.system(size: 12, weight: .medium))
+                            Text("Reset to default")
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                        }
+                        .foregroundStyle(colors.primary.opacity(0.5))
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.top, JohoDimensions.spacingMD)
+            }
+
+            Spacer()
+        }
+        .background(colors.surface)
+        .onAppear {
+            selectedIcon = currentCustomization.icon
+            selectedColor = currentCustomization.colorHex
+            messageText = currentCustomization.message ?? ""
+        }
+    }
+
+    private func iconButton(_ icon: String) -> some View {
+        let isSelected = selectedIcon == icon
+        let isDefault = icon == monthTheme.icon && selectedIcon == nil
+
+        return Button {
+            HapticManager.selection()
+            selectedIcon = (selectedIcon == icon) ? nil : icon
+        } label: {
+            Image(systemName: icon)
+                .font(.system(size: 18, weight: .medium))
+                .foregroundStyle(isSelected || isDefault ? colors.surface : colors.primary)
+                .frame(width: 44, height: 44)
+                .background(isSelected || isDefault ? colors.primary : JohoColors.inputBackground)
+                .clipShape(Squircle(cornerRadius: 10))
+                .overlay(
+                    Squircle(cornerRadius: 10)
+                        .stroke(colors.border, lineWidth: isSelected ? 2 : 1)
+                )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func colorButton(_ option: (name: String, hex: String, color: Color)) -> some View {
+        let isSelected = selectedColor == option.hex
+
+        return Button {
+            HapticManager.selection()
+            selectedColor = (selectedColor == option.hex) ? nil : option.hex
+        } label: {
+            option.color
+                .frame(width: 44, height: 44)
+                .clipShape(Squircle(cornerRadius: 10))
+                .overlay(
+                    Squircle(cornerRadius: 10)
+                        .stroke(colors.border, lineWidth: isSelected ? 2.5 : 1)
+                )
+                .overlay {
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(colors.primary)
+                    }
+                }
+        }
+        .buttonStyle(.plain)
+    }
+}
 
 // MARK: - Preview
 

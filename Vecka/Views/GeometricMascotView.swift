@@ -25,6 +25,10 @@ struct GeometricMascotView: View {
     /// Whether to show the border around the entire mascot
     var showOuterBorder: Bool = true
 
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     // Computed current values
     private var displayWeekNumber: Int {
         weekNumber ?? Calendar.iso8601.component(.weekOfYear, from: Date())
@@ -57,13 +61,13 @@ struct GeometricMascotView: View {
         }
         .padding(size * 0.12)
         .frame(width: size, height: size)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: size * 0.15))
         .overlay(
             Group {
                 if showOuterBorder {
                     Squircle(cornerRadius: size * 0.15)
-                        .stroke(JohoColors.black, lineWidth: borderWidth)
+                        .stroke(colors.border, lineWidth: borderWidth)
                 }
             }
         )
@@ -74,13 +78,13 @@ struct GeometricMascotView: View {
     private var weekNumberBadge: some View {
         Text("\(displayWeekNumber)")
             .font(.system(size: weekNumberSize * 0.5, weight: .bold, design: .rounded))
-            .foregroundStyle(JohoColors.black)
+            .foregroundStyle(colors.primary)
             .frame(width: weekNumberSize, height: weekNumberSize)
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: weekNumberSize * 0.25))
             .overlay(
                 Squircle(cornerRadius: weekNumberSize * 0.25)
-                    .stroke(JohoColors.black, lineWidth: innerBorderWidth)
+                    .stroke(colors.border, lineWidth: innerBorderWidth)
             )
     }
 
@@ -98,11 +102,11 @@ struct GeometricMascotView: View {
         let isToday = dayIndex == displayTodayIndex
 
         return Rectangle()
-            .fill(isToday ? JohoColors.yellow : JohoColors.white)
+            .fill(isToday ? JohoColors.yellow : colors.surface)
             .frame(width: daySquareSize, height: daySquareSize)
             .overlay(
                 Rectangle()
-                    .stroke(JohoColors.black, lineWidth: max(1, innerBorderWidth * 0.7))
+                    .stroke(colors.border, lineWidth: max(1, innerBorderWidth * 0.7))
             )
     }
 }

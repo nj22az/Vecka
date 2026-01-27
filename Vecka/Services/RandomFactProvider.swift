@@ -208,10 +208,10 @@ final class RandomFactProvider: ObservableObject {
     private func colorFor(category: QuirkyFact.Category) -> Color {
         switch category {
         case .tradition: return JohoColors.purple    // People zone
-        case .food: return Color(hex: "F97316")      // Orange - warm/food
+        case .food: return JohoColors.yellow         // NOW - cultural experience
         case .invention: return JohoColors.yellow    // Ideas/bright
         case .nature: return JohoColors.green        // Nature zone
-        case .history: return Color(hex: "78350F")   // Brown - heritage
+        case .history: return JohoColors.pink        // CELEBRATION - heritage
         case .quirky: return JohoColors.cyan         // General info
         }
     }

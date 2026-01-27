@@ -11,6 +11,8 @@ import AVFoundation
 
 struct QRCodeView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     let contact: Contact
 
@@ -36,13 +38,13 @@ struct QRCodeView: View {
                     } else {
                         // 情報デザイン: White background with black border, black text
                         Circle()
-                            .fill(JohoColors.white)
+                            .fill(colors.surface)
                             .frame(width: 80, height: 80)
-                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+                            .overlay(Circle().stroke(colors.border, lineWidth: 2))
                             .overlay {
                                 Text(contact.initials)
                                     .font(.system(size: 28, weight: .semibold, design: .rounded))
-                                    .foregroundStyle(JohoColors.black)
+                                    .foregroundStyle(colors.primary)
                             }
                     }
 
@@ -64,11 +66,11 @@ struct QRCodeView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 250, height: 250)
-                        .background(JohoColors.white)
+                        .background(colors.surface)
                         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .stroke(JohoColors.black, lineWidth: 2)
+                                .stroke(colors.border, lineWidth: 2)
                         )
                 } else {
                     ProgressView()
@@ -191,6 +193,8 @@ struct ShareSheet: UIViewControllerRepresentable {
 struct QRCodeScannerView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     @StateObject private var scanner = QRScannerViewModel()
     @State private var showingImportedContact = false
@@ -207,15 +211,15 @@ struct QRCodeScannerView: View {
                     if scanner.isScanning {
                         Text("Point camera at QR code")
                             .font(.system(size: 16, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .padding()
                             .background(
                                 Squircle(cornerRadius: 12)
-                                    .fill(JohoColors.white)
+                                    .fill(colors.surface)
                             )
                             .overlay(
                                 Squircle(cornerRadius: 12)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                             )
                             .padding()
                     }

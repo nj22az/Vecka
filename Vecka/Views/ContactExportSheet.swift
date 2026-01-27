@@ -11,6 +11,8 @@ import SwiftData
 struct ContactExportSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     let contacts: [Contact]
 
@@ -89,7 +91,7 @@ struct ContactExportSheet: View {
                     .padding(.horizontal, JohoDimensions.spacingMD)
                     .padding(.vertical, JohoDimensions.spacingSM)
                 }
-                .background(JohoColors.white)
+                .background(colors.surface)
 
                 Divider()
 
@@ -104,7 +106,7 @@ struct ContactExportSheet: View {
                                 .foregroundStyle(allVisibleSelected ? JohoColors.purple : JohoColors.black.opacity(0.4))
                             Text(allVisibleSelected ? "Deselect all" : "Select all")
                                 .font(.system(size: 13, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                         }
                     }
                     .buttonStyle(.plain)
@@ -113,7 +115,7 @@ struct ContactExportSheet: View {
 
                     Text("\(selectedIDs.count) selected")
                         .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
                 .padding(.vertical, JohoDimensions.spacingSM)
@@ -167,29 +169,29 @@ struct ContactExportSheet: View {
                             Text(isExporting ? "Generating..." : "Export \(selectedIDs.count) contacts")
                                 .font(.system(size: 15, weight: .bold, design: .rounded))
                         }
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(maxWidth: .infinity)
                         .frame(height: 46)
-                        .background(selectedIDs.isEmpty ? JohoColors.black.opacity(0.1) : JohoColors.purple)
+                        .background(selectedIDs.isEmpty ? colors.primary.opacity(0.1) : JohoColors.purple)
                         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                         .overlay(
                             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .stroke(JohoColors.black, lineWidth: 2)
+                                .stroke(colors.border, lineWidth: 2)
                         )
                     }
                     .disabled(isExporting || selectedIDs.isEmpty)
                     .padding(.horizontal, JohoDimensions.spacingMD)
                 }
                 .padding(.vertical, JohoDimensions.spacingSM)
-                .background(JohoColors.white)
+                .background(colors.surface)
             }
-            .background(JohoColors.white)
+            .background(colors.surface)
             .navigationTitle("Export")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                 }
             }
             .sheet(isPresented: $showShareSheet) {
@@ -222,15 +224,15 @@ struct ContactExportSheet: View {
                     .font(.system(size: 12, weight: .bold, design: .rounded))
                 Text("\(count)")
                     .font(.system(size: 9, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(0.5))
             }
-            .foregroundStyle(JohoColors.black)
+            .foregroundStyle(colors.primary)
             .frame(width: letter == nil ? 36 : 26, height: 36)
             .background(isSelected ? JohoColors.purple : JohoColors.white)
             .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .stroke(JohoColors.black, lineWidth: isSelected ? 1.5 : 1)
+                    .stroke(colors.border, lineWidth: isSelected ? 1.5 : 1)
             )
         }
         .buttonStyle(.plain)
@@ -258,23 +260,23 @@ struct ContactExportSheet: View {
                         .fill(JohoColors.purple.opacity(0.2))
                     Text(contact.initials)
                         .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                 }
                 .frame(width: 32, height: 32)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                .overlay(Circle().stroke(colors.border, lineWidth: 1))
 
                 // Name
                 VStack(alignment: .leading, spacing: 2) {
                     Text(contact.displayName)
                         .font(.system(size: 14, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     // Subtitle with available info
                     let subtitle = contactSubtitle(contact)
                     if !subtitle.isEmpty {
                         Text(subtitle)
                             .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(0.5))
                             .lineLimit(1)
                     }
                 }
@@ -309,10 +311,10 @@ struct ContactExportSheet: View {
                 Text(title)
                     .font(.system(size: 11, weight: .bold, design: .rounded))
             }
-            .foregroundStyle(JohoColors.black)
+            .foregroundStyle(colors.primary)
             .padding(.horizontal, 8)
             .padding(.vertical, 6)
-            .background(isOn.wrappedValue ? JohoColors.purple.opacity(0.3) : JohoColors.black.opacity(0.05))
+            .background(isOn.wrappedValue ? JohoColors.purple.opacity(0.3) : colors.primary.opacity(0.05))
             .clipShape(Capsule())
             .overlay(Capsule().stroke(JohoColors.black, lineWidth: isOn.wrappedValue ? 1.5 : 1))
         }

@@ -13,6 +13,8 @@ import SwiftUI
 struct SpecialDayDetailSheet: View {
     let item: SpecialDayRow
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -33,14 +35,14 @@ struct SpecialDayDetailSheet: View {
 
                     // Divider
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(height: 2)
                         .padding(.horizontal, JohoDimensions.spacingLG)
 
                     // Title
                     Text(item.title)
                         .font(JohoFont.headline)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, JohoDimensions.spacingLG)
 
@@ -54,7 +56,7 @@ struct SpecialDayDetailSheet: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .presentationDetents([.medium])
         .presentationDragIndicator(.visible)
         .presentationCornerRadius(20)
@@ -83,13 +85,13 @@ struct SpecialDayDetailSheet: View {
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.white)
                     .frame(width: 32, height: 32)
-                    .background(JohoColors.black.opacity(0.3))
+                    .background(colors.primary.opacity(0.3))
                     .clipShape(Circle())
             }
         }
         .padding(.horizontal, JohoDimensions.spacingLG)
         .padding(.vertical, JohoDimensions.spacingMD)
-        .background(JohoColors.black)
+        .background(colors.primary)
     }
 
     // MARK: - Icon Zone
@@ -106,7 +108,7 @@ struct SpecialDayDetailSheet: View {
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
@@ -123,7 +125,7 @@ struct SpecialDayDetailSheet: View {
 
             // Divider
             Rectangle()
-                .fill(JohoColors.black.opacity(0.15))
+                .fill(colors.primary.opacity(0.15))
                 .frame(height: 1)
 
             // Region row (if present)
@@ -131,7 +133,7 @@ struct SpecialDayDetailSheet: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     Text("REGION")
                         .font(.system(size: 10, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(0.5))
                         .frame(width: 60, alignment: .leading)
 
                     CountryPill(region: item.region)
@@ -143,7 +145,7 @@ struct SpecialDayDetailSheet: View {
 
                 // Divider
                 Rectangle()
-                    .fill(JohoColors.black.opacity(0.15))
+                    .fill(colors.primary.opacity(0.15))
                     .frame(height: 1)
             }
 
@@ -156,7 +158,7 @@ struct SpecialDayDetailSheet: View {
 
                 // Divider
                 Rectangle()
-                    .fill(JohoColors.black.opacity(0.15))
+                    .fill(colors.primary.opacity(0.15))
                     .frame(height: 1)
             }
 
@@ -165,11 +167,11 @@ struct SpecialDayDetailSheet: View {
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
                     Text("NOTES")
                         .font(.system(size: 10, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(0.5))
 
                     Text(notes)
                         .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -183,11 +185,11 @@ struct SpecialDayDetailSheet: View {
                 detailRow(label: "STATUS", value: daysText)
             }
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
@@ -196,12 +198,12 @@ struct SpecialDayDetailSheet: View {
         HStack(spacing: JohoDimensions.spacingSM) {
             Text(label)
                 .font(.system(size: 10, weight: .black, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.5))
+                .foregroundStyle(colors.primary.opacity(0.5))
                 .frame(width: 60, alignment: .leading)
 
             Text(value)
                 .font(JohoFont.body)
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
 
             Spacer()
         }

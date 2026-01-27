@@ -54,6 +54,10 @@ struct ShareableFactSnapshot: Transferable {
 struct ShareableFactCard: View {
     let fact: RandomFact
 
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     private let cornerRadius: CGFloat = 16
 
     private var cardShape: RoundedRectangle {
@@ -63,9 +67,9 @@ struct ShareableFactCard: View {
     var body: some View {
         // 情報デザイン: ZStack ensures white background fills corners before content
         ZStack {
-            // Layer 1: Solid white background (fills squircle corners)
+            // Layer 1: Solid background (fills squircle corners)
             cardShape
-                .fill(JohoColors.white)
+                .fill(colors.surface)
 
             // Layer 2: Content compartments
             VStack(spacing: 0) {
@@ -77,11 +81,11 @@ struct ShareableFactCard: View {
                     HStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: "calendar.badge.clock")
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
 
                         Text("ONSEN PLANNER")
                             .font(.system(size: 12, weight: .black, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                     }
                     .padding(.leading, JohoDimensions.spacingMD)
 
@@ -89,7 +93,7 @@ struct ShareableFactCard: View {
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -105,7 +109,7 @@ struct ShareableFactCard: View {
 
                 // Divider
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 2)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -123,7 +127,7 @@ struct ShareableFactCard: View {
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -131,14 +135,14 @@ struct ShareableFactCard: View {
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                         Text(fact.text)
                             .font(.system(size: 16, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .lineLimit(4)
                             .multilineTextAlignment(.leading)
 
                         if !fact.explanation.isEmpty {
                             Text(fact.explanation)
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(0.6))
                                 .lineLimit(3)
                                 .multilineTextAlignment(.leading)
                         }
@@ -151,7 +155,7 @@ struct ShareableFactCard: View {
 
                 // Divider
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 2)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -160,7 +164,7 @@ struct ShareableFactCard: View {
                 HStack {
                     Text("RANDOM FACTS")
                         .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(0.5))
                         .tracking(1)
 
                     Spacer()
@@ -168,7 +172,7 @@ struct ShareableFactCard: View {
                     // Source country/category
                     Text(fact.displaySource.uppercased())
                         .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.4))
+                        .foregroundStyle(colors.primary.opacity(0.4))
                         .tracking(0.5)
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -179,7 +183,7 @@ struct ShareableFactCard: View {
 
             // Layer 3: Border (strokeBorder keeps it inside the shape)
             cardShape
-                .strokeBorder(JohoColors.black, lineWidth: 3)
+                .strokeBorder(colors.border, lineWidth: 3)
         }
     }
 }
@@ -190,6 +194,8 @@ struct ShareableFactCard: View {
 @available(iOS 16.0, *)
 struct FactShareButton: View {
     let fact: RandomFact
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private var snapshot: ShareableFactSnapshot {
         ShareableFactSnapshot(
@@ -208,11 +214,11 @@ struct FactShareButton: View {
         ) {
             ZStack {
                 Circle()
-                    .fill(JohoColors.white)
+                    .fill(colors.surface)
                     .frame(width: 28, height: 28)
                 Image(systemName: "square.and.arrow.up")
                     .font(.system(size: 11, weight: .black, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
             }
         }
         .buttonStyle(.plain)

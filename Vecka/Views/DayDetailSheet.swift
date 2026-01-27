@@ -14,6 +14,9 @@ struct DayDetailSheet: View {
     let day: CalendarDay
     let dataCheck: DayDataCheck?
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     var body: some View {
         ScrollView {
             VStack(spacing: JohoDimensions.spacingLG) {
@@ -34,7 +37,7 @@ struct DayDetailSheet: View {
             .padding(.bottom, JohoDimensions.spacingLG)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(JohoColors.background)
+        .background(colors.canvas)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
         .presentationCornerRadius(20)
@@ -48,17 +51,17 @@ struct DayDetailSheet: View {
             VStack(spacing: 2) {
                 Text(String(day.dayNumber))
                     .font(JohoFont.displayLarge)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 Text(day.date.formatted(.dateTime.weekday(.wide)).uppercased())
                     .font(JohoFont.label)
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(0.6))
             }
             .frame(width: 80)
 
             // Vertical divider
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
@@ -66,7 +69,7 @@ struct DayDetailSheet: View {
             VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
                 Text(day.date.formatted(.dateTime.month(.wide).year()))
                     .font(JohoFont.headline)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 // Status pills
                 // 情報デザイン: Use pre-computed dataCheck to avoid accessing HolidayManager
@@ -87,20 +90,20 @@ struct DayDetailSheet: View {
             } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .frame(width: 32, height: 32)
-                    .background(JohoColors.white)
+                    .background(colors.surface)
                     .clipShape(Circle())
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                    .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
             }
         }
         .padding(JohoDimensions.spacingLG)
         .frame(height: 100)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
         )
     }
 
@@ -223,7 +226,7 @@ struct DayDetailSheet: View {
 
                 VStack(spacing: 4) {
                     Circle()
-                        .fill(JohoColors.white)
+                        .fill(colors.surface)
                         .frame(width: 12, height: 12)
                         .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
 
@@ -239,7 +242,7 @@ struct DayDetailSheet: View {
 
             // WALL
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
@@ -247,24 +250,24 @@ struct DayDetailSheet: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(JohoFont.bodySmall)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .lineLimit(1)
 
                 if let subtitle = subtitle, !subtitle.isEmpty {
                     Text(subtitle)
                         .font(JohoFont.caption)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                         .lineLimit(1)
                 }
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .frame(maxWidth: .infinity, alignment: .leading)
             .frame(maxHeight: .infinity)
-            .background(JohoColors.white)
+            .background(colors.surface)
 
             // WALL
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
@@ -278,14 +281,14 @@ struct DayDetailSheet: View {
                 .overlay(Squircle(cornerRadius: 7).stroke(JohoColors.black, lineWidth: 1.5))
                 .frame(width: 52)
                 .frame(maxHeight: .infinity)
-                .background(JohoColors.white)
+                .background(colors.surface)
         }
         .frame(height: 56)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
     }
 
@@ -328,23 +331,23 @@ struct DayDetailSheet: View {
         VStack(spacing: JohoDimensions.spacingMD) {
             Image(systemName: "calendar.badge.checkmark")
                 .font(.system(size: 32, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.3))
+                .foregroundStyle(colors.primary.opacity(0.3))
 
             Text("No special days")
                 .font(JohoFont.body)
-                .foregroundStyle(JohoColors.black.opacity(0.6))
+                .foregroundStyle(colors.primary.opacity(0.6))
 
             Text("Long press on any day to see details")
                 .font(JohoFont.caption)
-                .foregroundStyle(JohoColors.black.opacity(0.4))
+                .foregroundStyle(colors.primary.opacity(0.4))
         }
         .frame(maxWidth: .infinity)
         .padding(JohoDimensions.spacingXL)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(JohoColors.black.opacity(0.3), lineWidth: 1.5)
+                .stroke(colors.border.opacity(0.3), lineWidth: 1.5)
         )
     }
 }

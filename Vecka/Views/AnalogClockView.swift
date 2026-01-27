@@ -30,6 +30,8 @@ struct AnalogClockView: View {
 
 /// Internal clock face view (extracted to avoid TimelineView re-render issues)
 private struct ClockFaceView: View {
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
     let currentTime: Date
     let timezone: TimeZone
     let size: CGFloat
@@ -51,7 +53,7 @@ private struct ClockFaceView: View {
 
             // Center dot
             Circle()
-                .fill(JohoColors.black)
+                .fill(colors.primary)
                 .frame(width: size * 0.08, height: size * 0.08)
         }
         .frame(width: size, height: size)
@@ -61,17 +63,17 @@ private struct ClockFaceView: View {
 
     private var clockFace: some View {
         Circle()
-            .fill(JohoColors.white)
+            .fill(colors.surface)
             .overlay(
                 Circle()
-                    .stroke(JohoColors.black, lineWidth: size * 0.04)
+                    .stroke(colors.border, lineWidth: size * 0.04)
             )
     }
 
     private var hourMarkers: some View {
         ForEach(0..<12, id: \.self) { hour in
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.primary)
                 .frame(width: hour % 3 == 0 ? size * 0.03 : size * 0.015,
                        height: hour % 3 == 0 ? size * 0.12 : size * 0.06)
                 .offset(y: -size * 0.38)
@@ -81,7 +83,7 @@ private struct ClockFaceView: View {
 
     private var hourHand: some View {
         RoundedRectangle(cornerRadius: size * 0.02)
-            .fill(JohoColors.black)
+            .fill(colors.primary)
             .frame(width: size * 0.06, height: size * 0.28)
             .offset(y: -size * 0.12)
             .rotationEffect(hourAngle)
@@ -148,6 +150,8 @@ struct WorldClockCell: View {
 
 /// Internal content view for WorldClockCell
 private struct WorldClockCellContent: View {
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
     let currentTime: Date
     let cityCode: String
     let cityName: String
@@ -177,7 +181,7 @@ private struct WorldClockCellContent: View {
             // Digital time (small, below clock)
             Text(formattedTime)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
 
             // Offset indicator
             HStack(spacing: 2) {
@@ -187,7 +191,7 @@ private struct WorldClockCellContent: View {
 
                 Text(offsetText)
                     .font(.system(size: 9, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(0.6))
             }
         }
         .frame(maxWidth: .infinity)

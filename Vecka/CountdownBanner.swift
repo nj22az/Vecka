@@ -15,6 +15,9 @@ struct CountdownBanner: View {
     // Query all memos, filter to countdowns in computed property
     @Query(sort: \Memo.date) private var allMemos: [Memo]
     @AppStorage("selectedCountdownID") private var selectedCountdownID: String = ""
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     /// Filtered countdown events
     private var events: [Memo] {
@@ -43,18 +46,18 @@ struct CountdownBanner: View {
                         // Title
                         Text(event.text)
                             .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .lineLimit(1)
 
                         Text("•")
                             .font(.caption)
-                            .foregroundStyle(JohoColors.black.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(0.7))
 
                         // Days
                         let days = daysRemaining(to: event.date)
                         Text("\(abs(days)) \(days == 1 ? Localization.daySingular : Localization.dayPlural)")
                             .font(.subheadline.weight(.medium))
-                            .foregroundStyle(JohoColors.black.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(0.7))
                             .textCase(.uppercase)
                             .lineLimit(1)
 
@@ -74,11 +77,11 @@ struct CountdownBanner: View {
                     .padding(.vertical, 10)
                     .background(
                         Squircle(cornerRadius: 12)
-                            .fill(JohoColors.white)
+                            .fill(colors.surface)
                     )
                     .overlay(
                         Squircle(cornerRadius: 12)
-                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                     )
                 }
                 .accessibilityElement(children: .ignore)

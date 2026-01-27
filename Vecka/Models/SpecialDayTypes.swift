@@ -48,6 +48,18 @@ enum DisplayCategory: String, CaseIterable {
             return NSLocalizedString("category.memos", value: "Memos", comment: "Memo category label")
         }
     }
+
+    /// 情報デザイン: Category accent color (extremely readable, distinct)
+    /// - Holidays: Pink (celebration/official)
+    /// - Observances: Cyan (cultural waypoints)
+    /// - Memos: Yellow (personal/now)
+    var accentColor: Color {
+        switch self {
+        case .holiday: return JohoColors.pink      // Celebration - official holidays
+        case .observance: return JohoColors.cyan   // Scheduled - cultural observances
+        case .memo: return JohoColors.yellow       // Now - personal memos
+        }
+    }
 }
 
 // MARK: - Special Day Type

@@ -14,7 +14,10 @@ import SwiftData
 struct HolidayChangeLogView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
     @Query(sort: \HolidayChangeLog.timestamp, order: .reverse) private var allEntries: [HolidayChangeLog]
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     @State private var selectedRegion: String? = nil
     @State private var selectedEntry: HolidayChangeLog?
@@ -32,7 +35,7 @@ struct HolidayChangeLogView: View {
 
                 // Divider
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.primary)
                     .frame(height: JohoDimensions.borderMedium)
 
                 // Entries list
@@ -42,7 +45,7 @@ struct HolidayChangeLogView: View {
                     entriesList
                 }
             }
-            .background(JohoColors.white)
+            .background(colors.surface)
             .navigationTitle("Change Log")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -111,14 +114,14 @@ struct HolidayChangeLogView: View {
                     } label: {
                         Text(region)
                             .font(.system(size: 13, weight: .semibold, design: .rounded))
-                            .foregroundStyle(isSelected ? JohoColors.white : JohoColors.black)
+                            .foregroundStyle(isSelected ? colors.surface : colors.primary)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .background(isSelected ? JohoColors.black : JohoColors.white)
+                            .background(isSelected ? colors.primary : colors.surface)
                             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .stroke(JohoColors.black, lineWidth: 1.5)
+                                    .stroke(colors.border, lineWidth: 1.5)
                             )
                     }
                     .buttonStyle(.plain)
@@ -127,7 +130,7 @@ struct HolidayChangeLogView: View {
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     // MARK: - Empty State
@@ -138,15 +141,15 @@ struct HolidayChangeLogView: View {
 
             Image(systemName: "clock.arrow.circlepath")
                 .font(.system(size: 48, weight: .light, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.3))
+                .foregroundStyle(colors.primary.opacity(0.3))
 
             Text("No Changes Yet")
                 .font(.system(size: 18, weight: .semibold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
 
             Text("Changes to the holiday database will appear here")
                 .font(.system(size: 14, weight: .regular, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.6))
+                .foregroundStyle(colors.primary.opacity(0.6))
                 .multilineTextAlignment(.center)
 
             Spacer()
@@ -175,6 +178,9 @@ struct HolidayChangeLogView: View {
 
 struct ChangeLogEntryRow: View {
     let entry: HolidayChangeLog
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private var actionColor: Color {
         switch entry.action {
@@ -182,7 +188,7 @@ struct ChangeLogEntryRow: View {
         case .modified: return JohoColors.cyan
         case .deleted: return JohoColors.red
         case .enabled: return JohoColors.green
-        case .disabled: return JohoColors.black.opacity(0.4)
+        case .disabled: return colors.primary.opacity(0.4)
         case .reset: return JohoColors.cyan
         case .migrated: return JohoColors.cyan
         case .defaultsLoaded: return JohoColors.cyan
@@ -203,35 +209,35 @@ struct ChangeLogEntryRow: View {
                 HStack(spacing: 4) {
                     Text(entry.ruleName)
                         .font(.system(size: 14, weight: .semibold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .lineLimit(1)
 
                     Text("•")
-                        .foregroundStyle(JohoColors.black.opacity(0.4))
+                        .foregroundStyle(colors.primary.opacity(0.4))
 
                     Text(entry.region)
                         .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                 }
 
                 // Change description
                 Text(entry.changeDescription)
                     .font(.system(size: 12, weight: .regular, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                    .foregroundStyle(colors.primary.opacity(0.7))
                     .lineLimit(2)
 
                 // Timestamp and source
                 HStack(spacing: 4) {
                     Text(entry.formattedTimestamp)
                         .font(.system(size: 11, weight: .regular, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(0.5))
 
                     Text("•")
-                        .foregroundStyle(JohoColors.black.opacity(0.3))
+                        .foregroundStyle(colors.primary.opacity(0.3))
 
                     Text(entry.sourceLabel)
                         .font(.system(size: 11, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(0.5))
                 }
             }
 
@@ -240,14 +246,14 @@ struct ChangeLogEntryRow: View {
             // Chevron
             Image(systemName: "chevron.right")
                 .font(.system(size: 12, weight: .semibold, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.3))
+                .foregroundStyle(colors.primary.opacity(0.3))
         }
         .padding(JohoDimensions.spacingSM)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
-                .stroke(JohoColors.black.opacity(0.2), lineWidth: 1)
+                .stroke(colors.primary.opacity(0.2), lineWidth: 1)
         )
     }
 }
@@ -257,6 +263,9 @@ struct ChangeLogEntryRow: View {
 struct ChangeLogDetailSheet: View {
     let entry: HolidayChangeLog
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         NavigationStack {
@@ -280,7 +289,7 @@ struct ChangeLogDetailSheet: View {
                 }
                 .padding(JohoDimensions.spacingMD)
             }
-            .background(JohoColors.white)
+            .background(colors.surface)
             .navigationTitle("Change Details")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -306,7 +315,7 @@ struct ChangeLogDetailSheet: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(entry.ruleName)
                         .font(.system(size: 18, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     Text(entry.action.rawValue)
                         .font(.system(size: 14, weight: .medium, design: .rounded))
@@ -319,19 +328,19 @@ struct ChangeLogDetailSheet: View {
             }
 
             Rectangle()
-                .fill(JohoColors.black.opacity(0.1))
+                .fill(colors.primary.opacity(0.1))
                 .frame(height: 1)
 
             Text(entry.changeDescription)
                 .font(.system(size: 14, weight: .regular, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.8))
+                .foregroundStyle(colors.primary.opacity(0.8))
         }
         .padding(JohoDimensions.spacingMD)
         .background(actionColor.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
     }
 
@@ -341,7 +350,7 @@ struct ChangeLogDetailSheet: View {
         case .modified: return JohoColors.cyan
         case .deleted: return JohoColors.red
         case .enabled: return JohoColors.green
-        case .disabled: return JohoColors.black.opacity(0.4)
+        case .disabled: return colors.primary.opacity(0.4)
         case .reset: return JohoColors.cyan
         case .migrated: return JohoColors.cyan
         case .defaultsLoaded: return JohoColors.cyan
@@ -354,7 +363,7 @@ struct ChangeLogDetailSheet: View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
             Text("CHANGE DETAILS")
                 .font(.system(size: 11, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.5))
+                .foregroundStyle(colors.primary.opacity(0.5))
 
             if let before = entry.beforeJSON {
                 jsonCard(title: "Before", json: before, color: .red)
@@ -375,7 +384,7 @@ struct ChangeLogDetailSheet: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 Text(formatJSON(json))
                     .font(.system(size: 11, weight: .regular, design: .monospaced))
-                    .foregroundStyle(JohoColors.black.opacity(0.8))
+                    .foregroundStyle(colors.primary.opacity(0.8))
             }
         }
         .padding(JohoDimensions.spacingSM)
@@ -403,14 +412,14 @@ struct ChangeLogDetailSheet: View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
             Text("NOTES")
                 .font(.system(size: 11, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.5))
+                .foregroundStyle(colors.primary.opacity(0.5))
 
             Text(notes)
                 .font(.system(size: 14, weight: .regular, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.8))
+                .foregroundStyle(colors.primary.opacity(0.8))
                 .padding(JohoDimensions.spacingSM)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(JohoColors.black.opacity(0.03))
+                .background(colors.primary.opacity(0.03))
                 .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
         }
     }
@@ -421,7 +430,7 @@ struct ChangeLogDetailSheet: View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
             Text("METADATA")
                 .font(.system(size: 11, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.5))
+                .foregroundStyle(colors.primary.opacity(0.5))
 
             VStack(spacing: 0) {
                 metadataRow(label: "Timestamp", value: entry.formattedTimestamp)
@@ -434,7 +443,7 @@ struct ChangeLogDetailSheet: View {
             .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
-                    .stroke(JohoColors.black.opacity(0.1), lineWidth: 1)
+                    .stroke(colors.primary.opacity(0.1), lineWidth: 1)
             )
         }
     }
@@ -443,18 +452,18 @@ struct ChangeLogDetailSheet: View {
         HStack {
             Text(label)
                 .font(.system(size: 13, weight: .medium, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.6))
+                .foregroundStyle(colors.primary.opacity(0.6))
 
             Spacer()
 
             Text(value)
                 .font(.system(size: 13, weight: .regular, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
                 .lineLimit(1)
         }
         .padding(.horizontal, JohoDimensions.spacingSM)
         .padding(.vertical, 8)
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 }
 

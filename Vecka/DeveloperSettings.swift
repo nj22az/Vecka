@@ -173,16 +173,14 @@ struct DeveloperSettingsView: View {
                 .buttonStyle(.plain)
                 .disabled(isGeneratingData)
 
-                // Individual generators
-                HStack(spacing: JohoDimensions.spacingSM) {
-                    miniGeneratorButton(
-                        icon: "person.2.fill",
-                        label: "Contacts",
-                        color: JohoColors.purple
-                    ) {
-                        generateDummyContacts()
-                    }
+                // 情報デザイン: Organized by semantic category
 
+                // ═══════════════════════════════════════════════════════════════
+                // 今 NOW (Yellow) - Notes, Tasks, Pinned
+                // ═══════════════════════════════════════════════════════════════
+                categoryHeader(label: "今 NOW", color: JohoColors.yellow)
+
+                HStack(spacing: JohoDimensions.spacingSM) {
                     miniGeneratorButton(
                         icon: "note.text",
                         label: "Notes",
@@ -192,15 +190,36 @@ struct DeveloperSettingsView: View {
                     }
 
                     miniGeneratorButton(
-                        icon: "dollarsign.circle.fill",
-                        label: "Expenses",
-                        color: JohoColors.green
+                        icon: "checklist",
+                        label: "Tasks",
+                        color: JohoColors.yellow
                     ) {
-                        generateDummyExpenses()
+                        generateDummyTasks()
+                    }
+
+                    miniGeneratorButton(
+                        icon: "pin.fill",
+                        label: "Pinned",
+                        color: JohoColors.yellow
+                    ) {
+                        generateDummyPinned()
                     }
                 }
 
+                // ═══════════════════════════════════════════════════════════════
+                // 予定 SCHEDULED (Cyan) - Meetings, Trips
+                // ═══════════════════════════════════════════════════════════════
+                categoryHeader(label: "予定 SCHEDULED", color: JohoColors.cyan)
+
                 HStack(spacing: JohoDimensions.spacingSM) {
+                    miniGeneratorButton(
+                        icon: "person.2.fill",
+                        label: "Meetings",
+                        color: JohoColors.cyan
+                    ) {
+                        generateDummyMeetings()
+                    }
+
                     miniGeneratorButton(
                         icon: "airplane",
                         label: "Trips",
@@ -210,20 +229,88 @@ struct DeveloperSettingsView: View {
                     }
 
                     miniGeneratorButton(
-                        icon: "calendar.badge.clock",
-                        label: "Events",
+                        icon: "star.fill",
+                        label: "Holidays",
                         color: JohoColors.cyan
+                    ) {
+                        generateDummyHolidays()
+                    }
+                }
+
+                // ═══════════════════════════════════════════════════════════════
+                // 祝 CELEBRATION (Pink) - Birthdays, Countdowns
+                // ═══════════════════════════════════════════════════════════════
+                categoryHeader(label: "祝 CELEBRATION", color: JohoColors.pink)
+
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    miniGeneratorButton(
+                        icon: "birthday.cake.fill",
+                        label: "Birthdays",
+                        color: JohoColors.pink
+                    ) {
+                        generateDummyBirthdays()
+                    }
+
+                    miniGeneratorButton(
+                        icon: "timer",
+                        label: "Countdowns",
+                        color: JohoColors.pink
                     ) {
                         generateDummyCountdowns()
                     }
 
+                    // Placeholder for grid alignment
+                    Color.clear
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 60)
+                }
+
+                // ═══════════════════════════════════════════════════════════════
+                // 金 MONEY (Green) - Expenses
+                // ═══════════════════════════════════════════════════════════════
+                categoryHeader(label: "金 MONEY", color: JohoColors.green)
+
+                HStack(spacing: JohoDimensions.spacingSM) {
                     miniGeneratorButton(
-                        icon: "star.fill",
-                        label: "Holidays",
-                        color: JohoColors.pink
+                        icon: "yensign.circle.fill",
+                        label: "Expenses",
+                        color: JohoColors.green
                     ) {
-                        generateDummyHolidays()
+                        generateDummyExpenses()
                     }
+
+                    // Placeholders for grid alignment
+                    Color.clear
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 60)
+
+                    Color.clear
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 60)
+                }
+
+                // ═══════════════════════════════════════════════════════════════
+                // 人 PERSON (Purple) - Contacts
+                // ═══════════════════════════════════════════════════════════════
+                categoryHeader(label: "人 PERSON", color: JohoColors.purple)
+
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    miniGeneratorButton(
+                        icon: "person.crop.circle.fill",
+                        label: "Contacts",
+                        color: JohoColors.purple
+                    ) {
+                        generateDummyContacts()
+                    }
+
+                    // Placeholders for grid alignment
+                    Color.clear
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 60)
+
+                    Color.clear
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 60)
                 }
 
                 // Sample Images section
@@ -332,11 +419,32 @@ struct DeveloperSettingsView: View {
         .buttonStyle(.plain)
     }
 
+    /// 情報デザイン: Category header for semantic grouping
+    private func categoryHeader(label: String, color: Color) -> some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(color)
+                .frame(width: 8, height: 8)
+                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+
+            Text(label)
+                .font(.system(size: 10, weight: .black, design: .rounded))
+                .tracking(0.5)
+                .foregroundStyle(colors.primary)
+
+            Spacer()
+        }
+        .padding(.top, JohoDimensions.spacingSM)
+    }
+
     // MARK: - Debug Info Section
 
     private var debugInfoSection: some View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
             JohoPill(text: "DEBUG INFO", style: .whiteOnBlack, size: .small)
+
+            // 情報デザイン: Stats header showing data counts by category
+            dataStatsRow
 
             VStack(spacing: 1) {
                 debugInfoRow(label: "App Version", value: "1.0.0")
@@ -376,6 +484,70 @@ struct DeveloperSettingsView: View {
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, JohoDimensions.spacingSM)
         .background(JohoColors.inputBackground)
+    }
+
+    /// 情報デザイン: Stats row showing data counts by semantic category
+    private var dataStatsRow: some View {
+        let memoDescriptor = FetchDescriptor<Memo>()
+        let contactDescriptor = FetchDescriptor<Contact>()
+        let holidayDescriptor = FetchDescriptor<HolidayRule>()
+
+        let memos = (try? modelContext.fetch(memoDescriptor)) ?? []
+        let contactCount = (try? modelContext.fetchCount(contactDescriptor)) ?? 0
+        let holidayCount = (try? modelContext.fetchCount(holidayDescriptor)) ?? 0
+
+        // Count memos by type
+        let notes = memos.filter { $0.type == .note && $0.isCountdown != true && $0.tripEndDate == nil }.count
+        let expenses = memos.filter { $0.type == .expense }.count
+        let trips = memos.filter { $0.type == .trip || $0.tripEndDate != nil }.count
+        let countdowns = memos.filter { $0.isCountdown == true }.count
+
+        return HStack(spacing: JohoDimensions.spacingSM) {
+            // Notes (Yellow)
+            statChip(count: notes, icon: "note.text", color: JohoColors.yellow)
+
+            // Trips (Cyan)
+            statChip(count: trips, icon: "airplane", color: JohoColors.cyan)
+
+            // Countdowns (Pink)
+            statChip(count: countdowns, icon: "timer", color: JohoColors.pink)
+
+            // Expenses (Green)
+            statChip(count: expenses, icon: "yensign.circle.fill", color: JohoColors.green)
+
+            // Contacts (Purple)
+            statChip(count: contactCount, icon: "person.crop.circle.fill", color: JohoColors.purple)
+
+            // Holidays (Pink secondary)
+            statChip(count: holidayCount, icon: "star.fill", color: JohoColors.pink.opacity(0.7))
+        }
+        .padding(JohoDimensions.spacingSM)
+        .background(colors.surface.opacity(0.5))
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                .stroke(colors.border.opacity(0.5), lineWidth: 1)
+        )
+    }
+
+    private func statChip(count: Int, icon: String, color: Color) -> some View {
+        HStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .foregroundStyle(color)
+
+            Text("\(count)")
+                .font(.system(size: 11, weight: .black, design: .monospaced))
+                .foregroundStyle(colors.primary)
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(color.opacity(0.15))
+        .clipShape(Capsule())
+        .overlay(
+            Capsule()
+                .stroke(color.opacity(0.3), lineWidth: 1)
+        )
     }
 
     private func showSuccess(_ message: String) {
@@ -452,14 +624,29 @@ struct DeveloperSettingsView: View {
 
         Task {
             await MainActor.run {
+                // 情報デザイン: Generate all memo types by category
+
+                // 人 PERSON (Purple)
                 generateDummyContacts()
+
+                // 今 NOW (Yellow)
                 generateDummyNotes()
-                generateDummyExpenses()
+                generateDummyTasks()
+                generateDummyPinned()
+
+                // 予定 SCHEDULED (Cyan)
+                generateDummyMeetings()
                 generateDummyTrips()
+
+                // 祝 CELEBRATION (Pink)
                 generateDummyCountdowns()
+                generateDummyBirthdays()  // Requires contacts
+
+                // 金 MONEY (Green)
+                generateDummyExpenses()
 
                 isGeneratingData = false
-                successMessage = "Generated test data for all categories!"
+                successMessage = "Generated complete test data for all categories!"
                 showingSuccessMessage = true
                 HapticManager.notification(.success)
             }
@@ -571,52 +758,194 @@ struct DeveloperSettingsView: View {
     }
 
     private func generateDummyTrips() {
-        let trips = [
-            ("Tokyo", "Japan"),
-            ("Paris", "France"),
-            ("New York", "USA"),
-            ("London", "UK"),
-            ("Barcelona", "Spain")
+        // 情報デザイン: Realistic trips with proper start/end dates
+        let trips: [(city: String, country: String, duration: Int, purpose: String)] = [
+            ("Tokyo", "Japan", 10, "vacation"),
+            ("Paris", "France", 5, "business"),
+            ("New York", "USA", 7, "conference"),
+            ("London", "UK", 3, "family"),
+            ("Barcelona", "Spain", 4, "vacation"),
+            ("Stockholm", "Sweden", 2, "business"),
+            ("Ho Chi Minh City", "Vietnam", 14, "vacation"),
+            ("Copenhagen", "Denmark", 3, "weekend")
         ]
 
         let calendar = Calendar.current
-        for (city, country) in trips {
-            let startOffset = Int.random(in: -30...60)
-            let date = calendar.date(byAdding: .day, value: startOffset, to: Date()) ?? Date()
+        for trip in trips.prefix(5) {
+            let startOffset = Int.random(in: -30...90)
+            let startDate = calendar.date(byAdding: .day, value: startOffset, to: Date()) ?? Date()
+            let endDate = calendar.date(byAdding: .day, value: trip.duration, to: startDate) ?? startDate
 
-            let memo = Memo.withPlace(
-                "\(city) trip",
-                place: "\(city), \(country)",
-                date: date
+            // 情報デザイン: Use proper Memo.trip() factory with all fields
+            let memo = Memo.trip(
+                "\(trip.city) trip",
+                startDate: startDate,
+                endDate: endDate,
+                destination: "\(trip.city), \(trip.country)",
+                purpose: trip.purpose
             )
             modelContext.insert(memo)
         }
 
         try? modelContext.save()
-        successMessage = "Generated 5 test trips!"
+        successMessage = "Generated 5 test trips with dates!"
         showingSuccessMessage = true
         HapticManager.notification(.success)
     }
 
     private func generateDummyCountdowns() {
-        let countdowns = [
-            ("Summer Vacation", 45),
-            ("Birthday Party", 12),
-            ("Conference Talk", 30),
-            ("Product Launch", 60),
-            ("Wedding Anniversary", 90)
+        // 情報デザイン: Countdowns with proper icons and colors
+        let countdowns: [(title: String, days: Int, icon: String, color: String?)] = [
+            ("Summer Vacation", 45, "sun.max.fill", "A5F3FC"),      // Cyan
+            ("Birthday Party", 12, "birthday.cake.fill", "FECDD3"), // Pink
+            ("Conference Talk", 30, "mic.fill", "E9D5FF"),          // Purple
+            ("Product Launch", 60, "rocket.fill", "BBF7D0"),        // Green
+            ("Wedding Anniversary", 90, "heart.fill", "FECDD3"),    // Pink
+            ("Christmas", 340, "gift.fill", "FECDD3"),              // Pink
+            ("New Year", 365, "sparkles", "FFE566"),                // Yellow
+            ("Midsommar", 150, "leaf.fill", "BBF7D0")               // Green
         ]
 
         let calendar = Calendar.current
-        for (title, daysUntil) in countdowns {
-            let targetDate = calendar.date(byAdding: .day, value: daysUntil, to: Date()) ?? Date()
+        for countdown in countdowns.prefix(5) {
+            let targetDate = calendar.date(byAdding: .day, value: countdown.days, to: Date()) ?? Date()
 
-            let memo = Memo.quick(title, date: targetDate)
+            // 情報デザイン: Use proper Memo.countdown() factory
+            let memo = Memo.countdown(
+                countdown.title,
+                targetDate: targetDate,
+                icon: countdown.icon,
+                colorHex: countdown.color
+            )
             modelContext.insert(memo)
         }
 
         try? modelContext.save()
-        successMessage = "Generated 5 test events!"
+        successMessage = "Generated 5 countdown events!"
+        showingSuccessMessage = true
+        HapticManager.notification(.success)
+    }
+
+    // MARK: - New Generators (情報デザイン: Complete memo coverage)
+
+    private func generateDummyMeetings() {
+        // 情報デザイン: Scheduled appointments with person links
+        let meetings: [(title: String, person: String?, hours: Int)] = [
+            ("Team Standup", nil, 1),
+            ("Client Review", "Emma Larsson", 2),
+            ("Design Review", "Liam Andersson", 1),
+            ("1:1 with Manager", "Sofia Nilsson", 1),
+            ("Sprint Planning", nil, 2),
+            ("Product Demo", "Marcus Eriksson", 1),
+            ("Interview Candidate", "External", 1),
+            ("Lunch with Lisa", "Lisa Svensson", 1)
+        ]
+
+        let calendar = Calendar.current
+        for meeting in meetings.prefix(5) {
+            let daysOffset = Int.random(in: 0...14)
+            let date = calendar.date(byAdding: .day, value: daysOffset, to: Date()) ?? Date()
+
+            // Random hour between 9 and 16
+            let hour = Int.random(in: 9...16)
+            var components = calendar.dateComponents([.year, .month, .day], from: date)
+            components.hour = hour
+            components.minute = [0, 15, 30, 45].randomElement() ?? 0
+            let time = calendar.date(from: components) ?? date
+
+            let memo = Memo.meeting(
+                meeting.title,
+                date: date,
+                time: time,
+                person: meeting.person,
+                duration: TimeInterval(meeting.hours * 3600)
+            )
+            modelContext.insert(memo)
+        }
+
+        try? modelContext.save()
+        successMessage = "Generated 5 scheduled meetings!"
+        showingSuccessMessage = true
+        HapticManager.notification(.success)
+    }
+
+    private func generateDummyPinned() {
+        // 情報デザイン: Important pinned memos for dashboard
+        let pinnedItems = [
+            "Remember to call mom on Sunday",
+            "Project deadline: March 15",
+            "Gym membership expires next month",
+            "Passport renewal needed",
+            "Annual review scheduled"
+        ]
+
+        for text in pinnedItems.prefix(3) {
+            let memo = Memo.pinned(text)
+            modelContext.insert(memo)
+        }
+
+        try? modelContext.save()
+        successMessage = "Generated 3 pinned memos!"
+        showingSuccessMessage = true
+        HapticManager.notification(.success)
+    }
+
+    private func generateDummyBirthdays() {
+        // 情報デザイン: Birthday memos linked to contacts
+        let descriptor = FetchDescriptor<Contact>()
+        guard let contacts = try? modelContext.fetch(descriptor), !contacts.isEmpty else {
+            successMessage = "No contacts found. Generate contacts first!"
+            showingSuccessMessage = true
+            return
+        }
+
+        let calendar = Calendar.current
+        var createdCount = 0
+
+        for contact in contacts.prefix(5) {
+            // Generate a birthday in the next 365 days
+            let daysUntil = Int.random(in: 1...365)
+            let birthdayDate = calendar.date(byAdding: .day, value: daysUntil, to: Date()) ?? Date()
+
+            let memo = Memo.birthday(
+                contact.displayName,
+                date: birthdayDate,
+                contactID: contact.id
+            )
+            modelContext.insert(memo)
+            createdCount += 1
+        }
+
+        try? modelContext.save()
+        successMessage = "Generated \(createdCount) birthday memos!"
+        showingSuccessMessage = true
+        HapticManager.notification(.success)
+    }
+
+    private func generateDummyTasks() {
+        // 情報デザイン: Task memos with priorities
+        let tasks: [(text: String, priority: MemoPriority)] = [
+            ("Review pull request", .high),
+            ("Update documentation", .normal),
+            ("Clean up old branches", .low),
+            ("Write unit tests", .high),
+            ("Refactor database layer", .normal),
+            ("Fix accessibility issues", .high),
+            ("Update dependencies", .low),
+            ("Code review feedback", .normal)
+        ]
+
+        let calendar = Calendar.current
+        for task in tasks.prefix(5) {
+            let daysOffset = Int.random(in: 0...7)
+            let date = calendar.date(byAdding: .day, value: daysOffset, to: Date()) ?? Date()
+
+            let memo = Memo.task(task.text, date: date, priority: task.priority)
+            modelContext.insert(memo)
+        }
+
+        try? modelContext.save()
+        successMessage = "Generated 5 task memos!"
         showingSuccessMessage = true
         HapticManager.notification(.success)
     }

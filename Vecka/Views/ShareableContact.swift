@@ -124,6 +124,10 @@ struct ShareableContactSnapshot: Transferable, @unchecked Sendable {
 struct ShareableContactCard: View {
     let contact: Contact
 
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     private let cornerRadius: CGFloat = 16
 
     private var cardShape: RoundedRectangle {
@@ -138,9 +142,9 @@ struct ShareableContactCard: View {
     var body: some View {
         // 情報デザイン: ZStack ensures white background fills corners before content
         ZStack {
-            // Layer 1: Solid white background (fills squircle corners)
+            // Layer 1: Solid background (fills squircle corners)
             cardShape
-                .fill(JohoColors.white)
+                .fill(colors.surface)
 
             // Layer 2: Content compartments
             VStack(spacing: 0) {
@@ -152,11 +156,11 @@ struct ShareableContactCard: View {
                     HStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: "person.crop.rectangle.stack.fill")
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
 
                         Text("CONTACTS")
                             .font(.system(size: 12, weight: .black, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                     }
                     .padding(.leading, JohoDimensions.spacingMD)
 
@@ -164,14 +168,14 @@ struct ShareableContactCard: View {
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
                     // RIGHT: Group icon
                     Image(systemName: contact.group.icon)
                         .font(.system(size: 18, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(width: 48)
                         .frame(maxHeight: .infinity)
                 }
@@ -180,7 +184,7 @@ struct ShareableContactCard: View {
 
                 // Divider
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 2)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -190,7 +194,7 @@ struct ShareableContactCard: View {
                     // Name (always prominent)
                     Text(contact.displayName)
                         .font(.system(size: 18, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .lineLimit(2)
 
                     // Organization
@@ -201,7 +205,7 @@ struct ShareableContactCard: View {
                                 .foregroundStyle(JohoColors.cyan)
                             Text(org)
                                 .font(.system(size: 12, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                                 .lineLimit(1)
                         }
                     }
@@ -214,7 +218,7 @@ struct ShareableContactCard: View {
                                 .foregroundStyle(JohoColors.green)
                             Text(phone.value)
                                 .font(.system(size: 12, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                                 .lineLimit(1)
                         }
                     }
@@ -227,7 +231,7 @@ struct ShareableContactCard: View {
                                 .foregroundStyle(JohoColors.yellow)
                             Text(email.value)
                                 .font(.system(size: 12, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                                 .lineLimit(1)
                         }
                     }
@@ -240,7 +244,7 @@ struct ShareableContactCard: View {
                                 .foregroundStyle(JohoColors.pink)
                             Text(birthday.formatted(.dateTime.month(.abbreviated).day()))
                                 .font(.system(size: 12, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                         }
                     }
                 }
@@ -250,7 +254,7 @@ struct ShareableContactCard: View {
 
                 // Divider
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 2)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -263,25 +267,25 @@ struct ShareableContactCard: View {
                             .interpolation(.none)
                             .resizable()
                             .frame(width: 90, height: 90)
-                            .background(JohoColors.white)
+                            .background(colors.surface)
                             .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 4, style: .continuous)
-                                    .stroke(JohoColors.black, lineWidth: 1)
+                                    .stroke(colors.border, lineWidth: 1)
                             )
                     } else {
                         // Fallback if QR generation fails
                         RoundedRectangle(cornerRadius: 4, style: .continuous)
-                            .fill(JohoColors.white)
+                            .fill(colors.surface)
                             .frame(width: 90, height: 90)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 4, style: .continuous)
-                                    .stroke(JohoColors.black, lineWidth: 1)
+                                    .stroke(colors.border, lineWidth: 1)
                             )
                             .overlay {
                                 Image(systemName: "qrcode")
                                     .font(.system(size: 32))
-                                    .foregroundStyle(JohoColors.black.opacity(0.3))
+                                    .foregroundStyle(colors.primary.opacity(0.3))
                             }
                     }
 
@@ -289,12 +293,12 @@ struct ShareableContactCard: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("SCAN TO SAVE")
                             .font(.system(size: 10, weight: .black, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(0.5))
                             .tracking(0.5)
 
                         Text("Point your camera at this QR code to add contact")
                             .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .lineLimit(2)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -303,11 +307,11 @@ struct ShareableContactCard: View {
                 }
                 .padding(JohoDimensions.spacingMD)
                 .frame(height: 120)
-                .background(JohoColors.white)
+                .background(colors.surface)
 
                 // Divider
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 2)
 
                 // ═══════════════════════════════════════════════════════════════
@@ -316,7 +320,7 @@ struct ShareableContactCard: View {
                 HStack {
                     Text("CONTACT CARD")
                         .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(0.5))
                         .tracking(1)
 
                     Spacer()
@@ -324,7 +328,7 @@ struct ShareableContactCard: View {
                     // Group badge
                     Text(contact.group.localizedName.uppercased())
                         .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.4))
+                        .foregroundStyle(colors.primary.opacity(0.4))
                         .tracking(0.5)
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -335,7 +339,7 @@ struct ShareableContactCard: View {
 
             // Layer 3: Border (strokeBorder keeps it inside the shape)
             cardShape
-                .strokeBorder(JohoColors.black, lineWidth: 3)
+                .strokeBorder(colors.border, lineWidth: 3)
         }
     }
 }
