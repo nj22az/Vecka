@@ -25,9 +25,16 @@ struct RegionQuickPicker: View {
         Dictionary(grouping: RegionSelectionView.allRegions) { $0.continent }
     }
 
+    private var validCodes: Set<String> {
+        Set(RegionSelectionView.allRegions.map { $0.code })
+    }
+
+    private var validSelectedRegions: [String] {
+        selectedRegions.regions.filter { validCodes.contains($0) }
+    }
+
     private var selectedCount: Int {
-        let validCodes = Set(RegionSelectionView.allRegions.map { $0.code })
-        return selectedRegions.regions.filter { validCodes.contains($0) }.count
+        validSelectedRegions.count
     }
 
     var body: some View {
@@ -72,9 +79,9 @@ struct RegionQuickPicker: View {
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary.opacity(0.7))
 
-                // Selected region pills (up to 3 shown)
+                // Selected region pills (up to 3 shown, only valid codes)
                 HStack(spacing: 4) {
-                    ForEach(Array(selectedRegions.regions.prefix(3)), id: \.self) { code in
+                    ForEach(Array(validSelectedRegions.prefix(3)), id: \.self) { code in
                         Text(code)
                             .font(.system(size: 9, weight: .black, design: .rounded))
                             .foregroundStyle(colors.primaryInverted)
@@ -89,8 +96,8 @@ struct RegionQuickPicker: View {
                     }
 
                     // Overflow indicator
-                    if selectedRegions.regions.count > 3 {
-                        Text("+\(selectedRegions.regions.count - 3)")
+                    if validSelectedRegions.count > 3 {
+                        Text("+\(validSelectedRegions.count - 3)")
                             .font(.system(size: 9, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary.opacity(0.6))
                             .padding(.horizontal, 6)
@@ -323,8 +330,8 @@ struct RegionQuickPicker: View {
     }
 
     private func clearAllRegions() {
-        let validCodes = Set(RegionSelectionView.allRegions.map { $0.code })
-        for code in selectedRegions.regions.filter({ validCodes.contains($0) }) {
+        // Remove all stored codes (including any invalid/legacy ones like "NORDIC")
+        for code in selectedRegions.regions {
             _ = selectedRegions.removeRegionIfPossible(code, minimumCount: 0)
         }
     }
