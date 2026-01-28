@@ -2340,14 +2340,18 @@ struct JohoTypeSuggestionPill: View {
 // MARK: - 情報デザイン ViewModifier Implementations
 // Pattern from Swift Playgrounds "Laying Out Views" ThemeViews.swift
 
-/// Background modifier that adapts to color mode
+/// Background modifier that uses user's AMOLED background preference
+/// Canvas is always dark (for AMOLED battery savings) - Light/Dark only affects cards/text
 struct JohoBackgroundModifier: ViewModifier {
-    @Environment(\.johoColorMode) private var colorMode
-    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+    @AppStorage("appBackgroundColor") private var appBackgroundColor = "black"
+
+    private var backgroundColor: Color {
+        (AppBackgroundOption(rawValue: appBackgroundColor) ?? .trueBlack).color
+    }
 
     func body(content: Content) -> some View {
         content
-            .background(colors.canvas)
+            .background(backgroundColor)
             .scrollContentBackground(.hidden)
     }
 }
