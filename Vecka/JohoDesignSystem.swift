@@ -240,7 +240,7 @@ struct JohoScheme {
                 secondary: Color(hex: "000000").opacity(0.6),
                 surface: Color(hex: "FFFFFF"),      // White containers
                 border: Color(hex: "000000"),       // Black borders
-                canvas: Color(hex: "1A1A2E"),       // Dark canvas (barely visible)
+                canvas: Color(hex: "FFFFFF"),       // White canvas (light mode)
                 surfaceInverted: Color(hex: "000000"),
                 primaryInverted: Color(hex: "FFFFFF"),
                 inputBackground: Color(hex: "F5F5F5")  // Light gray for text fields
