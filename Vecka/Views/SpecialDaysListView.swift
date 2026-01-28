@@ -325,6 +325,34 @@ struct SpecialDaysListView: View {
         return (allHolidays.count, allObservances.count, allBirthdays.count, allMemos.count)
     }
 
+    /// 情報デザイン: Get UNIQUE date counts for a specific month by category
+    /// Shows unique dates, not duplicate regional variants (Dec 24 = 1 holiday, not 5)
+    private func monthUniqueCounts(for month: Int) -> (holidays: Int, observances: Int, memos: Int) {
+        let calendar = Calendar.current
+
+        func uniqueDates(for type: SpecialDayType) -> Int {
+            var dates = Set<DateComponents>()
+            for row in rows(for: type) where calendar.component(.month, from: row.date) == month {
+                dates.insert(calendar.dateComponents([.year, .month, .day], from: row.date))
+            }
+            return dates.count
+        }
+
+        let holidays = uniqueDates(for: .holiday)
+        let observances = uniqueDates(for: .observance)
+
+        // Memos combine birthdays + memos
+        var memoDates = Set<DateComponents>()
+        for row in rows(for: .birthday) where calendar.component(.month, from: row.date) == month {
+            memoDates.insert(calendar.dateComponents([.year, .month, .day], from: row.date))
+        }
+        for row in rows(for: .memo) where calendar.component(.month, from: row.date) == month {
+            memoDates.insert(calendar.dateComponents([.year, .month, .day], from: row.date))
+        }
+
+        return (holidays, observances, memoDates.count)
+    }
+
     /// Get rows for a specific month, filtered by active category filters
     private func rowsForMonth(_ month: Int) -> [SpecialDayRow] {
         let calendar = Calendar.current
@@ -606,16 +634,13 @@ struct SpecialDaysListView: View {
                 .fill(colors.border)
                 .frame(height: 1.5)
 
-            // STATS ROW (full width)
+            // STATS ROW (full width) - Filter pills for both main view and month detail
             HStack(spacing: JohoDimensions.spacingSM) {
-                if let _ = theme {
-                    Text("\(monthRows.count) special days")
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(colors.primary.opacity(0.7))
+                if let month = selectedMonth {
+                    monthBentoStatsRow(for: month)
                 } else {
                     bentoStatsRow
                 }
-                Spacer()
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
@@ -657,6 +682,33 @@ struct SpecialDaysListView: View {
             }
 
             // Show empty state only when no entries exist
+            if totalCount == 0 {
+                Text("No entries yet")
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(colors.primary.opacity(0.5))
+            }
+
+            Spacer()
+        }
+    }
+
+    /// 情報デザイン: Month-specific stats row with filter pills
+    /// Same behavior as main bentoStatsRow but with month-scoped counts
+    private func monthBentoStatsRow(for month: Int) -> some View {
+        let counts = monthUniqueCounts(for: month)
+        let totalCount = counts.holidays + counts.observances + counts.memos
+
+        return HStack(spacing: JohoDimensions.spacingMD) {
+            if counts.holidays > 0 {
+                categoryIndicator(category: .holiday, count: counts.holidays)
+            }
+            if counts.observances > 0 {
+                categoryIndicator(category: .observance, count: counts.observances)
+            }
+            if counts.memos > 0 {
+                categoryIndicator(category: .memo, count: counts.memos)
+            }
+
             if totalCount == 0 {
                 Text("No entries yet")
                     .font(JohoFont.bodySmall)
@@ -714,15 +766,15 @@ struct SpecialDaysListView: View {
                         .font(.system(size: 10, weight: .semibold, design: .rounded))
                         .foregroundStyle(colors.primary)
                         .lineLimit(1)
-                        .fixedSize(horizontal: true, vertical: false)
                 }
 
-                // Count numeral (smaller, subtitle-style) - dimmed when inactive
+                // Count numeral - dimmed when inactive
                 Text(String(count))
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
                     .monospacedDigit()
                     .foregroundStyle(isActive ? colors.primary : colors.primary.opacity(0.4))
             }
+            .fixedSize(horizontal: true, vertical: false)
             .padding(.horizontal, 5)
             .padding(.vertical, 2)
             .background(isActive ? category.accentColor.opacity(0.12) : Color.clear)
@@ -1054,9 +1106,8 @@ struct SpecialDaysListView: View {
 
         for card in dayCards {
             let cardDay = calendar.startOfDay(for: card.date)
-            // Auto-expand: today, cards with multiple items, or upcoming events within 7 days
-            let daysUntil = calendar.dateComponents([.day], from: today, to: cardDay).day ?? 0
-            if cardDay == today || card.items.count > 1 || (daysUntil >= 0 && daysUntil <= 7) {
+            // Only auto-expand TODAY (情報デザイン: minimal default expansion)
+            if cardDay == today {
                 expandedDays.insert(card.id)
             }
         }
@@ -1141,20 +1192,14 @@ struct CollapsibleSpecialDayCard: View {
         return calendar.dateComponents([.day], from: today, to: target).day ?? 0
     }
 
-    /// Date status pill for the day header (情報デザイン: Shows temporal context)
+    /// Date status pill for the day header (情報デザイン: Only TODAY highlighted)
     @ViewBuilder
     private var dateStatusPill: some View {
         if daysFromToday == 0 {
-            // TODAY - Yellow inverted pill
+            // TODAY - Yellow inverted pill (only status worth highlighting)
             JohoPill(text: "TODAY", style: .coloredInverted(JohoColors.yellow), size: .small)
-        } else if daysFromToday == -1 {
-            // YESTERDAY - Muted gray pill
-            JohoPill(text: "YESTERDAY", style: .muted, size: .small)
-        } else if daysFromToday < -1 {
-            // X DAYS AGO - Muted gray pill
-            JohoPill(text: "\(abs(daysFromToday)) DAYS AGO", style: .muted, size: .small)
         }
-        // Future dates: no status pill shown
+        // Past/future dates: no pill needed (date is already visible)
     }
 
     var body: some View {
@@ -1243,24 +1288,48 @@ struct CollapsibleSpecialDayCard: View {
     // MARK: - Content Indicator Icons (情報デザイン: Black outline shapes)
 
     private var contentIndicatorDots: some View {
-        HStack(spacing: 3) {
-            // 情報デザイン: Black outline shapes by DisplayCategory
-            // Shape = meaning (circle=holiday, diamond=observance, doc=memo)
+        HStack(spacing: 6) {
+            // 情報デザイン: 3-category indicator system
+            // PINK circle = Holidays (celebration)
+            // PINK diamond = Observances (celebration, different shape)
+            // YELLOW circle = Memos + Birthdays (now/personal)
+
+            // Holidays - Pink circle
             if holidays.isNotEmpty {
-                Image(systemName: DisplayCategory.holiday.outlineIcon)
-                    .font(.system(size: 8, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primary)
+                HStack(spacing: 2) {
+                    Circle()
+                        .fill(JohoColors.pink)
+                        .frame(width: 8, height: 8)
+                        .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
+                    Text("\(holidays.count)")
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                }
             }
+
+            // Observances - Pink diamond (same color, different SHAPE)
             if observances.isNotEmpty {
-                Image(systemName: DisplayCategory.observance.outlineIcon)
-                    .font(.system(size: 8, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primary)
+                HStack(spacing: 2) {
+                    Image(systemName: "diamond.fill")
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundStyle(JohoColors.pink)
+                    Text("\(observances.count)")
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                }
             }
-            // Birthdays + Memos both use memo category (doc outline)
+
+            // Memos + Birthdays - Yellow circle (unified personal category)
             if birthdays.isNotEmpty || memosForDay.isNotEmpty {
-                Image(systemName: DisplayCategory.memo.outlineIcon)
-                    .font(.system(size: 8, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primary)
+                HStack(spacing: 2) {
+                    Circle()
+                        .fill(JohoColors.yellow)
+                        .frame(width: 8, height: 8)
+                        .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
+                    Text("\(birthdays.count + memosForDay.count)")
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                }
             }
         }
     }
@@ -1269,15 +1338,18 @@ struct CollapsibleSpecialDayCard: View {
 
     /// Combined birthdays + memos for 情報デザイン 3-category system
     private var combinedMemos: [SpecialDayRow] {
-        // Birthdays + memos combined under メモ category
+        // Birthdays + memos combined under メモ category (YELLOW = now/personal)
         (birthdays + memosForDay).sorted { $0.date < $1.date }
     }
 
     @ViewBuilder
     private var expandedContent: some View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-            // 情報デザイン: 3-category sections with localized labels
-            // Holidays - Circle outline
+            // 情報デザイン: 3-category system
+            // PINK = Celebration (holidays, observances)
+            // YELLOW = Now/Personal (memos + birthdays)
+
+            // Holidays - Circle outline (PINK)
             if consolidatedHolidays.isNotEmpty {
                 consolidatedHolidaySection(
                     title: DisplayCategory.holiday.localizedLabel,
@@ -1287,7 +1359,7 @@ struct CollapsibleSpecialDayCard: View {
                 )
             }
 
-            // Observances - Diamond outline
+            // Observances - Diamond outline (PINK)
             if observances.isNotEmpty {
                 specialDaySection(
                     title: DisplayCategory.observance.localizedLabel,
@@ -1297,7 +1369,7 @@ struct CollapsibleSpecialDayCard: View {
                 )
             }
 
-            // Memos - Doc outline (includes birthdays)
+            // Memos - Doc outline (YELLOW - includes birthdays)
             if combinedMemos.isNotEmpty {
                 specialDaySection(
                     title: DisplayCategory.memo.localizedLabel,
@@ -1337,14 +1409,14 @@ struct CollapsibleSpecialDayCard: View {
                     .frame(maxHeight: .infinity)
             }
             .frame(height: 32)
-            .background(zone.background(for: colorMode).opacity(0.5))  // Slightly darker header
+            .background(zone.background(for: colorMode).opacity(0.5))  // Colored header
 
             // Horizontal divider between header and items
             Rectangle()
                 .fill(colors.border)
                 .frame(height: 1.5)
 
-            // Items in VStack for pixel-perfect 情報デザイン layout
+            // Items on WHITE background (情報デザイン: white content backgrounds)
             VStack(spacing: 0) {
                 ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                     specialDayItemRow(item, zone: zone)
@@ -1359,8 +1431,8 @@ struct CollapsibleSpecialDayCard: View {
                 }
             }
             .padding(.vertical, 4)
+            .background(colors.surface)  // WHITE body instead of colored
         }
-        .background(zone.background(for: colorMode))
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
@@ -1401,14 +1473,14 @@ struct CollapsibleSpecialDayCard: View {
                     .frame(maxHeight: .infinity)
             }
             .frame(height: 32)
-            .background(zone.background(for: colorMode).opacity(0.5))  // Slightly darker header
+            .background(zone.background(for: colorMode).opacity(0.5))  // Colored header
 
             // Horizontal divider between header and items
             Rectangle()
                 .fill(colors.border)
                 .frame(height: 1.5)
 
-            // Items in VStack for pixel-perfect 情報デザイン layout
+            // Items on WHITE background (情報デザイン: white content backgrounds)
             VStack(spacing: 0) {
                 ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                     consolidatedHolidayRow(item, zone: zone)
@@ -1423,8 +1495,8 @@ struct CollapsibleSpecialDayCard: View {
                 }
             }
             .padding(.vertical, 4)
+            .background(colors.surface)  // WHITE body instead of colored
         }
-        .background(zone.background(for: colorMode))
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
@@ -1442,13 +1514,9 @@ struct CollapsibleSpecialDayCard: View {
     @ViewBuilder
     private func consolidatedHolidayRow(_ item: ConsolidatedHoliday, zone: SectionZone) -> some View {
         HStack(spacing: JohoDimensions.spacingSM) {
-            // Type indicator dot (left edge)
-            typeIndicatorDot(for: item.type)
-                .padding(.leading, JohoDimensions.spacingSM)
-
-            // Holiday name (larger font, flexible)
-            // 情報デザイン: Display locale-appropriate name (Swedish user sees "Nyårsdagen", English sees "New Year's Day")
+            // Holiday name (情報デザイン: icon already in header, no need to repeat)
             Text(item.displayName(for: locale))
+                .padding(.leading, JohoDimensions.spacingMD)
                 .font(JohoFont.body)
                 .foregroundStyle(colors.primary)
                 .lineLimit(1)
@@ -1459,15 +1527,6 @@ struct CollapsibleSpecialDayCard: View {
             regionCodesText(regions: item.regions)
         }
         .frame(minHeight: 44)
-        .background(
-            HStack(spacing: 0) {
-                // 情報デザイン: 4pt left-edge color tint instead of full background
-                Rectangle()
-                    .fill(zone.background(for: colorMode))
-                    .frame(width: 4)
-                Spacer()
-            }
-        )
         .contentShape(Rectangle())
         // 情報デザイン: Tap shows detail sheet for first item in consolidated group
         .onTapGesture {
@@ -1520,26 +1579,31 @@ struct CollapsibleSpecialDayCard: View {
         let isExpanded = expandedItemID == item.id
 
         VStack(spacing: 0) {
-            // MAIN ROW (情報デザイン: Clean layout with left-edge tint)
-            HStack(spacing: JohoDimensions.spacingSM) {
-                // Type indicator dot (left edge)
-                typeIndicatorDot(for: item.type)
-                    .padding(.leading, JohoDimensions.spacingSM)
-
-                // Title + metadata (flexible)
-                Text(item.title)
-                    .font(JohoFont.body)
-                    .foregroundStyle(colors.primary)
-                    .lineLimit(1)
+            // MAIN ROW (情報デザイン: vertical growth, no truncation)
+            HStack(alignment: .top, spacing: JohoDimensions.spacingSM) {
+                // Content area - grows vertically as needed
+                if item.type == .birthday {
+                    // Birthday: two-line layout (name + subtitle)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(item.title)
+                            .font(JohoFont.body)
+                            .foregroundStyle(colors.primary)
+                        if let age = item.turningAge {
+                            Text(birthdayDisplayText(age: age, date: item.date))
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
+                                .foregroundStyle(colors.primary.opacity(0.6))
+                        }
+                    }
+                    .padding(.leading, JohoDimensions.spacingMD)
+                } else {
+                    // Regular memo/observance: single text, wraps vertically
+                    Text(item.title)
+                        .font(JohoFont.body)
+                        .padding(.leading, JohoDimensions.spacingMD)
+                        .foregroundStyle(colors.primary)
+                }
 
                 Spacer(minLength: 8)
-
-                // Metadata: age for birthdays (情報デザイン: intelligent messaging)
-                if item.type == .birthday, let age = item.turningAge {
-                    Text(birthdayDisplayText(age: age, date: item.date))
-                        .font(.system(size: 9, weight: .bold, design: .monospaced))
-                        .foregroundStyle(colors.primary.opacity(0.6))
-                }
 
                 // Region code as plain text (情報デザイン: Clean, minimal)
                 if item.hasCountryPill {
@@ -1547,18 +1611,11 @@ struct CollapsibleSpecialDayCard: View {
                         .font(.system(size: 11, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary.opacity(0.6))
                         .padding(.trailing, JohoDimensions.spacingMD)
+                        .padding(.top, 4)
                 }
             }
+            .padding(.vertical, 8)
             .frame(minHeight: 44)
-            .background(
-                HStack(spacing: 0) {
-                    // 情報デザイン: 4pt left-edge color tint instead of full background
-                    Rectangle()
-                        .fill(zone.background(for: colorMode))
-                        .frame(width: 4)
-                    Spacer()
-                }
-            )
             // 情報デザイン: Tap shows detail sheet, long-press expands inline
             .contentShape(Rectangle())
             .onTapGesture {

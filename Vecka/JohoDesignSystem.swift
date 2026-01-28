@@ -1015,6 +1015,7 @@ struct JohoStatBox: View {
     let value: String
     let label: String
     let zone: SectionZone
+    var isActive: Bool = true  // 情報デザイン: Visual feedback for filter state
     @Environment(\.johoColorMode) private var colorMode
 
     /// Dynamic colors based on color mode
@@ -1032,7 +1033,8 @@ struct JohoStatBox: View {
         }
         .frame(maxWidth: .infinity)
         .padding(JohoDimensions.spacingMD)
-        .background(zone.background(for: colorMode))
+        .background(isActive ? zone.background(for: colorMode) : colors.inputBackground)
+        .opacity(isActive ? 1.0 : 0.5)
         .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderMedium, borderColor: colors.border)
     }
 }
