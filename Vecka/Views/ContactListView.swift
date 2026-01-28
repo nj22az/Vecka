@@ -684,7 +684,7 @@ struct ContactListView: View {
                 .foregroundStyle(selectedGroup == nil ? JohoColors.white : JohoColors.black)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)
-                .background(selectedGroup == nil ? accentColor : JohoColors.inputBackground)
+                .background(selectedGroup == nil ? accentColor : colors.inputBackground)
                 .clipShape(Squircle(cornerRadius: 8))
                 .overlay(
                     Squircle(cornerRadius: 8)
@@ -715,7 +715,7 @@ struct ContactListView: View {
                     .foregroundStyle(selectedGroup == group ? JohoColors.white : JohoColors.black)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
-                    .background(selectedGroup == group ? Color(hex: group.color) : JohoColors.inputBackground)
+                    .background(selectedGroup == group ? Color(hex: group.color) : colors.inputBackground)
                     .clipShape(Squircle(cornerRadius: 8))
                     .overlay(
                         Squircle(cornerRadius: 8)
@@ -748,7 +748,7 @@ struct ContactListView: View {
                     .foregroundStyle(filterLetter == nil ? JohoColors.white : JohoColors.black)
                     .frame(maxWidth: .infinity)
                     .frame(height: 32)
-                    .background(filterLetter == nil ? accentColor : JohoColors.inputBackground)
+                    .background(filterLetter == nil ? accentColor : colors.inputBackground)
                     .clipShape(Squircle(cornerRadius: 6))
                     .overlay(
                         Squircle(cornerRadius: 6)
@@ -769,7 +769,7 @@ struct ContactListView: View {
                         .foregroundStyle(filterLetter == letter ? JohoColors.white : JohoColors.black)
                         .frame(maxWidth: .infinity)
                         .frame(height: 32)
-                        .background(filterLetter == letter ? accentColor : JohoColors.inputBackground)
+                        .background(filterLetter == letter ? accentColor : colors.inputBackground)
                         .clipShape(Squircle(cornerRadius: 6))
                         .overlay(
                             Squircle(cornerRadius: 6)
@@ -966,7 +966,7 @@ struct ContactListView: View {
                 .padding(.trailing, JohoDimensions.spacingSM)
         }
         .frame(height: 56)
-        .background(JohoColors.inputBackground)
+        .background(colors.inputBackground)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
@@ -1463,7 +1463,7 @@ struct ContactImportView: View {
                 .padding(.trailing, JohoDimensions.spacingMD)
         }
         .frame(height: 56)
-        .background(JohoColors.inputBackground)
+        .background(colors.inputBackground)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)

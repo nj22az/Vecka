@@ -646,7 +646,7 @@ struct MergeContactSheet: View {
                 }
             }
             .padding(JohoDimensions.spacingMD)
-            .background(isSelected ? accentColor.opacity(0.1) : JohoColors.inputBackground)
+            .background(isSelected ? accentColor.opacity(0.1) : colors.inputBackground)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
@@ -699,7 +699,7 @@ struct MergeContactSheet: View {
                 previewRow(label: "Photo", value: (primary.imageData ?? secondary.imageData) != nil ? "Yes" : "No")
             }
             .padding(JohoDimensions.spacingSM)
-            .background(JohoColors.inputBackground)
+            .background(colors.inputBackground)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
@@ -940,7 +940,7 @@ struct ClusterMergeSheet: View {
                 }
             }
             .padding(JohoDimensions.spacingMD)
-            .background(isSelected ? accentColor.opacity(0.1) : JohoColors.inputBackground)
+            .background(isSelected ? accentColor.opacity(0.1) : colors.inputBackground)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
@@ -996,7 +996,7 @@ struct ClusterMergeSheet: View {
                 clusterPreviewRow(label: "Photo", value: hasPhoto ? "Yes" : "No")
             }
             .padding(JohoDimensions.spacingSM)
-            .background(JohoColors.inputBackground)
+            .background(colors.inputBackground)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusSmall)

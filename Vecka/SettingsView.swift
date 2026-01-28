@@ -236,7 +236,7 @@ struct SettingsView: View {
                         Spacer()
                     }
                     .padding(JohoDimensions.spacingMD)
-                    .background(JohoColors.inputBackground)
+                    .background(colors.inputBackground)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusMedium)
@@ -391,7 +391,7 @@ struct SettingsView: View {
                         .font(.system(size: 20, weight: .bold))
                         .foregroundStyle(colors.primary)
                         .johoTouchTarget()
-                        .background(JohoColors.inputBackground)
+                        .background(colors.inputBackground)
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusSmall)
@@ -502,7 +502,7 @@ struct SettingsView: View {
                         .font(.system(size: 20, weight: .bold))
                         .foregroundStyle(showLunarCalendar ? Color(hex: "FFCD00") : JohoColors.black)
                         .johoTouchTarget()
-                        .background(showLunarCalendar ? Color(hex: "DA251D") : JohoColors.inputBackground)
+                        .background(showLunarCalendar ? Color(hex: "DA251D") : colors.inputBackground)
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusSmall)
@@ -523,7 +523,7 @@ struct SettingsView: View {
 
                     // Visual toggle indicator (情報デザイン: Maru circle)
                     Circle()
-                        .fill(showLunarCalendar ? Color(hex: "DA251D") : JohoColors.inputBackground)
+                        .fill(showLunarCalendar ? Color(hex: "DA251D") : colors.inputBackground)
                         .frame(width: 28, height: 28)
                         .overlay(
                             Circle().stroke(JohoColors.black, lineWidth: 1.5)

@@ -42,8 +42,9 @@ struct ShareableFactSnapshot: Transferable {
     /// The view to render for sharing
     @MainActor
     func shareableView() -> some View {
-        ShareableFactCard(fact: fact)
-            .frame(width: size.width, height: size.height)
+        ShareableFactCard(fact: fact, isShareable: true)
+            .frame(width: size.width)
+            .fixedSize(horizontal: false, vertical: true)
     }
 }
 
@@ -53,6 +54,8 @@ struct ShareableFactSnapshot: Transferable {
 /// Uses 情報デザイン bento styling with clean compartments
 struct ShareableFactCard: View {
     let fact: RandomFact
+    /// When true, text expands fully without line limits (for sharing as image)
+    var isShareable: Bool = false
 
     @Environment(\.johoColorMode) private var colorMode
 
@@ -115,42 +118,43 @@ struct ShareableFactCard: View {
                 // ═══════════════════════════════════════════════════════════════
                 // MAIN CONTENT: Large icon + fact text
                 // ═══════════════════════════════════════════════════════════════
-                HStack(spacing: 0) {
+                HStack(alignment: .top, spacing: 0) {
                     // LEFT: Large icon
                     VStack {
+                        Spacer()
                         Image(systemName: fact.icon ?? "lightbulb.fill")
                             .font(.system(size: 48, weight: .bold, design: .rounded))
                             .foregroundStyle(fact.color)
+                        Spacer()
                     }
                     .frame(width: 100)
-                    .frame(maxHeight: .infinity)
+                    .frame(minHeight: 140)
 
                     // WALL
                     Rectangle()
                         .fill(colors.border)
                         .frame(width: 1.5)
-                        .frame(maxHeight: .infinity)
 
                     // RIGHT: Fact text
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                         Text(fact.text)
                             .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary)
-                            .lineLimit(4)
+                            .lineLimit(isShareable ? nil : 4)
                             .multilineTextAlignment(.leading)
 
                         if !fact.explanation.isEmpty {
                             Text(fact.explanation)
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
                                 .foregroundStyle(colors.primary.opacity(0.6))
-                                .lineLimit(3)
+                                .lineLimit(isShareable ? nil : 3)
                                 .multilineTextAlignment(.leading)
                         }
                     }
                     .padding(JohoDimensions.spacingMD)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .frame(height: 140)
+                .frame(minHeight: 140)
                 .background(fact.color.opacity(0.15))
 
                 // Divider
@@ -200,7 +204,7 @@ struct FactShareButton: View {
     private var snapshot: ShareableFactSnapshot {
         ShareableFactSnapshot(
             fact: fact,
-            size: CGSize(width: 340, height: 220)
+            size: CGSize(width: 340, height: 0)  // Height is dynamic (content-driven)
         )
     }
 
@@ -228,31 +232,37 @@ struct FactShareButton: View {
 // MARK: - Preview
 
 #Preview("Shareable Fact Card") {
-    VStack(spacing: 20) {
-        ShareableFactCard(
-            fact: RandomFact(
-                id: "preview-1",
-                text: "Sweden has 21 national parks covering about 730,000 hectares",
-                icon: "leaf.fill",
-                color: JohoColors.green,
-                explanation: "The first national park, Sarek, was established in 1909.",
-                source: "SE"
+    ScrollView {
+        VStack(spacing: 20) {
+            // Compact (in-app display)
+            ShareableFactCard(
+                fact: RandomFact(
+                    id: "preview-1",
+                    text: "Swedish coffee: strongest in Europe",
+                    icon: "fork.knife",
+                    color: JohoColors.yellow,
+                    explanation: "Swedes drink more coffee per capita than almost any other nation - about 4 cups daily. Swedish coffee is notably stronger than most European varieties, reflecting the deep cultural tradition of fika.",
+                    source: "SE"
+                )
             )
-        )
-        .frame(width: 340, height: 220)
+            .frame(width: 340, height: 220)
 
-        ShareableFactCard(
-            fact: RandomFact(
-                id: "preview-2",
-                text: "Week 1 always contains January 4th",
-                icon: "calendar",
-                color: JohoColors.cyan,
-                explanation: "This is how ISO 8601 defines the first week of the year.",
-                source: "Calendar"
+            // Shareable (expanded, full text)
+            ShareableFactCard(
+                fact: RandomFact(
+                    id: "preview-2",
+                    text: "Swedish coffee: strongest in Europe",
+                    icon: "fork.knife",
+                    color: JohoColors.yellow,
+                    explanation: "Swedes drink more coffee per capita than almost any other nation - about 4 cups daily. Swedish coffee is notably stronger than most European varieties, reflecting the deep cultural tradition of fika.",
+                    source: "SE"
+                ),
+                isShareable: true
             )
-        )
-        .frame(width: 340, height: 220)
+            .frame(width: 340)
+            .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding()
     }
-    .padding()
     .johoBackground()
 }

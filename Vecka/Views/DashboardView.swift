@@ -694,6 +694,8 @@ private struct DataCard<Content: View>: View {
     let icon: String
     let zone: SectionZone
     @ViewBuilder let content: Content
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -702,39 +704,39 @@ private struct DataCard<Content: View>: View {
                 // Icon zone - uses SectionZone background for proper semantic color
                 Image(systemName: icon)
                     .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(zone.textColor(for: colorMode))
                     .frame(width: 28, height: 28)
-                    .background(zone.background)
+                    .background(zone.background(for: colorMode))
                     .clipShape(Squircle(cornerRadius: 6))
                     .overlay(
                         Squircle(cornerRadius: 6)
-                            .stroke(JohoColors.black, lineWidth: 1)
+                            .stroke(colors.border, lineWidth: 1)
                     )
 
                 Text(title)
                     .font(.system(size: 11, weight: .black, design: .rounded))
                     .tracking(1)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 Spacer()
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
 
-            // Divider - 情報デザイン: Black border between compartments
+            // Divider - 情報デザイン: Border between compartments
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 1.5)
 
             // Content
             content
                 .padding(JohoDimensions.spacingMD)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
     }
 }

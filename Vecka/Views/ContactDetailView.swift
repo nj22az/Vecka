@@ -611,7 +611,7 @@ struct ContactDetailView: View {
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(socialServiceColor(for: profile.service))
                 .frame(width: 32, height: 32)
-                .background(JohoColors.inputBackground)
+                .background(colors.inputBackground)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
@@ -897,7 +897,7 @@ struct ContactDetailView: View {
                                     .foregroundStyle(JohoColors.black)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 8)
-                                    .background(JohoColors.inputBackground)
+                                    .background(colors.inputBackground)
                                     .clipShape(Capsule())
                                     .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                             }
@@ -913,7 +913,7 @@ struct ContactDetailView: View {
                                     .foregroundStyle(JohoColors.black)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 8)
-                                    .background(JohoColors.inputBackground)
+                                    .background(colors.inputBackground)
                                     .clipShape(Capsule())
                                     .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                             }
@@ -929,7 +929,7 @@ struct ContactDetailView: View {
                                     .foregroundStyle(JohoColors.black)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 8)
-                                    .background(JohoColors.inputBackground)
+                                    .background(colors.inputBackground)
                                     .clipShape(Capsule())
                                     .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                             }
@@ -1087,7 +1087,7 @@ struct ContactDetailView: View {
 
                                 // Selection indicator
                                 Circle()
-                                    .fill(isSelected ? JohoColors.black : JohoColors.inputBackground)
+                                    .fill(isSelected ? JohoColors.black : colors.inputBackground)
                                     .frame(width: 8, height: 8)
                                     .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
                             }
@@ -1185,7 +1185,7 @@ struct ContactDetailView: View {
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(iconColor)
                     .frame(width: 32, height: 32)
-                    .background(JohoColors.inputBackground)
+                    .background(colors.inputBackground)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
@@ -1218,7 +1218,7 @@ struct ContactDetailView: View {
                 .font(.system(size: 16, weight: .bold, design: .rounded))
                 .foregroundStyle(rowColor)
                 .frame(width: 36, height: 36)
-                .background(JohoColors.inputBackground)
+                .background(colors.inputBackground)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
@@ -1735,7 +1735,7 @@ struct JohoContactEditorSheet: View {
                                 } else {
                                     // Elegant placeholder
                                     Circle()
-                                        .fill(JohoColors.inputBackground)
+                                        .fill(colors.inputBackground)
                                         .frame(width: 120, height: 120)
                                         .overlay(
                                             VStack(spacing: 4) {
@@ -1875,7 +1875,7 @@ struct JohoContactEditorSheet: View {
                                             .foregroundStyle(hasBirthday && birthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.6))
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
-                                            .background(hasBirthday && birthdayKnown ? SpecialDayType.birthday.accentColor : JohoColors.inputBackground)
+                                            .background(hasBirthday && birthdayKnown ? SpecialDayType.birthday.accentColor : colors.inputBackground)
                                             .clipShape(Capsule())
                                             .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                                     }
@@ -1890,7 +1890,7 @@ struct JohoContactEditorSheet: View {
                                             .foregroundStyle(!hasBirthday && birthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.6))
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
-                                            .background(!hasBirthday && birthdayKnown ? JohoColors.black : JohoColors.inputBackground)
+                                            .background(!hasBirthday && birthdayKnown ? JohoColors.black : colors.inputBackground)
                                             .clipShape(Capsule())
                                             .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                                     }
@@ -1905,7 +1905,7 @@ struct JohoContactEditorSheet: View {
                                             .foregroundStyle(!birthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.6))
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
-                                            .background(!birthdayKnown ? JohoColors.red : JohoColors.inputBackground)
+                                            .background(!birthdayKnown ? JohoColors.red : colors.inputBackground)
                                             .clipShape(Capsule())
                                             .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                                     }
@@ -1930,7 +1930,7 @@ struct JohoContactEditorSheet: View {
                                             .foregroundStyle(JohoColors.black)
                                             .padding(.horizontal, 12)
                                             .padding(.vertical, 8)
-                                            .background(JohoColors.inputBackground)
+                                            .background(colors.inputBackground)
                                             .clipShape(Capsule())
                                             .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                                     }
@@ -1946,7 +1946,7 @@ struct JohoContactEditorSheet: View {
                                             .foregroundStyle(JohoColors.black)
                                             .padding(.horizontal, 12)
                                             .padding(.vertical, 8)
-                                            .background(JohoColors.inputBackground)
+                                            .background(colors.inputBackground)
                                             .clipShape(Capsule())
                                             .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                                     }
@@ -1962,7 +1962,7 @@ struct JohoContactEditorSheet: View {
                                             .foregroundStyle(JohoColors.black)
                                             .padding(.horizontal, 12)
                                             .padding(.vertical, 8)
-                                            .background(JohoColors.inputBackground)
+                                            .background(colors.inputBackground)
                                             .clipShape(Capsule())
                                             .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
                                     }

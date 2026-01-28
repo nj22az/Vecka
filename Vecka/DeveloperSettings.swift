@@ -483,7 +483,7 @@ struct DeveloperSettingsView: View {
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, JohoDimensions.spacingSM)
-        .background(JohoColors.inputBackground)
+        .background(colors.inputBackground)
     }
 
     /// 情報デザイン: Stats row showing data counts by semantic category

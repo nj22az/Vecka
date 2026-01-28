@@ -147,7 +147,7 @@ struct SidebarIconButton: View {
                 // 情報デザイン: Solid colored circle + black border (NO glassEffect)
                 ZStack {
                     Circle()
-                        .fill(isSelected ? item.accentColor : JohoColors.inputBackground)
+                        .fill(isSelected ? item.accentColor : colors.inputBackground)
                         .johoTouchTarget(52)
 
                     Image(systemName: item.icon)

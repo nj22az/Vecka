@@ -159,7 +159,7 @@ struct HolidayDatabaseExplorer: View {
                                 .font(.system(size: 14, weight: .bold, design: .rounded))
                                 .foregroundStyle(colors.primary)
                                 .frame(width: 32, height: 32)
-                                .background(JohoColors.inputBackground)
+                                .background(colors.inputBackground)
                                 .clipShape(Circle())
                                 .overlay(Circle().stroke(colors.border, lineWidth: 1))
                         }
@@ -349,7 +349,7 @@ struct HolidayDatabaseExplorer: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 48)
-                .background(hasItems ? region.lightBackground(colors: colors) : JohoColors.inputBackground)
+                .background(hasItems ? region.lightBackground(colors: colors) : colors.inputBackground)
 
                 // Horizontal divider
                 Rectangle()

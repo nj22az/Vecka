@@ -480,7 +480,7 @@ struct SpecialDaysListView: View {
                                 .font(.system(size: 14, weight: .bold, design: .rounded))
                                 .foregroundStyle(colors.primary)
                                 .johoTouchTarget()
-                                .background(JohoColors.inputBackground)
+                                .background(colors.inputBackground)
                                 .clipShape(Circle())
                                 .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
                         }
@@ -667,7 +667,7 @@ struct SpecialDaysListView: View {
                 .font(.system(size: 18, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 32, height: 32)
-                .background(JohoColors.inputBackground)
+                .background(colors.inputBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: 8, style: .continuous)
@@ -836,7 +836,7 @@ struct SpecialDaysListView: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: 48)
-            .background(hasItems ? displayColor : JohoColors.inputBackground)
+            .background(hasItems ? displayColor : colors.inputBackground)
 
             // Divider (情報デザイン: Black wall between compartments)
             Rectangle()
@@ -1260,7 +1260,7 @@ struct CollapsibleSpecialDayCard: View {
                     .frame(maxHeight: .infinity)
             }
             .frame(height: 32)
-            .background(zone.background.opacity(0.5))  // Slightly darker header
+            .background(zone.background(for: colorMode).opacity(0.5))  // Slightly darker header
 
             // Horizontal divider between header and items
             Rectangle()
@@ -1283,7 +1283,7 @@ struct CollapsibleSpecialDayCard: View {
             }
             .padding(.vertical, 4)
         }
-        .background(zone.background)
+        .background(zone.background(for: colorMode))
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
@@ -1324,7 +1324,7 @@ struct CollapsibleSpecialDayCard: View {
                     .frame(maxHeight: .infinity)
             }
             .frame(height: 32)
-            .background(zone.background.opacity(0.5))  // Slightly darker header
+            .background(zone.background(for: colorMode).opacity(0.5))  // Slightly darker header
 
             // Horizontal divider between header and items
             Rectangle()
@@ -1347,7 +1347,7 @@ struct CollapsibleSpecialDayCard: View {
             }
             .padding(.vertical, 4)
         }
-        .background(zone.background)
+        .background(zone.background(for: colorMode))
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
@@ -2257,7 +2257,7 @@ struct MonthCustomizationSheet: View {
                             .foregroundStyle(colors.primary)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 10)
-                            .background(JohoColors.inputBackground)
+                            .background(colors.inputBackground)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(
                                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
@@ -2306,7 +2306,7 @@ struct MonthCustomizationSheet: View {
                 .font(.system(size: 18, weight: .medium))
                 .foregroundStyle(isSelected || isDefault ? colors.surface : colors.primary)
                 .frame(width: 44, height: 44)
-                .background(isSelected || isDefault ? colors.primary : JohoColors.inputBackground)
+                .background(isSelected || isDefault ? colors.primary : colors.inputBackground)
                 .clipShape(Squircle(cornerRadius: 10))
                 .overlay(
                     Squircle(cornerRadius: 10)

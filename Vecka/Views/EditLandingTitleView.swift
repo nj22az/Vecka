@@ -60,7 +60,7 @@ struct EditLandingTitleView: View {
                                 .font(JohoFont.body)
                                 .foregroundStyle(colors.primary)
                                 .padding(JohoDimensions.spacingMD)
-                                .background(JohoColors.inputBackground)
+                                .background(colors.inputBackground)
                                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                                 .overlay(
                                     Squircle(cornerRadius: JohoDimensions.radiusMedium)
@@ -158,7 +158,7 @@ struct EditLandingTitleView: View {
                 .foregroundStyle(colors.primary)
                 .frame(maxWidth: .infinity)
                 .padding(JohoDimensions.spacingSM)
-                .background(JohoColors.inputBackground)
+                .background(colors.inputBackground)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
