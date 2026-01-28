@@ -1,0 +1,669 @@
+{
+  "meta": {
+    "name": "Joho Design System",
+    "japanese": "情報デザイン",
+    "romanization": "Jōhō Dezain",
+    "translation": "Information Design",
+    "version": "2.0",
+    "lastUpdated": "2026-01-28",
+    "appName": "Onsen Planner",
+    "platform": "iOS 18+",
+    "framework": "SwiftUI"
+  },
+
+  "philosophy": {
+    "coreMantra": "Every visual element must serve a clear informational purpose. Nothing is decorative - everything communicates.",
+    "inspiration": {
+      "primary": "Japanese OTC medicine packaging (Muhi, Rohto, Salonpas)",
+      "secondary": "Bento box compartmentalization",
+      "tertiary": "Tokyo transit information design"
+    },
+    "principles": [
+      {
+        "name": "Compartmentalization",
+        "description": "Layouts are divided like bento boxes - each section has clear boundaries and purpose",
+        "japanese": "弁当箱配置"
+      },
+      {
+        "name": "High Contrast",
+        "description": "Pure black text on white backgrounds - maximum readability",
+        "japanese": "高コントラスト"
+      },
+      {
+        "name": "Semantic Color",
+        "description": "Every color has ONE meaning - no ambiguity, reduced cognitive load",
+        "japanese": "意味的色彩"
+      },
+      {
+        "name": "Thick Borders",
+        "description": "Bold black outlines on everything - like Japanese packaging",
+        "japanese": "太い境界線"
+      },
+      {
+        "name": "Squircle Geometry",
+        "description": "Continuous corner curves (iOS app icon style) - never harsh corners",
+        "japanese": "連続曲線"
+      },
+      {
+        "name": "Information Density",
+        "description": "Pack meaningful information efficiently without clutter",
+        "japanese": "情報密度"
+      }
+    ],
+    "antiPatterns": [
+      "Decoration without purpose",
+      "Gradients and glass effects",
+      "Ambiguous color usage",
+      "Missing boundaries",
+      "Excessive whitespace",
+      "Bouncy/playful animations"
+    ]
+  },
+
+  "colorSystem": {
+    "description": "6-color simplified semantic palette for reduced cognitive load",
+    "rule": "Each color has ONE clear meaning - no overlap, no confusion",
+    "semanticColors": {
+      "yellow": {
+        "hex": "#FFE566",
+        "lightVariant": "#FEF3C7",
+        "japanese": "今",
+        "romanization": "ima",
+        "meaning": "NOW",
+        "usage": ["Today indicator", "Personal notes", "Current moment", "Present time"],
+        "swiftCode": "JohoColors.yellow"
+      },
+      "cyan": {
+        "hex": "#A5F3FC",
+        "lightVariant": "#CFFAFE",
+        "japanese": "予定",
+        "romanization": "yotei",
+        "meaning": "SCHEDULED",
+        "usage": ["Events", "Trips", "Calendar items", "Appointments", "Future time"],
+        "swiftCode": "JohoColors.cyan"
+      },
+      "pink": {
+        "hex": "#FECDD3",
+        "lightVariant": "#FED7E2",
+        "japanese": "祝",
+        "romanization": "iwai",
+        "meaning": "CELEBRATION",
+        "usage": ["Holidays", "Birthdays", "Special days", "Observances"],
+        "swiftCode": "JohoColors.pink"
+      },
+      "green": {
+        "hex": "#BBF7D0",
+        "lightVariant": "#D1FAE5",
+        "japanese": "金",
+        "romanization": "kane",
+        "meaning": "MONEY",
+        "usage": ["Expenses", "Financial items", "Transactions", "Budgets"],
+        "swiftCode": "JohoColors.green"
+      },
+      "purple": {
+        "hex": "#E9D5FF",
+        "lightVariant": "#F3E8FF",
+        "japanese": "人",
+        "romanization": "hito",
+        "meaning": "PEOPLE",
+        "usage": ["Contacts", "Relationships", "Social items"],
+        "swiftCode": "JohoColors.purple"
+      },
+      "red": {
+        "hex": "#E53935",
+        "lightVariant": "#FECACA",
+        "japanese": "警告",
+        "romanization": "keikoku",
+        "meaning": "ALERT",
+        "usage": ["System warnings only", "Errors", "Destructive actions", "Delete"],
+        "restriction": "NEVER use for content - system alerts only",
+        "swiftCode": "JohoColors.red"
+      }
+    },
+    "structuralColors": {
+      "black": {
+        "hex": "#000000",
+        "usage": ["All borders", "Primary text", "Authority elements"],
+        "swiftCode": "JohoColors.black"
+      },
+      "white": {
+        "hex": "#FFFFFF",
+        "usage": ["Container backgrounds", "Content surfaces"],
+        "swiftCode": "JohoColors.white"
+      }
+    },
+    "backgroundOptions": {
+      "description": "App canvas colors (AMOLED-friendly options)",
+      "options": [
+        {
+          "name": "True Black",
+          "hex": "#000000",
+          "description": "Maximum AMOLED battery savings",
+          "default": true
+        },
+        {
+          "name": "Dark Navy",
+          "hex": "#1A1A2E",
+          "description": "Warm dark blue (legacy)"
+        },
+        {
+          "name": "Near Black",
+          "hex": "#0A0A0F",
+          "description": "Softer than pure black"
+        }
+      ]
+    },
+    "pageHeaderColors": {
+      "description": "Unique accent colors for page identity (distinct from content colors)",
+      "pages": {
+        "landing": { "hex": "#F59E0B", "name": "Warm Amber", "meaning": "Present moment" },
+        "calendar": { "hex": "#4338CA", "name": "Deep Indigo", "meaning": "Time structure" },
+        "specialDays": { "hex": "#D97706", "name": "Rich Amber", "meaning": "Celebration" },
+        "tools": { "hex": "#0D9488", "name": "Teal", "meaning": "Productivity" },
+        "contacts": { "hex": "#78350F", "name": "Warm Brown", "meaning": "Human connection" },
+        "settings": { "hex": "#475569", "name": "Slate Blue", "meaning": "Configuration" }
+      }
+    },
+    "deprecatedColors": {
+      "orange": {
+        "replacement": "cyan",
+        "reason": "Trips are scheduled time items - use cyan"
+      },
+      "cream": {
+        "replacement": "yellow",
+        "reason": "Notes are present moment items - use yellow"
+      }
+    }
+  },
+
+  "typography": {
+    "fontFamily": "SF Pro Rounded",
+    "swiftDesign": ".rounded",
+    "criticalRule": "NEVER use weights below .medium",
+    "scales": {
+      "displayLarge": {
+        "size": 48,
+        "weight": "heavy",
+        "usage": "Hero numbers (week number display)",
+        "swiftCode": "JohoFont.displayLarge"
+      },
+      "displayMedium": {
+        "size": 32,
+        "weight": "bold",
+        "usage": "Section titles, large numbers",
+        "swiftCode": "JohoFont.displayMedium"
+      },
+      "displaySmall": {
+        "size": 24,
+        "weight": "bold",
+        "usage": "Subsection titles",
+        "swiftCode": "JohoFont.displaySmall"
+      },
+      "headline": {
+        "size": 18,
+        "weight": "bold",
+        "usage": "Card titles, important labels",
+        "swiftCode": "JohoFont.headline"
+      },
+      "subheadline": {
+        "size": 15,
+        "weight": "semibold",
+        "usage": "Secondary headlines",
+        "swiftCode": "JohoFont.subheadline"
+      },
+      "body": {
+        "size": 16,
+        "weight": "medium",
+        "usage": "Primary content text",
+        "swiftCode": "JohoFont.body"
+      },
+      "bodySmall": {
+        "size": 14,
+        "weight": "medium",
+        "usage": "Secondary content",
+        "swiftCode": "JohoFont.bodySmall"
+      },
+      "label": {
+        "size": 12,
+        "weight": "bold",
+        "usage": "Pills, badges (ALWAYS UPPERCASE)",
+        "swiftCode": "JohoFont.label"
+      },
+      "labelSmall": {
+        "size": 10,
+        "weight": "heavy",
+        "usage": "Timestamps, micro labels",
+        "swiftCode": "JohoFont.labelSmall"
+      },
+      "caption": {
+        "size": 12,
+        "weight": "medium",
+        "usage": "Supplementary information",
+        "swiftCode": "JohoFont.caption"
+      },
+      "button": {
+        "size": 15,
+        "weight": "semibold",
+        "usage": "Button text",
+        "swiftCode": "JohoFont.button"
+      }
+    },
+    "rules": [
+      "ALWAYS include .design(.rounded)",
+      "Labels and pills are ALWAYS UPPERCASE",
+      "Minimum opacity for secondary text is 0.6",
+      "Use monospacedDigit() for numbers in dynamic contexts"
+    ]
+  },
+
+  "spacingSystem": {
+    "description": "Consistent spacing tokens based on 4pt grid",
+    "tokens": {
+      "xs": { "value": 4, "usage": "Cell gaps, tight spacing", "swiftCode": "JohoDimensions.spacingXS" },
+      "sm": { "value": 8, "usage": "Row gaps, icon margins", "swiftCode": "JohoDimensions.spacingSM" },
+      "md": { "value": 12, "usage": "Container padding, section gaps", "swiftCode": "JohoDimensions.spacingMD" },
+      "lg": { "value": 16, "usage": "Screen margins, large gaps", "swiftCode": "JohoDimensions.spacingLG" },
+      "xl": { "value": 20, "usage": "Major section separation", "swiftCode": "JohoDimensions.spacingXL" }
+    },
+    "criticalRules": [
+      "Maximum 8pt top padding on any screen",
+      "12pt minimum spacing between interactive elements",
+      "Use 0pt between sections (use dividers instead)"
+    ]
+  },
+
+  "borderSystem": {
+    "description": "Thick black borders on everything - the signature Joho look",
+    "borderColor": "#000000",
+    "widths": {
+      "thin": {
+        "value": 1.0,
+        "usage": "Day cells in calendar grid",
+        "swiftCode": "JohoDimensions.borderThin"
+      },
+      "standard": {
+        "value": 1.5,
+        "usage": "List rows, secondary containers"
+      },
+      "medium": {
+        "value": 2.0,
+        "usage": "Buttons, interactive elements",
+        "swiftCode": "JohoDimensions.borderMedium"
+      },
+      "selected": {
+        "value": 2.5,
+        "usage": "Today indicator, selected states"
+      },
+      "thick": {
+        "value": 3.0,
+        "usage": "Main containers, cards, sections",
+        "swiftCode": "JohoDimensions.borderThick"
+      }
+    },
+    "rule": "Every container MUST have a visible black border"
+  },
+
+  "cornerRadius": {
+    "description": "Squircle (continuous curve) corners - never use .cornerRadius()",
+    "implementation": {
+      "correct": [
+        ".clipShape(Squircle(cornerRadius: 12))",
+        ".clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))"
+      ],
+      "forbidden": [
+        ".cornerRadius(12)"
+      ]
+    },
+    "sizes": {
+      "small": { "value": 8, "usage": "Day cells, buttons, pills", "swiftCode": "JohoDimensions.radiusSmall" },
+      "medium": { "value": 12, "usage": "Cards, list items", "swiftCode": "JohoDimensions.radiusMedium" },
+      "large": { "value": 16, "usage": "Main containers, modals", "swiftCode": "JohoDimensions.radiusLarge" },
+      "xl": { "value": 20, "usage": "Full-width containers", "swiftCode": "JohoDimensions.radiusXL" }
+    }
+  },
+
+  "touchTargets": {
+    "minimumSize": 44,
+    "unit": "pt",
+    "description": "Apple HIG minimum touch target",
+    "rules": [
+      "All interactive elements: 44×44pt minimum",
+      "Chip/pill buttons: 44pt height",
+      "Row items: 44pt height minimum",
+      "Icon buttons: 44×44pt",
+      "Spacing between interactive elements: 12pt minimum"
+    ]
+  },
+
+  "animationGuidelines": {
+    "preferredCurve": "easeInOut",
+    "forbiddenCurves": ["spring with low damping", "bouncy"],
+    "durations": {
+      "selection": { "value": 0.1, "curve": "easeOut" },
+      "swipeSnap": { "value": 0.15, "curve": "easeInOut" },
+      "expandCollapse": { "value": 0.2, "curve": "easeInOut" },
+      "pageTransition": { "value": 0.25, "curve": "easeInOut" },
+      "maximum": { "value": 0.3, "description": "Never exceed" }
+    },
+    "swiftPattern": "withAnimation(.easeInOut(duration: 0.2)) { ... }"
+  },
+
+  "layoutRules": {
+    "coreRule": "NO VERTICAL SCROLLING in forms, editors, or sheets",
+    "allowedScrollContexts": [
+      "List views (contact list, calendar entries)",
+      "Long content in read mode only",
+      "Horizontal chip rows"
+    ],
+    "forbiddenScrollContexts": [
+      "Form editors",
+      "Modal sheets",
+      "Entry creation/editing",
+      "Settings screens"
+    ],
+    "alternatives": {
+      "collapsibleSections": "Expand/collapse to show/hide content",
+      "progressiveDisclosure": "Show essential fields first, more on demand",
+      "bentoBoxLayout": "Fixed compartments that resize, never scroll"
+    },
+    "expansionPattern": {
+      "behavior": "Push content down - items below move to accommodate",
+      "transition": "opacity combined with move(edge: .top)",
+      "animation": "easeInOut(duration: 0.2)"
+    }
+  },
+
+  "symbolLanguage": {
+    "description": "Japanese Maru-Batsu symbol system for universal communication",
+    "source": "SF Symbols (primary), Unicode geometric (reference)",
+    "coreSymbols": {
+      "maruBatsu": {
+        "circle": { "symbol": "○", "sfSymbol": "circle", "meaning": "Good, Yes, Correct" },
+        "filledCircle": { "symbol": "●", "sfSymbol": "circle.fill", "meaning": "Active, Selected, Has content" },
+        "doubleCircle": { "symbol": "◎", "sfSymbol": "circle.circle", "meaning": "Excellent, Best, Primary" },
+        "cross": { "symbol": "×", "sfSymbol": "xmark", "meaning": "No, Wrong, Cancel" },
+        "triangle": { "symbol": "△", "sfSymbol": "triangle", "meaning": "Caution, Partial, Maybe" },
+        "filledTriangle": { "symbol": "▲", "sfSymbol": "triangle.fill", "meaning": "Strong warning, Danger" },
+        "square": { "symbol": "□", "sfSymbol": "square", "meaning": "Info, Reference, Neutral" },
+        "filledSquare": { "symbol": "■", "sfSymbol": "square.fill", "meaning": "Selected, Active" },
+        "diamond": { "symbol": "◇", "sfSymbol": "diamond", "meaning": "Special, Notable" },
+        "filledDiamond": { "symbol": "◆", "sfSymbol": "diamond.fill", "meaning": "Featured, Important" }
+      },
+      "reference": {
+        "komeJirushi": { "symbol": "※", "meaning": "Note/Attention - THE most important reference mark" },
+        "star": { "symbol": "★", "sfSymbol": "star.fill", "meaning": "Important, Featured" },
+        "outlinedStar": { "symbol": "☆", "sfSymbol": "star", "meaning": "Reference, Highlight" }
+      }
+    },
+    "iconRules": {
+      "allowed": ["SF Symbols", "Unicode geometric", "Unicode arrows"],
+      "forbidden": ["Emoji", "Colored icons", "3D icons", "Animated symbols"],
+      "style": "Flat, outlined or solid fill, monochrome",
+      "weights": "Regular to Bold only (never thin/ultralight)"
+    }
+  },
+
+  "components": {
+    "containers": {
+      "JohoContainer": {
+        "description": "Core bordered container with optional zone color",
+        "usage": "Primary wrapper for all content sections",
+        "properties": ["zone", "backgroundColor", "borderWidth", "cornerRadius", "padding"]
+      },
+      "JohoCard": {
+        "description": "White surface card with black border",
+        "usage": "List items, detail cards, content blocks"
+      },
+      "JohoSectionBox": {
+        "description": "Colored compartment with title pill",
+        "usage": "Categorized sections within views"
+      },
+      "JohoFormSection": {
+        "description": "Form container with header",
+        "usage": "Add/Edit sheets and forms"
+      }
+    },
+    "indicators": {
+      "JohoIndicatorCircle": {
+        "description": "Type indicator dots with black border",
+        "sizes": {
+          "tiny": { "value": 5, "border": 0.5, "usage": "Calendar grid" },
+          "small": { "value": 7, "border": 1, "usage": "Day cells" },
+          "medium": { "value": 10, "border": 1.5, "usage": "Expanded items" },
+          "large": { "value": 12, "border": 1.5, "usage": "Legend popover" },
+          "xlarge": { "value": 24, "border": 2, "usage": "Legend header" }
+        }
+      },
+      "JohoPill": {
+        "description": "Badge/label with various styles",
+        "styles": ["blackOnWhite", "whiteOnBlack", "colored", "coloredInverted", "muted"],
+        "sizes": ["small", "medium", "large"],
+        "rule": "Text is ALWAYS UPPERCASE"
+      }
+    },
+    "calendar": {
+      "JohoDayCell": {
+        "description": "Individual calendar day with event indicator",
+        "size": "44×44pt",
+        "states": ["normal", "today", "selected", "hasEvent"]
+      },
+      "JohoWeekBadge": {
+        "description": "Large week number display"
+      },
+      "JohoMonthSelector": {
+        "description": "Month navigation arrows"
+      }
+    },
+    "headers": {
+      "JohoPageHeader": {
+        "description": "Simple page header with title and badge"
+      },
+      "JohoEditorHeader": {
+        "description": "Editor sheet header with back, icon, title, save"
+      }
+    },
+    "interactive": {
+      "JohoActionButton": {
+        "description": "Action button with icon"
+      },
+      "JohoToggle": {
+        "description": "Joho-styled toggle switch"
+      },
+      "JohoToggleRow": {
+        "description": "Toggle with label in row format"
+      }
+    },
+    "layout": {
+      "FlowLayout": {
+        "description": "Wrapping horizontal layout for chips",
+        "behavior": "Chips wrap to next line instead of scrolling"
+      }
+    }
+  },
+
+  "swipeActions": {
+    "leftSwipe": {
+      "action": "Delete",
+      "color": "#E53935",
+      "icon": "trash"
+    },
+    "rightSwipe": {
+      "action": "Edit",
+      "color": "#A5F3FC",
+      "icon": "pencil"
+    },
+    "restriction": "System items (lock icon) have NO swipe actions"
+  },
+
+  "countryPills": {
+    "description": "Country identifiers using flag colors (not emoji)",
+    "examples": {
+      "sweden": { "background": "#004B87", "text": "#FECC00", "code": "SWE" },
+      "usa": { "background": "#3C3B6E", "text": "#FFFFFF", "code": "USA" },
+      "vietnam": { "background": "#DA251D", "text": "#FFCD00", "code": "VN" }
+    },
+    "rule": "All country pills have black borders"
+  },
+
+  "forbiddenPatterns": {
+    "description": "Patterns that violate Joho Design principles - auto-reject",
+    "visual": [
+      { "pattern": ".background(.ultraThinMaterial)", "reason": "No glass effects" },
+      { "pattern": ".background(.thinMaterial)", "reason": "No blur materials" },
+      { "pattern": "LinearGradient(...)", "reason": "No gradients" },
+      { "pattern": "RadialGradient(...)", "reason": "No gradients" },
+      { "pattern": ".shadow(...)", "reason": "Avoid drop shadows" }
+    ],
+    "color": [
+      { "pattern": "Color.blue", "reason": "Use JohoColors.cyan" },
+      { "pattern": "Color.red", "reason": "Use JohoColors.red" },
+      { "pattern": "Color.green", "reason": "Use JohoColors.green" }
+    ],
+    "geometry": [
+      { "pattern": ".cornerRadius(12)", "reason": "Use Squircle or .continuous style" }
+    ],
+    "spacing": [
+      { "pattern": ".padding(.top, 40)", "reason": "Max top padding is 8pt" }
+    ],
+    "animation": [
+      { "pattern": ".spring(response: 0.5, dampingFraction: 0.5)", "reason": "No bouncy animations" }
+    ],
+    "localization": [
+      { "pattern": "Text(\"\\(year)\")", "reason": "Use String(year) or Text(verbatim:)" }
+    ]
+  },
+
+  "complianceRules": {
+    "ruleCategories": {
+      "COL": {
+        "name": "Color Rules",
+        "rules": [
+          { "id": "COL-001", "description": "Never use raw system colors", "severity": "ERROR" },
+          { "id": "COL-002", "description": "Always use JohoColors for text", "severity": "ERROR" },
+          { "id": "COL-003", "description": "Semantic colors must match meaning", "severity": "WARNING" },
+          { "id": "COL-004", "description": "Text opacity minimum 0.6", "severity": "WARNING" }
+        ]
+      },
+      "BRD": {
+        "name": "Border Rules",
+        "rules": [
+          { "id": "BRD-001", "description": "Every container MUST have black border", "severity": "ERROR" },
+          { "id": "BRD-002", "description": "Day cells: 1pt border", "severity": "WARNING" },
+          { "id": "BRD-003", "description": "List rows: 1.5pt border", "severity": "WARNING" },
+          { "id": "BRD-004", "description": "Buttons: 2pt border", "severity": "WARNING" },
+          { "id": "BRD-005", "description": "Containers: 3pt border", "severity": "WARNING" }
+        ]
+      },
+      "RAD": {
+        "name": "Corner Radius Rules",
+        "rules": [
+          { "id": "RAD-001", "description": "Never use .cornerRadius() modifier", "severity": "ERROR" },
+          { "id": "RAD-002", "description": "Always use Squircle or .continuous style", "severity": "ERROR" }
+        ]
+      },
+      "VFX": {
+        "name": "Visual Effect Rules",
+        "rules": [
+          { "id": "VFX-001", "description": "Never use glass/blur materials", "severity": "ERROR" },
+          { "id": "VFX-002", "description": "Never use gradients", "severity": "ERROR" },
+          { "id": "VFX-003", "description": "Avoid drop shadows", "severity": "WARNING" }
+        ]
+      },
+      "SPC": {
+        "name": "Spacing Rules",
+        "rules": [
+          { "id": "SPC-001", "description": "Maximum 8pt top padding", "severity": "ERROR" },
+          { "id": "SPC-002", "description": "Use JohoDimensions tokens", "severity": "WARNING" }
+        ]
+      },
+      "TYP": {
+        "name": "Typography Rules",
+        "rules": [
+          { "id": "TYP-001", "description": "Always use .design(.rounded)", "severity": "WARNING" },
+          { "id": "TYP-002", "description": "Minimum font weight is .medium", "severity": "WARNING" },
+          { "id": "TYP-003", "description": "Pills/labels MUST be UPPERCASE", "severity": "WARNING" },
+          { "id": "TYP-004", "description": "Use JohoFont tokens", "severity": "WARNING" }
+        ]
+      },
+      "ANI": {
+        "name": "Animation Rules",
+        "rules": [
+          { "id": "ANI-001", "description": "No bouncy springs (damping < 0.7)", "severity": "WARNING" },
+          { "id": "ANI-002", "description": "Max animation duration 0.3s", "severity": "WARNING" }
+        ]
+      }
+    }
+  },
+
+  "colorModes": {
+    "light": {
+      "name": "Classic Joho Design",
+      "description": "BLACK text on WHITE backgrounds",
+      "primary": "#000000",
+      "secondary": "rgba(0,0,0,0.6)",
+      "surface": "#FFFFFF",
+      "border": "#000000",
+      "canvas": "#FFFFFF"
+    },
+    "dark": {
+      "name": "Night Mode (夜間モード)",
+      "description": "WHITE text on BLACK backgrounds - AMOLED optimized",
+      "japanese": "夜間モード",
+      "primary": "#F0F0F0",
+      "secondary": "rgba(240,240,240,0.5)",
+      "surface": "#1C1C1E",
+      "border": "#48484A",
+      "canvas": "#000000"
+    }
+  },
+
+  "bentoRowStructure": {
+    "description": "Compartmentalized row layout like Star Page",
+    "structure": {
+      "left": { "width": 28, "content": "Type indicator + lock icon" },
+      "center": { "width": "flexible", "content": "Title text" },
+      "right": { "width": 72, "content": "Country pill + decoration icon" }
+    },
+    "walls": {
+      "width": 1.5,
+      "color": "#000000",
+      "description": "Vertical dividers between compartments"
+    }
+  },
+
+  "readabilityRules": {
+    "priority": "HIGHEST",
+    "rule": "情報デザイン = BLACK text on WHITE backgrounds. ALWAYS.",
+    "specifics": {
+      "textColor": "Black #000000",
+      "contentBackground": "White #FFFFFF",
+      "subtitleOpacity": "Minimum 0.6",
+      "pageTitles": "Inside white container, never floating on dark"
+    },
+    "darkBackgroundRule": {
+      "description": "Dark BG is the CANVAS only (outermost layer)",
+      "visibility": "Should be BARELY visible - just thin edges around white containers",
+      "threshold": "If you see more than 8pt of dark background anywhere, something is wrong"
+    }
+  },
+
+  "auditCommands": {
+    "findGlassEffects": "grep -rn \"ultraThinMaterial\\|thinMaterial\" --include=\"*.swift\" Vecka/",
+    "findNonContinuousCorners": "grep -rn \"\\.cornerRadius(\" --include=\"*.swift\" Vecka/",
+    "findRawColors": "grep -rn \"Color\\.blue\\|Color\\.red\" --include=\"*.swift\" Vecka/",
+    "findGradients": "grep -rn \"LinearGradient\\|RadialGradient\" --include=\"*.swift\" Vecka/",
+    "findExcessivePadding": "grep -rn \"\\.padding(.top,\" --include=\"*.swift\" Vecka/"
+  },
+
+  "preCommitChecklist": [
+    "Black borders on all containers",
+    "Colors match semantic meaning",
+    "No glass/blur/gradients",
+    "Squircle corners (.continuous)",
+    "Rounded typography (.design(.rounded))",
+    "No vertical scroll in forms",
+    "44pt minimum touch targets",
+    "Animation duration ≤ 0.3s",
+    "Text opacity ≥ 0.6 for secondary"
+  ]
+}
