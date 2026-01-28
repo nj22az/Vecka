@@ -679,22 +679,26 @@ struct SpecialDaysListView: View {
 
     /// 情報デザイン: Compact category indicator (subtitle-style)
     /// Colored dot + count - TAP TO TOGGLE FILTER
+    /// When active: Shows full label (e.g., "● Holidays 36")
+    /// When inactive: Shows only dot + count (e.g., "○ 36")
     private func categoryIndicator(category: DisplayCategory, count: Int) -> some View {
         let isActive = activeFilters.contains(category)
 
         return Button {
-            HapticManager.selection()
-            // Toggle filter state
-            if activeFilters.contains(category) {
-                // Don't allow disabling the last active filter
-                if activeFilters.count > 1 {
-                    activeFilters.remove(category)
+            withAnimation(.easeInOut(duration: 0.2)) {
+                HapticManager.selection()
+                // Toggle filter state
+                if activeFilters.contains(category) {
+                    // Don't allow disabling the last active filter
+                    if activeFilters.count > 1 {
+                        activeFilters.remove(category)
+                    }
+                } else {
+                    activeFilters.insert(category)
                 }
-            } else {
-                activeFilters.insert(category)
             }
         } label: {
-            HStack(spacing: 3) {
+            HStack(spacing: 4) {
                 // Colored filled dot (category color) - dimmed when inactive
                 Circle()
                     .fill(isActive ? category.accentColor : colors.primary.opacity(0.2))
@@ -704,16 +708,29 @@ struct SpecialDaysListView: View {
                             .stroke(colors.border, lineWidth: 0.5)
                     )
 
+                // 情報デザイン: Show full label only when active (tap reveals meaning)
+                if isActive {
+                    Text(category.localizedLabel)
+                        .font(.system(size: 10, weight: .semibold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .lineLimit(1)
+                        .fixedSize(horizontal: true, vertical: false)
+                }
+
                 // Count numeral (smaller, subtitle-style) - dimmed when inactive
                 Text(String(count))
                     .font(.system(size: 12, weight: .bold, design: .rounded))
                     .monospacedDigit()
                     .foregroundStyle(isActive ? colors.primary : colors.primary.opacity(0.4))
             }
-            .padding(.horizontal, 4)
+            .padding(.horizontal, 5)
             .padding(.vertical, 2)
-            .background(isActive ? category.accentColor.opacity(0.1) : Color.clear)
+            .background(isActive ? category.accentColor.opacity(0.12) : Color.clear)
             .clipShape(Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(isActive ? colors.border : Color.clear, lineWidth: 1)
+            )
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(category.localizedLabel): \(count)")
