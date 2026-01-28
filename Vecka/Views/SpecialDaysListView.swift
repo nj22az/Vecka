@@ -118,6 +118,9 @@ struct SpecialDaysListView: View {
     // 情報デザイン: Category filter toggles (tap stat icons to filter)
     @State private var activeFilters: Set<DisplayCategory> = [.holiday, .observance, .memo]
 
+    // 情報デザイン: Category navigation within month (nil = show category cards, set = show filtered list)
+    @State private var selectedCategory: DisplayCategory? = nil
+
     private var years: [Int] {
         let current = Calendar.current.component(.year, from: Date())
         return Array((current - 20)...(current + 20))
@@ -548,11 +551,18 @@ struct SpecialDaysListView: View {
             HStack(spacing: 0) {
                 // LEFT COMPARTMENT: Navigation + Icon + Title
                 HStack(spacing: JohoDimensions.spacingSM) {
-                    // Back button when in month detail
+                    // Back button when in month detail or category view
                     if selectedMonth != nil {
                         Button {
                             withAnimation(.easeInOut(duration: 0.2)) {
-                                selectedMonth = nil
+                                // 情報デザイン: Two-level navigation
+                                // If in category view, go back to category cards
+                                // If in category cards, go back to month grid
+                                if selectedCategory != nil {
+                                    selectedCategory = nil
+                                } else {
+                                    selectedMonth = nil
+                                }
                             }
                             HapticManager.selection()
                         } label: {
@@ -1048,47 +1058,185 @@ struct SpecialDaysListView: View {
         }
     }
 
-    // MARK: - Month Detail View (情報デザイン: Collapsible Timeline)
+    // MARK: - Month Detail View (情報デザイン: Category Cards → Filtered List)
 
     @State private var expandedDays: Set<String> = []
 
     @ViewBuilder
     private func monthDetailView(for month: Int) -> some View {
         let theme = MonthTheme.theme(for: month)
-        let dayCards = dayCardsForMonth(month)
 
         VStack(spacing: JohoDimensions.spacingMD) {
-            if dayCards.isEmpty {
-                JohoEmptyState(
-                    title: "No Special Days",
-                    message: "Tap + to add",
-                    icon: theme.icon,
-                    zone: .holidays
-                )
-                .padding(.top, JohoDimensions.spacingSM)
+            if selectedCategory == nil {
+                // 情報デザイン: Show category cards grid (mirrors month grid structure)
+                categoryCardsGrid(for: month)
             } else {
-                // Collapsible timeline (情報デザイン: clean, expandable day cards)
-                VStack(spacing: JohoDimensions.spacingSM) {
-                    ForEach(dayCards) { dayCard in
-                        CollapsibleSpecialDayCard(
-                            dayCard: dayCard,
-                            isExpanded: expandedDays.contains(dayCard.id),
-                            onToggle: { toggleExpand(dayCard) },
-                            isEditable: isEditable,
-                            deleteRow: deleteRow,
-                            openEditor: openEditor,
-                            showDetail: { item in selectedDetailItem = item },
-                            expandedItemID: $expandedItemID
-                        )
+                // Show filtered day cards for selected category
+                let dayCards = filteredDayCardsForMonth(month, category: selectedCategory!)
+
+                if dayCards.isEmpty {
+                    JohoEmptyState(
+                        title: "No \(selectedCategory!.localizedLabel)",
+                        message: "Tap + to add",
+                        icon: selectedCategory!.outlineIcon,
+                        zone: selectedCategory!.sectionZone
+                    )
+                    .padding(.top, JohoDimensions.spacingSM)
+                } else {
+                    // Collapsible timeline (情報デザイン: clean, expandable day cards)
+                    VStack(spacing: JohoDimensions.spacingSM) {
+                        ForEach(dayCards) { dayCard in
+                            CollapsibleSpecialDayCard(
+                                dayCard: dayCard,
+                                isExpanded: expandedDays.contains(dayCard.id),
+                                onToggle: { toggleExpand(dayCard) },
+                                isEditable: isEditable,
+                                deleteRow: deleteRow,
+                                openEditor: openEditor,
+                                showDetail: { item in selectedDetailItem = item },
+                                expandedItemID: $expandedItemID
+                            )
+                        }
                     }
+                    .padding(.horizontal, JohoDimensions.spacingLG)
                 }
-                .padding(.horizontal, JohoDimensions.spacingLG)
             }
         }
-        .onAppear { initializeExpandedDays(for: dayCards) }
+        .onAppear { initializeExpandedDays(for: dayCardsForMonth(month)) }
         .onChange(of: selectedMonth) { _, _ in
             expandedDays.removeAll()
-            initializeExpandedDays(for: dayCards)
+            selectedCategory = nil
+            initializeExpandedDays(for: dayCardsForMonth(month))
+        }
+        .onChange(of: selectedCategory) { _, _ in
+            expandedDays.removeAll()
+            if let month = selectedMonth {
+                let dayCards = selectedCategory != nil
+                    ? filteredDayCardsForMonth(month, category: selectedCategory!)
+                    : dayCardsForMonth(month)
+                initializeExpandedDays(for: dayCards)
+            }
+        }
+    }
+
+    // MARK: - Category Cards Grid (情報デザイン: Bento cards for each category)
+
+    @ViewBuilder
+    private func categoryCardsGrid(for month: Int) -> some View {
+        let counts = monthUniqueCounts(for: month)
+
+        let columns = [
+            GridItem(.flexible(), spacing: JohoDimensions.spacingSM),
+            GridItem(.flexible(), spacing: JohoDimensions.spacingSM),
+            GridItem(.flexible(), spacing: JohoDimensions.spacingSM)
+        ]
+
+        LazyVGrid(columns: columns, spacing: JohoDimensions.spacingSM) {
+            // Holidays card (PINK)
+            categoryCard(
+                category: .holiday,
+                count: counts.holidays,
+                color: JohoColors.pink
+            )
+
+            // Observances card (PINK with diamond)
+            categoryCard(
+                category: .observance,
+                count: counts.observances,
+                color: JohoColors.pink
+            )
+
+            // Memos card (YELLOW)
+            categoryCard(
+                category: .memo,
+                count: counts.memos,
+                color: JohoColors.yellow
+            )
+        }
+        .padding(.horizontal, JohoDimensions.spacingLG)
+    }
+
+    // MARK: - Category Card (情報デザイン: Individual category bento card)
+
+    @ViewBuilder
+    private func categoryCard(category: DisplayCategory, count: Int, color: Color) -> some View {
+        let hasItems = count > 0
+
+        Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                selectedCategory = category
+            }
+            HapticManager.selection()
+        } label: {
+            VStack(spacing: 0) {
+                // TOP: Icon zone with category color
+                VStack(spacing: 4) {
+                    Image(systemName: category.outlineIcon)
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .foregroundStyle(hasItems ? colors.primary : colors.primary.opacity(0.4))
+
+                    // Count badge
+                    if hasItems {
+                        Text("\(count)")
+                            .font(.system(size: 14, weight: .black, design: .rounded))
+                            .foregroundStyle(colors.primary)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 70)
+                .background(hasItems ? color.opacity(0.5) : colors.inputBackground)
+
+                // Divider
+                Rectangle()
+                    .fill(colors.border)
+                    .frame(height: 1.5)
+
+                // BOTTOM: Category label
+                Text(category.localizedLabel.uppercased())
+                    .font(.system(size: 10, weight: .black, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 32)
+                    .background(colors.surface)
+            }
+            .background(colors.surface)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(colors.border, lineWidth: 1.5)
+            )
+        }
+        .buttonStyle(.plain)
+        .opacity(hasItems ? 1.0 : 0.6)
+    }
+
+    // MARK: - Filtered Day Cards (情報デザイン: Filter by category)
+
+    private func filteredDayCardsForMonth(_ month: Int, category: DisplayCategory) -> [DayCardData] {
+        let allCards = dayCardsForMonth(month)
+
+        return allCards.compactMap { card -> DayCardData? in
+            let filteredItems = card.items.filter { item in
+                switch category {
+                case .holiday:
+                    return item.type == .holiday
+                case .observance:
+                    return item.type == .observance
+                case .memo:
+                    return item.type == .memo || item.type == .birthday
+                }
+            }
+
+            guard !filteredItems.isEmpty else {
+                return nil
+            }
+
+            return DayCardData(
+                id: card.id,
+                date: card.date,
+                day: card.day,
+                items: filteredItems
+            )
         }
     }
 

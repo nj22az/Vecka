@@ -60,6 +60,15 @@ enum DisplayCategory: String, CaseIterable {
         case .memo: return JohoColors.yellow       // Now - personal memos
         }
     }
+
+    /// 情報デザイン: Corresponding SectionZone for empty state styling
+    var sectionZone: SectionZone {
+        switch self {
+        case .holiday: return .holidays
+        case .observance: return .observances
+        case .memo: return .notes
+        }
+    }
 }
 
 // MARK: - Special Day Type
