@@ -64,6 +64,8 @@ struct JohoUndoToast: View {
 
 struct JohoIconPickerSheet: View {
     @Binding var selectedSymbol: String
+    /// 情報デザイン: Optional icon color binding - if nil, color picker is hidden
+    var selectedIconColor: Binding<String?>? = nil
     let accentColor: Color
     let lightBackground: Color
     /// 情報デザイン: Icons to exclude from picker (category defaults should not be selectable)
@@ -73,11 +75,21 @@ struct JohoIconPickerSheet: View {
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private let symbolCategories: [(name: String, symbols: [String])] = [
-        ("MARU-BATSU", ["circle", "circle.fill", "xmark", "xmark.circle.fill", "triangle", "triangle.fill", "square", "square.fill", "diamond", "diamond.fill"]),
+        ("MARU-BATSU", ["circle", "circle.fill", "xmark", "xmark.circle.fill", "triangle", "triangle.fill", "square", "square.fill", "diamond", "diamond.fill", "plus"]),
         ("EVENTS", ["star.fill", "sparkles", "gift.fill", "birthday.cake.fill", "party.popper.fill", "balloon.fill", "heart.fill", "bell.fill", "calendar.badge.clock"]),
         ("NATURE", ["leaf.fill", "camera.macro", "sun.max.fill", "moon.fill", "snowflake", "cloud.sun.fill", "flame.fill", "drop.fill"]),
         ("PEOPLE", ["person.fill", "person.2.fill", "figure.stand", "heart.circle.fill", "hand.raised.fill"]),
         ("TIME", ["calendar", "clock.fill", "hourglass", "timer", "sunrise.fill", "sunset.fill"]),
+    ]
+
+    // 情報デザイン: Icon colors (saturated for visibility on pastel backgrounds)
+    private let iconColorOptions: [(name: String, hex: String, color: Color)] = [
+        ("Default", "", Color.clear),  // Use category accent color
+        ("Black", "1A1A1A", JohoColors.black),
+        ("Pink", "E11D48", Color(hex: "E11D48")),
+        ("Cyan", "0891B2", Color(hex: "0891B2")),
+        ("Green", "16A34A", Color(hex: "16A34A")),
+        ("Purple", "9333EA", Color(hex: "9333EA")),
     ]
 
     /// 情報デザイン: Filter out excluded symbols (category defaults)
@@ -126,6 +138,55 @@ struct JohoIconPickerSheet: View {
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.top, JohoDimensions.spacingSM)
 
+                // Icon Color Picker (情報デザイン: Color = category, but icon color = personal expression)
+                // Only shown when selectedIconColor binding is provided
+                if let iconColorBinding = selectedIconColor {
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        JohoPill(text: "ICON COLOR", style: .whiteOnBlack, size: .small)
+
+                        HStack(spacing: JohoDimensions.spacingSM) {
+                            ForEach(iconColorOptions, id: \.hex) { option in
+                                Button {
+                                    iconColorBinding.wrappedValue = option.hex.isEmpty ? nil : option.hex
+                                    HapticManager.selection()
+                                } label: {
+                                    let isSelected = (iconColorBinding.wrappedValue == nil && option.hex.isEmpty) ||
+                                                     (iconColorBinding.wrappedValue == option.hex)
+                                    Group {
+                                        if option.hex.isEmpty {
+                                            // Default option shows accent color
+                                            accentColor
+                                        } else {
+                                            option.color
+                                        }
+                                    }
+                                    .frame(width: 44, height: 44)
+                                    .clipShape(Squircle(cornerRadius: 10))
+                                    .overlay(
+                                        Squircle(cornerRadius: 10)
+                                            .stroke(colors.border, lineWidth: isSelected ? 2.5 : 1)
+                                    )
+                                    .overlay {
+                                        if isSelected {
+                                            Image(systemName: "checkmark")
+                                                .font(.system(size: 16, weight: .bold))
+                                                .foregroundStyle(option.hex == "1A1A1A" ? colors.surface : colors.primary)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .padding(JohoDimensions.spacingMD)
+                    .background(colors.surface)
+                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+                    .overlay(
+                        Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+                    )
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+                }
+
                 // Categories (情報デザイン: filtered to exclude category defaults)
                 ForEach(filteredCategories, id: \.name) { category in
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
@@ -138,9 +199,15 @@ struct JohoIconPickerSheet: View {
                                     HapticManager.selection()
                                     dismiss()
                                 } label: {
+                                    let displayColor: Color = {
+                                        if let hex = selectedIconColor?.wrappedValue, !hex.isEmpty {
+                                            return Color(hex: hex)
+                                        }
+                                        return selectedSymbol == symbol ? accentColor : colors.primary
+                                    }()
                                     Image(systemName: symbol)
                                         .font(.system(size: 20, weight: .bold, design: .rounded))
-                                        .foregroundStyle(selectedSymbol == symbol ? accentColor : colors.primary)
+                                        .foregroundStyle(displayColor)
                                         .johoTouchTarget(52)
                                         .background(selectedSymbol == symbol ? lightBackground : colors.surface)
                                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
@@ -197,6 +264,7 @@ struct JohoSpecialDayEditorSheet: View {
     @State private var selectedMonth: Int = 1
     @State private var selectedDay: Int = 1
     @State private var selectedSymbol: String = "star.fill"
+    @State private var selectedIconColor: String? = nil
     @State private var selectedRegion: String = ""
     @State private var showingIconPicker = false
 
@@ -259,13 +327,14 @@ struct JohoSpecialDayEditorSheet: View {
             _selectedDay = State(initialValue: calendar.component(.day, from: Date()))
             _selectedSymbol = State(initialValue: type.defaultIcon)
             _selectedRegion = State(initialValue: defaultRegion)
-        case .edit(let editName, let editDate, let editSymbol, _, let editNotes, let editRegion):
+        case .edit(let editName, let editDate, let editSymbol, let editIconColor, let editNotes, let editRegion):
             _name = State(initialValue: editName)
             _notes = State(initialValue: editNotes ?? "")
             _selectedYear = State(initialValue: calendar.component(.year, from: editDate))
             _selectedMonth = State(initialValue: calendar.component(.month, from: editDate))
             _selectedDay = State(initialValue: calendar.component(.day, from: editDate))
             _selectedSymbol = State(initialValue: editSymbol)
+            _selectedIconColor = State(initialValue: editIconColor)
             _selectedRegion = State(initialValue: editRegion)
         }
     }
@@ -312,7 +381,7 @@ struct JohoSpecialDayEditorSheet: View {
 
                     Button {
                         let notesValue = notes.trimmed
-                        onSave(name.trimmed, selectedDate, selectedSymbol, nil, notesValue.isEmpty ? nil : notesValue, selectedRegion)
+                        onSave(name.trimmed, selectedDate, selectedSymbol, selectedIconColor, notesValue.isEmpty ? nil : notesValue, selectedRegion)
                         dismiss()
                     } label: {
                         Text("Save")
@@ -407,9 +476,15 @@ struct JohoSpecialDayEditorSheet: View {
                     HapticManager.selection()
                 } label: {
                     HStack(spacing: 0) {
+                        let iconColor: Color = {
+                            if let hex = selectedIconColor, !hex.isEmpty {
+                                return Color(hex: hex)
+                            }
+                            return type.accentColor
+                        }()
                         Image(systemName: selectedSymbol)
                             .font(.system(size: 18, weight: .bold, design: .rounded))
-                            .foregroundStyle(type.accentColor)
+                            .foregroundStyle(iconColor)
                             .frame(width: 40).frame(maxHeight: .infinity)
 
                         Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
@@ -450,6 +525,7 @@ struct JohoSpecialDayEditorSheet: View {
             // 情報デザイン: Exclude category default icon from picker
             JohoIconPickerSheet(
                 selectedSymbol: $selectedSymbol,
+                selectedIconColor: $selectedIconColor,
                 accentColor: type.accentColor,
                 lightBackground: type.lightBackground,
                 excludedSymbols: [type.defaultIcon]

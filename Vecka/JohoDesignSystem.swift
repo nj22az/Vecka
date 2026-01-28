@@ -2216,12 +2216,24 @@ struct JohoYearPicker: View {
             }
             .disabled(year <= minYear)
 
-            // Year text
-            Text(String(year))
-                .font(.system(size: 16, weight: .bold, design: .rounded))
-                .monospacedDigit()
-                .foregroundStyle(colors.primary)
-                .fixedSize()
+            // Year text - tap to reset to current year
+            let currentYear = Calendar.current.component(.year, from: Date())
+            let isCurrentYear = year == currentYear
+
+            Button {
+                if !isCurrentYear {
+                    withAnimation(.easeInOut(duration: 0.15)) { year = currentYear }
+                    HapticManager.notification(.success)
+                }
+            } label: {
+                Text(String(year))
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(isCurrentYear ? colors.primary : colors.primary.opacity(0.7))
+                    .underline(!isCurrentYear, color: colors.primary.opacity(0.3))
+                    .fixedSize()
+            }
+            .buttonStyle(.plain)
 
             // Increment button
             Button {

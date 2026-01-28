@@ -567,8 +567,9 @@ struct SpecialDaysListView: View {
             month: month,
             currentCustomization: monthCustomizations[month] ?? MonthCustomization(),
             onSave: { customization in
-                // Save if any customization is set (icon, color, or message)
-                if customization.icon != nil || customization.colorHex != nil || customization.message != nil {
+                // Save if any customization is set (icon, icon color, or message)
+                // Note: colorHex is locked to seasonal theme (季節の色)
+                if customization.icon != nil || customization.iconColorHex != nil || customization.message != nil {
                     setMonthCustomization(customization, for: month)
                 } else {
                     setMonthCustomization(nil, for: month)
@@ -1129,26 +1130,16 @@ struct SpecialDaysListView: View {
         let displayIcon = customIcon(for: month) ?? theme.icon
         let customIconColorHex = customIconColor(for: month)
         let customColorHex = customColor(for: month)
-        // 情報デザイン: Custom icon color takes priority, then theme accent if items, else faded
+        // 情報デザイン: Custom icon color takes priority, then always theme accent (季節の色 defines identity)
         let displayIconColor: Color = {
             if let hex = customIconColorHex {
                 return Color(hex: hex)
-            } else if hasItems {
+            } else {
                 return theme.accentColor
-            } else {
-                return colors.primary.opacity(0.4)
             }
         }()
-        // 情報デザイン: Custom background color takes priority, then seasonal color if items, else gray
-        let displayColor: Color = {
-            if let hex = customColorHex {
-                return Color(hex: hex)
-            } else if hasItems {
-                return theme.accentColor.opacity(0.2)
-            } else {
-                return colors.inputBackground
-            }
-        }()
+        // 情報デザイン: Banner color is LOCKED to seasonal theme (users cannot change it)
+        let displayColor: Color = theme.lightBackground
         let message = customMessage(for: month)
 
         VStack(spacing: 0) {
@@ -1229,7 +1220,7 @@ struct SpecialDaysListView: View {
                 .stroke(colors.border, lineWidth: 1.5)
         )
         .contentShape(Rectangle())
-        .opacity(hasItems ? 1.0 : 0.7)
+        // 情報デザイン: NO opacity change - colors define identity regardless of content
         .simultaneousGesture(
             LongPressGesture(minimumDuration: 0.5)
                 .onEnded { _ in
@@ -2634,10 +2625,11 @@ struct MonthCustomizationSheet: View {
 
                 Button {
                     let trimmedMessage = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
+                    // 情報デザイン: colorHex is locked to seasonal theme (季節の色)
                     onSave(MonthCustomization(
                         icon: selectedIcon,
                         iconColorHex: selectedIconColor,
-                        colorHex: selectedColor,
+                        colorHex: nil,  // Locked to theme
                         message: trimmedMessage.isEmpty ? nil : trimmedMessage
                     ))
                 } label: {
@@ -2688,18 +2680,8 @@ struct MonthCustomizationSheet: View {
                         }
                     }
 
-                    // Background color picker
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("BACKGROUND")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.5))
-
-                        HStack(spacing: 8) {
-                            ForEach(colorOptions, id: \.hex) { option in
-                                colorButton(option)
-                            }
-                        }
-                    }
+                    // 情報デザイン: Background color is LOCKED to seasonal theme (季節の色)
+                    // Users can only customize icons, icon colors, and messages
 
                     // Message field (情報デザイン: personal note)
                     VStack(alignment: .leading, spacing: 8) {

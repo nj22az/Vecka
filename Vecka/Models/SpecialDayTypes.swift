@@ -236,32 +236,44 @@ struct MonthTheme {
         )
     }
 
-    /// Fallback themes if JSON fails to load
+    /// Fallback themes if JSON fails to load (Japanese seasonal colors - 季節の色 with HIGH CONTRAST)
     private static let defaultThemes: [MonthTheme] = [
-        MonthTheme(month: 1, name: "January", icon: "snowflake",
-                   accentColor: Color(hex: "4A90D9"), lightBackground: Color(hex: "E8F4FD")),
-        MonthTheme(month: 2, name: "February", icon: "heart.fill",
-                   accentColor: Color(hex: "E84393"), lightBackground: Color(hex: "FDE8F3")),
-        MonthTheme(month: 3, name: "March", icon: "leaf.fill",
-                   accentColor: Color(hex: "00B894"), lightBackground: Color(hex: "E8FDF6")),
-        MonthTheme(month: 4, name: "April", icon: "cloud.rain.fill",
-                   accentColor: Color(hex: "74B9FF"), lightBackground: Color(hex: "EBF5FF")),
-        MonthTheme(month: 5, name: "May", icon: "camera.macro",
-                   accentColor: Color(hex: "FDCB6E"), lightBackground: Color(hex: "FFF9E8")),
-        MonthTheme(month: 6, name: "June", icon: "sun.max.fill",
-                   accentColor: Color(hex: "F39C12"), lightBackground: Color(hex: "FEF3E2")),
-        MonthTheme(month: 7, name: "July", icon: "beach.umbrella.fill",
-                   accentColor: Color(hex: "00CEC9"), lightBackground: Color(hex: "E8FFFE")),
-        MonthTheme(month: 8, name: "August", icon: "flame.fill",
-                   accentColor: Color(hex: "E17055"), lightBackground: Color(hex: "FDECE8")),
-        MonthTheme(month: 9, name: "September", icon: "leaf.arrow.triangle.circlepath",
-                   accentColor: Color(hex: "D35400"), lightBackground: Color(hex: "FDEEE5")),
-        MonthTheme(month: 10, name: "October", icon: "moon.fill",
-                   accentColor: Color(hex: "6C5CE7"), lightBackground: Color(hex: "EFECFD")),
+        // 1月: 松色 Matsu-iro (Pine Green) - New Year pines, resilience
+        MonthTheme(month: 1, name: "January", icon: "tree.fill",
+                   accentColor: Color(hex: "1D4A3A"), lightBackground: Color(hex: "A8D5C2")),
+        // 2月: 紅梅色 Kōbai-iro (Red Plum) - Ume blossoms, vitality
+        MonthTheme(month: 2, name: "February", icon: "camera.macro",
+                   accentColor: Color(hex: "B8363B"), lightBackground: Color(hex: "F2B8BA")),
+        // 3月: 桃色 Momo-iro (Peach Pink) - Hina-matsuri, warm coral-pink
+        MonthTheme(month: 3, name: "March", icon: "leaf",
+                   accentColor: Color(hex: "D4587A"), lightBackground: Color(hex: "F8C4D4")),
+        // 4月: 桜色 Sakura-iro (Cherry Blossom) - Hanami, pale whisper pink
+        MonthTheme(month: 4, name: "April", icon: "camera.macro",
+                   accentColor: Color(hex: "E8A0A0"), lightBackground: Color(hex: "FFE4E4")),
+        // 5月: 若葉色 Wakaba-iro (Young Leaf) - Fresh growth, vitality
+        MonthTheme(month: 5, name: "May", icon: "leaf.fill",
+                   accentColor: Color(hex: "4A8C2A"), lightBackground: Color(hex: "B8E89C")),
+        // 6月: 紫陽花色 Ajisai-iro (Hydrangea Blue) - Tsuyu rainy season
+        MonthTheme(month: 6, name: "June", icon: "cloud.rain.fill",
+                   accentColor: Color(hex: "4A7CB8"), lightBackground: Color(hex: "B4D4F4")),
+        // 7月: 藍色 Ai-iro (Deep Indigo) - Summer festivals, ocean depth
+        MonthTheme(month: 7, name: "July", icon: "water.waves",
+                   accentColor: Color(hex: "1E3A5F"), lightBackground: Color(hex: "8AAED4")),
+        // 8月: 金色 Kin-iro (Gold) - Summer sun, obon lanterns
+        MonthTheme(month: 8, name: "August", icon: "sun.max.fill",
+                   accentColor: Color(hex: "C88C10"), lightBackground: Color(hex: "F4D88C")),
+        // 9月: 柿色 Kaki-iro (Persimmon) - Harvest moon, tsukimi
+        MonthTheme(month: 9, name: "September", icon: "moon.fill",
+                   accentColor: Color(hex: "D47830"), lightBackground: Color(hex: "F4C89C")),
+        // 10月: 紅葉色 Momiji-iro (Maple Red) - Koyo autumn leaves
+        MonthTheme(month: 10, name: "October", icon: "leaf.fill",
+                   accentColor: Color(hex: "9C1C1C"), lightBackground: Color(hex: "E8A0A0")),
+        // 11月: 落葉色 Ochiba-iro (Fallen Leaf) - Chrysanthemum, melancholy
         MonthTheme(month: 11, name: "November", icon: "wind",
-                   accentColor: Color(hex: "636E72"), lightBackground: Color(hex: "F0F2F3")),
-        MonthTheme(month: 12, name: "December", icon: "gift.fill",
-                   accentColor: Color(hex: "C0392B"), lightBackground: Color(hex: "F9E7E5"))
+                   accentColor: Color(hex: "8C5C34"), lightBackground: Color(hex: "D4B89C")),
+        // 12月: 銀鼠 Gin-nezu (Steel Blue-Gray) - Snow, winter purity
+        MonthTheme(month: 12, name: "December", icon: "snowflake",
+                   accentColor: Color(hex: "5C6C7C"), lightBackground: Color(hex: "C4D0DC"))
     ]
 }
 

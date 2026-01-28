@@ -2,85 +2,85 @@
   {
     "month": 1,
     "name": "January",
-    "icon": "snowflake",
-    "accentColor": "4A90D9",
-    "lightBackground": "E8F4FD"
+    "icon": "tree.fill",
+    "accentColor": "1D4A3A",
+    "lightBackground": "A8D5C2"
   },
   {
     "month": 2,
     "name": "February",
-    "icon": "heart.fill",
-    "accentColor": "E84393",
-    "lightBackground": "FDE8F3"
+    "icon": "camera.macro",
+    "accentColor": "B8363B",
+    "lightBackground": "F2B8BA"
   },
   {
     "month": 3,
     "name": "March",
-    "icon": "leaf.fill",
-    "accentColor": "00B894",
-    "lightBackground": "E8FDF6"
+    "icon": "leaf",
+    "accentColor": "D4587A",
+    "lightBackground": "F8C4D4"
   },
   {
     "month": 4,
     "name": "April",
-    "icon": "cloud.rain.fill",
-    "accentColor": "74B9FF",
-    "lightBackground": "EBF5FF"
+    "icon": "camera.macro",
+    "accentColor": "E8A0A0",
+    "lightBackground": "FFE4E4"
   },
   {
     "month": 5,
     "name": "May",
-    "icon": "camera.macro",
-    "accentColor": "FDCB6E",
-    "lightBackground": "FFF9E8"
+    "icon": "leaf.fill",
+    "accentColor": "4A8C2A",
+    "lightBackground": "B8E89C"
   },
   {
     "month": 6,
     "name": "June",
-    "icon": "sun.max.fill",
-    "accentColor": "F39C12",
-    "lightBackground": "FEF3E2"
+    "icon": "cloud.rain.fill",
+    "accentColor": "4A7CB8",
+    "lightBackground": "B4D4F4"
   },
   {
     "month": 7,
     "name": "July",
-    "icon": "beach.umbrella.fill",
-    "accentColor": "00CEC9",
-    "lightBackground": "E8FFFE"
+    "icon": "water.waves",
+    "accentColor": "1E3A5F",
+    "lightBackground": "8AAED4"
   },
   {
     "month": 8,
     "name": "August",
-    "icon": "flame.fill",
-    "accentColor": "E17055",
-    "lightBackground": "FDECE8"
+    "icon": "sun.max.fill",
+    "accentColor": "C88C10",
+    "lightBackground": "F4D88C"
   },
   {
     "month": 9,
     "name": "September",
-    "icon": "leaf.arrow.triangle.circlepath",
-    "accentColor": "D35400",
-    "lightBackground": "FDEEE5"
+    "icon": "moon.fill",
+    "accentColor": "D47830",
+    "lightBackground": "F4C89C"
   },
   {
     "month": 10,
     "name": "October",
-    "icon": "moon.fill",
-    "accentColor": "6C5CE7",
-    "lightBackground": "EFECFD"
+    "icon": "leaf.fill",
+    "accentColor": "9C1C1C",
+    "lightBackground": "E8A0A0"
   },
   {
     "month": 11,
     "name": "November",
     "icon": "wind",
-    "accentColor": "636E72",
-    "lightBackground": "F0F2F3"
+    "accentColor": "8C5C34",
+    "lightBackground": "D4B89C"
   },
   {
     "month": 12,
     "name": "December",
-    "icon": "gift.fill",
-    "accentColor": "C0392B",
-    "lightBackground": "F9E7E5"
+    "icon": "snowflake",
+    "accentColor": "5C6C7C",
+    "lightBackground": "C4D0DC"
   }
 ]
