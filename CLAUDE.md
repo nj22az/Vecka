@@ -47,6 +47,20 @@ Built with SwiftUI, SwiftData, WidgetKit.
 | Purple | `#E9D5FF` | PEOPLE - contacts |
 | Red | `#E53935` | ALERT - system only |
 
+### Category Colors (Star Page)
+
+| Category | Color | Code |
+|----------|-------|------|
+| Holidays | Pink | `JohoColors.pink` |
+| Observances | Cyan | `JohoColors.cyan` |
+| Memos | Yellow | `JohoColors.yellow` |
+
+These colors MUST be consistent everywhere categories appear:
+- Star page month cards (colored dots)
+- Month detail category cards (background tints)
+- Header subtitle row (filter dots + add buttons)
+- Category filter pills
+
 ### Required Patterns
 
 ```swift

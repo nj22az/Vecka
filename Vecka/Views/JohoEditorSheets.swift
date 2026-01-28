@@ -188,6 +188,9 @@ struct JohoSpecialDayEditorSheet: View {
     @Environment(\.johoColorMode) private var colorMode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
+    // 情報デザイン: Access enabled regions for region picker
+    @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
+
     @State private var name: String = ""
     @State private var notes: String = ""
     @State private var selectedYear: Int = Calendar.current.component(.year, from: Date())
@@ -196,6 +199,11 @@ struct JohoSpecialDayEditorSheet: View {
     @State private var selectedSymbol: String = "star.fill"
     @State private var selectedRegion: String = ""
     @State private var showingIconPicker = false
+
+    /// 情報デザイン: Enabled regions for the region picker (PERSONAL + user-selected regions)
+    private var enabledRegions: [String] {
+        holidayRegions.expandedRegions
+    }
 
     private var isEditing: Bool {
         if case .edit = mode { return true }
@@ -422,6 +430,12 @@ struct JohoSpecialDayEditorSheet: View {
                     .background(type.lightBackground)
                 }
                 .buttonStyle(.plain)
+
+                // 情報デザイン: Region picker row (only for holidays/observances)
+                if type == .holiday || type == .observance {
+                    Rectangle().fill(colors.border).frame(height: 1.5)
+                    regionPickerRow
+                }
             }
             .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
@@ -440,6 +454,47 @@ struct JohoSpecialDayEditorSheet: View {
                 lightBackground: type.lightBackground,
                 excludedSymbols: [type.defaultIcon]
             )
+        }
+    }
+
+    // MARK: - Region Picker Row (情報デザイン: Horizontal scrolling chips)
+
+    private var regionPickerRow: some View {
+        HStack(spacing: 0) {
+            Image(systemName: "globe")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 40).frame(maxHeight: .infinity)
+
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(enabledRegions, id: \.self) { region in
+                        regionChip(region, label: region)
+                    }
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+            }
+            .frame(maxHeight: .infinity)
+        }
+        .frame(height: 48)
+        .background(type.lightBackground)
+    }
+
+    private func regionChip(_ code: String, label: String) -> some View {
+        Button {
+            selectedRegion = code
+            HapticManager.selection()
+        } label: {
+            Text(label)
+                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .foregroundStyle(selectedRegion == code ? colors.primaryInverted : colors.primary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(selectedRegion == code ? type.accentColor : colors.surface)
+                .clipShape(Squircle(cornerRadius: 8))
+                .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
         }
     }
 
