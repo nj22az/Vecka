@@ -1344,8 +1344,17 @@ struct SpecialDaysListView: View {
         }
         .padding(.horizontal, JohoDimensions.spacingLG)
         .sheet(item: $editingCategoryLabel) { category in
+            let counts = monthUniqueCounts(for: selectedMonth ?? 1)
+            let count: Int = {
+                switch category {
+                case .holiday: return counts.holidays
+                case .observance: return counts.observances
+                case .memo: return counts.memos
+                }
+            }()
             CategoryCustomizationSheet(
                 category: category,
+                count: count,
                 currentCustomization: categoryCustomizations[category.rawValue] ?? CategoryCustomization(),
                 onSave: { customization in
                     if customization.icon == nil {
@@ -2863,6 +2872,7 @@ struct MonthCustomizationSheet: View {
 /// 情報デザイン: Color is locked to category - only icon can be customized
 struct CategoryCustomizationSheet: View {
     let category: DisplayCategory
+    let count: Int
     let currentCustomization: CategoryCustomization
     let onSave: (CategoryCustomization) -> Void
     let onReset: () -> Void
@@ -2887,60 +2897,74 @@ struct CategoryCustomizationSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header
-            HStack {
-                Button {
-                    onDismiss()
-                } label: {
-                    Text("Cancel")
-                        .font(.system(size: 14, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.6))
+            // 情報デザイン: Bento-style header with category color banner
+            VStack(spacing: 0) {
+                // Banner with category color
+                HStack {
+                    Button {
+                        onDismiss()
+                    } label: {
+                        Text("Cancel")
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.7))
+                    }
+                    .buttonStyle(.plain)
+
+                    Spacer()
+
+                    Text(category.localizedLabel.uppercased())
+                        .font(.system(size: 14, weight: .black, design: .rounded))
+                        .foregroundStyle(colors.primary)
+
+                    Spacer()
+
+                    Button {
+                        onSave(CategoryCustomization(icon: selectedIcon))
+                    } label: {
+                        Text("Save")
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primary)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(category.accentColor)
+                            .clipShape(Squircle(cornerRadius: 8))
+                            .overlay(
+                                Squircle(cornerRadius: 8)
+                                    .stroke(colors.border, lineWidth: 1.5)
+                            )
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.vertical, JohoDimensions.spacingMD)
+                .background(category.accentColor.opacity(0.3))
 
-                Spacer()
-
-                Text(category.localizedLabel.uppercased())
-                    .font(.system(size: 12, weight: .black, design: .rounded))
-                    .foregroundStyle(colors.primary)
-
-                Spacer()
-
-                Button {
-                    onSave(CategoryCustomization(icon: selectedIcon))
-                } label: {
-                    Text("Save")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.surface)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(colors.primary)
-                        .clipShape(Capsule())
-                }
-                .buttonStyle(.plain)
+                // Divider
+                Rectangle()
+                    .fill(colors.border)
+                    .frame(height: 1.5)
             }
-            .padding(.horizontal, JohoDimensions.spacingLG)
-            .padding(.top, JohoDimensions.spacingLG)
-            .padding(.bottom, JohoDimensions.spacingMD)
 
-            // Divider
-            Rectangle()
-                .fill(colors.border)
-                .frame(height: 1.5)
-
+            // Content
             VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
-                // Preview card
+                // 情報デザイン: Preview card - bento style
                 HStack {
                     Spacer()
                     categoryPreview
                     Spacer()
                 }
 
-                // Icon picker
+                // Icon picker with category-colored section header
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("ICON")
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.5))
+                    HStack(spacing: 6) {
+                        Circle()
+                            .fill(category.accentColor)
+                            .frame(width: 8, height: 8)
+                            .overlay(Circle().stroke(colors.border, lineWidth: 1))
+                        Text("ICON")
+                            .font(.system(size: 10, weight: .black, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.6))
+                    }
 
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 6), spacing: 8) {
                         ForEach(iconOptions, id: \.self) { icon in
@@ -2953,17 +2977,21 @@ struct CategoryCustomizationSheet: View {
                 Button {
                     onReset()
                 } label: {
-                    Text("Reset to Default")
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.6))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(colors.inputBackground)
-                        .clipShape(Squircle(cornerRadius: 10))
-                        .overlay(
-                            Squircle(cornerRadius: 10)
-                                .stroke(colors.border, lineWidth: 1.5)
-                        )
+                    HStack(spacing: 6) {
+                        Image(systemName: "arrow.counterclockwise")
+                            .font(.system(size: 12, weight: .bold, design: .rounded))
+                        Text("Reset to Default")
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
+                    }
+                    .foregroundStyle(colors.primary.opacity(0.6))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(colors.inputBackground)
+                    .clipShape(Squircle(cornerRadius: 10))
+                    .overlay(
+                        Squircle(cornerRadius: 10)
+                            .stroke(colors.border, lineWidth: 1.5)
+                    )
                 }
                 .buttonStyle(.plain)
             }
@@ -2977,19 +3005,19 @@ struct CategoryCustomizationSheet: View {
         }
     }
 
-    // 情報デザイン: Preview card showing current selection
+    // 情報デザイン: Preview card showing current selection (bento style)
     private var categoryPreview: some View {
         let displayIcon = selectedIcon ?? category.outlineIcon
 
         return VStack(spacing: 0) {
-            // TOP: Icon zone (category color locked)
+            // TOP: Icon zone with full-width category color
             VStack {
                 Image(systemName: displayIcon)
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
             }
-            .frame(width: 80)
-            .padding(.vertical, 16)
+            .frame(maxWidth: .infinity)
+            .frame(height: 64)
             .background(category.accentColor)
 
             // Divider
@@ -2997,14 +3025,23 @@ struct CategoryCustomizationSheet: View {
                 .fill(colors.border)
                 .frame(height: 1.5)
 
-            // BOTTOM: Category name
-            Text(category.localizedLabel.uppercased())
-                .font(.system(size: 10, weight: .black, design: .rounded))
-                .foregroundStyle(colors.primary)
-                .frame(width: 80)
-                .padding(.vertical, 8)
-                .background(colors.surface)
+            // BOTTOM: Show count (header already shows category name)
+            VStack(spacing: 2) {
+                Text(category.localizedLabel.uppercased())
+                    .font(.system(size: 10, weight: .black, design: .rounded))
+                    .foregroundStyle(colors.primary)
+
+                if count > 0 {
+                    Text("\(count)")
+                        .font(.system(size: 9, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.6))
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)
+            .background(colors.surface)
         }
+        .frame(width: 100)
         .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
