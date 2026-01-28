@@ -1583,15 +1583,20 @@ struct CollapsibleSpecialDayCard: View {
             HStack(alignment: .top, spacing: JohoDimensions.spacingSM) {
                 // Content area - grows vertically as needed
                 if item.type == .birthday {
-                    // Birthday: two-line layout (name + subtitle)
+                    // Birthday: two-line layout (name + 🎂 age)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(item.title)
                             .font(JohoFont.body)
                             .foregroundStyle(colors.primary)
                         if let age = item.turningAge {
-                            Text(birthdayDisplayText(age: age, date: item.date))
-                                .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(colors.primary.opacity(0.6))
+                            // 情報デザイン: Icon + number (no words needed)
+                            HStack(spacing: 4) {
+                                Image(systemName: "birthday.cake")
+                                    .font(.system(size: 10, weight: .medium))
+                                Text("\(age)")
+                                    .font(.system(size: 11, weight: .semibold, design: .rounded))
+                            }
+                            .foregroundStyle(colors.primary.opacity(0.6))
                         }
                     }
                     .padding(.leading, JohoDimensions.spacingMD)
