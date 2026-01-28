@@ -54,6 +54,11 @@ struct MonthCustomization: Codable, Equatable {
     var message: String?      // Personal note (nil = no message)
 }
 
+/// 情報デザイン: Custom icon for category cards (color is locked to category)
+struct CategoryCustomization: Codable, Equatable {
+    var icon: String?  // SF Symbol name (nil = use default category icon)
+}
+
 // MARK: - Special Days List View (情報デザイン Redesign)
 
 struct SpecialDaysListView: View {
@@ -72,6 +77,7 @@ struct SpecialDaysListView: View {
     @AppStorage("showHolidays") private var showHolidays = true
     @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
     @AppStorage("monthCustomizations") private var monthCustomizationsData: Data = Data()  // 情報デザイン: Custom icon + color per month
+    @AppStorage("categoryCustomizations") private var categoryCustomizationsData: Data = Data()  // 情報デザイン: Custom icon per category
 
     // View mode - exposed via binding for sidebar integration
     @Binding var isInMonthDetail: Bool
@@ -168,6 +174,35 @@ struct SpecialDaysListView: View {
     private func customMessage(for month: Int) -> String? {
         monthCustomizations[month]?.message
     }
+
+    // 情報デザイン: Category customization storage helpers
+    private var categoryCustomizations: [String: CategoryCustomization] {
+        get {
+            guard !categoryCustomizationsData.isEmpty,
+                  let decoded = try? JSONDecoder().decode([String: CategoryCustomization].self, from: categoryCustomizationsData) else {
+                return [:]
+            }
+            return decoded
+        }
+    }
+
+    private func setCategoryCustomization(_ customization: CategoryCustomization?, for category: DisplayCategory) {
+        var customizations = categoryCustomizations
+        if let customization = customization {
+            customizations[category.rawValue] = customization
+        } else {
+            customizations.removeValue(forKey: category.rawValue)
+        }
+        if let encoded = try? JSONEncoder().encode(customizations) {
+            categoryCustomizationsData = encoded
+        }
+    }
+
+    private func customCategoryIcon(for category: DisplayCategory) -> String? {
+        categoryCustomizations[category.rawValue]?.icon
+    }
+
+    @State private var editingCategoryLabel: DisplayCategory? = nil
 
     // MARK: - Computed Data
 
@@ -1126,10 +1161,9 @@ struct SpecialDaysListView: View {
         let totalCount = counts.holidays + counts.observances + counts.birthdays + counts.memos
         let hasItems = totalCount > 0
 
-        // 情報デザイン: Allow custom icon, icon color, background color, and message
+        // 情報デザイン: Allow custom icon and icon color (background color locked to seasonal theme)
         let displayIcon = customIcon(for: month) ?? theme.icon
         let customIconColorHex = customIconColor(for: month)
-        let customColorHex = customColor(for: month)
         // 情報デザイン: Custom icon color takes priority, then always theme accent (季節の色 defines identity)
         let displayIconColor: Color = {
             if let hex = customIconColorHex {
@@ -1295,95 +1329,114 @@ struct SpecialDaysListView: View {
         }
     }
 
-    // MARK: - Category Cards Grid (情報デザイン: Bento cards for each category)
+    // MARK: - Category Cards Grid (情報デザイン: Bento cards mirroring month grid)
 
     @ViewBuilder
     private func categoryCardsGrid(for month: Int) -> some View {
         let counts = monthUniqueCounts(for: month)
 
-        let columns = [
-            GridItem(.flexible(), spacing: JohoDimensions.spacingSM),
-            GridItem(.flexible(), spacing: JohoDimensions.spacingSM),
-            GridItem(.flexible(), spacing: JohoDimensions.spacingSM)
-        ]
-
-        LazyVGrid(columns: columns, spacing: JohoDimensions.spacingSM) {
-            // Holidays card (PINK)
-            categoryCard(
-                category: .holiday,
-                count: counts.holidays,
-                color: JohoColors.pink
-            )
-
-            // Observances card (CYAN with diamond)
-            categoryCard(
-                category: .observance,
-                count: counts.observances,
-                color: JohoColors.cyan
-            )
-
-            // Memos card (YELLOW)
-            categoryCard(
-                category: .memo,
-                count: counts.memos,
-                color: JohoColors.yellow
-            )
+        // 情報デザイン: Grid (not LazyVGrid) ensures synchronized row heights
+        Grid(horizontalSpacing: JohoDimensions.spacingSM, verticalSpacing: JohoDimensions.spacingSM) {
+            GridRow {
+                categoryCard(category: .holiday, count: counts.holidays)
+                categoryCard(category: .observance, count: counts.observances)
+                categoryCard(category: .memo, count: counts.memos)
+            }
         }
         .padding(.horizontal, JohoDimensions.spacingLG)
+        .sheet(item: $editingCategoryLabel) { category in
+            CategoryCustomizationSheet(
+                category: category,
+                currentCustomization: categoryCustomizations[category.rawValue] ?? CategoryCustomization(),
+                onSave: { customization in
+                    if customization.icon == nil {
+                        setCategoryCustomization(nil, for: category)
+                    } else {
+                        setCategoryCustomization(customization, for: category)
+                    }
+                    editingCategoryLabel = nil
+                },
+                onReset: {
+                    setCategoryCustomization(nil, for: category)
+                    editingCategoryLabel = nil
+                },
+                onDismiss: {
+                    editingCategoryLabel = nil
+                }
+            )
+            .presentationCornerRadius(20)
+        }
     }
 
-    // MARK: - Category Card (情報デザイン: Individual category bento card)
+    // MARK: - Category Card (情報デザイン: Bento card mirroring month flipcard)
 
     @ViewBuilder
-    private func categoryCard(category: DisplayCategory, count: Int, color: Color) -> some View {
-        let hasItems = count > 0
+    private func categoryCard(category: DisplayCategory, count: Int) -> some View {
+        // 情報デザイン: Custom icon allowed, color locked to category
+        let displayIcon = customCategoryIcon(for: category) ?? category.outlineIcon
+        let categoryColor = category.accentColor
 
-        Button {
+        VStack(spacing: 0) {
+            // TOP: Icon zone (情報デザイン: Category color background)
+            // Grid handles row height synchronization automatically
+            VStack {
+                Image(systemName: displayIcon)
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 20)
+            .background(categoryColor)
+
+            // Divider (情報デザイン: Black wall between compartments)
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            // BOTTOM: Category name + count (情報デザイン: Like message on month cards)
+            HStack(spacing: 0) {
+                Spacer(minLength: 16)
+
+                VStack(spacing: 2) {
+                    Text(category.localizedLabel.uppercased())
+                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .multilineTextAlignment(.center)
+
+                    // Count shown like message on month cards
+                    if count > 0 {
+                        Text("\(count)")
+                            .font(.system(size: 9, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.6))
+                    }
+                }
+
+                Spacer(minLength: 16)
+            }
+            .frame(maxWidth: .infinity, minHeight: 48)
+            .background(colors.surface)
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: 1.5)
+        )
+        .contentShape(Rectangle())
+        // 情報デザイン: NO opacity change - colors define identity regardless of content
+        .simultaneousGesture(
+            LongPressGesture(minimumDuration: 0.5)
+                .onEnded { _ in
+                    HapticManager.impact(.medium)
+                    editingCategoryLabel = category
+                }
+        )
+        .onTapGesture {
             withAnimation(.easeInOut(duration: 0.2)) {
                 selectedCategory = category
             }
             HapticManager.selection()
-        } label: {
-            VStack(spacing: 0) {
-                // TOP: Icon zone with category color
-                // Fixed height ensures symmetry across all cards (LazyVGrid doesn't sync row heights)
-                VStack(spacing: 4) {
-                    Image(systemName: category.outlineIcon)
-                        .font(.system(size: 28, weight: .bold, design: .rounded))
-                        .foregroundStyle(hasItems ? colors.primary : colors.primary.opacity(0.4))
-
-                    // Count badge (always rendered for consistent height)
-                    Text("\(hasItems ? count : 0)")
-                        .font(.system(size: 14, weight: .black, design: .rounded))
-                        .foregroundStyle(colors.primary)
-                        .opacity(hasItems ? 1 : 0)
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 72)  // Fixed height for all cards
-                .background(hasItems ? color.opacity(0.5) : colors.inputBackground)
-
-                // Divider
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(height: 1.5)
-
-                // BOTTOM: Category label
-                Text(category.localizedLabel.uppercased())
-                    .font(.system(size: 10, weight: .black, design: .rounded))
-                    .foregroundStyle(colors.primary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 10)
-                    .background(colors.surface)
-            }
-            .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: 1.5)
-            )
         }
-        .buttonStyle(.plain)
-        .opacity(hasItems ? 1.0 : 0.6)
     }
 
     // MARK: - Filtered Day Cards (情報デザイン: Filter by category)
@@ -2800,6 +2853,193 @@ struct MonthCustomizationSheet: View {
                             .foregroundStyle(option.name == "Black" ? colors.surface : colors.primary)
                     }
                 }
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Category Customization Sheet (情報デザイン: Icon-only customization for categories)
+
+/// Simple editor sheet for customizing category card icons
+/// Long-press on a category card in month detail to trigger
+/// 情報デザイン: Color is locked to category - only icon can be customized
+struct CategoryCustomizationSheet: View {
+    let category: DisplayCategory
+    let currentCustomization: CategoryCustomization
+    let onSave: (CategoryCustomization) -> Void
+    let onReset: () -> Void
+    let onDismiss: () -> Void
+
+    @State private var selectedIcon: String?
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    // 情報デザイン: Curated icon set for categories (shapes + conceptual)
+    private let iconOptions: [String] = [
+        // Shapes (core category icons)
+        "circle", "diamond", "doc.text", "square", "triangle", "plus",
+        // Conceptual
+        "star.fill", "heart.fill", "flag.fill", "bell.fill", "gift.fill", "bookmark.fill",
+        // Status
+        "checkmark.circle", "xmark.circle", "exclamationmark.circle", "questionmark.circle",
+        // Nature
+        "leaf.fill", "sun.max.fill", "moon.fill", "sparkles"
+    ]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Button {
+                    onDismiss()
+                } label: {
+                    Text("Cancel")
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.6))
+                }
+                .buttonStyle(.plain)
+
+                Spacer()
+
+                Text(category.localizedLabel.uppercased())
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .foregroundStyle(colors.primary)
+
+                Spacer()
+
+                Button {
+                    onSave(CategoryCustomization(icon: selectedIcon))
+                } label: {
+                    Text("Save")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.surface)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(colors.primary)
+                        .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.top, JohoDimensions.spacingLG)
+            .padding(.bottom, JohoDimensions.spacingMD)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
+                // Preview card
+                HStack {
+                    Spacer()
+                    categoryPreview
+                    Spacer()
+                }
+
+                // Icon picker
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("ICON")
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.5))
+
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 6), spacing: 8) {
+                        ForEach(iconOptions, id: \.self) { icon in
+                            iconButton(icon)
+                        }
+                    }
+                }
+
+                // Reset button
+                Button {
+                    onReset()
+                } label: {
+                    Text("Reset to Default")
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(colors.inputBackground)
+                        .clipShape(Squircle(cornerRadius: 10))
+                        .overlay(
+                            Squircle(cornerRadius: 10)
+                                .stroke(colors.border, lineWidth: 1.5)
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(JohoDimensions.spacingLG)
+
+            Spacer()
+        }
+        .background(colors.surface)
+        .onAppear {
+            selectedIcon = currentCustomization.icon
+        }
+    }
+
+    // 情報デザイン: Preview card showing current selection
+    private var categoryPreview: some View {
+        let displayIcon = selectedIcon ?? category.outlineIcon
+
+        return VStack(spacing: 0) {
+            // TOP: Icon zone (category color locked)
+            VStack {
+                Image(systemName: displayIcon)
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+            }
+            .frame(width: 80)
+            .padding(.vertical, 16)
+            .background(category.accentColor)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            // BOTTOM: Category name
+            Text(category.localizedLabel.uppercased())
+                .font(.system(size: 10, weight: .black, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 80)
+                .padding(.vertical, 8)
+                .background(colors.surface)
+        }
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: 1.5)
+        )
+    }
+
+    private func iconButton(_ icon: String) -> some View {
+        let isSelected = selectedIcon == icon
+        let isDefault = (selectedIcon == nil && icon == category.outlineIcon)
+
+        return Button {
+            HapticManager.selection()
+            // Toggle selection: if selecting current default, clear; otherwise set
+            if icon == category.outlineIcon && selectedIcon == nil {
+                // Already at default, do nothing
+            } else if selectedIcon == icon {
+                selectedIcon = nil  // Clear to default
+            } else {
+                selectedIcon = icon
+            }
+        } label: {
+            Image(systemName: icon)
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 44, height: 44)
+                .background((isSelected || isDefault) ? category.accentColor : colors.inputBackground)
+                .clipShape(Squircle(cornerRadius: 10))
+                .overlay(
+                    Squircle(cornerRadius: 10)
+                        .stroke(colors.border, lineWidth: (isSelected || isDefault) ? 2.5 : 1)
+                )
         }
         .buttonStyle(.plain)
     }

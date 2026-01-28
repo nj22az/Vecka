@@ -23,10 +23,12 @@ import SwiftUI
 /// - holiday (祝日): Circle outline - Official/authoritative (most stable shape)
 /// - observance (記念日): Diamond outline - Cultural waypoint (secondary shape)
 /// - memo (メモ): Doc outline - Personal (includes birthdays, informal shape)
-enum DisplayCategory: String, CaseIterable {
+enum DisplayCategory: String, CaseIterable, Identifiable {
     case holiday     // 祝日 - Circle outline
     case observance  // 記念日 - Diamond outline
     case memo        // メモ - Doc outline (includes birthdays)
+
+    var id: String { rawValue }
 
     /// SF Symbol for outline icon (black stroke, no fill)
     var outlineIcon: String {
