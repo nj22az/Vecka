@@ -276,7 +276,7 @@ struct ContactListView: View {
                                     Text("\(selectedForDeletion.count)")
                                         .font(.system(size: 12, weight: .bold, design: .rounded))
                                 }
-                                .foregroundStyle(JohoColors.white)
+                                .foregroundStyle(colors.primaryInverted)
                                 .frame(height: 32)
                                 .padding(.horizontal, 12)
                                 .background(JohoColors.red)
@@ -299,7 +299,7 @@ struct ContactListView: View {
                         } label: {
                             Text("Done")
                                 .font(.system(size: 14, weight: .bold, design: .rounded))
-                                .foregroundStyle(JohoColors.white)
+                                .foregroundStyle(colors.primaryInverted)
                                 .frame(height: 32)
                                 .padding(.horizontal, 12)
                                 .background(PageHeaderColor.contacts.accent)
@@ -329,7 +329,7 @@ struct ContactListView: View {
 
                         // Thin separator (情報デザイン: solid black, reduced height)
                         Rectangle()
-                            .fill(JohoColors.black)
+                            .fill(colors.border)
                             .frame(width: 0.5)
                             .padding(.vertical, 8)
 
@@ -347,7 +347,7 @@ struct ContactListView: View {
 
                         // Thin separator (情報デザイン: solid black, reduced height)
                         Rectangle()
-                            .fill(JohoColors.black)
+                            .fill(colors.border)
                             .frame(width: 0.5)
                             .padding(.vertical, 8)
 
@@ -462,13 +462,13 @@ struct ContactListView: View {
 
                     // VERTICAL WALL (full height)
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
 
                     // RIGHT COMPARTMENT: Label
                     Text("IMPORT FROM ADDRESS BOOK")
                         .font(JohoFont.bodySmall.bold())
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .padding(.horizontal, JohoDimensions.spacingMD)
 
                     Spacer()
@@ -476,7 +476,7 @@ struct ContactListView: View {
                     // Chevron
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .padding(.trailing, JohoDimensions.spacingMD)
                 }
                 .frame(height: 56)
@@ -510,7 +510,7 @@ struct ContactListView: View {
 
             // Horizontal divider
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 1)
 
             // Contact list (情報デザイン: filtered by selected letter)
@@ -605,7 +605,7 @@ struct ContactListView: View {
 
                 // Vertical divider
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1)
 
                 // INDEX toggle (情報デザイン: Both filters can be active simultaneously)
@@ -644,7 +644,7 @@ struct ContactListView: View {
             // Expanded: Group filter grid
             if isGroupsExpanded {
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 0.5)
 
                 groupFilterGrid
@@ -653,7 +653,7 @@ struct ContactListView: View {
             // Expanded: Letter index grid
             if isIndexExpanded {
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 0.5)
 
                 letterIndexGrid
@@ -681,7 +681,7 @@ struct ContactListView: View {
                     Text("All")
                         .font(.system(size: 11, weight: .bold, design: .rounded))
                 }
-                .foregroundStyle(selectedGroup == nil ? JohoColors.white : JohoColors.black)
+                .foregroundStyle(selectedGroup == nil ? colors.primaryInverted : colors.primary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)
                 .background(selectedGroup == nil ? accentColor : colors.inputBackground)
@@ -709,10 +709,10 @@ struct ContactListView: View {
                         if count > 0 {
                             Text("\(count)")
                                 .font(.system(size: 9, weight: .medium, design: .rounded))
-                                .foregroundStyle(selectedGroup == group ? JohoColors.white.opacity(0.7) : JohoColors.black.opacity(0.5))
+                                .foregroundStyle(selectedGroup == group ? colors.primaryInverted.opacity(0.7) : colors.primary.opacity(0.5))
                         }
                     }
-                    .foregroundStyle(selectedGroup == group ? JohoColors.white : JohoColors.black)
+                    .foregroundStyle(selectedGroup == group ? colors.primaryInverted : colors.primary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
                     .background(selectedGroup == group ? Color(hex: group.color) : colors.inputBackground)
@@ -745,7 +745,7 @@ struct ContactListView: View {
             } label: {
                 Text("ALL")
                     .font(.system(size: 10, weight: .black, design: .rounded))
-                    .foregroundStyle(filterLetter == nil ? JohoColors.white : JohoColors.black)
+                    .foregroundStyle(filterLetter == nil ? colors.primaryInverted : colors.primary)
                     .frame(maxWidth: .infinity)
                     .frame(height: 32)
                     .background(filterLetter == nil ? accentColor : colors.inputBackground)
@@ -766,7 +766,7 @@ struct ContactListView: View {
                 } label: {
                     Text(letter)
                         .font(.system(size: 13, weight: .black, design: .rounded))
-                        .foregroundStyle(filterLetter == letter ? JohoColors.white : JohoColors.black)
+                        .foregroundStyle(filterLetter == letter ? colors.primaryInverted : colors.primary)
                         .frame(maxWidth: .infinity)
                         .frame(height: 32)
                         .background(filterLetter == letter ? accentColor : colors.inputBackground)
@@ -789,14 +789,14 @@ struct ContactListView: View {
         HStack(spacing: JohoDimensions.spacingSM) {
             Text(letter)
                 .font(.system(size: 13, weight: .black, design: .rounded))
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primaryInverted)
                 .frame(width: 24, height: 24)
-                .background(JohoColors.black)
+                .background(colors.primary)
                 .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
 
             // 情報デザイン: Solid black divider line, reduced height
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 0.5)
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
@@ -824,7 +824,7 @@ struct ContactListView: View {
                 } label: {
                     ZStack {
                         Circle()
-                            .fill(isSelected ? JohoColors.red : JohoColors.white)
+                            .fill(isSelected ? JohoColors.red : colors.surface)
                             .frame(width: 28, height: 28)
                         Circle()
                             .stroke(colors.border, lineWidth: isSelected ? 2 : 1)
@@ -832,7 +832,7 @@ struct ContactListView: View {
                         if isSelected {
                             Image(systemName: "checkmark")
                                 .font(.system(size: 12, weight: .bold, design: .rounded))
-                                .foregroundStyle(JohoColors.white)
+                                .foregroundStyle(colors.primaryInverted)
                         }
                     }
                 }
@@ -912,7 +912,7 @@ struct ContactListView: View {
 
             // WALL
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(width: 1.5)
                 .padding(.vertical, JohoDimensions.spacingSM)
 
@@ -920,13 +920,13 @@ struct ContactListView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(contact.displayName)
                     .font(JohoFont.body.bold())
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .lineLimit(1)
 
                 if let org = contact.organizationName, org.isNotEmpty {
                     Text(org)
                         .font(JohoFont.labelSmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                         .lineLimit(1)
                 }
             }
@@ -962,7 +962,7 @@ struct ContactListView: View {
             // Chevron
             Image(systemName: "chevron.right")
                 .font(.system(size: 12, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.5))
+                .foregroundStyle(colors.primary.opacity(0.5))
                 .padding(.trailing, JohoDimensions.spacingSM)
         }
         .frame(height: 56)
@@ -1061,12 +1061,12 @@ struct JohoContactAvatar: View {
 
                         Text(contact.initials.isEmpty ? "?" : contact.initials)
                             .font(.system(size: fontSize, weight: .black, design: .rounded))
-                            .foregroundStyle(JohoColors.white)
+                            .foregroundStyle(colors.primaryInverted)
                     }
                     .frame(width: size, height: size)
                     .overlay(
                         Circle()
-                            .stroke(JohoColors.black, lineWidth: borderWidth)
+                            .stroke(colors.border, lineWidth: borderWidth)
                     )
                 }
             }
@@ -1116,14 +1116,14 @@ struct JohoContactRow: View {
                 // Name
                 Text(contact.displayName)
                     .font(JohoFont.headline)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .lineLimit(1)
 
                 // Organization (if any)
                 if let org = contact.organizationName, org.isNotEmpty {
                     Text(org)
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                         .lineLimit(1)
                 }
 
@@ -1149,7 +1149,7 @@ struct JohoContactRow: View {
             // Chevron
             Image(systemName: "chevron.right")
                 .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
         }
         .padding(JohoDimensions.spacingMD)
         .background(colors.surface)
@@ -1161,8 +1161,8 @@ struct JohoContactRow: View {
     }
 
     @ViewBuilder
-    /// 情報デザイン: Info pill with optional background color (default white)
-    private func contactInfoPill(icon: String, text: String, color: Color, bgColor: Color = JohoColors.white) -> some View {
+    /// 情報デザイン: Info pill with optional background color (default surface)
+    private func contactInfoPill(icon: String, text: String, color: Color, bgColor: Color? = nil) -> some View {
         HStack(spacing: 3) {
             Image(systemName: icon)
                 .font(.system(size: 9, weight: .bold, design: .rounded))
@@ -1172,7 +1172,7 @@ struct JohoContactRow: View {
         .foregroundStyle(color)
         .padding(.horizontal, 6)
         .padding(.vertical, 3)
-        .background(bgColor)
+        .background(bgColor ?? colors.surface)
         .clipShape(Capsule())
         .overlay(Capsule().stroke(colors.border, lineWidth: 1))
     }
@@ -1212,7 +1212,7 @@ struct ContactImportView: View {
                         } label: {
                             Text("Close")
                                 .font(JohoFont.body)
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                                 .padding(.horizontal, JohoDimensions.spacingMD)
                                 .padding(.vertical, JohoDimensions.spacingMD)
                                 .background(colors.surface)
@@ -1247,7 +1247,7 @@ struct ContactImportView: View {
 
                             Text("IMPORT CONTACTS")
                                 .font(JohoFont.headline)
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
 
                             Spacer()
                         }
@@ -1255,7 +1255,7 @@ struct ContactImportView: View {
 
                         // Horizontal divider
                         Rectangle()
-                            .fill(JohoColors.black)
+                            .fill(colors.border)
                             .frame(height: 1.5)
 
                         // Import options (情報デザイン: bento rows)
@@ -1294,7 +1294,7 @@ struct ContactImportView: View {
                         if !isAuthorized {
                             // Divider
                             Rectangle()
-                                .fill(JohoColors.black)
+                                .fill(colors.border)
                                 .frame(height: 1.5)
 
                             // Warning section (情報デザイン: white background with warning indicator)
@@ -1315,7 +1315,7 @@ struct ContactImportView: View {
 
                                 Text("Contacts access is required to import from your address book.")
                                     .font(JohoFont.bodySmall)
-                                    .foregroundStyle(JohoColors.red)
+                                    .foregroundStyle(JohoColors.red)  // Keep red for warning text
                                     .frame(maxWidth: .infinity, alignment: .leading)
 
                                 // Grant permission button
@@ -1332,13 +1332,13 @@ struct ContactImportView: View {
 
                                         // Wall
                                         Rectangle()
-                                            .fill(JohoColors.black)
+                                            .fill(colors.border)
                                             .frame(width: 1.5)
 
                                         // Label
                                         Text("GRANT PERMISSION")
                                             .font(JohoFont.bodySmall.bold())
-                                            .foregroundStyle(JohoColors.black)
+                                            .foregroundStyle(colors.primary)
                                             .padding(.horizontal, JohoDimensions.spacingMD)
 
                                         Spacer()
@@ -1346,7 +1346,7 @@ struct ContactImportView: View {
                                         // Chevron
                                         Image(systemName: "chevron.right")
                                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                                            .foregroundStyle(JohoColors.black)
+                                            .foregroundStyle(colors.primary)
                                             .padding(.trailing, JohoDimensions.spacingMD)
                                     }
                                     .frame(height: 48)
@@ -1366,7 +1366,7 @@ struct ContactImportView: View {
                         if let message = importMessage {
                             // Divider
                             Rectangle()
-                                .fill(JohoColors.black)
+                                .fill(colors.border)
                                 .frame(height: 1.5)
 
                             HStack(spacing: JohoDimensions.spacingSM) {
@@ -1376,7 +1376,7 @@ struct ContactImportView: View {
 
                                 Text(message)
                                     .font(JohoFont.bodySmall)
-                                    .foregroundStyle(JohoColors.black)
+                                    .foregroundStyle(colors.primary)
 
                                 Spacer()
                             }
@@ -1399,16 +1399,16 @@ struct ContactImportView: View {
                 if isImporting {
                     VStack(spacing: JohoDimensions.spacingMD) {
                         ProgressView()
-                            .tint(JohoColors.white)
+                            .tint(colors.primaryInverted)
 
                         Text("Importing...")
                             .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.white)
+                            .foregroundStyle(colors.primaryInverted)
                     }
                     .padding(JohoDimensions.spacingXL)
-                    .background(JohoColors.black)
+                    .background(colors.primary)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                    .overlay(Squircle(cornerRadius: JohoDimensions.radiusLarge).stroke(JohoColors.white, lineWidth: 2))
+                    .overlay(Squircle(cornerRadius: JohoDimensions.radiusLarge).stroke(colors.primaryInverted, lineWidth: 2))
                 }
             }
             .sheet(isPresented: $showingIOSContactPicker) {
@@ -1438,7 +1438,7 @@ struct ContactImportView: View {
 
             // Wall (full height, no vertical padding)
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(width: 1.5)
                 .padding(.leading, JohoDimensions.spacingSM)
 
@@ -1446,11 +1446,11 @@ struct ContactImportView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(JohoFont.body.bold())
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 Text(subtitle)
                     .font(JohoFont.labelSmall)
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(0.6))
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
 
@@ -1459,7 +1459,7 @@ struct ContactImportView: View {
             // Chevron
             Image(systemName: "chevron.right")
                 .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
                 .padding(.trailing, JohoDimensions.spacingMD)
         }
         .frame(height: 56)
@@ -1620,24 +1620,24 @@ struct JohoAddContactSheet: View {
                 Text("ADD")
                     .font(.system(size: 14, weight: .black, design: .rounded))
                     .tracking(1.2)
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
 
                 Spacer()
 
                 Button { dismiss() } label: {
                     ZStack {
                         Circle()
-                            .fill(JohoColors.white)
+                            .fill(colors.surface)
                             .frame(width: 24, height: 24)
                         Image(systemName: "xmark")
                             .font(.system(size: 10, weight: .black, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                     }
                 }
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, 12)
-            .background(JohoColors.black)
+            .background(colors.primary)
 
             // Entry list with thick BLACK borders between rows
             VStack(spacing: 0) {
@@ -1662,7 +1662,7 @@ struct JohoAddContactSheet: View {
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
         )
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, JohoDimensions.spacingLG)
@@ -1684,14 +1684,14 @@ struct JohoAddContactSheet: View {
 
                 Image(systemName: icon)
                     .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
             }
 
             // Code badge - BLACK border around colored pill
             Text(code)
                 .font(.system(size: 10, weight: .black, design: .rounded))
                 .tracking(0.5)
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primaryInverted)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(color)
@@ -1704,14 +1704,14 @@ struct JohoAddContactSheet: View {
             // Label - bold rounded for 情報デザイン
             Text(label)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
 
             Spacer()
 
             // Arrow - bold BLACK
             Image(systemName: "chevron.right")
                 .font(.system(size: 12, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, 10)

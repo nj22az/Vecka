@@ -22,11 +22,14 @@ struct JohoUndoToast: View {
     let onUndo: () -> Void
     let onDismiss: () -> Void
 
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     var body: some View {
         HStack(spacing: JohoDimensions.spacingMD) {
             Text(message)
                 .font(JohoFont.body)
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primaryInverted)
                 .lineLimit(1)
 
             Spacer()
@@ -45,12 +48,12 @@ struct JohoUndoToast: View {
             } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.white.opacity(0.6))
+                    .foregroundStyle(colors.primaryInverted.opacity(0.6))
             }
         }
         .padding(.horizontal, JohoDimensions.spacingLG)
         .padding(.vertical, JohoDimensions.spacingMD)
-        .background(JohoColors.black)
+        .background(colors.surfaceInverted)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .shadow(color: .black.opacity(0.2), radius: 8, y: 4)
         .padding(.horizontal, JohoDimensions.spacingLG)
@@ -66,6 +69,8 @@ struct JohoIconPickerSheet: View {
     /// 情報デザイン: Icons to exclude from picker (category defaults should not be selectable)
     var excludedSymbols: Set<String> = []
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private let symbolCategories: [(name: String, symbols: [String])] = [
         ("MARU-BATSU", ["circle", "circle.fill", "xmark", "xmark.circle.fill", "triangle", "triangle.fill", "square", "square.fill", "diamond", "diamond.fill"]),
@@ -93,14 +98,14 @@ struct JohoIconPickerSheet: View {
                         Button { dismiss() } label: {
                             Text("Cancel")
                                 .font(JohoFont.body)
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                                 .padding(.horizontal, JohoDimensions.spacingMD)
                                 .padding(.vertical, JohoDimensions.spacingSM)
-                                .background(JohoColors.white)
+                                .background(colors.surface)
                                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                 .overlay(
                                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                        .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                                 )
                         }
                         Spacer()
@@ -108,15 +113,15 @@ struct JohoIconPickerSheet: View {
 
                     Text("Choose Icon")
                         .font(JohoFont.displaySmall)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(JohoDimensions.spacingLG)
-                .background(JohoColors.white)
+                .background(colors.surface)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                        .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.top, JohoDimensions.spacingSM)
@@ -135,24 +140,24 @@ struct JohoIconPickerSheet: View {
                                 } label: {
                                     Image(systemName: symbol)
                                         .font(.system(size: 20, weight: .bold, design: .rounded))
-                                        .foregroundStyle(selectedSymbol == symbol ? accentColor : JohoColors.black)
+                                        .foregroundStyle(selectedSymbol == symbol ? accentColor : colors.primary)
                                         .johoTouchTarget(52)
-                                        .background(selectedSymbol == symbol ? lightBackground : JohoColors.white)
+                                        .background(selectedSymbol == symbol ? lightBackground : colors.surface)
                                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                         .overlay(
                                             Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                                .stroke(JohoColors.black, lineWidth: selectedSymbol == symbol ? JohoDimensions.borderMedium : JohoDimensions.borderThin)
+                                                .stroke(colors.border, lineWidth: selectedSymbol == symbol ? JohoDimensions.borderMedium : JohoDimensions.borderThin)
                                         )
                                 }
                             }
                         }
                     }
                     .padding(JohoDimensions.spacingMD)
-                    .background(JohoColors.white)
+                    .background(colors.surface)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                     )
                     .padding(.horizontal, JohoDimensions.spacingLG)
                 }
@@ -180,6 +185,9 @@ struct JohoSpecialDayEditorSheet: View {
     let onSave: (String, Date, String, String?, String?, String) -> Void
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     @State private var name: String = ""
     @State private var notes: String = ""
     @State private var selectedYear: Int = Calendar.current.component(.year, from: Date())
@@ -264,11 +272,11 @@ struct JohoSpecialDayEditorSheet: View {
                     Button { dismiss() } label: {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .johoTouchTarget()
                     }
 
-                    Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
+                    Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
                     HStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: type.defaultIcon)
@@ -277,22 +285,22 @@ struct JohoSpecialDayEditorSheet: View {
                             .frame(width: 36, height: 36)
                             .background(type.lightBackground)
                             .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+                            .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text(headerTitle)
                                 .font(.system(size: 16, weight: .black, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                             Text(headerSubtitle)
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(0.6))
                         }
                         Spacer()
                     }
                     .padding(.horizontal, JohoDimensions.spacingSM)
                     .frame(maxHeight: .infinity)
 
-                    Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
+                    Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
                     Button {
                         let notesValue = notes.trimmed
@@ -301,11 +309,11 @@ struct JohoSpecialDayEditorSheet: View {
                     } label: {
                         Text("Save")
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.4))
+                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(0.4))
                             .frame(width: 56, height: 32)
-                            .background(canSave ? type.accentColor : JohoColors.white)
+                            .background(canSave ? type.accentColor : colors.surface)
                             .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+                            .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
                     }
                     .disabled(!canSave)
                     .frame(width: 72).frame(maxHeight: .infinity)
@@ -313,35 +321,35 @@ struct JohoSpecialDayEditorSheet: View {
                 .frame(height: 56)
                 .background(type.accentColor.opacity(0.7))
 
-                Rectangle().fill(JohoColors.black).frame(height: 1.5)
+                Rectangle().fill(colors.border).frame(height: 1.5)
 
                 // Name row
                 HStack(spacing: 0) {
                     Circle().fill(type.accentColor).frame(width: 10, height: 10)
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
                         .frame(width: 40).frame(maxHeight: .infinity)
 
-                    Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
+                    Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
                     TextField(namePlaceholder, text: $name)
                         .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .frame(maxHeight: .infinity)
                 }
                 .frame(height: 48)
                 .background(type.lightBackground)
 
-                Rectangle().fill(JohoColors.black).frame(height: 1.5)
+                Rectangle().fill(colors.border).frame(height: 1.5)
 
                 // Date row
                 HStack(spacing: 0) {
                     Image(systemName: "calendar")
                         .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(width: 40).frame(maxHeight: .infinity)
 
-                    Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
+                    Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
                     Menu {
                         ForEach(yearRange, id: \.self) { year in
@@ -350,11 +358,11 @@ struct JohoSpecialDayEditorSheet: View {
                     } label: {
                         Text(String(selectedYear))
                             .font(.system(size: 14, weight: .bold, design: .monospaced))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity).frame(maxHeight: .infinity)
                     }
 
-                    Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
+                    Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
                     Menu {
                         ForEach(1...12, id: \.self) { month in
@@ -363,11 +371,11 @@ struct JohoSpecialDayEditorSheet: View {
                     } label: {
                         Text(monthName(selectedMonth))
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity).frame(maxHeight: .infinity)
                     }
 
-                    Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
+                    Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
                     Menu {
                         ForEach(1...daysInMonth(selectedMonth, year: selectedYear), id: \.self) { day in
@@ -376,14 +384,14 @@ struct JohoSpecialDayEditorSheet: View {
                     } label: {
                         Text("\(selectedDay)")
                             .font(.system(size: 14, weight: .bold, design: .monospaced))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .frame(width: 44).frame(maxHeight: .infinity)
                     }
                 }
                 .frame(height: 48)
                 .background(type.lightBackground)
 
-                Rectangle().fill(JohoColors.black).frame(height: 1.5)
+                Rectangle().fill(colors.border).frame(height: 1.5)
 
                 // Icon picker row
                 Button {
@@ -396,18 +404,18 @@ struct JohoSpecialDayEditorSheet: View {
                             .foregroundStyle(type.accentColor)
                             .frame(width: 40).frame(maxHeight: .infinity)
 
-                        Rectangle().fill(JohoColors.black).frame(width: 1.5).frame(maxHeight: .infinity)
+                        Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
                         Text("Tap to change icon")
                             .font(JohoFont.caption)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
                             .padding(.leading, JohoDimensions.spacingMD)
 
                         Spacer()
 
                         Image(systemName: "chevron.right")
                             .font(.system(size: 12, weight: .semibold, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.4))
+                            .foregroundStyle(colors.primary.opacity(0.4))
                             .padding(.trailing, JohoDimensions.spacingMD)
                     }
                     .frame(height: 48)
@@ -415,9 +423,9 @@ struct JohoSpecialDayEditorSheet: View {
                 }
                 .buttonStyle(.plain)
             }
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-            .overlay(Squircle(cornerRadius: JohoDimensions.radiusLarge).stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick))
+            .overlay(Squircle(cornerRadius: JohoDimensions.radiusLarge).stroke(colors.border, lineWidth: JohoDimensions.borderThick))
             .padding(.horizontal, JohoDimensions.spacingLG)
 
             Spacer()
@@ -538,7 +546,7 @@ struct JohoBentoOptionRow: View {
         HStack(spacing: 0) {
             ZStack {
                 RoundedRectangle(cornerRadius: 10, style: .continuous).fill(option.color).frame(width: 48, height: 48)
-                Image(systemName: option.icon).font(.system(size: 22, weight: .bold, design: .rounded)).foregroundStyle(JohoColors.white)
+                Image(systemName: option.icon).font(.system(size: 22, weight: .bold, design: .rounded)).foregroundStyle(colors.primaryInverted)
             }
             .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(colors.border, lineWidth: 2))
             .padding(.leading, JohoDimensions.spacingMD)
@@ -550,7 +558,7 @@ struct JohoBentoOptionRow: View {
                 HStack(spacing: 8) {
                     Text(option.code)
                         .font(.system(size: 10, weight: .black, design: .monospaced))
-                        .foregroundStyle(JohoColors.white)
+                        .foregroundStyle(colors.primaryInverted)
                         .padding(.horizontal, 8).padding(.vertical, 3)
                         .background(option.color)
                         .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))

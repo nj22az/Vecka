@@ -1629,20 +1629,39 @@ extension Collection {
 
 // MARK: - View Extensions
 
-extension View {
-    /// 情報デザイン: Apply squircle clip with border in one modifier
-    /// Replaces the common pattern of .clipShape(Squircle(...)).overlay(Squircle(...).stroke(...))
-    func johoBordered(
-        cornerRadius: CGFloat = JohoDimensions.radiusMedium,
-        borderWidth: CGFloat = JohoDimensions.borderMedium,
-        borderColor: Color = JohoColors.black
-    ) -> some View {
-        self
+/// Environment-aware border modifier — resolves border color from JohoScheme automatically
+private struct JohoBorderedModifier: ViewModifier {
+    let cornerRadius: CGFloat
+    let borderWidth: CGFloat
+    let explicitBorderColor: Color?
+
+    @Environment(\.johoColorMode) private var colorMode
+
+    func body(content: Content) -> some View {
+        let resolvedColor = explicitBorderColor ?? JohoScheme.colors(for: colorMode).border
+        content
             .clipShape(Squircle(cornerRadius: cornerRadius))
             .overlay(
                 Squircle(cornerRadius: cornerRadius)
-                    .stroke(borderColor, lineWidth: borderWidth)
+                    .stroke(resolvedColor, lineWidth: borderWidth)
             )
+    }
+}
+
+extension View {
+    /// 情報デザイン: Apply squircle clip with border in one modifier
+    /// Automatically resolves border color from JohoScheme (environment-aware)
+    /// Pass explicit borderColor only to override the scheme color
+    func johoBordered(
+        cornerRadius: CGFloat = JohoDimensions.radiusMedium,
+        borderWidth: CGFloat = JohoDimensions.borderMedium,
+        borderColor: Color? = nil
+    ) -> some View {
+        modifier(JohoBorderedModifier(
+            cornerRadius: cornerRadius,
+            borderWidth: borderWidth,
+            explicitBorderColor: borderColor
+        ))
     }
 
     // ═══════════════════════════════════════════════════════════════════════════

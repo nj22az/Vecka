@@ -247,7 +247,7 @@ struct ManualMergeSheet: View {
 
                                     Text("MERGE PREVIEW")
                                         .font(.system(size: 11, weight: .bold, design: .rounded))
-                                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                                        .foregroundStyle(colors.primary.opacity(0.6))
                                 }
 
                                 Text("'\(secondary.displayName)' will be deleted.")
@@ -318,7 +318,7 @@ struct ManualMergeSheet: View {
                 // Selection indicator
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 22, weight: .bold, design: .rounded))
-                    .foregroundStyle(isSelected ? accentColor : JohoColors.black.opacity(0.3))
+                    .foregroundStyle(isSelected ? accentColor : colors.primary.opacity(0.3))
 
                 // Avatar
                 ZStack {
@@ -335,7 +335,7 @@ struct ManualMergeSheet: View {
                 .johoTouchTarget()
                 .background(accentColor.opacity(0.2))
                 .clipShape(Circle())
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: isSelected ? 2 : 1.5))
+                .overlay(Circle().stroke(colors.border, lineWidth: isSelected ? 2 : 1.5))
 
                 // Info
                 VStack(alignment: .leading, spacing: 2) {
@@ -374,11 +374,11 @@ struct ManualMergeSheet: View {
                 }
             }
             .padding(JohoDimensions.spacingMD)
-            .background(isSelected ? accentColor.opacity(0.15) : JohoColors.white)
+            .background(isSelected ? accentColor.opacity(0.15) : colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(JohoColors.black, lineWidth: isSelected ? 2 : 1.5)
+                    .stroke(colors.border, lineWidth: isSelected ? 2 : 1.5)
             )
         }
         .buttonStyle(.plain)

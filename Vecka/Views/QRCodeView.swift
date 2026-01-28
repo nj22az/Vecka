@@ -34,7 +34,7 @@ struct QRCodeView: View {
                             .scaledToFill()
                             .frame(width: 80, height: 80)
                             .clipShape(Circle())
-                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+                            .overlay(Circle().stroke(colors.border, lineWidth: 2))
                     } else {
                         // 情報デザイン: White background with black border, black text
                         Circle()

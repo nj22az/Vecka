@@ -832,7 +832,7 @@ struct SpecialDaysListView: View {
             VStack {
                 Image(systemName: displayIcon)
                     .font(.system(size: 24, weight: .bold, design: .rounded))
-                    .foregroundStyle(hasItems ? theme.accentColor : JohoColors.black.opacity(0.4))
+                    .foregroundStyle(hasItems ? theme.accentColor : colors.primary.opacity(0.4))
             }
             .frame(maxWidth: .infinity)
             .frame(height: 48)
@@ -1152,7 +1152,7 @@ struct CollapsibleSpecialDayCard: View {
             Text("\(dayCard.day)")
                 .font(JohoFont.headline)
         }
-        .foregroundStyle(isToday ? JohoColors.black : colors.primary)
+        .foregroundStyle(isToday ? Color.black : colors.primary)
         .padding(.horizontal, JohoDimensions.spacingSM)
         .padding(.vertical, JohoDimensions.spacingXS)
         .background(isToday ? JohoColors.yellow : colors.surface)
@@ -1583,7 +1583,7 @@ struct CollapsibleSpecialDayCard: View {
                                 Text("EDIT")
                             }
                             .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(Color.black)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
                             .background(JohoColors.cyan)

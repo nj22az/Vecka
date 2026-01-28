@@ -64,8 +64,8 @@ struct CountdownCard: View {
         if isSelected {
             return JohoColors.cyan.opacity(0.2)
         }
-        
-        return JohoColors.black.opacity(0.5).opacity(0.1)
+
+        return colors.primary.opacity(0.5).opacity(0.1)
     }
     
     private var iconForegroundColor: Color {
@@ -556,13 +556,13 @@ struct CustomCountdownDialog: View {
                     Button { dismiss() } label: {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(JohoColors.white)
+                            .foregroundStyle(colors.primaryInverted)
                             .johoTouchTarget()
                     }
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.white)
+                        .fill(colors.primaryInverted)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -575,15 +575,15 @@ struct CustomCountdownDialog: View {
                             .frame(width: 36, height: 36)
                             .background(eventLightBackground)
                             .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.white, lineWidth: 1.5))
+                            .overlay(Squircle(cornerRadius: 8).stroke(colors.primaryInverted, lineWidth: 1.5))
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text("NEW EVENT")
                                 .font(.system(size: 16, weight: .black, design: .rounded))
-                                .foregroundStyle(JohoColors.white)
+                                .foregroundStyle(colors.primaryInverted)
                             Text("Set date & details")
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.white.opacity(0.6))
+                                .foregroundStyle(colors.primaryInverted.opacity(0.6))
                         }
 
                         Spacer()
@@ -593,7 +593,7 @@ struct CustomCountdownDialog: View {
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.white)
+                        .fill(colors.primaryInverted)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -606,11 +606,11 @@ struct CustomCountdownDialog: View {
                     } label: {
                         Text("Save")
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.white.opacity(0.4))
+                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primaryInverted.opacity(0.4))
                             .frame(width: 56, height: 32)
-                            .background(canSave ? eventAccentColor : JohoColors.white.opacity(0.2))
+                            .background(canSave ? eventAccentColor : colors.primaryInverted.opacity(0.2))
                             .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.white, lineWidth: 1.5))
+                            .overlay(Squircle(cornerRadius: 8).stroke(colors.primaryInverted, lineWidth: 1.5))
                     }
                     .disabled(!canSave)
                     .frame(width: 72)
@@ -940,6 +940,9 @@ private struct JohoIconPickerGrid: View {
     @Binding var selectedIcon: String
     private let columns = [GridItem(.adaptive(minimum: 50), spacing: 10)]
 
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     var body: some View {
         LazyVGrid(columns: columns, spacing: 10) {
             ForEach(LucidIcon.allNames, id: \.self) { name in
@@ -949,16 +952,16 @@ private struct JohoIconPickerGrid: View {
                 } label: {
                     ZStack {
                         Circle()
-                            .fill(selectedIcon == name ? SpecialDayType.event.accentColor : JohoColors.white)
+                            .fill(selectedIcon == name ? SpecialDayType.event.accentColor : colors.surface)
                             .frame(width: 48, height: 48)
                             .overlay(
                                 Circle()
-                                    .stroke(JohoColors.black, lineWidth: selectedIcon == name ? JohoDimensions.borderThick : JohoDimensions.borderMedium)
+                                    .stroke(colors.border, lineWidth: selectedIcon == name ? JohoDimensions.borderThick : JohoDimensions.borderMedium)
                             )
 
                         Image(systemName: name)
                             .font(.system(size: 20, weight: .bold))
-                            .foregroundStyle(selectedIcon == name ? JohoColors.white : JohoColors.black)
+                            .foregroundStyle(selectedIcon == name ? colors.primaryInverted : colors.primary)
                     }
                 }
                 .buttonStyle(.plain)

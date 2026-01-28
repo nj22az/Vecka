@@ -82,7 +82,7 @@ struct OnboardingView: View {
                 } label: {
                     Text(currentPage < pages.count - 1 ? "Continue" : "Get Started")
                         .font(.system(size: 16, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.white)
+                        .foregroundStyle(colors.primaryInverted)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, JohoDimensions.spacingMD)
                         .background(colors.primary)

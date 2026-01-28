@@ -69,10 +69,10 @@ struct SpecialDayDetailSheet: View {
             // Type code pill
             Text(item.type.code)
                 .font(.system(size: 12, weight: .black, design: .rounded))
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primaryInverted)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
-                .background(JohoColors.black)
+                .background(colors.primary)
                 .clipShape(Capsule())
 
             Spacer()
@@ -83,7 +83,7 @@ struct SpecialDayDetailSheet: View {
             } label: {
                 Image(systemName: "xmark")
                     .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
                     .frame(width: 32, height: 32)
                     .background(colors.primary.opacity(0.3))
                     .clipShape(Circle())

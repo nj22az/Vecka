@@ -16,6 +16,9 @@ struct EventTaskRow: View {
     @Binding var task: EventTask
     var onDelete: (() -> Void)?
 
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     var body: some View {
         HStack(spacing: JohoDimensions.spacingMD) {
             // Checkbox button with 情報デザイン styling
@@ -27,22 +30,22 @@ struct EventTaskRow: View {
             } label: {
                 Image(systemName: task.isCompleted ? "checkmark.square.fill" : "square")
                     .font(.system(size: 20, weight: .medium, design: .rounded))
-                    .foregroundStyle(task.isCompleted ? JohoColors.cyan : JohoColors.black)
+                    .foregroundStyle(task.isCompleted ? JohoColors.cyan : colors.primary)
             }
             .buttonStyle(.plain)
 
             // Task text
             Text(task.text)
                 .font(JohoFont.body)
-                .foregroundStyle(task.isCompleted ? JohoColors.black.opacity(0.4) : JohoColors.black)
-                .strikethrough(task.isCompleted, color: JohoColors.black.opacity(0.4))
+                .foregroundStyle(task.isCompleted ? colors.primary.opacity(0.4) : colors.primary)
+                .strikethrough(task.isCompleted, color: colors.primary.opacity(0.4))
                 .lineLimit(2)
 
             Spacer(minLength: 0)
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, JohoDimensions.spacingSM)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .contentShape(Rectangle())
         .contextMenu {
             if let onDelete = onDelete {
@@ -62,6 +65,9 @@ struct EventTaskEditorRow: View {
     var onDelete: (() -> Void)?
     @FocusState private var isFocused: Bool
 
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     var body: some View {
         HStack(spacing: JohoDimensions.spacingMD) {
             // Checkbox button
@@ -73,15 +79,15 @@ struct EventTaskEditorRow: View {
             } label: {
                 Image(systemName: task.isCompleted ? "checkmark.square.fill" : "square")
                     .font(.system(size: 20, weight: .medium, design: .rounded))
-                    .foregroundStyle(task.isCompleted ? JohoColors.cyan : JohoColors.black)
+                    .foregroundStyle(task.isCompleted ? JohoColors.cyan : colors.primary)
             }
             .buttonStyle(.plain)
 
             // Editable text field
             TextField("Task description", text: $task.text, axis: .vertical)
                 .font(JohoFont.body)
-                .foregroundStyle(task.isCompleted ? JohoColors.black.opacity(0.4) : JohoColors.black)
-                .strikethrough(task.isCompleted, color: JohoColors.black.opacity(0.4))
+                .foregroundStyle(task.isCompleted ? colors.primary.opacity(0.4) : colors.primary)
+                .strikethrough(task.isCompleted, color: colors.primary.opacity(0.4))
                 .focused($isFocused)
                 .submitLabel(.done)
 
@@ -92,14 +98,14 @@ struct EventTaskEditorRow: View {
                 Button(action: onDelete) {
                     Image(systemName: "xmark.circle.fill")
                         .font(.system(size: 18, weight: .medium))
-                        .foregroundStyle(JohoColors.black.opacity(0.3))
+                        .foregroundStyle(colors.primary.opacity(0.3))
                 }
                 .buttonStyle(.plain)
             }
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, JohoDimensions.spacingSM)
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     /// Request focus for this row (call after adding a new task)
@@ -114,6 +120,9 @@ struct EventTaskEditorRow: View {
 struct EventTasksSection: View {
     @Binding var tasks: [EventTask]
 
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Section header (情報デザイン: Bento style)
@@ -121,7 +130,7 @@ struct EventTasksSection: View {
 
             // Horizontal divider
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 1.5)
 
             // Task list
@@ -140,7 +149,7 @@ struct EventTasksSection: View {
                     // Divider between tasks (not after last)
                     if index < tasks.count - 1 {
                         Rectangle()
-                            .fill(JohoColors.black.opacity(0.2))
+                            .fill(colors.border.opacity(0.2))
                             .frame(height: 1)
                             .padding(.horizontal, JohoDimensions.spacingMD)
                     }
@@ -151,11 +160,11 @@ struct EventTasksSection: View {
             }
             .padding(.vertical, JohoDimensions.spacingXS)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
     }
 
@@ -167,11 +176,11 @@ struct EventTasksSection: View {
             HStack(spacing: JohoDimensions.spacingSM) {
                 Image(systemName: "checklist")
                     .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 Text("TASKS")
                     .font(JohoFont.label)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
 
@@ -184,13 +193,13 @@ struct EventTasksSection: View {
 
                 // WALL
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
                 Text("\(total - remaining)/\(total)")
                     .font(.system(size: 12, weight: .bold, design: .monospaced))
-                    .foregroundStyle(remaining == 0 ? JohoColors.cyan : JohoColors.black.opacity(0.6))
+                    .foregroundStyle(remaining == 0 ? JohoColors.cyan : colors.primary.opacity(0.6))
                     .frame(width: 48)
             }
         }
@@ -230,6 +239,9 @@ struct EventTasksSection: View {
 struct TaskProgressIndicator: View {
     let tasks: [EventTask]
 
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     private var completedCount: Int {
         tasks.filter { $0.isCompleted && !$0.text.isEmpty }.count
     }
@@ -247,15 +259,15 @@ struct TaskProgressIndicator: View {
             HStack(spacing: 4) {
                 Image(systemName: isAllComplete ? "checkmark.circle.fill" : "circle.dotted")
                     .font(.system(size: 12, weight: .medium, design: .rounded))
-                    .foregroundStyle(isAllComplete ? JohoColors.cyan : JohoColors.black.opacity(0.5))
+                    .foregroundStyle(isAllComplete ? JohoColors.cyan : colors.primary.opacity(0.5))
 
                 Text("\(completedCount)/\(totalCount)")
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
-                    .foregroundStyle(isAllComplete ? JohoColors.cyan : JohoColors.black.opacity(0.5))
+                    .foregroundStyle(isAllComplete ? JohoColors.cyan : colors.primary.opacity(0.5))
             }
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
-            .background(isAllComplete ? JohoColors.cyan.opacity(0.15) : JohoColors.black.opacity(0.05))
+            .background(isAllComplete ? JohoColors.cyan.opacity(0.15) : colors.primary.opacity(0.05))
             .clipShape(Capsule())
         }
     }

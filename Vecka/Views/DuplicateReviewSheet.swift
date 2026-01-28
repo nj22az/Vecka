@@ -54,7 +54,7 @@ struct DuplicateSuggestionBanner: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     Text("\(suggestionCount)")
                         .font(.system(size: 12, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.white)
+                        .foregroundStyle(colors.primaryInverted)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
                         .background(warningColor)
@@ -179,7 +179,7 @@ struct DuplicateReviewSheet: View {
                             // Count badge (shows number of clusters, not pairs)
                             Text("\(duplicateClusters.count)")
                                 .font(.system(size: 14, weight: .black, design: .rounded))
-                                .foregroundStyle(JohoColors.white)
+                                .foregroundStyle(colors.primaryInverted)
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 4)
                                 .background(warningColor)
@@ -209,7 +209,7 @@ struct DuplicateReviewSheet: View {
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
                     )
                     .padding(.horizontal, JohoDimensions.spacingLG)
                 }
@@ -298,7 +298,7 @@ struct DuplicateReviewSheet: View {
                     // Count badge
                     Text("\(cluster.count)")
                         .font(.system(size: 12, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.white)
+                        .foregroundStyle(colors.primaryInverted)
                         .frame(width: 24, height: 24)
                         .background(warningColor)
                         .clipShape(Circle())
@@ -534,7 +534,7 @@ struct MergeContactSheet: View {
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
                     )
                     .padding(.horizontal, JohoDimensions.spacingLG)
                 }
@@ -579,7 +579,7 @@ struct MergeContactSheet: View {
             } label: {
                 Text("Merge")
                     .font(JohoFont.body.bold())
-                    .foregroundStyle(selectedPrimary != nil ? JohoColors.white : colors.primary.opacity(0.4))
+                    .foregroundStyle(selectedPrimary != nil ? colors.surfaceInverted : colors.primary.opacity(0.4))
                     .padding(.horizontal, JohoDimensions.spacingLG)
                     .padding(.vertical, JohoDimensions.spacingMD)
                     .background(selectedPrimary != nil ? accentColor : colors.surface)
@@ -609,7 +609,7 @@ struct MergeContactSheet: View {
                     if isSelected {
                         Image(systemName: "checkmark")
                             .font(.system(size: 12, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.white)
+                            .foregroundStyle(colors.surfaceInverted)
                     }
                 }
 
@@ -650,7 +650,7 @@ struct MergeContactSheet: View {
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(isSelected ? accentColor : JohoColors.black, lineWidth: isSelected ? 2.5 : 1.5)
+                    .stroke(isSelected ? accentColor : colors.border, lineWidth: isSelected ? 2.5 : 1.5)
             )
         }
         .buttonStyle(.plain)
@@ -817,7 +817,7 @@ struct ClusterMergeSheet: View {
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                            .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
                     )
                     .padding(.horizontal, JohoDimensions.spacingLG)
                 }
@@ -868,10 +868,10 @@ struct ClusterMergeSheet: View {
                     }
                 }
                 .font(JohoFont.body.bold())
-                .foregroundStyle(selectedPrimary != nil ? JohoColors.white : colors.primary.opacity(0.4))
+                .foregroundStyle(selectedPrimary != nil ? colors.primaryInverted : colors.primary.opacity(0.4))
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.vertical, JohoDimensions.spacingMD)
-                .background(selectedPrimary != nil ? accentColor : JohoColors.white)
+                .background(selectedPrimary != nil ? accentColor : colors.surface)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
@@ -898,7 +898,7 @@ struct ClusterMergeSheet: View {
                     if isSelected {
                         Image(systemName: "checkmark")
                             .font(.system(size: 12, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.white)
+                            .foregroundStyle(colors.surfaceInverted)
                     }
                 }
 
@@ -944,7 +944,7 @@ struct ClusterMergeSheet: View {
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(isSelected ? accentColor : JohoColors.black, lineWidth: isSelected ? 2.5 : 1.5)
+                    .stroke(isSelected ? accentColor : colors.border, lineWidth: isSelected ? 2.5 : 1.5)
             )
         }
         .buttonStyle(.plain)

@@ -487,8 +487,8 @@ struct LandingPageView: View {
                 icon: "sparkles",
                 label: "—",
                 indicator: nil,
-                iconColor: JohoColors.black.opacity(0.5),
-                bgColor: JohoColors.black.opacity(0.05)
+                iconColor: colors.primary.opacity(0.5),
+                bgColor: colors.primary.opacity(0.05)
             )
         }
         return stats[randomStatIndex % stats.count]
@@ -631,7 +631,7 @@ struct LandingPageView: View {
                 .frame(height: 64)
 
             // Horizontal wall below header
-            Rectangle().fill(JohoColors.black).frame(height: 2)
+            Rectangle().fill(colors.border).frame(height: 2)
 
             if isLandscapeLayout {
                 // LANDSCAPE: TODAY (primary) | THIS WEEK (secondary)
@@ -640,7 +640,7 @@ struct LandingPageView: View {
                     iPadTodaySection
                         .frame(maxWidth: .infinity)
 
-                    Rectangle().fill(JohoColors.black).frame(width: 2)
+                    Rectangle().fill(colors.border).frame(width: 2)
 
                     // RIGHT (45%): THIS WEEK - Secondary information
                     iPadThisWeekSection
@@ -654,7 +654,7 @@ struct LandingPageView: View {
                     iPadTodaySection
                         .frame(maxHeight: .infinity)
 
-                    Rectangle().fill(JohoColors.black).frame(height: 2)
+                    Rectangle().fill(colors.border).frame(height: 2)
 
                     // THIS WEEK - Secondary
                     iPadThisWeekSection
@@ -663,22 +663,22 @@ struct LandingPageView: View {
             }
 
             // Horizontal wall above stats
-            Rectangle().fill(JohoColors.black).frame(height: 2)
+            Rectangle().fill(colors.border).frame(height: 2)
 
             // GLANCE ROW: Contextual non-zero stats only
             iPadStatsRow
                 .frame(height: 44)
 
             // Horizontal wall above footer
-            Rectangle().fill(JohoColors.black).frame(height: 2)
+            Rectangle().fill(colors.border).frame(height: 2)
 
             // FOOTER COMPARTMENT: Progress bars
             iPadBentoFooter
                 .frame(height: 70)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(Squircle(cornerRadius: JohoDimensions.radiusLarge).stroke(JohoColors.black, lineWidth: 3))
+        .overlay(Squircle(cornerRadius: JohoDimensions.radiusLarge).stroke(colors.border, lineWidth: 3))
         .padding(padding)
         .frame(width: geometry.size.width, height: availableHeight + (padding * 2))
     }
@@ -692,7 +692,7 @@ struct LandingPageView: View {
             // Header with date
             HStack(alignment: .center) {
                 Circle().fill(JohoColors.yellow).frame(width: 12, height: 12)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                    .overlay(Circle().stroke(colors.border, lineWidth: 1))
                 Text("TODAY")
                     .font(.system(size: 14, weight: .black, design: .rounded))
                     .tracking(1)
@@ -707,7 +707,7 @@ struct LandingPageView: View {
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
 
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+            Rectangle().fill(colors.border).frame(height: 1.5)
 
             // Content: Today's items or explicit empty state
             if todayItems.isEmpty {
@@ -719,7 +719,7 @@ struct LandingPageView: View {
                     VStack(spacing: 8) {
                         Image(systemName: "checkmark.circle")
                             .font(.system(size: 32, weight: .medium))
-                            .foregroundStyle(JohoColors.black.opacity(0.2))
+                            .foregroundStyle(colors.primary.opacity(0.2))
                         Text("No events scheduled")
                             .font(.system(size: 16, weight: .medium, design: .rounded))
                             .foregroundStyle(colors.secondary)
@@ -735,11 +735,11 @@ struct LandingPageView: View {
                             Circle()
                                 .fill(nextItem.color)
                                 .frame(width: 8, height: 8)
-                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                                .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
 
                             Text(nextItem.title)
                                 .font(.system(size: 12, weight: .semibold, design: .rounded))
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
 
                             Text("(\(nextItem.date.formatted(.dateTime.day().month(.abbreviated))))")
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
@@ -749,7 +749,7 @@ struct LandingPageView: View {
                         .padding(.vertical, JohoDimensions.spacingSM)
                         .background(JohoColors.yellow)
                         .clipShape(Squircle(cornerRadius: 8))
-                        .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1))
+                        .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1))
                     }
 
                     Spacer()
@@ -761,14 +761,14 @@ struct LandingPageView: View {
                     VStack(spacing: 0) {
                         ForEach(todayItems, id: \.id) { item in
                             todayItemBentoRow(item)
-                            Rectangle().fill(JohoColors.black.opacity(0.2)).frame(height: 1)
+                            Rectangle().fill(colors.border.opacity(0.2)).frame(height: 1)
                         }
                     }
                     .padding(.top, JohoDimensions.spacingXS)
                 }
             }
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     /// Today item as bento row with compartments
@@ -778,17 +778,17 @@ struct LandingPageView: View {
             Circle()
                 .fill(item.color)
                 .frame(width: 10, height: 10)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                .overlay(Circle().stroke(colors.border, lineWidth: 1))
                 .frame(width: 36)
 
-            Rectangle().fill(JohoColors.black).frame(width: 1)
+            Rectangle().fill(colors.border).frame(width: 1)
                 .frame(maxHeight: .infinity)
 
             // CENTER: Title + subtitle if any
             VStack(alignment: .leading, spacing: 2) {
                 Text(item.title)
                     .font(.system(size: 14, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .lineLimit(1)
                 if let subtitle = item.subtitle {
                     Text(subtitle)
@@ -799,13 +799,13 @@ struct LandingPageView: View {
             .padding(.horizontal, JohoDimensions.spacingSM)
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            Rectangle().fill(JohoColors.black).frame(width: 1)
+            Rectangle().fill(colors.border).frame(width: 1)
                 .frame(maxHeight: .infinity)
 
             // RIGHT: Badge
             Text(item.typeBadge)
                 .font(.system(size: 9, weight: .black, design: .rounded))
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primaryInverted)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(item.color)
@@ -823,7 +823,7 @@ struct LandingPageView: View {
             // Header
             HStack {
                 Circle().fill(JohoColors.cyan).frame(width: 10, height: 10)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                    .overlay(Circle().stroke(colors.border, lineWidth: 1))
                 Text("THIS WEEK")
                     .font(.system(size: 12, weight: .black, design: .rounded))
                     .tracking(1)
@@ -832,16 +832,16 @@ struct LandingPageView: View {
 
                 Text("W\(weekNumber)")
                     .font(.system(size: 11, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
-                    .background(JohoColors.black)
+                    .background(colors.surfaceInverted)
                     .clipShape(Capsule())
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
 
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+            Rectangle().fill(colors.border).frame(height: 1.5)
 
             // Content
             let weekItems = upcomingItems.filter { !$0.isToday }
@@ -862,14 +862,14 @@ struct LandingPageView: View {
                     VStack(spacing: 0) {
                         ForEach(weekItems.prefix(10), id: \.id) { item in
                             weekItemRow(item)
-                            Rectangle().fill(JohoColors.black.opacity(0.2)).frame(height: 1)
+                            Rectangle().fill(colors.border.opacity(0.2)).frame(height: 1)
                         }
                     }
                     .padding(.top, JohoDimensions.spacingXS)
                 }
             }
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     /// Week item row
@@ -882,11 +882,11 @@ struct LandingPageView: View {
                     .foregroundStyle(colors.secondary)
                 Text(String(item.dayNumber))
                     .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
             }
             .frame(width: 36)
 
-            Rectangle().fill(JohoColors.black).frame(width: 1)
+            Rectangle().fill(colors.border).frame(width: 1)
                 .frame(maxHeight: .infinity)
 
             // CENTER: Type dot + Title
@@ -894,23 +894,23 @@ struct LandingPageView: View {
                 Circle()
                     .fill(item.color)
                     .frame(width: 8, height: 8)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                    .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
 
                 Text(item.title)
                     .font(.system(size: 13, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .lineLimit(1)
             }
             .padding(.horizontal, JohoDimensions.spacingSM)
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            Rectangle().fill(JohoColors.black).frame(width: 1)
+            Rectangle().fill(colors.border).frame(width: 1)
                 .frame(maxHeight: .infinity)
 
             // RIGHT: Badge
             Text(item.typeBadge)
                 .font(.system(size: 8, weight: .black, design: .rounded))
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primaryInverted)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 3)
                 .background(item.color)
@@ -934,7 +934,7 @@ struct LandingPageView: View {
                 .tracking(0.5)
                 .padding(.leading, 4)
 
-            Rectangle().fill(JohoColors.black).frame(width: 1)
+            Rectangle().fill(colors.border).frame(width: 1)
                 .padding(.horizontal, JohoDimensions.spacingSM)
                 .frame(maxHeight: .infinity)
 
@@ -991,7 +991,7 @@ struct LandingPageView: View {
             Spacer()
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     /// Stats chip with count and label
@@ -999,7 +999,7 @@ struct LandingPageView: View {
         HStack(spacing: 4) {
             Text("\(count)")
                 .font(.system(size: 12, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primaryInverted)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
                 .background(color)
@@ -1007,7 +1007,7 @@ struct LandingPageView: View {
 
             Text(label)
                 .font(.system(size: 11, weight: .medium, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
 
             if let detail = detail {
                 Text(detail)
@@ -1035,40 +1035,40 @@ struct LandingPageView: View {
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
 
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+            Rectangle().fill(colors.border).frame(height: 1.5)
 
             // 2x3 Grid of large bento tiles
             HStack(spacing: 0) {
                 // Row 1
                 largeBentoTile(icon: "calendar", label: "W\(weekNumber)", subtitle: "WEEK", color: PageHeaderColor.calendar.accent, bg: PageHeaderColor.calendar.lightBackground)
 
-                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                Rectangle().fill(colors.border).frame(width: 1.5)
 
                 largeBentoTile(icon: currentMonthTheme.icon, label: String(currentMonthTheme.name.prefix(3)).uppercased(), subtitle: "MONTH", color: currentMonthTheme.accentColor, bg: currentMonthTheme.lightBackground)
 
-                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                Rectangle().fill(colors.border).frame(width: 1.5)
 
                 largeBentoTile(icon: "person.2.fill", label: "\(contacts.count)", subtitle: "CONTACTS", color: PageHeaderColor.contacts.accent, bg: PageHeaderColor.contacts.lightBackground)
             }
             .frame(maxHeight: .infinity)
 
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+            Rectangle().fill(colors.border).frame(height: 1.5)
 
             HStack(spacing: 0) {
                 // Row 2
                 largeBentoTile(icon: "dollarsign.circle.fill", label: "\(allExpenses.count)", subtitle: "EXPENSES", color: SpecialDayType.expense.accentColor, bg: SpecialDayType.expense.lightBackground)
 
-                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                Rectangle().fill(colors.border).frame(width: 1.5)
 
                 largeBentoTile(icon: "airplane", label: "\(allTrips.count)", subtitle: "TRIPS", color: SpecialDayType.trip.accentColor, bg: SpecialDayType.trip.lightBackground)
 
-                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                Rectangle().fill(colors.border).frame(width: 1.5)
 
                 largeBentoTile(icon: "star.fill", label: "\(specialDaysThisMonth.holidays)", subtitle: "HOLIDAYS", color: SpecialDayType.holiday.accentColor, bg: SpecialDayType.holiday.lightBackground)
             }
             .frame(maxHeight: .infinity)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     /// Large bento tile for GLANCE section
@@ -1080,11 +1080,11 @@ struct LandingPageView: View {
                 .johoTouchTarget()
                 .background(bg)
                 .clipShape(Squircle(cornerRadius: 10))
-                .overlay(Squircle(cornerRadius: 10).stroke(JohoColors.black, lineWidth: 1.5))
+                .overlay(Squircle(cornerRadius: 10).stroke(colors.border, lineWidth: 1.5))
 
             Text(label)
                 .font(.system(size: 20, weight: .black, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
 
             Text(subtitle)
                 .font(.system(size: 9, weight: .bold, design: .rounded))
@@ -1092,7 +1092,7 @@ struct LandingPageView: View {
                 .tracking(0.5)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     // MARK: - iPad Agenda Section (情報デザイン: Card styling)
@@ -1103,7 +1103,7 @@ struct LandingPageView: View {
             // Header
             HStack {
                 Circle().fill(JohoColors.yellow).frame(width: 10, height: 10)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                    .overlay(Circle().stroke(colors.border, lineWidth: 1))
                 Text("AGENDA")
                     .font(.system(size: 12, weight: .black, design: .rounded))
                     .tracking(1)
@@ -1117,7 +1117,7 @@ struct LandingPageView: View {
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
 
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+            Rectangle().fill(colors.border).frame(height: 1.5)
 
             if todayItems.isEmpty && upcomingItems.isEmpty {
                 // Empty state
@@ -1174,7 +1174,7 @@ struct LandingPageView: View {
                 }
             }
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     /// Agenda card for TodayItem (情報デザイン: Bento compartments)
@@ -1184,23 +1184,23 @@ struct LandingPageView: View {
             Circle()
                 .fill(item.color)
                 .frame(width: 10, height: 10)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                .overlay(Circle().stroke(colors.border, lineWidth: 1))
                 .frame(width: 32)
 
             // WALL
-            Rectangle().fill(JohoColors.black).frame(width: 1.5)
+            Rectangle().fill(colors.border).frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
             // CENTER: Title
             Text(item.title)
                 .font(.system(size: 13, weight: .medium, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
                 .lineLimit(1)
                 .padding(.horizontal, JohoDimensions.spacingSM)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             // WALL
-            Rectangle().fill(JohoColors.black).frame(width: 1.5)
+            Rectangle().fill(colors.border).frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
             // RIGHT: Icon + Badge (64pt)
@@ -1211,11 +1211,11 @@ struct LandingPageView: View {
                     .frame(width: 22, height: 22)
                     .background(item.color.opacity(0.2))
                     .clipShape(Squircle(cornerRadius: 5))
-                    .overlay(Squircle(cornerRadius: 5).stroke(JohoColors.black, lineWidth: 1))
+                    .overlay(Squircle(cornerRadius: 5).stroke(colors.border, lineWidth: 1))
 
                 Text(item.typeBadge)
                     .font(.system(size: 8, weight: .black, design: .rounded))
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
                     .padding(.horizontal, 5)
                     .padding(.vertical, 2)
                     .background(item.color)
@@ -1224,9 +1224,9 @@ struct LandingPageView: View {
             .frame(width: 64)
         }
         .frame(height: 40)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .overlay(
-            Rectangle().fill(JohoColors.black.opacity(0.15)).frame(height: 1),
+            Rectangle().fill(colors.border.opacity(0.15)).frame(height: 1),
             alignment: .bottom
         )
         .padding(.horizontal, JohoDimensions.spacingXS)
@@ -1239,18 +1239,18 @@ struct LandingPageView: View {
             Circle()
                 .fill(item.color)
                 .frame(width: 10, height: 10)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                .overlay(Circle().stroke(colors.border, lineWidth: 1))
                 .frame(width: 32)
 
             // WALL
-            Rectangle().fill(JohoColors.black).frame(width: 1.5)
+            Rectangle().fill(colors.border).frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
             // CENTER: Title + Date
             VStack(alignment: .leading, spacing: 2) {
                 Text(item.title)
                     .font(.system(size: 13, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .lineLimit(1)
                 Text(item.date.formatted(.dateTime.weekday(.abbreviated).day()))
                     .font(.system(size: 10, weight: .medium, design: .rounded))
@@ -1260,7 +1260,7 @@ struct LandingPageView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             // WALL
-            Rectangle().fill(JohoColors.black).frame(width: 1.5)
+            Rectangle().fill(colors.border).frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
             // RIGHT: Icon + Badge (64pt)
@@ -1271,11 +1271,11 @@ struct LandingPageView: View {
                     .frame(width: 22, height: 22)
                     .background(item.color.opacity(0.2))
                     .clipShape(Squircle(cornerRadius: 5))
-                    .overlay(Squircle(cornerRadius: 5).stroke(JohoColors.black, lineWidth: 1))
+                    .overlay(Squircle(cornerRadius: 5).stroke(colors.border, lineWidth: 1))
 
                 Text(item.typeBadge)
                     .font(.system(size: 8, weight: .black, design: .rounded))
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
                     .padding(.horizontal, 5)
                     .padding(.vertical, 2)
                     .background(item.color)
@@ -1284,9 +1284,9 @@ struct LandingPageView: View {
             .frame(width: 64)
         }
         .frame(height: 40)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .overlay(
-            Rectangle().fill(JohoColors.black.opacity(0.15)).frame(height: 1),
+            Rectangle().fill(colors.border.opacity(0.15)).frame(height: 1),
             alignment: .bottom
         )
         .padding(.horizontal, JohoDimensions.spacingXS)
@@ -1325,7 +1325,7 @@ struct LandingPageView: View {
                 // Year badge
                 Text(String(year))
                     .font(.system(size: 16, weight: .black, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 Spacer()
 
@@ -1336,10 +1336,10 @@ struct LandingPageView: View {
                         Text("SHUFFLE")
                             .font(.system(size: 9, weight: .bold, design: .rounded))
                     }
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 5)
-                    .background(JohoColors.black)
+                    .background(colors.surfaceInverted)
                     .clipShape(Capsule())
                 }
                 .buttonStyle(.plain)
@@ -1347,7 +1347,7 @@ struct LandingPageView: View {
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
 
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+            Rectangle().fill(colors.border).frame(height: 1.5)
 
             // CONTENT: Star page style bento rows - fills all space
             GeometryReader { geo in
@@ -1361,7 +1361,7 @@ struct LandingPageView: View {
                     VStack(spacing: 0) {
                         ForEach(0..<rowCount, id: \.self) { index in
                             if index > 0 {
-                                Rectangle().fill(JohoColors.black).frame(height: dividerHeight)
+                                Rectangle().fill(colors.border).frame(height: dividerHeight)
                             }
                             if index < discoveryItems.count {
                                 discoveryBentoRow(discoveryItems[index])
@@ -1375,13 +1375,13 @@ struct LandingPageView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                     // VERTICAL WALL
-                    Rectangle().fill(JohoColors.black).frame(width: 2)
+                    Rectangle().fill(colors.border).frame(width: 2)
 
                     // RIGHT COLUMN
                     VStack(spacing: 0) {
                         ForEach(0..<rowCount, id: \.self) { index in
                             if index > 0 {
-                                Rectangle().fill(JohoColors.black).frame(height: dividerHeight)
+                                Rectangle().fill(colors.border).frame(height: dividerHeight)
                             }
                             let itemIndex = index + rowCount
                             if itemIndex < discoveryItems.count {
@@ -1398,7 +1398,7 @@ struct LandingPageView: View {
             }
             .id(discoveryShuffleID)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     /// Star page style bento row for discovery items
@@ -1413,19 +1413,19 @@ struct LandingPageView: View {
                 Circle()
                     .fill(item.type.color)
                     .frame(width: 10, height: 10)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                    .overlay(Circle().stroke(colors.border, lineWidth: 1))
                     .frame(width: 32)
                     .frame(maxHeight: .infinity)
 
                 // WALL
-                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                Rectangle().fill(colors.border).frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
                 // CENTER COMPARTMENT: Title + Date (flexible)
                 HStack(spacing: JohoDimensions.spacingXS) {
                     Text(item.title)
                         .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .lineLimit(1)
 
                     Spacer(minLength: 4)
@@ -1438,7 +1438,7 @@ struct LandingPageView: View {
                 .frame(maxHeight: .infinity)
 
                 // WALL
-                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                Rectangle().fill(colors.border).frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
                 // RIGHT COMPARTMENT: Icon + Badge (72pt)
@@ -1449,11 +1449,11 @@ struct LandingPageView: View {
                         .frame(width: 22, height: 22)
                         .background(item.type.background)
                         .clipShape(Squircle(cornerRadius: 5))
-                        .overlay(Squircle(cornerRadius: 5).stroke(JohoColors.black, lineWidth: 1))
+                        .overlay(Squircle(cornerRadius: 5).stroke(colors.border, lineWidth: 1))
 
                     Text(item.type.badge)
                         .font(.system(size: 8, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.white)
+                        .foregroundStyle(colors.primaryInverted)
                         .padding(.horizontal, 5)
                         .padding(.vertical, 2)
                         .background(item.type.color)
@@ -1463,7 +1463,7 @@ struct LandingPageView: View {
                 .frame(maxHeight: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(JohoColors.white)
+            .background(colors.surface)
         }
         .buttonStyle(.plain)
     }
@@ -1473,12 +1473,12 @@ struct LandingPageView: View {
         HStack(spacing: 0) {
             // LEFT COMPARTMENT
             Circle()
-                .fill(JohoColors.black.opacity(0.1))
+                .fill(colors.primary.opacity(0.1))
                 .frame(width: 10, height: 10)
                 .frame(width: 32)
                 .frame(maxHeight: .infinity)
 
-            Rectangle().fill(JohoColors.black).frame(width: 1.5)
+            Rectangle().fill(colors.border).frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
             // CENTER
@@ -1487,14 +1487,14 @@ struct LandingPageView: View {
                 .foregroundStyle(colors.secondary.opacity(0.3))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            Rectangle().fill(JohoColors.black).frame(width: 1.5)
+            Rectangle().fill(colors.border).frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
             // RIGHT
             Color.clear.frame(width: 72)
                 .frame(maxHeight: .infinity)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     // MARK: - iPad Portrait Layout (情報デザイン: Vertical hierarchy)
@@ -1506,7 +1506,7 @@ struct LandingPageView: View {
             iPadRandomFactsSection
                 .frame(height: 180)
 
-            Rectangle().fill(JohoColors.black).frame(height: 2)
+            Rectangle().fill(colors.border).frame(height: 2)
 
             // MIDDLE: Side-by-side Agenda + Discover preview
             HStack(spacing: 0) {
@@ -1514,7 +1514,7 @@ struct LandingPageView: View {
                 VStack(spacing: 0) {
                     HStack {
                         Circle().fill(JohoColors.yellow).frame(width: 8, height: 8)
-                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                            .overlay(Circle().stroke(colors.border, lineWidth: 1))
                         Text("AGENDA")
                             .font(.system(size: 10, weight: .black, design: .rounded))
                             .tracking(1)
@@ -1523,7 +1523,7 @@ struct LandingPageView: View {
                     .padding(.horizontal, JohoDimensions.spacingSM)
                     .padding(.vertical, JohoDimensions.spacingXS)
 
-                    Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+                    Rectangle().fill(colors.border.opacity(0.3)).frame(height: 1)
 
                     if todayItems.isEmpty && upcomingItems.isEmpty {
                         VStack {
@@ -1551,7 +1551,7 @@ struct LandingPageView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                Rectangle().fill(colors.border).frame(width: 1.5)
 
                 // RIGHT: Compact Discover
                 VStack(spacing: 0) {
@@ -1566,21 +1566,21 @@ struct LandingPageView: View {
                         Button(action: shuffleDiscovery) {
                             Image(systemName: "shuffle")
                                 .font(.system(size: 10, weight: .bold))
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                         }
                         .buttonStyle(.plain)
                     }
                     .padding(.horizontal, JohoDimensions.spacingSM)
                     .padding(.vertical, JohoDimensions.spacingXS)
 
-                    Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+                    Rectangle().fill(colors.border.opacity(0.3)).frame(height: 1)
 
                     // Compact discover rows - anchored to top
                     VStack(spacing: 0) {
                         ForEach(discoveryItems.prefix(5), id: \.id) { item in
                             compactDiscoverRow(item)
                             if item.id != discoveryItems.prefix(5).last?.id {
-                                Rectangle().fill(JohoColors.black.opacity(0.2)).frame(height: 1)
+                                Rectangle().fill(colors.border.opacity(0.2)).frame(height: 1)
                             }
                         }
                         Spacer(minLength: 0)
@@ -1604,18 +1604,18 @@ struct LandingPageView: View {
                 Circle()
                     .fill(item.type.color)
                     .frame(width: 8, height: 8)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                    .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
 
                 Text(item.title)
                     .font(.system(size: 11, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .lineLimit(1)
 
                 Spacer()
 
                 Text(item.type.badge)
                     .font(.system(size: 7, weight: .black, design: .rounded))
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
                     .padding(.horizontal, 4)
                     .padding(.vertical, 2)
                     .background(item.type.color)
@@ -1639,7 +1639,7 @@ struct LandingPageView: View {
                 .frame(maxHeight: .infinity)
 
             // Horizontal divider
-            Rectangle().fill(JohoColors.black).frame(height: 2)
+            Rectangle().fill(colors.border).frame(height: 2)
 
             // BOTTOM: 2-column grid (Agenda + Stats side by side)
             HStack(spacing: 0) {
@@ -1648,7 +1648,7 @@ struct LandingPageView: View {
                     .frame(maxWidth: .infinity)
 
                 // Vertical wall
-                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                Rectangle().fill(colors.border).frame(width: 1.5)
 
                 // RIGHT: Stats section
                 iPadPortraitStats
@@ -1664,7 +1664,7 @@ struct LandingPageView: View {
             // Header
             HStack {
                 Circle().fill(JohoColors.yellow).frame(width: 8, height: 8)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                    .overlay(Circle().stroke(colors.border, lineWidth: 1))
                 Text("AGENDA")
                     .font(.system(size: 10, weight: .black, design: .rounded))
                     .tracking(1)
@@ -1678,7 +1678,7 @@ struct LandingPageView: View {
             .padding(.horizontal, JohoDimensions.spacingSM)
             .padding(.vertical, JohoDimensions.spacingXS)
 
-            Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+            Rectangle().fill(colors.border.opacity(0.3)).frame(height: 1)
 
             if todayItems.isEmpty && upcomingItems.isEmpty {
                 VStack {
@@ -1728,7 +1728,7 @@ struct LandingPageView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     /// Portrait Stats section (vertical tile stack)
@@ -1747,7 +1747,7 @@ struct LandingPageView: View {
             .padding(.horizontal, JohoDimensions.spacingSM)
             .padding(.vertical, JohoDimensions.spacingXS)
 
-            Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+            Rectangle().fill(colors.border.opacity(0.3)).frame(height: 1)
 
             // Stats tiles in 2x3 grid for portrait
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 6) {
@@ -1762,7 +1762,7 @@ struct LandingPageView: View {
             .frame(maxHeight: .infinity)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     // MARK: - iPad Discovery Grid (情報デザイン: Dense list rows like iPhone)
@@ -1785,7 +1785,7 @@ struct LandingPageView: View {
                 // Year prominently displayed
                 Text(String(year))
                     .font(.system(size: 24, weight: .black, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 Spacer()
 
@@ -1796,10 +1796,10 @@ struct LandingPageView: View {
                         Text("SHUFFLE")
                             .font(.system(size: 10, weight: .bold, design: .rounded))
                     }
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 6)
-                    .background(JohoColors.black)
+                    .background(colors.surfaceInverted)
                     .clipShape(Capsule())
                 }
                 .buttonStyle(.plain)
@@ -1808,7 +1808,7 @@ struct LandingPageView: View {
             .padding(.vertical, JohoDimensions.spacingSM)
 
             // Thick wall
-            Rectangle().fill(JohoColors.black).frame(height: 3)
+            Rectangle().fill(colors.border).frame(height: 3)
 
             // CONTENT: Dense list rows in columns - FILLS ALL SPACE
             GeometryReader { geo in
@@ -1822,7 +1822,7 @@ struct LandingPageView: View {
                     VStack(spacing: 0) {
                         ForEach(0..<rowCount, id: \.self) { index in
                             if index > 0 {
-                                Rectangle().fill(JohoColors.black).frame(height: dividerHeight)
+                                Rectangle().fill(colors.border).frame(height: dividerHeight)
                             }
                             if index < discoveryItems.count {
                                 discoveryListRow(discoveryItems[index])
@@ -1836,13 +1836,13 @@ struct LandingPageView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
 
                     // VERTICAL WALL
-                    Rectangle().fill(JohoColors.black).frame(width: 3)
+                    Rectangle().fill(colors.border).frame(width: 3)
 
                     // RIGHT COLUMN - Second half of items
                     VStack(spacing: 0) {
                         ForEach(0..<rowCount, id: \.self) { index in
                             if index > 0 {
-                                Rectangle().fill(JohoColors.black).frame(height: dividerHeight)
+                                Rectangle().fill(colors.border).frame(height: dividerHeight)
                             }
                             let itemIndex = index + rowCount
                             if itemIndex < discoveryItems.count {
@@ -1859,7 +1859,7 @@ struct LandingPageView: View {
             }
             .id(discoveryShuffleID)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     /// Dense discovery list row - like iPhone todayItemRow
@@ -1874,7 +1874,7 @@ struct LandingPageView: View {
                 Circle()
                     .fill(item.type.color)
                     .frame(width: 10, height: 10)
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                    .overlay(Circle().stroke(colors.border, lineWidth: 1))
 
                 // Icon
                 Image(systemName: item.type.icon)
@@ -1883,7 +1883,7 @@ struct LandingPageView: View {
                     .frame(width: 28, height: 28)
                     .background(item.type.background)
                     .clipShape(Squircle(cornerRadius: 6))
-                    .overlay(Squircle(cornerRadius: 6).stroke(JohoColors.black, lineWidth: 1))
+                    .overlay(Squircle(cornerRadius: 6).stroke(colors.border, lineWidth: 1))
 
                 // Date + Title
                 VStack(alignment: .leading, spacing: 2) {
@@ -1901,17 +1901,17 @@ struct LandingPageView: View {
                 // Year badge
                 Text(item.yearString)
                     .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 3)
                     .background(JohoColors.yellow)
                     .clipShape(Capsule())
-                    .overlay(Capsule().stroke(JohoColors.black, lineWidth: 0.5))
+                    .overlay(Capsule().stroke(colors.border, lineWidth: 0.5))
 
                 // Type badge
                 Text(item.type.badge)
                     .font(.system(size: 9, weight: .black, design: .rounded))
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(item.type.color)
@@ -1920,7 +1920,7 @@ struct LandingPageView: View {
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-            .background(JohoColors.white)
+            .background(colors.surface)
         }
         .buttonStyle(.plain)
     }
@@ -1960,7 +1960,7 @@ struct LandingPageView: View {
                 .padding(.horizontal, JohoDimensions.spacingSM)
                 .padding(.vertical, JohoDimensions.spacingXS)
 
-                Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+                Rectangle().fill(colors.border.opacity(0.3)).frame(height: 1)
 
                 // Compact stats tiles
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 4) {
@@ -1973,13 +1973,13 @@ struct LandingPageView: View {
             }
             .frame(height: 110)
 
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+            Rectangle().fill(colors.border).frame(height: 1.5)
 
             // AGENDA section
             VStack(spacing: 0) {
                 HStack {
                     Circle().fill(JohoColors.yellow).frame(width: 8, height: 8)
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1))
                     Text("AGENDA")
                         .font(.system(size: 10, weight: .black, design: .rounded))
                         .tracking(1)
@@ -1988,7 +1988,7 @@ struct LandingPageView: View {
                 .padding(.horizontal, JohoDimensions.spacingSM)
                 .padding(.vertical, JohoDimensions.spacingXS)
 
-                Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+                Rectangle().fill(colors.border.opacity(0.3)).frame(height: 1)
 
                 if todayItems.isEmpty && upcomingItems.isEmpty {
                     VStack {
@@ -2017,7 +2017,7 @@ struct LandingPageView: View {
             .frame(maxHeight: .infinity)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     /// Portrait Discovery layout - stacked vertically
@@ -2029,7 +2029,7 @@ struct LandingPageView: View {
                 .frame(maxHeight: .infinity)
 
             // Horizontal divider
-            Rectangle().fill(JohoColors.black).frame(height: 2)
+            Rectangle().fill(colors.border).frame(height: 2)
 
             // BOTTOM: Stats + Agenda side by side
             HStack(spacing: 0) {
@@ -2047,7 +2047,7 @@ struct LandingPageView: View {
                     .padding(.horizontal, JohoDimensions.spacingSM)
                     .padding(.vertical, JohoDimensions.spacingXS)
 
-                    Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+                    Rectangle().fill(colors.border.opacity(0.3)).frame(height: 1)
 
                     LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 4) {
                         compactStatsTile(icon: "calendar", label: "W\(weekNumber)", color: PageHeaderColor.calendar.accent, bg: PageHeaderColor.calendar.lightBackground)
@@ -2060,9 +2060,9 @@ struct LandingPageView: View {
                     .padding(JohoDimensions.spacingSM)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(JohoColors.white)
+                .background(colors.surface)
 
-                Rectangle().fill(JohoColors.black).frame(width: 1.5)
+                Rectangle().fill(colors.border).frame(width: 1.5)
 
                 // Compact Agenda
                 iPadPortraitAgenda
@@ -2087,19 +2087,19 @@ struct LandingPageView: View {
                     .frame(width: 40, height: 40)
                     .background(PageHeaderColor.landing.lightBackground)
                     .clipShape(Squircle(cornerRadius: 8))
-                    .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.black, lineWidth: 1.5))
+                    .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
 
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 6) {
                         Text(displayTitle)
                             .font(.system(size: 16, weight: .black, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .lineLimit(1)
 
                         // Year badge (情報デザイン: Year prominently displayed)
                         Text(String(year))
                             .font(.system(size: 12, weight: .black, design: .rounded))
-                            .foregroundStyle(JohoColors.white)
+                            .foregroundStyle(colors.primaryInverted)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 3)
                             .background(PageHeaderColor.calendar.accent)
@@ -2124,7 +2124,7 @@ struct LandingPageView: View {
                     HStack(spacing: 4) {
                         Text(clock.countryCode)
                             .font(.system(size: 9, weight: .black, design: .rounded))
-                            .foregroundStyle(JohoColors.white)
+                            .foregroundStyle(colors.primaryInverted)
                             .padding(.horizontal, 5)
                             .padding(.vertical, 2)
                             .background(TimezoneTheme.theme(for: clock.timezoneIdentifier).accentColor)
@@ -2132,7 +2132,7 @@ struct LandingPageView: View {
                         Text(clock.formattedTime)
                             .font(.system(size: 12, weight: .bold, design: .rounded))
                             .monospacedDigit()
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                     }
                 }
             }
@@ -2140,17 +2140,17 @@ struct LandingPageView: View {
             Spacer()
 
             // VERTICAL WALL
-            Rectangle().fill(JohoColors.black).frame(width: 1.5)
+            Rectangle().fill(colors.border).frame(width: 1.5)
                 .padding(.vertical, JohoDimensions.spacingXS)
 
             // RIGHT: Week badge + Mascot
             HStack(spacing: JohoDimensions.spacingSM) {
                 Text("W\(weekNumber)")
                     .font(.system(size: 12, weight: .black, design: .rounded))
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
                     .padding(.horizontal, 10)
                     .padding(.vertical, 5)
-                    .background(JohoColors.black)
+                    .background(colors.surfaceInverted)
                     .clipShape(Capsule())
 
                 JohoMascot(mood: mascotMood, size: 36, borderWidth: 1.5, showBob: true, showBlink: true, autoOnsen: false)
@@ -2158,7 +2158,7 @@ struct LandingPageView: View {
             .padding(.horizontal, JohoDimensions.spacingMD)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     // MARK: - iPad Bento Column Components
@@ -2168,7 +2168,7 @@ struct LandingPageView: View {
         VStack(spacing: 0) {
             ForEach(weekDays, id: \.date) { day in
                 if day.dayOfWeek > 1 {
-                    Rectangle().fill(JohoColors.black.opacity(0.2)).frame(height: 1)
+                    Rectangle().fill(colors.border.opacity(0.2)).frame(height: 1)
                 }
                 HStack(spacing: 6) {
                     Text(day.name)
@@ -2177,16 +2177,16 @@ struct LandingPageView: View {
                         .frame(width: 24)
                     Text(String(day.number))
                         .font(.system(size: 16, weight: .black, design: .rounded))
-                        .foregroundStyle(day.isToday ? JohoColors.black : colors.primary)
+                        .foregroundStyle(colors.primary)
                         .frame(width: 32, height: 32)
                         .background(day.isToday ? JohoColors.yellow : Color.clear)
                         .clipShape(Circle())
-                        .overlay(Circle().stroke(day.isToday ? JohoColors.black : Color.clear, lineWidth: 1))
+                        .overlay(Circle().stroke(day.isToday ? colors.border : Color.clear, lineWidth: 1))
                     // Indicators
                     HStack(spacing: 2) {
                         ForEach(day.indicators.prefix(3), id: \.self) { color in
                             Circle().fill(color).frame(width: 5, height: 5)
-                                .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                                .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
                         }
                     }
                     Spacer()
@@ -2196,7 +2196,7 @@ struct LandingPageView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     /// Center column: Calendar
@@ -2226,18 +2226,18 @@ struct LandingPageView: View {
             }
             .padding(.horizontal, JohoDimensions.spacingSM)
 
-            Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+            Rectangle().fill(colors.border.opacity(0.3)).frame(height: 1)
 
             // 情報デザイン: Day headers with GRID LINES
             HStack(spacing: 0) {
                 ForEach(["M", "T", "W", "T", "F", "S", "S"], id: \.self) { d in
                     Text(d)
                         .font(.system(size: 11, weight: .black, design: .rounded))
-                        .foregroundStyle(d == "S" ? JohoColors.red : JohoColors.black)
+                        .foregroundStyle(d == "S" ? JohoColors.red : colors.primary)
                         .frame(maxWidth: .infinity)
                         .frame(height: 28)
                         .overlay(
-                            Rectangle().stroke(JohoColors.black, lineWidth: 1)
+                            Rectangle().stroke(colors.border, lineWidth: 1)
                         )
                 }
             }
@@ -2257,7 +2257,7 @@ struct LandingPageView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     /// Right column: AGENDA (merged Today+Upcoming) + GLANCE
@@ -2269,7 +2269,7 @@ struct LandingPageView: View {
                 // Header
                 HStack {
                     Circle().fill(JohoColors.yellow).frame(width: 8, height: 8)
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1))
                     Text("AGENDA")
                         .font(.system(size: 10, weight: .black, design: .rounded))
                         .tracking(1)
@@ -2283,7 +2283,7 @@ struct LandingPageView: View {
                 .padding(.horizontal, JohoDimensions.spacingSM)
                 .padding(.vertical, JohoDimensions.spacingXS)
 
-                Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+                Rectangle().fill(colors.border.opacity(0.3)).frame(height: 1)
 
                 if todayItems.isEmpty && upcomingItems.isEmpty {
                     VStack {
@@ -2341,7 +2341,7 @@ struct LandingPageView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             // Horizontal divider
-            Rectangle().fill(JohoColors.black).frame(height: 1.5)
+            Rectangle().fill(colors.border).frame(height: 1.5)
 
             // GLANCE section (moved UP from footer)
             VStack(spacing: 0) {
@@ -2357,7 +2357,7 @@ struct LandingPageView: View {
                 .padding(.horizontal, JohoDimensions.spacingSM)
                 .padding(.vertical, JohoDimensions.spacingXS)
 
-                Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+                Rectangle().fill(colors.border.opacity(0.3)).frame(height: 1)
 
                 // Stats tiles in grid
                 HStack(spacing: 6) {
@@ -2372,7 +2372,7 @@ struct LandingPageView: View {
             .frame(height: 90)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     /// Agenda item row for TodayItem
@@ -2381,7 +2381,7 @@ struct LandingPageView: View {
             Circle()
                 .fill(item.color)
                 .frame(width: 8, height: 8)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
 
             Text(item.title)
                 .font(.system(size: 12, weight: .medium, design: .rounded))
@@ -2392,7 +2392,7 @@ struct LandingPageView: View {
 
             Text(item.typeBadge)
                 .font(.system(size: 8, weight: .black, design: .rounded))
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primaryInverted)
                 .padding(.horizontal, 5)
                 .padding(.vertical, 2)
                 .background(item.color)
@@ -2408,7 +2408,7 @@ struct LandingPageView: View {
             Circle()
                 .fill(item.color)
                 .frame(width: 8, height: 8)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
 
             Text(item.title)
                 .font(.system(size: 12, weight: .medium, design: .rounded))
@@ -2423,7 +2423,7 @@ struct LandingPageView: View {
 
             Text(item.typeBadge)
                 .font(.system(size: 8, weight: .black, design: .rounded))
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primaryInverted)
                 .padding(.horizontal, 5)
                 .padding(.vertical, 2)
                 .background(item.color)
@@ -2454,7 +2454,7 @@ struct LandingPageView: View {
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingXS)
 
-            Rectangle().fill(JohoColors.black.opacity(0.3)).frame(height: 1)
+            Rectangle().fill(colors.border.opacity(0.3)).frame(height: 1)
 
             // Progress bars - larger and more prominent
             HStack(spacing: JohoDimensions.spacingLG) {
@@ -2467,7 +2467,7 @@ struct LandingPageView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 
     /// Large progress bar for footer (情報デザイン: More prominent)
@@ -2487,7 +2487,7 @@ struct LandingPageView: View {
                 ZStack(alignment: .leading) {
                     Capsule()
                         .fill(colors.secondary.opacity(0.2))
-                        .overlay(Capsule().stroke(JohoColors.black, lineWidth: 0.5))
+                        .overlay(Capsule().stroke(colors.border, lineWidth: 0.5))
                     Capsule()
                         .fill(color)
                         .frame(width: geo.size.width * progress)
@@ -2529,13 +2529,13 @@ struct LandingPageView: View {
                 .foregroundStyle(color)
             Text(label)
                 .font(.system(size: 9, weight: .black, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
         }
         .frame(maxWidth: .infinity)
         .frame(height: 50)
         .background(bg)
         .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 6, style: .continuous).stroke(JohoColors.black, lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: 6, style: .continuous).stroke(colors.border, lineWidth: 1))
     }
 
     /// 情報デザイン: Day cell with GRID LINES (1pt black border)
@@ -2549,21 +2549,21 @@ struct LandingPageView: View {
             Text(String(day.dayNumber))
                 .font(.system(size: 14, weight: day.isToday ? .black : .medium, design: .rounded))
                 .foregroundStyle(
-                    day.isToday ? JohoColors.black :
+                    day.isToday ? colors.primary :
                     isSunday && day.isCurrentMonth ? JohoColors.red :
                     day.isCurrentMonth ? colors.primary : colors.secondary.opacity(0.3)
                 )
                 .frame(width: 28, height: 28)
                 .background(day.isToday ? JohoColors.yellow : Color.clear)
                 .clipShape(Circle())
-                .overlay(Circle().stroke(day.isToday ? JohoColors.black : Color.clear, lineWidth: 1.5))
+                .overlay(Circle().stroke(day.isToday ? colors.border : Color.clear, lineWidth: 1.5))
 
             // Event indicators
             if day.indicators.isNotEmpty && day.isCurrentMonth {
                 HStack(spacing: 2) {
                     ForEach(Array(day.indicators.prefix(3).enumerated()), id: \.offset) { _, color in
                         Circle().fill(color).frame(width: 5, height: 5)
-                            .overlay(Circle().stroke(JohoColors.black, lineWidth: 0.5))
+                            .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
                     }
                 }
                 .frame(height: 6)
@@ -2572,9 +2572,9 @@ struct LandingPageView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(day.isCurrentMonth ? JohoColors.white : JohoColors.yellow.opacity(0.3))
+        .background(day.isCurrentMonth ? colors.surface : JohoColors.yellow.opacity(0.3))
         .overlay(
-            Rectangle().stroke(JohoColors.black, lineWidth: 1)
+            Rectangle().stroke(colors.border, lineWidth: 1)
         )
     }
 
@@ -2742,7 +2742,7 @@ struct LandingPageView: View {
             // Country code pill (情報デザイン: Region-colored like MonthTheme)
             Text(clock.countryCode)
                 .font(.system(size: 10, weight: .black, design: .rounded))
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primaryInverted)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 3)
                 .background(theme.accentColor)
@@ -2838,7 +2838,7 @@ struct LandingPageView: View {
                 Circle()
                     .fill(JohoColors.yellow)
                     .frame(width: size.dotSize + 2, height: size.dotSize + 2)
-                    .overlay(Circle().stroke(isCompact ? JohoColors.black : colors.border, lineWidth: 1))
+                    .overlay(Circle().stroke(colors.border, lineWidth: 1))
 
                 Text("TODAY")
                     .font(.system(size: size.headerFontSize, weight: .black, design: .rounded))
@@ -2918,7 +2918,7 @@ struct LandingPageView: View {
         .clipShape(Squircle(cornerRadius: size.cornerRadius))
         .overlay(
             Squircle(cornerRadius: size.cornerRadius)
-                .stroke(isCompact ? JohoColors.black : colors.border, lineWidth: size.borderWidth)
+                .stroke(colors.border, lineWidth: size.borderWidth)
         )
     }
 
@@ -2931,7 +2931,7 @@ struct LandingPageView: View {
             Circle()
                 .fill(item.color)
                 .frame(width: size.dotSize, height: size.dotSize)
-                .overlay(Circle().stroke(isCompact ? JohoColors.black : colors.border, lineWidth: 1))
+                .overlay(Circle().stroke(colors.border, lineWidth: 1))
 
             // Icon
             Image(systemName: item.icon)
@@ -2981,7 +2981,7 @@ struct LandingPageView: View {
                 .clipShape(Squircle(cornerRadius: 6))
                 .overlay(
                     Squircle(cornerRadius: 6)
-                        .stroke(JohoColors.black, lineWidth: 1)
+                        .stroke(colors.border, lineWidth: 1)
                 )
 
                 Text("RANDOM FACTS")
@@ -3105,13 +3105,13 @@ struct LandingPageView: View {
 
             // Divider
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 1.5)
 
             // BOTTOM: Text zone
             Text(fact.text)
                 .font(.system(size: 10, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
                 .multilineTextAlignment(.center)
                 .lineLimit(3)
                 .minimumScaleFactor(0.7)
@@ -3119,11 +3119,11 @@ struct LandingPageView: View {
                 .padding(.vertical, 8)
                 .frame(maxWidth: .infinity, minHeight: 52)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: 1.5)
+                .stroke(colors.border, lineWidth: 1.5)
         )
     }
 
@@ -3765,7 +3765,7 @@ struct LandingPageView: View {
                 .clipShape(Circle())
                 .overlay(
                     Circle()
-                        .stroke(day.isToday ? JohoColors.black : Color.clear, lineWidth: 1.5)
+                        .stroke(day.isToday ? colors.border : Color.clear, lineWidth: 1.5)
                 )
 
             // Indicators
@@ -4045,17 +4045,17 @@ struct LandingPageView: View {
                 // Centered label (BLACK, bold, uppercase)
                 Text(label)
                     .font(.system(size: 12, weight: .black, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 // Count indicator orbs (Star page style - small)
                 if let indicator = indicator {
                     Text(indicator)
                         .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                        .foregroundStyle(colors.primary.opacity(0.7))
                 } else {
                     Text("—")
                         .font(.system(size: 10, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.3))
+                        .foregroundStyle(colors.primary.opacity(0.3))
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 100)
@@ -4064,7 +4064,7 @@ struct LandingPageView: View {
             // 情報デザイン: Every element MUST have a border - 1pt for cells
             .overlay(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
             )
         }
         .buttonStyle(.plain)
@@ -4092,16 +4092,16 @@ struct LandingPageView: View {
 
                 Text(label)
                     .font(.system(size: 12, weight: .black, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 if let indicator = indicator {
                     Text(indicator)
                         .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                        .foregroundStyle(colors.primary.opacity(0.7))
                 } else {
                     Text("—")
                         .font(.system(size: 10, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.3))
+                        .foregroundStyle(colors.primary.opacity(0.3))
                 }
             }
             .frame(maxWidth: .infinity, minHeight: 100)
@@ -4110,7 +4110,7 @@ struct LandingPageView: View {
             // 情報デザイン: Every element MUST have a border - 1pt for cells
             .overlay(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
             )
         }
         .buttonStyle(.plain)
@@ -4135,7 +4135,7 @@ struct LandingPageView: View {
                 if stat.isFact {
                     Text(stat.label)
                         .font(.system(size: 11, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .multilineTextAlignment(.center)
                         .lineLimit(3)
                         .minimumScaleFactor(0.8)
@@ -4143,16 +4143,16 @@ struct LandingPageView: View {
                 } else {
                     Text(stat.label)
                         .font(.system(size: 12, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     if let indicator = stat.indicator {
                         Text(indicator)
                             .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(0.7))
                     } else {
                         Text("—")
                             .font(.system(size: 10, weight: .medium, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.3))
+                            .foregroundStyle(colors.primary.opacity(0.3))
                     }
                 }
             }
@@ -4162,7 +4162,7 @@ struct LandingPageView: View {
             // 情報デザイン: Every element MUST have a border - 1pt for cells
             .overlay(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
             )
         }
         .buttonStyle(.plain)
@@ -4543,7 +4543,7 @@ struct LandingPageView: View {
                 .clipShape(Circle())
                 .overlay(
                     Circle()
-                        .stroke(day.isToday ? JohoColors.black : Color.clear, lineWidth: 1.5)
+                        .stroke(day.isToday ? colors.border : Color.clear, lineWidth: 1.5)
                 )
 
             // Indicators
@@ -4654,7 +4654,7 @@ struct LandingPageView: View {
                 if priority != .normal {
                     Text(priority.symbol)
                         .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(priority == .high ? JohoColors.red : JohoColors.black.opacity(0.4))
+                        .foregroundStyle(priority == .high ? JohoColors.red : colors.primary.opacity(0.4))
                 }
             }
             .frame(width: 16)
@@ -5163,6 +5163,8 @@ struct LandingPageView: View {
 /// 情報デザイン: Larger view with full explanation
 struct RandomFactDetailSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
     let fact: RandomFact
 
     var body: some View {
@@ -5172,7 +5174,7 @@ struct RandomFactDetailSheet: View {
                 Text("FACT")
                     .font(.system(size: 12, weight: .black, design: .rounded))
                     .tracking(1.5)
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
 
                 Spacer()
 
@@ -5182,18 +5184,18 @@ struct RandomFactDetailSheet: View {
                 Button { dismiss() } label: {
                     ZStack {
                         Circle()
-                            .fill(JohoColors.white)
+                            .fill(colors.surface)
                             .frame(width: 28, height: 28)
                         Image(systemName: "xmark")
                             .font(.system(size: 11, weight: .black, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                     }
                 }
                 .buttonStyle(.plain)
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
-            .background(JohoColors.black)
+            .background(colors.surfaceInverted)
 
             // Main content card
             VStack(spacing: 0) {
@@ -5209,20 +5211,20 @@ struct RandomFactDetailSheet: View {
 
                 // Thick divider
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 2)
 
                 // Text zone with headline
                 Text(fact.text)
                     .font(.system(size: 18, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, JohoDimensions.spacingMD)
                     .padding(.top, JohoDimensions.spacingMD)
 
                 // Thin divider
                 Rectangle()
-                    .fill(JohoColors.black.opacity(0.2))
+                    .fill(colors.border.opacity(0.2))
                     .frame(height: 1)
                     .padding(.horizontal, JohoDimensions.spacingMD)
                     .padding(.vertical, JohoDimensions.spacingSM)
@@ -5230,17 +5232,17 @@ struct RandomFactDetailSheet: View {
                 // Explanation text (情報デザイン: Full context for understanding)
                 Text(fact.explanation)
                     .font(.system(size: 14, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.8))
+                    .foregroundStyle(colors.primary.opacity(0.8))
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, JohoDimensions.spacingMD)
                     .padding(.bottom, JohoDimensions.spacingLG)
             }
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
             )
             .padding(JohoDimensions.spacingMD)
 

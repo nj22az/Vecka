@@ -15,6 +15,8 @@ import SwiftData
 
 struct DashboardView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     // Unified Memo query - filter by type in computed properties
     @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
@@ -97,12 +99,12 @@ struct DashboardView: View {
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(JohoColors.black, lineWidth: 1.5)
+                                .stroke(colors.border, lineWidth: 1.5)
                         )
 
                     Text("DATA")
                         .font(JohoFont.headline)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
                 .padding(.vertical, JohoDimensions.spacingSM)
@@ -110,7 +112,7 @@ struct DashboardView: View {
 
                 // VERTICAL WALL (separator)
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
 
                 // RIGHT COMPARTMENT: Card count
@@ -118,10 +120,10 @@ struct DashboardView: View {
                     Text("7")
                         .font(.system(size: 16, weight: .bold, design: .rounded))
                         .monospacedDigit()
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                     Text("CARDS")
                         .font(JohoFont.labelSmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                        .foregroundStyle(colors.primary.opacity(0.7))
                 }
                 .frame(width: 80)
             }
@@ -129,7 +131,7 @@ struct DashboardView: View {
 
             // HORIZONTAL DIVIDER
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 1.5)
 
             // STATS ROW (full width) - shows colored indicators like Star Page
@@ -140,11 +142,11 @@ struct DashboardView: View {
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
     }
 
@@ -168,7 +170,7 @@ struct DashboardView: View {
             if notesCount == 0 && expensesCount == 0 && tripsCount == 0 && specialDaysCount == 0 {
                 Text("Your data at a glance")
                     .font(JohoFont.bodySmall)
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(0.6))
             }
         }
     }
@@ -178,10 +180,10 @@ struct DashboardView: View {
             Circle()
                 .fill(color)
                 .frame(width: 8, height: 8)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                .overlay(Circle().stroke(colors.border, lineWidth: 1))
             Text("\(count)")
                 .font(JohoFont.labelSmall)
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
         }
         .accessibilityLabel("\(count) \(label)")
     }
@@ -285,16 +287,16 @@ struct DashboardView: View {
                 // Large day number - 情報デザイン: Hero display size
                 Text("\(dayNumber)")
                     .font(JohoFont.displayLarge)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(weekday)
                         .font(JohoFont.headline)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     Text(monthYear)
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.7))
+                        .foregroundStyle(colors.primary.opacity(0.7))
                 }
 
                 Spacer()
@@ -312,11 +314,11 @@ struct DashboardView: View {
             VStack(spacing: JohoDimensions.spacingSM) {
                 Text("W\(weekNumber)")
                     .font(JohoFont.displayMedium)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 Text("\(daysLeft) days left")
                     .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(0.6))
             }
             .frame(maxWidth: .infinity)
         }
@@ -342,13 +344,13 @@ struct DashboardView: View {
                 VStack(spacing: JohoDimensions.spacingSM) {
                     Text("\(Int(data.progress * 100))%")
                         .font(JohoFont.displaySmall)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     // Progress bar - 情報デザイン: Squircle with black border
                     GeometryReader { geo in
                         ZStack(alignment: .leading) {
                             Squircle(cornerRadius: 4)
-                                .fill(JohoColors.black.opacity(0.1))
+                                .fill(colors.primary.opacity(0.1))
                                 .frame(height: 10)
 
                             Squircle(cornerRadius: 4)
@@ -357,7 +359,7 @@ struct DashboardView: View {
                         }
                         .overlay(
                             Squircle(cornerRadius: 4)
-                                .stroke(JohoColors.black, lineWidth: 1)
+                                .stroke(colors.border, lineWidth: 1)
                                 .frame(height: 10)
                         )
                     }
@@ -365,13 +367,13 @@ struct DashboardView: View {
 
                     Text("\(data.totalDays - data.daysPassed) days left")
                         .font(JohoFont.caption)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                 }
                 .frame(maxWidth: .infinity)
             } else {
                 Text("--")
                     .font(JohoFont.displaySmall)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
             }
         }
     }
@@ -389,12 +391,12 @@ struct DashboardView: View {
 
                     Text("days until")
                         .font(JohoFont.labelSmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(0.5))
 
                     // Event name
                     Text(item.name)
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
@@ -404,10 +406,10 @@ struct DashboardView: View {
                         Circle()
                             .fill(item.color)
                             .frame(width: 6, height: 6)
-                            .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
+                            .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
                         Text(item.typeLabel)
                             .font(JohoFont.labelSmall)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -415,11 +417,11 @@ struct DashboardView: View {
                 VStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: "sparkles")
                         .font(.system(size: 24, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.3))
+                        .foregroundStyle(colors.primary.opacity(0.3))
 
                     Text("No upcoming events")
                         .font(JohoFont.caption)
-                        .foregroundStyle(JohoColors.black.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(0.5))
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -435,7 +437,7 @@ struct DashboardView: View {
             if upcomingHolidays.isEmpty {
                 Text("No upcoming holidays")
                     .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(0.5))
                     .frame(maxWidth: .infinity)
             } else {
                 VStack(spacing: JohoDimensions.spacingSM) {
@@ -445,14 +447,14 @@ struct DashboardView: View {
 
                             Text(holiday.name)
                                 .font(JohoFont.bodySmall)
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                                 .lineLimit(1)
 
                             Spacer()
 
                             Text(daysUntilText(holiday.date))
                                 .font(JohoFont.labelSmall)
-                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(0.6))
                         }
                     }
                 }
@@ -469,7 +471,7 @@ struct DashboardView: View {
             if recentNotes.isEmpty {
                 Text("No notes yet")
                     .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(0.5))
                     .frame(maxWidth: .infinity)
             } else {
                 VStack(spacing: JohoDimensions.spacingSM) {
@@ -479,14 +481,14 @@ struct DashboardView: View {
 
                             Text(note.text.prefix(25) + (note.text.count > 25 ? "..." : ""))
                                 .font(JohoFont.caption)
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
                                 .lineLimit(1)
 
                             Spacer()
 
                             Text(note.date.formatted(.dateTime.month(.abbreviated).day()))
                                 .font(JohoFont.labelSmall)
-                                .foregroundStyle(JohoColors.black.opacity(0.5))
+                                .foregroundStyle(colors.primary.opacity(0.5))
                         }
                     }
                 }
@@ -504,15 +506,15 @@ struct DashboardView: View {
             VStack(spacing: JohoDimensions.spacingSM) {
                 Text(formatCurrency(total))
                     .font(JohoFont.displaySmall)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 Text("this month")
                     .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(0.6))
 
                 Text("\(thisMonth.count) transaction\(thisMonth.count == 1 ? "" : "s")")
                     .font(JohoFont.labelSmall)
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(0.5))
             }
             .frame(maxWidth: .infinity)
         }
@@ -533,11 +535,11 @@ struct DashboardView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(trip.text)
                             .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
 
                         Text(trip.place ?? "")
                             .font(JohoFont.caption)
-                            .foregroundStyle(JohoColors.black.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(0.7))
                     }
 
                     Spacer()
@@ -546,14 +548,14 @@ struct DashboardView: View {
                     VStack(spacing: 2) {
                         Text("\(max(0, daysLeft))")
                             .font(JohoFont.displaySmall)
-                            .foregroundStyle(JohoColors.white)
+                            .foregroundStyle(colors.primaryInverted)
 
                         Text("days")
                             .font(JohoFont.labelSmall)
-                            .foregroundStyle(JohoColors.white.opacity(0.8))
+                            .foregroundStyle(colors.primaryInverted.opacity(0.8))
                     }
                     .frame(width: 56, height: 56)
-                    .background(JohoColors.black)
+                    .background(colors.primary)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 }
             }

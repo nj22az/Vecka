@@ -756,14 +756,14 @@ struct ModernCalendarView: View {
                             Text("TODAY")
                                 .font(JohoFont.labelSmall)
                         }
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(Color.black)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
                         .background(JohoColors.yellow)
                         .clipShape(Squircle(cornerRadius: 6))
                         .overlay(
                             Squircle(cornerRadius: 6)
-                                .stroke(JohoColors.black, lineWidth: 1.5)
+                                .stroke(Color.black, lineWidth: 1.5)
                         )
                     }
                     .buttonStyle(.plain)

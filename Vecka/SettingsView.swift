@@ -58,7 +58,7 @@ struct SettingsView: View {
                                 .font(.system(size: 20, weight: .bold))
                                 .foregroundStyle(colors.primary)
                                 .johoTouchTarget()
-                                .background(JohoColors.white)
+                                .background(colors.surface)
                                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                 .overlay(
                                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
@@ -168,7 +168,7 @@ struct SettingsView: View {
 
                     // Divider
                     Rectangle()
-                        .fill(JohoColors.black.opacity(0.1))
+                        .fill(colors.border.opacity(0.1))
                         .frame(height: 1)
                         .padding(.vertical, JohoDimensions.spacingSM)
 
@@ -256,7 +256,7 @@ struct SettingsView: View {
 
                         Text("Licensed exclusively for authorized use only. Unauthorized reproduction, distribution, or modification is strictly prohibited.")
                             .font(JohoFont.caption)
-                            .foregroundStyle(JohoColors.black.opacity(0.65))
+                            .foregroundStyle(colors.secondary.opacity(0.85))
                     }
                     .padding(.horizontal, JohoDimensions.spacingSM)
                 }
@@ -313,7 +313,7 @@ struct SettingsView: View {
 
                 // VERTICAL WALL
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
 
                 // RIGHT COMPARTMENT: App version
@@ -331,7 +331,7 @@ struct SettingsView: View {
 
             // HORIZONTAL DIVIDER (情報デザイン: Golden Standard Pattern)
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 1.5)
 
             // STATS ROW: Database health + World clocks count
@@ -348,7 +348,7 @@ struct SettingsView: View {
 
                     Text("/ \(Self.entryLimit)")
                         .font(JohoFont.labelSmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.secondary)
                 }
 
                 // World clocks count (if any)
@@ -356,13 +356,13 @@ struct SettingsView: View {
                     HStack(spacing: 4) {
                         Image(systemName: "globe")
                             .font(.system(size: 10, weight: .bold))
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.secondary)
                         Text("\(worldClocks.count)")
                             .font(JohoFont.labelSmall)
                             .foregroundStyle(colors.secondary)
                         Text("clocks")
                             .font(JohoFont.labelSmall)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.secondary)
                     }
                 }
 
@@ -426,16 +426,16 @@ struct SettingsView: View {
                             Text("LIGHT")
                                 .font(.system(size: 12, weight: .black, design: .rounded))
                         }
-                        .foregroundStyle(selectedColorMode == .light ? JohoColors.white : JohoColors.black)
+                        .foregroundStyle(selectedColorMode == .light ? colors.primaryInverted : colors.primary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(selectedColorMode == .light ? JohoColors.black : JohoColors.white)
+                        .background(selectedColorMode == .light ? colors.primary : colors.surface)
                     }
                     .buttonStyle(.plain)
 
                     // Vertical divider
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(width: 1.5)
 
                     // DARK button
@@ -451,17 +451,17 @@ struct SettingsView: View {
                             Text("DARK")
                                 .font(.system(size: 12, weight: .black, design: .rounded))
                         }
-                        .foregroundStyle(selectedColorMode == .dark ? JohoColors.white : JohoColors.black)
+                        .foregroundStyle(selectedColorMode == .dark ? colors.primaryInverted : colors.primary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(selectedColorMode == .dark ? JohoColors.black : JohoColors.white)
+                        .background(selectedColorMode == .dark ? colors.primary : colors.surface)
                     }
                     .buttonStyle(.plain)
                 }
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .stroke(JohoColors.black, lineWidth: 1.5)
+                        .stroke(colors.border, lineWidth: 1.5)
                 )
             }
             .padding(JohoDimensions.spacingMD)
@@ -497,10 +497,10 @@ struct SettingsView: View {
                 HapticManager.selection()
             } label: {
                 HStack(spacing: JohoDimensions.spacingMD) {
-                    // Moon icon
+                    // Moon icon (EXCEPTION: Keep JohoColors.black on bright Vietnamese flag background)
                     Image(systemName: showLunarCalendar ? "moon.stars.fill" : "moon")
                         .font(.system(size: 20, weight: .bold))
-                        .foregroundStyle(showLunarCalendar ? Color(hex: "FFCD00") : JohoColors.black)
+                        .foregroundStyle(showLunarCalendar ? Color(hex: "FFCD00") : colors.primary)
                         .johoTouchTarget()
                         .background(showLunarCalendar ? Color(hex: "DA251D") : colors.inputBackground)
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
@@ -526,7 +526,7 @@ struct SettingsView: View {
                         .fill(showLunarCalendar ? Color(hex: "DA251D") : colors.inputBackground)
                         .frame(width: 28, height: 28)
                         .overlay(
-                            Circle().stroke(JohoColors.black, lineWidth: 1.5)
+                            Circle().stroke(colors.border, lineWidth: 1.5)
                         )
                         .overlay(
                             showLunarCalendar ?
@@ -584,7 +584,7 @@ struct SettingsView: View {
                     .overlay(
                         Circle()
                             .stroke(
-                                selectedBackgroundOption == option ? JohoColors.black : JohoColors.black.opacity(0.3),
+                                selectedBackgroundOption == option ? colors.border : colors.border.opacity(0.3),
                                 lineWidth: selectedBackgroundOption == option ? 2.5 : 1.5
                             )
                     )
@@ -592,7 +592,7 @@ struct SettingsView: View {
                         if selectedBackgroundOption == option {
                             Image(systemName: "checkmark")
                                 .font(.system(size: 14, weight: .bold))
-                                .foregroundStyle(JohoColors.white)
+                                .foregroundStyle(colors.primaryInverted)
                         }
                     }
 
@@ -603,12 +603,12 @@ struct SettingsView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, JohoDimensions.spacingSM)
-            .background(selectedBackgroundOption == option ? JohoColors.yellow.opacity(0.3) : JohoColors.white)
+            .background(selectedBackgroundOption == option ? JohoColors.yellow.opacity(0.3) : colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
                     .stroke(
-                        selectedBackgroundOption == option ? JohoColors.black : JohoColors.black.opacity(0.3),
+                        selectedBackgroundOption == option ? colors.border : colors.border.opacity(0.3),
                         lineWidth: selectedBackgroundOption == option ? 2 : 1
                     )
             )
@@ -657,10 +657,10 @@ struct SettingsView: View {
                     } label: {
                         Text("Edit")
                             .font(.system(size: 12, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.white)
+                            .foregroundStyle(colors.primaryInverted)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .background(JohoColors.black)
+                            .background(colors.primary)
                             .clipShape(Capsule())
                     }
                     .buttonStyle(.plain)
@@ -678,25 +678,25 @@ struct SettingsView: View {
                     HStack(spacing: JohoDimensions.spacingXS) {
                         Text("Examples:")
                             .font(JohoFont.caption)
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.secondary.opacity(0.8))
 
                         Text("Nils Calendar")
                             .font(JohoFont.caption.bold())
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.secondary)
 
                         Text("•")
-                            .foregroundStyle(JohoColors.black.opacity(0.3))
+                            .foregroundStyle(colors.secondary.opacity(0.5))
 
                         Text("My Planner")
                             .font(JohoFont.caption.bold())
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.secondary)
 
                         Text("•")
-                            .foregroundStyle(JohoColors.black.opacity(0.3))
+                            .foregroundStyle(colors.secondary.opacity(0.5))
 
                         Text("Family Hub")
                             .font(JohoFont.caption.bold())
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.secondary)
                     }
                     .padding(.horizontal, JohoDimensions.spacingSM)
                 }
@@ -737,7 +737,7 @@ struct SettingsView: View {
             // Section label
             JohoPill(text: "EXPORT", style: .whiteOnBlack, size: .small)
 
-            // PDF Title setting
+            // PDF Title setting (EXCEPTION: Keep JohoColors.black on purple background)
             HStack(spacing: JohoDimensions.spacingMD) {
                 // Icon zone
                 Image(systemName: "doc.text")
@@ -771,7 +771,7 @@ struct SettingsView: View {
                     .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
             )
 
-            // PDF Footer setting
+            // PDF Footer setting (EXCEPTION: Keep JohoColors.black on purple background)
             HStack(spacing: JohoDimensions.spacingMD) {
                 // Icon zone
                 Image(systemName: "text.alignleft")
@@ -834,13 +834,13 @@ struct SettingsView: View {
                 HStack(spacing: JohoDimensions.spacingMD) {
                     Image(systemName: "globe")
                         .font(.system(size: 20, weight: .bold))
-                        .foregroundStyle(JohoColors.black.opacity(0.4))
+                        .foregroundStyle(colors.secondary)
                         .johoTouchTarget()
-                        .background(JohoColors.black.opacity(0.05))
+                        .background(colors.border.opacity(0.05))
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(JohoColors.black.opacity(0.2), lineWidth: JohoDimensions.borderThin)
+                                .stroke(colors.border.opacity(0.2), lineWidth: JohoDimensions.borderThin)
                         )
 
                     VStack(alignment: .leading, spacing: 2) {
@@ -860,7 +860,7 @@ struct SettingsView: View {
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(JohoColors.black.opacity(0.2), lineWidth: JohoDimensions.borderMedium)
+                        .stroke(colors.border.opacity(0.2), lineWidth: JohoDimensions.borderMedium)
                 )
             } else {
                 // Clock list
@@ -871,10 +871,10 @@ struct SettingsView: View {
                             HStack(spacing: 8) {
                                 Text(clock.cityCode)
                                     .font(.system(size: 10, weight: .black, design: .rounded))
-                                    .foregroundStyle(JohoColors.white)
+                                    .foregroundStyle(colors.primaryInverted)
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 4)
-                                    .background(JohoColors.black)
+                                    .background(colors.primary)
                                     .clipShape(Capsule())
 
                                 Text(clock.cityName)
@@ -892,10 +892,10 @@ struct SettingsView: View {
                             // Offset
                             Text(clock.offsetFromLocal)
                                 .font(.system(size: 10, weight: .bold, design: .rounded))
-                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                                .foregroundStyle(colors.secondary)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
-                                .background(JohoColors.black.opacity(0.05))
+                                .background(colors.border.opacity(0.05))
                                 .clipShape(Capsule())
 
                             // Delete button
@@ -915,7 +915,7 @@ struct SettingsView: View {
 
                         if index < worldClocks.count - 1 {
                             Rectangle()
-                                .fill(JohoColors.black.opacity(0.1))
+                                .fill(colors.border.opacity(0.1))
                                 .frame(height: 1)
                                 .padding(.horizontal, JohoDimensions.spacingMD)
                         }
@@ -929,7 +929,7 @@ struct SettingsView: View {
                 )
             }
 
-            // Add clock button (情報デザイン: Max 3 clocks)
+            // Add clock button (情報デザイン: Max 3 clocks) - EXCEPTION: Keep JohoColors.black on cyan background
             Button {
                 if worldClocks.count < 3 {
                     showAddClockSheet = true
@@ -938,7 +938,7 @@ struct SettingsView: View {
                 HStack(spacing: JohoDimensions.spacingMD) {
                     Image(systemName: "plus.circle.fill")
                         .font(.system(size: 20, weight: .bold))
-                        .foregroundStyle(colors.primary)
+                        .foregroundStyle(JohoColors.black)
                         .johoTouchTarget()
                         .background(JohoColors.cyan)
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
@@ -949,13 +949,13 @@ struct SettingsView: View {
 
                     Text(worldClocks.count >= 3 ? "Maximum 3 Clocks" : "Add World Clock")
                         .font(JohoFont.headline)
-                        .foregroundStyle(worldClocks.count >= 3 ? JohoColors.black.opacity(0.4) : JohoColors.black)
+                        .foregroundStyle(worldClocks.count >= 3 ? colors.secondary : colors.primary)
 
                     Spacer()
 
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.secondary)
                 }
                 .padding(JohoDimensions.spacingMD)
                 .background(colors.surface)
@@ -1049,7 +1049,7 @@ struct SettingsView: View {
 
             // HORIZONTAL DIVIDER
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 1.5)
 
             // STAR PAGE STYLE GRID: 2 rows × 3 columns (like month cards)
@@ -1085,7 +1085,7 @@ struct SettingsView: View {
 
             // HORIZONTAL DIVIDER
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 1.5)
 
             // FOOTER ROW: Status + System count
@@ -1093,7 +1093,7 @@ struct SettingsView: View {
                 // Health status
                 Text(databaseStatusText)
                     .font(.system(size: 10, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                    .foregroundStyle(colors.secondary)
 
                 Spacer()
 
@@ -1104,10 +1104,10 @@ struct SettingsView: View {
                     Text("\(systemHolidayCount) SYS")
                         .font(.system(size: 9, weight: .bold, design: .rounded))
                 }
-                .foregroundStyle(JohoColors.black.opacity(0.5))
+                .foregroundStyle(colors.secondary)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
-                .background(JohoColors.black.opacity(0.05))
+                .background(colors.border.opacity(0.05))
                 .clipShape(Capsule())
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
@@ -1151,7 +1151,7 @@ struct SettingsView: View {
                 // Empty state - subtle dash
                 Text("—")
                     .font(.system(size: 10, weight: .medium))
-                    .foregroundStyle(JohoColors.black.opacity(0.3))
+                    .foregroundStyle(colors.secondary.opacity(0.5))
             }
         }
         .frame(maxWidth: .infinity)

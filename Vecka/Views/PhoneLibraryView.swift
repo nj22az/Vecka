@@ -15,6 +15,9 @@ struct PhoneLibraryView: View {
     @Query private var holidays: [HolidayRule]
     @Query private var contacts: [Contact]
 
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     // Computed: Filter memos by type
     private var notes: [Memo] {
         memos.filter { $0.type == .note }
@@ -141,24 +144,24 @@ struct PhoneLibraryView: View {
             // Icon zone (gold/yellow for Library - matches sidebar accent)
             Image(systemName: "books.vertical.fill")
                 .font(.system(size: 24, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
                 .johoTouchTarget(52)
                 .background(Color(hex: "FFD700"))  // Gold - Library accent
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                        .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                 )
 
             // Title and stats zone
             VStack(alignment: .leading, spacing: 2) {
                 Text("Library")
                     .font(JohoFont.displaySmall)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 Text(librarySubtitle)
                     .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                    .foregroundStyle(colors.secondary)
                     .lineLimit(2)
                     .minimumScaleFactor(0.8)
             }
@@ -166,11 +169,11 @@ struct PhoneLibraryView: View {
             Spacer()
         }
         .padding(JohoDimensions.spacingMD)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
         )
     }
 

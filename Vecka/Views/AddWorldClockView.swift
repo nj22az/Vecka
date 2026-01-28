@@ -60,7 +60,7 @@ struct AddWorldClockView: View {
                     HStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: "magnifyingglass")
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundStyle(JohoColors.black.opacity(0.4))
+                            .foregroundStyle(colors.primary.opacity(0.4))
 
                         TextField("Type city or country...", text: $searchText)
                             .font(JohoFont.body)
@@ -73,7 +73,7 @@ struct AddWorldClockView: View {
                             } label: {
                                 Image(systemName: "xmark.circle.fill")
                                     .font(.system(size: 16))
-                                    .foregroundStyle(JohoColors.black.opacity(0.3))
+                                    .foregroundStyle(colors.primary.opacity(0.3))
                             }
                         }
                     }
@@ -90,7 +90,7 @@ struct AddWorldClockView: View {
                     if searchText.isEmpty {
                         Text("Type any city name to search 300+ locations worldwide")
                             .font(JohoFont.caption)
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(0.5))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, JohoDimensions.spacingLG)
                     }
@@ -102,13 +102,13 @@ struct AddWorldClockView: View {
                             VStack(spacing: JohoDimensions.spacingMD) {
                                 Image(systemName: "globe")
                                     .font(.system(size: 32, weight: .light))
-                                    .foregroundStyle(JohoColors.black.opacity(0.3))
+                                    .foregroundStyle(colors.primary.opacity(0.3))
                                 Text("No cities found")
                                     .font(JohoFont.headline)
-                                    .foregroundStyle(JohoColors.black.opacity(0.5))
+                                    .foregroundStyle(colors.primary.opacity(0.5))
                                 Text("Try a different spelling")
                                     .font(JohoFont.caption)
-                                    .foregroundStyle(JohoColors.black.opacity(0.4))
+                                    .foregroundStyle(colors.primary.opacity(0.4))
                             }
                             .padding(JohoDimensions.spacingXL)
                         } else {
@@ -122,7 +122,7 @@ struct AddWorldClockView: View {
                                         // City code pill
                                         Text(city.code)
                                             .font(.system(size: 11, weight: .black, design: .rounded))
-                                            .foregroundStyle(JohoColors.white)
+                                            .foregroundStyle(colors.primaryInverted)
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
                                             .background(regionColor(for: city.worldRegion))
@@ -137,7 +137,7 @@ struct AddWorldClockView: View {
 
                                             Text(city.country)
                                                 .font(JohoFont.caption)
-                                                .foregroundStyle(JohoColors.black.opacity(0.6))
+                                                .foregroundStyle(colors.primary.opacity(0.6))
                                         }
 
                                         Spacer()
@@ -158,7 +158,7 @@ struct AddWorldClockView: View {
 
                                 if index < searchResults.count - 1 {
                                     Rectangle()
-                                        .fill(JohoColors.black.opacity(0.1))
+                                        .fill(colors.border.opacity(0.1))
                                         .frame(height: 1)
                                         .padding(.horizontal, JohoDimensions.spacingMD)
                                 }

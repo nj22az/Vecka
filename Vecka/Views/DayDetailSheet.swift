@@ -228,12 +228,12 @@ struct DayDetailSheet: View {
                     Circle()
                         .fill(colors.surface)
                         .frame(width: 12, height: 12)
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
 
                     if isSystem {
                         Image(systemName: "lock.fill")
                             .font(.system(size: 9, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(0.7))
                     }
                 }
             }
@@ -274,11 +274,11 @@ struct DayDetailSheet: View {
             // RIGHT: Decoration icon with colored background
             Image(systemName: icon)
                 .font(.system(size: 16, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primaryInverted)
                 .frame(width: 28, height: 28)
                 .background(color)
                 .clipShape(Squircle(cornerRadius: 7))
-                .overlay(Squircle(cornerRadius: 7).stroke(JohoColors.black, lineWidth: 1.5))
+                .overlay(Squircle(cornerRadius: 7).stroke(colors.border, lineWidth: 1.5))
                 .frame(width: 52)
                 .frame(maxHeight: .infinity)
                 .background(colors.surface)

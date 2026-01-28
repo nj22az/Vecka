@@ -269,7 +269,7 @@ struct JohoPhotoContainer: View {
                 // Initials fallback
                 Text(initials.prefix(2).uppercased())
                     .font(.system(size: size * 0.35, weight: .heavy, design: .rounded))
-                    .foregroundStyle(colors.primary)
+                    .foregroundStyle(colors.primaryInverted)
             } else if let symbol = fallbackSymbol {
                 // Symbol fallback
                 Text(symbol)
@@ -278,7 +278,7 @@ struct JohoPhotoContainer: View {
                 // Category SF Symbol fallback
                 Image(systemName: category.sfSymbol)
                     .font(.system(size: size * 0.4, weight: .bold))
-                    .foregroundStyle(colors.primary)
+                    .foregroundStyle(colors.primaryInverted)
             } else {
                 // Default person icon
                 Image(systemName: JohoSymbols.SFIcon.person.rawValue)
@@ -294,7 +294,7 @@ struct JohoPhotoContainer: View {
                         Spacer()
                         Image(systemName: category.sfSymbol)
                             .font(.system(size: size * 0.15, weight: .bold))
-                            .foregroundStyle(colors.primary)
+                            .foregroundStyle(colors.primaryInverted)
                             .padding(4)
                             .background(category.color)
                             .clipShape(Squircle(cornerRadius: 4))
@@ -329,6 +329,10 @@ struct JohoPhotoPicker: View {
     let size: CGFloat
     let category: JohoSymbols.ContactCategory?
     let initials: String?
+
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     init(
         image: Binding<Image?>,
@@ -406,21 +410,24 @@ struct JohoPhotoPicker: View {
         }
     }
 
-    private func actionButton(icon: String, label: String, color: Color = JohoColors.black) -> some View {
-        VStack(spacing: 4) {
+    private func actionButton(icon: String, label: String, color: Color? = nil) -> some View {
+        let backgroundColor = color ?? colors.primary
+        let foregroundColor = color != nil ? colors.primary : colors.primaryInverted
+
+        return VStack(spacing: 4) {
             Image(systemName: icon)
                 .font(.system(size: 16, weight: .bold))
             Text(label)
                 .font(.system(size: 10, weight: .bold, design: .rounded))
         }
-        .foregroundStyle(color == JohoColors.black ? JohoColors.white : JohoColors.black)
+        .foregroundStyle(foregroundColor)
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, JohoDimensions.spacingSM)
-        .background(color)
+        .background(backgroundColor)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
     }
 }
@@ -433,6 +440,9 @@ struct JohoSymbolPickerSheet: View {
     let onSelect: () -> Void
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     // Symbol categories for picker - loaded from JSON (情報デザイン: database-driven)
     private var symbolSections: [(title: String, symbols: [String])] {
@@ -456,11 +466,11 @@ struct JohoSymbolPickerSheet: View {
                             }
                         }
                         .padding(JohoDimensions.spacingLG)
-                        .background(JohoColors.white)
+                        .background(colors.surface)
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                         )
                     }
                 }
@@ -490,11 +500,11 @@ struct JohoSymbolPickerSheet: View {
             Text(symbol)
                 .font(.system(size: 28))
                 .frame(width: 56, height: 56)
-                .background(selectedSymbol == symbol ? JohoColors.yellow : JohoColors.white)
+                .background(selectedSymbol == symbol ? JohoColors.yellow : colors.surface)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .stroke(JohoColors.black, lineWidth: selectedSymbol == symbol ? 2.5 : 1.5)
+                        .stroke(colors.border, lineWidth: selectedSymbol == symbol ? 2.5 : 1.5)
                 )
         }
     }
@@ -601,6 +611,10 @@ struct JohoContactAvatarRow: View {
 struct JohoCategoryFilterBar: View {
     @Binding var selectedCategory: JohoSymbols.ContactCategory?
 
+    @Environment(\.johoColorMode) private var colorMode
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: JohoDimensions.spacingSM) {
@@ -628,14 +642,14 @@ struct JohoCategoryFilterBar: View {
                 Text(label)
                     .font(JohoFont.labelSmall)
             }
-            .foregroundStyle(isSelected(category) ? JohoColors.black : JohoColors.white)
+            .foregroundStyle(isSelected(category) ? colors.primary : colors.primaryInverted)
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
-            .background(isSelected(category) ? (category?.color ?? JohoColors.yellow) : JohoColors.black)
+            .background(isSelected(category) ? (category?.color ?? JohoColors.yellow) : colors.primary)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                    .stroke(JohoColors.black, lineWidth: isSelected(category) ? 2 : 1.5)
+                    .stroke(colors.border, lineWidth: isSelected(category) ? 2 : 1.5)
             )
         }
     }

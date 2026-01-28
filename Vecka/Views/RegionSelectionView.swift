@@ -198,7 +198,7 @@ struct RegionSelectionView: View {
                     if selected > 0 {
                         Text("\(selected)")
                             .font(.system(size: 9, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.white)
+                            .foregroundStyle(colors.primaryInverted)
                             .padding(.horizontal, 5)
                             .padding(.vertical, 2)
                             .background(selectedColor)
@@ -249,7 +249,7 @@ struct RegionSelectionView: View {
                 Text(region.displayName)
                     .font(.system(size: 12, weight: .medium, design: .rounded))
             }
-            .foregroundStyle(isSelected ? JohoColors.white : colors.primary)
+            .foregroundStyle(isSelected ? colors.primaryInverted : colors.primary)
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
             .background(isSelected ? selectedColor : colors.surface)

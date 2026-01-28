@@ -75,10 +75,10 @@ struct MonthPickerSheet: View {
                     // Section header integrated into border
                     Text("MONTH")
                         .font(.system(size: 10, weight: .heavy, design: .rounded))
-                        .foregroundStyle(JohoColors.white)
+                        .foregroundStyle(colors.primaryInverted)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 4)
-                        .background(JohoColors.black)
+                        .background(colors.primary)
 
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 3), spacing: 6) {
                         ForEach(1...12, id: \.self) { m in
@@ -99,10 +99,10 @@ struct MonthPickerSheet: View {
                     // Section header integrated into border
                     Text("YEAR")
                         .font(.system(size: 10, weight: .heavy, design: .rounded))
-                        .foregroundStyle(JohoColors.white)
+                        .foregroundStyle(colors.primaryInverted)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 4)
-                        .background(JohoColors.black)
+                        .background(colors.primary)
 
                     ScrollViewReader { proxy in
                         ScrollView(showsIndicators: false) {
@@ -143,7 +143,7 @@ struct MonthPickerSheet: View {
         Button(action: { month = m }) {
             Text(localizedMonthAbbrev(for: m))
                 .font(.system(size: 14, weight: month == m ? .bold : .medium, design: .rounded))
-                .foregroundStyle(month == m ? JohoColors.white : colors.primary)
+                .foregroundStyle(month == m ? colors.primaryInverted : colors.primary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 10)
                 .background(month == m ? colors.primary : Color.clear)
@@ -161,7 +161,7 @@ struct MonthPickerSheet: View {
             Text(String(y))
                 .font(.system(size: 14, weight: year == y ? .bold : .medium, design: .rounded))
                 .monospacedDigit()
-                .foregroundStyle(year == y ? JohoColors.white : colors.primary)
+                .foregroundStyle(year == y ? colors.primaryInverted : colors.primary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)
                 .background(year == y ? colors.primary : Color.clear)

@@ -119,7 +119,7 @@ struct DailyNotesView: View {
                             Text("Add Note")
                                 .font(JohoFont.button)
                         }
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, JohoDimensions.spacingMD)
                         .background(JohoColors.yellow)
@@ -336,7 +336,7 @@ private struct JohoNoteEditor: View {
                 } label: {
                     Text("Save")
                         .font(JohoFont.body.bold())
-                        .foregroundStyle(canSave ? JohoColors.white : colors.primary.opacity(0.4))
+                        .foregroundStyle(canSave ? colors.primary : colors.primary.opacity(0.4))
                         .padding(.horizontal, JohoDimensions.spacingLG)
                         .padding(.vertical, JohoDimensions.spacingMD)
                         .background(canSave ? accentColor : colors.surface)
@@ -504,13 +504,13 @@ struct JohoNoteEditorSheet: View {
                     Button { dismiss() } label: {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(JohoColors.white)
+                            .foregroundStyle(colors.primaryInverted)
                             .johoTouchTarget()
                     }
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.white)
+                        .fill(colors.primaryInverted)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -523,15 +523,15 @@ struct JohoNoteEditorSheet: View {
                             .frame(width: 36, height: 36)
                             .background(noteLightBackground)
                             .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.white, lineWidth: 1.5))
+                            .overlay(Squircle(cornerRadius: 8).stroke(colors.primaryInverted, lineWidth: 1.5))
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text("NEW NOTE")
                                 .font(.system(size: 16, weight: .black, design: .rounded))
-                                .foregroundStyle(JohoColors.white)
+                                .foregroundStyle(colors.primaryInverted)
                             Text("Set date & details")
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.white.opacity(0.6))
+                                .foregroundStyle(colors.primaryInverted.opacity(0.6))
                         }
 
                         Spacer()
@@ -541,7 +541,7 @@ struct JohoNoteEditorSheet: View {
 
                     // WALL
                     Rectangle()
-                        .fill(JohoColors.white)
+                        .fill(colors.primaryInverted)
                         .frame(width: 1.5)
                         .frame(maxHeight: .infinity)
 
@@ -552,11 +552,11 @@ struct JohoNoteEditorSheet: View {
                     } label: {
                         Text("Save")
                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.white.opacity(0.4))
+                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primaryInverted.opacity(0.4))
                             .frame(width: 56, height: 32)
-                            .background(canSave ? noteAccentColor : JohoColors.white.opacity(0.2))
+                            .background(canSave ? noteAccentColor : colors.primaryInverted.opacity(0.2))
                             .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(JohoColors.white, lineWidth: 1.5))
+                            .overlay(Squircle(cornerRadius: 8).stroke(colors.primaryInverted, lineWidth: 1.5))
                     }
                     .disabled(!canSave)
                     .frame(width: 72)

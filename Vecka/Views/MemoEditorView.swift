@@ -64,13 +64,13 @@ struct MemoEditorView: View {
             .padding(.top, 8)
             .frame(maxHeight: .infinity, alignment: .top)
         }
-        .background(JohoColors.black)
+        .background(colors.canvas)
         .onAppear { loadExisting() }
-        .presentationBackground(JohoColors.black)
+        .presentationBackground(colors.canvas)
         .presentationDragIndicator(.hidden)
         .sheet(isPresented: $showDatePicker) {
             datePickerSheet
-                .presentationBackground(JohoColors.black)
+                .presentationBackground(colors.canvas)
                 .presentationDetents([.medium])
         }
         .alert("Delete?", isPresented: $showDeleteConfirm) {
@@ -85,27 +85,27 @@ struct MemoEditorView: View {
         HStack {
             Button("Cancel") { dismiss() }
                 .font(.system(size: 16, weight: .semibold, design: .rounded))
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primaryInverted)
                 .frame(minWidth: 44, minHeight: 44)
 
             Spacer()
 
             Text(isEditing ? "Edit" : "Memo")
                 .font(.system(size: 17, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primaryInverted)
 
             Spacer()
 
             Button("Save") { saveMemo() }
                 .font(.system(size: 16, weight: .bold, design: .rounded))
-                .foregroundStyle(canSave ? JohoColors.white : JohoColors.white.opacity(0.4))
+                .foregroundStyle(canSave ? colors.primaryInverted : colors.primaryInverted.opacity(0.4))
                 .frame(minWidth: 44, minHeight: 44)
                 .disabled(!canSave)
         }
         .padding(.horizontal, 16)
         .padding(.top, 8)
         .padding(.bottom, 8)
-        .background(JohoColors.black)
+        .background(colors.canvas)
     }
 
     // MARK: - Content Card
@@ -206,7 +206,7 @@ struct MemoEditorView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .stroke(JohoColors.black, lineWidth: 1.5)
+                            .stroke(colors.border, lineWidth: 1.5)
                     )
             }
             .buttonStyle(.plain)
@@ -249,14 +249,14 @@ struct MemoEditorView: View {
                 Text(label)
                     .font(.system(size: 11, weight: .bold, design: .rounded))
             }
-            .foregroundStyle(isActive ? JohoColors.white : colors.primary)
+            .foregroundStyle(isActive ? colors.primaryInverted : colors.primary)
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
-            .background(isActive ? JohoColors.black : colors.surface)
+            .background(isActive ? colors.primary : colors.surface)
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(JohoColors.black, lineWidth: isActive ? 2 : 1)
+                    .stroke(colors.border, lineWidth: isActive ? 2 : 1)
             )
         }
         .buttonStyle(.plain)
@@ -292,7 +292,7 @@ struct MemoEditorView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: 6, style: .continuous)
-                            .stroke(JohoColors.black, lineWidth: 1.5)
+                            .stroke(colors.border, lineWidth: 1.5)
                     )
             }
         }
@@ -301,7 +301,7 @@ struct MemoEditorView: View {
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(JohoColors.black, lineWidth: 1.5)
+                .stroke(colors.border, lineWidth: 1.5)
         )
     }
 
@@ -319,7 +319,7 @@ struct MemoEditorView: View {
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(JohoColors.black, lineWidth: 1.5)
+                .stroke(colors.border, lineWidth: 1.5)
         )
     }
 
@@ -380,14 +380,14 @@ struct MemoEditorView: View {
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(JohoColors.black, lineWidth: 1.5)
+                .stroke(colors.border, lineWidth: 1.5)
         )
         .sheet(isPresented: $showContactPicker) {
             MemoContactPicker(
                 selectedContactID: $linkedContactID,
                 selectedContactName: $linkedContactName
             )
-            .presentationBackground(JohoColors.black)
+            .presentationBackground(colors.canvas)
             .presentationDetents([.medium, .large])
         }
     }
@@ -417,18 +417,18 @@ struct MemoEditorView: View {
             HStack {
                 Button("Cancel") { showDatePicker = false }
                     .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
                 Spacer()
                 Text("Date")
                     .font(.system(size: 17, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
                 Spacer()
                 Button("Done") { showDatePicker = false }
                     .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
             }
             .padding(16)
-            .background(JohoColors.black)
+            .background(colors.canvas)
 
             DatePicker("", selection: $date, displayedComponents: .date)
                 .datePickerStyle(.graphical)
@@ -444,7 +444,7 @@ struct MemoEditorView: View {
 
             Spacer()
         }
-        .background(JohoColors.black)
+        .background(colors.canvas)
     }
 
     // MARK: - Validation
@@ -546,14 +546,14 @@ struct MemoContactPicker: View {
             HStack {
                 Button("Cancel") { dismiss() }
                     .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
                     .frame(minWidth: 44, minHeight: 44)
 
                 Spacer()
 
                 Text("Link Contact")
                     .font(.system(size: 17, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.white)
+                    .foregroundStyle(colors.primaryInverted)
 
                 Spacer()
 
@@ -563,7 +563,7 @@ struct MemoContactPicker: View {
             .padding(.horizontal, 16)
             .padding(.top, 8)
             .padding(.bottom, 8)
-            .background(JohoColors.black)
+            .background(colors.canvas)
 
             // Contact list
             ScrollView {
@@ -583,7 +583,7 @@ struct MemoContactPicker: View {
             }
             .background(colors.surface)
         }
-        .background(JohoColors.black)
+        .background(colors.canvas)
     }
 
     private func contactRow(_ contact: Contact) -> some View {
@@ -597,9 +597,9 @@ struct MemoContactPicker: View {
                 // Avatar
                 ZStack {
                     Circle()
-                        .fill(JohoColors.black.opacity(0.1))
+                        .fill(colors.primary.opacity(0.1))
                         .frame(width: 40, height: 40)
-                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1))
 
                     Text(contact.initials)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
@@ -624,13 +624,13 @@ struct MemoContactPicker: View {
                 // Checkmark if selected
                 if selectedContactID == contact.id {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .font(.system(size: 20))
                 }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
-            .background(selectedContactID == contact.id ? JohoColors.black.opacity(0.1) : colors.surface)
+            .background(selectedContactID == contact.id ? colors.primary.opacity(0.1) : colors.surface)
             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
         .buttonStyle(.plain)

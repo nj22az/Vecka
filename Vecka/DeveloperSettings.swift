@@ -86,7 +86,7 @@ struct DeveloperSettingsView: View {
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(JohoColors.black, lineWidth: 1.5)
+                                .stroke(colors.border, lineWidth: 1.5)
                         )
 
                     Text("DEVELOPER")
@@ -98,7 +98,7 @@ struct DeveloperSettingsView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
 
                 HStack(spacing: 4) {
@@ -425,7 +425,7 @@ struct DeveloperSettingsView: View {
             Circle()
                 .fill(color)
                 .frame(width: 8, height: 8)
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                .overlay(Circle().stroke(colors.border, lineWidth: 1))
 
             Text(label)
                 .font(.system(size: 10, weight: .black, design: .rounded))

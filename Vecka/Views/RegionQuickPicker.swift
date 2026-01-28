@@ -38,17 +38,17 @@ struct RegionQuickPicker: View {
             // Expanded content
             if isExpanded {
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(height: 1.5)
 
                 expandedContent
             }
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
         .alert("Limit Reached", isPresented: $showSelectionLimitAlert) {
             Button("OK", role: .cancel) {}
@@ -70,21 +70,21 @@ struct RegionQuickPicker: View {
                 // Globe icon
                 Image(systemName: "globe")
                     .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                    .foregroundStyle(colors.primary.opacity(0.7))
 
                 // Selected region pills (up to 3 shown)
                 HStack(spacing: 4) {
                     ForEach(Array(selectedRegions.regions.prefix(3)), id: \.self) { code in
                         Text(code)
                             .font(.system(size: 9, weight: .black, design: .rounded))
-                            .foregroundStyle(JohoColors.white)
+                            .foregroundStyle(colors.primaryInverted)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 3)
                             .background(selectedColor)
                             .clipShape(Capsule())
                             .overlay(
                                 Capsule()
-                                    .stroke(JohoColors.black, lineWidth: 1)
+                                    .stroke(colors.border, lineWidth: 1)
                             )
                     }
 
@@ -92,14 +92,14 @@ struct RegionQuickPicker: View {
                     if selectedRegions.regions.count > 3 {
                         Text("+\(selectedRegions.regions.count - 3)")
                             .font(.system(size: 9, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
                             .padding(.horizontal, 6)
                             .padding(.vertical, 3)
-                            .background(JohoColors.black.opacity(0.1))
+                            .background(colors.primary.opacity(0.1))
                             .clipShape(Capsule())
                             .overlay(
                                 Capsule()
-                                    .stroke(JohoColors.black, lineWidth: 1)
+                                    .stroke(colors.border, lineWidth: 1)
                             )
                     }
                 }
@@ -109,7 +109,7 @@ struct RegionQuickPicker: View {
                 // Expand/collapse indicator
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                     .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(0.5))
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingMD)
@@ -128,7 +128,7 @@ struct RegionQuickPicker: View {
                 Text("HOLIDAY REGIONS")
                     .font(.system(size: 10, weight: .black, design: .rounded))
                     .tracking(0.5)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 Spacer()
 
@@ -141,10 +141,10 @@ struct RegionQuickPicker: View {
                 } label: {
                     Text("Done")
                         .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.white)
+                        .foregroundStyle(colors.primaryInverted)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(JohoColors.black)
+                        .background(colors.primary)
                         .clipShape(Capsule())
                 }
                 .buttonStyle(.plain)
@@ -160,7 +160,7 @@ struct RegionQuickPicker: View {
 
                         if continent != RegionSelectionView.Continent.allCases.last {
                             Rectangle()
-                                .fill(JohoColors.black.opacity(0.1))
+                                .fill(colors.border.opacity(0.5))
                                 .frame(height: 1)
                         }
                     }
@@ -171,7 +171,7 @@ struct RegionQuickPicker: View {
             HStack {
                 Text("\(selectedCount)/5 selected")
                     .font(.system(size: 10, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(0.5))
 
                 Spacer()
             }
@@ -201,27 +201,27 @@ struct RegionQuickPicker: View {
                     // Chevron
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
                         .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(JohoColors.black.opacity(0.4))
+                        .foregroundStyle(colors.primary.opacity(0.4))
                         .frame(width: 10)
 
                     // Continent icon
                     Image(systemName: continent.symbol)
                         .font(.system(size: 9, weight: .bold))
-                        .foregroundStyle(JohoColors.white)
+                        .foregroundStyle(colors.primaryInverted)
                         .frame(width: 16, height: 16)
-                        .background(JohoColors.black)
+                        .background(colors.primary)
                         .clipShape(Squircle(cornerRadius: 3))
 
                     // Continent name
                     Text(continent.rawValue.uppercased())
                         .font(.system(size: 9, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     // Selected badge
                     if selected > 0 {
                         Text("\(selected)")
                             .font(.system(size: 8, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.white)
+                            .foregroundStyle(colors.primaryInverted)
                             .padding(.horizontal, 4)
                             .padding(.vertical, 2)
                             .background(selectedColor)
@@ -267,14 +267,14 @@ struct RegionQuickPicker: View {
                 Text(region.displayName)
                     .font(.system(size: 10, weight: .medium, design: .rounded))
             }
-            .foregroundStyle(isSelected ? JohoColors.white : JohoColors.black)
+            .foregroundStyle(isSelected ? colors.primaryInverted : colors.primary)
             .padding(.horizontal, 8)
             .padding(.vertical, 6)
-            .background(isSelected ? selectedColor : JohoColors.white)
+            .background(isSelected ? selectedColor : colors.surface)
             .clipShape(Squircle(cornerRadius: 6))
             .overlay(
                 Squircle(cornerRadius: 6)
-                    .stroke(JohoColors.black, lineWidth: isSelected ? 1.5 : 1)
+                    .stroke(colors.border, lineWidth: isSelected ? 1.5 : 1)
             )
         }
         .buttonStyle(.plain)
@@ -306,11 +306,14 @@ struct RegionQuickPicker: View {
 // MARK: - Preview
 
 #Preview {
+    @Previewable @State var colorMode: JohoColorMode = .light
+
     VStack {
         RegionQuickPicker(selectedRegions: .constant(HolidayRegionSelection(regions: ["SE", "VN"])))
             .padding()
 
         Spacer()
     }
-    .background(JohoColors.background)
+    .johoBackground()
+    .environment(\.johoColorMode, colorMode)
 }

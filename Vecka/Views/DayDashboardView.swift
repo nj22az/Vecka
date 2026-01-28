@@ -18,7 +18,7 @@ enum EventTextColor: String, CaseIterable {
 
     var color: Color {
         switch self {
-        case .black: return JohoColors.black
+        case .black: return Color.black
         case .red: return Color(hex: "D32F2F")  // Deep red
         case .blue: return Color(hex: "1976D2")  // Deep blue
         }
@@ -26,7 +26,7 @@ enum EventTextColor: String, CaseIterable {
 
     var darkModeColor: Color {
         switch self {
-        case .black: return JohoColors.white
+        case .black: return Color.white
         case .red: return Color(hex: "EF5350")  // Lighter red for dark mode
         case .blue: return Color(hex: "42A5F5")  // Lighter blue for dark mode
         }
@@ -99,7 +99,7 @@ struct DayDashboardView: View {
 
     /// 情報デザイン: Border color for dark mode (white borders)
     private var eventBorderColor: Color {
-        colorMode == .dark ? JohoColors.white : JohoColors.black
+        colorMode == .dark ? Color.white : Color.black
     }
 
     private let previewLimit = 3

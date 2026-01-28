@@ -253,35 +253,35 @@ struct ContactDetailView: View {
             // 情報デザイン: Edit icon in colored zone
             Image(systemName: "pencil")
                 .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primaryInverted)
                 .frame(width: 28, height: 28)
                 .background(accentColor)
                 .clipShape(Circle())
-                .overlay(Circle().stroke(JohoColors.black, lineWidth: 1.5))
+                .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
 
             // Title pill (情報デザイン: BLACK on WHITE = prominent)
             Text("EDIT MODE")
                 .font(.system(size: 12, weight: .black, design: .rounded))
                 .tracking(0.5)
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primaryInverted)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
                 .background(accentColor)
                 .clipShape(Capsule())
-                .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1.5))
+                .overlay(Capsule().stroke(colors.border, lineWidth: 1.5))
 
             Spacer()
 
             Text("Tap → to save")
                 .font(.system(size: 11, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.6))
+                .foregroundStyle(colors.primary.opacity(0.6))
         }
         .padding(JohoDimensions.spacingMD)
         .background(lightBackground)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
         )
     }
 
@@ -308,11 +308,11 @@ struct ContactDetailView: View {
                                         Spacer()
                                         Image(systemName: "camera.fill")
                                             .font(.system(size: 14, weight: .bold, design: .rounded))
-                                            .foregroundStyle(JohoColors.white)
+                                            .foregroundStyle(colors.primaryInverted)
                                             .frame(width: 28, height: 28)
                                             .background(accentColor)
                                             .clipShape(Circle())
-                                            .overlay(Circle().stroke(JohoColors.white, lineWidth: 2))
+                                            .overlay(Circle().stroke(colors.primaryInverted, lineWidth: 2))
                                     }
                                 }
                             )
@@ -328,7 +328,7 @@ struct ContactDetailView: View {
                     VStack(spacing: JohoDimensions.spacingSM) {
                         TextField("First Name", text: $editFirstName)
                             .font(.system(size: 22, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .multilineTextAlignment(.center)
 
                         TextField("Last Name", text: $editLastName)
@@ -476,7 +476,7 @@ struct ContactDetailView: View {
                 // Label below
                 Text(label)
                     .font(.system(size: 9, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .tracking(0.5)
             }
         }
@@ -506,15 +506,15 @@ struct ContactDetailView: View {
 
                     TextField("Phone number", text: $editPhone)
                         .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .keyboardType(.phonePad)
                 }
                 .padding(JohoDimensions.spacingMD)
-                .background(JohoColors.white)
+                .background(colors.surface)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                        .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
                 )
             } else {
                 // View mode: display with action buttons
@@ -548,16 +548,16 @@ struct ContactDetailView: View {
 
                     TextField("Email address", text: $editEmail)
                         .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .keyboardType(.emailAddress)
                         .textInputAutocapitalization(.never)
                 }
                 .padding(JohoDimensions.spacingMD)
-                .background(JohoColors.white)
+                .background(colors.surface)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                        .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
                 )
             } else {
                 // View mode
@@ -615,18 +615,18 @@ struct ContactDetailView: View {
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .stroke(JohoColors.black, lineWidth: 1)
+                        .stroke(colors.border, lineWidth: 1)
                 )
 
             // Service name + username
             VStack(alignment: .leading, spacing: 2) {
                 Text(profile.service.uppercased())
                     .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(0.6))
 
                 Text("@\(profile.username)")
                     .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
             }
 
             Spacer()
@@ -634,14 +634,14 @@ struct ContactDetailView: View {
             // External link indicator
             Image(systemName: "arrow.up.right")
                 .font(.system(size: 12, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.6))
+                .foregroundStyle(colors.primary.opacity(0.6))
         }
         .padding(JohoDimensions.spacingSM)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(JohoColors.black, lineWidth: 1)
+                .stroke(colors.border, lineWidth: 1)
         )
     }
 
@@ -710,7 +710,7 @@ struct ContactDetailView: View {
 
                         TextField("Street address", text: $editStreet)
                             .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                     }
                     .padding(JohoDimensions.spacingMD)
                     .background(colors.surface)
@@ -724,26 +724,26 @@ struct ContactDetailView: View {
                     HStack(spacing: JohoDimensions.spacingSM) {
                         TextField("City", text: $editCity)
                             .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .padding(JohoDimensions.spacingMD)
-                            .background(JohoColors.white)
+                            .background(colors.surface)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                             .overlay(
                                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                                    .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
                             )
 
                         TextField("Postal", text: $editPostalCode)
                             .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .keyboardType(.numbersAndPunctuation)
                             .padding(JohoDimensions.spacingMD)
                             .frame(width: 100)
-                            .background(JohoColors.white)
+                            .background(colors.surface)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                             .overlay(
                                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                    .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                                    .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
                             )
                     }
                 }
@@ -759,7 +759,7 @@ struct ContactDetailView: View {
 
                                 Text(address.formattedAddress)
                                     .font(JohoFont.body)
-                                    .foregroundStyle(JohoColors.black)
+                                    .foregroundStyle(colors.primary)
                             }
 
                             Spacer()
@@ -772,21 +772,21 @@ struct ContactDetailView: View {
                                     .font(.system(size: 16, weight: .bold, design: .rounded))
                                     .foregroundStyle(JohoColors.cyan)
                                     .johoTouchTarget()
-                                    .background(JohoColors.white)
+                                    .background(colors.surface)
                                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                     .overlay(
                                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                            .stroke(JohoColors.black, lineWidth: 1.5)
+                                            .stroke(colors.border, lineWidth: 1.5)
                                     )
                             }
                             .buttonStyle(.plain)
                         }
                         .padding(JohoDimensions.spacingMD)
-                        .background(JohoColors.white)
+                        .background(colors.surface)
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                                .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
                         )
                     }
                 }
@@ -815,14 +815,14 @@ struct ContactDetailView: View {
                                 Text("HAS")
                                     .font(.system(size: 11, weight: .bold, design: .rounded))
                             }
-                            .foregroundStyle(editHasBirthday && editBirthdayKnown ? JohoColors.white : JohoColors.black)
+                            .foregroundStyle(editHasBirthday && editBirthdayKnown ? colors.primaryInverted : colors.primary)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 10)
-                            .background(editHasBirthday && editBirthdayKnown ? SpecialDayType.birthday.accentColor : JohoColors.white)
+                            .background(editHasBirthday && editBirthdayKnown ? SpecialDayType.birthday.accentColor : colors.surface)
                             .clipShape(Squircle(cornerRadius: 8))
                             .overlay(
                                 Squircle(cornerRadius: 8)
-                                    .stroke(JohoColors.black, lineWidth: editHasBirthday && editBirthdayKnown ? 1.5 : 1)
+                                    .stroke(colors.border, lineWidth: editHasBirthday && editBirthdayKnown ? 1.5 : 1)
                             )
                         }
                         .buttonStyle(.plain)
@@ -838,14 +838,14 @@ struct ContactDetailView: View {
                                 Text("NONE")
                                     .font(.system(size: 11, weight: .bold, design: .rounded))
                             }
-                            .foregroundStyle(!editHasBirthday && editBirthdayKnown ? JohoColors.white : JohoColors.black)
+                            .foregroundStyle(!editHasBirthday && editBirthdayKnown ? colors.primaryInverted : colors.primary)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 10)
-                            .background(!editHasBirthday && editBirthdayKnown ? JohoColors.black : JohoColors.white)
+                            .background(!editHasBirthday && editBirthdayKnown ? colors.primary : colors.surface)
                             .clipShape(Squircle(cornerRadius: 8))
                             .overlay(
                                 Squircle(cornerRadius: 8)
-                                    .stroke(JohoColors.black, lineWidth: !editHasBirthday && editBirthdayKnown ? 1.5 : 1)
+                                    .stroke(colors.border, lineWidth: !editHasBirthday && editBirthdayKnown ? 1.5 : 1)
                             )
                         }
                         .buttonStyle(.plain)
@@ -861,14 +861,14 @@ struct ContactDetailView: View {
                                 Text("N/A")
                                     .font(.system(size: 11, weight: .bold, design: .rounded))
                             }
-                            .foregroundStyle(!editBirthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.6))
+                            .foregroundStyle(!editBirthdayKnown ? colors.primaryInverted : colors.primary.opacity(0.6))
                             .padding(.horizontal, 14)
                             .padding(.vertical, 10)
-                            .background(!editBirthdayKnown ? JohoColors.black.opacity(0.6) : JohoColors.white)
+                            .background(!editBirthdayKnown ? colors.primary.opacity(0.6) : colors.surface)
                             .clipShape(Squircle(cornerRadius: 8))
                             .overlay(
                                 Squircle(cornerRadius: 8)
-                                    .stroke(JohoColors.black, lineWidth: 1)
+                                    .stroke(colors.border, lineWidth: 1)
                             )
                         }
                         .buttonStyle(.plain)
@@ -894,12 +894,12 @@ struct ContactDetailView: View {
                             } label: {
                                 Text(String(editYear))
                                     .font(.system(size: 15, weight: .medium, design: .rounded))
-                                    .foregroundStyle(JohoColors.black)
+                                    .foregroundStyle(colors.primary)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 8)
                                     .background(colors.inputBackground)
                                     .clipShape(Capsule())
-                                    .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
+                                    .overlay(Capsule().stroke(colors.border, lineWidth: 1))
                             }
 
                             // Month (情報デザイン: solid background + border)
@@ -910,12 +910,12 @@ struct ContactDetailView: View {
                             } label: {
                                 Text(monthName(editMonth))
                                     .font(.system(size: 15, weight: .medium, design: .rounded))
-                                    .foregroundStyle(JohoColors.black)
+                                    .foregroundStyle(colors.primary)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 8)
                                     .background(colors.inputBackground)
                                     .clipShape(Capsule())
-                                    .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
+                                    .overlay(Capsule().stroke(colors.border, lineWidth: 1))
                             }
 
                             // Day (情報デザイン: solid background + border)
@@ -926,22 +926,22 @@ struct ContactDetailView: View {
                             } label: {
                                 Text("\(editDay)")
                                     .font(.system(size: 15, weight: .medium, design: .rounded))
-                                    .foregroundStyle(JohoColors.black)
+                                    .foregroundStyle(colors.primary)
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 8)
                                     .background(colors.inputBackground)
                                     .clipShape(Capsule())
-                                    .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
+                                    .overlay(Capsule().stroke(colors.border, lineWidth: 1))
                             }
 
                             Spacer()
                         }
                         .padding(JohoDimensions.spacingMD)
-                        .background(JohoColors.white)
+                        .background(colors.surface)
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                                .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
                         )
                     }
 
@@ -960,7 +960,7 @@ struct ContactDetailView: View {
                         if let birthday = contact.birthday {
                             Text(birthday.formatted(.dateTime.month(.wide).day()))
                                 .font(JohoFont.headline)
-                                .foregroundStyle(JohoColors.black)
+                                .foregroundStyle(colors.primary)
 
                             // Age calculation
                             if let age = calculateAge(from: birthday) {
@@ -979,11 +979,11 @@ struct ContactDetailView: View {
                         .foregroundStyle(SpecialDayType.birthday.accentColor)
                 }
                 .padding(JohoDimensions.spacingMD)
-                .background(JohoColors.white)
+                .background(colors.surface)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                        .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
                 )
             }
         }
@@ -1022,7 +1022,7 @@ struct ContactDetailView: View {
                 // Edit mode: multiline text editor
                 TextField("Notes", text: $editNotes, axis: .vertical)
                     .font(JohoFont.body)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .lineLimit(3...10)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(JohoDimensions.spacingMD)
@@ -1037,14 +1037,14 @@ struct ContactDetailView: View {
                 if let note = contact.note, !note.isEmpty {
                     Text(note)
                         .font(JohoFont.body)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(JohoDimensions.spacingMD)
-                        .background(JohoColors.white)
+                        .background(colors.surface)
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin)
+                                .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
                         )
                 }
             }
@@ -1077,27 +1077,27 @@ struct ContactDetailView: View {
                                 // Icon
                                 Image(systemName: group.icon)
                                     .font(.system(size: 18, weight: .bold, design: .rounded))
-                                    .foregroundStyle(JohoColors.black)
+                                    .foregroundStyle(colors.primaryInverted)
 
                                 // Label
                                 Text(group.localizedName)
                                     .font(.system(size: 10, weight: .bold, design: .rounded))
-                                    .foregroundStyle(JohoColors.black)
+                                    .foregroundStyle(colors.primaryInverted)
                                     .lineLimit(1)
 
                                 // Selection indicator
                                 Circle()
-                                    .fill(isSelected ? JohoColors.black : colors.inputBackground)
+                                    .fill(isSelected ? colors.primary : colors.inputBackground)
                                     .frame(width: 8, height: 8)
-                                    .overlay(Circle().stroke(JohoColors.black, lineWidth: JohoDimensions.borderThin))
+                                    .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
-                            .background(isSelected ? groupColor : JohoColors.white)
+                            .background(isSelected ? groupColor : colors.surface)
                             .clipShape(Squircle(cornerRadius: 10))
                             .overlay(
                                 Squircle(cornerRadius: 10)
-                                    .stroke(JohoColors.black, lineWidth: isSelected ? 2 : 1)
+                                    .stroke(colors.border, lineWidth: isSelected ? 2 : 1)
                             )
                         }
                         .buttonStyle(.plain)
@@ -1109,17 +1109,17 @@ struct ContactDetailView: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: contact.group.icon)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primaryInverted)
 
                     Text(contact.group.localizedName)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primaryInverted)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
                 .background(groupColor)
                 .clipShape(Capsule())
-                .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1.5))
+                .overlay(Capsule().stroke(colors.border, lineWidth: 1.5))
             }
         }
     }
@@ -1189,7 +1189,7 @@ struct ContactDetailView: View {
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(JohoColors.black, lineWidth: 1)
+                            .stroke(colors.border, lineWidth: 1)
                     )
 
                 JohoPill(text: title, style: .whiteOnBlack, size: .medium)
@@ -1222,7 +1222,7 @@ struct ContactDetailView: View {
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .stroke(JohoColors.black, lineWidth: 1.5)
+                        .stroke(colors.border, lineWidth: 1.5)
                 )
 
             Text(title)
@@ -1300,7 +1300,7 @@ struct ContactDetailView: View {
                     .scaledToFill()
                     .frame(width: 100, height: 100)
                     .clipShape(Circle())
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+                    .overlay(Circle().stroke(colors.border, lineWidth: 2))
             } else {
                 // Placeholder (情報デザイン: solid semantic background)
                 Circle()
@@ -1311,10 +1311,10 @@ struct ContactDetailView: View {
                             .font(.system(size: 36, weight: .bold, design: .rounded))
                             .foregroundStyle(accentColor)
                     )
-                    .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+                    .overlay(Circle().stroke(colors.border, lineWidth: 2))
             }
         }
-        .shadow(color: JohoColors.black, radius: 0, x: 2, y: 2)
+        .shadow(color: colors.border, radius: 0, x: 2, y: 2)
     }
 
     // MARK: - Control Buttons
@@ -1352,7 +1352,7 @@ struct ContactDetailView: View {
         } label: {
             Image(systemName: isEditMode ? "lock.open.fill" : "lock.fill")
                 .font(.system(size: 18, weight: .bold, design: .rounded))
-                .foregroundStyle(isEditMode ? JohoColors.white : colors.primary.opacity(0.6))
+                .foregroundStyle(isEditMode ? colors.primaryInverted : colors.primary.opacity(0.6))
                 .johoTouchTarget()
                 .background(isEditMode ? accentColor : colors.surface)
                 .clipShape(Circle())
@@ -1371,12 +1371,12 @@ struct ContactDetailView: View {
         } label: {
             Text("Save")
                 .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.white)
+                .foregroundStyle(colors.primaryInverted)
                 .padding(.horizontal, JohoDimensions.spacingMD)
                 .padding(.vertical, JohoDimensions.spacingSM)
                 .background(JohoColors.green)
                 .clipShape(Capsule())
-                .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1.5))
+                .overlay(Capsule().stroke(colors.border, lineWidth: 1.5))
         }
     }
 
@@ -1687,11 +1687,11 @@ struct JohoContactEditorSheet: View {
                     Button { dismiss() } label: {
                         Text(JohoSymbols.batsu)  // ×
                             .font(.system(size: 20, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .johoTouchTarget()
-                            .background(JohoColors.white)
+                            .background(colors.surface)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(JohoColors.black, lineWidth: 1.5))
+                            .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: 1.5))
                     }
 
                     Spacer()
@@ -1703,11 +1703,11 @@ struct JohoContactEditorSheet: View {
                     } label: {
                         Text(JohoSymbols.maru)  // ○
                             .font(.system(size: 26, weight: .bold, design: .rounded))
-                            .foregroundStyle(canSave ? JohoColors.white : JohoColors.black.opacity(0.6))
+                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(0.6))
                             .johoTouchTarget()
-                            .background(canSave ? accentColor : JohoColors.white)
+                            .background(canSave ? accentColor : colors.surface)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(JohoColors.black, lineWidth: 1.5))
+                            .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: 1.5))
                     }
                     .disabled(!canSave)
                 }
@@ -1731,7 +1731,7 @@ struct JohoContactEditorSheet: View {
                                         .scaledToFill()
                                         .frame(width: 120, height: 120)
                                         .clipShape(Circle())
-                                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 2))
+                                        .overlay(Circle().stroke(colors.border, lineWidth: 2))
                                 } else {
                                     // Elegant placeholder
                                     Circle()
@@ -1747,7 +1747,7 @@ struct JohoContactEditorSheet: View {
                                                     .foregroundStyle(colors.primary.opacity(0.6))
                                             }
                                         )
-                                        .overlay(Circle().stroke(JohoColors.black, lineWidth: 1))
+                                        .overlay(Circle().stroke(colors.border, lineWidth: 1))
                                 }
                             }
                             .frame(width: 120, height: 120)  // Fixed frame for tap area
@@ -1780,7 +1780,7 @@ struct JohoContactEditorSheet: View {
                     VStack(spacing: JohoDimensions.spacingSM) {
                         TextField("First Name", text: $firstName)
                             .font(.system(size: 24, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .multilineTextAlignment(.center)
 
                         TextField("Last Name", text: $lastName)
@@ -1791,7 +1791,7 @@ struct JohoContactEditorSheet: View {
 
                     // Thin separator
                     Rectangle()
-                        .fill(JohoColors.black)
+                        .fill(colors.border)
                         .frame(height: 0.5)
                         .padding(.horizontal, 40)
 
@@ -1834,7 +1834,7 @@ struct JohoContactEditorSheet: View {
                                 HStack(spacing: JohoDimensions.spacingSM) {
                                     TextField("City", text: $city)
                                         .font(.system(size: 15, weight: .medium, design: .rounded))
-                                        .foregroundStyle(JohoColors.black)
+                                        .foregroundStyle(colors.primary)
                                 }
                                 .padding(.horizontal, JohoDimensions.spacingMD)
                                 .padding(.vertical, JohoDimensions.spacingSM)
@@ -1844,7 +1844,7 @@ struct JohoContactEditorSheet: View {
                                 HStack(spacing: JohoDimensions.spacingSM) {
                                     TextField("Postal Code", text: $postalCode)
                                         .font(.system(size: 15, weight: .medium, design: .rounded))
-                                        .foregroundStyle(JohoColors.black)
+                                        .foregroundStyle(colors.primary)
                                         .keyboardType(.numbersAndPunctuation)
                                 }
                                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -1860,7 +1860,7 @@ struct JohoContactEditorSheet: View {
                             HStack(spacing: JohoDimensions.spacingSM) {
                                 Image(systemName: "birthday.cake")
                                     .font(.system(size: 16, weight: .medium, design: .rounded))
-                                    .foregroundStyle(birthdayKnown ? SpecialDayType.birthday.accentColor : JohoColors.black.opacity(0.6))
+                                    .foregroundStyle(birthdayKnown ? SpecialDayType.birthday.accentColor : colors.primary.opacity(0.6))
                                     .frame(width: 24)
 
                                 // Three-state toggle: Has birthday / No birthday yet / N/A
@@ -1872,12 +1872,12 @@ struct JohoContactEditorSheet: View {
                                     } label: {
                                         Text("HAS")
                                             .font(.system(size: 11, weight: .bold, design: .rounded))
-                                            .foregroundStyle(hasBirthday && birthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.6))
+                                            .foregroundStyle(hasBirthday && birthdayKnown ? colors.primaryInverted : colors.primary.opacity(0.6))
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
                                             .background(hasBirthday && birthdayKnown ? SpecialDayType.birthday.accentColor : colors.inputBackground)
                                             .clipShape(Capsule())
-                                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
+                                            .overlay(Capsule().stroke(colors.border, lineWidth: 1))
                                     }
 
                                     // Not entered yet (default)
@@ -1887,12 +1887,12 @@ struct JohoContactEditorSheet: View {
                                     } label: {
                                         Text("NONE")
                                             .font(.system(size: 11, weight: .bold, design: .rounded))
-                                            .foregroundStyle(!hasBirthday && birthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.6))
+                                            .foregroundStyle(!hasBirthday && birthdayKnown ? colors.primaryInverted : colors.primary.opacity(0.6))
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
-                                            .background(!hasBirthday && birthdayKnown ? JohoColors.black : colors.inputBackground)
+                                            .background(!hasBirthday && birthdayKnown ? colors.primary : colors.inputBackground)
                                             .clipShape(Capsule())
-                                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
+                                            .overlay(Capsule().stroke(colors.border, lineWidth: 1))
                                     }
 
                                     // N/A - explicitly unknown (won't show in Star page)
@@ -1902,12 +1902,12 @@ struct JohoContactEditorSheet: View {
                                     } label: {
                                         Text("N/A")
                                             .font(.system(size: 11, weight: .bold, design: .rounded))
-                                            .foregroundStyle(!birthdayKnown ? JohoColors.white : JohoColors.black.opacity(0.6))
+                                            .foregroundStyle(!birthdayKnown ? colors.primaryInverted : colors.primary.opacity(0.6))
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
                                             .background(!birthdayKnown ? JohoColors.red : colors.inputBackground)
                                             .clipShape(Capsule())
-                                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
+                                            .overlay(Capsule().stroke(colors.border, lineWidth: 1))
                                     }
                                 }
 
@@ -1927,12 +1927,12 @@ struct JohoContactEditorSheet: View {
                                     } label: {
                                         Text(String(selectedYear))
                                             .font(.system(size: 15, weight: .medium, design: .rounded))
-                                            .foregroundStyle(JohoColors.black)
+                                            .foregroundStyle(colors.primary)
                                             .padding(.horizontal, 12)
                                             .padding(.vertical, 8)
                                             .background(colors.inputBackground)
                                             .clipShape(Capsule())
-                                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
+                                            .overlay(Capsule().stroke(colors.border, lineWidth: 1))
                                     }
 
                                     // Month
@@ -1943,12 +1943,12 @@ struct JohoContactEditorSheet: View {
                                     } label: {
                                         Text(monthName(selectedMonth))
                                             .font(.system(size: 15, weight: .medium, design: .rounded))
-                                            .foregroundStyle(JohoColors.black)
+                                            .foregroundStyle(colors.primary)
                                             .padding(.horizontal, 12)
                                             .padding(.vertical, 8)
                                             .background(colors.inputBackground)
                                             .clipShape(Capsule())
-                                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
+                                            .overlay(Capsule().stroke(colors.border, lineWidth: 1))
                                     }
 
                                     // Day
@@ -1959,12 +1959,12 @@ struct JohoContactEditorSheet: View {
                                     } label: {
                                         Text("\(selectedDay)")
                                             .font(.system(size: 15, weight: .medium, design: .rounded))
-                                            .foregroundStyle(JohoColors.black)
+                                            .foregroundStyle(colors.primary)
                                             .padding(.horizontal, 12)
                                             .padding(.vertical, 8)
                                             .background(colors.inputBackground)
                                             .clipShape(Capsule())
-                                            .overlay(Capsule().stroke(JohoColors.black, lineWidth: 1))
+                                            .overlay(Capsule().stroke(colors.border, lineWidth: 1))
                                     }
 
                                     Spacer()
@@ -1986,11 +1986,11 @@ struct JohoContactEditorSheet: View {
                     .padding(.horizontal, JohoDimensions.spacingMD)
                 }
                 .padding(.vertical, JohoDimensions.spacingLG)
-                .background(JohoColors.white)
+                .background(colors.surface)
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                        .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
 
@@ -2032,30 +2032,30 @@ struct JohoContactEditorSheet: View {
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(JohoColors.black, lineWidth: 1.5)
+                            .stroke(colors.border, lineWidth: 1.5)
                     )
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("DECORATION")
                         .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                     Text("Tap to change icon")
                         .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                 }
 
                 Spacer()
 
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(0.6))
             }
             .padding(JohoDimensions.spacingMD)
-            .background(JohoColors.white)
+            .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(JohoColors.black, lineWidth: 1)
+                    .stroke(colors.border, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -2076,12 +2076,12 @@ struct JohoContactEditorSheet: View {
         HStack(spacing: JohoDimensions.spacingSM) {
             Image(systemName: icon)
                 .font(.system(size: 16, weight: .medium, design: .rounded))
-                .foregroundStyle(JohoColors.black.opacity(0.6))
+                .foregroundStyle(colors.primary.opacity(0.6))
                 .frame(width: 24)
 
             TextField(placeholder, text: text)
                 .font(.system(size: 15, weight: .medium, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, JohoDimensions.spacingSM)
@@ -2290,14 +2290,14 @@ struct CircularImageCropperView: View {
                             Text("Cancel")
                                 .font(.system(size: 16, weight: .semibold, design: .rounded))
                         }
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(Color.black)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
-                        .background(JohoColors.white)
+                        .background(Color.white)
                         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .stroke(JohoColors.black, lineWidth: 2)
+                                .stroke(Color.black, lineWidth: 2)
                         )
                     }
 
@@ -2309,10 +2309,10 @@ struct CircularImageCropperView: View {
                             Text("Done")
                                 .font(.system(size: 16, weight: .bold, design: .rounded))
                         }
-                        .foregroundStyle(JohoColors.white)
+                        .foregroundStyle(Color.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
-                        .background(JohoColors.black)
+                        .background(Color.black)
                         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
                 }
@@ -2478,7 +2478,7 @@ private struct ContactSymbolPicker: View {
                     Button { dismiss() } label: {
                         Text("Cancel")
                             .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                             .padding(.horizontal, JohoDimensions.spacingMD)
                             .padding(.vertical, JohoDimensions.spacingSM)
                             .background(colors.surface)
@@ -2493,21 +2493,21 @@ private struct ContactSymbolPicker: View {
 
                     Text("DECORATION")
                         .font(.system(size: 16, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     Spacer()
 
                     Button { dismiss() } label: {
                         Text("Done")
                             .font(JohoFont.body.bold())
-                            .foregroundStyle(JohoColors.white)
+                            .foregroundStyle(colors.primaryInverted)
                             .padding(.horizontal, JohoDimensions.spacingMD)
                             .padding(.vertical, JohoDimensions.spacingSM)
                             .background(accentColor)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(
                                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(JohoColors.black, lineWidth: 1.5)
+                                    .stroke(colors.border, lineWidth: 1.5)
                             )
                     }
                 }
@@ -2520,7 +2520,7 @@ private struct ContactSymbolPicker: View {
                         // Category header
                         Text(category.name)
                             .font(.system(size: 11, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(0.5))
                             .padding(.horizontal, JohoDimensions.spacingLG)
 
                         // Symbol grid
@@ -2533,13 +2533,13 @@ private struct ContactSymbolPicker: View {
                                     let isSelected = selectedSymbol == symbol
                                     Image(systemName: symbol)
                                         .font(.system(size: 22, weight: .bold, design: .rounded))
-                                        .foregroundStyle(isSelected ? accentColor : JohoColors.black)
+                                        .foregroundStyle(isSelected ? accentColor : colors.primary)
                                         .johoTouchTarget(52)
-                                        .background(isSelected ? lightBackground : JohoColors.white)
+                                        .background(isSelected ? lightBackground : colors.surface)
                                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                                         .overlay(
                                             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                                .stroke(JohoColors.black, lineWidth: isSelected ? 2 : 1)
+                                                .stroke(colors.border, lineWidth: isSelected ? 2 : 1)
                                         )
                                 }
                                 .buttonStyle(.plain)
@@ -2551,6 +2551,6 @@ private struct ContactSymbolPicker: View {
             }
             .padding(.bottom, JohoDimensions.spacingXL)
         }
-        .background(JohoColors.white)
+        .background(colors.surface)
     }
 }

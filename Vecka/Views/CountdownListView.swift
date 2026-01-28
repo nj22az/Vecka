@@ -19,6 +19,9 @@ struct CountdownListView: View {
     @State private var newEventDate: Date = Date()
     @State private var newEventIsAnnual: Bool = false
 
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     var body: some View {
         ScrollView {
             VStack(spacing: JohoDimensions.spacingLG) {
@@ -68,24 +71,24 @@ struct CountdownListView: View {
             // Icon zone (52×52pt) - matches Star Page month detail pattern
             Image(systemName: "calendar.badge.clock")
                 .font(.system(size: 24, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoColors.black)
+                .foregroundStyle(colors.primary)
                 .johoTouchTarget(52)
                 .background(JohoColors.purple.opacity(0.3))
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                        .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                 )
 
             // Title area
             VStack(alignment: .leading, spacing: 2) {
                 Text("EVENTS")
                     .font(JohoFont.displaySmall)
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
 
                 Text("\(customCountdowns.count) event\(customCountdowns.count == 1 ? "" : "s")")
                     .font(JohoFont.caption)
-                    .foregroundStyle(JohoColors.black.opacity(0.7))
+                    .foregroundStyle(colors.primary.opacity(0.7))
             }
 
             Spacer()
@@ -97,11 +100,11 @@ struct CountdownListView: View {
             }
         }
         .padding(JohoDimensions.spacingLG)
-        .background(JohoColors.white)
+        .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderThick)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
         .padding(.top, JohoDimensions.spacingSM)
@@ -145,14 +148,14 @@ struct CountdownListView: View {
 
                 // WALL (vertical divider)
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
                 // RIGHT: Event icon compartment (uses actual event icon)
                 Image(systemName: event.icon)
                     .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
             }
@@ -161,7 +164,7 @@ struct CountdownListView: View {
 
             // Horizontal divider
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 1.5)
 
             // Hero content (matches Star page item row style)
@@ -175,7 +178,7 @@ struct CountdownListView: View {
 
                 // WALL
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
@@ -183,18 +186,18 @@ struct CountdownListView: View {
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
                     Text(event.name)
                         .font(JohoFont.headline)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
 
                     Text(event.date.formatted(.dateTime.month(.wide).day().year()))
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 // WALL
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
@@ -204,15 +207,15 @@ struct CountdownListView: View {
                     if event.days == 0 {
                         Text("TODAY")
                             .font(JohoFont.headline)
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
                     } else {
                         Text("\(event.days)")
                             .font(JohoFont.displayMedium)
-                            .foregroundStyle(JohoColors.black)
+                            .foregroundStyle(colors.primary)
 
                         Text(event.days == 1 ? "DAY" : "DAYS")
                             .font(JohoFont.label)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
                     }
                 }
                 .frame(width: 84)
@@ -224,7 +227,7 @@ struct CountdownListView: View {
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
@@ -245,15 +248,15 @@ struct CountdownListView: View {
                     VStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: "calendar.badge.plus")
                             .font(.system(size: 24, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.black.opacity(0.4))
+                            .foregroundStyle(colors.primary.opacity(0.4))
 
                         Text("No Events")
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(JohoColors.black.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(0.6))
 
                         Text("Tap + to create your first event")
                             .font(JohoFont.caption)
-                            .foregroundStyle(JohoColors.black.opacity(0.4))
+                            .foregroundStyle(colors.primary.opacity(0.4))
                     }
                     .padding(JohoDimensions.spacingLG)
                     Spacer()
@@ -278,7 +281,7 @@ struct CountdownListView: View {
                     // Divider between items (not after last) - matches Star page
                     if index < customCountdowns.count - 1 {
                         Rectangle()
-                            .fill(JohoColors.black.opacity(0.3))
+                            .fill(colors.border.opacity(0.3))
                             .frame(height: 1)
                             .padding(.horizontal, 6)
                     }
@@ -327,14 +330,14 @@ struct CountdownListView: View {
 
                 // WALL (vertical divider)
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
                 // RIGHT: Icon compartment
                 Image(systemName: icon)
                     .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.black)
+                    .foregroundStyle(colors.primary)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
             }
@@ -343,7 +346,7 @@ struct CountdownListView: View {
 
             // Horizontal divider between header and items
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(height: 1.5)
 
             // Items in VStack for pixel-perfect 情報デザイン layout
@@ -356,7 +359,7 @@ struct CountdownListView: View {
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(JohoColors.black, lineWidth: JohoDimensions.borderMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
         )
     }
 
@@ -388,7 +391,7 @@ struct CountdownListView: View {
 
             // WALL (vertical divider)
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
@@ -397,7 +400,7 @@ struct CountdownListView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(name)
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(JohoColors.black)
+                        .foregroundStyle(colors.primary)
                         .lineLimit(1)
 
                     // 情報デザイン: Show task progress if event has tasks
@@ -414,14 +417,14 @@ struct CountdownListView: View {
                                "IN \(days)D"
                 Text(daysLabel)
                     .font(.system(size: 9, weight: .bold, design: .monospaced))
-                    .foregroundStyle(JohoColors.black.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(0.6))
             }
             .padding(.horizontal, 8)
             .frame(maxHeight: .infinity)
 
             // WALL (vertical divider)
             Rectangle()
-                .fill(JohoColors.black)
+                .fill(colors.border)
                 .frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
@@ -433,7 +436,7 @@ struct CountdownListView: View {
 
                 // WALL (vertical divider)
                 Rectangle()
-                    .fill(JohoColors.black)
+                    .fill(colors.border)
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
             }
@@ -447,7 +450,7 @@ struct CountdownListView: View {
                     .frame(width: 24, height: 24)
                     .background(JohoColors.cyan.opacity(0.15))
                     .clipShape(Squircle(cornerRadius: 6))
-                    .overlay(Squircle(cornerRadius: 6).stroke(JohoColors.black, lineWidth: 1))
+                    .overlay(Squircle(cornerRadius: 6).stroke(colors.border, lineWidth: 1))
             }
             .frame(width: 48, alignment: .center)
             .frame(maxHeight: .infinity)

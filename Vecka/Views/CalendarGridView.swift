@@ -351,9 +351,9 @@ extension CalendarGridView {
 
     // Text color following Joho contrast rules
     private func dayTextColor(for day: CalendarDay, isSelected: Bool) -> Color {
-        // Today = always black text (yellow background needs black for contrast)
+        // Today = always primary text (yellow background needs black in light, white in dark for contrast)
         if day.isToday {
-            return JohoColors.black
+            return colors.primary
         }
         // Selected = inverted text color
         if isSelected {
@@ -365,9 +365,9 @@ extension CalendarGridView {
 
     // Border color for day cells
     private func cellBorderColor(for day: CalendarDay, isSelected: Bool) -> Color {
-        // Today = black border (on yellow background)
+        // Today = border color (on yellow background)
         if day.isToday {
-            return JohoColors.black
+            return colors.border
         }
         // Selected = inverted border color
         if isSelected {
@@ -410,7 +410,7 @@ extension CalendarGridView {
                     .frame(width: 6, height: 6)
                     .overlay(
                         Circle()
-                            .stroke(day.isToday ? JohoColors.black.opacity(0.3) : colors.border.opacity(0.5), lineWidth: 0.5)
+                            .stroke(day.isToday ? colors.border.opacity(0.3) : colors.border.opacity(0.5), lineWidth: 0.5)
                     )
             }
 
@@ -488,7 +488,7 @@ extension CalendarGridView {
             } else if isFullMoon {
                 return JohoColors.pink
             } else if isToday {
-                return JohoColors.black.opacity(0.6)
+                return colors.primary.opacity(0.6)
             } else if isSelected {
                 return colors.primaryInverted.opacity(0.7)
             } else {

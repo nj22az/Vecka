@@ -103,7 +103,7 @@ struct ContactExportSheet: View {
                         HStack(spacing: 8) {
                             Image(systemName: allVisibleSelected ? "checkmark.square.fill" : "square")
                                 .font(.system(size: 18, weight: .bold, design: .rounded))
-                                .foregroundStyle(allVisibleSelected ? JohoColors.purple : JohoColors.black.opacity(0.4))
+                                .foregroundStyle(allVisibleSelected ? JohoColors.purple : colors.primary.opacity(0.4))
                             Text(allVisibleSelected ? "Deselect all" : "Select all")
                                 .font(.system(size: 13, weight: .medium, design: .rounded))
                                 .foregroundStyle(colors.primary)
@@ -161,7 +161,7 @@ struct ContactExportSheet: View {
                     } label: {
                         HStack(spacing: 8) {
                             if isExporting {
-                                ProgressView().tint(JohoColors.black)
+                                ProgressView().tint(colors.primary)
                             } else {
                                 Image(systemName: "square.and.arrow.up")
                                     .font(.system(size: 15, weight: .bold, design: .rounded))
@@ -228,7 +228,7 @@ struct ContactExportSheet: View {
             }
             .foregroundStyle(colors.primary)
             .frame(width: letter == nil ? 36 : 26, height: 36)
-            .background(isSelected ? JohoColors.purple : JohoColors.white)
+            .background(isSelected ? JohoColors.purple : colors.surface)
             .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
@@ -252,7 +252,7 @@ struct ContactExportSheet: View {
                 // Checkbox
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 22, weight: .medium, design: .rounded))
-                    .foregroundStyle(isSelected ? JohoColors.purple : JohoColors.black.opacity(0.3))
+                    .foregroundStyle(isSelected ? JohoColors.purple : colors.primary.opacity(0.3))
 
                 // Avatar
                 ZStack {
@@ -285,7 +285,7 @@ struct ContactExportSheet: View {
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
-            .background(isSelected ? JohoColors.purple.opacity(0.08) : JohoColors.white)
+            .background(isSelected ? JohoColors.purple.opacity(0.08) : colors.surface)
         }
         .buttonStyle(.plain)
     }
@@ -316,7 +316,7 @@ struct ContactExportSheet: View {
             .padding(.vertical, 6)
             .background(isOn.wrappedValue ? JohoColors.purple.opacity(0.3) : colors.primary.opacity(0.05))
             .clipShape(Capsule())
-            .overlay(Capsule().stroke(JohoColors.black, lineWidth: isOn.wrappedValue ? 1.5 : 1))
+            .overlay(Capsule().stroke(colors.border, lineWidth: isOn.wrappedValue ? 1.5 : 1))
         }
         .buttonStyle(.plain)
     }
