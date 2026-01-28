@@ -871,113 +871,61 @@ struct SpecialDaysListView: View {
         }
     }
 
-    /// 情報デザイン: State for unified add button popover
-    @State private var showingAddTypeChoice = false
+    /// 情報デザイン: State for unified add button sheet
+    @State private var showingCustomHolidayCreator = false
 
-    /// 情報デザイン: Unified add button - one plus that shows Holiday/Observance choice
+    /// 情報デザイン: Unified add button - black/white styling, opens creator sheet
     private var unifiedAddButton: some View {
         Button {
-            showingAddTypeChoice = true
+            showingCustomHolidayCreator = true
             HapticManager.impact(.light)
         } label: {
-            // Split-color plus button (pink/cyan)
-            ZStack {
-                // Pink half (left) for Holiday
-                JohoColors.pink.opacity(0.6)
-                    .clipShape(HalfCircle(isLeft: true))
-
-                // Cyan half (right) for Observance
-                JohoColors.cyan.opacity(0.6)
-                    .clipShape(HalfCircle(isLeft: false))
-
-                // Plus icon
-                Image(systemName: "plus")
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primary)
-            }
-            .frame(width: 28, height: 28)
-            .clipShape(Circle())
-            .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
+            // 情報デザイン: Simple black/white plus button
+            Image(systemName: "plus")
+                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 28, height: 28)
+                .background(colors.surface)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
         }
         .buttonStyle(.plain)
-        .popover(isPresented: $showingAddTypeChoice, arrowEdge: .bottom) {
-            addTypeChoicePopover
-                .presentationCompactAdaptation(.popover)
+        .sheet(isPresented: $showingCustomHolidayCreator) {
+            CustomHolidayCreatorSheet(
+                initialMonth: selectedMonth ?? Calendar.current.component(.month, from: Date()),
+                holidayIcon: customCategoryIcon(for: .holiday) ?? DisplayCategory.holiday.outlineIcon,
+                observanceIcon: customCategoryIcon(for: .observance) ?? DisplayCategory.observance.outlineIcon,
+                enabledRegions: holidayRegions.regions,
+                onSave: { type, name, about, region, year, month, day in
+                    createCustomHoliday(type: type, name: name, about: about, region: region, year: year, month: month, day: day)
+                }
+            )
+            .presentationCornerRadius(20)
         }
     }
 
-    /// 情報デザイン: Popover with Holiday/Observance choice
-    private var addTypeChoicePopover: some View {
-        VStack(spacing: 0) {
-            // Holiday option
-            Button {
-                showingAddTypeChoice = false
-                newSpecialDayType = .holiday
-                showingHolidayCreator = true
-                HapticManager.selection()
-            } label: {
-                HStack(spacing: 10) {
-                    Circle()
-                        .fill(JohoColors.pink)
-                        .frame(width: 12, height: 12)
-                        .overlay(Circle().stroke(colors.border, lineWidth: 1))
-
-                    Text("Holiday")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary)
-
-                    Spacer()
-
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(colors.primary.opacity(0.4))
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 14)
-                .background(JohoColors.pink.opacity(0.15))
-            }
-            .buttonStyle(.plain)
-
-            Rectangle()
-                .fill(colors.border)
-                .frame(height: 1)
-
-            // Observance option
-            Button {
-                showingAddTypeChoice = false
-                newSpecialDayType = .observance
-                showingHolidayCreator = true
-                HapticManager.selection()
-            } label: {
-                HStack(spacing: 10) {
-                    Circle()
-                        .fill(JohoColors.cyan)
-                        .frame(width: 12, height: 12)
-                        .overlay(Circle().stroke(colors.border, lineWidth: 1))
-
-                    Text("Observance")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary)
-
-                    Spacer()
-
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundStyle(colors.primary.opacity(0.4))
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 14)
-                .background(JohoColors.cyan.opacity(0.15))
-            }
-            .buttonStyle(.plain)
-        }
-        .frame(width: 180)
-        .background(colors.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(colors.border, lineWidth: 1.5)
+    /// 情報デザイン: Create a custom holiday/observance from user input
+    private func createCustomHoliday(type: SpecialDayType, name: String, about: String?, region: String, year: Int, month: Int, day: Int) {
+        let rule = HolidayRule(
+            name: name,
+            region: region,
+            isBankHoliday: type == .holiday,
+            titleOverride: name,
+            notes: about,
+            type: .fixed,
+            month: month,
+            day: day,
+            isSystemDefault: false,
+            isEnabled: true
         )
+        rule.userModifiedAt = Date()
+
+        modelContext.insert(rule)
+        try? modelContext.save()
+
+        // Refresh cache
+        holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: selectedYear)
+        HapticManager.notification(.success)
     }
 
     /// 情報デザイン: Category dot with count (tap to filter)
@@ -3165,6 +3113,551 @@ struct CategoryCustomizationSheet: View {
                 )
         }
         .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Custom Holiday Creator Sheet (情報デザイン)
+
+/// 情報デザイン: Sheet for creating custom holidays/observances
+struct CustomHolidayCreatorSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    // 情報デザイン: Initial month context (can be changed)
+    let initialMonth: Int
+    let holidayIcon: String      // Custom icon from category customization
+    let observanceIcon: String   // Custom icon from category customization
+    let enabledRegions: [String]
+    let onSave: (SpecialDayType, String, String?, String, Int, Int, Int) -> Void  // type, name, about, region, year, month, day
+
+    // Form state
+    @State private var selectedType: SpecialDayType = .holiday
+    @State private var name: String = ""
+    @State private var about: String = ""
+    @State private var selectedYear: Int = Calendar.current.component(.year, from: Date())
+    @State private var selectedMonth: Int = 1
+    @State private var selectedDay: Int = 1
+    @State private var selectedRegion: String = "PERSONAL"
+    @State private var showingCustomRegionInput = false
+    @State private var customRegionName: String = ""
+
+    private var yearRange: [Int] {
+        let current = Calendar.current.component(.year, from: Date())
+        return Array((current - 5)...(current + 10))
+    }
+
+    // 情報デザイン: Custom regions stored in UserDefaults
+    @AppStorage("customHolidayRegions") private var customRegionsData: Data = Data()
+
+    private var customRegions: [String] {
+        guard !customRegionsData.isEmpty,
+              let decoded = try? JSONDecoder().decode([String].self, from: customRegionsData) else {
+            return []
+        }
+        return decoded
+    }
+
+    private func addCustomRegion(_ name: String) {
+        var regions = customRegions
+        let normalized = name.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        guard !normalized.isEmpty, !regions.contains(normalized) else { return }
+        regions.append(normalized)
+        if let encoded = try? JSONEncoder().encode(regions) {
+            customRegionsData = encoded
+        }
+    }
+
+    private var accentColor: Color {
+        selectedType == .holiday ? JohoColors.pink : JohoColors.cyan
+    }
+
+    // 情報デザイン: Use customized icons from category picker
+    private var typeIcon: String {
+        selectedType == .holiday ? holidayIcon : observanceIcon
+    }
+
+    private func monthName(_ month: Int) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM"
+        let date = Calendar.current.date(from: DateComponents(year: 2024, month: month, day: 1)) ?? Date()
+        return formatter.string(from: date)
+    }
+
+    private var daysInSelectedMonth: Int {
+        let date = Calendar.current.date(from: DateComponents(year: selectedYear, month: selectedMonth, day: 1)) ?? Date()
+        return Calendar.current.range(of: .day, in: .month, for: date)?.count ?? 31
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header with month context
+            headerRow
+
+            Rectangle().fill(colors.border).frame(height: 2)
+
+            // Type selector (Holiday/Observance)
+            typeRow
+
+            Rectangle().fill(colors.border).frame(height: 1.5)
+
+            // Date picker (day of month)
+            dateRow
+
+            Rectangle().fill(colors.border).frame(height: 1.5)
+
+            // Name input
+            nameRow
+
+            Rectangle().fill(colors.border).frame(height: 1.5)
+
+            // About/Purpose input
+            aboutRow
+
+            Rectangle().fill(colors.border).frame(height: 1.5)
+
+            // Region picker
+            regionRow
+
+            Rectangle().fill(colors.border).frame(height: 2)
+
+            // Save button
+            saveRow
+
+            Spacer()
+        }
+        .background(colors.canvas)
+        .sheet(isPresented: $showingCustomRegionInput) {
+            customRegionInputSheet
+        }
+        .onAppear {
+            // Initialize from context
+            selectedMonth = initialMonth
+            let today = Calendar.current.component(.day, from: Date())
+            let currentMonth = Calendar.current.component(.month, from: Date())
+            selectedDay = (initialMonth == currentMonth) ? today : 1
+        }
+    }
+
+    // MARK: - Header Row
+
+    private var headerRow: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .frame(width: 32, height: 32)
+                    .background(colors.surface)
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
+            }
+
+            Spacer()
+
+            // 情報デザイン: Simple header
+            Text("NEW ENTRY")
+                .font(.system(size: 16, weight: .heavy, design: .rounded))
+                .foregroundStyle(colors.primary)
+
+            Spacer()
+
+            // Placeholder for symmetry
+            Color.clear.frame(width: 32, height: 32)
+        }
+        .padding(.horizontal, JohoDimensions.spacingLG)
+        .padding(.vertical, JohoDimensions.spacingMD)
+        .background(colors.surface)
+    }
+
+    // MARK: - Date Picker Row (情報デザイン: Year | Month | Day compartments, no glass)
+
+    private var dateRow: some View {
+        HStack(spacing: 0) {
+            // Icon column
+            Image(systemName: "calendar")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 48).frame(maxHeight: .infinity)
+
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
+
+            // Year dropdown
+            Menu {
+                ForEach(yearRange, id: \.self) { year in
+                    Button {
+                        selectedYear = year
+                        HapticManager.selection()
+                    } label: {
+                        Text(String(year))
+                    }
+                }
+            } label: {
+                Text(String(selectedYear))
+                    .font(.system(size: 14, weight: .bold, design: .monospaced))
+                    .foregroundStyle(colors.primary)
+                    .frame(maxWidth: .infinity).frame(maxHeight: .infinity)
+            }
+
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
+
+            // Month dropdown
+            Menu {
+                ForEach(1...12, id: \.self) { month in
+                    Button {
+                        selectedMonth = month
+                        // Adjust day if needed
+                        let maxDays = daysInSelectedMonth
+                        if selectedDay > maxDays { selectedDay = maxDays }
+                        HapticManager.selection()
+                    } label: {
+                        Text(monthName(month))
+                    }
+                }
+            } label: {
+                Text(monthName(selectedMonth))
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .frame(maxWidth: .infinity).frame(maxHeight: .infinity)
+            }
+
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
+
+            // Day dropdown
+            Menu {
+                ForEach(1...daysInSelectedMonth, id: \.self) { day in
+                    Button {
+                        selectedDay = day
+                        HapticManager.selection()
+                    } label: {
+                        Text("\(day)")
+                    }
+                }
+            } label: {
+                Text("\(selectedDay)")
+                    .font(.system(size: 14, weight: .bold, design: .monospaced))
+                    .foregroundStyle(colors.primary)
+                    .frame(width: 48).frame(maxHeight: .infinity)
+            }
+        }
+        .frame(height: 48)
+        .background(colors.surface)
+    }
+
+    // MARK: - Type Selector Row
+
+    private var typeRow: some View {
+        HStack(spacing: 0) {
+            // Icon column - shows the currently selected type's custom icon
+            Image(systemName: typeIcon)
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 48).frame(maxHeight: .infinity)
+
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
+
+            // Type pills with custom icons from category customization
+            HStack(spacing: JohoDimensions.spacingSM) {
+                typePill(.holiday, label: "HOLIDAY", icon: holidayIcon)
+                typePill(.observance, label: "OBSERVANCE", icon: observanceIcon)
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .frame(height: 56)
+        .background(accentColor.opacity(0.15))
+    }
+
+    private func typePill(_ type: SpecialDayType, label: String, icon: String) -> some View {
+        let isSelected = selectedType == type
+        let pillColor = type == .holiday ? JohoColors.pink : JohoColors.cyan
+
+        return Button {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                selectedType = type
+            }
+            HapticManager.selection()
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                Text(label)
+                    .font(.system(size: 12, weight: .heavy, design: .rounded))
+            }
+            .foregroundStyle(isSelected ? colors.primaryInverted : colors.primary)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            .background(isSelected ? pillColor : colors.surface)
+            .clipShape(Squircle(cornerRadius: 10))
+            .overlay(Squircle(cornerRadius: 10).stroke(colors.border, lineWidth: isSelected ? 2 : 1.5))
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Name Input Row
+
+    private var nameRow: some View {
+        HStack(spacing: 0) {
+            // Icon column
+            Image(systemName: "pencil")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 48).frame(maxHeight: .infinity)
+
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
+
+            // Text field
+            TextField("Name (e.g., Earth Day)", text: $name)
+                .font(.system(size: 14, weight: .medium, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .frame(maxHeight: .infinity)
+        }
+        .frame(height: 48)
+        .background(colors.surface)
+    }
+
+    // MARK: - About Input Row
+
+    private var aboutRow: some View {
+        HStack(spacing: 0) {
+            // Icon column
+            Image(systemName: "doc.text")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 48).frame(maxHeight: .infinity)
+
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
+
+            // Text field
+            TextField("About / Purpose (optional)", text: $about)
+                .font(.system(size: 14, weight: .medium, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .frame(maxHeight: .infinity)
+        }
+        .frame(height: 48)
+        .background(colors.surface)
+    }
+
+    // MARK: - Region Picker Row (情報デザイン: Menu dropdown, no horizontal scroll)
+
+    private var regionRow: some View {
+        HStack(spacing: 0) {
+            // Icon column
+            Image(systemName: "globe")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 48).frame(maxHeight: .infinity)
+
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
+
+            // Region dropdown (Menu)
+            Menu {
+                // Personal option
+                Button {
+                    selectedRegion = "PERSONAL"
+                    HapticManager.selection()
+                } label: {
+                    Label("Personal", systemImage: "person.fill")
+                }
+
+                Divider()
+
+                // Enabled regions from settings
+                ForEach(enabledRegions, id: \.self) { region in
+                    Button {
+                        selectedRegion = region
+                        HapticManager.selection()
+                    } label: {
+                        Label(regionDisplayName(region), systemImage: "flag.fill")
+                    }
+                }
+
+                // Custom regions (if any)
+                if !customRegions.isEmpty {
+                    Divider()
+                    ForEach(customRegions, id: \.self) { region in
+                        Button {
+                            selectedRegion = region
+                            HapticManager.selection()
+                        } label: {
+                            Label(region, systemImage: "star.fill")
+                        }
+                    }
+                }
+
+                Divider()
+
+                // Create custom region
+                Button {
+                    showingCustomRegionInput = true
+                } label: {
+                    Label("Create Custom...", systemImage: "plus")
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: regionIcon(for: selectedRegion))
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                    Text(selectedRegion == "PERSONAL" ? "Personal" : regionDisplayName(selectedRegion))
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                    Spacer()
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(colors.primary.opacity(0.5))
+                }
+                .foregroundStyle(colors.primary)
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .frame(maxHeight: .infinity)
+            }
+        }
+        .frame(height: 48)
+        .background(colors.surface)
+    }
+
+    private func regionIcon(for code: String) -> String {
+        if code == "PERSONAL" { return "person.fill" }
+        if customRegions.contains(code) { return "star.fill" }
+        return "flag.fill"
+    }
+
+    private func regionDisplayName(_ code: String) -> String {
+        switch code {
+        case "SE": return "Sweden"
+        case "US": return "USA"
+        case "VN": return "Vietnam"
+        case "NO": return "Norway"
+        case "DK": return "Denmark"
+        case "FI": return "Finland"
+        case "JP": return "Japan"
+        case "NORDIC": return "Nordic"
+        default: return code
+        }
+    }
+
+    // MARK: - Save Row
+
+    private var saveRow: some View {
+        Button {
+            guard !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                HapticManager.notification(.error)
+                return
+            }
+            onSave(selectedType, name.trimmingCharacters(in: .whitespacesAndNewlines),
+                   about.isEmpty ? nil : about.trimmingCharacters(in: .whitespacesAndNewlines),
+                   selectedRegion, selectedYear, selectedMonth, selectedDay)
+            dismiss()
+        } label: {
+            HStack {
+                Image(systemName: "checkmark")
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                Text("SAVE")
+                    .font(.system(size: 14, weight: .heavy, design: .rounded))
+            }
+            .foregroundStyle(name.isEmpty ? colors.primary.opacity(0.4) : colors.primaryInverted)
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)
+            .background(name.isEmpty ? colors.inputBackground : accentColor)
+            .clipShape(Squircle(cornerRadius: 12))
+            .overlay(Squircle(cornerRadius: 12).stroke(colors.border, lineWidth: 2))
+        }
+        .buttonStyle(.plain)
+        .disabled(name.isEmpty)
+        .padding(JohoDimensions.spacingLG)
+    }
+
+    // MARK: - Custom Region Input Sheet
+
+    private var customRegionInputSheet: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Button {
+                    showingCustomRegionInput = false
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .frame(width: 32, height: 32)
+                        .background(colors.surface)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
+                }
+
+                Spacer()
+
+                Text("CREATE REGION")
+                    .font(.system(size: 16, weight: .heavy, design: .rounded))
+                    .foregroundStyle(colors.primary)
+
+                Spacer()
+
+                Color.clear.frame(width: 32, height: 32)
+            }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.vertical, JohoDimensions.spacingMD)
+            .background(colors.surface)
+
+            Rectangle().fill(colors.border).frame(height: 2)
+
+            // Input row
+            HStack(spacing: 0) {
+                Image(systemName: "globe")
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .frame(width: 48).frame(maxHeight: .infinity)
+
+                Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
+
+                TextField("Region name (e.g., FAMILY)", text: $customRegionName)
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .textInputAutocapitalization(.characters)
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+                    .frame(maxHeight: .infinity)
+            }
+            .frame(height: 48)
+            .background(colors.surface)
+
+            Rectangle().fill(colors.border).frame(height: 2)
+
+            // Add button
+            Button {
+                let trimmed = customRegionName.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !trimmed.isEmpty else {
+                    HapticManager.notification(.error)
+                    return
+                }
+                addCustomRegion(trimmed)
+                selectedRegion = trimmed.uppercased()
+                customRegionName = ""
+                showingCustomRegionInput = false
+                HapticManager.notification(.success)
+            } label: {
+                HStack {
+                    Image(systemName: "plus")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                    Text("ADD REGION")
+                        .font(.system(size: 14, weight: .heavy, design: .rounded))
+                }
+                .foregroundStyle(customRegionName.isEmpty ? colors.primary.opacity(0.4) : colors.primaryInverted)
+                .frame(maxWidth: .infinity)
+                .frame(height: 48)
+                .background(customRegionName.isEmpty ? colors.inputBackground : accentColor)
+                .clipShape(Squircle(cornerRadius: 12))
+                .overlay(Squircle(cornerRadius: 12).stroke(colors.border, lineWidth: 2))
+            }
+            .buttonStyle(.plain)
+            .disabled(customRegionName.isEmpty)
+            .padding(JohoDimensions.spacingLG)
+
+            Spacer()
+        }
+        .background(colors.canvas)
+        .presentationDetents([.height(220)])
+        .presentationCornerRadius(20)
     }
 }
 
