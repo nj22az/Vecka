@@ -293,7 +293,7 @@ enum SectionZone {
     case events      // CYAN - scheduled time (alias for calendar)
     case countdowns  // CYAN - scheduled time (alias for calendar)
     case holidays    // PINK - celebrations, special days
-    case observances // PINK - celebrations (alias for holidays)
+    case observances // CYAN - scheduled cultural observances
     case birthdays   // PINK - celebrations (alias for holidays)
     case expenses    // GREEN - money, financial items
     case contacts    // PURPLE - people, relationships
@@ -306,12 +306,12 @@ enum SectionZone {
         case .notes:
             return JohoColors.yellow
 
-        // CYAN = SCHEDULED (all time-based items)
-        case .calendar, .trips, .events, .countdowns:
+        // CYAN = SCHEDULED (all time-based items + cultural observances)
+        case .calendar, .trips, .events, .countdowns, .observances:
             return JohoColors.cyan
 
-        // PINK = CELEBRATION (all special days)
-        case .holidays, .observances, .birthdays:
+        // PINK = CELEBRATION (holidays and birthdays)
+        case .holidays, .birthdays:
             return JohoColors.pink
 
         // GREEN = MONEY
@@ -333,9 +333,9 @@ enum SectionZone {
         switch self {
         case .notes:
             return JohoColors.yellow.opacity(0.25)       // Warm amber tint
-        case .calendar, .trips, .events, .countdowns:
+        case .calendar, .trips, .events, .countdowns, .observances:
             return JohoColors.cyan.opacity(0.25)          // Cool teal tint
-        case .holidays, .observances, .birthdays:
+        case .holidays, .birthdays:
             return JohoColors.pink.opacity(0.25)          // Soft rose tint
         case .expenses:
             return JohoColors.green.opacity(0.25)         // Mint tint

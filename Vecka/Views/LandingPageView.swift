@@ -291,7 +291,7 @@ struct LandingPageView: View {
     }
 
     /// Special days count for current month (matches Star page format)
-    /// Returns holidays (red●), observances (orange○), birthdays (pink○)
+    /// Returns holidays (pink●), observances (cyan◇), birthdays (yellow○)
     private var specialDaysThisMonth: (holidays: Int, observances: Int, birthdays: Int) {
         let calendar = Calendar.current
         let month = calendar.component(.month, from: today)

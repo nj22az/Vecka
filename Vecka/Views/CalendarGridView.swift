@@ -440,9 +440,9 @@ extension CalendarGridView {
             indicators.append(IndicatorInfo(icon: "birthday.cake.fill", color: JohoColors.pink))
         }
 
-        // 3. Observance - sparkles PINK (celebration category)
+        // 3. Observance - sparkles CYAN (cultural observances)
         if dataCheck?.hasObservance == true {
-            indicators.append(IndicatorInfo(icon: "sparkles", color: JohoColors.pink))
+            indicators.append(IndicatorInfo(icon: "sparkles", color: JohoColors.cyan))
         }
 
         // 4. Event - calendar.badge.clock CYAN (scheduled time items)

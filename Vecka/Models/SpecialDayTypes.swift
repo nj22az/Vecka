@@ -128,7 +128,7 @@ enum SpecialDayType: String, CaseIterable {
     var accentColor: Color {
         switch self {
         case .holiday: return Color(hex: "E53E3E")    // Red - "day off!"
-        case .observance: return Color(hex: "ED8936") // Orange - celebration
+        case .observance: return JohoColors.cyan       // Cyan - cultural observances
         case .birthday: return Color(hex: "D53F8C")   // Pink - birthdays
         case .memo, .note, .event: return Color(hex: "ECC94B")  // Yellow - memos
         case .trip: return Color(hex: "22D3EE")       // Cyan - trips (予定)
@@ -140,7 +140,7 @@ enum SpecialDayType: String, CaseIterable {
     var lightBackground: Color {
         switch self {
         case .holiday: return Color(hex: "FDE8E8")    // Light red
-        case .observance: return Color(hex: "FEEBC8") // Light orange
+        case .observance: return JohoColors.cyan.opacity(0.3) // Light cyan
         case .birthday: return Color(hex: "FECDD3")   // Light pink
         case .memo, .note, .event: return Color(hex: "FFE566")  // Light yellow
         case .trip: return Color(hex: "A5F3FC")       // Light cyan

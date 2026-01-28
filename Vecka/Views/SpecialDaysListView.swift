@@ -48,9 +48,10 @@ fileprivate struct MonthLabelEdit: Identifiable {
 
 /// 情報デザイン: Custom icon, color, and message for a month card
 struct MonthCustomization: Codable, Equatable {
-    var icon: String?      // SF Symbol name (nil = use default seasonal icon)
-    var colorHex: String?  // Background color hex (nil = use default seasonal color)
-    var message: String?   // Personal note (nil = no message)
+    var icon: String?         // SF Symbol name (nil = use default seasonal icon)
+    var iconColorHex: String? // Icon color hex (nil = use theme accent color)
+    var colorHex: String?     // Background color hex (nil = use default seasonal color)
+    var message: String?      // Personal note (nil = no message)
 }
 
 // MARK: - Special Days List View (情報デザイン Redesign)
@@ -121,6 +122,9 @@ struct SpecialDaysListView: View {
     // 情報デザイン: Category navigation within month (nil = show category cards, set = show filtered list)
     @State private var selectedCategory: DisplayCategory? = nil
 
+    // 情報デザイン: FAB for creating custom holidays/observances
+    @State private var showingHolidayCreator = false
+
     private var years: [Int] {
         let current = Calendar.current.component(.year, from: Date())
         return Array((current - 20)...(current + 20))
@@ -151,6 +155,10 @@ struct SpecialDaysListView: View {
 
     private func customIcon(for month: Int) -> String? {
         monthCustomizations[month]?.icon
+    }
+
+    private func customIconColor(for month: Int) -> String? {
+        monthCustomizations[month]?.iconColorHex
     }
 
     private func customColor(for month: Int) -> String? {
@@ -413,6 +421,7 @@ struct SpecialDaysListView: View {
             .sheet(isPresented: $showingDatabaseExplorer) { HolidayDatabaseExplorer() }
             .sheet(item: $selectedDetailItem) { item in SpecialDayDetailSheet(item: item) }
             .sheet(item: $editingMonthLabel) { edit in monthLabelEditorSheet(for: edit.month) }
+            .sheet(isPresented: $showingHolidayCreator) { holidayCreatorSheet }
             .overlay(alignment: .bottom) { undoToastOverlay }
     }
 
@@ -455,6 +464,11 @@ struct SpecialDaysListView: View {
         }
         .onChange(of: selectedMonth) { _, newMonth in
             isInMonthDetail = newMonth != nil
+        }
+        .onDisappear {
+            // 情報デザイン: Reset to year overview when leaving Star tab
+            selectedMonth = nil
+            selectedCategory = nil
         }
     }
 
@@ -501,14 +515,60 @@ struct SpecialDaysListView: View {
             .presentationCornerRadius(20)
     }
 
+    // 情報デザイン: Holiday/observance creator sheet (triggered from subtitle plus buttons)
+    private var holidayCreatorSheet: some View {
+        // Use newSpecialDayType which is set by addCategoryButton
+        let type: SpecialDayType = newSpecialDayType
+        return JohoSpecialDayEditorSheet(
+            mode: .create,
+            type: type,
+            defaultRegion: holidayRegions.primaryRegion ?? "SE",
+            onSave: { name, date, symbol, iconColor, notes, region in
+                createCustomHoliday(type: type, name: name, date: date, symbol: symbol, notes: notes, region: region)
+            }
+        )
+        .presentationCornerRadius(20)
+    }
+
+    /// 情報デザイン: Create a custom holiday/observance linked to a region
+    private func createCustomHoliday(type: SpecialDayType, name: String, date: Date, symbol: String, notes: String?, region: String) {
+        let calendar = Calendar.current
+        let month = calendar.component(.month, from: date)
+        let day = calendar.component(.day, from: date)
+
+        let rule = HolidayRule(
+            name: name,
+            region: region,
+            isBankHoliday: type == .holiday,
+            titleOverride: name,
+            symbolName: symbol,
+            iconColor: nil,
+            userModifiedAt: Date(),
+            notes: notes,
+            type: .fixed,
+            month: month,
+            day: day
+        )
+
+        modelContext.insert(rule)
+        do {
+            try modelContext.save()
+            holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: selectedYear)
+            HapticManager.notification(.success)
+        } catch {
+            Log.w("Failed to create custom holiday: \(error.localizedDescription)")
+            HapticManager.notification(.error)
+        }
+    }
+
     // 情報デザイン: Personal month label editor
     private func monthLabelEditorSheet(for month: Int) -> some View {
         MonthCustomizationSheet(
             month: month,
             currentCustomization: monthCustomizations[month] ?? MonthCustomization(),
             onSave: { customization in
-                // Only save if something changed from default
-                if customization.icon != nil || customization.colorHex != nil {
+                // Save if any customization is set (icon, color, or message)
+                if customization.icon != nil || customization.colorHex != nil || customization.message != nil {
                     setMonthCustomization(customization, for: month)
                 } else {
                     setMonthCustomization(nil, for: month)
@@ -544,7 +604,6 @@ struct SpecialDaysListView: View {
 
     private var headerWithYearPicker: some View {
         let theme: MonthTheme? = selectedMonth.map { MonthTheme.theme(for: $0) }
-        let monthRows = selectedMonth.map { rowsForMonth($0) } ?? []
 
         return VStack(spacing: 0) {
             // TOP ROW: Back button (if needed) + Icon + Title | WALL | Year Picker
@@ -644,16 +703,19 @@ struct SpecialDaysListView: View {
                 .fill(colors.border)
                 .frame(height: 1.5)
 
-            // STATS ROW (full width) - Filter pills for both main view and month detail
-            HStack(spacing: JohoDimensions.spacingSM) {
-                if let month = selectedMonth {
-                    monthBentoStatsRow(for: month)
-                } else {
+            // STATS ROW (full width)
+            // 情報デザイン: Show colored dots + add buttons when inside a month
+            if let month = selectedMonth {
+                monthSubtitleRow(for: month)
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+                    .padding(.vertical, JohoDimensions.spacingSM)
+            } else {
+                HStack(spacing: JohoDimensions.spacingSM) {
                     bentoStatsRow
                 }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
             }
-            .padding(.horizontal, JohoDimensions.spacingMD)
-            .padding(.vertical, JohoDimensions.spacingSM)
         }
         .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
@@ -727,6 +789,112 @@ struct SpecialDaysListView: View {
 
             Spacer()
         }
+    }
+
+    // MARK: - Month Subtitle Row (情報デザイン: Colored dots + Add buttons)
+
+    /// 情報デザイン: Subtitle row when viewing a month
+    /// Shows colored category dots and plus buttons to add new items
+    private func monthSubtitleRow(for month: Int) -> some View {
+        let counts = monthUniqueCounts(for: month)
+
+        return HStack(spacing: JohoDimensions.spacingMD) {
+            // Category filter dots (tap to filter)
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Holidays dot
+                monthCategoryDot(
+                    category: .holiday,
+                    count: counts.holidays,
+                    color: JohoColors.pink
+                )
+
+                // Observances dot
+                monthCategoryDot(
+                    category: .observance,
+                    count: counts.observances,
+                    color: JohoColors.cyan
+                )
+
+                // Memos dot
+                monthCategoryDot(
+                    category: .memo,
+                    count: counts.memos,
+                    color: JohoColors.yellow
+                )
+            }
+
+            Spacer()
+
+            // Add buttons (tap to add) - Memo excluded, only available on Calendar page
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Add Holiday
+                addCategoryButton(type: .holiday, color: JohoColors.pink)
+
+                // Add Observance
+                addCategoryButton(type: .observance, color: JohoColors.cyan)
+            }
+        }
+    }
+
+    /// 情報デザイン: Category dot with count (tap to filter)
+    private func monthCategoryDot(category: DisplayCategory, count: Int, color: Color) -> some View {
+        let isSelected = selectedCategory == category
+        let hasItems = count > 0
+
+        return Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                if selectedCategory == category {
+                    selectedCategory = nil  // Deselect to show category cards
+                } else {
+                    selectedCategory = category
+                }
+            }
+            HapticManager.selection()
+        } label: {
+            HStack(spacing: 4) {
+                Circle()
+                    .fill(hasItems && (isSelected || selectedCategory == nil) ? color : colors.inputBackground)
+                    .frame(width: 10, height: 10)
+                    .overlay(Circle().stroke(colors.border, lineWidth: 1))
+
+                Text("\(count)")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(hasItems ? colors.primary : colors.primary.opacity(0.4))
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(isSelected ? color.opacity(0.3) : Color.clear)
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(isSelected ? colors.border : Color.clear, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .opacity(hasItems ? 1.0 : 0.5)
+    }
+
+    /// 情報デザイン: Add button for category (tap to add new item)
+    private func addCategoryButton(type: SpecialDayType, color: Color) -> some View {
+        Button {
+            // Set the type and show creator
+            newSpecialDayType = type
+            if type == .holiday || type == .observance {
+                showingHolidayCreator = true
+            } else {
+                isPresentingNewSpecialDay = true
+            }
+            HapticManager.impact(.light)
+        } label: {
+            Image(systemName: "plus")
+                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 22, height: 22)
+                .background(color.opacity(0.5))
+                .clipShape(Circle())
+                .overlay(Circle().stroke(colors.border, lineWidth: 1))
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Region Quick Picker Section
@@ -934,21 +1102,18 @@ struct SpecialDaysListView: View {
     // MARK: - Month Grid (情報デザイン: 12 Month Flipcards in 3-Column Bento)
 
     private var monthGrid: some View {
-        let columns = [
-            GridItem(.flexible(), spacing: JohoDimensions.spacingSM),
-            GridItem(.flexible(), spacing: JohoDimensions.spacingSM),
-            GridItem(.flexible(), spacing: JohoDimensions.spacingSM)
-        ]
-
-        return VStack(spacing: JohoDimensions.spacingMD) {
-            // Month grid (tap stat icons in header to see type names)
-            LazyVGrid(columns: columns, spacing: JohoDimensions.spacingSM) {
-                ForEach(1...12, id: \.self) { month in
-                    monthFlipcard(for: month)
+        // 情報デザイン: Use Grid (not LazyVGrid) for automatic row height synchronization
+        Grid(horizontalSpacing: JohoDimensions.spacingSM, verticalSpacing: JohoDimensions.spacingSM) {
+            ForEach(0..<4, id: \.self) { row in
+                GridRow {
+                    ForEach(1...3, id: \.self) { col in
+                        let month = row * 3 + col
+                        monthFlipcard(for: month)
+                    }
                 }
             }
-            .padding(.horizontal, JohoDimensions.spacingLG)
         }
+        .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
     // MARK: - Month Flipcard (情報デザイン: Compartmentalized Bento Style)
@@ -960,22 +1125,43 @@ struct SpecialDaysListView: View {
         let totalCount = counts.holidays + counts.observances + counts.birthdays + counts.memos
         let hasItems = totalCount > 0
 
-        // 情報デザイン: Allow custom icon, background color, and message
+        // 情報デザイン: Allow custom icon, icon color, background color, and message
         let displayIcon = customIcon(for: month) ?? theme.icon
-        // 情報デザイン: Use vibrant accent color with opacity (like Random Facts) not muted pastels
-        let displayColor = customColor(for: month).flatMap { Color(hex: $0) } ?? theme.accentColor.opacity(0.2)
+        let customIconColorHex = customIconColor(for: month)
+        let customColorHex = customColor(for: month)
+        // 情報デザイン: Custom icon color takes priority, then theme accent if items, else faded
+        let displayIconColor: Color = {
+            if let hex = customIconColorHex {
+                return Color(hex: hex)
+            } else if hasItems {
+                return theme.accentColor
+            } else {
+                return colors.primary.opacity(0.4)
+            }
+        }()
+        // 情報デザイン: Custom background color takes priority, then seasonal color if items, else gray
+        let displayColor: Color = {
+            if let hex = customColorHex {
+                return Color(hex: hex)
+            } else if hasItems {
+                return theme.accentColor.opacity(0.2)
+            } else {
+                return colors.inputBackground
+            }
+        }()
         let message = customMessage(for: month)
 
         VStack(spacing: 0) {
             // TOP: Icon zone (情報デザイン: Strong accent color on light tint background)
+            // Grid handles row height synchronization automatically
             VStack {
                 Image(systemName: displayIcon)
                     .font(.system(size: 24, weight: .bold, design: .rounded))
-                    .foregroundStyle(hasItems ? theme.accentColor : colors.primary.opacity(0.4))
+                    .foregroundStyle(displayIconColor)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 48)
-            .background(hasItems ? displayColor : colors.inputBackground)
+            .padding(.vertical, 20)
+            .background(displayColor)
 
             // Divider (情報デザイン: Black wall between compartments)
             Rectangle()
@@ -983,6 +1169,7 @@ struct SpecialDaysListView: View {
                 .frame(height: 1.5)
 
             // BOTTOM: Centered text with stacked dots in corner
+            // minHeight ensures all cards are same height even when only some have messages
             HStack(spacing: 0) {
                 Spacer(minLength: 16)
 
@@ -993,7 +1180,7 @@ struct SpecialDaysListView: View {
                         .foregroundStyle(colors.primary)
                         .multilineTextAlignment(.center)
 
-                    // Custom message
+                    // Custom message (or invisible placeholder for height consistency)
                     if let msg = message, !msg.isEmpty {
                         Text(msg)
                             .font(.system(size: 9, weight: .medium, design: .rounded))
@@ -1005,7 +1192,8 @@ struct SpecialDaysListView: View {
 
                 Spacer(minLength: 16)
             }
-            .frame(maxWidth: .infinity, minHeight: 52)
+            .frame(maxWidth: .infinity, minHeight: 48)
+            .background(colors.surface)
             .overlay(alignment: .bottomTrailing) {
                 // 情報デザイン: Vertical dot stack with black borders (holidays → observances → memos)
                 if hasItems {
@@ -1035,10 +1223,9 @@ struct SpecialDaysListView: View {
             }
         }
         .background(colors.surface)
-        .frame(height: 110)
-        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
                 .stroke(colors.border, lineWidth: 1.5)
         )
         .contentShape(Rectangle())
@@ -1064,8 +1251,6 @@ struct SpecialDaysListView: View {
 
     @ViewBuilder
     private func monthDetailView(for month: Int) -> some View {
-        let theme = MonthTheme.theme(for: month)
-
         VStack(spacing: JohoDimensions.spacingMD) {
             if selectedCategory == nil {
                 // 情報デザイン: Show category cards grid (mirrors month grid structure)
@@ -1139,11 +1324,11 @@ struct SpecialDaysListView: View {
                 color: JohoColors.pink
             )
 
-            // Observances card (PINK with diamond)
+            // Observances card (CYAN with diamond)
             categoryCard(
                 category: .observance,
                 count: counts.observances,
-                color: JohoColors.pink
+                color: JohoColors.cyan
             )
 
             // Memos card (YELLOW)
@@ -1170,20 +1355,20 @@ struct SpecialDaysListView: View {
         } label: {
             VStack(spacing: 0) {
                 // TOP: Icon zone with category color
+                // Fixed height ensures symmetry across all cards (LazyVGrid doesn't sync row heights)
                 VStack(spacing: 4) {
                     Image(systemName: category.outlineIcon)
                         .font(.system(size: 28, weight: .bold, design: .rounded))
                         .foregroundStyle(hasItems ? colors.primary : colors.primary.opacity(0.4))
 
-                    // Count badge
-                    if hasItems {
-                        Text("\(count)")
-                            .font(.system(size: 14, weight: .black, design: .rounded))
-                            .foregroundStyle(colors.primary)
-                    }
+                    // Count badge (always rendered for consistent height)
+                    Text("\(hasItems ? count : 0)")
+                        .font(.system(size: 14, weight: .black, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .opacity(hasItems ? 1 : 0)
                 }
                 .frame(maxWidth: .infinity)
-                .frame(height: 70)
+                .frame(height: 72)  // Fixed height for all cards
                 .background(hasItems ? color.opacity(0.5) : colors.inputBackground)
 
                 // Divider
@@ -1196,13 +1381,13 @@ struct SpecialDaysListView: View {
                     .font(.system(size: 10, weight: .black, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 32)
+                    .padding(.vertical, 10)
                     .background(colors.surface)
             }
             .background(colors.surface)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                Squircle(cornerRadius: JohoDimensions.radiusMedium)
                     .stroke(colors.border, lineWidth: 1.5)
             )
         }
@@ -1455,12 +1640,12 @@ struct CollapsibleSpecialDayCard: View {
                 }
             }
 
-            // Observances - Pink diamond (same color, different SHAPE)
+            // Observances - Cyan diamond (cultural observances)
             if observances.isNotEmpty {
                 HStack(spacing: 2) {
                     Image(systemName: "diamond.fill")
                         .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(JohoColors.pink)
+                        .foregroundStyle(JohoColors.cyan)
                     Text("\(observances.count)")
                         .font(.system(size: 10, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary)
@@ -1507,7 +1692,7 @@ struct CollapsibleSpecialDayCard: View {
                 )
             }
 
-            // Observances - Diamond outline (PINK)
+            // Observances - Diamond outline (CYAN)
             if observances.isNotEmpty {
                 specialDaySection(
                     title: DisplayCategory.observance.localizedLabel,
@@ -2383,6 +2568,7 @@ struct MonthCustomizationSheet: View {
     let onReset: () -> Void
 
     @State private var selectedIcon: String?
+    @State private var selectedIconColor: String?
     @State private var selectedColor: String?
     @State private var messageText: String = ""
 
@@ -2393,19 +2579,19 @@ struct MonthCustomizationSheet: View {
         MonthTheme.theme(for: month)
     }
 
-    // 情報デザイン: Curated icon set for months
+    // 情報デザイン: Curated icon set for months (PlayStation-style shapes + seasonal)
     private let iconOptions: [String] = [
         // Seasonal
-        "snowflake", "heart.fill", "leaf.fill", "sun.max.fill", "cloud.rain.fill", "flame.fill",
+        "snowflake", "heart.fill", "leaf.fill", "sun.max.fill", "cloud.rain.fill", "drop.fill",
         // Nature
-        "tree.fill", "flower.fill", "moon.fill", "star.fill", "sparkles", "wind",
+        "tree.fill", "moon.fill", "star.fill", "sparkles", "wind", "bolt.fill",
         // Objects
         "gift.fill", "flag.fill", "bell.fill", "airplane", "car.fill", "house.fill",
-        // Abstract
-        "circle.fill", "square.fill", "triangle.fill", "hexagon.fill", "seal.fill", "burst.fill"
+        // PlayStation-style shapes (using SF Symbols that match the style)
+        "circle", "xmark", "triangle", "square", "diamond", "plus"
     ]
 
-    // 情報デザイン: 6-color palette
+    // 情報デザイン: 6-color palette for backgrounds
     private let colorOptions: [(name: String, hex: String, color: Color)] = [
         ("Yellow", "FFE566", JohoColors.yellow),
         ("Cyan", "A5F3FC", JohoColors.cyan),
@@ -2413,6 +2599,16 @@ struct MonthCustomizationSheet: View {
         ("Green", "BBF7D0", JohoColors.green),
         ("Purple", "E9D5FF", JohoColors.purple),
         ("White", "FFFFFF", JohoColors.white)
+    ]
+
+    // 情報デザイン: Icon colors (darker/more saturated for visibility)
+    private let iconColorOptions: [(name: String, hex: String, color: Color)] = [
+        ("Black", "1A1A1A", JohoColors.black),
+        ("Yellow", "D4A900", Color(hex: "D4A900")),
+        ("Cyan", "0891B2", Color(hex: "0891B2")),
+        ("Pink", "E11D48", Color(hex: "E11D48")),
+        ("Green", "16A34A", Color(hex: "16A34A")),
+        ("Purple", "9333EA", Color(hex: "9333EA"))
     ]
 
     var body: some View {
@@ -2440,6 +2636,7 @@ struct MonthCustomizationSheet: View {
                     let trimmedMessage = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
                     onSave(MonthCustomization(
                         icon: selectedIcon,
+                        iconColorHex: selectedIconColor,
                         colorHex: selectedColor,
                         message: trimmedMessage.isEmpty ? nil : trimmedMessage
                     ))
@@ -2478,7 +2675,20 @@ struct MonthCustomizationSheet: View {
                         }
                     }
 
-                    // Color picker
+                    // Icon color picker
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("ICON COLOR")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.5))
+
+                        HStack(spacing: 8) {
+                            ForEach(iconColorOptions, id: \.hex) { option in
+                                iconColorButton(option)
+                            }
+                        }
+                    }
+
+                    // Background color picker
                     VStack(alignment: .leading, spacing: 8) {
                         Text("BACKGROUND")
                             .font(.system(size: 10, weight: .bold, design: .rounded))
@@ -2534,6 +2744,7 @@ struct MonthCustomizationSheet: View {
         .background(colors.surface)
         .onAppear {
             selectedIcon = currentCustomization.icon
+            selectedIconColor = currentCustomization.iconColorHex
             selectedColor = currentCustomization.colorHex
             messageText = currentCustomization.message ?? ""
         }
@@ -2580,6 +2791,31 @@ struct MonthCustomizationSheet: View {
                         Image(systemName: "checkmark")
                             .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(colors.primary)
+                    }
+                }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func iconColorButton(_ option: (name: String, hex: String, color: Color)) -> some View {
+        let isSelected = selectedIconColor == option.hex
+
+        return Button {
+            HapticManager.selection()
+            selectedIconColor = (selectedIconColor == option.hex) ? nil : option.hex
+        } label: {
+            option.color
+                .frame(width: 44, height: 44)
+                .clipShape(Squircle(cornerRadius: 10))
+                .overlay(
+                    Squircle(cornerRadius: 10)
+                        .stroke(colors.border, lineWidth: isSelected ? 2.5 : 1)
+                )
+                .overlay {
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(option.name == "Black" ? colors.surface : colors.primary)
                     }
                 }
         }

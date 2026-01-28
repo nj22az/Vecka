@@ -94,9 +94,9 @@ struct ModernCalendarView: View {
                 foundTypes.insert("BDY")
             }
 
-            // 3. Observance - PINK (celebration category)
+            // 3. Observance - CYAN (cultural observances)
             if dataCheck.hasObservance && !foundTypes.contains("OBS") {
-                items.append(LegendItem(type: "OBS", label: "Observance", color: JohoColors.pink))
+                items.append(LegendItem(type: "OBS", label: "Observance", color: JohoColors.cyan))
                 foundTypes.insert("OBS")
             }
 
