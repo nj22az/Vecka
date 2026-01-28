@@ -204,6 +204,11 @@ struct SpecialDaysListView: View {
 
     @State private var editingCategoryLabel: DisplayCategory? = nil
 
+    // 情報デザイン: Force refresh when customizations change (SwiftUI dependency workaround)
+    private var categoryCustomizationsVersion: Int {
+        categoryCustomizationsData.hashValue
+    }
+
     // MARK: - Computed Data
 
     private func rows(for type: SpecialDayType) -> [SpecialDayRow] {
@@ -861,15 +866,118 @@ struct SpecialDaysListView: View {
 
             Spacer()
 
-            // Add buttons (tap to add) - Memo excluded, only available on Calendar page
-            HStack(spacing: JohoDimensions.spacingSM) {
-                // Add Holiday
-                addCategoryButton(type: .holiday, color: JohoColors.pink)
-
-                // Add Observance
-                addCategoryButton(type: .observance, color: JohoColors.cyan)
-            }
+            // 情報デザイン: Unified add button (tap to choose Holiday or Observance)
+            unifiedAddButton
         }
+    }
+
+    /// 情報デザイン: State for unified add button popover
+    @State private var showingAddTypeChoice = false
+
+    /// 情報デザイン: Unified add button - one plus that shows Holiday/Observance choice
+    private var unifiedAddButton: some View {
+        Button {
+            showingAddTypeChoice = true
+            HapticManager.impact(.light)
+        } label: {
+            // Split-color plus button (pink/cyan)
+            ZStack {
+                // Pink half (left) for Holiday
+                JohoColors.pink.opacity(0.6)
+                    .clipShape(HalfCircle(isLeft: true))
+
+                // Cyan half (right) for Observance
+                JohoColors.cyan.opacity(0.6)
+                    .clipShape(HalfCircle(isLeft: false))
+
+                // Plus icon
+                Image(systemName: "plus")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+            }
+            .frame(width: 28, height: 28)
+            .clipShape(Circle())
+            .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
+        }
+        .buttonStyle(.plain)
+        .popover(isPresented: $showingAddTypeChoice, arrowEdge: .bottom) {
+            addTypeChoicePopover
+                .presentationCompactAdaptation(.popover)
+        }
+    }
+
+    /// 情報デザイン: Popover with Holiday/Observance choice
+    private var addTypeChoicePopover: some View {
+        VStack(spacing: 0) {
+            // Holiday option
+            Button {
+                showingAddTypeChoice = false
+                newSpecialDayType = .holiday
+                showingHolidayCreator = true
+                HapticManager.selection()
+            } label: {
+                HStack(spacing: 10) {
+                    Circle()
+                        .fill(JohoColors.pink)
+                        .frame(width: 12, height: 12)
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1))
+
+                    Text("Holiday")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(colors.primary.opacity(0.4))
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 14)
+                .background(JohoColors.pink.opacity(0.15))
+            }
+            .buttonStyle(.plain)
+
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1)
+
+            // Observance option
+            Button {
+                showingAddTypeChoice = false
+                newSpecialDayType = .observance
+                showingHolidayCreator = true
+                HapticManager.selection()
+            } label: {
+                HStack(spacing: 10) {
+                    Circle()
+                        .fill(JohoColors.cyan)
+                        .frame(width: 12, height: 12)
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1))
+
+                    Text("Observance")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(colors.primary.opacity(0.4))
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 14)
+                .background(JohoColors.cyan.opacity(0.15))
+            }
+            .buttonStyle(.plain)
+        }
+        .frame(width: 180)
+        .background(colors.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(colors.border, lineWidth: 1.5)
+        )
     }
 
     /// 情報デザイン: Category dot with count (tap to filter)
@@ -908,29 +1016,6 @@ struct SpecialDaysListView: View {
         }
         .buttonStyle(.plain)
         .opacity(hasItems ? 1.0 : 0.5)
-    }
-
-    /// 情報デザイン: Add button for category (tap to add new item)
-    private func addCategoryButton(type: SpecialDayType, color: Color) -> some View {
-        Button {
-            // Set the type and show creator
-            newSpecialDayType = type
-            if type == .holiday || type == .observance {
-                showingHolidayCreator = true
-            } else {
-                isPresentingNewSpecialDay = true
-            }
-            HapticManager.impact(.light)
-        } label: {
-            Image(systemName: "plus")
-                .font(.system(size: 10, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.primary)
-                .frame(width: 22, height: 22)
-                .background(color.opacity(0.5))
-                .clipShape(Circle())
-                .overlay(Circle().stroke(colors.border, lineWidth: 1))
-        }
-        .buttonStyle(.plain)
     }
 
     // MARK: - Region Quick Picker Section
@@ -1284,10 +1369,12 @@ struct SpecialDaysListView: View {
                 let dayCards = filteredDayCardsForMonth(month, category: selectedCategory!)
 
                 if dayCards.isEmpty {
+                    // 情報デザイン: Use customized icon if set, otherwise default
+                    let displayIcon = customCategoryIcon(for: selectedCategory!) ?? selectedCategory!.outlineIcon
                     JohoEmptyState(
                         title: "No \(selectedCategory!.localizedLabel)",
                         message: "Tap + to add",
-                        icon: selectedCategory!.outlineIcon,
+                        icon: displayIcon,
                         zone: selectedCategory!.sectionZone
                     )
                     .padding(.top, JohoDimensions.spacingSM)
@@ -1342,6 +1429,7 @@ struct SpecialDaysListView: View {
                 categoryCard(category: .memo, count: counts.memos)
             }
         }
+        .id(categoryCustomizationsVersion)  // 情報デザイン: Force refresh when customizations change
         .padding(.horizontal, JohoDimensions.spacingLG)
         .sheet(item: $editingCategoryLabel) { category in
             let counts = monthUniqueCounts(for: selectedMonth ?? 1)

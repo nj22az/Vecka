@@ -467,6 +467,33 @@ struct Squircle: Shape {
     }
 }
 
+/// 情報デザイン: Half circle shape for split-color buttons
+struct HalfCircle: Shape {
+    var isLeft: Bool
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        if isLeft {
+            path.move(to: CGPoint(x: rect.midX, y: rect.minY))
+            path.addArc(center: CGPoint(x: rect.midX, y: rect.midY),
+                       radius: rect.width / 2,
+                       startAngle: .degrees(-90),
+                       endAngle: .degrees(90),
+                       clockwise: true)
+            path.closeSubpath()
+        } else {
+            path.move(to: CGPoint(x: rect.midX, y: rect.minY))
+            path.addArc(center: CGPoint(x: rect.midX, y: rect.midY),
+                       radius: rect.width / 2,
+                       startAngle: .degrees(-90),
+                       endAngle: .degrees(90),
+                       clockwise: false)
+            path.closeSubpath()
+        }
+        return path
+    }
+}
+
 // MARK: - Bordered Squircle Container
 // The CORE component - colored background + thick black border
 
