@@ -1178,14 +1178,14 @@ struct SpecialDaysListView: View {
 
         VStack(spacing: 0) {
             // TOP: Icon zone (情報デザイン: Strong accent color on light tint background)
-            // Grid handles row height synchronization automatically
+            // Fixed height ensures banner dividers align across all cards
             VStack {
                 Image(systemName: displayIcon)
                     .font(.system(size: 24, weight: .bold, design: .rounded))
                     .foregroundStyle(displayIconColor)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 20)
+            .frame(height: 64)  // Fixed height for aligned banners
             .background(displayColor)
 
             // Divider (情報デザイン: Black wall between compartments)
@@ -1194,7 +1194,7 @@ struct SpecialDaysListView: View {
                 .frame(height: 1.5)
 
             // BOTTOM: Centered text with stacked dots in corner
-            // minHeight ensures all cards are same height even when only some have messages
+            // Fixed height ensures all card bottoms align
             HStack(spacing: 0) {
                 Spacer(minLength: 16)
 
@@ -1205,19 +1205,18 @@ struct SpecialDaysListView: View {
                         .foregroundStyle(colors.primary)
                         .multilineTextAlignment(.center)
 
-                    // Custom message (or invisible placeholder for height consistency)
-                    if let msg = message, !msg.isEmpty {
-                        Text(msg)
-                            .font(.system(size: 9, weight: .medium, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.6))
-                            .lineLimit(2)
-                            .multilineTextAlignment(.center)
-                    }
+                    // Custom message (always rendered, invisible when empty for height consistency)
+                    Text(message ?? " ")
+                        .font(.system(size: 9, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(message != nil ? 0.6 : 0))
+                        .lineLimit(1)
+                        .multilineTextAlignment(.center)
                 }
 
                 Spacer(minLength: 16)
             }
-            .frame(maxWidth: .infinity, minHeight: 48)
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)  // Fixed height for aligned bottoms
             .background(colors.surface)
             .overlay(alignment: .bottomTrailing) {
                 // 情報デザイン: Vertical dot stack with black borders (holidays → observances → memos)
@@ -1378,14 +1377,14 @@ struct SpecialDaysListView: View {
 
         VStack(spacing: 0) {
             // TOP: Icon zone (情報デザイン: Category color background)
-            // Grid handles row height synchronization automatically
+            // Fixed height ensures banner dividers align across all cards
             VStack {
                 Image(systemName: displayIcon)
                     .font(.system(size: 24, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 20)
+            .frame(height: 64)  // Fixed height for aligned banners
             .background(categoryColor)
 
             // Divider (情報デザイン: Black wall between compartments)
@@ -1394,6 +1393,7 @@ struct SpecialDaysListView: View {
                 .frame(height: 1.5)
 
             // BOTTOM: Category name + count (情報デザイン: Like message on month cards)
+            // minHeight ensures all cards end at same line
             HStack(spacing: 0) {
                 Spacer(minLength: 16)
 
@@ -1403,12 +1403,10 @@ struct SpecialDaysListView: View {
                         .foregroundStyle(colors.primary)
                         .multilineTextAlignment(.center)
 
-                    // Count shown like message on month cards
-                    if count > 0 {
-                        Text("\(count)")
-                            .font(.system(size: 9, weight: .medium, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.6))
-                    }
+                    // Count always rendered for consistent height (invisible when 0)
+                    Text(count > 0 ? "\(count)" : " ")
+                        .font(.system(size: 9, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(count > 0 ? 0.6 : 0))
                 }
 
                 Spacer(minLength: 16)
