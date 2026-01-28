@@ -779,14 +779,14 @@ final class ServiceIntegrationTests: XCTestCase {
         XCTAssertEqual(weekday, 4) // Wednesday in ISO calendar (Mon=2, Tue=3, Wed=4...)
     }
 
-    // MARK: - Animation Constants Tests
+    // MARK: - Animation Constants Tests (情報デザイン: easeInOut only, no springs)
 
     func testAnimationConstantsExist() {
-        XCTAssertNotNil(AnimationConstants.quickSpring)
-        XCTAssertNotNil(AnimationConstants.standardSpring)
-        XCTAssertNotNil(AnimationConstants.gentleSpring)
-        XCTAssertNotNil(AnimationConstants.sidebarSpring)
-        XCTAssertNotNil(AnimationConstants.calendarSpring)
+        XCTAssertNotNil(AnimationConstants.quickTransition)
+        XCTAssertNotNil(AnimationConstants.standardTransition)
+        XCTAssertNotNil(AnimationConstants.gentleTransition)
+        XCTAssertNotNil(AnimationConstants.sidebarTransition)
+        XCTAssertNotNil(AnimationConstants.calendarTransition)
     }
 
     func testLayoutConstantsValues() {
