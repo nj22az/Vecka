@@ -124,13 +124,38 @@ struct RegionQuickPicker: View {
     private var expandedContent: some View {
         VStack(spacing: 0) {
             // Header
-            HStack {
+            HStack(spacing: 8) {
                 Text("HOLIDAY REGIONS")
                     .font(.system(size: 10, weight: .black, design: .rounded))
                     .tracking(0.5)
                     .foregroundStyle(colors.primary)
 
                 Spacer()
+
+                // Clear All button (only when 2+ selected)
+                if selectedCount >= 2 {
+                    Button {
+                        clearAllRegions()
+                        HapticManager.impact(.light)
+                    } label: {
+                        HStack(spacing: 3) {
+                            Image(systemName: "xmark.circle")
+                                .font(.system(size: 10, weight: .semibold))
+                            Text("Clear")
+                                .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        }
+                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(colors.inputBackground)
+                        .clipShape(Capsule())
+                        .overlay(
+                            Capsule()
+                                .stroke(colors.border.opacity(0.5), lineWidth: 1)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
 
                 // Done button
                 Button {
@@ -294,6 +319,13 @@ struct RegionQuickPicker: View {
                 showSelectionLimitAlert = true
                 HapticManager.impact(.light)
             }
+        }
+    }
+
+    private func clearAllRegions() {
+        let validCodes = Set(RegionSelectionView.allRegions.map { $0.code })
+        for code in selectedRegions.regions.filter({ validCodes.contains($0) }) {
+            _ = selectedRegions.removeRegionIfPossible(code, minimumCount: 0)
         }
     }
 
