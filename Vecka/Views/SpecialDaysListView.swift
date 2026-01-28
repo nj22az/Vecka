@@ -115,6 +115,9 @@ struct SpecialDaysListView: View {
     // 情報デザイン: Personal month label editing
     @State private var editingMonthLabel: MonthLabelEdit? = nil
 
+    // 情報デザイン: Category filter toggles (tap stat icons to filter)
+    @State private var activeFilters: Set<DisplayCategory> = [.holiday, .observance, .memo]
+
     private var years: [Int] {
         let current = Calendar.current.component(.year, from: Date())
         return Array((current - 20)...(current + 20))
@@ -257,6 +260,45 @@ struct SpecialDaysListView: View {
     private var birthdayCount: Int { rows(for: .birthday).count }
     private var memoCount: Int { rows(for: .memo).count }
 
+    // MARK: - Unique Date Counting (情報デザイン: Show unique dates, not duplicate regional variants)
+
+    /// Count unique dates for a category (Dec 24 = 1 holiday, not 5 regional variants)
+    private func uniqueDateCount(for category: DisplayCategory) -> Int {
+        let calendar = Calendar.current
+        var uniqueDates = Set<DateComponents>()
+
+        switch category {
+        case .holiday:
+            for row in rows(for: .holiday) {
+                let components = calendar.dateComponents([.year, .month, .day], from: row.date)
+                uniqueDates.insert(components)
+            }
+        case .observance:
+            for row in rows(for: .observance) {
+                let components = calendar.dateComponents([.year, .month, .day], from: row.date)
+                uniqueDates.insert(components)
+            }
+        case .memo:
+            // Memos + birthdays combined
+            for row in rows(for: .birthday) {
+                let components = calendar.dateComponents([.year, .month, .day], from: row.date)
+                uniqueDates.insert(components)
+            }
+            for row in rows(for: .memo) {
+                let components = calendar.dateComponents([.year, .month, .day], from: row.date)
+                uniqueDates.insert(components)
+            }
+        }
+        return uniqueDates.count
+    }
+
+    /// Unique holiday date count
+    private var uniqueHolidayCount: Int { uniqueDateCount(for: .holiday) }
+    /// Unique observance date count
+    private var uniqueObservanceCount: Int { uniqueDateCount(for: .observance) }
+    /// Unique memo date count (includes birthdays)
+    private var uniqueMemoCount: Int { uniqueDateCount(for: .memo) }
+
     /// 情報デザイン: Compact subtitle that fits iPhone screens
     private var compactSubtitle: String {
         var parts: [String] = []
@@ -283,14 +325,25 @@ struct SpecialDaysListView: View {
         return (allHolidays.count, allObservances.count, allBirthdays.count, allMemos.count)
     }
 
-    /// Get rows for a specific month
+    /// Get rows for a specific month, filtered by active category filters
     private func rowsForMonth(_ month: Int) -> [SpecialDayRow] {
         let calendar = Calendar.current
-        let holidays = rows(for: .holiday).filter { calendar.component(.month, from: $0.date) == month }
-        let observances = rows(for: .observance).filter { calendar.component(.month, from: $0.date) == month }
-        let birthdays = rows(for: .birthday).filter { calendar.component(.month, from: $0.date) == month }
-        let memosForMonth = rows(for: .memo).filter { calendar.component(.month, from: $0.date) == month }
-        return (holidays + observances + birthdays + memosForMonth).sorted { $0.date < $1.date }
+        var result: [SpecialDayRow] = []
+
+        // 情報デザイン: Only include categories that are active in the filter
+        if activeFilters.contains(.holiday) {
+            result += rows(for: .holiday).filter { calendar.component(.month, from: $0.date) == month }
+        }
+        if activeFilters.contains(.observance) {
+            result += rows(for: .observance).filter { calendar.component(.month, from: $0.date) == month }
+        }
+        if activeFilters.contains(.memo) {
+            // Memo category includes birthdays + memos
+            result += rows(for: .birthday).filter { calendar.component(.month, from: $0.date) == month }
+            result += rows(for: .memo).filter { calendar.component(.month, from: $0.date) == month }
+        }
+
+        return result.sorted { $0.date < $1.date }
     }
 
     /// Group rows by date into DayCardData (情報デザイン: same-day holidays combine)
@@ -579,11 +632,10 @@ struct SpecialDaysListView: View {
 
     // MARK: - Bento Stats Row (情報デザイン: 3-category outline icons)
 
-    /// 情報デザイン: Calculate counts by DisplayCategory
+    /// 情報デザイン: Calculate UNIQUE date counts by DisplayCategory
+    /// Shows unique dates, not duplicate regional variants (Dec 24 = 1 holiday, not 5)
     private var displayCategoryCounts: (holidays: Int, observances: Int, memos: Int) {
-        // Memos category includes: birthdays + memos
-        let memoTotal = birthdayCount + memoCount
-        return (holidayCount, observanceCount, memoTotal)
+        return (uniqueHolidayCount, uniqueObservanceCount, uniqueMemoCount)
     }
 
     private var bentoStatsRow: some View {
@@ -626,38 +678,46 @@ struct SpecialDaysListView: View {
     @State private var activePopoverCategory: DisplayCategory?
 
     /// 情報デザイン: Compact category indicator (subtitle-style)
-    /// Colored dot + count - matches header subtitle aesthetic
+    /// Colored dot + count - TAP TO TOGGLE FILTER
     private func categoryIndicator(category: DisplayCategory, count: Int) -> some View {
-        Button {
+        let isActive = activeFilters.contains(category)
+
+        return Button {
             HapticManager.selection()
-            activePopoverCategory = category
+            // Toggle filter state
+            if activeFilters.contains(category) {
+                // Don't allow disabling the last active filter
+                if activeFilters.count > 1 {
+                    activeFilters.remove(category)
+                }
+            } else {
+                activeFilters.insert(category)
+            }
         } label: {
             HStack(spacing: 3) {
-                // Colored filled dot (category color)
+                // Colored filled dot (category color) - dimmed when inactive
                 Circle()
-                    .fill(category.accentColor)
+                    .fill(isActive ? category.accentColor : colors.primary.opacity(0.2))
                     .frame(width: 8, height: 8)
                     .overlay(
                         Circle()
                             .stroke(colors.border, lineWidth: 0.5)
                     )
 
-                // Count numeral (smaller, subtitle-style)
+                // Count numeral (smaller, subtitle-style) - dimmed when inactive
                 Text(String(count))
                     .font(.system(size: 12, weight: .bold, design: .rounded))
                     .monospacedDigit()
-                    .foregroundStyle(colors.primary)
+                    .foregroundStyle(isActive ? colors.primary : colors.primary.opacity(0.4))
             }
+            .padding(.horizontal, 4)
+            .padding(.vertical, 2)
+            .background(isActive ? category.accentColor.opacity(0.1) : Color.clear)
+            .clipShape(Capsule())
         }
         .buttonStyle(.plain)
-        .popover(isPresented: Binding(
-            get: { activePopoverCategory == category },
-            set: { if !$0 { activePopoverCategory = nil } }
-        )) {
-            categoryPopover(category: category, count: count)
-        }
         .accessibilityLabel("\(category.localizedLabel): \(count)")
-        .accessibilityHint("Tap for details")
+        .accessibilityHint(isActive ? "Tap to hide \(category.localizedLabel)" : "Tap to show \(category.localizedLabel)")
     }
 
     /// 情報デザイン: Compact popover showing category details
@@ -1364,66 +1424,33 @@ struct CollapsibleSpecialDayCard: View {
 
     @ViewBuilder
     private func consolidatedHolidayRow(_ item: ConsolidatedHoliday, zone: SectionZone) -> some View {
-        HStack(spacing: 0) {
-            // LEFT COMPARTMENT: Type indicator (fixed 32pt, centered)
-            HStack(alignment: .center, spacing: 3) {
-                typeIndicatorDot(for: item.type)
-                if item.isSystemHoliday {
-                    Image(systemName: "lock.fill")
-                        .font(.system(size: 7, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.5))
-                }
-            }
-            .frame(width: 32, alignment: .center)
-            .frame(maxHeight: .infinity)
+        HStack(spacing: JohoDimensions.spacingSM) {
+            // Type indicator dot (left edge)
+            typeIndicatorDot(for: item.type)
+                .padding(.leading, JohoDimensions.spacingSM)
 
-            // WALL (vertical divider)
-            Rectangle()
-                .fill(colors.border)
-                .frame(width: 1.5)
-                .frame(maxHeight: .infinity)
-
-            // CENTER COMPARTMENT: Holiday name (flexible)
+            // Holiday name (larger font, flexible)
             // 情報デザイン: Display locale-appropriate name (Swedish user sees "Nyårsdagen", English sees "New Year's Day")
             Text(item.displayName(for: locale))
-                .font(JohoFont.bodySmall)
+                .font(JohoFont.body)
                 .foregroundStyle(colors.primary)
                 .lineLimit(1)
-                .padding(.horizontal, 8)
-                .frame(maxHeight: .infinity, alignment: .leading)
 
-            Spacer(minLength: 4)
+            Spacer(minLength: 8)
 
-            // WALL (vertical divider)
-            Rectangle()
-                .fill(colors.border)
-                .frame(width: 1.5)
-                .frame(maxHeight: .infinity)
-
-            // RIGHT COMPARTMENT: Country pills + icons (情報デザイン: Show ALL icons)
-            // Each country paired with its decoration icon
-            HStack(spacing: 6) {
-                ForEach(item.regions, id: \.self) { region in
-                    HStack(spacing: 3) {
-                        CountryPill(region: region)
-
-                        // Each country keeps its own icon
-                        if let icon = item.icons[region] {
-                            Image(systemName: icon)
-                                .font(.system(size: 12, weight: .bold, design: .rounded))
-                                .foregroundStyle(item.type.accentColor)
-                                .frame(width: 20, height: 20)
-                                .background(item.type.accentColor.opacity(0.15))
-                                .clipShape(Squircle(cornerRadius: 5))
-                                .overlay(Squircle(cornerRadius: 5).stroke(colors.border, lineWidth: 1))
-                        }
-                    }
-                }
-            }
-            .padding(.horizontal, 6)
-            .frame(maxHeight: .infinity)
+            // Region codes as plain text (情報デザイン: Clean, minimal)
+            regionCodesText(regions: item.regions)
         }
-        .frame(minHeight: 36)
+        .frame(minHeight: 44)
+        .background(
+            HStack(spacing: 0) {
+                // 情報デザイン: 4pt left-edge color tint instead of full background
+                Rectangle()
+                    .fill(zone.background(for: colorMode))
+                    .frame(width: 4)
+                Spacer()
+            }
+        )
         .contentShape(Rectangle())
         // 情報デザイン: Tap shows detail sheet for first item in consolidated group
         .onTapGesture {
@@ -1432,6 +1459,29 @@ struct CollapsibleSpecialDayCard: View {
                 HapticManager.selection()
             }
         }
+    }
+
+    // MARK: - Region Codes Text (情報デザイン: Clean plain text codes)
+
+    /// Shows region codes as plain text ("NO SE FI") with optional overflow indicator
+    @ViewBuilder
+    private func regionCodesText(regions: [String]) -> some View {
+        let maxVisible = 4
+        let visibleRegions = Array(regions.prefix(maxVisible))
+        let overflowCount = regions.count - maxVisible
+
+        HStack(spacing: 4) {
+            Text(visibleRegions.joined(separator: " "))
+                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary.opacity(0.6))
+
+            if overflowCount > 0 {
+                Text("+\(overflowCount)")
+                    .font(.system(size: 10, weight: .semibold, design: .rounded))
+                    .foregroundStyle(colors.primary.opacity(0.4))
+            }
+        }
+        .padding(.trailing, JohoDimensions.spacingMD)
     }
 
     // MARK: - Item Row (情報デザイン Bento: Compartmentalized with walls)
@@ -1453,77 +1503,45 @@ struct CollapsibleSpecialDayCard: View {
         let isExpanded = expandedItemID == item.id
 
         VStack(spacing: 0) {
-            // MAIN ROW (情報デザイン Bento with compartment walls)
-            HStack(spacing: 0) {
-                // LEFT COMPARTMENT: Type indicator + lock (fixed 32pt, centered)
-                HStack(alignment: .center, spacing: 3) {
-                    typeIndicatorDot(for: item.type)
-                    if !canEdit {
-                        Image(systemName: "lock.fill")
-                            .font(.system(size: 7, weight: .bold, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.5))
-                    }
+            // MAIN ROW (情報デザイン: Clean layout with left-edge tint)
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Type indicator dot (left edge)
+                typeIndicatorDot(for: item.type)
+                    .padding(.leading, JohoDimensions.spacingSM)
+
+                // Title + metadata (flexible)
+                Text(item.title)
+                    .font(JohoFont.body)
+                    .foregroundStyle(colors.primary)
+                    .lineLimit(1)
+
+                Spacer(minLength: 8)
+
+                // Metadata: age for birthdays (情報デザイン: intelligent messaging)
+                if item.type == .birthday, let age = item.turningAge {
+                    Text(birthdayDisplayText(age: age, date: item.date))
+                        .font(.system(size: 9, weight: .bold, design: .monospaced))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                 }
-                .frame(width: 32, alignment: .center)
-                .frame(maxHeight: .infinity)
 
-                // WALL (vertical divider) - must have maxHeight to expand
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(width: 1.5)
-                    .frame(maxHeight: .infinity)
-
-                // CENTER COMPARTMENT: Title + metadata (flexible)
-                HStack(spacing: JohoDimensions.spacingXS) {
-                    Text(item.title)
-                        .font(JohoFont.bodySmall)
-                        .foregroundStyle(colors.primary)
-                        .lineLimit(1)
-
-                    Spacer(minLength: 4)
-
-                    // Metadata: age for birthdays (情報デザイン: intelligent messaging)
-                    // Note: Countdown removed - temporal status now shown in day header
-                    if item.type == .birthday, let age = item.turningAge {
-                        // 情報デザイン: Age 0 means birth year - show contextual message
-                        Text(birthdayDisplayText(age: age, date: item.date))
-                            .font(.system(size: 9, weight: .bold, design: .monospaced))
-                            .foregroundStyle(colors.primary.opacity(0.6))
-                    }
+                // Region code as plain text (情報デザイン: Clean, minimal)
+                if item.hasCountryPill {
+                    Text(item.region)
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .padding(.trailing, JohoDimensions.spacingMD)
                 }
-                .padding(.horizontal, 8)
-                .frame(maxHeight: .infinity)
-
-                // WALL (vertical divider) - must have maxHeight to expand
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(width: 1.5)
-                    .frame(maxHeight: .infinity)
-
-                // RIGHT COMPARTMENT: Country pill + OPTIONAL custom decoration icon
-                // 情報デザイン: Only show icon if user chose a DIFFERENT custom icon
-                // (type indicator is on LEFT, don't duplicate it on RIGHT)
-                HStack(spacing: 4) {
-                    if item.hasCountryPill {
-                        CountryPill(region: item.region)
-                    }
-                    // 情報デザイン: Decoration icon - ONLY show if custom icon differs from type default
-                    if let customIcon = item.symbolName,
-                       !customIcon.isEmpty,
-                       customIcon != item.type.defaultIcon {
-                        Image(systemName: customIcon)
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(item.type.accentColor)
-                            .frame(width: 24, height: 24)
-                            .background(item.type.accentColor.opacity(0.15))
-                            .clipShape(Squircle(cornerRadius: 6))
-                            .overlay(Squircle(cornerRadius: 6).stroke(colors.border, lineWidth: 1))
-                    }
-                }
-                .frame(width: 72, alignment: .center)
-                .frame(maxHeight: .infinity)
             }
-            .frame(minHeight: 36)
+            .frame(minHeight: 44)
+            .background(
+                HStack(spacing: 0) {
+                    // 情報デザイン: 4pt left-edge color tint instead of full background
+                    Rectangle()
+                        .fill(zone.background(for: colorMode))
+                        .frame(width: 4)
+                    Spacer()
+                }
+            )
             // 情報デザイン: Tap shows detail sheet, long-press expands inline
             .contentShape(Rectangle())
             .onTapGesture {
