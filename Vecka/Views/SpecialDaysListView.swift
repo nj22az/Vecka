@@ -3272,78 +3272,121 @@ struct CustomHolidayCreatorSheet: View {
         .background(colors.surface)
     }
 
-    // MARK: - Date Picker Row (情報デザイン: Year | Month | Day compartments, no glass)
+    // MARK: - Date Picker Row (情報デザイン: Single button, opens sheet, no glass)
+
+    @State private var showingDatePicker = false
+
+    private var selectedDate: Date {
+        get {
+            Calendar.current.date(from: DateComponents(year: selectedYear, month: selectedMonth, day: selectedDay)) ?? Date()
+        }
+        set {
+            selectedYear = Calendar.current.component(.year, from: newValue)
+            selectedMonth = Calendar.current.component(.month, from: newValue)
+            selectedDay = Calendar.current.component(.day, from: newValue)
+        }
+    }
+
+    private var formattedDate: String {
+        let y = String(format: "%04d", selectedYear)
+        let m = String(format: "%02d", selectedMonth)
+        let d = String(format: "%02d", selectedDay)
+        return "\(y)  \(m)  \(d)"
+    }
 
     private var dateRow: some View {
-        HStack(spacing: 0) {
-            // Icon column
-            Image(systemName: "calendar")
-                .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.primary)
-                .frame(width: 48).frame(maxHeight: .infinity)
-
-            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
-
-            // Year dropdown
-            Menu {
-                ForEach(yearRange, id: \.self) { year in
-                    Button {
-                        selectedYear = year
-                        HapticManager.selection()
-                    } label: {
-                        Text(String(year))
-                    }
-                }
-            } label: {
-                Text(String(selectedYear))
-                    .font(.system(size: 14, weight: .bold, design: .monospaced))
-                    .foregroundStyle(colors.primary)
-                    .frame(maxWidth: .infinity).frame(maxHeight: .infinity)
-            }
-
-            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
-
-            // Month dropdown
-            Menu {
-                ForEach(1...12, id: \.self) { month in
-                    Button {
-                        selectedMonth = month
-                        // Adjust day if needed
-                        let maxDays = daysInSelectedMonth
-                        if selectedDay > maxDays { selectedDay = maxDays }
-                        HapticManager.selection()
-                    } label: {
-                        Text(monthName(month))
-                    }
-                }
-            } label: {
-                Text(monthName(selectedMonth))
+        Button {
+            showingDatePicker = true
+            HapticManager.selection()
+        } label: {
+            HStack(spacing: 0) {
+                // Icon column (tappable indicator)
+                Image(systemName: "calendar")
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
-                    .frame(maxWidth: .infinity).frame(maxHeight: .infinity)
-            }
-
-            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
-
-            // Day dropdown
-            Menu {
-                ForEach(1...daysInSelectedMonth, id: \.self) { day in
-                    Button {
-                        selectedDay = day
-                        HapticManager.selection()
-                    } label: {
-                        Text("\(day)")
-                    }
-                }
-            } label: {
-                Text("\(selectedDay)")
-                    .font(.system(size: 14, weight: .bold, design: .monospaced))
-                    .foregroundStyle(colors.primary)
                     .frame(width: 48).frame(maxHeight: .infinity)
+
+                Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
+
+                // Formatted date display: YYYY  MM  DD
+                Text(formattedDate)
+                    .font(.system(size: 16, weight: .bold, design: .monospaced))
+                    .foregroundStyle(colors.primary)
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+
+                Spacer()
+
+                // Chevron indicator
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(colors.primary.opacity(0.4))
+                    .padding(.trailing, JohoDimensions.spacingMD)
             }
+            .frame(height: 48)
+            .background(colors.surface)
         }
-        .frame(height: 48)
-        .background(colors.surface)
+        .buttonStyle(.plain)
+        .sheet(isPresented: $showingDatePicker) {
+            datePickerSheet
+        }
+    }
+
+    // 情報デザイン: Date picker sheet (no glass, solid background)
+    private var datePickerSheet: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Button {
+                    showingDatePicker = false
+                } label: {
+                    Text("Cancel")
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.6))
+                }
+
+                Spacer()
+
+                Text("SELECT DATE")
+                    .font(.system(size: 14, weight: .heavy, design: .rounded))
+                    .foregroundStyle(colors.primary)
+
+                Spacer()
+
+                Button {
+                    showingDatePicker = false
+                    HapticManager.selection()
+                } label: {
+                    Text("Done")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(accentColor)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.vertical, JohoDimensions.spacingMD)
+            .background(colors.surface)
+
+            Rectangle().fill(colors.border).frame(height: 2)
+
+            // Date picker (graphical style)
+            DatePicker("", selection: Binding(
+                get: { selectedDate },
+                set: { newDate in
+                    selectedYear = Calendar.current.component(.year, from: newDate)
+                    selectedMonth = Calendar.current.component(.month, from: newDate)
+                    selectedDay = Calendar.current.component(.day, from: newDate)
+                }
+            ), displayedComponents: .date)
+                .datePickerStyle(.graphical)
+                .tint(accentColor)
+                .padding(JohoDimensions.spacingMD)
+                .background(colors.surface)
+
+            Spacer()
+        }
+        .background(colors.canvas)
+        .presentationDetents([.medium])
+        .presentationCornerRadius(20)
+        .presentationDragIndicator(.hidden)
     }
 
     // MARK: - Type Selector Row
