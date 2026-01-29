@@ -149,6 +149,61 @@ enum PageHeaderColor {
     }
 }
 
+// MARK: - System UI Accent (情報デザイン: Neutral navigation elements)
+// Used for month/year pickers, generic buttons, navigation controls
+// These are NOT tied to semantic content types
+
+enum SystemUIAccent: String, CaseIterable, Identifiable {
+    case black = "black"           // Pure authority - stark but clear
+    case slate = "slate"           // Soft professional - Settings-like
+    case indigo = "indigo"         // Deep calm - Calendar header inspired
+    case navy = "navy"             // Warm neutral - softer than black
+    case blue = "blue"             // Information blue - Japanese wayfinding style
+
+    var id: String { rawValue }
+
+    var color: Color {
+        switch self {
+        case .black:  return Color(hex: "000000")  // Pure black
+        case .slate:  return Color(hex: "475569")  // Slate gray (Settings header)
+        case .indigo: return Color(hex: "4338CA")  // Deep indigo (Calendar header)
+        case .navy:   return Color(hex: "1E3A5F")  // Soft navy
+        case .blue:   return Color(hex: "3B82F6")  // UI blue (wayfinding)
+        }
+    }
+
+    var displayName: String {
+        switch self {
+        case .black:  return "Black"
+        case .slate:  return "Slate"
+        case .indigo: return "Indigo"
+        case .navy:   return "Navy"
+        case .blue:   return "Blue"
+        }
+    }
+
+    var description: String {
+        switch self {
+        case .black:  return "Pure authority"
+        case .slate:  return "Soft professional"
+        case .indigo: return "Deep calm"
+        case .navy:   return "Warm neutral"
+        case .blue:   return "Wayfinding"
+        }
+    }
+
+    /// Japanese design principle this represents
+    var japaneseName: String {
+        switch self {
+        case .black:  return "権威"      // Authority
+        case .slate:  return "穏やか"    // Calm/gentle
+        case .indigo: return "時"        // Time/structure
+        case .navy:   return "深み"      // Depth
+        case .blue:   return "案内"      // Guidance
+        }
+    }
+}
+
 // MARK: - App Background Options (AMOLED-friendly)
 // User can choose background color for battery savings on OLED screens
 

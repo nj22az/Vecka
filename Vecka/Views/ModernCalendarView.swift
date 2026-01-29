@@ -43,6 +43,10 @@ struct ModernCalendarView: View {
 
     /// Dynamic colors based on color mode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    // Settings
+    @AppStorage("systemUIAccent") private var systemUIAccent = "indigo"
+
     @Query private var memos: [Memo]
     @Query private var contacts: [Contact]  // For birthday indicators
     private var holidayManager = HolidayManager.shared
@@ -324,7 +328,7 @@ struct ModernCalendarView: View {
                 isPresented: $showMonthPicker,
                 selectedMonth: $displayMonth,
                 selectedYear: $selectedYear,
-                accentColor: JohoColors.black  // System navigation - uses Black per 情報デザイン
+                accentColor: (SystemUIAccent(rawValue: systemUIAccent) ?? .indigo).color
             )
             .onChange(of: displayMonth) { _, newMonth in
                 currentMonth = CalendarMonth(year: selectedYear, month: newMonth, noteColors: memoColors)

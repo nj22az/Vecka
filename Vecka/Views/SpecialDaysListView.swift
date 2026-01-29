@@ -11,6 +11,14 @@
 //  - Year picker in header (not separate section)
 //  - Color-coded by holiday TYPE not just "holiday zone"
 //
+//  IMPORTANT: Icons are DATABASE-DRIVEN
+//  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+//  Category icons (holiday, observance, memo) come from customCategoryIcon(for:)
+//  which reads from @AppStorage("categoryCustomizations").
+//  NEVER hardcode icons - always use:
+//    customCategoryIcon(for: .category) ?? DisplayCategory.category.outlineIcon
+//
+//
 
 import SwiftUI
 import SwiftData
@@ -78,6 +86,7 @@ struct SpecialDaysListView: View {
     @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
     @AppStorage("monthCustomizations") private var monthCustomizationsData: Data = Data()  // 情報デザイン: Custom icon + color per month
     @AppStorage("categoryCustomizations") private var categoryCustomizationsData: Data = Data()  // 情報デザイン: Custom icon per category
+    @AppStorage("systemUIAccent") private var systemUIAccent = "indigo"  // 情報デザイン: System UI accent color
 
     // View mode - exposed via binding for sidebar integration
     @Binding var isInMonthDetail: Bool
@@ -874,18 +883,23 @@ struct SpecialDaysListView: View {
     /// 情報デザイン: State for unified add button sheet
     @State private var showingCustomHolidayCreator = false
 
-    /// 情報デザイン: Unified add button - black/white styling, opens creator sheet
+    /// System UI accent for buttons (database-driven via settings)
+    private var systemAccentColor: Color {
+        (SystemUIAccent(rawValue: systemUIAccent) ?? .indigo).color
+    }
+
+    /// 情報デザイン: Unified add button - uses system UI accent color
     private var unifiedAddButton: some View {
         Button {
             showingCustomHolidayCreator = true
             HapticManager.impact(.light)
         } label: {
-            // 情報デザイン: Simple black/white plus button
+            // 情報デザイン: System UI accent plus button (matches date picker)
             Image(systemName: "plus")
                 .font(.system(size: 12, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.primary)
+                .foregroundStyle(.white)
                 .frame(width: 28, height: 28)
-                .background(colors.surface)
+                .background(systemAccentColor)
                 .clipShape(Circle())
                 .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
         }
@@ -1037,9 +1051,10 @@ struct SpecialDaysListView: View {
     }
 
     /// 情報デザイン: Compact popover showing category details
+    /// Icons are database-driven via customCategoryIcon(for:)
     private func categoryPopover(category: DisplayCategory, count: Int) -> some View {
         HStack(spacing: JohoDimensions.spacingSM) {
-            Image(systemName: category.outlineIcon)
+            Image(systemName: customCategoryIcon(for: category) ?? category.outlineIcon)
                 .font(.system(size: 18, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 32, height: 32)
@@ -1338,6 +1353,9 @@ struct SpecialDaysListView: View {
                                 deleteRow: deleteRow,
                                 openEditor: openEditor,
                                 showDetail: { item in selectedDetailItem = item },
+                                holidayIcon: customCategoryIcon(for: .holiday) ?? DisplayCategory.holiday.outlineIcon,
+                                observanceIcon: customCategoryIcon(for: .observance) ?? DisplayCategory.observance.outlineIcon,
+                                memoIcon: customCategoryIcon(for: .memo) ?? DisplayCategory.memo.outlineIcon,
                                 expandedItemID: $expandedItemID
                             )
                         }
@@ -1562,6 +1580,11 @@ struct CollapsibleSpecialDayCard: View {
     let openEditor: (SpecialDayRow) -> Void
     let showDetail: (SpecialDayRow) -> Void
 
+    // Category icons (database-driven via customCategoryIcon in parent)
+    let holidayIcon: String
+    let observanceIcon: String
+    let memoIcon: String
+
     // Item expansion state (情報デザイン: tap row to show details)
     @Binding var expandedItemID: String?
 
@@ -1710,11 +1733,10 @@ struct CollapsibleSpecialDayCard: View {
     private var contentIndicatorDots: some View {
         HStack(spacing: 6) {
             // 情報デザイン: 3-category indicator system
-            // PINK circle = Holidays (celebration)
-            // PINK diamond = Observances (celebration, different shape)
-            // YELLOW circle = Memos + Birthdays (now/personal)
+            // Colored dots are FIXED (pink, cyan, yellow) - colors encode category meaning
+            // Icons are separate and customizable via database
 
-            // Holidays - Pink circle
+            // Holidays - Pink dot
             if holidays.isNotEmpty {
                 HStack(spacing: 2) {
                     Circle()
@@ -1727,19 +1749,20 @@ struct CollapsibleSpecialDayCard: View {
                 }
             }
 
-            // Observances - Cyan diamond (cultural observances)
+            // Observances - Cyan dot
             if observances.isNotEmpty {
                 HStack(spacing: 2) {
-                    Image(systemName: "diamond.fill")
-                        .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(JohoColors.cyan)
+                    Circle()
+                        .fill(JohoColors.cyan)
+                        .frame(width: 8, height: 8)
+                        .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
                     Text("\(observances.count)")
                         .font(.system(size: 10, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary)
                 }
             }
 
-            // Memos + Birthdays - Yellow circle (unified personal category)
+            // Memos + Birthdays - Yellow dot
             if birthdays.isNotEmpty || memosForDay.isNotEmpty {
                 HStack(spacing: 2) {
                     Circle()
@@ -1769,33 +1792,38 @@ struct CollapsibleSpecialDayCard: View {
             // PINK = Celebration (holidays, observances)
             // YELLOW = Now/Personal (memos + birthdays)
 
-            // Holidays - Circle outline (PINK)
+            // Icons are database-driven via customCategoryIcon(for:)
+            // Fallback to DisplayCategory.outlineIcon only if no custom icon set
+
+            // Holidays (PINK zone)
+            // Icons are database-driven - passed from parent via holidayIcon/observanceIcon/memoIcon
+
             if consolidatedHolidays.isNotEmpty {
                 consolidatedHolidaySection(
                     title: DisplayCategory.holiday.localizedLabel,
                     items: consolidatedHolidays,
                     zone: .holidays,
-                    icon: DisplayCategory.holiday.outlineIcon
+                    icon: holidayIcon
                 )
             }
 
-            // Observances - Diamond outline (CYAN)
+            // Observances (CYAN zone)
             if observances.isNotEmpty {
                 specialDaySection(
                     title: DisplayCategory.observance.localizedLabel,
                     items: observances,
                     zone: .observances,
-                    icon: DisplayCategory.observance.outlineIcon
+                    icon: observanceIcon
                 )
             }
 
-            // Memos - Doc outline (YELLOW - includes birthdays)
+            // Memos (YELLOW zone - includes birthdays)
             if combinedMemos.isNotEmpty {
                 specialDaySection(
                     title: DisplayCategory.memo.localizedLabel,
                     items: combinedMemos,
                     zone: .notes,
-                    icon: DisplayCategory.memo.outlineIcon
+                    icon: memoIcon
                 )
             }
         }
@@ -2143,11 +2171,19 @@ struct CollapsibleSpecialDayCard: View {
     }
 
     // MARK: - Type Indicator Dot (情報デザイン: Black outline shapes)
-    // Shape = meaning (circle=holiday, diamond=observance, doc=memo)
+    // Icons are database-driven - use passed icon parameters from parent
+
+    private func iconForType(_ type: SpecialDayType) -> String {
+        switch type.displayCategory {
+        case .holiday: return holidayIcon
+        case .observance: return observanceIcon
+        case .memo: return memoIcon
+        }
+    }
 
     @ViewBuilder
     private func typeIndicatorDot(for type: SpecialDayType) -> some View {
-        Image(systemName: type.displayCategory.outlineIcon)
+        Image(systemName: iconForType(type))
             .font(.system(size: 10, weight: .bold, design: .rounded))
             .foregroundStyle(colors.primary)
     }
@@ -2392,11 +2428,13 @@ extension SpecialDaysListView {
         .shadow(color: colors.border.opacity(0.05), radius: 2, x: 0, y: 1)
     }
 
-    // MARK: - Type Indicator Icon (情報デザイン: Black outline shapes)
+    // MARK: - Type Indicator Dot (情報デザイン: Black outline shapes)
+    // Icons are database-driven via customCategoryIcon(for:)
 
     @ViewBuilder
     private func typeIndicatorDot(for type: SpecialDayType) -> some View {
-        Image(systemName: type.displayCategory.outlineIcon)
+        let category = type.displayCategory
+        Image(systemName: customCategoryIcon(for: category) ?? category.outlineIcon)
             .font(.system(size: 10, weight: .bold, design: .rounded))
             .foregroundStyle(colors.primary)
     }
@@ -3168,8 +3206,11 @@ struct CustomHolidayCreatorSheet: View {
         }
     }
 
+    // 情報デザイン: System UI accent for universal creator (not category-specific)
+    @AppStorage("systemUIAccent") private var systemUIAccent = "indigo"
+
     private var accentColor: Color {
-        selectedType == .holiday ? JohoColors.pink : JohoColors.cyan
+        (SystemUIAccent(rawValue: systemUIAccent) ?? .indigo).color
     }
 
     // 情報デザイン: Use customized icons from category picker

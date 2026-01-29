@@ -19,6 +19,7 @@ struct SettingsView: View {
     @AppStorage("showLunarCalendar") private var showLunarCalendar = false  // For Vietnamese holidays
     @AppStorage("customLandingTitle") private var customLandingTitle = ""
     @AppStorage("eventTextColor") private var eventTextColor = "black"  // 情報デザイン: Japanese planner text color
+    @AppStorage("systemUIAccent") private var systemUIAccent = "indigo"  // 情報デザイン: System UI accent color
     // PDF Export settings (情報デザイン: User-configurable branding)
     @AppStorage("pdfExportTitle") private var pdfExportTitle = "Contact Directory"
     @AppStorage("pdfExportFooter") private var pdfExportFooter = ""  // Empty = page number only
@@ -174,6 +175,15 @@ struct SettingsView: View {
 
                     // 夜間モード (Night Mode) toggle - AMOLED dark mode
                     darkModeToggleRow
+
+                    // Divider
+                    Rectangle()
+                        .fill(colors.border.opacity(0.1))
+                        .frame(height: 1)
+                        .padding(.vertical, JohoDimensions.spacingSM)
+
+                    // System UI Accent (情報デザイン: Navigation element color)
+                    systemUIAccentSection
                 }
                 .padding(JohoDimensions.spacingLG)
                 .background(colors.surface)
@@ -482,6 +492,95 @@ struct SettingsView: View {
 
     private var selectedColorMode: JohoColorMode {
         JohoColorMode(rawValue: johoColorMode) ?? .light
+    }
+
+    // MARK: - System UI Accent Section (情報デザイン: Navigation elements)
+
+    private var systemUIAccentSection: some View {
+        VStack(spacing: JohoDimensions.spacingSM) {
+            // Header row
+            HStack(spacing: JohoDimensions.spacingMD) {
+                Image(systemName: "slider.horizontal.3")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(colors.primary)
+                    .johoTouchTarget()
+                    .background(colors.inputBackground)
+                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                    .overlay(
+                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
+                    )
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("UI Accent")
+                        .font(JohoFont.headline)
+                        .foregroundStyle(colors.primary)
+
+                    Text((SystemUIAccent(rawValue: systemUIAccent) ?? .indigo).description)
+                        .font(JohoFont.body)
+                        .foregroundStyle(colors.secondary)
+                }
+
+                Spacer()
+            }
+
+            // Color option buttons (horizontal scroll for 5 options)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    ForEach(SystemUIAccent.allCases) { option in
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.15)) {
+                                systemUIAccent = option.rawValue
+                            }
+                            HapticManager.selection()
+                        } label: {
+                            VStack(spacing: 4) {
+                                // Color circle preview
+                                Circle()
+                                    .fill(option.color)
+                                    .frame(width: 28, height: 28)
+                                    .overlay(
+                                        Circle()
+                                            .stroke(systemUIAccent == option.rawValue ? colors.primary : colors.border, lineWidth: systemUIAccent == option.rawValue ? 2.5 : 1)
+                                    )
+
+                                // Label
+                                Text(option.displayName)
+                                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                                    .foregroundStyle(colors.primary)
+
+                                // Japanese name
+                                Text(option.japaneseName)
+                                    .font(.system(size: 8, weight: .medium, design: .rounded))
+                                    .foregroundStyle(colors.secondary)
+                            }
+                            .frame(width: 60)
+                            .padding(.vertical, 8)
+                            .background(systemUIAccent == option.rawValue ? option.color.opacity(0.15) : colors.surface)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                    .stroke(systemUIAccent == option.rawValue ? option.color : colors.border, lineWidth: systemUIAccent == option.rawValue ? 2 : 1)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+
+            // Footer
+            Text("Color for pickers, navigation buttons, and system UI elements.")
+                .font(JohoFont.caption)
+                .foregroundStyle(colors.secondary)
+                .padding(.horizontal, JohoDimensions.spacingSM)
+        }
+        .padding(JohoDimensions.spacingMD)
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+        )
     }
 
     // MARK: - Lunar Calendar Section (情報デザイン: VN holidays)
