@@ -2873,22 +2873,27 @@ struct JohoCalendarPickerSheet: View {
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack {
+            // Dimmed background - tap to dismiss
+            Color.black.opacity(0.4)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    isPresented = false
+                }
+
+            // Floating calendar card
             JohoCalendarPicker(
                 selectedDate: $selectedDate,
                 accentColor: accentColor,
                 onDone: { isPresented = false },
                 onCancel: { isPresented = false }
             )
-            .padding(.horizontal, JohoDimensions.spacingMD)
-            .padding(.top, JohoDimensions.spacingMD)
-
-            Spacer()
+            .padding(.horizontal, JohoDimensions.spacingLG)
         }
-        .presentationDetents([.medium])
+        .presentationDetents([.large])
         .presentationCornerRadius(0)
         .presentationDragIndicator(.hidden)
-        .presentationBackground(JohoColors.black)
+        .presentationBackground(.clear)
     }
 }
 
