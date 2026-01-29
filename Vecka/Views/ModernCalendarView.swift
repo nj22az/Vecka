@@ -320,8 +320,15 @@ struct ModernCalendarView: View {
             .sheet(isPresented: $showHolidayEditor) {
                 holidayEditorSheet
             }
-            .sheet(isPresented: $showMonthPicker) {
-                monthPickerSheet
+            .johoYearPicker(
+                isPresented: $showMonthPicker,
+                selectedMonth: $displayMonth,
+                selectedYear: $selectedYear,
+                accentColor: JohoColors.cyan  // Calendar = SCHEDULED zone
+            )
+            .onChange(of: displayMonth) { _, newMonth in
+                currentMonth = CalendarMonth(year: selectedYear, month: newMonth, noteColors: memoColors)
+                updateSelectedWeekAndDay()
             }
             .onAppear {
                 AppInitializer.initialize(context: modelContext)
@@ -342,6 +349,8 @@ struct ModernCalendarView: View {
                 updateMonthFromDate()
             }
             .onChange(of: selectedYear) { _, newYear in
+                currentMonth = CalendarMonth(year: newYear, month: displayMonth, noteColors: memoColors)
+                updateSelectedWeekAndDay()
                 holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: newYear)
             }
             .onChange(of: navigationManager.targetDate) { _, newDate in
@@ -469,19 +478,7 @@ struct ModernCalendarView: View {
         .presentationCornerRadius(20)
     }
 
-    private var monthPickerSheet: some View {
-        MonthPickerSheet(
-            initialMonth: displayMonth,
-            initialYear: selectedYear
-        ) { newMonth, newYear in
-            currentMonth = CalendarMonth(year: newYear, month: newMonth, noteColors: memoColors)
-            displayMonth = newMonth
-            selectedYear = newYear
-            updateSelectedWeekAndDay()
-        }
-        .presentationDetents([.medium, .large])
-        .presentationCornerRadius(20)
-    }
+    // monthPickerSheet removed - now using JohoYearPicker overlay
 
     // MARK: - Calendar Detail View
 
@@ -638,7 +635,12 @@ struct ModernCalendarView: View {
     @State private var showMonthPicker = false
 
     private var monthYearHeader: some View {
-        Button(action: { showMonthPicker = true }) {
+        Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                showMonthPicker = true
+            }
+            HapticManager.selection()
+        } label: {
             HStack(spacing: 6) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(verbatim: "\(currentMonth.year)")
@@ -801,7 +803,12 @@ struct ModernCalendarView: View {
             }
             .buttonStyle(.plain)
 
-            Button { showMonthPicker = true } label: {
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    showMonthPicker = true
+                }
+                HapticManager.selection()
+            } label: {
                 VStack(spacing: 0) {
                     Text(monthTitle)
                         .font(JohoFont.bodySmall.bold())

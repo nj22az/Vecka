@@ -2933,6 +2933,250 @@ struct JohoCalendarPickerSheet: View {
     }
 }
 
+// MARK: - JohoMonthYearPicker (情報デザイン: Month/Year Navigation)
+
+/// A 情報デザイン compliant month/year picker for calendar navigation
+/// Matches the JohoCalendarPicker aesthetic but only selects month and year
+struct JohoMonthYearPicker: View {
+    @Binding var selectedMonth: Int
+    @Binding var selectedYear: Int
+    let accentColor: Color
+    let onDone: () -> Void
+    let onCancel: () -> Void
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    private let months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+                          "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
+
+    private var years: [Int] {
+        let current = Calendar.iso8601.component(.year, from: Date())
+        return Array((current - 10)...(current + 10))
+    }
+
+    private var currentYear: Int {
+        Calendar.iso8601.component(.year, from: Date())
+    }
+
+    private var currentMonth: Int {
+        Calendar.iso8601.component(.month, from: Date())
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header row
+            headerRow
+
+            Rectangle().fill(colors.border).frame(height: 1.5)
+
+            // Year navigation row
+            yearNavigationRow
+
+            Rectangle().fill(colors.border).frame(height: 1.5)
+
+            // Month grid (3x4)
+            monthGrid
+        }
+        .background(colors.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(colors.border, lineWidth: 2)
+        )
+        .shadow(color: .black.opacity(0.2), radius: 20, y: 10)
+    }
+
+    // MARK: - Header
+
+    private var headerRow: some View {
+        HStack {
+            Button {
+                onCancel()
+                HapticManager.selection()
+            } label: {
+                Text("CANCEL")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(colors.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .stroke(colors.border, lineWidth: 1.5)
+                    )
+            }
+            .buttonStyle(.plain)
+
+            Spacer()
+
+            Text("SELECT MONTH")
+                .font(.system(size: 14, weight: .heavy, design: .rounded))
+                .foregroundStyle(colors.primary)
+
+            Spacer()
+
+            Button {
+                onDone()
+                HapticManager.notification(.success)
+            } label: {
+                Text("DONE")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primaryInverted)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(accentColor)
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .stroke(colors.border, lineWidth: 1.5)
+                    )
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
+    }
+
+    // MARK: - Year Navigation
+
+    private var yearNavigationRow: some View {
+        HStack(spacing: 0) {
+            // Previous year button
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    selectedYear -= 1
+                }
+                HapticManager.selection()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .frame(width: 44, height: 44)
+            }
+            .buttonStyle(.plain)
+
+            Spacer()
+
+            // Year display
+            Text(String(selectedYear))
+                .font(.system(size: 24, weight: .heavy, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(selectedYear == currentYear ? accentColor : colors.primary)
+
+            Spacer()
+
+            // Next year button
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    selectedYear += 1
+                }
+                HapticManager.selection()
+            } label: {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .frame(width: 44, height: 44)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, JohoDimensions.spacingSM)
+        .frame(height: 52)
+    }
+
+    // MARK: - Month Grid
+
+    private var monthGrid: some View {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 0), count: 4), spacing: 0) {
+            ForEach(1...12, id: \.self) { month in
+                monthCell(month)
+            }
+        }
+    }
+
+    private func monthCell(_ month: Int) -> some View {
+        let isSelected = month == selectedMonth
+        let isCurrentMonth = month == currentMonth && selectedYear == currentYear
+
+        return Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                selectedMonth = month
+            }
+            HapticManager.selection()
+        } label: {
+            Text(months[month - 1])
+                .font(.system(size: 14, weight: isSelected ? .heavy : .bold, design: .rounded))
+                .foregroundStyle(isSelected ? colors.primaryInverted : colors.primary)
+                .frame(maxWidth: .infinity)
+                .frame(height: 48)
+                .background(
+                    isSelected ? accentColor :
+                    isCurrentMonth ? JohoColors.yellow.opacity(0.3) :
+                    colors.surface
+                )
+                .overlay(
+                    Rectangle()
+                        .stroke(colors.border, lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - JohoMonthYearPicker Overlay
+
+/// Overlay modifier for presenting JohoMonthYearPicker floating over content
+struct JohoMonthYearPickerOverlay: ViewModifier {
+    @Binding var isPresented: Bool
+    @Binding var selectedMonth: Int
+    @Binding var selectedYear: Int
+    let accentColor: Color
+
+    func body(content: Content) -> some View {
+        content
+            .overlay {
+                if isPresented {
+                    JohoMonthYearPicker(
+                        selectedMonth: $selectedMonth,
+                        selectedYear: $selectedYear,
+                        accentColor: accentColor,
+                        onDone: {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                isPresented = false
+                            }
+                        },
+                        onCancel: {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                isPresented = false
+                            }
+                        }
+                    )
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                }
+            }
+            .animation(.easeInOut(duration: 0.2), value: isPresented)
+    }
+}
+
+extension View {
+    /// Present a floating month/year picker overlay
+    func johoYearPicker(
+        isPresented: Binding<Bool>,
+        selectedMonth: Binding<Int>,
+        selectedYear: Binding<Int>,
+        accentColor: Color
+    ) -> some View {
+        modifier(JohoMonthYearPickerOverlay(
+            isPresented: isPresented,
+            selectedMonth: selectedMonth,
+            selectedYear: selectedYear,
+            accentColor: accentColor
+        ))
+    }
+}
+
 // MARK: - Preview
 
 #Preview("Joho Components") {
