@@ -794,22 +794,6 @@ struct ModernCalendarView: View {
 
                 Spacer()
 
-                // 情報デザイン: Add entry button (matches Star page month detail)
-                Button {
-                    memoEditorDate = selectedDay?.date ?? selectedDate
-                    showMemoSheet = true
-                    HapticManager.impact(.light)
-                } label: {
-                    Image(systemName: "plus")
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
-                        .frame(width: 28, height: 28)
-                        .background(systemAccentColor)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
-                }
-                .buttonStyle(.plain)
-
                 // 情報デザイン: Go to Today button (Yellow = NOW/Present)
                 // Only show when not viewing today
                 if !isViewingToday {
@@ -841,6 +825,22 @@ struct ModernCalendarView: View {
                     .padding(.vertical, 4)
                     .background(colors.surfaceInverted)
                     .clipShape(Capsule())
+
+                // 情報デザイン: Add entry button (matches Star page month detail - far right)
+                Button {
+                    memoEditorDate = selectedDay?.date ?? selectedDate
+                    showMemoSheet = true
+                    HapticManager.impact(.light)
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+                        .frame(width: 28, height: 28)
+                        .background(systemAccentColor)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
+                }
+                .buttonStyle(.plain)
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
