@@ -89,7 +89,34 @@ Color.blue                       // NO raw colors
 .cornerRadius(12)                // NO non-continuous
 ScrollView { Form... }           // NO scroll in forms
 .spring(...)                     // NO bouncy animations
+DatePicker(...)                  // NO iOS DatePicker - use JohoCalendarPicker
 ```
+
+### Date Picker (情報デザイン Standard)
+
+**ALWAYS use `JohoCalendarPicker`** for date selection. Never use iOS `DatePicker`.
+
+```swift
+// ✅ CORRECT: JohoCalendarPicker as floating overlay
+.johoCalendarPicker(
+    isPresented: $showDatePicker,
+    selectedDate: $date,
+    accentColor: JohoColors.yellow  // Match semantic zone
+)
+
+// ❌ WRONG: iOS DatePicker
+DatePicker("", selection: $date)
+    .datePickerStyle(.graphical)
+```
+
+**JohoCalendarPicker features:**
+- Week numbers column (W, 1-6) - tap to select week
+- Day headers (M T W T F S S)
+- Black borders on all cells
+- Yellow highlight for today
+- Accent color for DONE button (matches semantic zone)
+- Floats as overlay over form content
+- No black/gray background covering screen
 
 ### Border Widths
 
@@ -144,3 +171,4 @@ Before committing UI:
 - [ ] Rounded typography
 - [ ] No vertical scroll in forms
 - [ ] 44pt touch targets
+- [ ] Date pickers use `JohoCalendarPicker` (never iOS DatePicker)

@@ -338,7 +338,90 @@ Text("\(year)")  // Use String(year)
 
 // ❌ BOUNCY ANIMATIONS
 .spring(response: 0.5, dampingFraction: 0.5)
+
+// ❌ iOS DatePicker
+DatePicker("", selection: $date)  // NEVER use - use JohoCalendarPicker
 ```
+
+---
+
+## JohoCalendarPicker (情報デザイン Date Picker)
+
+**MANDATORY: All date selection MUST use `JohoCalendarPicker`.** iOS DatePicker is forbidden.
+
+### Features
+- Week numbers column (W, 1-6) on left side
+- Tap week number to select first day of that week
+- Day headers (M T W T F S S)
+- Black bordered cells (1pt)
+- Yellow highlight for today
+- Accent-colored DONE button (matches semantic zone)
+- Floats as overlay over form content
+- No black/gray background covering screen
+
+### Usage Pattern
+
+```swift
+// State
+@State private var showDatePicker = false
+@State private var selectedDate = Date()
+
+// Apply overlay modifier to container
+VStack {
+    // Form content...
+
+    Button {
+        withAnimation(.easeInOut(duration: 0.2)) {
+            showDatePicker = true
+        }
+    } label: {
+        Text(selectedDate.formatted(date: .abbreviated, time: .omitted))
+    }
+}
+.johoCalendarPicker(
+    isPresented: $showDatePicker,
+    selectedDate: $selectedDate,
+    accentColor: JohoColors.yellow  // Match semantic zone
+)
+```
+
+### Accent Color by Zone
+
+| Zone | Color | Example |
+|------|-------|---------|
+| NOW (memos) | `JohoColors.yellow` | Memo editor |
+| CELEBRATION (holidays) | `JohoColors.pink` | Holiday editor |
+| SCHEDULED (events) | `JohoColors.cyan` | Event editor |
+| PEOPLE (contacts) | `JohoColors.purple` | Birthday editor |
+
+### Visual Structure
+
+```
+┌─────────────────────────────────────────────────┐
+│ [CANCEL]    SELECT DATE         [DONE]          │
+├─────────────────────────────────────────────────┤
+│    <        JANUARY 2026           >            │
+├────┬────┬────┬────┬────┬────┬────┬────┤
+│ W  │ M  │ T  │ W  │ T  │ F  │ S  │ S  │
+├────┼────┼────┼────┼────┼────┼────┼────┤
+│ 1  │ 29 │ 30 │ 31 │  1 │  2 │  3 │  4 │
+├────┼────┼────┼────┼────┼────┼────┼────┤
+│ 2  │  5 │  6 │  7 │  8 │  9 │ 10 │ 11 │
+├────┼────┼────┼────┼────┼────┼────┼────┤
+│ 3  │ 12 │ 13 │ 14 │ 15 │ 16 │ 17 │ 18 │
+├────┼────┼────┼────┼────┼────┼────┼────┤
+│ 4  │ 19 │ 20 │ 21 │ 22 │ 23 │ 24 │ 25 │
+├────┼────┼────┼────┼────┼────┼────┼────┤
+│ 5  │ 26 │ 27 │ 28 │[29]│ 30 │ 31 │  1 │  ← [29] = today (yellow)
+├────┼────┼────┼────┼────┼────┼────┼────┤
+│ 6  │  2 │  3 │  4 │  5 │  6 │  7 │  8 │
+└────┴────┴────┴────┴────┴────┴────┴────┘
+```
+
+- Week column (W, 1-6): Black background, white text
+- Today cell: Yellow background
+- Other month days: 40% opacity
+- All cells: 1pt black border
 
 ---
 
@@ -420,6 +503,7 @@ grep -rn "\.cornerRadius(" --include="*.swift"
 grep -rn "Color\.blue\|Color\.red" --include="*.swift"
 grep -rn "LinearGradient\|RadialGradient" --include="*.swift"
 grep -rn "\.padding(.top," --include="*.swift"
+grep -rn "DatePicker(" --include="*.swift"  # Should return 0 results
 ```
 
 ---
@@ -443,9 +527,15 @@ grep -rn "\.padding(.top," --include="*.swift"
 ├─────────────────────────────────────────────┤
 │ SWIPE: →Right=Edit(Cyan), ←Left=Delete(Red) │
 ├─────────────────────────────────────────────┤
+│ DATE PICKER: JohoCalendarPicker ONLY        │
+│   .johoCalendarPicker(isPresented:          │
+│     selectedDate:, accentColor:)            │
+│   NEVER use iOS DatePicker                  │
+├─────────────────────────────────────────────┤
 │ FORBIDDEN: Glass, Gradients, Missing        │
 │   borders, Raw colors, .cornerRadius()      │
 │   Orange (use Cyan), Cream (use Yellow)     │
+│   iOS DatePicker (use JohoCalendarPicker)   │
 └─────────────────────────────────────────────┘
 ```
 
