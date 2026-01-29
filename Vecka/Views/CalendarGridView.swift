@@ -131,33 +131,22 @@ extension CalendarGridView {
         .frame(maxWidth: .infinity)
     }
 
-    // MARK: - Header Row (情報デザイン: Bento-style with icon compartment)
+    // MARK: - Header Row (情報デザイン: Bento grid header)
 
     @ViewBuilder
     private var headerRow: some View {
-        // 情報デザイン: Icon compartment in top-left (mirrors Star page month cards)
-        // Shows current month's seasonal icon with colored background
-        let monthTheme = MonthTheme.theme(for: month.month)
-
+        // 情報デザイン: Purple calendar icon in week column position
         ZStack {
-            // Icon background with month's seasonal color
-            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .fill(monthTheme.lightBackground)
-
-            // Month icon
-            Image(systemName: monthTheme.icon)
+            // Purple calendar icon (consistent app identity)
+            Image(systemName: "calendar")
                 .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundStyle(monthTheme.accentColor)
-
-            // Border
-            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(colors.border, lineWidth: 1)
+                .foregroundStyle(PageHeaderColor.calendar.accent)
         }
         .frame(height: 28)
         .frame(maxWidth: .infinity)
-        .accessibilityLabel("\(monthTheme.name) calendar")
+        .accessibilityLabel("Week number")
 
-        // Day Headers (MON-SUN) - UPPERCASE, bold, rounded
+        // Day Headers (MON-SUN) - Clean grid style, no individual backgrounds
         ForEach(0..<7, id: \.self) { index in
             weekdayHeaderCell(for: index)
         }
@@ -165,21 +154,12 @@ extension CalendarGridView {
 
     private func weekdayHeaderCell(for index: Int) -> some View {
         let isWeekend = index >= 5 // Saturday (5) and Sunday (6)
-        // Dark mode: Slightly lighter background for header contrast
-        let weekdayBg = colorMode == .dark ? Color(hex: "2A2A2A") : Color(hex: "F0F0F0")
-        let weekendBg = isWeekend ? JohoColors.pink.opacity(colorMode == .dark ? 0.4 : 0.3) : weekdayBg
 
         return Text(weekdaySymbol(for: index).uppercased())
             .font(JohoFont.label)
-            .foregroundStyle(colors.primary)
+            .foregroundStyle(isWeekend ? JohoColors.pink : colors.primary)
             .frame(maxWidth: .infinity)
             .frame(height: 28)
-            .background(weekendBg)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-            )
             .accessibilityLabel(weekdayName(for: index))
     }
 
@@ -220,27 +200,26 @@ extension CalendarGridView {
     private func dayCell(_ day: CalendarDay) -> some View {
         let isSelected = selectedDay?.id == day.id
         let dataCheck = hasDataForDay?(day.date)
+        let needsHighlight = day.isToday || isSelected
 
         return Button {
             onDayTap(day)
             HapticManager.impact(.light)
         } label: {
             ZStack {
-                // Base cell background following JohoDayCell pattern
-                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                    .fill(cellBackground(for: day, isSelected: isSelected))
-
-                // Border - dynamic color, extra thick for today/selected
-                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                    .stroke(
-                        cellBorderColor(for: day, isSelected: isSelected),
-                        lineWidth: (day.isToday || isSelected) ? JohoDimensions.borderThick : JohoDimensions.borderThin
-                    )
+                // 情報デザイン: Clean grid - only highlight today/selected
+                // No individual cell backgrounds for regular days
+                if needsHighlight {
+                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                        .fill(cellBackground(for: day, isSelected: isSelected))
+                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                        .stroke(colors.border, lineWidth: 2)
+                }
 
                 // Day number - bold rounded font
                 VStack(spacing: showLunarCalendar ? 0 : 2) {
                     Text("\(day.dayNumber)")
-                        .font(showLunarCalendar ? JohoFont.label : JohoFont.subheadline) // Smaller when lunar shown
+                        .font(showLunarCalendar ? JohoFont.label : JohoFont.subheadline)
                         .fontWeight(.bold)
                         .foregroundStyle(dayTextColor(for: day, isSelected: isSelected))
                         .monospacedDigit()
@@ -251,17 +230,13 @@ extension CalendarGridView {
                     }
 
                     // 情報デザイン: Priority-filtered indicators (max 3 + overflow)
-                    // Priority: HOL > BDY > OBS > EVT > NTE > TRP > EXP
                     priorityIndicators(for: day, dataCheck: dataCheck)
                 }
-
-                // 情報デザイン: Trip indicators shown as orbs only (no connecting lines)
-                // The span bar was removed - too visually noisy, orbs communicate better
             }
             .frame(maxWidth: .infinity)
             .frame(height: cellSize)
-            .contentShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-            .opacity(day.isInCurrentMonth ? 1.0 : 0.4) // Dim out-of-month days
+            .contentShape(Rectangle())
+            .opacity(day.isInCurrentMonth ? 1.0 : 0.4)
         }
         .buttonStyle(.plain)
         .simultaneousGesture(
