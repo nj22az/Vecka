@@ -392,13 +392,13 @@ extension CalendarGridView {
 
         HStack(spacing: 3) {
             ForEach(displayIndicators, id: \.self) { info in
-                // 情報デザイン: Simple colored dots with black outline
+                // 情報デザイン: Simple colored dots with black outline (matches Star page)
                 Circle()
                     .fill(info.color)
                     .frame(width: 6, height: 6)
                     .overlay(
                         Circle()
-                            .stroke(day.isToday ? colors.border.opacity(0.3) : colors.border.opacity(0.5), lineWidth: 0.5)
+                            .stroke(colors.border, lineWidth: 0.5)
                     )
             }
 

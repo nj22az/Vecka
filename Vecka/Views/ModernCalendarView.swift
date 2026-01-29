@@ -735,17 +735,20 @@ struct ModernCalendarView: View {
         let weekNumber = Calendar.iso8601.component(.weekOfYear, from: today)
         let isViewingToday = Calendar.iso8601.isDate(selectedDate, inSameDayAs: today)
 
+        // 情報デザイン: Use current month's seasonal theme (mirrors Star page month cards)
+        let monthTheme = MonthTheme.theme(for: displayMonth)
+
         return VStack(spacing: 0) {
             // MAIN ROW: Icon + Title | WALL | Month Picker
             HStack(spacing: 0) {
                 // LEFT COMPARTMENT: Icon + Title
                 HStack(spacing: JohoDimensions.spacingSM) {
-                    // Icon zone with Calendar accent color (Deep Indigo)
-                    Image(systemName: "calendar")
+                    // Icon zone with current month's seasonal colors (mirrors Star page)
+                    Image(systemName: monthTheme.icon)
                         .font(.system(size: 20, weight: .bold, design: .rounded))
-                        .foregroundStyle(PageHeaderColor.calendar.accent)
+                        .foregroundStyle(monthTheme.accentColor)
                         .frame(width: 40, height: 40)
-                        .background(PageHeaderColor.calendar.lightBackground)
+                        .background(monthTheme.lightBackground)
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusSmall)
