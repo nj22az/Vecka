@@ -324,7 +324,7 @@ struct ModernCalendarView: View {
                 isPresented: $showMonthPicker,
                 selectedMonth: $displayMonth,
                 selectedYear: $selectedYear,
-                accentColor: JohoColors.cyan  // Calendar = SCHEDULED zone
+                accentColor: JohoColors.black  // System navigation - uses Black per 情報デザイン
             )
             .onChange(of: displayMonth) { _, newMonth in
                 currentMonth = CalendarMonth(year: selectedYear, month: newMonth, noteColors: memoColors)

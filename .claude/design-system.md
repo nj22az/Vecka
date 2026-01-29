@@ -32,10 +32,45 @@ Each color has ONE clear meaning - no overlap, no confusion.
 **Structural Colors:**
 | Color | Hex | Usage |
 |-------|-----|-------|
-| **Black** | `#000000` | Borders, text, authority |
+| **Black** | `#000000` | Borders, text, authority, system UI |
 | **White** | `#FFFFFF` | Container backgrounds |
 
 **Note:** Orange and Cream have been **deprecated**. Use Cyan for trips, Yellow for notes.
+
+### System UI (Neutral Elements)
+
+In 情報デザイン, **Black represents Authority** - the system speaking to the user.
+
+Use Black for neutral UI elements that aren't tied to a specific content type:
+- Month/year navigation pickers
+- Generic "+" add buttons
+- Navigation controls
+- Universal date selection (not editing a specific item)
+- Confirmation buttons in neutral contexts
+
+**System UI Pattern:**
+| State | Background | Text | Border |
+|-------|------------|------|--------|
+| Normal | White | Black | Black 2pt |
+| Selected | Black | White | Black 2pt |
+| Disabled | White | Black 40% | Black 40% |
+
+```swift
+// ✅ Month picker (navigation) - uses Black
+.johoYearPicker(
+    isPresented: $showPicker,
+    selectedMonth: $month,
+    selectedYear: $year,
+    accentColor: JohoColors.black  // System navigation
+)
+
+// ✅ Memo date picker (editing content) - uses Yellow
+.johoCalendarPicker(
+    isPresented: $showDatePicker,
+    selectedDate: $memoDate,
+    accentColor: JohoColors.yellow  // Matches memo's semantic zone
+)
+```
 
 ### App Background Options
 
@@ -387,12 +422,17 @@ VStack {
 
 ### Accent Color by Zone
 
+**IMPORTANT:** Use semantic colors ONLY when the picker is contextually tied to that content type. For universal/navigation UI, use Black (SYSTEM).
+
 | Zone | Color | Example |
 |------|-------|---------|
-| NOW (memos) | `JohoColors.yellow` | Memo editor |
-| CELEBRATION (holidays) | `JohoColors.pink` | Holiday editor |
-| SCHEDULED (events) | `JohoColors.cyan` | Event editor |
-| PEOPLE (contacts) | `JohoColors.purple` | Birthday editor |
+| **SYSTEM (navigation)** | `JohoColors.black` | Month/year picker, generic date selection |
+| NOW (memos) | `JohoColors.yellow` | Memo editor (editing a memo's date) |
+| CELEBRATION (holidays) | `JohoColors.pink` | Holiday editor (editing a holiday's date) |
+| SCHEDULED (events) | `JohoColors.cyan` | Event editor (editing an event's date) |
+| PEOPLE (contacts) | `JohoColors.purple` | Birthday editor (editing a birthday) |
+
+**Rule of Thumb:** If the picker is selecting a date FOR a specific content type, use that type's color. If it's general navigation (like choosing which month to view), use Black.
 
 ### Visual Structure
 

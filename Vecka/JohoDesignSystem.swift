@@ -2026,9 +2026,9 @@ struct JohoWeekNumberCell: View {
                     lineWidth: (isCurrentWeek || isSelected) ? JohoDimensions.borderMedium : JohoDimensions.borderThin
                 )
 
-            // Week number
+            // Week number - smaller font for better padding with 2-digit numbers
             Text("\(weekNumber)")
-                .font(JohoFont.headline)
+                .font(JohoFont.bodySmall)
                 .foregroundStyle(colors.primaryInverted)
                 .monospacedDigit()
         }
