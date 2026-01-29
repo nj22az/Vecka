@@ -3327,66 +3327,20 @@ struct CustomHolidayCreatorSheet: View {
         }
         .buttonStyle(.plain)
         .sheet(isPresented: $showingDatePicker) {
-            datePickerSheet
+            // 情報デザイン: Use unified JohoCalendarPicker
+            JohoCalendarPickerSheet(
+                selectedDate: Binding(
+                    get: { selectedDate },
+                    set: { newDate in
+                        selectedYear = Calendar.current.component(.year, from: newDate)
+                        selectedMonth = Calendar.current.component(.month, from: newDate)
+                        selectedDay = Calendar.current.component(.day, from: newDate)
+                    }
+                ),
+                accentColor: accentColor,
+                isPresented: $showingDatePicker
+            )
         }
-    }
-
-    // 情報デザイン: Date picker sheet (no glass, solid background)
-    private var datePickerSheet: some View {
-        VStack(spacing: 0) {
-            // Header
-            HStack {
-                Button {
-                    showingDatePicker = false
-                } label: {
-                    Text("Cancel")
-                        .font(.system(size: 14, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.6))
-                }
-
-                Spacer()
-
-                Text("SELECT DATE")
-                    .font(.system(size: 14, weight: .heavy, design: .rounded))
-                    .foregroundStyle(colors.primary)
-
-                Spacer()
-
-                Button {
-                    showingDatePicker = false
-                    HapticManager.selection()
-                } label: {
-                    Text("Done")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(accentColor)
-                }
-            }
-            .padding(.horizontal, JohoDimensions.spacingLG)
-            .padding(.vertical, JohoDimensions.spacingMD)
-            .background(colors.surface)
-
-            Rectangle().fill(colors.border).frame(height: 2)
-
-            // Date picker (graphical style)
-            DatePicker("", selection: Binding(
-                get: { selectedDate },
-                set: { newDate in
-                    selectedYear = Calendar.current.component(.year, from: newDate)
-                    selectedMonth = Calendar.current.component(.month, from: newDate)
-                    selectedDay = Calendar.current.component(.day, from: newDate)
-                }
-            ), displayedComponents: .date)
-                .datePickerStyle(.graphical)
-                .tint(accentColor)
-                .padding(JohoDimensions.spacingMD)
-                .background(colors.surface)
-
-            Spacer()
-        }
-        .background(colors.canvas)
-        .presentationDetents([.medium])
-        .presentationCornerRadius(20)
-        .presentationDragIndicator(.hidden)
     }
 
     // MARK: - Type Selector Row

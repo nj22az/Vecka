@@ -2560,6 +2560,338 @@ struct JohoPillModifier: ViewModifier {
     }
 }
 
+// MARK: - JohoCalendarPicker (情報デザイン: Unified Date Picker)
+
+/// A 情報デザイン compliant calendar picker matching the Calendar page design
+/// Features: Week numbers, bordered cells, yellow today highlight, week selection
+struct JohoCalendarPicker: View {
+    @Binding var selectedDate: Date
+    let accentColor: Color
+    let onDone: () -> Void
+    let onCancel: () -> Void
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    @State private var displayedMonth: Date
+
+    init(selectedDate: Binding<Date>, accentColor: Color = JohoColors.pink, onDone: @escaping () -> Void, onCancel: @escaping () -> Void) {
+        self._selectedDate = selectedDate
+        self.accentColor = accentColor
+        self.onDone = onDone
+        self.onCancel = onCancel
+        self._displayedMonth = State(initialValue: selectedDate.wrappedValue)
+    }
+
+    private let calendar = Calendar.iso8601
+    private let weekdays = ["M", "T", "W", "T", "F", "S", "S"]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header with buttons
+            headerRow
+
+            Rectangle().fill(colors.border).frame(height: 2)
+
+            // Month navigation
+            monthNavigationRow
+
+            Rectangle().fill(colors.border).frame(height: 1.5)
+
+            // Calendar grid
+            calendarGrid
+                .padding(JohoDimensions.spacingSM)
+        }
+        .background(colors.surface)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(colors.border, lineWidth: 3)
+        )
+    }
+
+    // MARK: - Header Row
+
+    private var headerRow: some View {
+        HStack {
+            Button {
+                onCancel()
+                HapticManager.selection()
+            } label: {
+                Text("CANCEL")
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(colors.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .stroke(colors.border, lineWidth: 1.5)
+                    )
+            }
+
+            Spacer()
+
+            Text("SELECT DATE")
+                .font(.system(size: 14, weight: .heavy, design: .rounded))
+                .foregroundStyle(colors.primary)
+
+            Spacer()
+
+            Button {
+                onDone()
+                HapticManager.selection()
+            } label: {
+                Text("DONE")
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primaryInverted)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(accentColor)
+                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .stroke(colors.border, lineWidth: 1.5)
+                    )
+            }
+        }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingMD)
+    }
+
+    // MARK: - Month Navigation
+
+    private var monthNavigationRow: some View {
+        HStack {
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    displayedMonth = calendar.date(byAdding: .month, value: -1, to: displayedMonth) ?? displayedMonth
+                }
+                HapticManager.selection()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(colors.primary)
+                    .frame(width: 44, height: 44)
+            }
+
+            Spacer()
+
+            Text(monthYearString)
+                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+
+            Spacer()
+
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    displayedMonth = calendar.date(byAdding: .month, value: 1, to: displayedMonth) ?? displayedMonth
+                }
+                HapticManager.selection()
+            } label: {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(colors.primary)
+                    .frame(width: 44, height: 44)
+            }
+        }
+        .padding(.horizontal, JohoDimensions.spacingXS)
+    }
+
+    private var monthYearString: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy"
+        return formatter.string(from: displayedMonth).uppercased()
+    }
+
+    // MARK: - Calendar Grid
+
+    private var calendarGrid: some View {
+        let weeks = weeksInMonth()
+
+        return VStack(spacing: JohoDimensions.spacingXS) {
+            // Weekday header row
+            HStack(spacing: JohoDimensions.spacingXS) {
+                // Week column header
+                Text("W")
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primaryInverted)
+                    .frame(width: 28, height: 28)
+                    .background(colors.surfaceInverted)
+                    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+
+                // Day headers
+                ForEach(0..<7, id: \.self) { index in
+                    let isWeekend = index >= 5
+                    Text(weekdays[index])
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 28)
+                        .background(isWeekend ? accentColor.opacity(0.2) : colors.surface)
+                        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                .stroke(colors.border, lineWidth: 1)
+                        )
+                }
+            }
+
+            // Week rows
+            ForEach(weeks, id: \.self) { week in
+                HStack(spacing: JohoDimensions.spacingXS) {
+                    // Week number cell (tappable to select first day of week)
+                    weekNumberCell(for: week)
+
+                    // Day cells
+                    ForEach(week, id: \.self) { day in
+                        dayCell(for: day)
+                    }
+                }
+            }
+        }
+    }
+
+    private func weekNumberCell(for week: [Date]) -> some View {
+        let weekNumber = calendar.component(.weekOfYear, from: week.first ?? Date())
+        let firstDayOfWeek = week.first { calendar.component(.month, from: $0) == calendar.component(.month, from: displayedMonth) } ?? week.first!
+
+        return Button {
+            selectedDate = firstDayOfWeek
+            HapticManager.impact(.light)
+        } label: {
+            Text("\(weekNumber)")
+                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(colors.primaryInverted)
+                .frame(width: 28, height: 40)
+                .background(colors.surfaceInverted)
+                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func dayCell(for date: Date) -> some View {
+        let day = calendar.component(.day, from: date)
+        let isCurrentMonth = calendar.component(.month, from: date) == calendar.component(.month, from: displayedMonth)
+        let isToday = calendar.isDateInToday(date)
+        let isSelected = calendar.isDate(date, inSameDayAs: selectedDate)
+
+        return Button {
+            selectedDate = date
+            HapticManager.impact(.light)
+        } label: {
+            Text("\(day)")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(dayTextColor(isToday: isToday, isSelected: isSelected, isCurrentMonth: isCurrentMonth))
+                .frame(maxWidth: .infinity)
+                .frame(height: 40)
+                .background(dayBackground(isToday: isToday, isSelected: isSelected))
+                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .stroke(
+                            dayBorderColor(isToday: isToday, isSelected: isSelected),
+                            lineWidth: (isToday || isSelected) ? 2 : 1
+                        )
+                )
+                .opacity(isCurrentMonth ? 1.0 : 0.3)
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Styling Helpers
+
+    private func dayBackground(isToday: Bool, isSelected: Bool) -> Color {
+        if isToday { return JohoColors.yellow }
+        if isSelected { return accentColor }
+        return colors.surface
+    }
+
+    private func dayTextColor(isToday: Bool, isSelected: Bool, isCurrentMonth: Bool) -> Color {
+        if isToday { return colors.primary }
+        if isSelected { return colors.primaryInverted }
+        return colors.primary
+    }
+
+    private func dayBorderColor(isToday: Bool, isSelected: Bool) -> Color {
+        if isToday || isSelected { return colors.border }
+        return colors.border.opacity(0.5)
+    }
+
+    // MARK: - Date Calculations
+
+    private func weeksInMonth() -> [[Date]] {
+        guard let monthStart = calendar.date(from: calendar.dateComponents([.year, .month], from: displayedMonth)),
+              let monthRange = calendar.range(of: .day, in: .month, for: monthStart) else {
+            return []
+        }
+
+        // Find the Monday of the week containing the 1st
+        let firstWeekday = calendar.component(.weekday, from: monthStart)
+        // ISO 8601: Monday = 1, Sunday = 7
+        // Calendar weekday: Sunday = 1, Monday = 2, etc.
+        let daysToSubtract = (firstWeekday + 5) % 7 // Convert to ISO weekday offset
+        guard let gridStart = calendar.date(byAdding: .day, value: -daysToSubtract, to: monthStart) else {
+            return []
+        }
+
+        var weeks: [[Date]] = []
+        var currentDate = gridStart
+
+        // Generate 6 weeks to cover all possible month layouts
+        for _ in 0..<6 {
+            var week: [Date] = []
+            for _ in 0..<7 {
+                week.append(currentDate)
+                currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate) ?? currentDate
+            }
+            weeks.append(week)
+
+            // Stop if we've passed the end of the month and completed the week
+            if calendar.component(.month, from: currentDate) != calendar.component(.month, from: monthStart)
+                && calendar.component(.day, from: currentDate) > 7 {
+                break
+            }
+        }
+
+        return weeks
+    }
+}
+
+// MARK: - JohoCalendarPicker Sheet Wrapper
+
+/// Convenience wrapper for presenting JohoCalendarPicker in a sheet
+struct JohoCalendarPickerSheet: View {
+    @Binding var selectedDate: Date
+    let accentColor: Color
+    @Binding var isPresented: Bool
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            JohoCalendarPicker(
+                selectedDate: $selectedDate,
+                accentColor: accentColor,
+                onDone: { isPresented = false },
+                onCancel: { isPresented = false }
+            )
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.top, JohoDimensions.spacingMD)
+
+            Spacer()
+        }
+        .presentationDetents([.medium])
+        .presentationCornerRadius(0)
+        .presentationDragIndicator(.hidden)
+        .presentationBackground(JohoColors.black)
+    }
+}
+
 // MARK: - Preview
 
 #Preview("Joho Components") {

@@ -69,9 +69,12 @@ struct MemoEditorView: View {
         .presentationBackground(colors.canvas)
         .presentationDragIndicator(.hidden)
         .sheet(isPresented: $showDatePicker) {
-            datePickerSheet
-                .presentationBackground(colors.canvas)
-                .presentationDetents([.medium])
+            // 情報デザイン: Use unified JohoCalendarPicker
+            JohoCalendarPickerSheet(
+                selectedDate: $date,
+                accentColor: JohoColors.yellow,  // Memos are yellow
+                isPresented: $showDatePicker
+            )
         }
         .alert("Delete?", isPresented: $showDeleteConfirm) {
             Button("Cancel", role: .cancel) { }
@@ -408,43 +411,6 @@ struct MemoEditorView: View {
             .frame(maxWidth: .infinity, minHeight: 44)
         }
         .buttonStyle(.plain)
-    }
-
-    // MARK: - Date Picker Sheet
-
-    private var datePickerSheet: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Button("Cancel") { showDatePicker = false }
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .foregroundStyle(colors.primaryInverted)
-                Spacer()
-                Text("Date")
-                    .font(.system(size: 17, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primaryInverted)
-                Spacer()
-                Button("Done") { showDatePicker = false }
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primaryInverted)
-            }
-            .padding(16)
-            .background(colors.canvas)
-
-            DatePicker("", selection: $date, displayedComponents: .date)
-                .datePickerStyle(.graphical)
-                .labelsHidden()
-                .padding(16)
-                .background(colors.surface)
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(colors.border, lineWidth: 2)
-                )
-                .padding(8)
-
-            Spacer()
-        }
-        .background(colors.canvas)
     }
 
     // MARK: - Validation
