@@ -86,7 +86,7 @@ struct SpecialDaysListView: View {
     @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
     @AppStorage("monthCustomizations") private var monthCustomizationsData: Data = Data()  // 情報デザイン: Custom icon + color per month
     @AppStorage("categoryCustomizations") private var categoryCustomizationsData: Data = Data()  // 情報デザイン: Custom icon per category
-    @AppStorage("systemUIAccent") private var systemUIAccent = "indigo"  // 情報デザイン: System UI accent color
+    @AppStorage("systemUIAccent") private var systemUIAccent = "blue"  // 情報デザイン: System UI accent color
 
     // View mode - exposed via binding for sidebar integration
     @Binding var isInMonthDetail: Bool
@@ -99,6 +99,12 @@ struct SpecialDaysListView: View {
 
     // Year selection
     @State private var selectedYear = Calendar.current.component(.year, from: Date())
+
+    // 情報デザイン: Computed date for selected month (for unified entry creator)
+    private var selectedMonthDate: Date {
+        let month = selectedMonth ?? Calendar.current.component(.month, from: Date())
+        return Calendar.current.date(from: DateComponents(year: selectedYear, month: month, day: 1)) ?? Date()
+    }
 
     // Editor state
     @State private var isPresentingNewSpecialDay = false
@@ -905,15 +911,23 @@ struct SpecialDaysListView: View {
         }
         .buttonStyle(.plain)
         .sheet(isPresented: $showingCustomHolidayCreator) {
-            CustomHolidayCreatorSheet(
-                initialMonth: selectedMonth ?? Calendar.current.component(.month, from: Date()),
-                holidayIcon: customCategoryIcon(for: .holiday) ?? DisplayCategory.holiday.outlineIcon,
-                observanceIcon: customCategoryIcon(for: .observance) ?? DisplayCategory.observance.outlineIcon,
-                enabledRegions: holidayRegions.regions,
-                onSave: { type, name, about, region, year, month, day in
+            // 情報デザイン: Unified entry creator for full context (Holiday/Observance/Memo)
+            UnifiedEntryCreator(
+                config: .fullContext(
+                    date: selectedMonthDate,
+                    holidayIcon: customCategoryIcon(for: .holiday) ?? DisplayCategory.holiday.outlineIcon,
+                    observanceIcon: customCategoryIcon(for: .observance) ?? DisplayCategory.observance.outlineIcon,
+                    memoIcon: customCategoryIcon(for: .memo) ?? DisplayCategory.memo.outlineIcon,
+                    enabledRegions: holidayRegions.regions
+                ),
+                onSaveHoliday: { type, name, about, region, year, month, day in
                     createCustomHoliday(type: type, name: name, about: about, region: region, year: year, month: month, day: day)
+                },
+                onSaveMemo: { text, date, amount, currency, place, contactID, photoData in
+                    createMemo(text: text, date: date, amount: amount, currency: currency, place: place, contactID: contactID, photoData: photoData)
                 }
             )
+            .presentationDetents([.large])
             .presentationCornerRadius(20)
         }
     }
@@ -939,6 +953,19 @@ struct SpecialDaysListView: View {
 
         // Refresh cache
         holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: selectedYear)
+        HapticManager.notification(.success)
+    }
+
+    /// 情報デザイン: Create a memo from unified entry creator
+    private func createMemo(text: String, date: Date, amount: Double?, currency: String?, place: String?, contactID: UUID?, photoData: Data?) {
+        let memo = Memo(text: text, date: date)
+        memo.amount = amount
+        memo.currency = currency
+        memo.place = place
+        memo.linkedContactID = contactID
+        memo.photoData = photoData
+        modelContext.insert(memo)
+        try? modelContext.save()
         HapticManager.notification(.success)
     }
 
@@ -3207,7 +3234,7 @@ struct CustomHolidayCreatorSheet: View {
     }
 
     // 情報デザイン: System UI accent for universal creator (not category-specific)
-    @AppStorage("systemUIAccent") private var systemUIAccent = "indigo"
+    @AppStorage("systemUIAccent") private var systemUIAccent = "blue"
 
     private var accentColor: Color {
         (SystemUIAccent(rawValue: systemUIAccent) ?? .indigo).color
@@ -3409,7 +3436,6 @@ struct CustomHolidayCreatorSheet: View {
 
     private func typePill(_ type: SpecialDayType, label: String, icon: String) -> some View {
         let isSelected = selectedType == type
-        let pillColor = type == .holiday ? JohoColors.pink : JohoColors.cyan
 
         return Button {
             withAnimation(.easeInOut(duration: 0.15)) {
@@ -3423,10 +3449,10 @@ struct CustomHolidayCreatorSheet: View {
                 Text(label)
                     .font(.system(size: 12, weight: .heavy, design: .rounded))
             }
-            .foregroundStyle(isSelected ? colors.primaryInverted : colors.primary)
+            .foregroundStyle(isSelected ? .white : colors.primary)
             .padding(.horizontal, 14)
             .padding(.vertical, 12)
-            .background(isSelected ? pillColor : colors.surface)
+            .background(isSelected ? accentColor : colors.surface)
             .clipShape(Squircle(cornerRadius: 10))
             .overlay(Squircle(cornerRadius: 10).stroke(colors.border, lineWidth: isSelected ? 2 : 1.5))
         }

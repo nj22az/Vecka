@@ -135,23 +135,21 @@ extension CalendarGridView {
 
     @ViewBuilder
     private var headerRow: some View {
-        // Week column header - inverted background (black in light, white in dark)
-        // 情報デザイン: Show moon icon when lunar calendar is active
+        // 情報デザイン: Minimal week column header - no background
+        // Moon icon shown when lunar calendar is active
         HStack(spacing: 2) {
-            Text("W")
-                .font(JohoFont.label)
-                .foregroundStyle(colors.primaryInverted)
-
             if showLunarCalendar {
                 Image(systemName: "moon.fill")
-                    .font(.system(size: 8, weight: .bold, design: .rounded))
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.yellow)
+            } else {
+                Text("W")
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.secondary)
             }
         }
         .frame(height: 28)
         .frame(maxWidth: .infinity)
-        .background(colors.surfaceInverted)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
         .accessibilityLabel(showLunarCalendar ? "Week, Lunar calendar active" : Localization.weekColumnHeader)
 
         // Day Headers (MON-SUN) - UPPERCASE, bold, rounded
@@ -182,42 +180,32 @@ extension CalendarGridView {
 
     // MARK: - Cells
 
+    // 情報デザイン: Floating week numbers - minimal, aligned with row
+    // Circle outline only on current week (no squircle backgrounds)
     private func weekNumberCell(_ week: CalendarWeek) -> some View {
         let isSelected = selectedWeek?.id == week.id
+        let showCircle = week.isCurrentWeek || isSelected
 
         return Button(action: {
             onWeekTap(week)
             HapticManager.impact(.light)
         }) {
-            HStack(spacing: 0) {
-                ZStack {
-                    // Background - inverted squircle (black in light, white in dark)
-                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .fill(colors.surfaceInverted)
-
-                    // Border - highlight when selected/current
-                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .stroke(
-                            (week.isCurrentWeek || isSelected) ? colors.primaryInverted : colors.surfaceInverted.opacity(0.3),
-                            lineWidth: (week.isCurrentWeek || isSelected) ? JohoDimensions.borderMedium : JohoDimensions.borderThin
-                        )
-
-                    // Week number
-                    Text("\(week.weekNumber)")
-                        .font(JohoFont.headline)
-                        .foregroundStyle(colors.primaryInverted)
-                        .monospacedDigit()
+            ZStack {
+                // Circle outline only for current/selected week
+                if showCircle {
+                    Circle()
+                        .stroke(colors.primary, lineWidth: 2)
+                        .frame(width: 28, height: 28)
                 }
-                .frame(maxWidth: .infinity)
-                .frame(height: cellSize)
 
-                // Subtle vertical separator after week number
-                Rectangle()
-                    .fill(colors.primaryInverted.opacity(0.2))
-                    .frame(width: 1)
-                    .frame(height: cellSize - 8)
-                    .padding(.leading, JohoDimensions.spacingXS)
+                // Week number - floating, no background
+                Text("\(week.weekNumber)")
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .monospacedDigit()
             }
+            .frame(maxWidth: .infinity)
+            .frame(height: cellSize)
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Week \(week.weekNumber)")
@@ -424,45 +412,29 @@ extension CalendarGridView {
         .frame(height: 10)
     }
 
-    /// Collects indicator info (icon + color) in priority order
-    /// Priority: HOL > BDY > OBS > EVT > NTE > TRP > EXP
-    /// Icons match SpecialDayType.defaultIcon for app-wide consistency
+    /// 情報デザイン: Collects indicators using unified 3-category system
+    /// Categories: Holiday (Pink), Observance (Cyan), Memo (Yellow)
     private func collectIndicators(for day: CalendarDay, dataCheck: DayDataCheck?) -> [IndicatorInfo] {
         var indicators: [IndicatorInfo] = []
 
-        // 1. Holiday - star.fill RED (highest priority)
+        // 1. HOLIDAY (Pink) - Bank holidays only
         if day.isHoliday || dataCheck?.hasHoliday == true {
-            indicators.append(IndicatorInfo(icon: "star.fill", color: JohoColors.red))
+            indicators.append(IndicatorInfo(icon: "star.fill", color: JohoColors.pink))
         }
 
-        // 2. Birthday - birthday.cake.fill PINK
-        if dataCheck?.hasBirthday == true {
-            indicators.append(IndicatorInfo(icon: "birthday.cake.fill", color: JohoColors.pink))
-        }
-
-        // 3. Observance - sparkles CYAN (cultural observances)
+        // 2. OBSERVANCE (Cyan) - Cultural observances
         if dataCheck?.hasObservance == true {
             indicators.append(IndicatorInfo(icon: "sparkles", color: JohoColors.cyan))
         }
 
-        // 4. Event - calendar.badge.clock CYAN (scheduled time items)
-        if dataCheck?.hasEvent == true {
-            indicators.append(IndicatorInfo(icon: "calendar.badge.clock", color: JohoColors.cyan))
-        }
-
-        // 5. Note - note.text YELLOW
-        if dataCheck?.hasNote == true {
+        // 3. MEMO (Yellow) - All memos: notes, expenses, trips, birthdays
+        let hasMemo = dataCheck?.hasNote == true ||
+                      dataCheck?.hasExpense == true ||
+                      dataCheck?.hasTrip == true ||
+                      dataCheck?.hasBirthday == true ||
+                      dataCheck?.hasEvent == true
+        if hasMemo {
             indicators.append(IndicatorInfo(icon: "note.text", color: JohoColors.yellow))
-        }
-
-        // 6. Trip - airplane CYAN (scheduled time items)
-        if dataCheck?.hasTrip == true {
-            indicators.append(IndicatorInfo(icon: "airplane", color: JohoColors.cyan))
-        }
-
-        // 7. Expense - dollarsign.circle.fill GREEN (lowest priority)
-        if dataCheck?.hasExpense == true {
-            indicators.append(IndicatorInfo(icon: "dollarsign.circle.fill", color: JohoColors.green))
         }
 
         return indicators
@@ -534,7 +506,7 @@ extension CalendarGridView {
     // 情報デザイン: Unified sizing across all devices (iPhone golden standard)
     // Week column narrower to give more space to day columns
     private var weekColumnWidth: CGFloat { 32 }
-    private var cellSize: CGFloat { 48 }
+    private var cellSize: CGFloat { 52 }  // 情報デザイン: Slightly taller for better readability
 
     private func color(for colorName: String) -> Color {
         switch colorName {

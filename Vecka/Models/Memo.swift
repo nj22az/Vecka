@@ -115,6 +115,9 @@ final class Memo {
     /// User-defined color hex (overrides semantic color)
     var color: String?
 
+    /// Photo attachment (stored as JPEG data)
+    @Attribute(.externalStorage) var photoData: Data?
+
     // ═══════════════════════════════════════════════════════════════════
     // MARK: - Countdown
     // ═══════════════════════════════════════════════════════════════════
@@ -162,6 +165,9 @@ final class Memo {
 
     /// Is this pinned?
     var isPinned: Bool { pinnedToDashboard == true }
+
+    /// Does this memo have a photo?
+    var hasPhoto: Bool { photoData != nil }
 
     /// Short preview for lists
     var preview: String {

@@ -88,6 +88,7 @@ LinearGradient(...)              // NO gradients
 Color.blue                       // NO raw colors
 .cornerRadius(12)                // NO non-continuous
 ScrollView { Form... }           // NO scroll in forms
+ScrollView(.horizontal, ...)     // NO horizontal scrolling - use shorter labels/icons
 .spring(...)                     // NO bouncy animations
 DatePicker(...)                  // NO iOS DatePicker - use JohoCalendarPicker
 ```

@@ -19,7 +19,7 @@ struct SettingsView: View {
     @AppStorage("showLunarCalendar") private var showLunarCalendar = false  // For Vietnamese holidays
     @AppStorage("customLandingTitle") private var customLandingTitle = ""
     @AppStorage("eventTextColor") private var eventTextColor = "black"  // 情報デザイン: Japanese planner text color
-    @AppStorage("systemUIAccent") private var systemUIAccent = "indigo"  // 情報デザイン: System UI accent color
+    @AppStorage("systemUIAccent") private var systemUIAccent = "blue"  // 情報デザイン: System UI accent color
     // PDF Export settings (情報デザイン: User-configurable branding)
     @AppStorage("pdfExportTitle") private var pdfExportTitle = "Contact Directory"
     @AppStorage("pdfExportFooter") private var pdfExportFooter = ""  // Empty = page number only

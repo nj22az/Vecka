@@ -45,7 +45,7 @@ struct ModernCalendarView: View {
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     // Settings
-    @AppStorage("systemUIAccent") private var systemUIAccent = "indigo"
+    @AppStorage("systemUIAccent") private var systemUIAccent = "blue"
 
     @Query private var memos: [Memo]
     @Query private var contacts: [Contact]  // For birthday indicators
@@ -439,11 +439,52 @@ struct ModernCalendarView: View {
 
     // MARK: - Sheet Contents (Extracted for Type-Checker)
 
+    // 情報デザイン: Unified entry creator for calendar context (Memo only)
     private var memoEditorSheet: some View {
-        MemoEditorView(date: memoEditorDate)
-            .presentationDetents([.large])
-            .presentationDragIndicator(.visible)
-            .presentationCornerRadius(20)
+        UnifiedEntryCreator(
+            config: .calendarContext(date: memoEditorDate),
+            onSaveMemo: { text, date, amount, currency, place, contactID, photoData in
+                saveMemo(text: text, date: date, amount: amount, currency: currency, place: place, contactID: contactID, photoData: photoData)
+            }
+        )
+        .presentationDetents([.large])
+        .presentationCornerRadius(20)
+    }
+
+    private func saveMemo(text: String, date: Date, amount: Double?, currency: String?, place: String?, contactID: UUID?, photoData: Data?) {
+        let memo = Memo(text: text, date: date)
+        memo.amount = amount
+        memo.currency = currency
+        memo.place = place
+        memo.linkedContactID = contactID
+        memo.photoData = photoData
+        modelContext.insert(memo)
+        try? modelContext.save()
+        HapticManager.notification(.success)
+    }
+
+    /// 情報デザイン: Create a holiday/observance from unified entry creator
+    private func createHolidayRule(type: SpecialDayType, name: String, about: String?, region: String, year: Int, month: Int, day: Int) {
+        let rule = HolidayRule(
+            name: name,
+            region: region,
+            isBankHoliday: type == .holiday,
+            titleOverride: name,
+            notes: about,
+            type: .fixed,
+            month: month,
+            day: day,
+            isSystemDefault: false,
+            isEnabled: true
+        )
+        rule.userModifiedAt = Date()
+
+        modelContext.insert(rule)
+        try? modelContext.save()
+
+        // Refresh cache
+        holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: selectedYear)
+        HapticManager.notification(.success)
     }
 
     private var contactMenuSheet: some View {
@@ -521,10 +562,6 @@ struct ModernCalendarView: View {
                     secondaryDateText: lunarDashboardText(for: dashboardDate),
                     onOpenMemos: { targetDate in
                         memoEditorDate = targetDate
-                        showMemoSheet = true
-                    },
-                    onAddEntry: {
-                        memoEditorDate = dashboardDate
                         showMemoSheet = true
                     }
                 )
@@ -735,7 +772,7 @@ struct ModernCalendarView: View {
                 .fill(colors.border)
                 .frame(height: 1.5)
 
-            // TODAY ROW: Today info + Go to Today button + Week badge
+            // TODAY ROW: Today info + Add button + Go to Today button + Week badge
             HStack(spacing: JohoDimensions.spacingSM) {
                 // Today info display
                 HStack(spacing: JohoDimensions.spacingXS) {
@@ -751,6 +788,22 @@ struct ModernCalendarView: View {
                 }
 
                 Spacer()
+
+                // 情報デザイン: Add entry button (matches Star page month detail)
+                Button {
+                    memoEditorDate = selectedDay?.date ?? selectedDate
+                    showMemoSheet = true
+                    HapticManager.impact(.light)
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .frame(width: 32, height: 32)
+                        .background(colors.surface)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
+                }
+                .buttonStyle(.plain)
 
                 // 情報デザイン: Go to Today button (Yellow = NOW/Present)
                 // Only show when not viewing today
@@ -876,10 +929,11 @@ struct ModernCalendarView: View {
         // Check memos for the day
         let dayMemos = memos.filter { Calendar.current.startOfDay(for: $0.date) == day }
 
-        // Check for notes (memos without money/place/person)
-        if let firstMemo = dayMemos.first {
+        // Check for notes (memos WITHOUT money AND WITHOUT place - pure text notes)
+        let noteMemos = dayMemos.filter { !$0.hasMoney && !$0.hasPlace }
+        if let firstNote = noteMemos.first {
             check.hasNote = true
-            check.noteContent = firstMemo.text
+            check.noteContent = firstNote.text
         }
 
         // Check expenses - calculate total amount for the day
@@ -944,7 +998,8 @@ struct ModernCalendarView: View {
     }
 
     private func holidayInfo(for date: Date) -> [DayDashboardView.HolidayInfo] {
-        let day = Calendar.iso8601.startOfDay(for: date)
+        // 情報デザイン: Use Calendar.current to match HolidayManager cache key format
+        let day = Calendar.current.startOfDay(for: date)
         let holidays = holidayManager.holidayCache[day] ?? []
         return holidays.map { holiday in
             DayDashboardView.HolidayInfo(

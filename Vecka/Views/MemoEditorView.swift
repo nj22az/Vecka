@@ -2,9 +2,9 @@
 //  MemoEditorView.swift
 //  Vecka
 //
-//  情報デザイン (Jōhō Dezain) - Paper Planner Style
-//  Write something. Add details if you need them.
-//  No categories. No complexity. Just write.
+//  情報デザイン (Jōhō Dezain) - Unified Entry Sheet
+//  IDENTICAL pattern to Holiday/Observance creator
+//  Blue system UI accent for all interactive states
 //
 
 import SwiftUI
@@ -31,7 +31,7 @@ struct MemoEditorView: View {
     // Expansion state
     @State private var showAmount = false
     @State private var showPlace = false
-    @State private var showContactLink = false
+    @State private var showContact = false
 
     // Linked contact
     @State private var linkedContactID: UUID?
@@ -41,10 +41,16 @@ struct MemoEditorView: View {
     // UI state
     @State private var showDatePicker = false
     @State private var showDeleteConfirm = false
-    @FocusState private var isTextFocused: Bool
+
+    // 情報デザイン: Blue system UI accent (unified across all entry sheets)
+    @AppStorage("systemUIAccent") private var systemUIAccent = "blue"
 
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
     private var isEditing: Bool { existingMemo != nil }
+
+    private var accentColor: Color {
+        (SystemUIAccent(rawValue: systemUIAccent) ?? .blue).color
+    }
 
     init(date: Date = Date(), existingMemo: Memo? = nil) {
         self.initialDate = date
@@ -55,334 +61,68 @@ struct MemoEditorView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            header
+            // Header
+            headerRow
 
-            VStack(spacing: 0) {
-                contentCard
+            Rectangle().fill(colors.border).frame(height: 2)
+
+            // Subtitle: Option chips (same position as HOLIDAY/OBSERVANCE pills)
+            optionChipsRow
+
+            Rectangle().fill(colors.border).frame(height: 1.5)
+
+            // Content
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(spacing: 0) {
+                    // Text input (required)
+                    textRow
+
+                    Rectangle().fill(colors.border).frame(height: 1.5)
+
+                    // Date row
+                    dateRow
+
+                    // Expanded detail rows (when chips active)
+                    if showAmount {
+                        Rectangle().fill(colors.border).frame(height: 1.5)
+                        amountRow
+                    }
+
+                    if showPlace {
+                        Rectangle().fill(colors.border).frame(height: 1.5)
+                        placeRow
+                    }
+
+                    if showContact {
+                        Rectangle().fill(colors.border).frame(height: 1.5)
+                        contactRow
+                    }
+                }
+                .background(colors.surface)
+                .clipShape(Squircle(cornerRadius: 16))
+                .overlay(Squircle(cornerRadius: 16).stroke(colors.border, lineWidth: 2))
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.top, JohoDimensions.spacingMD)
             }
-            .padding(.horizontal, 8)
-            .padding(.top, 8)
-            .frame(maxHeight: .infinity, alignment: .top)
+
+            Spacer()
+
+            // Save button
+            saveButton
+
+            // Delete button (edit mode only)
+            if isEditing {
+                deleteButton
+            }
         }
         .background(colors.canvas)
         .onAppear { loadExisting() }
         .presentationBackground(colors.canvas)
-        .presentationDragIndicator(.hidden)
+        .presentationDragIndicator(.visible)
         .johoCalendarPicker(
             isPresented: $showDatePicker,
             selectedDate: $date,
-            accentColor: JohoColors.yellow  // Memos are yellow
-        )
-        .alert("Delete?", isPresented: $showDeleteConfirm) {
-            Button("Cancel", role: .cancel) { }
-            Button("Delete", role: .destructive) { deleteMemo() }
-        }
-    }
-
-    // MARK: - Header
-
-    private var header: some View {
-        HStack {
-            Button("Cancel") { dismiss() }
-                .font(.system(size: 16, weight: .semibold, design: .rounded))
-                .foregroundStyle(colors.primaryInverted)
-                .frame(minWidth: 44, minHeight: 44)
-
-            Spacer()
-
-            Text(isEditing ? "Edit" : "Memo")
-                .font(.system(size: 17, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.primaryInverted)
-
-            Spacer()
-
-            Button("Save") { saveMemo() }
-                .font(.system(size: 16, weight: .bold, design: .rounded))
-                .foregroundStyle(canSave ? colors.primaryInverted : colors.primaryInverted.opacity(0.4))
-                .frame(minWidth: 44, minHeight: 44)
-                .disabled(!canSave)
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 8)
-        .padding(.bottom, 8)
-        .background(colors.canvas)
-    }
-
-    // MARK: - Content Card
-
-    private var contentCard: some View {
-        VStack(spacing: 0) {
-            // Main text field
-            textField
-                .padding(12)
-
-            divider
-
-            // Date row
-            dateRow
-                .padding(12)
-
-            divider
-
-            // Add details section
-            detailChips
-                .padding(12)
-
-            // Expanded detail fields
-            if showAmount {
-                divider
-                amountField
-                    .padding(12)
-            }
-
-            if showPlace {
-                divider
-                placeField
-                    .padding(12)
-            }
-
-            if showContactLink {
-                divider
-                contactLinkField
-                    .padding(12)
-            }
-
-            // Delete button
-            if isEditing {
-                divider
-                deleteButton
-            }
-        }
-        .background(colors.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(colors.border, lineWidth: 2)
-        )
-    }
-
-    private var divider: some View {
-        Rectangle()
-            .fill(colors.border)
-            .frame(height: 1)
-    }
-
-    // MARK: - Text Field
-
-    private var textField: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("MEMO")
-                .font(.system(size: 10, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.secondary)
-
-            TextField("Write something...", text: $text, axis: .vertical)
-                .font(.system(size: 16, weight: .medium, design: .rounded))
-                .foregroundStyle(colors.primary)
-                .lineLimit(3...6)
-                .focused($isTextFocused)
-        }
-    }
-
-    // MARK: - Date Row
-
-    private var dateRow: some View {
-        HStack {
-            Text("DATE")
-                .font(.system(size: 10, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.secondary)
-
-            Spacer()
-
-            Button {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    showDatePicker = true
-                }
-                HapticManager.impact(.light)
-            } label: {
-                Text(date.formatted(date: .abbreviated, time: .omitted))
-                    .font(.system(size: 15, weight: .medium, design: .rounded))
-                    .foregroundStyle(colors.primary)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(colors.surface)
-                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .stroke(colors.border, lineWidth: 1.5)
-                    )
-            }
-            .buttonStyle(.plain)
-        }
-    }
-
-    // MARK: - Detail Chips (Progressive Disclosure)
-
-    private var detailChips: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("ADD DETAILS")
-                .font(.system(size: 10, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.secondary)
-
-            // Chips row - no semantic colors, neutral styling
-            HStack(spacing: 8) {
-                detailChip("yensign.circle", "Amount", isActive: showAmount) {
-                    withAnimation(.easeInOut(duration: 0.2)) { showAmount.toggle() }
-                }
-
-                detailChip("mappin", "Place", isActive: showPlace) {
-                    withAnimation(.easeInOut(duration: 0.2)) { showPlace.toggle() }
-                }
-
-                detailChip("person.crop.circle", "Contact", isActive: showContactLink) {
-                    withAnimation(.easeInOut(duration: 0.2)) { showContactLink.toggle() }
-                }
-            }
-        }
-    }
-
-    private func detailChip(_ icon: String, _ label: String, isActive: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: {
-            action()
-            HapticManager.selection()
-        }) {
-            HStack(spacing: 4) {
-                Image(systemName: icon)
-                    .font(.system(size: 12, weight: .medium))
-                Text(label)
-                    .font(.system(size: 11, weight: .bold, design: .rounded))
-            }
-            .foregroundStyle(isActive ? colors.primaryInverted : colors.primary)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 8)
-            .background(isActive ? colors.primary : colors.surface)
-            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(colors.border, lineWidth: isActive ? 2 : 1)
-            )
-        }
-        .buttonStyle(.plain)
-    }
-
-    // MARK: - Detail Fields
-
-    private var amountField: some View {
-        HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("AMOUNT")
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.secondary)
-                TextField("0", text: $amount)
-                    .font(.system(size: 20, weight: .bold, design: .rounded))
-                    .keyboardType(.decimalPad)
-                    .foregroundStyle(colors.primary)
-            }
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text("CURRENCY")
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.secondary)
-                TextField("SEK", text: $currency)
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primary)
-                    .textInputAutocapitalization(.characters)
-                    .frame(width: 60)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 6)
-                    .background(colors.surface)
-                    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 6, style: .continuous)
-                            .stroke(colors.border, lineWidth: 1.5)
-                    )
-            }
-        }
-        .padding(10)
-        .background(colors.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(colors.border, lineWidth: 1.5)
-        )
-    }
-
-    private var placeField: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("PLACE")
-                .font(.system(size: 10, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.secondary)
-            TextField("Where...", text: $place)
-                .font(.system(size: 14, weight: .medium, design: .rounded))
-                .foregroundStyle(colors.primary)
-        }
-        .padding(10)
-        .background(colors.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(colors.border, lineWidth: 1.5)
-        )
-    }
-
-    // MARK: - Contact Link Field
-
-    private var contactLinkField: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("LINKED CONTACT")
-                .font(.system(size: 10, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.secondary)
-
-            Button {
-                showContactPicker = true
-                HapticManager.impact(.light)
-            } label: {
-                HStack {
-                    if linkedContactID != nil {
-                        Image(systemName: "person.crop.circle.fill.badge.checkmark")
-                            .foregroundStyle(colors.primary)
-                        Text(linkedContactName.isEmpty ? "Contact linked" : linkedContactName)
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
-                            .foregroundStyle(colors.primary)
-                    } else {
-                        Image(systemName: "person.crop.circle.badge.plus")
-                            .foregroundStyle(colors.secondary)
-                        Text("Select a contact...")
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
-                            .foregroundStyle(colors.secondary)
-                    }
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(colors.secondary)
-                }
-                .padding(.vertical, 8)
-            }
-            .buttonStyle(.plain)
-
-            // Clear button when contact is linked
-            if linkedContactID != nil {
-                Button {
-                    linkedContactID = nil
-                    linkedContactName = ""
-                    HapticManager.selection()
-                } label: {
-                    HStack {
-                        Image(systemName: "xmark.circle.fill")
-                        Text("Remove link")
-                    }
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.red)
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .padding(10)
-        .background(colors.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(colors.border, lineWidth: 1.5)
+            accentColor: accentColor
         )
         .sheet(isPresented: $showContactPicker) {
             MemoContactPicker(
@@ -392,6 +132,288 @@ struct MemoEditorView: View {
             .presentationBackground(colors.canvas)
             .presentationDetents([.medium, .large])
         }
+        .alert("Delete?", isPresented: $showDeleteConfirm) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) { deleteMemo() }
+        }
+    }
+
+    // MARK: - Header (identical to Holiday/Observance)
+
+    private var headerRow: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .frame(width: 32, height: 32)
+                    .background(colors.surface)
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
+            }
+
+            Spacer()
+
+            Text(isEditing ? "EDIT MEMO" : "NEW MEMO")
+                .font(.system(size: 16, weight: .heavy, design: .rounded))
+                .foregroundStyle(colors.primary)
+
+            Spacer()
+
+            Color.clear.frame(width: 32, height: 32)
+        }
+        .padding(.horizontal, JohoDimensions.spacingLG)
+        .padding(.vertical, JohoDimensions.spacingMD)
+        .background(colors.surface)
+    }
+
+    // MARK: - Option Chips Row (subtitle position - like HOLIDAY/OBSERVANCE pills)
+
+    private var optionChipsRow: some View {
+        HStack(spacing: 0) {
+            // Icon column
+            Image(systemName: "plus.circle")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 48)
+
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
+
+            // Chips (same style as HOLIDAY/OBSERVANCE pills)
+            HStack(spacing: 8) {
+                optionChip(icon: "yensign.circle", label: "AMOUNT", isActive: showAmount) {
+                    withAnimation(.easeInOut(duration: 0.2)) { showAmount.toggle() }
+                }
+
+                optionChip(icon: "mappin", label: "PLACE", isActive: showPlace) {
+                    withAnimation(.easeInOut(duration: 0.2)) { showPlace.toggle() }
+                }
+
+                optionChip(icon: "person.crop.circle", label: "CONTACT", isActive: showContact) {
+                    withAnimation(.easeInOut(duration: 0.2)) { showContact.toggle() }
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+
+            Spacer()
+        }
+        .frame(height: 56)
+        .background(accentColor.opacity(0.15))
+    }
+
+    private func optionChip(icon: String, label: String, isActive: Bool, action: @escaping () -> Void) -> some View {
+        Button {
+            action()
+            HapticManager.selection()
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 10, weight: .bold))
+                Text(label)
+                    .font(.system(size: 10, weight: .heavy, design: .rounded))
+            }
+            .foregroundStyle(isActive ? .white : colors.primary)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .background(isActive ? accentColor : colors.surface)
+            .clipShape(Squircle(cornerRadius: 8))
+            .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Text Row
+
+    private var textRow: some View {
+        HStack(spacing: 0) {
+            Image(systemName: "pencil")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 48).frame(maxHeight: .infinity)
+
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
+
+            TextField("Write something...", text: $text, axis: .vertical)
+                .font(.system(size: 14, weight: .medium, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .lineLimit(1...4)
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .frame(maxHeight: .infinity)
+        }
+        .frame(minHeight: 48)
+    }
+
+    // MARK: - Date Row (identical to Holiday/Observance)
+
+    private var dateRow: some View {
+        HStack(spacing: 0) {
+            Image(systemName: "calendar")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 48)
+
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(height: 48)
+
+            Button {
+                showDatePicker = true
+                HapticManager.impact(.light)
+            } label: {
+                HStack {
+                    Text(formattedDate)
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .monospacedDigit()
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+            }
+            .buttonStyle(.plain)
+        }
+        .frame(height: 48)
+    }
+
+    private var formattedDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy    MM    dd"
+        return formatter.string(from: date)
+    }
+
+    // MARK: - Amount Row
+
+    private var amountRow: some View {
+        HStack(spacing: 0) {
+            Image(systemName: "yensign.circle")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 48)
+
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(height: 48)
+
+            HStack(spacing: 12) {
+                TextField("0", text: $amount)
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .keyboardType(.decimalPad)
+                    .foregroundStyle(colors.primary)
+
+                TextField("SEK", text: $currency)
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .textInputAutocapitalization(.characters)
+                    .frame(width: 44)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 6)
+                    .background(colors.inputBackground)
+                    .clipShape(Squircle(cornerRadius: 6))
+                    .overlay(Squircle(cornerRadius: 6).stroke(colors.border, lineWidth: 1.5))
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+        }
+        .frame(height: 48)
+    }
+
+    // MARK: - Place Row
+
+    private var placeRow: some View {
+        HStack(spacing: 0) {
+            Image(systemName: "mappin")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 48)
+
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(height: 48)
+
+            TextField("Where...", text: $place)
+                .font(.system(size: 14, weight: .medium, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .padding(.horizontal, JohoDimensions.spacingMD)
+        }
+        .frame(height: 48)
+    }
+
+    // MARK: - Contact Row
+
+    private var contactRow: some View {
+        HStack(spacing: 0) {
+            Image(systemName: "person.crop.circle")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 48)
+
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(height: 48)
+
+            Button {
+                showContactPicker = true
+                HapticManager.impact(.light)
+            } label: {
+                HStack {
+                    if linkedContactID != nil {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(accentColor)
+                        Text(linkedContactName.isEmpty ? "Linked" : linkedContactName)
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.primary)
+                    } else {
+                        Text("Select contact...")
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.secondary)
+                    }
+
+                    Spacer()
+
+                    if linkedContactID != nil {
+                        Button {
+                            linkedContactID = nil
+                            linkedContactName = ""
+                            HapticManager.selection()
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(colors.secondary)
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+            }
+            .buttonStyle(.plain)
+        }
+        .frame(height: 48)
+    }
+
+    // MARK: - Save Button (blue accent - unified)
+
+    private var saveButton: some View {
+        Button {
+            saveMemo()
+        } label: {
+            HStack {
+                Image(systemName: "checkmark")
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                Text("SAVE")
+                    .font(.system(size: 14, weight: .heavy, design: .rounded))
+            }
+            .foregroundStyle(canSave ? .white : colors.primary.opacity(0.4))
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)
+            .background(canSave ? accentColor : colors.inputBackground)
+            .clipShape(Squircle(cornerRadius: 12))
+            .overlay(Squircle(cornerRadius: 12).stroke(colors.border, lineWidth: 2))
+        }
+        .buttonStyle(.plain)
+        .disabled(!canSave)
+        .padding(.horizontal, JohoDimensions.spacingLG)
+        .padding(.vertical, JohoDimensions.spacingMD)
     }
 
     // MARK: - Delete Button
@@ -407,9 +429,12 @@ struct MemoEditorView: View {
             }
             .font(.system(size: 14, weight: .bold, design: .rounded))
             .foregroundStyle(JohoColors.red)
-            .frame(maxWidth: .infinity, minHeight: 44)
+            .frame(maxWidth: .infinity)
+            .frame(height: 44)
         }
         .buttonStyle(.plain)
+        .padding(.horizontal, JohoDimensions.spacingLG)
+        .padding(.bottom, JohoDimensions.spacingMD)
     }
 
     // MARK: - Validation
@@ -429,7 +454,6 @@ struct MemoEditorView: View {
         text = memo.text
         date = memo.date
 
-        // Optional details
         if let amt = memo.amount {
             amount = String(format: "%.2f", amt)
             showAmount = true
@@ -441,11 +465,9 @@ struct MemoEditorView: View {
             showPlace = true
         }
 
-        // Linked contact
         if let contactID = memo.linkedContactID {
             linkedContactID = contactID
-            showContactLink = true
-            // Load contact name from database
+            showContact = true
             loadContactName(for: contactID)
         }
     }
@@ -464,14 +486,10 @@ struct MemoEditorView: View {
 
         memo.text = text
         memo.date = date
-
-        // Optional details
         memo.amount = showAmount ? Double(amount) : nil
         memo.currency = showAmount ? currency : nil
         memo.place = showPlace && !place.isEmpty ? place : nil
-
-        // Linked contact
-        memo.linkedContactID = showContactLink ? linkedContactID : nil
+        memo.linkedContactID = showContact ? linkedContactID : nil
 
         if existingMemo == nil {
             modelContext.insert(memo)
@@ -491,7 +509,7 @@ struct MemoEditorView: View {
     }
 }
 
-// MARK: - Memo Contact Picker (情報デザイン: memo-contact linking)
+// MARK: - Contact Picker (unified blue accent)
 
 struct MemoContactPicker: View {
     @Environment(\.modelContext) private var modelContext
@@ -503,32 +521,45 @@ struct MemoContactPicker: View {
     @Binding var selectedContactID: UUID?
     @Binding var selectedContactName: String
 
+    @AppStorage("systemUIAccent") private var systemUIAccent = "blue"
+
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    private var accentColor: Color {
+        (SystemUIAccent(rawValue: systemUIAccent) ?? .blue).color
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             // Header
             HStack {
-                Button("Cancel") { dismiss() }
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .foregroundStyle(colors.primaryInverted)
-                    .frame(minWidth: 44, minHeight: 44)
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .frame(width: 32, height: 32)
+                        .background(colors.surface)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
+                }
 
                 Spacer()
 
-                Text("Link Contact")
-                    .font(.system(size: 17, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primaryInverted)
+                Text("LINK CONTACT")
+                    .font(.system(size: 16, weight: .heavy, design: .rounded))
+                    .foregroundStyle(colors.primary)
 
                 Spacer()
 
-                // Spacer for symmetry
-                Color.clear.frame(width: 60, height: 44)
+                Color.clear.frame(width: 32, height: 32)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 8)
-            .padding(.bottom, 8)
-            .background(colors.canvas)
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.vertical, JohoDimensions.spacingMD)
+            .background(colors.surface)
+
+            Rectangle().fill(colors.border).frame(height: 2)
 
             // Contact list
             ScrollView {
@@ -541,12 +572,16 @@ struct MemoContactPicker: View {
                     } else {
                         ForEach(contacts) { contact in
                             contactRow(contact)
+
+                            if contact.id != contacts.last?.id {
+                                Rectangle().fill(colors.border.opacity(0.5)).frame(height: 1)
+                                    .padding(.leading, 60)
+                            }
                         }
                     }
                 }
-                .padding(8)
+                .padding(JohoDimensions.spacingMD)
             }
-            .background(colors.surface)
         }
         .background(colors.canvas)
     }
@@ -559,19 +594,17 @@ struct MemoContactPicker: View {
             dismiss()
         } label: {
             HStack(spacing: 12) {
-                // Avatar
                 ZStack {
                     Circle()
-                        .fill(colors.primary.opacity(0.1))
+                        .fill(selectedContactID == contact.id ? accentColor.opacity(0.2) : colors.primary.opacity(0.1))
                         .frame(width: 40, height: 40)
-                        .overlay(Circle().stroke(colors.border, lineWidth: 1))
+                        .overlay(Circle().stroke(selectedContactID == contact.id ? accentColor : colors.border, lineWidth: 1.5))
 
                     Text(contact.initials)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary)
+                        .foregroundStyle(selectedContactID == contact.id ? accentColor : colors.primary)
                 }
 
-                // Name
                 VStack(alignment: .leading, spacing: 2) {
                     Text(contact.displayName)
                         .font(.system(size: 15, weight: .medium, design: .rounded))
@@ -586,17 +619,14 @@ struct MemoContactPicker: View {
 
                 Spacer()
 
-                // Checkmark if selected
                 if selectedContactID == contact.id {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(colors.primary)
+                        .foregroundStyle(accentColor)
                         .font(.system(size: 20))
                 }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
-            .background(selectedContactID == contact.id ? colors.primary.opacity(0.1) : colors.surface)
-            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         }
         .buttonStyle(.plain)
     }
