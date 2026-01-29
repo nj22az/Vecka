@@ -157,6 +157,11 @@ struct ModernCalendarView: View {
         }
     }
 
+    /// System UI accent for buttons (database-driven via settings)
+    private var systemAccentColor: Color {
+        (SystemUIAccent(rawValue: systemUIAccent) ?? .indigo).color
+    }
+
     // 情報デザイン: Unified margins across all devices (iPhone golden standard)
     private var screenMargin: CGFloat { 16 }
 
@@ -796,10 +801,10 @@ struct ModernCalendarView: View {
                     HapticManager.impact(.light)
                 } label: {
                     Image(systemName: "plus")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary)
-                        .frame(width: 32, height: 32)
-                        .background(colors.surface)
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+                        .frame(width: 28, height: 28)
+                        .background(systemAccentColor)
                         .clipShape(Circle())
                         .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
                 }
