@@ -68,14 +68,11 @@ struct MemoEditorView: View {
         .onAppear { loadExisting() }
         .presentationBackground(colors.canvas)
         .presentationDragIndicator(.hidden)
-        .sheet(isPresented: $showDatePicker) {
-            // 情報デザイン: Use unified JohoCalendarPicker
-            JohoCalendarPickerSheet(
-                selectedDate: $date,
-                accentColor: JohoColors.yellow,  // Memos are yellow
-                isPresented: $showDatePicker
-            )
-        }
+        .johoCalendarPicker(
+            isPresented: $showDatePicker,
+            selectedDate: $date,
+            accentColor: JohoColors.yellow  // Memos are yellow
+        )
         .alert("Delete?", isPresented: $showDeleteConfirm) {
             Button("Cancel", role: .cancel) { }
             Button("Delete", role: .destructive) { deleteMemo() }
@@ -197,7 +194,9 @@ struct MemoEditorView: View {
             Spacer()
 
             Button {
-                showDatePicker = true
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    showDatePicker = true
+                }
                 HapticManager.impact(.light)
             } label: {
                 Text(date.formatted(date: .abbreviated, time: .omitted))

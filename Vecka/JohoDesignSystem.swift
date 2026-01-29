@@ -2863,32 +2863,71 @@ struct JohoCalendarPicker: View {
 
 // MARK: - JohoCalendarPicker Sheet Wrapper
 
-/// Convenience wrapper for presenting JohoCalendarPicker in a sheet
+/// Overlay modifier for presenting JohoCalendarPicker floating over content
+struct JohoCalendarPickerOverlay: ViewModifier {
+    @Binding var isPresented: Bool
+    @Binding var selectedDate: Date
+    let accentColor: Color
+
+    func body(content: Content) -> some View {
+        content
+            .overlay {
+                if isPresented {
+                    // Calendar picker floating over content
+                    JohoCalendarPicker(
+                        selectedDate: $selectedDate,
+                        accentColor: accentColor,
+                        onDone: {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                isPresented = false
+                            }
+                        },
+                        onCancel: {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                isPresented = false
+                            }
+                        }
+                    )
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                }
+            }
+            .animation(.easeInOut(duration: 0.2), value: isPresented)
+    }
+}
+
+extension View {
+    /// Present a floating calendar picker overlay
+    func johoCalendarPicker(
+        isPresented: Binding<Bool>,
+        selectedDate: Binding<Date>,
+        accentColor: Color
+    ) -> some View {
+        modifier(JohoCalendarPickerOverlay(
+            isPresented: isPresented,
+            selectedDate: selectedDate,
+            accentColor: accentColor
+        ))
+    }
+}
+
+/// Legacy wrapper - redirects to overlay for backward compatibility
 struct JohoCalendarPickerSheet: View {
     @Binding var selectedDate: Date
     let accentColor: Color
     @Binding var isPresented: Bool
 
-    @Environment(\.johoColorMode) private var colorMode
-    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
-
     var body: some View {
-        ZStack {
-            // Solid black background - 情報デザイン: no glass, no show-through
-            JohoColors.black
-                .ignoresSafeArea()
-
-            // Floating calendar card - centered
-            JohoCalendarPicker(
-                selectedDate: $selectedDate,
-                accentColor: accentColor,
-                onDone: { isPresented = false },
-                onCancel: { isPresented = false }
-            )
-            .padding(.horizontal, JohoDimensions.spacingLG)
-        }
-        .presentationDetents([.large])
-        .presentationCornerRadius(0)
+        // This is now just the picker itself for sheet contexts
+        JohoCalendarPicker(
+            selectedDate: $selectedDate,
+            accentColor: accentColor,
+            onDone: { isPresented = false },
+            onCancel: { isPresented = false }
+        )
+        .padding(JohoDimensions.spacingMD)
+        .presentationDetents([.medium])
+        .presentationCornerRadius(20)
         .presentationDragIndicator(.hidden)
         .presentationBackground(JohoColors.black)
     }

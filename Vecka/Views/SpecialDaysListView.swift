@@ -3227,6 +3227,18 @@ struct CustomHolidayCreatorSheet: View {
             Spacer()
         }
         .background(colors.canvas)
+        .johoCalendarPicker(
+            isPresented: $showingDatePicker,
+            selectedDate: Binding(
+                get: { selectedDate },
+                set: { newDate in
+                    selectedYear = Calendar.current.component(.year, from: newDate)
+                    selectedMonth = Calendar.current.component(.month, from: newDate)
+                    selectedDay = Calendar.current.component(.day, from: newDate)
+                }
+            ),
+            accentColor: accentColor
+        )
         .sheet(isPresented: $showingCustomRegionInput) {
             customRegionInputSheet
         }
@@ -3296,7 +3308,9 @@ struct CustomHolidayCreatorSheet: View {
 
     private var dateRow: some View {
         Button {
-            showingDatePicker = true
+            withAnimation(.easeInOut(duration: 0.2)) {
+                showingDatePicker = true
+            }
             HapticManager.selection()
         } label: {
             HStack(spacing: 0) {
@@ -3326,21 +3340,6 @@ struct CustomHolidayCreatorSheet: View {
             .background(colors.surface)
         }
         .buttonStyle(.plain)
-        .sheet(isPresented: $showingDatePicker) {
-            // 情報デザイン: Use unified JohoCalendarPicker
-            JohoCalendarPickerSheet(
-                selectedDate: Binding(
-                    get: { selectedDate },
-                    set: { newDate in
-                        selectedYear = Calendar.current.component(.year, from: newDate)
-                        selectedMonth = Calendar.current.component(.month, from: newDate)
-                        selectedDay = Calendar.current.component(.day, from: newDate)
-                    }
-                ),
-                accentColor: accentColor,
-                isPresented: $showingDatePicker
-            )
-        }
     }
 
     // MARK: - Type Selector Row
