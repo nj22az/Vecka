@@ -66,7 +66,7 @@ enum JohoColors {
     static let yellow = Color(hex: "FFE566")    // NOW - today, notes, present moment
     static let cyan = Color(hex: "A5F3FC")      // SCHEDULED - events, trips, calendar
     static let pink = Color(hex: "FECDD3")      // CELEBRATION - holidays, birthdays
-    static let green = Color(hex: "BBF7D0")     // MONEY - expenses
+    static let green = Color(hex: "4ADE80")     // MONEY - expenses (stark green for readability)
     static let purple = Color(hex: "E9D5FF")    // PEOPLE - contacts
     static let red = Color(hex: "E53935")       // ALERT - warnings, errors (system)
 

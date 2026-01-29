@@ -32,6 +32,9 @@ struct CalendarGridView: View {
     @AppStorage("showLunarCalendar") private var showLunarCalendar = false
     private let lunarService = LunarCalendarService.shared
 
+    /// 情報デザイン: Callback when calendar icon is tapped (opens month picker)
+    let onCalendarIconTap: (() -> Void)?
+
     init(
         month: CalendarMonth,
         selectedWeek: CalendarWeek?,
@@ -39,7 +42,8 @@ struct CalendarGridView: View {
         onDayTap: @escaping (CalendarDay) -> Void,
         onWeekTap: @escaping (CalendarWeek) -> Void,
         onDayLongPress: ((CalendarDay) -> Void)? = nil,
-        hasDataForDay: ((Date) -> DayDataCheck)? = nil
+        hasDataForDay: ((Date) -> DayDataCheck)? = nil,
+        onCalendarIconTap: (() -> Void)? = nil
     ) {
         self.month = month
         self.selectedWeek = selectedWeek
@@ -48,6 +52,7 @@ struct CalendarGridView: View {
         self.onWeekTap = onWeekTap
         self.onDayLongPress = onDayLongPress
         self.hasDataForDay = hasDataForDay
+        self.onCalendarIconTap = onCalendarIconTap
     }
 }
 
@@ -92,151 +97,211 @@ struct DayDataCheck {
 
 extension CalendarGridView {
 
-    // HIG: 8 columns (1 for week number + 7 days)
-    private var columns: [GridItem] {
-        [
-            GridItem(.fixed(weekColumnWidth), spacing: JohoDimensions.spacingXS), // Week Number Column
-            GridItem(.flexible(), spacing: JohoDimensions.spacingXS),             // Mon
-            GridItem(.flexible(), spacing: JohoDimensions.spacingXS),             // Tue
-            GridItem(.flexible(), spacing: JohoDimensions.spacingXS),             // Wed
-            GridItem(.flexible(), spacing: JohoDimensions.spacingXS),             // Thu
-            GridItem(.flexible(), spacing: JohoDimensions.spacingXS),             // Fri
-            GridItem(.flexible(), spacing: JohoDimensions.spacingXS),             // Sat
-            GridItem(.flexible(), spacing: JohoDimensions.spacingXS)              // Sun
-        ]
-    }
+    // 情報デザイン: Bento grid dimensions
+    private var rowHeight: CGFloat { 48 }
+    private var headerHeight: CGFloat { 28 }
+    private var wallWidth: CGFloat { 1.5 }  // Vertical wall between compartments
+    private var dividerWidth: CGFloat { 1.5 }  // Horizontal divider between rows
 
     var body: some View {
-        VStack(spacing: JohoDimensions.spacingSM) {
-            // Calendar grid with thick-bordered cells
-            LazyVGrid(columns: columns, spacing: JohoDimensions.spacingXS) {
-                // Header Row
-                headerRow
+        // 情報デザイン: TRUE BENTO with full-height column lines
+        // Use GeometryReader + ZStack overlay for continuous vertical lines
+        let edgeExtension = JohoDimensions.spacingSM
 
-                // Weeks and Days
-                ForEach(month.weeks) { week in
-                    // Week Number Cell
-                    weekNumberCell(week)
+        return GeometryReader { geometry in
+            ZStack {
+                // CONTENT LAYER
+                VStack(spacing: 0) {
+                    // HEADER ROW
+                    bentoHeaderRow
 
-                    // Day Cells
-                    ForEach(week.days) { day in
-                        dayCell(day)
+                    // Horizontal divider after header
+                    Rectangle()
+                        .fill(colors.border)
+                        .frame(height: dividerWidth)
+                        .padding(.horizontal, -edgeExtension)
+
+                    // WEEK ROWS
+                    ForEach(Array(month.weeks.enumerated()), id: \.element.id) { index, week in
+                        bentoWeekRow(week)
+
+                        // Horizontal divider between weeks (not after last)
+                        if index < month.weeks.count - 1 {
+                            Rectangle()
+                                .fill(colors.border.opacity(0.4))
+                                .frame(height: dividerWidth)
+                                .padding(.horizontal, -edgeExtension)
+                        }
+                    }
+                }
+
+                // VERTICAL LINES OVERLAY - continuous top to bottom
+                HStack(spacing: 0) {
+                    // Week column width + wall
+                    Color.clear
+                        .frame(width: weekColumnWidth)
+                    Rectangle()
+                        .fill(colors.border)
+                        .frame(width: wallWidth)
+                        .padding(.vertical, -edgeExtension)  // Extend to edges
+
+                    // Day columns with dividers between them
+                    ForEach(0..<7, id: \.self) { index in
+                        Color.clear
+                            .frame(maxWidth: .infinity)
+                        if index < 6 {
+                            Rectangle()
+                                .fill(colors.border.opacity(0.25))
+                                .frame(width: dividerWidth)
+                                .padding(.vertical, -edgeExtension)
+                        }
                     }
                 }
             }
-            .padding(.horizontal, JohoDimensions.spacingSM)
-            .padding(.vertical, JohoDimensions.spacingSM)
-            .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity)
+        .frame(height: headerHeight + (rowHeight * CGFloat(month.weeks.count)) + (dividerWidth * CGFloat(month.weeks.count)))
     }
 
-    // MARK: - Header Row (情報デザイン: Bento grid header)
+    // MARK: - Bento Header Row
 
-    @ViewBuilder
-    private var headerRow: some View {
-        // 情報デザイン: Purple calendar icon in week column position
-        ZStack {
-            // Purple calendar icon (consistent app identity)
-            Image(systemName: "calendar")
-                .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundStyle(PageHeaderColor.calendar.accent)
-        }
-        .frame(height: 28)
-        .frame(maxWidth: .infinity)
-        .accessibilityLabel("Week number")
+    private var bentoHeaderRow: some View {
+        HStack(spacing: 0) {
+            // LEFT COMPARTMENT: Week column header
+            Text("W")
+                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.secondary)
+                .frame(width: weekColumnWidth, height: headerHeight)
 
-        // Day Headers (MON-SUN) - Clean grid style, no individual backgrounds
-        ForEach(0..<7, id: \.self) { index in
-            weekdayHeaderCell(for: index)
+            // VERTICAL WALL (1.5pt) between week numbers and days
+            Rectangle()
+                .fill(colors.border)
+                .frame(width: wallWidth)
+
+            // RIGHT COMPARTMENT: Day headers
+            // 情報デザイン: Saturday = Blue (stark), Sunday = Red (alert/rest)
+            ForEach(0..<7, id: \.self) { index in
+                let dayColor: Color = {
+                    switch index {
+                    case 5: return JohoColors.tripBlue   // Saturday = Blue (stark)
+                    case 6: return JohoColors.red        // Sunday = Red
+                    default: return colors.primary       // Mon-Fri = default
+                    }
+                }()
+
+                Text(weekdaySymbol(for: index).uppercased())
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundStyle(dayColor)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: headerHeight)
+            }
         }
     }
 
-    private func weekdayHeaderCell(for index: Int) -> some View {
-        let isWeekend = index >= 5 // Saturday (5) and Sunday (6)
+    // MARK: - Bento Week Row (ONE horizontal compartment)
 
-        return Text(weekdaySymbol(for: index).uppercased())
-            .font(JohoFont.label)
-            .foregroundStyle(isWeekend ? JohoColors.pink : colors.primary)
-            .frame(maxWidth: .infinity)
-            .frame(height: 28)
-            .accessibilityLabel(weekdayName(for: index))
+    private func bentoWeekRow(_ week: CalendarWeek) -> some View {
+        HStack(spacing: 0) {
+            // LEFT COMPARTMENT: Week number
+            bentoCellWeekNumber(week)
+
+            // VERTICAL WALL (1.5pt)
+            Rectangle()
+                .fill(colors.border)
+                .frame(width: wallWidth)
+
+            // RIGHT COMPARTMENT: Days (NO individual borders - just text)
+            ForEach(week.days, id: \.id) { day in
+                bentoCellDay(day)
+            }
+        }
+        .frame(height: rowHeight)
     }
 
-    // MARK: - Cells
+    // MARK: - Bento Cell: Week Number (NO individual border)
 
-    // 情報デザイン: Week number cells - bento column style
-    // Circle outline for current/selected week, minimal otherwise
-    private func weekNumberCell(_ week: CalendarWeek) -> some View {
-        let isSelected = selectedWeek?.id == week.id
+    private func bentoCellWeekNumber(_ week: CalendarWeek) -> some View {
         let isCurrentWeek = week.isCurrentWeek
+        let isSelected = selectedWeek?.id == week.id
 
-        return Button(action: {
+        return Button {
             onWeekTap(week)
             HapticManager.impact(.light)
-        }) {
+        } label: {
+            // 情報デザイン: Week number PINNED at fixed position
+            // CURRENT week = filled black circle (always shows which week we're in)
+            // SELECTED week (not current) = outline only
             ZStack {
-                // Circle outline for current/selected week
-                if isCurrentWeek || isSelected {
-                    Circle()
-                        .stroke(colors.primary, lineWidth: 2)
-                        .frame(width: 28, height: 28)
-                }
+                ZStack {
+                    if isCurrentWeek {
+                        // Current week: filled black circle
+                        Circle()
+                            .fill(colors.primary)
+                            .frame(width: 28, height: 28)
+                    } else if isSelected {
+                        // Selected but not current: outline only
+                        Circle()
+                            .stroke(colors.primary, lineWidth: 2)
+                            .frame(width: 28, height: 28)
+                    }
 
-                // Week number
-                Text("\(week.weekNumber)")
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primary)
-                    .monospacedDigit()
+                    Text("\(week.weekNumber)")
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .foregroundStyle(isCurrentWeek ? colors.primaryInverted : colors.primary)
+                        .monospacedDigit()
+                }
+                .frame(height: 28)
+                .padding(.top, 6)
+                .frame(maxHeight: .infinity, alignment: .top)
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: cellSize)
+            .frame(width: weekColumnWidth, height: rowHeight)
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Week \(week.weekNumber)")
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
-    private func dayCell(_ day: CalendarDay) -> some View {
+    // MARK: - Bento Cell: Day (NO individual border - just text + dots)
+
+    private func bentoCellDay(_ day: CalendarDay) -> some View {
         let isSelected = selectedDay?.id == day.id
         let dataCheck = hasDataForDay?(day.date)
-        let needsHighlight = day.isToday || isSelected
 
         return Button {
             onDayTap(day)
             HapticManager.impact(.light)
         } label: {
+            // 情報デザイン: Day cell with ABSOLUTE positioning
+            // Number PINNED at top, dots PINNED at bottom - no flexible spacers
             ZStack {
-                // 情報デザイン: Clean grid - only highlight today/selected
-                // No individual cell backgrounds for regular days
-                if needsHighlight {
-                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .fill(cellBackground(for: day, isSelected: isSelected))
-                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .stroke(colors.border, lineWidth: 2)
-                }
-
-                // Day number - bold rounded font
-                VStack(spacing: showLunarCalendar ? 0 : 2) {
-                    Text("\(day.dayNumber)")
-                        .font(showLunarCalendar ? JohoFont.label : JohoFont.subheadline)
-                        .fontWeight(.bold)
-                        .foregroundStyle(dayTextColor(for: day, isSelected: isSelected))
-                        .monospacedDigit()
-
-                    // Lunar date (Âm Lịch) when enabled
-                    if showLunarCalendar {
-                        lunarDateView(for: day.date, isToday: day.isToday, isSelected: isSelected)
+                // Day number PINNED at top
+                ZStack {
+                    // Today = orange pill, Selected = inverted pill
+                    if day.isToday {
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(JohoColors.todayOrange)
+                            .frame(width: 32, height: 28)
+                    } else if isSelected {
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(colors.surfaceInverted)
+                            .frame(width: 32, height: 28)
                     }
 
-                    // 情報デザイン: Priority-filtered indicators (max 3 + overflow)
-                    priorityIndicators(for: day, dataCheck: dataCheck)
+                    Text("\(day.dayNumber)")
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .foregroundStyle(dayTextColor(for: day, isSelected: isSelected, dataCheck: dataCheck))
+                        .monospacedDigit()
                 }
+                .frame(height: 28)
+                .padding(.top, 6)  // Fixed 6pt from top
+                .frame(maxHeight: .infinity, alignment: .top)
+
+                // Dots PINNED at bottom
+                priorityIndicators(for: day, dataCheck: dataCheck)
+                    .frame(height: 10)
+                    .padding(.bottom, 4)  // Fixed 4pt from bottom
+                    .frame(maxHeight: .infinity, alignment: .bottom)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: cellSize)
-            .contentShape(Rectangle())
-            .opacity(day.isInCurrentMonth ? 1.0 : 0.4)
+            .frame(height: rowHeight)
+            .opacity(day.isInCurrentMonth ? 1.0 : 0.35)
         }
         .buttonStyle(.plain)
         .simultaneousGesture(
@@ -246,9 +311,6 @@ extension CalendarGridView {
                     onDayLongPress?(day)
                 }
         )
-        .accessibilityLabel(accessibilityLabel(for: day))
-        .accessibilityHint((day.noteColor != nil || day.holidayName != nil) ? "Long press for details, tap to select" : "Double tap to select")
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     // MARK: - Trip Span Indicator (情報デザイン)
@@ -318,7 +380,12 @@ extension CalendarGridView {
     }
 
     // Text color following Joho contrast rules
-    private func dayTextColor(for day: CalendarDay, isSelected: Bool) -> Color {
+    // 情報デザイン: Weekend/Holiday coloring for semantic meaning
+    // - Sunday = Red (rest day)
+    // - Saturday = Blue/Cyan (weekend)
+    // - Holiday = Red (day off, like Sunday)
+    // - Observance = Blue/Cyan (special but not holiday)
+    private func dayTextColor(for day: CalendarDay, isSelected: Bool, dataCheck: DayDataCheck?) -> Color {
         // Today = white text on orange background for contrast
         if day.isToday {
             return .white
@@ -327,6 +394,28 @@ extension CalendarGridView {
         if isSelected {
             return colors.primaryInverted
         }
+
+        // Check for holiday first (red - day off)
+        if day.isHoliday || dataCheck?.hasHoliday == true {
+            return JohoColors.red
+        }
+
+        // Check for observance (blue - special but not holiday)
+        if dataCheck?.hasObservance == true {
+            return JohoColors.tripBlue
+        }
+
+        // Weekend colors based on day of week
+        let calendar = Calendar.iso8601
+        let weekday = calendar.component(.weekday, from: day.date)
+        // ISO weekday: 1 = Sunday, 7 = Saturday
+        if weekday == 1 { // Sunday
+            return JohoColors.red
+        }
+        if weekday == 7 { // Saturday
+            return JohoColors.tripBlue
+        }
+
         // Default = primary color (black in light, white in dark)
         return colors.primary
     }
@@ -361,60 +450,75 @@ extension CalendarGridView {
         }
     }
 
-    /// Returns max 3 colored dots + overflow badge based on priority
-    /// Priority order: HOL > BDY > OBS > EVT > NTE > TRP > EXP
-    /// 情報デザイン: Simple colored dots are more readable than tiny icons
+    /// Returns 3 placeholder dots - filled with color when data exists
+    /// 情報デザイン: Consistent visual weight across all cells
+    /// Position 1: Holiday (Red), Position 2: Observance (Blue), Position 3: Memo (Green)
+    /// Placeholders are almost invisible to avoid visual noise
     @ViewBuilder
     private func priorityIndicators(for day: CalendarDay, dataCheck: DayDataCheck?) -> some View {
-        let indicators = collectIndicators(for: day, dataCheck: dataCheck)
-        let displayIndicators = Array(indicators.prefix(3))
-        let overflow = indicators.count - 3
+        let hasHoliday = day.isHoliday || dataCheck?.hasHoliday == true
+        let hasObservance = dataCheck?.hasObservance == true
+        let hasMemo = dataCheck?.hasNote == true ||
+                      dataCheck?.hasExpense == true ||
+                      dataCheck?.hasTrip == true ||
+                      dataCheck?.hasBirthday == true ||
+                      dataCheck?.hasEvent == true
 
         HStack(spacing: 3) {
-            ForEach(displayIndicators, id: \.self) { info in
-                // 情報デザイン: Simple colored dots with black outline (matches Star page)
-                Circle()
-                    .fill(info.color)
-                    .frame(width: 6, height: 6)
-                    .overlay(
-                        Circle()
-                            .stroke(colors.border, lineWidth: 0.5)
-                    )
-            }
+            // Position 1: Holiday (Red) - colored or invisible placeholder
+            Circle()
+                .fill(hasHoliday ? DisplayCategory.holiday.accentColor : Color.clear)
+                .frame(width: 6, height: 6)
+                .overlay(
+                    Circle()
+                        .stroke(hasHoliday ? colors.border.opacity(0.8) : Color.clear, lineWidth: 0.5)
+                )
 
-            // Overflow badge when >3 indicators
-            if overflow > 0 {
-                Text("+\(overflow)")
-                    .font(.system(size: 6, weight: .black, design: .rounded))
-                    .foregroundStyle(day.isToday ? JohoColors.black : colors.primary)
-            }
+            // Position 2: Observance (Blue) - colored or invisible placeholder
+            Circle()
+                .fill(hasObservance ? DisplayCategory.observance.accentColor : Color.clear)
+                .frame(width: 6, height: 6)
+                .overlay(
+                    Circle()
+                        .stroke(hasObservance ? colors.border.opacity(0.8) : Color.clear, lineWidth: 0.5)
+                )
+
+            // Position 3: Memo (Green) - colored or invisible placeholder
+            Circle()
+                .fill(hasMemo ? DisplayCategory.memo.accentColor : Color.clear)
+                .frame(width: 6, height: 6)
+                .overlay(
+                    Circle()
+                        .stroke(hasMemo ? colors.border.opacity(0.8) : Color.clear, lineWidth: 0.5)
+                )
         }
         .frame(height: 10)
     }
 
     /// 情報デザイン: Collects indicators using unified 3-category system
-    /// Categories: Holiday (Pink), Observance (Cyan), Memo (Yellow)
+    /// Categories: Holiday (Red), Observance (Blue), Memo (Yellow)
     private func collectIndicators(for day: CalendarDay, dataCheck: DayDataCheck?) -> [IndicatorInfo] {
         var indicators: [IndicatorInfo] = []
 
-        // 1. HOLIDAY (Pink) - Bank holidays only
+        // 1. HOLIDAY (Red) - Bank holidays only (day off, like Sunday)
         if day.isHoliday || dataCheck?.hasHoliday == true {
-            indicators.append(IndicatorInfo(icon: "star.fill", color: JohoColors.pink))
+            indicators.append(IndicatorInfo(icon: "star.fill", color: JohoColors.red))
         }
 
-        // 2. OBSERVANCE (Cyan) - Cultural observances
+        // 2. OBSERVANCE (Blue) - Cultural observances (special but not holiday)
         if dataCheck?.hasObservance == true {
-            indicators.append(IndicatorInfo(icon: "sparkles", color: JohoColors.cyan))
+            indicators.append(IndicatorInfo(icon: "sparkles", color: JohoColors.tripBlue))
         }
 
-        // 3. MEMO (Yellow) - All memos: notes, expenses, trips, birthdays
+        // 3. MEMO (Green) - All memos: notes, expenses, trips, birthdays
+        // 情報デザイン: Stark green for readability
         let hasMemo = dataCheck?.hasNote == true ||
                       dataCheck?.hasExpense == true ||
                       dataCheck?.hasTrip == true ||
                       dataCheck?.hasBirthday == true ||
                       dataCheck?.hasEvent == true
         if hasMemo {
-            indicators.append(IndicatorInfo(icon: "note.text", color: JohoColors.yellow))
+            indicators.append(IndicatorInfo(icon: "note.text", color: JohoColors.green))
         }
 
         return indicators
@@ -510,7 +614,8 @@ struct CalendarGridView_Preview: View {
             selectedWeek: nil,
             selectedDay: nil,
             onDayTap: { _ in },
-            onWeekTap: { _ in }
+            onWeekTap: { _ in },
+            onCalendarIconTap: { }
         )
         .padding()
     }

@@ -271,7 +271,7 @@ private struct SidebarLegendView: View {
         ("OBS", "OBSERVANCE", "sparkles", Color(hex: "ED8936")),
         ("EVT", "EVENT", "calendar.badge.clock", Color(hex: "805AD5")),
         ("BDY", "BIRTHDAY", "birthday.cake.fill", Color(hex: "78350F")),
-        ("NTE", "NOTE", "note.text", Color(hex: "ECC94B")),
+        ("NTE", "NOTE", "note.text", Color(hex: "4ADE80")),
         ("TRP", "TRIP", "airplane", Color(hex: "3182CE")),
         ("EXP", "EXPENSE", "dollarsign.circle.fill", Color(hex: "38A169"))
     ]

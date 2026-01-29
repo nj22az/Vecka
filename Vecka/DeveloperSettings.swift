@@ -503,8 +503,8 @@ struct DeveloperSettingsView: View {
         let countdowns = memos.filter { $0.isCountdown == true }.count
 
         return HStack(spacing: JohoDimensions.spacingSM) {
-            // Notes (Yellow)
-            statChip(count: notes, icon: "note.text", color: JohoColors.yellow)
+            // Notes (Green)
+            statChip(count: notes, icon: "note.text", color: JohoColors.green)
 
             // Trips (Cyan)
             statChip(count: trips, icon: "airplane", color: JohoColors.cyan)

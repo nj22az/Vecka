@@ -190,8 +190,8 @@ final class Memo {
         if hasPlace || hasTrip { return "A5F3FC" }  // Cyan (予定) - SCHEDULED
         // Person memos use purple
         if hasPerson { return "E9D5FF" }      // Purple (人) - PERSON
-        // Default is yellow
-        return "FFE566"                        // Yellow (今) - NOW
+        // Default is green (memo)
+        return "4ADE80"                        // Green - memo default
     }
 
     /// Days until countdown target

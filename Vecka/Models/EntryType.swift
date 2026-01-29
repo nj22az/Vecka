@@ -43,7 +43,7 @@ enum EntryType: String, CaseIterable, Identifiable {
     /// Yellow=NOW, Cyan=SCHEDULED, Pink=CELEBRATION, Green=MONEY
     var color: Color {
         switch self {
-        case .note: return JohoColors.yellow        // NOW - present moment items
+        case .note: return JohoColors.green         // MEMO - notes are memos
         case .trip: return JohoColors.cyan          // SCHEDULED - time-based items
         case .expense: return JohoColors.green      // MONEY - financial items
         case .holiday: return JohoColors.pink       // CELEBRATION - special days

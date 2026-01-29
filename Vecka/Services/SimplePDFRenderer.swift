@@ -1247,7 +1247,7 @@ struct PDFWeekCompactPage: View {
                 // Summary badges
                 HStack(spacing: 4) {
                     if dayData.noteCount > 0 {
-                        badge(count: dayData.noteCount, color: JohoColors.yellow, icon: "note.text")
+                        badge(count: dayData.noteCount, color: JohoColors.green, icon: "note.text")
                     }
                     if dayData.expenseCount > 0 {
                         badge(count: dayData.expenseCount, color: JohoColors.green, icon: "yensign.circle")
@@ -1511,10 +1511,10 @@ struct PDFMonthCompactPage: View {
 
     private var legendSection: some View {
         HStack(spacing: 16) {
-            legendItem(color: JohoColors.pink, label: "Holidays/Birthdays")
-            legendItem(color: JohoColors.yellow, label: "Notes")
+            legendItem(color: JohoColors.red, label: "Holidays")
+            legendItem(color: JohoColors.tripBlue, label: "Observances")
+            legendItem(color: JohoColors.yellow, label: "Memos")
             legendItem(color: JohoColors.green, label: "Expenses")
-            legendItem(color: JohoColors.cyan, label: "Events")
         }
         .padding(.vertical, 8)
     }

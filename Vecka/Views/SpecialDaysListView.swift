@@ -861,21 +861,21 @@ struct SpecialDaysListView: View {
                 monthCategoryDot(
                     category: .holiday,
                     count: counts.holidays,
-                    color: JohoColors.pink
+                    color: DisplayCategory.holiday.accentColor
                 )
 
                 // Observances dot
                 monthCategoryDot(
                     category: .observance,
                     count: counts.observances,
-                    color: JohoColors.cyan
+                    color: DisplayCategory.observance.accentColor
                 )
 
                 // Memos dot
                 monthCategoryDot(
                     category: .memo,
                     count: counts.memos,
-                    color: JohoColors.yellow
+                    color: DisplayCategory.memo.accentColor
                 )
             }
 
@@ -1763,11 +1763,11 @@ struct CollapsibleSpecialDayCard: View {
             // Colored dots are FIXED (pink, cyan, yellow) - colors encode category meaning
             // Icons are separate and customizable via database
 
-            // Holidays - Pink dot
+            // Holidays - Red dot
             if holidays.isNotEmpty {
                 HStack(spacing: 2) {
                     Circle()
-                        .fill(JohoColors.pink)
+                        .fill(DisplayCategory.holiday.accentColor)
                         .frame(width: 8, height: 8)
                         .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
                     Text("\(holidays.count)")
@@ -1776,11 +1776,11 @@ struct CollapsibleSpecialDayCard: View {
                 }
             }
 
-            // Observances - Cyan dot
+            // Observances - Blue dot
             if observances.isNotEmpty {
                 HStack(spacing: 2) {
                     Circle()
-                        .fill(JohoColors.cyan)
+                        .fill(DisplayCategory.observance.accentColor)
                         .frame(width: 8, height: 8)
                         .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
                     Text("\(observances.count)")
@@ -1789,11 +1789,11 @@ struct CollapsibleSpecialDayCard: View {
                 }
             }
 
-            // Memos + Birthdays - Yellow dot
+            // Memos + Birthdays - Green dot
             if birthdays.isNotEmpty || memosForDay.isNotEmpty {
                 HStack(spacing: 2) {
                     Circle()
-                        .fill(JohoColors.yellow)
+                        .fill(DisplayCategory.memo.accentColor)
                         .frame(width: 8, height: 8)
                         .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
                     Text("\(birthdays.count + memosForDay.count)")

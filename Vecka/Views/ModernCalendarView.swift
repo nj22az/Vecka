@@ -162,6 +162,77 @@ struct ModernCalendarView: View {
         (SystemUIAccent(rawValue: systemUIAccent) ?? .indigo).color
     }
 
+    // MARK: - Month Category Counts (情報デザイン)
+
+    /// Counts for current month's categories
+    private var monthCategoryCounts: (holidays: Int, observances: Int, memos: Int) {
+        let calendar = Calendar.iso8601
+        let year = currentMonth.year
+        let monthNum = currentMonth.month
+
+        // Count holidays and observances for this month
+        var holidayCount = 0
+        var observanceCount = 0
+
+        // Check each day in the month for holidays/observances
+        for week in currentMonth.weeks {
+            for day in week.days where day.isInCurrentMonth {
+                let dayStart = calendar.startOfDay(for: day.date)
+                if let holidays = holidayManager.holidayCache[dayStart] {
+                    for holiday in holidays {
+                        if holiday.isBankHoliday {
+                            holidayCount += 1
+                        } else {
+                            observanceCount += 1
+                        }
+                    }
+                }
+            }
+        }
+
+        // Count memos for this month
+        let memoCount = memos.filter { memo in
+            let comp = calendar.dateComponents([.year, .month], from: memo.date)
+            return comp.year == year && comp.month == monthNum
+        }.count
+
+        return (holidayCount, observanceCount, memoCount)
+    }
+
+    /// 情報デザイン: Category dots for subtitle row (matches Star page pattern)
+    private var monthCategoryDots: some View {
+        let counts = monthCategoryCounts
+
+        return HStack(spacing: 4) {
+            // Holidays (Red)
+            categoryDot(count: counts.holidays, color: DisplayCategory.holiday.accentColor)
+
+            // Observances (Blue)
+            categoryDot(count: counts.observances, color: DisplayCategory.observance.accentColor)
+
+            // Memos (Green)
+            categoryDot(count: counts.memos, color: DisplayCategory.memo.accentColor)
+        }
+    }
+
+    /// Single category dot with count (matches Star page subtitle style)
+    private func categoryDot(count: Int, color: Color) -> some View {
+        HStack(spacing: 3) {
+            Circle()
+                .fill(count > 0 ? color : colors.border.opacity(0.2))
+                .frame(width: 10, height: 10)
+                .overlay(
+                    Circle()
+                        .stroke(colors.border, lineWidth: 0.5)
+                )
+
+            Text("\(count)")
+                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .foregroundStyle(count > 0 ? colors.primary : colors.secondary)
+                .monospacedDigit()
+        }
+    }
+
     // 情報デザイン: Unified margins across all devices (iPhone golden standard)
     private var screenMargin: CGFloat { 16 }
 
@@ -540,7 +611,7 @@ struct ModernCalendarView: View {
                     .padding(.horizontal, screenMargin)
 
                 // Calendar Grid in WHITE container with thick black border
-                // 情報デザイン: No swipe gesture - use month picker in header instead
+                // 情報デザイン: Tap calendar icon to open month picker
                 JohoCalendarContainer {
                     CalendarGridView(
                         month: currentMonth,
@@ -549,7 +620,10 @@ struct ModernCalendarView: View {
                         onDayTap: handleDayTap,
                         onWeekTap: handleWeekTap,
                         onDayLongPress: handleDayLongPress,
-                        hasDataForDay: hasDataForDay
+                        hasDataForDay: hasDataForDay,
+                        onCalendarIconTap: {
+                            showMonthPicker = true
+                        }
                     )
                     .id("\(currentMonth.month)-\(currentMonth.year)-\(contacts.count)-\(memos.count)")
                 }
@@ -728,6 +802,7 @@ struct ModernCalendarView: View {
     // MARK: - Calendar Page Header (情報デザイン: Golden Standard Pattern)
 
     /// Bento-style page header matching Star Page pattern
+    /// 情報デザイン: Month picker in upper LEFT, TODAY button in upper RIGHT
     private var calendarPageHeader: some View {
         let today = Date()
         let dayNumber = Calendar.iso8601.component(.day, from: today)
@@ -736,39 +811,75 @@ struct ModernCalendarView: View {
         let isViewingToday = Calendar.iso8601.isDate(selectedDate, inSameDayAs: today)
 
         return VStack(spacing: 0) {
-            // MAIN ROW: Icon + Title | WALL | Month Picker
+            // MAIN ROW: Month Picker (LEFT) | WALL | Today Button (RIGHT)
             HStack(spacing: 0) {
-                // LEFT COMPARTMENT: Icon + Title
-                HStack(spacing: JohoDimensions.spacingSM) {
-                    // 情報デザイン: Purple calendar icon (app identity, not seasonal)
-                    Image(systemName: "calendar")
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
-                        .foregroundStyle(PageHeaderColor.calendar.accent)
-                        .frame(width: 40, height: 40)
-                        .background(PageHeaderColor.calendar.lightBackground)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(colors.border, lineWidth: 1.5)
-                        )
+                // LEFT COMPARTMENT: Icon + Month/Year (tappable for picker)
+                Button {
+                    showMonthPicker = true
+                    HapticManager.selection()
+                } label: {
+                    HStack(spacing: JohoDimensions.spacingSM) {
+                        // 情報デザイン: Purple calendar icon (app identity)
+                        Image(systemName: "calendar")
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .foregroundStyle(PageHeaderColor.calendar.accent)
+                            .frame(width: 40, height: 40)
+                            .background(PageHeaderColor.calendar.lightBackground)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                    .stroke(colors.border, lineWidth: 1.5)
+                            )
 
-                    // Title
-                    Text("CALENDAR")
-                        .font(JohoFont.headline)
-                        .foregroundStyle(colors.primary)
+                        // Month + Year (tappable)
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text(monthTitle.uppercased())
+                                .font(JohoFont.headline)
+                                .foregroundStyle(colors.primary)
+                            Text(String(currentMonth.year))
+                                .font(JohoFont.labelSmall)
+                                .foregroundStyle(colors.secondary)
+                                .monospacedDigit()
+                        }
+
+                        Image(systemName: "chevron.down")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.secondary)
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+                    .padding(.vertical, JohoDimensions.spacingSM)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(.horizontal, JohoDimensions.spacingMD)
-                .padding(.vertical, JohoDimensions.spacingSM)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .buttonStyle(.plain)
 
                 // VERTICAL WALL
                 Rectangle()
                     .fill(colors.border)
                     .frame(width: 1.5)
 
-                // RIGHT COMPARTMENT: Month/Year Picker
-                calendarMonthPicker
+                // RIGHT COMPARTMENT: Go to Today button (Yellow = NOW/Present)
+                // Only show when not viewing today's month
+                if !isViewingToday {
+                    Button(action: jumpToToday) {
+                        HStack(spacing: 4) {
+                            Image(systemName: "arrow.uturn.backward")
+                                .font(.system(size: 12, weight: .bold, design: .rounded))
+                            Text("TODAY")
+                                .font(JohoFont.labelSmall)
+                        }
+                        .foregroundStyle(Color.black)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(JohoColors.yellow)
+                        .clipShape(Squircle(cornerRadius: 6))
+                        .overlay(
+                            Squircle(cornerRadius: 6)
+                                .stroke(Color.black, lineWidth: 1.5)
+                        )
+                    }
+                    .buttonStyle(.plain)
                     .padding(.horizontal, JohoDimensions.spacingSM)
+                }
             }
             .frame(minHeight: 56)
 
@@ -777,7 +888,7 @@ struct ModernCalendarView: View {
                 .fill(colors.border)
                 .frame(height: 1.5)
 
-            // TODAY ROW: Today info + Add button + Go to Today button + Week badge
+            // SUBTITLE ROW: Today info + Category dots + Week badge + Add button
             HStack(spacing: JohoDimensions.spacingSM) {
                 // Today info display
                 HStack(spacing: JohoDimensions.spacingXS) {
@@ -792,39 +903,10 @@ struct ModernCalendarView: View {
                         .foregroundStyle(colors.secondary)
                 }
 
+                // 情報デザイン: Category dots for current month (Red, Blue, Green)
+                monthCategoryDots
+
                 Spacer()
-
-                // 情報デザイン: Go to Today button (Yellow = NOW/Present)
-                // Only show when not viewing today
-                if !isViewingToday {
-                    Button(action: jumpToToday) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "arrow.uturn.backward")
-                                .font(.system(size: 12, weight: .bold, design: .rounded))
-                            Text("TODAY")
-                                .font(JohoFont.labelSmall)
-                        }
-                        .foregroundStyle(Color.black)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 6)
-                        .background(JohoColors.yellow)
-                        .clipShape(Squircle(cornerRadius: 6))
-                        .overlay(
-                            Squircle(cornerRadius: 6)
-                                .stroke(Color.black, lineWidth: 1.5)
-                        )
-                    }
-                    .buttonStyle(.plain)
-                }
-
-                // Week badge
-                Text("W\(weekNumber)")
-                    .font(JohoFont.labelSmall)
-                    .foregroundStyle(colors.primaryInverted)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(colors.surfaceInverted)
-                    .clipShape(Capsule())
 
                 // 情報デザイン: Add entry button (matches Star page month detail - far right)
                 Button {

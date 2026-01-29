@@ -183,31 +183,38 @@ struct DayDashboardView: View {
             }
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+            Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)  // 3pt main bento border
         )
     }
 
     // MARK: - Date Cell (情報デザイン: Header compartment)
 
     private var dateCell: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        let isToday = Calendar.current.isDateInToday(date)
+
+        return VStack(alignment: .leading, spacing: 4) {
             Text(formattedDate)
-                .font(.system(size: 20, weight: .bold, design: .rounded))
+                .font(.system(size: 22, weight: .black, design: .rounded))
                 .foregroundStyle(colors.primary)
 
-            Text(subtitleText ?? "")
-                .font(.system(size: 11, weight: .medium, design: .rounded))
-                .foregroundStyle(colors.secondary)
+            if let subtitle = subtitleText, !subtitle.isEmpty {
+                Text(subtitle)
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .foregroundStyle(colors.primary.opacity(0.6))
+            }
         }
-        .padding(.horizontal, JohoDimensions.spacingSM)
-        .padding(.vertical, 6)
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
         .background(
-            Calendar.current.isDateInToday(date) ? JohoColors.yellow.opacity(0.3) : Color.clear
+            isToday ? JohoColors.todayOrange.opacity(0.15) : Color.clear
         )
-        .clipShape(Squircle(cornerRadius: 8))
+        .clipShape(Squircle(cornerRadius: 10))
+        .overlay(
+            isToday ? Squircle(cornerRadius: 10).stroke(JohoColors.todayOrange, lineWidth: 1.5) : nil
+        )
     }
 
     // MARK: - Content Cell Grid (情報デザイン: 2-column grid of compartments)
@@ -474,10 +481,10 @@ struct DayDashboardView: View {
 
         var accentColor: Color {
             switch self {
-            case .holidays: return JohoColors.pink
+            case .holidays: return JohoColors.red       // Holidays = red (day off)
             case .birthdays: return JohoColors.pink
-            case .notes: return JohoColors.yellow
-            case .expenses: return JohoColors.green
+            case .notes: return JohoColors.green        // Notes = stark green (memo)
+            case .expenses: return JohoColors.green     // Expenses = stark green (memo)
             case .trips: return JohoColors.cyan
             }
         }
