@@ -2874,14 +2874,11 @@ struct JohoCalendarPickerSheet: View {
 
     var body: some View {
         ZStack {
-            // Dimmed background - tap to dismiss
-            Color.black.opacity(0.4)
+            // Solid black background - 情報デザイン: no glass, no show-through
+            JohoColors.black
                 .ignoresSafeArea()
-                .onTapGesture {
-                    isPresented = false
-                }
 
-            // Floating calendar card
+            // Floating calendar card - centered
             JohoCalendarPicker(
                 selectedDate: $selectedDate,
                 accentColor: accentColor,
@@ -2893,7 +2890,7 @@ struct JohoCalendarPickerSheet: View {
         .presentationDetents([.large])
         .presentationCornerRadius(0)
         .presentationDragIndicator(.hidden)
-        .presentationBackground(.clear)
+        .presentationBackground(JohoColors.black)
     }
 }
 
