@@ -131,26 +131,31 @@ extension CalendarGridView {
         .frame(maxWidth: .infinity)
     }
 
-    // MARK: - Header Row
+    // MARK: - Header Row (情報デザイン: Bento-style with icon compartment)
 
     @ViewBuilder
     private var headerRow: some View {
-        // 情報デザイン: Minimal week column header - no background
-        // Moon icon shown when lunar calendar is active
-        HStack(spacing: 2) {
-            if showLunarCalendar {
-                Image(systemName: "moon.fill")
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.yellow)
-            } else {
-                Text("W")
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.secondary)
-            }
+        // 情報デザイン: Icon compartment in top-left (mirrors Star page month cards)
+        // Shows current month's seasonal icon with colored background
+        let monthTheme = MonthTheme.theme(for: month.month)
+
+        ZStack {
+            // Icon background with month's seasonal color
+            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                .fill(monthTheme.lightBackground)
+
+            // Month icon
+            Image(systemName: monthTheme.icon)
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(monthTheme.accentColor)
+
+            // Border
+            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                .stroke(colors.border, lineWidth: 1)
         }
         .frame(height: 28)
         .frame(maxWidth: .infinity)
-        .accessibilityLabel(showLunarCalendar ? "Week, Lunar calendar active" : Localization.weekColumnHeader)
+        .accessibilityLabel("\(monthTheme.name) calendar")
 
         // Day Headers (MON-SUN) - UPPERCASE, bold, rounded
         ForEach(0..<7, id: \.self) { index in
@@ -180,25 +185,25 @@ extension CalendarGridView {
 
     // MARK: - Cells
 
-    // 情報デザイン: Floating week numbers - minimal, aligned with row
-    // Circle outline only on current week (no squircle backgrounds)
+    // 情報デザイン: Week number cells - bento column style
+    // Circle outline for current/selected week, minimal otherwise
     private func weekNumberCell(_ week: CalendarWeek) -> some View {
         let isSelected = selectedWeek?.id == week.id
-        let showCircle = week.isCurrentWeek || isSelected
+        let isCurrentWeek = week.isCurrentWeek
 
         return Button(action: {
             onWeekTap(week)
             HapticManager.impact(.light)
         }) {
             ZStack {
-                // Circle outline only for current/selected week
-                if showCircle {
+                // Circle outline for current/selected week
+                if isCurrentWeek || isSelected {
                     Circle()
                         .stroke(colors.primary, lineWidth: 2)
                         .frame(width: 28, height: 28)
                 }
 
-                // Week number - floating, no background
+                // Week number
                 Text("\(week.weekNumber)")
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
