@@ -86,6 +86,9 @@ enum JohoColors {
     @available(*, deprecated, message: "Use cyan - trips are scheduled time items")
     static let orange = Color(hex: "A5F3FC")
 
+    // Today highlight - bright orange (distinct from yellow memos)
+    static let todayOrange = Color(hex: "FF9500")
+
     // Type-specific indicator colors (darker versions for visibility on white)
     static let tripBlue = Color(hex: "3182CE")     // TRP indicator on calendar
     static let eventPurple = Color(hex: "805AD5")  // EVT indicator on calendar

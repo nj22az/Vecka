@@ -325,9 +325,9 @@ extension CalendarGridView {
     // Cell background following Joho style
     // Light mode: white cells, Dark mode: black cells
     private func cellBackground(for day: CalendarDay, isSelected: Bool) -> Color {
-        // Today = yellow background (always - it's a semantic color)
+        // Today = bright orange background (distinct from yellow memos)
         if day.isToday {
-            return JohoColors.yellow
+            return JohoColors.todayOrange
         }
         // Selected = inverted from default (black in light, white in dark)
         if isSelected {
@@ -339,9 +339,9 @@ extension CalendarGridView {
 
     // Text color following Joho contrast rules
     private func dayTextColor(for day: CalendarDay, isSelected: Bool) -> Color {
-        // Today = always primary text (yellow background needs black in light, white in dark for contrast)
+        // Today = white text on orange background for contrast
         if day.isToday {
-            return colors.primary
+            return .white
         }
         // Selected = inverted text color
         if isSelected {
