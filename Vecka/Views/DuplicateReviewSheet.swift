@@ -10,8 +10,8 @@ import SwiftData
 
 // MARK: - Duplicate Suggestion Banner
 
-/// A non-aggressive banner that appears when potential duplicate contacts are detected
-/// 情報デザイン: Orange accent for warnings, tappable to review
+/// A friendly banner that appears when potential duplicate contacts are detected
+/// 情報デザイン: Soft styling, clear action
 struct DuplicateSuggestionBanner: View {
     @Environment(\.johoColorMode) private var colorMode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
@@ -19,60 +19,45 @@ struct DuplicateSuggestionBanner: View {
     let suggestionCount: Int
     let onTap: () -> Void
 
-    private let warningColor = JohoColors.cyan
+    private let accentColor = JohoColors.purple
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 0) {
-                // LEFT: Warning icon zone
-                Image(systemName: "person.2.badge.key.fill")
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundStyle(warningColor)
-                    .johoTouchTarget()
-                    .background(warningColor.opacity(0.2))
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Icon
+                Image(systemName: "person.2.badge.gearshape")
+                    .font(.system(size: 18, weight: .semibold, design: .rounded))
+                    .foregroundStyle(accentColor)
 
-                // WALL
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(width: 1.5)
-
-                // CENTER: Message
+                // Message
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("POSSIBLE DUPLICATES")
-                        .font(.system(size: 12, weight: .black, design: .rounded))
+                    Text("Clean up duplicates")
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
                         .foregroundStyle(colors.primary)
 
-                    Text("\(suggestionCount) contact\(suggestionCount == 1 ? "" : "s") may be duplicated")
-                        .font(.system(size: 10, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                    Text("\(suggestionCount) possible duplicate\(suggestionCount == 1 ? "" : "s") found")
+                        .font(.system(size: 11, weight: .regular, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.5))
                 }
-                .padding(.horizontal, JohoDimensions.spacingMD)
 
                 Spacer()
 
-                // RIGHT: Count badge and chevron
-                HStack(spacing: JohoDimensions.spacingSM) {
-                    Text("\(suggestionCount)")
-                        .font(.system(size: 12, weight: .black, design: .rounded))
-                        .foregroundStyle(colors.primaryInverted)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(warningColor)
-                        .clipShape(Capsule())
-                        .overlay(Capsule().stroke(colors.border, lineWidth: 1.5))
-
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary)
-                }
-                .padding(.trailing, JohoDimensions.spacingMD)
+                // Action button
+                Text("Review")
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .foregroundStyle(colors.primaryInverted)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(accentColor)
+                    .clipShape(Capsule())
             }
-            .frame(height: 56)
-            .background(colors.surface)
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .background(accentColor.opacity(0.08))
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(warningColor, lineWidth: 2)
+                    .stroke(accentColor.opacity(0.3), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -95,7 +80,7 @@ struct DuplicateReviewSheet: View {
     @State private var showingClusterMerge = false
 
     private let duplicateManager = DuplicateContactManager.shared
-    private let warningColor = JohoColors.cyan
+    private let accentColor = PageHeaderColor.contacts.accent
 
     /// Groups related duplicate suggestions into clusters
     /// If A-B and B-C are duplicates, they form one cluster [A, B, C]
@@ -157,41 +142,30 @@ struct DuplicateReviewSheet: View {
 
                     // Main content card
                     VStack(spacing: 0) {
-                        // Title with icon
+                        // Simple header
                         HStack(spacing: JohoDimensions.spacingSM) {
-                            Image(systemName: "person.2.badge.key.fill")
-                                .font(.system(size: 20, weight: .bold, design: .rounded))
-                                .foregroundStyle(warningColor)
-                                .frame(width: 40, height: 40)
-                                .background(warningColor.opacity(0.2))
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(colors.border, lineWidth: 1.5)
-                                )
+                            Image(systemName: "person.2.badge.gearshape")
+                                .font(.system(size: 20, weight: .semibold, design: .rounded))
+                                .foregroundStyle(accentColor)
 
-                            Text("REVIEW DUPLICATES")
-                                .font(JohoFont.headline)
-                                .foregroundStyle(colors.primary)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Duplicate contacts")
+                                    .font(.system(size: 16, weight: .semibold, design: .rounded))
+                                    .foregroundStyle(colors.primary)
+
+                                Text("\(duplicateClusters.count) group\(duplicateClusters.count == 1 ? "" : "s") to review")
+                                    .font(.system(size: 12, weight: .regular, design: .rounded))
+                                    .foregroundStyle(colors.primary.opacity(0.5))
+                            }
 
                             Spacer()
-
-                            // Count badge (shows number of clusters, not pairs)
-                            Text("\(duplicateClusters.count)")
-                                .font(.system(size: 14, weight: .black, design: .rounded))
-                                .foregroundStyle(colors.primaryInverted)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 4)
-                                .background(warningColor)
-                                .clipShape(Capsule())
-                                .overlay(Capsule().stroke(colors.border, lineWidth: 1.5))
                         }
                         .padding(JohoDimensions.spacingMD)
 
                         // Divider
                         Rectangle()
-                            .fill(colors.border)
-                            .frame(height: 1.5)
+                            .fill(colors.primary.opacity(0.1))
+                            .frame(height: 1)
 
                         // Clusters list (grouped duplicates)
                         if duplicateClusters.isEmpty {
@@ -285,67 +259,87 @@ struct DuplicateReviewSheet: View {
         .padding(JohoDimensions.spacingLG)
     }
 
-    // MARK: - Duplicate Cluster Row (Groups related duplicates together)
+    // MARK: - Duplicate Cluster Row (Clean grouped view)
 
     private func duplicateClusterRow(cluster: [Contact], index: Int) -> some View {
         Button {
             selectedClusterIndex = index
             showingClusterMerge = true
         } label: {
-            VStack(spacing: 0) {
-                // Header with count
-                HStack(spacing: JohoDimensions.spacingSM) {
-                    // Count badge
-                    Text("\(cluster.count)")
-                        .font(.system(size: 12, weight: .black, design: .rounded))
-                        .foregroundStyle(colors.primaryInverted)
-                        .frame(width: 24, height: 24)
-                        .background(warningColor)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
-
-                    Text("POSSIBLE DUPLICATES")
-                        .font(.system(size: 11, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary)
+            VStack(alignment: .leading, spacing: 0) {
+                // Stacked contact previews with overlapping avatars
+                HStack(spacing: -8) {
+                    // Overlapping avatars
+                    ForEach(Array(cluster.prefix(4).enumerated()), id: \.element.id) { idx, contact in
+                        JohoContactAvatar(contact: contact, size: 36)
+                            .overlay(
+                                Circle().stroke(colors.surface, lineWidth: 2)
+                            )
+                            .zIndex(Double(cluster.count - idx))
+                    }
+                    if cluster.count > 4 {
+                        Text("+\(cluster.count - 4)")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .frame(width: 36, height: 36)
+                            .background(colors.inputBackground)
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(colors.surface, lineWidth: 2))
+                    }
 
                     Spacer()
 
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary)
+                    // Quick merge indicator
+                    HStack(spacing: 4) {
+                        Image(systemName: "arrow.triangle.merge")
+                            .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        Text("Merge")
+                            .font(.system(size: 12, weight: .medium, design: .rounded))
+                    }
+                    .foregroundStyle(accentColor)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(accentColor.opacity(0.1))
+                    .clipShape(Capsule())
                 }
-                .padding(JohoDimensions.spacingSM)
-                .background(warningColor.opacity(0.1))
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.top, JohoDimensions.spacingMD)
 
-                // Divider
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(height: 1)
+                // Names list
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(cluster.prefix(3), id: \.id) { contact in
+                        HStack(spacing: 6) {
+                            Text(contact.displayName)
+                                .font(.system(size: 13, weight: .medium, design: .rounded))
+                                .foregroundStyle(colors.primary)
+                                .lineLimit(1)
 
-                // Contact previews (stack all in cluster)
-                VStack(spacing: 0) {
-                    ForEach(Array(cluster.enumerated()), id: \.element.id) { idx, contact in
-                        HStack(spacing: JohoDimensions.spacingSM) {
-                            contactPreview(contact: contact)
-                            Spacer()
-                        }
-                        .padding(JohoDimensions.spacingSM)
-
-                        // Divider between contacts (not after last)
-                        if idx < cluster.count - 1 {
-                            Rectangle()
-                                .fill(colors.primary.opacity(0.2))
-                                .frame(height: 1)
-                                .padding(.horizontal, JohoDimensions.spacingSM)
+                            if !contact.phoneNumbers.isEmpty {
+                                Text("•")
+                                    .font(.system(size: 10, weight: .medium, design: .rounded))
+                                    .foregroundStyle(colors.primary.opacity(0.3))
+                                Text(contact.phoneNumbers[0].value)
+                                    .font(.system(size: 11, weight: .regular, design: .rounded))
+                                    .foregroundStyle(colors.primary.opacity(0.5))
+                                    .lineLimit(1)
+                            }
                         }
                     }
+                    if cluster.count > 3 {
+                        Text("+ \(cluster.count - 3) more")
+                            .font(.system(size: 11, weight: .regular, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.4))
+                    }
                 }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
             }
+            .padding(.bottom, JohoDimensions.spacingSM)
             .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: 1.5)
+                    .stroke(colors.border.opacity(0.5), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -727,7 +721,7 @@ struct MergeContactSheet: View {
 
 // MARK: - Cluster Merge Sheet (Multi-contact merge)
 
-/// Sheet to merge multiple duplicate contacts at once
+/// Sheet to merge multiple duplicate contacts at once - simplified UX
 struct ClusterMergeSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.johoColorMode) private var colorMode
@@ -739,85 +733,97 @@ struct ClusterMergeSheet: View {
 
     @State private var selectedPrimary: Contact?
 
-    private let warningColor = JohoColors.cyan
     private let accentColor = PageHeaderColor.contacts.accent
+
+    // Auto-select the most complete contact
+    private var suggestedPrimary: Contact? {
+        cluster.max { contactScore($0) < contactScore($1) }
+    }
+
+    // Score a contact by completeness
+    private func contactScore(_ contact: Contact) -> Int {
+        var score = 0
+        if contact.imageData != nil { score += 10 }
+        score += contact.phoneNumbers.count * 3
+        score += contact.emailAddresses.count * 2
+        if contact.birthday != nil { score += 5 }
+        if contact.organizationName?.isEmpty == false { score += 2 }
+        if !contact.givenName.isEmpty && !contact.familyName.isEmpty { score += 2 }
+        return score
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: JohoDimensions.spacingMD) {
-                    // Header buttons
+                    // Header buttons - simplified
                     clusterMergeHeader
                         .padding(.horizontal, JohoDimensions.spacingLG)
                         .padding(.top, JohoDimensions.spacingSM)
 
-                    // Main content card
+                    // Main content card - cleaner layout
                     VStack(spacing: 0) {
-                        // Title
-                        HStack(spacing: JohoDimensions.spacingSM) {
-                            Image(systemName: "arrow.triangle.merge")
-                                .font(.system(size: 20, weight: .bold, design: .rounded))
-                                .foregroundStyle(accentColor)
-                                .frame(width: 40, height: 40)
-                                .background(accentColor.opacity(0.2))
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(colors.border, lineWidth: 1.5)
-                                )
+                        // Simple header
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Merge \(cluster.count) contacts")
+                                .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                .foregroundStyle(colors.primary)
 
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("MERGE \(cluster.count) CONTACTS")
-                                    .font(JohoFont.headline)
-                                    .foregroundStyle(colors.primary)
-
-                                Text("Select the primary contact to keep")
-                                    .font(JohoFont.labelSmall)
-                                    .foregroundStyle(colors.primary.opacity(0.6))
-                            }
-
-                            Spacer()
+                            Text("Choose which contact to keep. Information from others will be merged in.")
+                                .font(.system(size: 13, weight: .regular, design: .rounded))
+                                .foregroundStyle(colors.primary.opacity(0.5))
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(JohoDimensions.spacingMD)
 
                         // Divider
                         Rectangle()
-                            .fill(colors.border)
-                            .frame(height: 1.5)
+                            .fill(colors.primary.opacity(0.1))
+                            .frame(height: 1)
 
-                        // Contact selection (all contacts in cluster)
+                        // Contact selection (simplified cards)
                         VStack(spacing: JohoDimensions.spacingSM) {
                             ForEach(cluster, id: \.id) { contact in
-                                clusterContactCard(contact: contact, isSelected: selectedPrimary?.id == contact.id) {
+                                let isRecommended = contact.id == suggestedPrimary?.id
+                                simpleContactCard(
+                                    contact: contact,
+                                    isSelected: selectedPrimary?.id == contact.id,
+                                    isRecommended: isRecommended
+                                ) {
                                     selectedPrimary = contact
                                 }
                             }
                         }
                         .padding(JohoDimensions.spacingMD)
 
-                        // Divider
-                        Rectangle()
-                            .fill(colors.border)
-                            .frame(height: 1.5)
-
-                        // Merge preview
+                        // What will happen (only show when selected)
                         if let primary = selectedPrimary {
                             let secondaries = cluster.filter { $0.id != primary.id }
-                            clusterMergePreview(primary: primary, secondaries: secondaries)
-                                .padding(JohoDimensions.spacingMD)
-                        } else {
-                            Text("Select a contact above to see merge preview")
-                                .font(JohoFont.bodySmall)
-                                .foregroundStyle(colors.primary.opacity(0.6))
-                                .frame(maxWidth: .infinity)
-                                .padding(JohoDimensions.spacingLG)
+
+                            Rectangle()
+                                .fill(colors.primary.opacity(0.1))
+                                .frame(height: 1)
+
+                            // Simple merge summary
+                            HStack(spacing: JohoDimensions.spacingSM) {
+                                Image(systemName: "info.circle")
+                                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                                    .foregroundStyle(colors.primary.opacity(0.4))
+
+                                Text("\(secondaries.count) contact\(secondaries.count == 1 ? "" : "s") will be merged and removed")
+                                    .font(.system(size: 12, weight: .regular, design: .rounded))
+                                    .foregroundStyle(colors.primary.opacity(0.5))
+
+                                Spacer()
+                            }
+                            .padding(JohoDimensions.spacingMD)
                         }
                     }
                     .background(colors.surface)
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
+                            .stroke(colors.border.opacity(0.5), lineWidth: 1)
                     )
                     .padding(.horizontal, JohoDimensions.spacingLG)
                 }
@@ -825,35 +831,116 @@ struct ClusterMergeSheet: View {
             }
             .johoBackground()
             .toolbar(.hidden, for: .navigationBar)
+            .onAppear {
+                // Auto-select the recommended contact
+                if selectedPrimary == nil {
+                    selectedPrimary = suggestedPrimary
+                }
+            }
         }
     }
 
-    // MARK: - Header
+    // Simple contact card - cleaner than the complex one
+    private func simpleContactCard(contact: Contact, isSelected: Bool, isRecommended: Bool, onSelect: @escaping () -> Void) -> some View {
+        Button(action: onSelect) {
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Selection radio
+                ZStack {
+                    Circle()
+                        .fill(isSelected ? accentColor : colors.surface)
+                        .frame(width: 22, height: 22)
+                        .overlay(Circle().stroke(isSelected ? accentColor : colors.border.opacity(0.5), lineWidth: isSelected ? 0 : 1.5))
+
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.surfaceInverted)
+                    }
+                }
+
+                // Avatar
+                JohoContactAvatar(contact: contact, size: 40)
+
+                // Info
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 6) {
+                        Text(contact.displayName)
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.primary)
+                            .lineLimit(1)
+
+                        if isRecommended {
+                            Text("Recommended")
+                                .font(.system(size: 9, weight: .semibold, design: .rounded))
+                                .foregroundStyle(JohoColors.green)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(JohoColors.green.opacity(0.15))
+                                .clipShape(Capsule())
+                        }
+                    }
+
+                    // Contact summary
+                    HStack(spacing: 8) {
+                        if !contact.phoneNumbers.isEmpty {
+                            Text("\(contact.phoneNumbers.count) phone")
+                                .font(.system(size: 10, weight: .regular, design: .rounded))
+                                .foregroundStyle(colors.primary.opacity(0.4))
+                        }
+                        if !contact.emailAddresses.isEmpty {
+                            Text("\(contact.emailAddresses.count) email")
+                                .font(.system(size: 10, weight: .regular, design: .rounded))
+                                .foregroundStyle(colors.primary.opacity(0.4))
+                        }
+                        if contact.birthday != nil {
+                            Text("birthday")
+                                .font(.system(size: 10, weight: .regular, design: .rounded))
+                                .foregroundStyle(JohoColors.pink.opacity(0.7))
+                        }
+                        if contact.imageData != nil {
+                            Text("photo")
+                                .font(.system(size: 10, weight: .regular, design: .rounded))
+                                .foregroundStyle(colors.primary.opacity(0.4))
+                        }
+                    }
+                }
+
+                Spacer()
+            }
+            .padding(JohoDimensions.spacingSM)
+            .background(isSelected ? accentColor.opacity(0.08) : colors.inputBackground.opacity(0.5))
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                    .stroke(isSelected ? accentColor.opacity(0.5) : colors.border.opacity(0.3), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Header (simplified)
 
     private var clusterMergeHeader: some View {
         HStack {
-            // NOT DUPLICATES button
+            // Cancel / Not duplicates
             Button {
                 onDismissAll()
                 dismiss()
             } label: {
-                Text("Not Duplicates")
-                    .font(JohoFont.body)
-                    .foregroundStyle(colors.primary)
-                    .padding(.horizontal, JohoDimensions.spacingMD)
-                    .padding(.vertical, JohoDimensions.spacingMD)
+                Text("Not duplicates")
+                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .foregroundStyle(colors.primary.opacity(0.6))
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
                     .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(colors.border, lineWidth: 1.5)
-                    )
+                    .clipShape(Capsule())
+                    .overlay(Capsule().stroke(colors.border.opacity(0.5), lineWidth: 1))
             }
             .buttonStyle(.plain)
 
             Spacer()
 
-            // MERGE ALL button
+            // Merge button - always visible, enabled when selected
             Button {
                 guard let primary = selectedPrimary else { return }
                 let secondaries = cluster.filter { $0.id != primary.id }
@@ -861,165 +948,22 @@ struct ClusterMergeSheet: View {
                 dismiss()
             } label: {
                 HStack(spacing: 4) {
-                    Text("Merge All")
-                    if selectedPrimary != nil {
-                        Text("(\(cluster.count - 1))")
-                            .font(.system(size: 12, weight: .bold, design: .rounded))
-                    }
+                    Image(systemName: "arrow.triangle.merge")
+                        .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    Text("Merge")
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
                 }
-                .font(JohoFont.body.bold())
-                .foregroundStyle(selectedPrimary != nil ? colors.primaryInverted : colors.primary.opacity(0.4))
-                .padding(.horizontal, JohoDimensions.spacingLG)
-                .padding(.vertical, JohoDimensions.spacingMD)
-                .background(selectedPrimary != nil ? accentColor : colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .stroke(colors.border, lineWidth: 1.5)
-                )
+                .foregroundStyle(selectedPrimary != nil ? colors.primaryInverted : colors.primary.opacity(0.3))
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(selectedPrimary != nil ? accentColor : colors.inputBackground)
+                .clipShape(Capsule())
             }
             .buttonStyle(.plain)
             .disabled(selectedPrimary == nil)
         }
     }
 
-    // MARK: - Contact Card
-
-    private func clusterContactCard(contact: Contact, isSelected: Bool, onSelect: @escaping () -> Void) -> some View {
-        Button(action: onSelect) {
-            HStack(spacing: JohoDimensions.spacingMD) {
-                // Selection indicator
-                ZStack {
-                    Circle()
-                        .fill(isSelected ? accentColor : colors.surface)
-                        .frame(width: 24, height: 24)
-                        .overlay(Circle().stroke(colors.border, lineWidth: 2))
-
-                    if isSelected {
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 12, weight: .bold, design: .rounded))
-                            .foregroundStyle(colors.surfaceInverted)
-                    }
-                }
-
-                // Avatar
-                JohoContactAvatar(contact: contact, size: 44)
-
-                // Info
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(contact.displayName)
-                        .font(JohoFont.body.bold())
-                        .foregroundStyle(colors.primary)
-
-                    if let org = contact.organizationName, !org.isEmpty {
-                        Text(org)
-                            .font(JohoFont.labelSmall)
-                            .foregroundStyle(colors.primary.opacity(0.6))
-                    }
-
-                    // Stats
-                    HStack(spacing: JohoDimensions.spacingSM) {
-                        if !contact.phoneNumbers.isEmpty {
-                            clusterStatBadge(icon: "phone.fill", count: contact.phoneNumbers.count)
-                        }
-                        if !contact.emailAddresses.isEmpty {
-                            clusterStatBadge(icon: "envelope.fill", count: contact.emailAddresses.count)
-                        }
-                        if contact.birthday != nil {
-                            Image(systemName: "gift.fill")
-                                .font(.system(size: 8, weight: .bold, design: .rounded))
-                                .foregroundStyle(JohoColors.pink)
-                        }
-                    }
-                }
-
-                Spacer()
-
-                if isSelected {
-                    JohoPill(text: "KEEP", style: .coloredInverted(accentColor), size: .small)
-                }
-            }
-            .padding(JohoDimensions.spacingMD)
-            .background(isSelected ? accentColor.opacity(0.1) : colors.inputBackground)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(isSelected ? accentColor : colors.border, lineWidth: isSelected ? 2.5 : 1.5)
-            )
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func clusterStatBadge(icon: String, count: Int) -> some View {
-        HStack(spacing: 2) {
-            Image(systemName: icon)
-                .font(.system(size: 8, weight: .bold, design: .rounded))
-            Text("\(count)")
-                .font(.system(size: 9, weight: .bold, design: .rounded))
-        }
-        .foregroundStyle(colors.primary.opacity(0.6))
-    }
-
-    // MARK: - Merge Preview
-
-    private func clusterMergePreview(primary: Contact, secondaries: [Contact]) -> some View {
-        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-            JohoPill(text: "MERGE PREVIEW", style: .whiteOnBlack, size: .small)
-
-            VStack(alignment: .leading, spacing: 4) {
-                clusterPreviewRow(label: "Name", value: primary.displayName)
-
-                // Total unique phones
-                let allPhones = Set([primary] + secondaries).flatMap { $0.phoneNumbers.map { $0.value } }
-                let uniquePhones = Set(allPhones).count
-                if uniquePhones > 0 {
-                    clusterPreviewRow(label: "Phone numbers", value: "\(uniquePhones)")
-                }
-
-                // Total unique emails
-                let allEmails = Set([primary] + secondaries).flatMap { $0.emailAddresses.map { $0.value.lowercased() } }
-                let uniqueEmails = Set(allEmails).count
-                if uniqueEmails > 0 {
-                    clusterPreviewRow(label: "Email addresses", value: "\(uniqueEmails)")
-                }
-
-                // Birthday
-                let hasBirthday = ([primary] + secondaries).contains { $0.birthday != nil }
-                if hasBirthday {
-                    let bdayContact = ([primary] + secondaries).first { $0.birthday != nil }
-                    let bdayText = bdayContact?.birthday?.formatted(.dateTime.month(.wide).day()) ?? "?"
-                    clusterPreviewRow(label: "Birthday", value: bdayText)
-                }
-
-                // Photo
-                let hasPhoto = ([primary] + secondaries).contains { $0.imageData != nil }
-                clusterPreviewRow(label: "Photo", value: hasPhoto ? "Yes" : "No")
-            }
-            .padding(JohoDimensions.spacingSM)
-            .background(colors.inputBackground)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                    .stroke(colors.border, lineWidth: 1)
-            )
-
-            Text("\(secondaries.count) contact\(secondaries.count == 1 ? "" : "s") will be deleted after merge.")
-                .font(.system(size: 10, weight: .medium, design: .rounded))
-                .foregroundStyle(warningColor)
-        }
-    }
-
-    private func clusterPreviewRow(label: String, value: String) -> some View {
-        HStack {
-            Text(label)
-                .font(.system(size: 11, weight: .medium, design: .rounded))
-                .foregroundStyle(colors.primary.opacity(0.6))
-            Spacer()
-            Text(value)
-                .font(.system(size: 11, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.primary)
-        }
-    }
 }
 
 // MARK: - Preview

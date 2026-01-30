@@ -567,85 +567,88 @@ struct ContactListView: View {
         }
     }
 
-    // MARK: - Filter Header Row (情報デザイン: Collapsible GROUPS and INDEX)
+    // MARK: - Filter Header Row (情報デザイン: Subtle filter bar)
 
     private var filterHeaderRow: some View {
         VStack(spacing: 0) {
-            // Header row with two collapsible toggles
-            HStack(spacing: 0) {
-                // GROUPS toggle (情報デザイン: Both filters can be active simultaneously)
+            // Simple filter row - subtle, not heavy
+            HStack(spacing: JohoDimensions.spacingSM) {
+                // Group filter pill
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) {
                         isGroupsExpanded.toggle()
+                        if isGroupsExpanded { isIndexExpanded = false }
                     }
                     HapticManager.selection()
                 } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "folder.fill")
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
-                        Text("GROUPS")
-                            .font(.system(size: 11, weight: .black, design: .rounded))
-                            .tracking(0.5)
+                    HStack(spacing: 4) {
                         if let group = selectedGroup {
-                            Text("• \(group.localizedName)")
+                            Image(systemName: group.icon)
                                 .font(.system(size: 10, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color(hex: group.color))
+                            Text(group.localizedName)
+                                .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        } else {
+                            Image(systemName: "folder")
+                                .font(.system(size: 10, weight: .medium, design: .rounded))
+                            Text("All")
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
                         }
-                        Spacer()
                         Image(systemName: isGroupsExpanded ? "chevron.up" : "chevron.down")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .font(.system(size: 8, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.4))
                     }
-                    .foregroundStyle(colors.primary)
-                    .padding(.horizontal, JohoDimensions.spacingMD)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .contentShape(Rectangle())
+                    .foregroundStyle(selectedGroup != nil ? Color(hex: selectedGroup!.color) : colors.primary.opacity(0.6))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(selectedGroup != nil ? Color(hex: selectedGroup!.color).opacity(0.12) : colors.inputBackground)
+                    .clipShape(Capsule())
                 }
                 .buttonStyle(.plain)
 
-                // Vertical divider
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(width: 1)
-
-                // INDEX toggle (情報デザイン: Both filters can be active simultaneously)
+                // Letter filter pill
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) {
                         isIndexExpanded.toggle()
+                        if isIndexExpanded { isGroupsExpanded = false }
                     }
                     HapticManager.selection()
                 } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "textformat.abc")
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
-                        Text("INDEX")
-                            .font(.system(size: 11, weight: .black, design: .rounded))
-                            .tracking(0.5)
+                    HStack(spacing: 4) {
                         if let letter = filterLetter {
-                            Text("• \(letter)")
-                                .font(.system(size: 11, weight: .black, design: .rounded))
-                                .foregroundStyle(accentColor)
+                            Text(letter)
+                                .font(.system(size: 11, weight: .bold, design: .rounded))
+                        } else {
+                            Text("A-Z")
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
                         }
-                        Spacer()
                         Image(systemName: isIndexExpanded ? "chevron.up" : "chevron.down")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .font(.system(size: 8, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.4))
                     }
-                    .foregroundStyle(colors.primary)
-                    .padding(.horizontal, JohoDimensions.spacingMD)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .contentShape(Rectangle())
+                    .foregroundStyle(filterLetter != nil ? accentColor : colors.primary.opacity(0.6))
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(filterLetter != nil ? accentColor.opacity(0.12) : colors.inputBackground)
+                    .clipShape(Capsule())
                 }
                 .buttonStyle(.plain)
+
+                Spacer()
+
+                // Contact count
+                Text("\(filteredContacts.count)")
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                    .foregroundStyle(colors.primary.opacity(0.4))
             }
-            .frame(height: 40)
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
             .background(colors.surface)
 
             // Expanded: Group filter grid
             if isGroupsExpanded {
                 Rectangle()
-                    .fill(colors.border)
-                    .frame(height: 0.5)
+                    .fill(colors.primary.opacity(0.1))
+                    .frame(height: 1)
 
                 groupFilterGrid
             }
@@ -653,8 +656,8 @@ struct ContactListView: View {
             // Expanded: Letter index grid
             if isIndexExpanded {
                 Rectangle()
-                    .fill(colors.border)
-                    .frame(height: 0.5)
+                    .fill(colors.primary.opacity(0.1))
+                    .frame(height: 1)
 
                 letterIndexGrid
             }
@@ -662,155 +665,161 @@ struct ContactListView: View {
         .background(colors.surface)
     }
 
-    // MARK: - Group Filter Grid (情報デザイン: Wrapping grid, no scroll)
+    // MARK: - Group Filter Grid (情報デザイン: Simple pill list)
 
     private var groupFilterGrid: some View {
-        let columns = Array(repeating: GridItem(.flexible(), spacing: 8), count: 3)
-
-        return LazyVGrid(columns: columns, spacing: 8) {
-            // "All" button
-            Button {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    selectedGroup = nil
-                }
-                HapticManager.selection()
-            } label: {
-                HStack(spacing: 4) {
-                    Image(systemName: "person.3.fill")
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
-                    Text("All")
-                        .font(.system(size: 11, weight: .bold, design: .rounded))
-                }
-                .foregroundStyle(selectedGroup == nil ? colors.primaryInverted : colors.primary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
-                .background(selectedGroup == nil ? accentColor : colors.inputBackground)
-                .clipShape(Squircle(cornerRadius: 8))
-                .overlay(
-                    Squircle(cornerRadius: 8)
-                        .stroke(colors.border, lineWidth: selectedGroup == nil ? 2 : 1)
-                )
-            }
-
-            // Group buttons
-            ForEach(ContactGroup.allCases, id: \.self) { group in
-                let count = contacts.filter { $0.group == group }.count
-                Button {
+        // Horizontal scrolling pills - simpler than grid
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                // "All" pill
+                groupPill(
+                    icon: "person.3",
+                    label: "All",
+                    count: contacts.count,
+                    isSelected: selectedGroup == nil,
+                    color: accentColor
+                ) {
                     withAnimation(.easeInOut(duration: 0.2)) {
-                        selectedGroup = selectedGroup == group ? nil : group
+                        selectedGroup = nil
+                        isGroupsExpanded = false
                     }
-                    HapticManager.selection()
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: group.icon)
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
-                        Text(group.localizedName)
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
-                        if count > 0 {
-                            Text("\(count)")
-                                .font(.system(size: 9, weight: .medium, design: .rounded))
-                                .foregroundStyle(selectedGroup == group ? colors.primaryInverted.opacity(0.7) : colors.primary.opacity(0.5))
+                }
+
+                // Group pills
+                ForEach(ContactGroup.allCases, id: \.self) { group in
+                    let count = contacts.filter { $0.group == group }.count
+                    groupPill(
+                        icon: group.icon,
+                        label: group.localizedName,
+                        count: count,
+                        isSelected: selectedGroup == group,
+                        color: Color(hex: group.color)
+                    ) {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            selectedGroup = selectedGroup == group ? nil : group
+                            isGroupsExpanded = false
                         }
                     }
-                    .foregroundStyle(selectedGroup == group ? colors.primaryInverted : colors.primary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                    .background(selectedGroup == group ? Color(hex: group.color) : colors.inputBackground)
-                    .clipShape(Squircle(cornerRadius: 8))
-                    .overlay(
-                        Squircle(cornerRadius: 8)
-                            .stroke(colors.border, lineWidth: selectedGroup == group ? 2 : 1)
-                    )
                 }
             }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
         }
-        .padding(.horizontal, JohoDimensions.spacingMD)
-        .padding(.vertical, JohoDimensions.spacingSM)
-        .background(colors.surface)
+        .background(colors.inputBackground.opacity(0.5))
     }
 
-    // MARK: - Letter Index Grid (情報デザイン: Wrapping grid, no scroll)
+    private func groupPill(icon: String, label: String, count: Int, isSelected: Bool, color: Color, action: @escaping () -> Void) -> some View {
+        Button(action: {
+            action()
+            HapticManager.selection()
+        }) {
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                Text(label)
+                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                if count > 0 {
+                    Text("\(count)")
+                        .font(.system(size: 10, weight: .regular, design: .rounded))
+                        .foregroundStyle(isSelected ? colors.primaryInverted.opacity(0.7) : colors.primary.opacity(0.4))
+                }
+            }
+            .foregroundStyle(isSelected ? colors.primaryInverted : colors.primary.opacity(0.7))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(isSelected ? color : colors.surface)
+            .clipShape(Capsule())
+            .overlay(
+                Capsule().stroke(isSelected ? color : colors.border.opacity(0.5), lineWidth: isSelected ? 0 : 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Letter Index Grid (情報デザイン: Simple letter strip)
 
     private var letterIndexGrid: some View {
         let populatedLetters = allAvailableLetters
-        let columns = Array(repeating: GridItem(.flexible(), spacing: 6), count: 8)
 
-        return LazyVGrid(columns: columns, spacing: 6) {
-            // "ALL" button
-            Button {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    filterLetter = nil
-                }
-                HapticManager.selection()
-            } label: {
-                Text("ALL")
-                    .font(.system(size: 10, weight: .black, design: .rounded))
-                    .foregroundStyle(filterLetter == nil ? colors.primaryInverted : colors.primary)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 32)
-                    .background(filterLetter == nil ? accentColor : colors.inputBackground)
-                    .clipShape(Squircle(cornerRadius: 6))
-                    .overlay(
-                        Squircle(cornerRadius: 6)
-                            .stroke(colors.border, lineWidth: filterLetter == nil ? 2 : 1)
-                    )
-            }
-
-            // Letter buttons
-            ForEach(populatedLetters, id: \.self) { letter in
+        // Horizontal scrolling letter pills - simpler
+        return ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 4) {
+                // "All" pill
                 Button {
                     withAnimation(.easeInOut(duration: 0.2)) {
-                        filterLetter = filterLetter == letter ? nil : letter
+                        filterLetter = nil
+                        isIndexExpanded = false
                     }
                     HapticManager.selection()
                 } label: {
-                    Text(letter)
-                        .font(.system(size: 13, weight: .black, design: .rounded))
-                        .foregroundStyle(filterLetter == letter ? colors.primaryInverted : colors.primary)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 32)
-                        .background(filterLetter == letter ? accentColor : colors.inputBackground)
-                        .clipShape(Squircle(cornerRadius: 6))
+                    Text("All")
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .foregroundStyle(filterLetter == nil ? colors.primaryInverted : colors.primary.opacity(0.6))
+                        .frame(minWidth: 36)
+                        .padding(.vertical, 8)
+                        .background(filterLetter == nil ? accentColor : colors.surface)
+                        .clipShape(Capsule())
                         .overlay(
-                            Squircle(cornerRadius: 6)
-                                .stroke(colors.border, lineWidth: filterLetter == letter ? 2 : 1)
+                            Capsule().stroke(filterLetter == nil ? accentColor : colors.border.opacity(0.5), lineWidth: filterLetter == nil ? 0 : 1)
                         )
                 }
+                .buttonStyle(.plain)
+
+                // Letter pills
+                ForEach(populatedLetters, id: \.self) { letter in
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            filterLetter = filterLetter == letter ? nil : letter
+                            isIndexExpanded = false
+                        }
+                        HapticManager.selection()
+                    } label: {
+                        Text(letter)
+                            .font(.system(size: 13, weight: .semibold, design: .rounded))
+                            .foregroundStyle(filterLetter == letter ? colors.primaryInverted : colors.primary.opacity(0.6))
+                            .frame(width: 32, height: 32)
+                            .background(filterLetter == letter ? accentColor : colors.surface)
+                            .clipShape(Circle())
+                            .overlay(
+                                Circle().stroke(filterLetter == letter ? accentColor : colors.border.opacity(0.3), lineWidth: filterLetter == letter ? 0 : 1)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                }
             }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
         }
-        .padding(.horizontal, JohoDimensions.spacingMD)
-        .padding(.vertical, JohoDimensions.spacingSM)
-        .background(colors.surface)
+        .background(colors.inputBackground.opacity(0.5))
     }
 
-    // MARK: - Section Header (情報デザイン: Clean letter header)
+    // MARK: - Section Header (情報デザイン: Subtle letter divider)
 
     private func sectionHeader(letter: String) -> some View {
         HStack(spacing: JohoDimensions.spacingSM) {
+            // Subtle letter badge - not heavy black
             Text(letter)
-                .font(.system(size: 13, weight: .black, design: .rounded))
-                .foregroundStyle(colors.primaryInverted)
-                .frame(width: 24, height: 24)
-                .background(colors.primary)
-                .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary.opacity(0.5))
+                .frame(width: 20)
 
-            // 情報デザイン: Solid black divider line, reduced height
+            // Light divider line
             Rectangle()
-                .fill(colors.border)
-                .frame(height: 0.5)
+                .fill(colors.primary.opacity(0.15))
+                .frame(height: 1)
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
-        .padding(.vertical, JohoDimensions.spacingXS)
+        .padding(.vertical, 6)
         .background(colors.surface)
     }
 
-    // MARK: - Kudo-Style Contact Row (情報デザイン: Photo + Name + actionable icons)
+    // MARK: - Clean Contact Row (情報デザイン: Minimal, readable, information-first)
 
     private func compactContactRow(for contact: Contact) -> some View {
         let isSelected = selectedForDeletion.contains(contact.id)
 
-        return HStack(spacing: JohoDimensions.spacingSM) {
-            // EDIT MODE: Selection checkbox (情報デザイン: circle with checkmark)
+        return HStack(spacing: JohoDimensions.spacingMD) {
+            // EDIT MODE: Selection checkbox
             if isEditMode {
                 Button {
                     withAnimation(.easeInOut(duration: 0.15)) {
@@ -822,84 +831,72 @@ struct ContactListView: View {
                     }
                     HapticManager.selection()
                 } label: {
-                    ZStack {
-                        Circle()
-                            .fill(isSelected ? JohoColors.red : colors.surface)
-                            .frame(width: 28, height: 28)
-                        Circle()
-                            .stroke(colors.border, lineWidth: isSelected ? 2 : 1)
-                            .frame(width: 28, height: 28)
-                        if isSelected {
-                            Image(systemName: "checkmark")
-                                .font(.system(size: 12, weight: .bold, design: .rounded))
-                                .foregroundStyle(colors.primaryInverted)
-                        }
-                    }
+                    Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                        .font(.system(size: 22, weight: .medium))
+                        .foregroundStyle(isSelected ? JohoColors.red : colors.primary.opacity(0.3))
                 }
                 .buttonStyle(.plain)
             }
 
-            // PHOTO COMPARTMENT (48pt) - tap to see details
-            JohoContactAvatar(contact: contact, size: 48)
+            // AVATAR: Clean squircle, not too heavy
+            JohoContactAvatar(contact: contact, size: 44)
 
-            // NAME COMPARTMENT (flexible)
+            // INFO: Name + subtitle (clean stack, no pills)
             VStack(alignment: .leading, spacing: 2) {
                 Text(contact.displayName)
                     .font(.system(size: 16, weight: .medium, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .lineLimit(1)
 
-                // Alias/Organization as subtitle
+                // Subtitle: Org or birthday (not both cluttering)
                 if let org = contact.organizationName, org.isNotEmpty {
                     Text(org)
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .font(.system(size: 12, weight: .regular, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.5))
                         .lineLimit(1)
+                } else if contact.birthday != nil {
+                    // Only show birthday if no org
+                    Text("Birthday")
+                        .font(.system(size: 12, weight: .regular, design: .rounded))
+                        .foregroundStyle(JohoColors.pink.opacity(0.8))
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            // ACTIONABLE CONTACT BUTTONS (情報デザイン: Semantic colors like Star page)
-            // Hide action buttons in edit mode
+            // ACTION ICONS: Subtle, icon-only (no colored backgrounds)
             if !isEditMode {
-                HStack(spacing: 10) {
-                    // Birthday indicator (secondary - small pink dot, not actionable)
-                    birthdayIndicator(for: contact)
+                HStack(spacing: 16) {
+                    // Birthday indicator (subtle)
+                    if contact.birthday != nil, contact.hasBirthdayForStarPage {
+                        Image(systemName: "gift.fill")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundStyle(JohoColors.pink)
+                    }
 
-                    // Message button - Cyan
+                    // Phone (if available)
                     if let phone = contact.phoneNumbers.first?.value {
-                        JohoContactActionButton(action: .message(phone: phone))
+                        Button {
+                            if let url = URL(string: "tel:\(phone.replacingOccurrences(of: " ", with: ""))") {
+                                UIApplication.shared.open(url)
+                            }
+                        } label: {
+                            Image(systemName: "phone.fill")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundStyle(JohoColors.green)
+                        }
+                        .buttonStyle(.plain)
                     }
 
-                    // Email button - Purple
-                    if let email = contact.emailAddresses.first?.value {
-                        JohoContactActionButton(action: .email(address: email))
-                    }
-
-                    // Phone button - Green
-                    if let phone = contact.phoneNumbers.first?.value {
-                        JohoContactActionButton(action: .call(phone: phone))
-                    }
+                    // Chevron for detail
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(colors.primary.opacity(0.3))
                 }
             }
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
-        .frame(height: 64)
-        .background(isSelected ? JohoColors.redLight : Color.clear)
-    }
-
-    // MARK: - Birthday Indicator (情報デザイン: Small pink dot)
-
-    /// 情報デザイン: Small birthday dot - details shown in contact detail view
-    @ViewBuilder
-    private func birthdayIndicator(for contact: Contact) -> some View {
-        if contact.birthday != nil, contact.hasBirthdayForStarPage {
-            // Small pink dot (情報デザイン: Secondary indicator)
-            Circle()
-                .fill(JohoColors.pink)
-                .frame(width: 10, height: 10)
-                .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
-        }
+        .padding(.vertical, JohoDimensions.spacingSM)
+        .background(isSelected ? JohoColors.red.opacity(0.1) : Color.clear)
     }
 
     // MARK: - Contact Row (情報デザイン: Bento style with compartments)
@@ -1013,82 +1010,71 @@ struct ContactListView: View {
     }
 }
 
-// MARK: - 情報デザイン Circular Contact Avatar (iOS Contacts style)
+// MARK: - 情報デザイン Contact Avatar (Clean, Minimal)
 
-/// Circular contact avatar with photo or initials - like iOS Contacts
-/// Uses 情報デザイン styling: black border, Warm Brown accent for initials
+/// Clean contact avatar - photo or initials in a subtle squircle
+/// Designed to not overpower the contact information
 struct JohoContactAvatar: View {
     @Environment(\.johoColorMode) private var colorMode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     let contact: Contact
-    var size: CGFloat = 56
+    var size: CGFloat = 44
 
-    // 情報デザイン accent color for contacts (Warm Brown)
-    private var accentColor: Color { PageHeaderColor.contacts.accent }
+    // Softer accent color for avatars (not heavy brown)
+    private var avatarBackground: Color {
+        // Use a softer, more neutral tone
+        colorMode == .dark ? Color(hex: "3A3A3C") : Color(hex: "E5E5EA")
+    }
+
+    private var initialsColor: Color {
+        colorMode == .dark ? colors.primary : Color(hex: "636366")
+    }
 
     private var fontSize: CGFloat {
-        size * 0.4
+        size * 0.36
     }
 
-    private var borderWidth: CGFloat {
-        size >= 80 ? JohoDimensions.borderThick : JohoDimensions.borderMedium
-    }
-
-    private var decorationBadgeSize: CGFloat {
-        size * 0.35
+    private var cornerRadius: CGFloat {
+        size * 0.24
     }
 
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
-            Group {
-                if let imageData = contact.imageData, let uiImage = UIImage(data: imageData) {
-                    // Photo available - circular frame with black border
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: size, height: size)
-                        .clipShape(Circle())
-                        .overlay(
-                            Circle()
-                                .stroke(colors.border, lineWidth: borderWidth)
-                        )
-                } else {
-                    // No photo - show initials with Warm Brown background
-                    ZStack {
-                        Circle()
-                            .fill(accentColor)
-
-                        Text(contact.initials.isEmpty ? "?" : contact.initials)
-                            .font(.system(size: fontSize, weight: .black, design: .rounded))
-                            .foregroundStyle(colors.primaryInverted)
-                    }
+        Group {
+            if let imageData = contact.imageData, let uiImage = UIImage(data: imageData) {
+                // Photo available - clean squircle
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFill()
                     .frame(width: size, height: size)
+                    .clipShape(Squircle(cornerRadius: cornerRadius))
                     .overlay(
-                        Circle()
-                            .stroke(colors.border, lineWidth: borderWidth)
+                        Squircle(cornerRadius: cornerRadius)
+                            .stroke(colors.border.opacity(0.3), lineWidth: 1)
                     )
-                }
-            }
+            } else {
+                // No photo - subtle initials
+                ZStack {
+                    Squircle(cornerRadius: cornerRadius)
+                        .fill(avatarBackground)
 
-            // Symbol decoration badge (情報デザイン: bottom-right overlay)
-            if let symbolName = contact.symbolName, symbolName != "person.fill" {
-                Image(systemName: symbolName)
-                    .font(.system(size: decorationBadgeSize * 0.5, weight: .bold))
-                    .foregroundStyle(accentColor)
-                    .frame(width: decorationBadgeSize, height: decorationBadgeSize)
-                    .background(colors.surface)
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(colors.border, lineWidth: 1))
-                    .offset(x: 2, y: 2)
+                    Text(contact.initials.isEmpty ? "?" : contact.initials)
+                        .font(.system(size: fontSize, weight: .semibold, design: .rounded))
+                        .foregroundStyle(initialsColor)
+                }
+                .frame(width: size, height: size)
+                .overlay(
+                    Squircle(cornerRadius: cornerRadius)
+                        .stroke(colors.border.opacity(0.2), lineWidth: 1)
+                )
             }
         }
     }
 }
 
-// MARK: - 情報デザイン Contact Row with Circular Photo
+// MARK: - 情報デザイン Contact Row (Business Card Style)
 
-/// A contact row that displays circular photo (or initials), name, organization, and quick contact info
+/// A contact row that displays squircle photo (or initials), name, organization - business card style
 struct JohoContactRow: View {
     @Environment(\.johoColorMode) private var colorMode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
@@ -1107,11 +1093,18 @@ struct JohoContactRow: View {
     }
 
     var body: some View {
-        HStack(spacing: JohoDimensions.spacingMD) {
-            // Circular photo avatar (like iOS Contacts)
+        HStack(spacing: 0) {
+            // LEFT COMPARTMENT: Squircle avatar
             JohoContactAvatar(contact: contact, size: 56)
+                .padding(JohoDimensions.spacingSM)
 
-            // Contact info
+            // VERTICAL WALL
+            Rectangle()
+                .fill(colors.border.opacity(0.5))
+                .frame(width: 1)
+                .padding(.vertical, JohoDimensions.spacingSM)
+
+            // CENTER COMPARTMENT: Contact info
             VStack(alignment: .leading, spacing: 4) {
                 // Name
                 Text(contact.displayName)
@@ -1127,8 +1120,8 @@ struct JohoContactRow: View {
                         .lineLimit(1)
                 }
 
-                // Quick contact info pills (情報デザイン colored pills)
-                HStack(spacing: JohoDimensions.spacingSM) {
+                // Quick contact info pills (情報デザイン squircle pills)
+                HStack(spacing: JohoDimensions.spacingXS) {
                     if primaryPhone != nil {
                         contactInfoPill(icon: "phone.fill", text: "PHONE", color: accentColor)
                     }
@@ -1139,10 +1132,11 @@ struct JohoContactRow: View {
 
                     // 情報デザイン: Birthday pill with Pink background
                     if contact.birthday != nil {
-                        contactInfoPill(icon: "gift.fill", text: "BDAY", color: SpecialDayType.birthday.accentColor, bgColor: JohoColors.pink)
+                        contactInfoPill(icon: "gift.fill", text: "BDAY", color: SpecialDayType.birthday.accentColor, bgColor: JohoColors.pink.opacity(0.2))
                     }
                 }
             }
+            .padding(.horizontal, JohoDimensions.spacingSM)
 
             Spacer()
 
@@ -1150,8 +1144,8 @@ struct JohoContactRow: View {
             Image(systemName: "chevron.right")
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
+                .padding(.trailing, JohoDimensions.spacingMD)
         }
-        .padding(JohoDimensions.spacingMD)
         .background(colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
@@ -1161,7 +1155,7 @@ struct JohoContactRow: View {
     }
 
     @ViewBuilder
-    /// 情報デザイン: Info pill with optional background color (default surface)
+    /// 情報デザイン: Info pill with squircle shape (not capsule)
     private func contactInfoPill(icon: String, text: String, color: Color, bgColor: Color? = nil) -> some View {
         HStack(spacing: 3) {
             Image(systemName: icon)
@@ -1173,8 +1167,8 @@ struct JohoContactRow: View {
         .padding(.horizontal, 6)
         .padding(.vertical, 3)
         .background(bgColor ?? colors.surface)
-        .clipShape(Capsule())
-        .overlay(Capsule().stroke(colors.border, lineWidth: 1))
+        .clipShape(Squircle(cornerRadius: 4))
+        .overlay(Squircle(cornerRadius: 4).stroke(colors.border.opacity(0.5), lineWidth: 1))
     }
 }
 
