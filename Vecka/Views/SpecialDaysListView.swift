@@ -861,21 +861,21 @@ struct SpecialDaysListView: View {
                 monthCategoryDot(
                     category: .holiday,
                     count: counts.holidays,
-                    color: DisplayCategory.holiday.accentColor
+                    color: CategoryColorSettings.shared.color(for: .holiday)
                 )
 
                 // Observances dot
                 monthCategoryDot(
                     category: .observance,
                     count: counts.observances,
-                    color: DisplayCategory.observance.accentColor
+                    color: CategoryColorSettings.shared.color(for: .observance)
                 )
 
                 // Memos dot
                 monthCategoryDot(
                     category: .memo,
                     count: counts.memos,
-                    color: DisplayCategory.memo.accentColor
+                    color: CategoryColorSettings.shared.color(for: .memo)
                 )
             }
 
@@ -1041,7 +1041,7 @@ struct SpecialDaysListView: View {
             HStack(spacing: 4) {
                 // Colored filled dot (category color) - dimmed when inactive
                 Circle()
-                    .fill(isActive ? category.accentColor : colors.primary.opacity(0.2))
+                    .fill(isActive ? CategoryColorSettings.shared.color(for: category) : colors.primary.opacity(0.2))
                     .frame(width: 8, height: 8)
                     .overlay(
                         Circle()
@@ -1065,7 +1065,7 @@ struct SpecialDaysListView: View {
             .fixedSize(horizontal: true, vertical: false)
             .padding(.horizontal, 5)
             .padding(.vertical, 2)
-            .background(isActive ? category.accentColor.opacity(0.12) : Color.clear)
+            .background(isActive ? CategoryColorSettings.shared.color(for: category).opacity(0.12) : Color.clear)
             .clipShape(Capsule())
             .overlay(
                 Capsule()
@@ -1174,24 +1174,24 @@ struct SpecialDaysListView: View {
 
     /// 情報デザイン: Category-colored dots for month cards
     /// Each dot represents a category present in this month:
-    /// - Pink = holidays, Cyan = observances, Yellow = memos
+    /// - Red = holidays, Blue = observances, Green = memos
     private func monthCategoryDots(holidays: Int, observances: Int, memos: Int) -> some View {
         HStack(spacing: 3) {
             if holidays > 0 {
                 Circle()
-                    .fill(DisplayCategory.holiday.accentColor)
+                    .fill(CategoryColorSettings.shared.color(for: .holiday))
                     .frame(width: 6, height: 6)
                     .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
             }
             if observances > 0 {
                 Circle()
-                    .fill(DisplayCategory.observance.accentColor)
+                    .fill(CategoryColorSettings.shared.color(for: .observance))
                     .frame(width: 6, height: 6)
                     .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
             }
             if memos > 0 {
                 Circle()
-                    .fill(DisplayCategory.memo.accentColor)
+                    .fill(CategoryColorSettings.shared.color(for: .memo))
                     .frame(width: 6, height: 6)
                     .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
             }
@@ -1299,19 +1299,19 @@ struct SpecialDaysListView: View {
                     VStack(spacing: 3) {
                         if counts.holidays > 0 {
                             Circle()
-                                .fill(DisplayCategory.holiday.accentColor)
+                                .fill(CategoryColorSettings.shared.color(for: .holiday))
                                 .frame(width: 7, height: 7)
                                 .overlay(Circle().stroke(colors.border, lineWidth: 1))
                         }
                         if counts.observances > 0 {
                             Circle()
-                                .fill(DisplayCategory.observance.accentColor)
+                                .fill(CategoryColorSettings.shared.color(for: .observance))
                                 .frame(width: 7, height: 7)
                                 .overlay(Circle().stroke(colors.border, lineWidth: 1))
                         }
                         if (counts.birthdays + counts.memos) > 0 {
                             Circle()
-                                .fill(DisplayCategory.memo.accentColor)
+                                .fill(CategoryColorSettings.shared.color(for: .memo))
                                 .frame(width: 7, height: 7)
                                 .overlay(Circle().stroke(colors.border, lineWidth: 1))
                         }
@@ -1461,9 +1461,9 @@ struct SpecialDaysListView: View {
 
     @ViewBuilder
     private func categoryCard(category: DisplayCategory, count: Int) -> some View {
-        // 情報デザイン: Custom icon allowed, color locked to category
+        // 情報デザイン: Custom icon allowed, color from CategoryColorSettings
         let displayIcon = customCategoryIcon(for: category) ?? category.outlineIcon
-        let categoryColor = category.accentColor
+        let categoryColor = CategoryColorSettings.shared.color(for: category)
 
         VStack(spacing: 0) {
             // TOP: Icon zone (情報デザイン: Category color background)
@@ -1666,8 +1666,8 @@ struct CollapsibleSpecialDayCard: View {
     @ViewBuilder
     private var dateStatusPill: some View {
         if daysFromToday == 0 {
-            // TODAY - Yellow inverted pill (only status worth highlighting)
-            JohoPill(text: "TODAY", style: .coloredInverted(JohoColors.yellow), size: .small)
+            // TODAY - Orange inverted pill (consistent with calendar)
+            JohoPill(text: "TODAY", style: .coloredInverted(JohoColors.todayOrange), size: .small)
         }
         // Past/future dates: no pill needed (date is already visible)
     }
@@ -1747,7 +1747,7 @@ struct CollapsibleSpecialDayCard: View {
         .foregroundStyle(isToday ? Color.black : colors.primary)
         .padding(.horizontal, JohoDimensions.spacingSM)
         .padding(.vertical, JohoDimensions.spacingXS)
-        .background(isToday ? JohoColors.yellow : colors.surface)
+        .background(isToday ? JohoColors.todayOrange : colors.surface)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusSmall)
@@ -1760,14 +1760,14 @@ struct CollapsibleSpecialDayCard: View {
     private var contentIndicatorDots: some View {
         HStack(spacing: 6) {
             // 情報デザイン: 3-category indicator system
-            // Colored dots are FIXED (pink, cyan, yellow) - colors encode category meaning
+            // Colored dots are FIXED (red, blue, green) - colors encode category meaning
             // Icons are separate and customizable via database
 
             // Holidays - Red dot
             if holidays.isNotEmpty {
                 HStack(spacing: 2) {
                     Circle()
-                        .fill(DisplayCategory.holiday.accentColor)
+                        .fill(CategoryColorSettings.shared.color(for: .holiday))
                         .frame(width: 8, height: 8)
                         .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
                     Text("\(holidays.count)")
@@ -1780,7 +1780,7 @@ struct CollapsibleSpecialDayCard: View {
             if observances.isNotEmpty {
                 HStack(spacing: 2) {
                     Circle()
-                        .fill(DisplayCategory.observance.accentColor)
+                        .fill(CategoryColorSettings.shared.color(for: .observance))
                         .frame(width: 8, height: 8)
                         .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
                     Text("\(observances.count)")
@@ -1793,7 +1793,7 @@ struct CollapsibleSpecialDayCard: View {
             if birthdays.isNotEmpty || memosForDay.isNotEmpty {
                 HStack(spacing: 2) {
                     Circle()
-                        .fill(DisplayCategory.memo.accentColor)
+                        .fill(CategoryColorSettings.shared.color(for: .memo))
                         .frame(width: 8, height: 8)
                         .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
                     Text("\(birthdays.count + memosForDay.count)")
@@ -1808,7 +1808,7 @@ struct CollapsibleSpecialDayCard: View {
 
     /// Combined birthdays + memos for 情報デザイン 3-category system
     private var combinedMemos: [SpecialDayRow] {
-        // Birthdays + memos combined under メモ category (YELLOW = now/personal)
+        // Birthdays + memos combined under メモ category (GREEN)
         (birthdays + memosForDay).sorted { $0.date < $1.date }
     }
 
@@ -1816,8 +1816,8 @@ struct CollapsibleSpecialDayCard: View {
     private var expandedContent: some View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
             // 情報デザイン: 3-category system
-            // PINK = Celebration (holidays, observances)
-            // YELLOW = Now/Personal (memos + birthdays)
+            // RED = Holidays, BLUE = Observances
+            // GREEN = Memos (includes birthdays)
 
             // Icons are database-driven via customCategoryIcon(for:)
             // Fallback to DisplayCategory.outlineIcon only if no custom icon set
@@ -1844,12 +1844,12 @@ struct CollapsibleSpecialDayCard: View {
                 )
             }
 
-            // Memos (YELLOW zone - includes birthdays)
+            // Memos (GREEN zone - includes birthdays)
             if combinedMemos.isNotEmpty {
                 specialDaySection(
                     title: DisplayCategory.memo.localizedLabel,
                     items: combinedMemos,
-                    zone: .notes,
+                    zone: .memos,
                     icon: memoIcon
                 )
             }
@@ -2968,9 +2968,9 @@ struct MonthCustomizationSheet: View {
 
 // MARK: - Category Customization Sheet (情報デザイン: Icon-only customization for categories)
 
-/// Simple editor sheet for customizing category card icons
+/// Enhanced editor sheet for customizing category card icons AND colors
 /// Long-press on a category card in month detail to trigger
-/// 情報デザイン: Color is locked to category - only icon can be customized
+/// 情報デザイン: Full customization - master icon + master color for each category
 struct CategoryCustomizationSheet: View {
     let category: DisplayCategory
     let count: Int
@@ -2980,9 +2980,16 @@ struct CategoryCustomizationSheet: View {
     let onDismiss: () -> Void
 
     @State private var selectedIcon: String?
+    @State private var showColorPicker = false
+    @State private var selectedColorHex: String = ""
 
     @Environment(\.johoColorMode) private var colorMode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    // Dynamic category color (reads from CategoryColorSettings)
+    private var categoryColor: Color {
+        CategoryColorSettings.shared.color(for: category)
+    }
 
     // 情報デザイン: Curated icon set for categories (shapes + conceptual)
     private let iconOptions: [String] = [
@@ -3027,7 +3034,7 @@ struct CategoryCustomizationSheet: View {
                             .foregroundStyle(colors.primary)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 8)
-                            .background(category.accentColor)
+                            .background(categoryColor)
                             .clipShape(Squircle(cornerRadius: 8))
                             .overlay(
                                 Squircle(cornerRadius: 8)
@@ -3038,7 +3045,7 @@ struct CategoryCustomizationSheet: View {
                 }
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.vertical, JohoDimensions.spacingMD)
-                .background(category.accentColor.opacity(0.3))
+                .background(categoryColor.opacity(0.3))
 
                 // Divider
                 Rectangle()
@@ -3046,63 +3053,123 @@ struct CategoryCustomizationSheet: View {
                     .frame(height: 1.5)
             }
 
-            // Content
-            VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
-                // 情報デザイン: Preview card - bento style
-                HStack {
-                    Spacer()
-                    categoryPreview
-                    Spacer()
-                }
-
-                // Icon picker with category-colored section header
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(category.accentColor)
-                            .frame(width: 8, height: 8)
-                            .overlay(Circle().stroke(colors.border, lineWidth: 1))
-                        Text("ICON")
-                            .font(.system(size: 10, weight: .black, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.6))
+            // Content - scrollable for smaller screens
+            ScrollView {
+                VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
+                    // 情報デザイン: Preview card - bento style
+                    HStack {
+                        Spacer()
+                        categoryPreview
+                        Spacer()
                     }
 
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 6), spacing: 8) {
-                        ForEach(iconOptions, id: \.self) { icon in
-                            iconButton(icon)
+                    // MASTER ICON section
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(categoryColor)
+                                .frame(width: 8, height: 8)
+                                .overlay(Circle().stroke(colors.border, lineWidth: 1))
+                            Text("MASTER ICON")
+                                .font(.system(size: 10, weight: .black, design: .rounded))
+                                .foregroundStyle(colors.primary.opacity(0.6))
+                        }
+
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 6), spacing: 8) {
+                            ForEach(iconOptions, id: \.self) { icon in
+                                iconButton(icon)
+                            }
                         }
                     }
-                }
 
-                // Reset button
-                Button {
-                    onReset()
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "arrow.counterclockwise")
-                            .font(.system(size: 12, weight: .bold, design: .rounded))
-                        Text("Reset to Default")
-                            .font(.system(size: 12, weight: .medium, design: .rounded))
+                    // COLOR section - opens JohoColorPickerSheet
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(categoryColor)
+                                .frame(width: 8, height: 8)
+                                .overlay(Circle().stroke(colors.border, lineWidth: 1))
+                            Text("COLOR")
+                                .font(.system(size: 10, weight: .black, design: .rounded))
+                                .foregroundStyle(colors.primary.opacity(0.6))
+                        }
+
+                        Button {
+                            showColorPicker = true
+                        } label: {
+                            HStack {
+                                // Color swatch
+                                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                    .fill(categoryColor)
+                                    .frame(width: 32, height: 32)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                            .stroke(colors.border, lineWidth: 1.5)
+                                    )
+
+                                Text("Change Color")
+                                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                                    .foregroundStyle(colors.primary)
+
+                                Spacer()
+
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 12, weight: .bold))
+                                    .foregroundStyle(colors.primary.opacity(0.4))
+                            }
+                            .padding(12)
+                            .background(colors.inputBackground)
+                            .clipShape(Squircle(cornerRadius: 10))
+                            .overlay(
+                                Squircle(cornerRadius: 10)
+                                    .stroke(colors.border, lineWidth: 1.5)
+                            )
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .foregroundStyle(colors.primary.opacity(0.6))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(colors.inputBackground)
-                    .clipShape(Squircle(cornerRadius: 10))
-                    .overlay(
-                        Squircle(cornerRadius: 10)
-                            .stroke(colors.border, lineWidth: 1.5)
-                    )
-                }
-                .buttonStyle(.plain)
-            }
-            .padding(JohoDimensions.spacingLG)
 
-            Spacer()
+                    // Reset button - resets both icon and color
+                    Button {
+                        // Reset color to default
+                        CategoryColorSettings.shared.resetColor(for: category)
+                        // Reset icon via callback
+                        onReset()
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "arrow.counterclockwise")
+                                .font(.system(size: 12, weight: .bold, design: .rounded))
+                            Text("Reset All to Defaults")
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                        }
+                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(colors.inputBackground)
+                        .clipShape(Squircle(cornerRadius: 10))
+                        .overlay(
+                            Squircle(cornerRadius: 10)
+                                .stroke(colors.border, lineWidth: 1.5)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(JohoDimensions.spacingLG)
+            }
         }
         .background(colors.surface)
         .onAppear {
             selectedIcon = currentCustomization.icon
+            selectedColorHex = CategoryColorSettings.shared.colorHex(for: category)
+        }
+        .sheet(isPresented: $showColorPicker) {
+            JohoColorPickerSheet(
+                selectedColorHex: $selectedColorHex,
+                title: "\(category.localizedLabel) Color",
+                category: category,
+                onDone: {
+                    CategoryColorSettings.shared.setColorHex(selectedColorHex, for: category)
+                }
+            )
         }
     }
 
@@ -3119,7 +3186,7 @@ struct CategoryCustomizationSheet: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: 64)
-            .background(category.accentColor)
+            .background(categoryColor)
 
             // Divider
             Rectangle()
@@ -3170,7 +3237,7 @@ struct CategoryCustomizationSheet: View {
                 .font(.system(size: 18, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 44, height: 44)
-                .background((isSelected || isDefault) ? category.accentColor : colors.inputBackground)
+                .background((isSelected || isDefault) ? categoryColor : colors.inputBackground)
                 .clipShape(Squircle(cornerRadius: 10))
                 .overlay(
                     Squircle(cornerRadius: 10)

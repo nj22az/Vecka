@@ -3221,7 +3221,7 @@ struct LandingPageView: View {
                         title: "\(name)'s Birthday",
                         subtitle: formatRelativeDate(date),
                         icon: "birthday.cake.fill",
-                        color: JohoColors.pink,
+                        color: CategoryColorSettings.shared.color(for: .memo),
                         typeBadge: "BDY"
                     ))
                 }
@@ -3654,7 +3654,7 @@ struct LandingPageView: View {
                         dayNumber: dayNumber,
                         isToday: isToday,
                         title: "\(name)'s Birthday",
-                        color: JohoColors.pink,
+                        color: CategoryColorSettings.shared.color(for: .memo),
                         typeBadge: "BDY"
                     ))
                 }
@@ -3824,7 +3824,7 @@ struct LandingPageView: View {
                 guard let birthday = contact.birthday else { continue }
                 if calendar.component(.month, from: birthday) == month &&
                    calendar.component(.day, from: birthday) == day {
-                    indicators.append(JohoColors.pink)
+                    indicators.append(CategoryColorSettings.shared.color(for: .memo))
                 }
             }
 
@@ -4216,7 +4216,7 @@ struct LandingPageView: View {
                     title: "\(name)'s Birthday",
                     subtitle: nil,
                     icon: "birthday.cake.fill",
-                    color: JohoColors.pink,
+                    color: CategoryColorSettings.shared.color(for: .memo),
                     typeBadge: "BDY"
                 ))
             }
@@ -4468,7 +4468,7 @@ struct LandingPageView: View {
                     guard let birthday = contact.birthday else { continue }
                     if calendar.component(.month, from: birthday) == month &&
                        calendar.component(.day, from: birthday) == day {
-                        indicators.append(JohoColors.pink)
+                        indicators.append(CategoryColorSettings.shared.color(for: .memo))
                         break
                     }
                 }
@@ -4734,7 +4734,7 @@ struct LandingPageView: View {
             HStack {
                 Image(systemName: "birthday.cake.fill")
                     .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.pink)
+                    .foregroundStyle(CategoryColorSettings.shared.color(for: .memo))
 
                 Text("BIRTHDAYS")
                     .font(.system(size: 11, weight: .black, design: .rounded))
@@ -4783,11 +4783,11 @@ struct LandingPageView: View {
                 if daysUntil == 0 {
                     Text("TODAY")
                         .font(.system(size: 9, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoColors.pink)
+                        .foregroundStyle(CategoryColorSettings.shared.color(for: .memo))
                 } else {
                     Text("\(daysUntil)")
                         .font(.system(size: 16, weight: .black, design: .rounded))
-                        .foregroundStyle(daysUntil <= 7 ? JohoColors.pink : colors.primary)
+                        .foregroundStyle(daysUntil <= 7 ? CategoryColorSettings.shared.color(for: .memo) : colors.primary)
                     Text("days")
                         .font(.system(size: 8, weight: .medium, design: .rounded))
                         .foregroundStyle(colors.secondary)
@@ -4795,11 +4795,11 @@ struct LandingPageView: View {
             }
             .frame(width: 44)
             .padding(.vertical, 4)
-            .background(daysUntil == 0 ? JohoColors.pink.opacity(0.2) : colors.surface)
+            .background(daysUntil == 0 ? CategoryColorSettings.shared.color(for: .memo).opacity(0.2) : colors.surface)
             .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .stroke(daysUntil <= 7 ? JohoColors.pink : colors.border.opacity(0.3), lineWidth: 1)
+                    .stroke(daysUntil <= 7 ? CategoryColorSettings.shared.color(for: .memo) : colors.border.opacity(0.3), lineWidth: 1)
             )
 
             // Name
@@ -4823,7 +4823,7 @@ struct LandingPageView: View {
             if daysUntil <= 7 {
                 Image(systemName: daysUntil == 0 ? "star.fill" : "star")
                     .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(JohoColors.pink)
+                    .foregroundStyle(CategoryColorSettings.shared.color(for: .memo))
             }
         }
         .padding(.horizontal, JohoDimensions.spacingMD)

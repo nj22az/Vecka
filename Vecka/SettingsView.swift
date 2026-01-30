@@ -37,8 +37,9 @@ struct SettingsView: View {
     @State private var isEditingTitle = false
     @State private var editingTitle = ""
 
-    // Developer settings (DEBUG only)
-    @State private var showDeveloperSettings = false
+    // Developer tools state
+    @State private var showingResetConfirmation = false
+    @State private var isGeneratingData = false
 
     var body: some View {
         ScrollView {
@@ -208,6 +209,9 @@ struct SettingsView: View {
                 // World Clocks Section (Onsen landing page)
                 worldClocksSection
 
+                // Developer Tools Section (情報デザイン: Test data for development)
+                developerToolsSection
+
                 // About Section
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
                     // Section label
@@ -216,7 +220,6 @@ struct SettingsView: View {
                     // App info card (情報デザイン: Mascot as app icon)
                     HStack(spacing: JohoDimensions.spacingMD) {
                         // JohoMascot as app icon (情報デザイン: The face of the app)
-                        // Secret: SOS morse code (...---...) opens developer tools
                         JohoMascot(
                             mood: .happy,
                             size: 64,
@@ -225,9 +228,6 @@ struct SettingsView: View {
                             showBlink: true,
                             autoOnsen: false
                         )
-                        .onSOSGesture {
-                            showDeveloperSettings = true
-                        }
 
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Onsen Planner")
@@ -279,17 +279,12 @@ struct SettingsView: View {
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
 
-                // Developer Section removed - access via SOS morse code on mascot
-
                 Spacer(minLength: JohoDimensions.spacingXL)
             }
             .padding(.bottom, JohoDimensions.spacingXL)
         }
         .johoBackground()
         .toolbar(.hidden, for: .navigationBar)
-        .sheet(isPresented: $showDeveloperSettings) {
-            DeveloperSettingsView()
-        }
     }
 
 
@@ -1314,54 +1309,75 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: - Developer Section (DEBUG only)
+    // MARK: - Developer Tools Section (情報デザイン: Inline test data generation)
 
-    private var developerSection: some View {
+    private var developerToolsSection: some View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
             JohoPill(text: "DEVELOPER", style: .whiteOnBlack, size: .small)
 
-            Button {
-                showDeveloperSettings = true
-            } label: {
-                HStack(spacing: JohoDimensions.spacingMD) {
-                    Image(systemName: "hammer.fill")
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.cyan)
-                        .johoTouchTarget()
-                        .background(JohoColors.cyan.opacity(0.2))
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                        )
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Developer Tools")
-                            .font(JohoFont.headline)
-                            .foregroundStyle(colors.primary)
-
-                        Text("Test data, debug info, reset")
-                            .font(JohoFont.body)
-                            .foregroundStyle(colors.secondary)
+            // Test data buttons grid (情報デザイン: Compact 3-column layout)
+            VStack(spacing: JohoDimensions.spacingSM) {
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    // Memos (Green)
+                    devToolButton(
+                        icon: "note.text",
+                        label: "Memos",
+                        color: JohoColors.green
+                    ) {
+                        generateDummyMemos()
                     }
 
-                    Spacer()
+                    // Holidays (Pink)
+                    devToolButton(
+                        icon: "star.fill",
+                        label: "Holidays",
+                        color: CategoryColorSettings.shared.color(for: .holiday)
+                    ) {
+                        generateDummyHolidays()
+                    }
 
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.secondary)
+                    // Observances (Cyan)
+                    devToolButton(
+                        icon: "calendar",
+                        label: "Observ.",
+                        color: CategoryColorSettings.shared.color(for: .observance)
+                    ) {
+                        generateDummyObservances()
+                    }
                 }
-                .padding(JohoDimensions.spacingMD)
-                .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(JohoColors.cyan.opacity(0.5), lineWidth: JohoDimensions.borderMedium)
-                )
-            }
-            .buttonStyle(.plain)
 
-            Text("Debug features for development and testing.")
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    // Contacts (Purple)
+                    devToolButton(
+                        icon: "person.2.fill",
+                        label: "Contacts",
+                        color: JohoColors.purple
+                    ) {
+                        generateDummyContacts()
+                    }
+
+                    // Trips (Cyan)
+                    devToolButton(
+                        icon: "airplane",
+                        label: "Trips",
+                        color: JohoColors.cyan
+                    ) {
+                        generateDummyTrips()
+                    }
+
+                    // Reset (Red)
+                    devToolButton(
+                        icon: "trash.fill",
+                        label: "Reset",
+                        color: JohoColors.red
+                    ) {
+                        showingResetConfirmation = true
+                    }
+                }
+            }
+
+            // Footer
+            Text("Generate test data for development. Reset clears all user data.")
                 .font(JohoFont.caption)
                 .foregroundStyle(colors.secondary)
                 .padding(.horizontal, JohoDimensions.spacingSM)
@@ -1371,9 +1387,207 @@ struct SettingsView: View {
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(JohoColors.cyan.opacity(0.3), lineWidth: JohoDimensions.borderThick)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
+        .alert("Reset All Data?", isPresented: $showingResetConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Reset", role: .destructive) {
+                resetAllData()
+            }
+        } message: {
+            Text("This will delete ALL user data including contacts, memos, and custom holidays. This cannot be undone.")
+        }
+    }
+
+    private func devToolButton(
+        icon: String,
+        label: String,
+        color: Color,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button {
+            action()
+        } label: {
+            VStack(spacing: 4) {
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .foregroundStyle(color)
+
+                Text(label)
+                    .font(.system(size: 9, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .background(color.opacity(0.1))
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                    .stroke(color.opacity(0.3), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .disabled(isGeneratingData)
+    }
+
+    // MARK: - Test Data Generation Functions
+
+    private func generateDummyMemos() {
+        let noteContents = [
+            "Morning standup - design team",
+            "Code review: SwiftUI performance",
+            "Call dentist for appointment",
+            "Shopping: milk, bread, eggs, coffee",
+            "Prepare presentation for Friday",
+            "Update project documentation",
+            "Book flight tickets for vacation",
+            "Research new Swift 6 features",
+            "Fix bug in calendar view",
+            "Plan birthday surprise for Lisa"
+        ]
+
+        let calendar = Calendar.current
+        for content in noteContents {
+            let daysAgo = Int.random(in: 0...30)
+            let date = calendar.date(byAdding: .day, value: -daysAgo, to: Date()) ?? Date()
+
+            let memo = Memo.quick(content, date: date)
+            modelContext.insert(memo)
+        }
+
+        try? modelContext.save()
+        HapticManager.notification(.success)
+    }
+
+    private func generateDummyHolidays() {
+        let holidays = [
+            ("Company Retreat", 3, 15),
+            ("Team Building Day", 5, 20),
+            ("Hackathon", 6, 10)
+        ]
+
+        for (name, month, day) in holidays {
+            let rule = HolidayRule(
+                name: name,
+                region: "CUSTOM",
+                isBankHoliday: true,
+                symbolName: "building.2.fill",
+                type: .fixed,
+                month: month,
+                day: day,
+                isSystemDefault: false,
+                isEnabled: true
+            )
+            modelContext.insert(rule)
+        }
+
+        try? modelContext.save()
+        HapticManager.notification(.success)
+    }
+
+    private func generateDummyObservances() {
+        let observances = [
+            ("Pizza Friday", 1, 26),
+            ("Office Yoga Day", 2, 14),
+            ("Book Club Meeting", 4, 5)
+        ]
+
+        for (name, month, day) in observances {
+            let rule = HolidayRule(
+                name: name,
+                region: "CUSTOM",
+                isBankHoliday: false,  // Not a bank holiday = observance
+                symbolName: "sparkles",
+                type: .fixed,
+                month: month,
+                day: day,
+                isSystemDefault: false,
+                isEnabled: true
+            )
+            modelContext.insert(rule)
+        }
+
+        try? modelContext.save()
+        HapticManager.notification(.success)
+    }
+
+    private func generateDummyContacts() {
+        let firstNames = ["Emma", "Liam", "Olivia", "Noah", "Ava", "Ethan", "Sophia", "Mason", "Isabella", "James"]
+        let lastNames = ["Andersson", "Johansson", "Karlsson", "Nilsson", "Eriksson", "Larsson", "Olsson", "Persson", "Svensson", "Gustafsson"]
+        let companies = ["Spotify", "IKEA", "Volvo", "Ericsson", "H&M", "Klarna", "King", "Mojang", "Electrolux", "Scania"]
+
+        for _ in 0..<10 {
+            let firstName = firstNames.randomElement() ?? "Test"
+            let lastName = lastNames.randomElement() ?? "User"
+            let company = companies.randomElement()
+
+            let phone = ContactPhoneNumber(
+                label: ["mobile", "work", "home"].randomElement() ?? "mobile",
+                value: "+46 70 \(Int.random(in: 100...999)) \(Int.random(in: 10...99)) \(Int.random(in: 10...99))"
+            )
+
+            let email = ContactEmailAddress(
+                label: "work",
+                value: "\(firstName.lowercased()).\(lastName.lowercased())@\(company?.lowercased() ?? "test").se"
+            )
+
+            let contact = Contact(
+                givenName: firstName,
+                familyName: lastName,
+                organizationName: Bool.random() ? company : nil,
+                phoneNumbers: [phone],
+                emailAddresses: [email],
+                birthday: Bool.random() ? Calendar.current.date(byAdding: .year, value: -Int.random(in: 20...60), to: Date()) : nil,
+                group: [ContactGroup.family, .friends, .work, .other].randomElement() ?? .other
+            )
+
+            modelContext.insert(contact)
+        }
+
+        try? modelContext.save()
+        HapticManager.notification(.success)
+    }
+
+    private func generateDummyTrips() {
+        let trips: [(city: String, country: String, duration: Int)] = [
+            ("Tokyo", "Japan", 10),
+            ("Paris", "France", 5),
+            ("New York", "USA", 7),
+            ("London", "UK", 3),
+            ("Barcelona", "Spain", 4)
+        ]
+
+        let calendar = Calendar.current
+        for trip in trips {
+            let startOffset = Int.random(in: -30...90)
+            let startDate = calendar.date(byAdding: .day, value: startOffset, to: Date()) ?? Date()
+            let endDate = calendar.date(byAdding: .day, value: trip.duration, to: startDate) ?? startDate
+
+            let memo = Memo.trip(
+                "\(trip.city) trip",
+                startDate: startDate,
+                endDate: endDate,
+                destination: "\(trip.city), \(trip.country)",
+                purpose: "vacation"
+            )
+            modelContext.insert(memo)
+        }
+
+        try? modelContext.save()
+        HapticManager.notification(.success)
+    }
+
+    private func resetAllData() {
+        do {
+            try modelContext.delete(model: Contact.self)
+            try modelContext.delete(model: Memo.self)
+            try modelContext.delete(model: HolidayRule.self, where: #Predicate { $0.region == "CUSTOM" })
+            try modelContext.save()
+            HapticManager.notification(.warning)
+        } catch {
+            Log.e("Failed to reset data: \(error)")
+        }
     }
 }
 

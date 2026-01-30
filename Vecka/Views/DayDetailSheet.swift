@@ -75,7 +75,7 @@ struct DayDetailSheet: View {
                 // 情報デザイン: Use pre-computed dataCheck to avoid accessing HolidayManager
                 HStack(spacing: JohoDimensions.spacingSM) {
                     if day.isToday {
-                        JohoPill(text: "TODAY", style: .coloredInverted(JohoColors.yellow), size: .small)
+                        JohoPill(text: "TODAY", style: .coloredInverted(JohoColors.todayOrange), size: .small)
                     }
                     if dataCheck?.hasHoliday == true {
                         JohoPill(text: "HOLIDAY", style: .coloredInverted(JohoColors.red), size: .small)

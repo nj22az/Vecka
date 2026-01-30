@@ -205,13 +205,13 @@ struct ModernCalendarView: View {
 
         return HStack(spacing: 4) {
             // Holidays (Red)
-            categoryDot(count: counts.holidays, color: DisplayCategory.holiday.accentColor)
+            categoryDot(count: counts.holidays, color: CategoryColorSettings.shared.color(for: .holiday))
 
             // Observances (Blue)
-            categoryDot(count: counts.observances, color: DisplayCategory.observance.accentColor)
+            categoryDot(count: counts.observances, color: CategoryColorSettings.shared.color(for: .observance))
 
             // Memos (Green)
-            categoryDot(count: counts.memos, color: DisplayCategory.memo.accentColor)
+            categoryDot(count: counts.memos, color: CategoryColorSettings.shared.color(for: .memo))
         }
     }
 
@@ -632,19 +632,21 @@ struct ModernCalendarView: View {
                 // 情報デザイン: Legend moved to Settings for cleaner calendar view
 
                 // 情報デザイン: Day Dashboard - each section is its own Bento (matches landing page)
-                let dashboardDate = Calendar.iso8601.startOfDay(for: selectedDay?.date ?? selectedDate)
+                // 情報デザイン: Use raw selectedDay.date to match hasDataForDay (grid dots)
+                // The functions internally normalize with Calendar.current.startOfDay
+                let rawDashboardDate = selectedDay?.date ?? selectedDate
                 DayDashboardView(
-                    date: dashboardDate,
-                    memos: memosForDay(dashboardDate),
-                    holidays: holidayInfo(for: dashboardDate),
-                    birthdays: birthdaysForDay(dashboardDate),
-                    secondaryDateText: lunarDashboardText(for: dashboardDate),
+                    date: rawDashboardDate,
+                    memos: memosForDay(rawDashboardDate),
+                    holidays: holidayInfo(for: rawDashboardDate),
+                    birthdays: birthdaysForDay(rawDashboardDate),
+                    secondaryDateText: lunarDashboardText(for: rawDashboardDate),
                     onOpenMemos: { targetDate in
                         memoEditorDate = targetDate
                         showMemoSheet = true
                     }
                 )
-                .id(dashboardDate)
+                .id(rawDashboardDate)
                 .padding(.horizontal, screenMargin)
             }
             .padding(.top, JohoDimensions.spacingSM) // 情報デザイン: Consistent with all pages
@@ -979,9 +981,10 @@ struct ModernCalendarView: View {
     // MARK: - Notes Helpers
 
     private func memosForDay(_ date: Date) -> [Memo] {
-        let day = Calendar.iso8601.startOfDay(for: date)
+        // 情報デザイン: Use Calendar.current to match memoColors and hasDataForDay
+        let day = Calendar.current.startOfDay(for: date)
         return memos.filter {
-            Calendar.iso8601.startOfDay(for: $0.date) == day
+            Calendar.current.startOfDay(for: $0.date) == day
         }.sorted(by: { $0.date < $1.date })
     }
 
@@ -1094,7 +1097,8 @@ struct ModernCalendarView: View {
                 name: holiday.displayTitle,
                 isBankHoliday: holiday.isBankHoliday,
                 symbolName: holiday.symbolName,
-                regionCode: holiday.region
+                regionCode: holiday.region,
+                ruleID: holiday.id  // HolidayCacheItem.id == HolidayRule.id
             )
         }
     }

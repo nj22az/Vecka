@@ -251,7 +251,7 @@ extension CalendarGridView {
                 }
                 .frame(height: 28)
                 .padding(.top, 6)
-                .frame(maxHeight: .infinity, alignment: .top)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
             .frame(width: weekColumnWidth, height: rowHeight)
         }
@@ -467,7 +467,7 @@ extension CalendarGridView {
         HStack(spacing: 3) {
             // Position 1: Holiday (Red) - colored or invisible placeholder
             Circle()
-                .fill(hasHoliday ? DisplayCategory.holiday.accentColor : Color.clear)
+                .fill(hasHoliday ? CategoryColorSettings.shared.color(for: .holiday) : Color.clear)
                 .frame(width: 6, height: 6)
                 .overlay(
                     Circle()
@@ -476,7 +476,7 @@ extension CalendarGridView {
 
             // Position 2: Observance (Blue) - colored or invisible placeholder
             Circle()
-                .fill(hasObservance ? DisplayCategory.observance.accentColor : Color.clear)
+                .fill(hasObservance ? CategoryColorSettings.shared.color(for: .observance) : Color.clear)
                 .frame(width: 6, height: 6)
                 .overlay(
                     Circle()
@@ -485,7 +485,7 @@ extension CalendarGridView {
 
             // Position 3: Memo (Green) - colored or invisible placeholder
             Circle()
-                .fill(hasMemo ? DisplayCategory.memo.accentColor : Color.clear)
+                .fill(hasMemo ? CategoryColorSettings.shared.color(for: .memo) : Color.clear)
                 .frame(width: 6, height: 6)
                 .overlay(
                     Circle()

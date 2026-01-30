@@ -68,7 +68,7 @@ enum DisplayCategory: String, CaseIterable, Identifiable {
         switch self {
         case .holiday: return .holidays
         case .observance: return .observances
-        case .memo: return .notes
+        case .memo: return .memos
         }
     }
 }
