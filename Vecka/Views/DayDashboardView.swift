@@ -9,39 +9,6 @@
 import SwiftUI
 import SwiftData
 
-// MARK: - Event Text Color Setting
-
-/// 情報デザイン: Classic Japanese planner text colors
-enum EventTextColor: String, CaseIterable {
-    case black = "black"
-    case red = "red"
-    case blue = "blue"
-
-    var color: Color {
-        switch self {
-        case .black: return Color.black
-        case .red: return Color(hex: "D32F2F")  // Deep red
-        case .blue: return Color(hex: "1976D2")  // Deep blue
-        }
-    }
-
-    var darkModeColor: Color {
-        switch self {
-        case .black: return Color.white
-        case .red: return Color(hex: "EF5350")  // Lighter red for dark mode
-        case .blue: return Color(hex: "42A5F5")  // Lighter blue for dark mode
-        }
-    }
-
-    var displayName: String {
-        switch self {
-        case .black: return "Black"
-        case .red: return "Red"
-        case .blue: return "Blue"
-        }
-    }
-}
-
 struct DayDashboardView: View {
     struct HolidayInfo: Identifiable, Equatable {
         let id: String
@@ -92,16 +59,9 @@ struct DayDashboardView: View {
 
     @Environment(\.locale) private var locale
     @Environment(\.johoColorMode) private var colorMode
-    @AppStorage("eventTextColor") private var eventTextColorRaw = "black"
 
     /// Dynamic colors based on color mode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
-
-    /// 情報デザイン: Event text color respecting dark mode
-    private var eventTextColor: Color {
-        let setting = EventTextColor(rawValue: eventTextColorRaw) ?? .black
-        return colorMode == .dark ? setting.darkModeColor : setting.color
-    }
 
     /// 情報デザイン: Border color for dark mode (white borders)
     private var eventBorderColor: Color {
@@ -585,7 +545,7 @@ struct DayDashboardView: View {
             // Holiday name
             Text(holiday.name)
                 .font(JohoFont.bodySmall)
-                .foregroundStyle(eventTextColor)
+                .foregroundStyle(colors.primary)
                 .lineLimit(1)
 
             // Holiday type badge
@@ -606,7 +566,7 @@ struct DayDashboardView: View {
         HStack(spacing: JohoDimensions.spacingSM) {
             Text(birthday.name)
                 .font(JohoFont.bodySmall)
-                .foregroundStyle(eventTextColor)
+                .foregroundStyle(colors.primary)
                 .lineLimit(1)
 
             if let age = birthday.age, age > 0 {
@@ -628,7 +588,7 @@ struct DayDashboardView: View {
                 // Description
                 Text(memo.preview)
                     .font(JohoFont.bodySmall)
-                    .foregroundStyle(eventTextColor)
+                    .foregroundStyle(colors.primary)
                     .lineLimit(1)
 
                 Spacer()
@@ -653,7 +613,7 @@ struct DayDashboardView: View {
                 // Place
                 Text(memo.place ?? memo.preview)
                     .font(JohoFont.bodySmall)
-                    .foregroundStyle(eventTextColor)
+                    .foregroundStyle(colors.primary)
                     .lineLimit(1)
 
                 Spacer()
@@ -689,7 +649,7 @@ struct DayDashboardView: View {
                 // Text
                 Text(memo.preview)
                     .font(JohoFont.bodySmall)
-                    .foregroundStyle(eventTextColor)
+                    .foregroundStyle(colors.primary)
                     .lineLimit(isExpanded ? 3 : 1)
 
                 Spacer()

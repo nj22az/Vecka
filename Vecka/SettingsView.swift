@@ -18,8 +18,8 @@ struct SettingsView: View {
     @AppStorage("johoColorMode") private var johoColorMode = "light"
     @AppStorage("showLunarCalendar") private var showLunarCalendar = false  // For Vietnamese holidays
     @AppStorage("customLandingTitle") private var customLandingTitle = ""
-    @AppStorage("eventTextColor") private var eventTextColor = "black"  // 情報デザイン: Japanese planner text color
     @AppStorage("systemUIAccent") private var systemUIAccent = "blue"  // 情報デザイン: System UI accent color
+    @AppStorage("customBackgroundColorHex") private var customBackgroundColorHex = ""  // Empty = use black
     // PDF Export settings (情報デザイン: User-configurable branding)
     @AppStorage("pdfExportTitle") private var pdfExportTitle = "Contact Directory"
     @AppStorage("pdfExportFooter") private var pdfExportFooter = ""  // Empty = page number only
@@ -40,6 +40,7 @@ struct SettingsView: View {
     // Developer tools state
     @State private var showingResetConfirmation = false
     @State private var isGeneratingData = false
+    @State private var showBackgroundColorPicker = false
 
     var body: some View {
         ScrollView {
@@ -48,72 +49,6 @@ struct SettingsView: View {
                 settingsPageHeader
                     .padding(.horizontal, JohoDimensions.spacingLG)
                     .padding(.top, JohoDimensions.spacingSM)
-
-                // Calendar Section (Event Text Color)
-                VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
-                    JohoPill(text: "CALENDAR", style: .whiteOnBlack, size: .small)
-
-                    // 情報デザイン: Event text color picker (Japanese planner style)
-                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                        HStack(spacing: JohoDimensions.spacingMD) {
-                            Image(systemName: "textformat")
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundStyle(colors.primary)
-                                .johoTouchTarget()
-                                .background(colors.surface)
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                                )
-
-                            Text("Event Text Color")
-                                .font(JohoFont.headline)
-                                .foregroundStyle(colors.primary)
-
-                            Spacer()
-                        }
-
-                        // Color options
-                        HStack(spacing: JohoDimensions.spacingSM) {
-                            ForEach(EventTextColor.allCases, id: \.rawValue) { color in
-                                Button {
-                                    eventTextColor = color.rawValue
-                                    HapticManager.selection()
-                                } label: {
-                                    Text(color.displayName)
-                                        .font(JohoFont.body)
-                                        .foregroundStyle(color.color)
-                                        .padding(.horizontal, JohoDimensions.spacingMD)
-                                        .padding(.vertical, JohoDimensions.spacingSM)
-                                        .frame(maxWidth: .infinity)
-                                        .background(eventTextColor == color.rawValue ? color.color.opacity(0.15) : colors.surface)
-                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                        .overlay(
-                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                                .stroke(eventTextColor == color.rawValue ? color.color : colors.border, lineWidth: eventTextColor == color.rawValue ? 2 : 1)
-                                        )
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                    }
-                    .padding(JohoDimensions.spacingMD)
-                    .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                    )
-                }
-                .padding(JohoDimensions.spacingLG)
-                .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-                )
-                .padding(.horizontal, JohoDimensions.spacingLG)
 
                 // Display Section (AMOLED-friendly background options)
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
@@ -139,7 +74,7 @@ struct SettingsView: View {
                                     .font(JohoFont.headline)
                                     .foregroundStyle(colors.primary)
 
-                                Text(selectedBackgroundOption.displayName)
+                                Text(backgroundDisplayName)
                                     .font(JohoFont.body)
                                     .foregroundStyle(colors.secondary)
                             }
@@ -154,16 +89,102 @@ struct SettingsView: View {
                                 .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                         )
 
-                        // Color options grid
+                        // Color options: BLACK or CUSTOM
                         HStack(spacing: JohoDimensions.spacingSM) {
-                            ForEach(AppBackgroundOption.allCases) { option in
-                                backgroundOptionButton(option)
+                            // BLACK option
+                            Button {
+                                withAnimation(.easeInOut(duration: 0.15)) {
+                                    appBackgroundColor = "black"
+                                    customBackgroundColorHex = ""
+                                }
+                                HapticManager.selection()
+                            } label: {
+                                VStack(spacing: 4) {
+                                    Circle()
+                                        .fill(Color.black)
+                                        .frame(width: 32, height: 32)
+                                        .overlay(
+                                            Circle()
+                                                .stroke(
+                                                    isBlackSelected ? colors.border : colors.border.opacity(0.3),
+                                                    lineWidth: isBlackSelected ? 2.5 : 1.5
+                                                )
+                                        )
+                                        .overlay {
+                                            if isBlackSelected {
+                                                Image(systemName: "checkmark")
+                                                    .font(.system(size: 14, weight: .bold))
+                                                    .foregroundStyle(.white)
+                                            }
+                                        }
+
+                                    Text("BLACK")
+                                        .font(.system(size: 9, weight: .bold, design: .rounded))
+                                        .foregroundStyle(colors.primary)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, JohoDimensions.spacingSM)
+                                .background(isBlackSelected ? JohoColors.yellow.opacity(0.3) : colors.surface)
+                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                .overlay(
+                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                        .stroke(
+                                            isBlackSelected ? colors.border : colors.border.opacity(0.3),
+                                            lineWidth: isBlackSelected ? 2 : 1
+                                        )
+                                )
                             }
+                            .buttonStyle(.plain)
+
+                            // CUSTOM option
+                            Button {
+                                showBackgroundColorPicker = true
+                            } label: {
+                                VStack(spacing: 4) {
+                                    Circle()
+                                        .fill(customBackgroundColor)
+                                        .frame(width: 32, height: 32)
+                                        .overlay(
+                                            Circle()
+                                                .stroke(
+                                                    isCustomSelected ? colors.border : colors.border.opacity(0.3),
+                                                    lineWidth: isCustomSelected ? 2.5 : 1.5
+                                                )
+                                        )
+                                        .overlay {
+                                            if isCustomSelected {
+                                                Image(systemName: "checkmark")
+                                                    .font(.system(size: 14, weight: .bold))
+                                                    .foregroundStyle(customBackgroundColorHex.isEmpty ? .white : JohoColors.black)
+                                            } else {
+                                                Image(systemName: "paintpalette")
+                                                    .font(.system(size: 12, weight: .bold))
+                                                    .foregroundStyle(colors.secondary)
+                                            }
+                                        }
+
+                                    Text("CUSTOM")
+                                        .font(.system(size: 9, weight: .bold, design: .rounded))
+                                        .foregroundStyle(colors.primary)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, JohoDimensions.spacingSM)
+                                .background(isCustomSelected ? JohoColors.yellow.opacity(0.3) : colors.surface)
+                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                                .overlay(
+                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                        .stroke(
+                                            isCustomSelected ? colors.border : colors.border.opacity(0.3),
+                                            lineWidth: isCustomSelected ? 2 : 1
+                                        )
+                                )
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
 
                     // Footer text
-                    Text("True Black saves battery on OLED displays by turning off pixels completely.")
+                    Text("True Black saves battery on OLED displays. Custom lets you pick any color.")
                         .font(JohoFont.caption)
                         .foregroundStyle(colors.secondary)
                         .padding(.horizontal, JohoDimensions.spacingSM)
@@ -194,6 +215,18 @@ struct SettingsView: View {
                         .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
+                .sheet(isPresented: $showBackgroundColorPicker) {
+                    BackgroundColorPickerSheet(
+                        selectedColorHex: $customBackgroundColorHex,
+                        onDone: {
+                            if !customBackgroundColorHex.isEmpty {
+                                appBackgroundColor = "custom"
+                            }
+                            showBackgroundColorPicker = false
+                        }
+                    )
+                    .presentationDetents([.medium])
+                }
 
                 // Lunar Calendar Section (情報デザイン: VN holidays only)
                 if holidayRegions.regions.contains("VN") {
@@ -658,56 +691,26 @@ struct SettingsView: View {
 
     // MARK: - Background Color Helpers
 
-    private var selectedBackgroundOption: AppBackgroundOption {
-        AppBackgroundOption(rawValue: appBackgroundColor) ?? .trueBlack
+    private var isBlackSelected: Bool {
+        appBackgroundColor == "black" && customBackgroundColorHex.isEmpty
     }
 
-    @ViewBuilder
-    private func backgroundOptionButton(_ option: AppBackgroundOption) -> some View {
-        Button {
-            withAnimation(.easeInOut(duration: 0.15)) {
-                appBackgroundColor = option.rawValue
-            }
-            HapticManager.selection()
-        } label: {
-            VStack(spacing: 4) {
-                // Color preview circle
-                Circle()
-                    .fill(option.color)
-                    .frame(width: 32, height: 32)
-                    .overlay(
-                        Circle()
-                            .stroke(
-                                selectedBackgroundOption == option ? colors.border : colors.border.opacity(0.3),
-                                lineWidth: selectedBackgroundOption == option ? 2.5 : 1.5
-                            )
-                    )
-                    .overlay {
-                        if selectedBackgroundOption == option {
-                            Image(systemName: "checkmark")
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundStyle(colors.primaryInverted)
-                        }
-                    }
+    private var isCustomSelected: Bool {
+        !customBackgroundColorHex.isEmpty
+    }
 
-                // Label
-                Text(option == .trueBlack ? "BLACK" : option == .darkNavy ? "NAVY" : "SOFT")
-                    .font(.system(size: 9, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primary)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, JohoDimensions.spacingSM)
-            .background(selectedBackgroundOption == option ? JohoColors.yellow.opacity(0.3) : colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                    .stroke(
-                        selectedBackgroundOption == option ? colors.border : colors.border.opacity(0.3),
-                        lineWidth: selectedBackgroundOption == option ? 2 : 1
-                    )
-            )
+    private var customBackgroundColor: Color {
+        if customBackgroundColorHex.isEmpty {
+            return Color(hex: "333333")  // Preview gray when not set
         }
-        .buttonStyle(.plain)
+        return Color(hex: customBackgroundColorHex)
+    }
+
+    private var backgroundDisplayName: String {
+        if isCustomSelected {
+            return "Custom Color"
+        }
+        return "True Black (AMOLED)"
     }
 
     // MARK: - Personalization Section (情報デザイン: Custom landing page title)
@@ -1588,6 +1591,106 @@ struct SettingsView: View {
         } catch {
             Log.e("Failed to reset data: \(error)")
         }
+    }
+}
+
+// MARK: - Background Color Picker Sheet
+
+struct BackgroundColorPickerSheet: View {
+    @Binding var selectedColorHex: String
+    let onDone: () -> Void
+    @Environment(\.johoColorMode) private var colorMode
+    @Environment(\.dismiss) private var dismiss
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    // Dark background color presets
+    private let presetColors: [(name: String, hex: String)] = [
+        ("Navy", "1A1A2E"),
+        ("Charcoal", "1C1C1E"),
+        ("Slate", "2C3E50"),
+        ("Dark Gray", "333333"),
+        ("Midnight", "191970"),
+        ("Forest", "1B4332"),
+        ("Wine", "4A1C2E"),
+        ("Espresso", "3C2415"),
+    ]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Button("Cancel") {
+                    dismiss()
+                }
+                .font(JohoFont.body)
+                .foregroundStyle(colors.secondary)
+
+                Spacer()
+
+                Text("BACKGROUND COLOR")
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .tracking(1.5)
+                    .foregroundStyle(colors.primary)
+
+                Spacer()
+
+                Button("Done") {
+                    onDone()
+                }
+                .font(JohoFont.body.bold())
+                .foregroundStyle(colors.primary)
+            }
+            .padding(JohoDimensions.spacingMD)
+
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            // Color grid
+            LazyVGrid(columns: [
+                GridItem(.flexible()),
+                GridItem(.flexible()),
+                GridItem(.flexible()),
+                GridItem(.flexible())
+            ], spacing: JohoDimensions.spacingSM) {
+                ForEach(presetColors, id: \.hex) { preset in
+                    Button {
+                        selectedColorHex = preset.hex
+                        HapticManager.selection()
+                    } label: {
+                        VStack(spacing: 4) {
+                            Circle()
+                                .fill(Color(hex: preset.hex))
+                                .frame(width: 44, height: 44)
+                                .overlay(
+                                    Circle()
+                                        .stroke(
+                                            selectedColorHex == preset.hex ? colors.primary : colors.border,
+                                            lineWidth: selectedColorHex == preset.hex ? 3 : 1.5
+                                        )
+                                )
+                                .overlay {
+                                    if selectedColorHex == preset.hex {
+                                        Image(systemName: "checkmark")
+                                            .font(.system(size: 16, weight: .bold))
+                                            .foregroundStyle(.white)
+                                    }
+                                }
+
+                            Text(preset.name)
+                                .font(.system(size: 9, weight: .bold, design: .rounded))
+                                .foregroundStyle(colors.primary)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(JohoDimensions.spacingMD)
+
+            Spacer()
+        }
+        .background(colors.surface)
     }
 }
 
