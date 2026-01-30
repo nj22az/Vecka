@@ -114,7 +114,7 @@ enum PageHeaderColor {
     case calendar      // Deep Indigo - time, structure
     case specialDays   // Rich Amber - celebration, golden
     case tools         // Teal - active, productivity
-    case contacts      // Warm Brown - personal, human
+    case contacts      // Vivid Purple - PEOPLE semantic color
     case settings      // Slate Blue - system, configuration
 
     /// Primary accent color for page headers (used in icon backgrounds, badges)
@@ -124,7 +124,7 @@ enum PageHeaderColor {
         case .calendar:     return Color(hex: "4338CA")  // Deep Indigo
         case .specialDays:  return Color(hex: "D97706")  // Rich Amber
         case .tools:        return Color(hex: "0D9488")  // Teal
-        case .contacts:     return Color(hex: "78350F")  // Warm Brown
+        case .contacts:     return Color(hex: "7C3AED")  // Vivid Purple (PEOPLE)
         case .settings:     return Color(hex: "475569")  // Slate Blue
         }
     }
@@ -136,7 +136,7 @@ enum PageHeaderColor {
         case .calendar:     return Color(hex: "4338CA").opacity(0.15)
         case .specialDays:  return Color(hex: "D97706").opacity(0.15)
         case .tools:        return Color(hex: "0D9488").opacity(0.15)
-        case .contacts:     return Color(hex: "78350F").opacity(0.15)
+        case .contacts:     return Color(hex: "7C3AED").opacity(0.15)
         case .settings:     return Color(hex: "475569").opacity(0.15)
         }
     }

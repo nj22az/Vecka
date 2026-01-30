@@ -35,6 +35,17 @@ enum ContactGroup: String, Codable, CaseIterable {
         }
     }
 
+    /// Darker avatar background color (情報デザイン: Vibrant colors for visual identity)
+    /// These are more saturated for use as avatar backgrounds with white text
+    var avatarColor: String {
+        switch self {
+        case .family: return "DB2777"   // Pink-600 - warm family feel
+        case .friends: return "7C3AED"  // Violet-600 - social/purple
+        case .work: return "0891B2"     // Cyan-600 - professional
+        case .other: return "7C3AED"    // Violet-600 - default purple (PEOPLE)
+        }
+    }
+
     var localizedName: String {
         switch self {
         case .family: return NSLocalizedString("contact.group.family", value: "Family", comment: "Contact group")

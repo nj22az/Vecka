@@ -1023,7 +1023,7 @@ struct ContactListView: View {
 // MARK: - 情報デザイン Circular Contact Avatar (iOS Contacts style)
 
 /// Circular contact avatar with photo or initials - like iOS Contacts
-/// Uses 情報デザイン styling: black border, Warm Brown accent for initials
+/// Uses 情報デザイン styling: black border, group-based colors for visual variety
 struct JohoContactAvatar: View {
     @Environment(\.johoColorMode) private var colorMode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
@@ -1031,8 +1031,9 @@ struct JohoContactAvatar: View {
     let contact: Contact
     var size: CGFloat = 56
 
-    // 情報デザイン accent color for contacts (Warm Brown)
-    private var accentColor: Color { PageHeaderColor.contacts.accent }
+    // 情報デザイン: Avatar color based on contact group for visual variety
+    // Family=Pink, Friends=Purple, Work=Cyan, Other=Purple
+    private var avatarColor: Color { Color(hex: contact.group.avatarColor) }
 
     private var fontSize: CGFloat {
         size * 0.4
@@ -1061,14 +1062,14 @@ struct JohoContactAvatar: View {
                                 .stroke(colors.border, lineWidth: borderWidth)
                         )
                 } else {
-                    // No photo - show initials with Warm Brown background
+                    // No photo - show initials with group-based color background
                     ZStack {
                         Circle()
-                            .fill(accentColor)
+                            .fill(avatarColor)
 
                         Text(contact.initials.isEmpty ? "?" : contact.initials)
                             .font(.system(size: fontSize, weight: .black, design: .rounded))
-                            .foregroundStyle(colors.primaryInverted)
+                            .foregroundStyle(.white)
                     }
                     .frame(width: size, height: size)
                     .overlay(
@@ -1082,7 +1083,7 @@ struct JohoContactAvatar: View {
             if let symbolName = contact.symbolName, symbolName != "person.fill" {
                 Image(systemName: symbolName)
                     .font(.system(size: decorationBadgeSize * 0.5, weight: .bold))
-                    .foregroundStyle(accentColor)
+                    .foregroundStyle(avatarColor)
                     .frame(width: decorationBadgeSize, height: decorationBadgeSize)
                     .background(colors.surface)
                     .clipShape(Circle())
