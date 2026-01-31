@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+> **Last Updated:** 2026-01-31
+
 ## Project Overview
 
 **Onsen Planner** — iOS 18+ week number app with semantic color coding.
@@ -7,20 +9,23 @@ Built with SwiftUI, SwiftData, WidgetKit.
 
 - **Folder:** `Vecka` (legacy name)
 - **Design:** 情報デザイン (Jōhō Dezain)
+- **Files:** 112 Swift (100 app + 12 widget)
 
 ---
 
-## ⚠️ MANDATORY: Read Before Working
+## Documentation Map
 
-| Task | Read First |
-|------|------------|
-| UI/View changes | `.claude/design-system.md` |
-| Layout/Forms | `.claude/layout-rules.md` |
-| Models/Architecture | `.claude/architecture.md` |
-| Components | `.claude/COMPONENT_GLOSSARY.md` |
-| Icons/Symbols | `.claude/japanese-symbol-language.md` |
-
-**Violations are bugs. No exceptions.**
+| Document | Purpose |
+|----------|---------|
+| **`.claude/GOLDEN_STANDARD.md`** | Single source of truth (colors, components, patterns) |
+| **`.claude/FILE_REGISTRY.md`** | Complete file inventory |
+| **`.claude/design-system.md`** | Visual specification |
+| **`.claude/architecture.md`** | Technical structure |
+| **`.claude/layout-rules.md`** | Interaction rules |
+| **`.claude/COMPONENT_GLOSSARY.md`** | Component details |
+| **`.claude/widgets.md`** | Widget implementation |
+| **`.claude/japanese-symbol-language.md`** | Symbol guide |
+| **`.claude/NEW_APP_GUIDE.md`** | Building new apps |
 
 ---
 
@@ -34,90 +39,26 @@ Built with SwiftUI, SwiftData, WidgetKit.
 
 ---
 
-## 情報デザイン Rules (Summary)
+## Quick Reference
 
-### Colors (6-Color Palette)
+### 6-Color Semantic Palette
 
 | Color | Hex | Meaning |
 |-------|-----|---------|
 | Yellow | `#FFE566` | NOW - notes, today |
 | Cyan | `#A5F3FC` | SCHEDULED - events, trips |
 | Pink | `#FECDD3` | CELEBRATION - holidays |
-| Green | `#BBF7D0` | MONEY - expenses |
+| Green | `#4ADE80` | MONEY - expenses |
 | Purple | `#E9D5FF` | PEOPLE - contacts |
 | Red | `#E53935` | ALERT - system only |
 
 ### Category Colors (Star Page)
 
-| Category | Color | Code |
-|----------|-------|------|
-| Holidays | Pink | `JohoColors.pink` |
-| Observances | Cyan | `JohoColors.cyan` |
-| Memos | Yellow | `JohoColors.yellow` |
-
-These colors MUST be consistent everywhere categories appear:
-- Star page month cards (colored dots)
-- Month detail category cards (background tints)
-- Header subtitle row (filter dots + add buttons)
-- Category filter pills
-
-### Required Patterns
-
-```swift
-// Colors: JohoColors only
-.foregroundStyle(JohoColors.black)
-
-// Corners: squircle only
-.clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-
-// Borders: always present
-.overlay(RoundedRectangle(...).stroke(JohoColors.black, lineWidth: 1.5))
-
-// Typography: rounded only
-.font(.system(size: 16, weight: .medium, design: .rounded))
-
-// Animation: easeInOut only
-withAnimation(.easeInOut(duration: 0.2)) { ... }
-```
-
-### Forbidden (Auto-Reject)
-
-```swift
-.background(.ultraThinMaterial)  // NO glass
-LinearGradient(...)              // NO gradients
-Color.blue                       // NO raw colors
-.cornerRadius(12)                // NO non-continuous
-ScrollView { Form... }           // NO scroll in forms
-ScrollView(.horizontal, ...)     // NO horizontal scrolling - use shorter labels/icons
-.spring(...)                     // NO bouncy animations
-DatePicker(...)                  // NO iOS DatePicker - use JohoCalendarPicker
-```
-
-### Date Picker (情報デザイン Standard)
-
-**ALWAYS use `JohoCalendarPicker`** for date selection. Never use iOS `DatePicker`.
-
-```swift
-// ✅ CORRECT: JohoCalendarPicker as floating overlay
-.johoCalendarPicker(
-    isPresented: $showDatePicker,
-    selectedDate: $date,
-    accentColor: JohoColors.yellow  // Match semantic zone
-)
-
-// ❌ WRONG: iOS DatePicker
-DatePicker("", selection: $date)
-    .datePickerStyle(.graphical)
-```
-
-**JohoCalendarPicker features:**
-- Week numbers column (W, 1-6) - tap to select week
-- Day headers (M T W T F S S)
-- Black borders on all cells
-- Yellow highlight for today
-- Accent color for DONE button (matches semantic zone)
-- Floats as overlay over form content
-- No black/gray background covering screen
+| Category | Color |
+|----------|-------|
+| Holidays | `JohoColors.pink` |
+| Observances | `JohoColors.cyan` |
+| Memos | `JohoColors.yellow` |
 
 ### Border Widths
 
@@ -129,23 +70,41 @@ DatePicker("", selection: $date)
 | Selected | 2.5pt |
 | Containers | 3pt |
 
-### Touch Targets
+---
 
-- **44×44pt minimum** for all interactive elements
-- **12pt spacing** between buttons
+## Golden Rules
+
+```swift
+// ✅ ALWAYS
+.foregroundStyle(JohoColors.black)
+.clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+.overlay(RoundedRectangle(...).stroke(JohoColors.black, lineWidth: 1.5))
+.font(.system(size: 16, weight: .medium, design: .rounded))
+withAnimation(.easeInOut(duration: 0.2)) { ... }
+.johoCalendarPicker(isPresented:selectedDate:accentColor:)
+
+// ❌ NEVER
+.background(.ultraThinMaterial)   // NO glass
+LinearGradient(...)               // NO gradients
+Color.blue                        // NO raw colors
+.cornerRadius(12)                 // NO non-continuous
+ScrollView { Form... }            // NO scroll in forms
+.spring(...)                      // NO bouncy animations
+DatePicker(...)                   // NO iOS DatePicker
+```
 
 ---
 
-## Layout Rules (Critical)
+## UI Checklist
 
-**NO VERTICAL SCROLLING** in forms, editors, or sheets.
-
-Use instead:
-- Collapsible sections (expand/collapse)
-- Progressive disclosure
-- Push content down when expanding
-
-See `.claude/layout-rules.md` for full specification.
+Before committing:
+- [ ] Black borders on all containers
+- [ ] Semantic colors only (`JohoColors.*`)
+- [ ] Squircle corners (`.continuous`)
+- [ ] Rounded typography (`.design(.rounded)`)
+- [ ] 44pt touch targets
+- [ ] No scroll in forms/editors
+- [ ] `JohoCalendarPicker` for dates
 
 ---
 
@@ -153,23 +112,21 @@ See `.claude/layout-rules.md` for full specification.
 
 ```
 Vecka/
-├── Core/                    # Week calculation
-├── Models/                  # SwiftData models
-├── Views/                   # SwiftUI views
-├── Services/                # External APIs
-├── JohoDesignSystem.swift   # Design components
+├── Core/                    # Week calculation (4 files)
+├── Models/                  # SwiftData models (15 files)
+├── Views/                   # SwiftUI views (44 files)
+├── Services/                # External APIs (11 files)
+├── JohoDesignSystem.swift   # Design components (~4000 LOC)
+└── Intents/                 # Siri Shortcuts (4 files)
+
+VeckaWidget/                 # Widget extension (12 files)
 ```
 
 ---
 
-## Checklist
+## See Also
 
-Before committing UI:
-- [ ] Black borders on all containers
-- [ ] Colors match semantic meaning
-- [ ] No glass/blur/gradients
-- [ ] Squircle corners (`.continuous`)
-- [ ] Rounded typography
-- [ ] No vertical scroll in forms
-- [ ] 44pt touch targets
-- [ ] Date pickers use `JohoCalendarPicker` (never iOS DatePicker)
+For detailed documentation, see the `.claude/` directory:
+- **GOLDEN_STANDARD.md** — Authoritative reference for all design decisions
+- **FILE_REGISTRY.md** — Find any file quickly
+- **NEW_APP_GUIDE.md** — Template for new 情報デザイン apps

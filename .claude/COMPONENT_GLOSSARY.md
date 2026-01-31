@@ -1,5 +1,7 @@
 # Component Glossary
 
+> **Last Updated:** 2026-01-31
+
 A complete reference of all pages, views, and reusable components in Onsen Planner.
 
 ---
@@ -310,3 +312,12 @@ When working with Claude:
 | iPad sidebar | `Vecka/Views/IconStripSidebar.swift` |
 | Colors & fonts | `JohoDesignSystem.swift:48-226` |
 | All Joho components | `JohoDesignSystem.swift:268-1500` |
+
+---
+
+## See Also
+
+- `.claude/GOLDEN_STANDARD.md` — Authoritative reference (includes component registry)
+- `.claude/FILE_REGISTRY.md` — Complete file inventory
+- `.claude/design-system.md` — Visual specification
+- `.claude/NEW_APP_GUIDE.md` — Using components in new apps

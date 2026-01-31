@@ -1,5 +1,6 @@
 # 情報デザイン (Jōhō Dezain) Design System
 
+> **Last Updated:** 2026-01-31
 > Reference this file when working on ANY UI code in this project.
 
 ## Core Philosophy
@@ -25,7 +26,7 @@ Each color has ONE clear meaning - no overlap, no confusion.
 | **Yellow** | `#FFE566` | 今 (ima) | NOW | Today, notes, current moment |
 | **Cyan** | `#A5F3FC` | 予定 (yotei) | SCHEDULED | Events, trips, calendar items |
 | **Pink** | `#FECDD3` | 祝 (iwai) | CELEBRATION | Holidays, birthdays, special days |
-| **Green** | `#BBF7D0` | 金 (kane) | MONEY | Expenses, financial items |
+| **Green** | `#4ADE80` | 金 (kane) | MONEY | Expenses, financial items |
 | **Purple** | `#E9D5FF` | 人 (hito) | PEOPLE | Contacts, relationships |
 | **Red** | `#E53935` | 警告 | ALERT | System warnings only |
 
@@ -207,7 +208,7 @@ Type indicator circles show what kind of content exists. They ALWAYS have:
 | **Event** | SCHEDULED | Cyan `#A5F3FC` | EVT |
 | **Holiday** | CELEBRATION | Pink `#FECDD3` | HOL |
 | **Birthday** | CELEBRATION | Pink `#FECDD3` | BDY |
-| **Expense** | MONEY | Green `#BBF7D0` | EXP |
+| **Expense** | MONEY | Green `#4ADE80` | EXP |
 | **Contact** | PEOPLE | Purple `#E9D5FF` | CTN |
 
 **Circle Sizes:**
@@ -580,3 +581,12 @@ grep -rn "DatePicker(" --include="*.swift"  # Should return 0 results
 ```
 
 **Remember: You are the 情報デザイン Guardian.**
+
+---
+
+## See Also
+
+- `.claude/GOLDEN_STANDARD.md` — Authoritative reference (colors, components)
+- `.claude/layout-rules.md` — Interaction and form rules
+- `.claude/COMPONENT_GLOSSARY.md` — All Joho* components
+- `.claude/NEW_APP_GUIDE.md` — Template for new apps

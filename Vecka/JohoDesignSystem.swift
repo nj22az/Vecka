@@ -79,12 +79,16 @@ enum JohoColors {
     static let redLight = Color(hex: "FECACA")      // Light red for alerts
 
     // DEPRECATED: Use yellow instead (kept for migration)
-    @available(*, deprecated, message: "Use yellow - notes are 'present moment' items")
-    static let cream = Color(hex: "FFE566")
+    // Historical: cream was #FFFBF5 (beige tint), now aliased to yellow #FFE566
+    // Reason: 6-color palette simplification - notes are "present moment" items
+    @available(*, deprecated, message: "Use JohoColors.yellow instead - notes are 'present moment' items")
+    static let cream = JohoColors.yellow
 
     // DEPRECATED: Use cyan instead (kept for migration)
-    @available(*, deprecated, message: "Use cyan - trips are scheduled time items")
-    static let orange = Color(hex: "A5F3FC")
+    // Historical: orange was #FDBA74 (trip indicator), now aliased to cyan #A5F3FC
+    // Reason: 6-color palette simplification - trips are "scheduled time" items
+    @available(*, deprecated, message: "Use JohoColors.cyan instead - trips are 'scheduled time' items")
+    static let orange = JohoColors.cyan
 
     // Today highlight - bright orange (distinct from yellow memos)
     static let todayOrange = Color(hex: "FF9500")

@@ -1,5 +1,6 @@
 # Onsen Planner Architecture
 
+> **Last Updated:** 2026-01-31
 > Reference this file when adding features, understanding code structure, or modifying data flow.
 
 ## Multi-Target Structure
@@ -262,3 +263,12 @@ All data logged to calendar days must be exportable. The `EntryType` enum define
 ### Design System Issues
 - Run audit commands (see `.claude/design-system.md`)
 - Check `JohoDesignSystem.swift` for component usage
+
+---
+
+## See Also
+
+- `.claude/GOLDEN_STANDARD.md` — Authoritative design reference
+- `.claude/FILE_REGISTRY.md` — Complete file inventory
+- `.claude/widgets.md` — Widget implementation
+- `.claude/design-system.md` — Visual specification

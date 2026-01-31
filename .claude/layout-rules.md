@@ -1,5 +1,7 @@
 # Layout Rules (情報デザイン)
 
+> **Last Updated:** 2026-01-31
+
 This document defines the layout principles for Onsen Planner.
 
 ---
@@ -123,3 +125,11 @@ withAnimation(.easeInOut(duration: 0.2)) { ... }
 // ❌ WRONG - no bouncy springs
 withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) { ... }
 ```
+
+---
+
+## See Also
+
+- `.claude/GOLDEN_STANDARD.md` — Authoritative design reference
+- `.claude/design-system.md` — Visual specification
+- `.claude/COMPONENT_GLOSSARY.md` — Component details
