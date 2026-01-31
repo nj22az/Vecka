@@ -2888,7 +2888,7 @@ struct JohoCalendarPicker: View {
 
     private func weeksInMonth() -> [[Date]] {
         guard let monthStart = calendar.date(from: calendar.dateComponents([.year, .month], from: displayedMonth)),
-              let monthRange = calendar.range(of: .day, in: .month, for: monthStart) else {
+              calendar.range(of: .day, in: .month, for: monthStart) != nil else {
             return []
         }
 

@@ -809,7 +809,6 @@ struct ModernCalendarView: View {
         let today = Date()
         let dayNumber = Calendar.iso8601.component(.day, from: today)
         let weekday = today.formatted(.dateTime.weekday(.abbreviated)).uppercased()
-        let weekNumber = Calendar.iso8601.component(.weekOfYear, from: today)
         let isViewingToday = Calendar.iso8601.isDate(selectedDate, inSameDayAs: today)
 
         return VStack(spacing: 0) {

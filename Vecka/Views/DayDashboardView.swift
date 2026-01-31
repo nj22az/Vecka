@@ -1082,7 +1082,7 @@ struct SingleMemoShareButton: View {
 // MARK: - Single Memo Snapshot (Transferable)
 
 @available(iOS 16.0, *)
-struct SingleMemoSnapshot: Transferable {
+struct SingleMemoSnapshot: Transferable, @unchecked Sendable {
     let memo: Memo
     let date: Date
     let size: CGSize
