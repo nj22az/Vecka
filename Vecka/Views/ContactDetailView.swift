@@ -58,8 +58,7 @@ struct ContactDetailView: View {
     @State private var cropOffset: CGSize = .zero
 
     // MARK: - Share
-    @State private var showingVCardShare = false
-    @State private var vcardURL: URL?
+    @State private var showingQRCard = false
 
     // 情報デザイン accent color for contacts (Warm Brown)
     private var accentColor: Color { PageHeaderColor.contacts.accent }
@@ -146,10 +145,8 @@ struct ContactDetailView: View {
             .padding(.horizontal, JohoDimensions.spacingLG)
             .padding(.top, JohoDimensions.spacingSM)
         }
-        .sheet(isPresented: $showingVCardShare) {
-            if let url = vcardURL {
-                ShareSheet(url: url)
-            }
+        .sheet(isPresented: $showingQRCard) {
+            ContactQRCardSheet(contact: contact)
         }
         .fullScreenCover(item: $cropImageItem) { item in
             CircularImageCropperView(
@@ -1127,30 +1124,13 @@ struct ContactDetailView: View {
     // MARK: - Share Actions Section
 
     private var shareActionsSection: some View {
-        johoDetailSection(title: "SHARE", icon: "square.and.arrow.up", iconColor: accentColor) {
+        johoDetailSection(title: "SHARE", icon: "qrcode", iconColor: accentColor) {
             VStack(spacing: JohoDimensions.spacingSM) {
-                // Share as PNG with embedded QR code (情報デザイン: Like RandomFact sharing)
-                if #available(iOS 16.0, *) {
-                    ShareLink(
-                        item: ShareableContactSnapshot(
-                            contact: contact,
-                            size: ShareableContactSnapshot.calculateSize(for: contact)
-                        ),
-                        preview: SharePreview(
-                            contact.displayName,
-                            image: Image(systemName: contact.group.icon)
-                        )
-                    ) {
-                        johoActionRow(icon: "photo", title: "Share as Image")
-                    }
-                    .buttonStyle(.plain)
-                }
-
-                // Export to iOS Contacts
+                // Show QR Code (情報デザイン: Beautiful card presentation like RandomFact)
                 Button {
-                    exportToIOSContacts()
+                    showingQRCard = true
                 } label: {
-                    johoActionRow(icon: "person.badge.plus", title: "Export to iOS Contacts")
+                    johoActionRow(icon: "qrcode", title: "Show QR Code")
                 }
                 .buttonStyle(.plain)
 
@@ -1479,47 +1459,6 @@ struct ContactDetailView: View {
         }
     }
 
-    private func generateAndShareVCard() {
-        let vcard = contact.toVCard()
-        let tempDir = FileManager.default.temporaryDirectory
-
-        // Sanitize filename: remove characters that are invalid for file systems
-        let sanitizedName = contact.displayName
-            .replacingOccurrences(of: "/", with: "-")
-            .replacingOccurrences(of: ":", with: "-")
-            .replacingOccurrences(of: "\\", with: "-")
-            .replacingOccurrences(of: "?", with: "")
-            .replacingOccurrences(of: "*", with: "")
-            .replacingOccurrences(of: "\"", with: "")
-            .replacingOccurrences(of: "<", with: "")
-            .replacingOccurrences(of: ">", with: "")
-            .replacingOccurrences(of: "|", with: "-")
-            .trimmed
-
-        let filename = (sanitizedName.isEmpty ? "Contact" : sanitizedName) + ".vcf"
-        let url = tempDir.appendingPathComponent(filename)
-
-        do {
-            try vcard.write(to: url, atomically: true, encoding: .utf8)
-            vcardURL = url
-            showingVCardShare = true
-            HapticManager.selection()  // 情報デザイン: Tactile confirmation
-        } catch {
-            Log.e("Failed to create vCard file: \(error)")
-            HapticManager.notification(.error)
-        }
-    }
-
-    private func exportToIOSContacts() {
-        Task {
-            do {
-                try ContactsManager.shared.exportToIOSContacts(contact)
-                HapticManager.notification(.success)
-            } catch {
-                print("Export failed: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: - 情報デザイン Contact Editor Sheet

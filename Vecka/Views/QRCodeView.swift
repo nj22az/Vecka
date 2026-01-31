@@ -2,14 +2,19 @@
 //  QRCodeView.swift
 //  Vecka
 //
-//  QR Code generation and scanning for contact sharing
+//  情報デザイン: QR Code sharing for contacts - beautiful bento card presentation
+//  Like ShareableFact, presents contact QR code in a pretty card format
 //
 
 import SwiftUI
 import CoreImage.CIFilterBuiltins
 import AVFoundation
 
-struct QRCodeView: View {
+// MARK: - Contact QR Card Sheet (情報デザイン styled)
+
+/// Beautiful QR code card for sharing contacts
+/// Follows the ShareableFact pattern with bento compartmentalization
+struct ContactQRCardSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.johoColorMode) private var colorMode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
@@ -17,102 +22,276 @@ struct QRCodeView: View {
     let contact: Contact
 
     @State private var qrCodeImage: UIImage?
-    @State private var showingShareSheet = false
-    @State private var shareURL: URL?
+
+    private let cornerRadius: CGFloat = 16
+
+    private var cardShape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+    }
+
+    /// Contact group color for accents
+    private var accentColor: Color {
+        Color(hex: contact.group.avatarColor)
+    }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 30) {
-                Spacer()
+        ZStack {
+            // Background
+            colors.surface
+                .ignoresSafeArea()
 
-                // Contact info
-                VStack(spacing: 12) {
-                    if let imageData = contact.imageData,
-                       let uiImage = UIImage(data: imageData) {
-                        Image(uiImage: uiImage)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 80, height: 80)
+            VStack(spacing: JohoDimensions.spacingLG) {
+                // Close button at top
+                HStack {
+                    Spacer()
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primary)
+                            .frame(width: 36, height: 36)
+                            .background(colors.surface)
                             .clipShape(Circle())
-                            .overlay(Circle().stroke(colors.border, lineWidth: 2))
-                    } else {
-                        // 情報デザイン: White background with black border, black text
-                        Circle()
-                            .fill(colors.surface)
-                            .frame(width: 80, height: 80)
-                            .overlay(Circle().stroke(colors.border, lineWidth: 2))
-                            .overlay {
-                                Text(contact.initials)
-                                    .font(.system(size: 28, weight: .semibold, design: .rounded))
-                                    .foregroundStyle(colors.primary)
-                            }
-                    }
-
-                    Text(contact.displayName)
-                        .font(.title2)
-                        .fontWeight(.semibold)
-
-                    if let organization = contact.organizationName {
-                        Text(organization)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
                     }
                 }
+                .padding(.horizontal, JohoDimensions.spacingMD)
 
-                // QR Code - 情報デザイン styling
+                Spacer()
+
+                // The QR Card (情報デザイン bento style)
+                qrCard
+                    .frame(width: 340)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Spacer()
+
+                // Share button
                 if let qrImage = qrCodeImage {
-                    Image(uiImage: qrImage)
-                        .interpolation(.none)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 250, height: 250)
-                        .background(colors.surface)
+                    ShareLink(
+                        item: Image(uiImage: qrImage),
+                        preview: SharePreview(
+                            "\(contact.displayName) QR Code",
+                            image: Image(uiImage: qrImage)
+                        )
+                    ) {
+                        HStack(spacing: JohoDimensions.spacingSM) {
+                            Image(systemName: "square.and.arrow.up")
+                                .font(.system(size: 16, weight: .bold, design: .rounded))
+                            Text("Share QR Code")
+                                .font(.system(size: 16, weight: .bold, design: .rounded))
+                        }
+                        .foregroundStyle(colors.primaryInverted)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(accentColor)
                         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12, style: .continuous)
                                 .stroke(colors.border, lineWidth: 2)
                         )
-                } else {
-                    ProgressView()
-                        .frame(width: 250, height: 250)
-                }
-
-                Text("Scan this QR code to save contact")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-
-                Spacer()
-
-                // Share button
-                Button {
-                    shareQRCode()
-                } label: {
-                    Label("Share QR Code", systemImage: "square.and.arrow.up")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .padding(.horizontal)
-            }
-            .padding()
-            .navigationTitle("Contact QR Code")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Done") {
-                        dismiss()
                     }
+                    .padding(.horizontal, JohoDimensions.spacingLG)
                 }
             }
-            .onAppear {
-                generateQRCode()
-            }
-            .sheet(isPresented: $showingShareSheet) {
-                if let url = shareURL {
-                    ShareSheet(url: url)
-                }
-            }
+            .padding(.vertical, JohoDimensions.spacingLG)
+        }
+        .onAppear {
+            generateQRCode()
         }
     }
+
+    // MARK: - QR Card (Bento Style like ShareableFact)
+
+    private var qrCard: some View {
+        ZStack {
+            // Layer 1: Solid background
+            cardShape
+                .fill(colors.surface)
+
+            // Layer 2: Content compartments
+            VStack(spacing: 0) {
+                // ═══════════════════════════════════════════════════════════════
+                // HEADER: App branding + contact group icon
+                // ═══════════════════════════════════════════════════════════════
+                HStack(spacing: 0) {
+                    // LEFT: App branding
+                    HStack(spacing: JohoDimensions.spacingSM) {
+                        Image(systemName: "person.crop.rectangle.stack.fill")
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primary)
+
+                        Text("CONTACTS")
+                            .font(.system(size: 12, weight: .black, design: .rounded))
+                            .foregroundStyle(colors.primary)
+                    }
+                    .padding(.leading, JohoDimensions.spacingMD)
+
+                    Spacer()
+
+                    // WALL
+                    Rectangle()
+                        .fill(colors.border)
+                        .frame(width: 1.5)
+                        .frame(maxHeight: .infinity)
+
+                    // RIGHT: Group icon
+                    Image(systemName: contact.group.icon)
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .frame(width: 48)
+                        .frame(maxHeight: .infinity)
+                }
+                .frame(height: 40)
+                .background(accentColor.opacity(0.3))
+
+                // Divider
+                Rectangle()
+                    .fill(colors.border)
+                    .frame(height: 2)
+
+                // ═══════════════════════════════════════════════════════════════
+                // MAIN CONTENT: Contact info + QR Code
+                // ═══════════════════════════════════════════════════════════════
+                VStack(spacing: JohoDimensions.spacingMD) {
+                    // Contact avatar and name
+                    HStack(spacing: JohoDimensions.spacingMD) {
+                        // Avatar
+                        ZStack {
+                            if let imageData = contact.imageData,
+                               let uiImage = UIImage(data: imageData) {
+                                Image(uiImage: uiImage)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 56, height: 56)
+                                    .clipShape(Circle())
+                                    .overlay(Circle().stroke(colors.border, lineWidth: 2))
+                            } else {
+                                Circle()
+                                    .fill(accentColor)
+                                    .frame(width: 56, height: 56)
+                                    .overlay(
+                                        Text(contact.initials.isEmpty ? "?" : contact.initials)
+                                            .font(.system(size: 20, weight: .black, design: .rounded))
+                                            .foregroundStyle(.white)
+                                    )
+                                    .overlay(Circle().stroke(colors.border, lineWidth: 2))
+                            }
+                        }
+
+                        // Name and org
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(contact.displayName)
+                                .font(.system(size: 18, weight: .bold, design: .rounded))
+                                .foregroundStyle(colors.primary)
+                                .lineLimit(2)
+
+                            if let org = contact.organizationName, !org.isEmpty {
+                                Text(org)
+                                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                                    .foregroundStyle(colors.primary.opacity(0.6))
+                                    .lineLimit(1)
+                            }
+                        }
+
+                        Spacer()
+                    }
+
+                    // QR Code (large, centered)
+                    if let qrImage = qrCodeImage {
+                        Image(uiImage: qrImage)
+                            .interpolation(.none)
+                            .resizable()
+                            .frame(width: 200, height: 200)
+                            .background(colors.surface)
+                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .stroke(colors.border, lineWidth: 2)
+                            )
+                    } else {
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(colors.surface)
+                            .frame(width: 200, height: 200)
+                            .overlay(
+                                ProgressView()
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .stroke(colors.border, lineWidth: 2)
+                            )
+                    }
+
+                    // Quick contact info
+                    HStack(spacing: JohoDimensions.spacingMD) {
+                        if let phone = contact.phoneNumbers.first {
+                            HStack(spacing: 4) {
+                                Image(systemName: "phone.fill")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(JohoColors.green)
+                                Text(phone.value)
+                                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                                    .foregroundStyle(colors.primary)
+                                    .lineLimit(1)
+                            }
+                        }
+
+                        if let email = contact.emailAddresses.first {
+                            HStack(spacing: 4) {
+                                Image(systemName: "envelope.fill")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(JohoColors.yellow)
+                                Text(email.value)
+                                    .font(.system(size: 11, weight: .medium, design: .rounded))
+                                    .foregroundStyle(colors.primary)
+                                    .lineLimit(1)
+                            }
+                        }
+                    }
+                }
+                .padding(JohoDimensions.spacingMD)
+                .background(accentColor.opacity(0.1))
+
+                // Divider
+                Rectangle()
+                    .fill(colors.border)
+                    .frame(height: 2)
+
+                // ═══════════════════════════════════════════════════════════════
+                // FOOTER: Instructions
+                // ═══════════════════════════════════════════════════════════════
+                HStack {
+                    Image(systemName: "viewfinder")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.5))
+
+                    Text("SCAN TO SAVE CONTACT")
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .tracking(1)
+
+                    Spacer()
+
+                    // Group badge
+                    Text(contact.group.localizedName.uppercased())
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.4))
+                        .tracking(0.5)
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+                .frame(height: 32)
+            }
+            .clipShape(cardShape)
+
+            // Layer 3: Border
+            cardShape
+                .strokeBorder(colors.border, lineWidth: 3)
+        }
+    }
+
+    // MARK: - QR Code Generation
 
     private func generateQRCode() {
         // Exclude photo from QR code to keep it scannable
@@ -122,54 +301,17 @@ struct QRCodeView: View {
         let filter = CIFilter.qrCodeGenerator()
 
         filter.message = Data(vcard.utf8)
-        filter.correctionLevel = "H" // High error correction for better scanning
+        filter.correctionLevel = "H" // High error correction
 
         guard let outputImage = filter.outputImage else { return }
 
-        // Scale up for high quality (20x gives us crisp QR codes)
-        let transform = CGAffineTransform(scaleX: 20, y: 20)
+        // Scale up for high quality
+        let transform = CGAffineTransform(scaleX: 10, y: 10)
         let scaledImage = outputImage.transformed(by: transform)
 
-        // Add quiet zone (white border) for better scanning
-        let quietZoneSize: CGFloat = 40
-        let imageSize = scaledImage.extent.size
-        let finalSize = CGSize(
-            width: imageSize.width + quietZoneSize * 2,
-            height: imageSize.height + quietZoneSize * 2
-        )
+        guard let cgImage = context.createCGImage(scaledImage, from: scaledImage.extent) else { return }
 
-        let renderer = UIGraphicsImageRenderer(size: finalSize)
-        let finalImage = renderer.image { _ in
-            // White background
-            UIColor.white.setFill()
-            UIRectFill(CGRect(origin: .zero, size: finalSize))
-
-            // Draw QR code centered
-            if let cgImage = context.createCGImage(scaledImage, from: scaledImage.extent) {
-                let qrImage = UIImage(cgImage: cgImage)
-                qrImage.draw(at: CGPoint(x: quietZoneSize, y: quietZoneSize))
-            }
-        }
-
-        qrCodeImage = finalImage
-    }
-
-    private func shareQRCode() {
-        guard let qrImage = qrCodeImage else { return }
-
-        let tempDir = FileManager.default.temporaryDirectory
-        let filename = "\(contact.displayName)-QR.png"
-        let url = tempDir.appendingPathComponent(filename)
-
-        if let data = qrImage.pngData() {
-            do {
-                try data.write(to: url)
-                shareURL = url
-                showingShareSheet = true
-            } catch {
-                print("Failed to save QR code: \(error)")
-            }
-        }
+        qrCodeImage = UIImage(cgImage: cgImage)
     }
 }
 
@@ -409,4 +551,23 @@ class QRScannerOverlayView: UIView {
             context.strokePath()
         }
     }
+}
+
+// MARK: - Preview
+
+#Preview("Contact QR Card") {
+    let previewContact = Contact(
+        givenName: "John",
+        familyName: "Smith",
+        organizationName: "Acme Corporation",
+        phoneNumbers: [
+            ContactPhoneNumber(label: "mobile", value: "+1-555-0123")
+        ],
+        emailAddresses: [
+            ContactEmailAddress(label: "work", value: "john.smith@acme.com")
+        ],
+        group: .work
+    )
+
+    ContactQRCardSheet(contact: previewContact)
 }
