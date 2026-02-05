@@ -17,7 +17,7 @@ enum JohoWidget {
         static let event = Color(hex: "A5F3FC")         // Cyan - Scheduled events
         static let holiday = Color(hex: "FECDD3")       // Pink - Special days
         static let trip = Color(hex: "A5F3FC")          // Cyan - Travel/Movement
-        static let expense = Color(hex: "BBF7D0")       // Green - Money
+        static let expense = Color(hex: "4ADE80")       // Green - Money (GOLDEN_STANDARD)
         static let contact = Color(hex: "E9D5FF")       // Purple - People
         static let alert = Color(hex: "E53935")         // Red - Warnings/Sunday
         static let note = Color(hex: "FFE566")          // Yellow - Personal notes
@@ -786,6 +786,215 @@ struct Theme {
     }
 }
 
+// MARK: - Widget Mascot (LINE/Kakao Style)
+
+extension JohoWidget {
+
+    /// Widget-friendly mascot for warm, friendly appearance
+    /// 情報デザイン compliant: squircle body, black borders, semantic colors
+    /// Uses SF Symbol effects for subtle "life" in static widget context
+    struct WidgetMascot: View {
+        let size: CGFloat
+        let weekNumber: Int
+        var isBlinking: Bool = false  // Set via timeline for variety
+        var accentColor: Color = Colors.now
+
+        // Computed dimensions
+        private var eyeSize: CGFloat { size * 0.09 }
+        private var eyeSpacing: CGFloat { size * 0.18 }
+        private var mouthWidth: CGFloat { size * 0.22 }
+        private var borderWidth: CGFloat { max(1.5, size * 0.015) }
+        private var cornerRadius: CGFloat { size * 0.2 }
+        private var weekBadgeSize: CGFloat { size * 0.35 }
+
+        var body: some View {
+            ZStack {
+                // Body (情報デザイン: squircle + border)
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(Colors.content)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                            .stroke(Colors.border, lineWidth: borderWidth)
+                    )
+
+                // Face area with tinted background
+                RoundedRectangle(cornerRadius: cornerRadius * 0.7, style: .continuous)
+                    .fill(accentColor.opacity(0.15))
+                    .padding(size * 0.08)
+
+                // Face elements
+                VStack(spacing: size * 0.04) {
+                    // Eyes
+                    HStack(spacing: eyeSpacing) {
+                        eyeView
+                        eyeView
+                    }
+                    .offset(y: size * -0.06)
+
+                    // Blush circles (情報デザイン: warmth indicator)
+                    HStack(spacing: eyeSpacing * 1.5) {
+                        Circle()
+                            .fill(Colors.holiday.opacity(0.5))
+                            .frame(width: size * 0.08, height: size * 0.08)
+                        Circle()
+                            .fill(Colors.holiday.opacity(0.5))
+                            .frame(width: size * 0.08, height: size * 0.08)
+                    }
+                    .offset(y: size * -0.02)
+
+                    // Smile
+                    WidgetMascotMouth()
+                        .stroke(Colors.border, style: StrokeStyle(lineWidth: borderWidth, lineCap: .round))
+                        .frame(width: mouthWidth, height: mouthWidth * 0.4)
+                        .offset(y: size * 0.02)
+                }
+
+                // Week number badge (bottom right, held by mascot)
+                weekBadge
+                    .offset(x: size * 0.28, y: size * 0.32)
+            }
+            .frame(width: size, height: size)
+        }
+
+        // MARK: - Eye View
+
+        private var eyeView: some View {
+            ZStack {
+                // Eye background
+                Circle()
+                    .fill(Colors.content)
+                    .frame(width: eyeSize * 1.3, height: eyeSize * 1.3)
+                    .overlay(
+                        Circle()
+                            .stroke(Colors.border, lineWidth: borderWidth * 0.5)
+                    )
+
+                // Pupil (blink = flat line)
+                if isBlinking {
+                    // Closed eye (^)
+                    WidgetWinkShape()
+                        .stroke(Colors.border, style: StrokeStyle(lineWidth: borderWidth * 0.8, lineCap: .round))
+                        .frame(width: eyeSize, height: eyeSize * 0.4)
+                } else {
+                    // Open eye with highlight
+                    ZStack {
+                        Circle()
+                            .fill(Colors.border)
+                            .frame(width: eyeSize, height: eyeSize)
+
+                        // Cute eye highlight
+                        Circle()
+                            .fill(Colors.content)
+                            .frame(width: eyeSize * 0.3, height: eyeSize * 0.3)
+                            .offset(x: -eyeSize * 0.15, y: -eyeSize * 0.15)
+                    }
+                }
+            }
+        }
+
+        // MARK: - Week Badge
+
+        private var weekBadge: some View {
+            ZStack {
+                // Badge background
+                Circle()
+                    .fill(accentColor)
+                    .frame(width: weekBadgeSize, height: weekBadgeSize)
+                    .overlay(
+                        Circle()
+                            .stroke(Colors.border, lineWidth: borderWidth)
+                    )
+
+                // Week number
+                VStack(spacing: 0) {
+                    Text("W")
+                        .font(.system(size: weekBadgeSize * 0.2, weight: .bold, design: .rounded))
+                        .foregroundStyle(Colors.text)
+                    Text("\(weekNumber)")
+                        .font(.system(size: weekBadgeSize * 0.4, weight: .black, design: .rounded))
+                        .foregroundStyle(Colors.text)
+                        .minimumScaleFactor(0.8)
+                }
+            }
+        }
+    }
+
+    /// Simple smile shape for widget mascot
+    struct WidgetMascotMouth: Shape {
+        func path(in rect: CGRect) -> Path {
+            var path = Path()
+            path.move(to: CGPoint(x: rect.minX, y: rect.midY))
+            path.addQuadCurve(
+                to: CGPoint(x: rect.maxX, y: rect.midY),
+                control: CGPoint(x: rect.midX, y: rect.maxY)
+            )
+            return path
+        }
+    }
+
+    /// Wink/closed eye shape (^)
+    struct WidgetWinkShape: Shape {
+        func path(in rect: CGRect) -> Path {
+            var path = Path()
+            path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
+            path.addQuadCurve(
+                to: CGPoint(x: rect.maxX, y: rect.maxY),
+                control: CGPoint(x: rect.midX, y: rect.minY)
+            )
+            return path
+        }
+    }
+
+    /// Compact mascot for medium/large widgets (header use)
+    struct CompactWidgetMascot: View {
+        let size: CGFloat
+        var accentColor: Color = Colors.now
+        var isBlinking: Bool = false
+
+        private var eyeSize: CGFloat { size * 0.12 }
+        private var borderWidth: CGFloat { max(1, size * 0.03) }
+        private var cornerRadius: CGFloat { size * 0.22 }
+
+        var body: some View {
+            ZStack {
+                // Body
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(Colors.content)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                            .stroke(Colors.border, lineWidth: borderWidth)
+                    )
+
+                // Tint
+                RoundedRectangle(cornerRadius: cornerRadius * 0.7, style: .continuous)
+                    .fill(accentColor.opacity(0.15))
+                    .padding(size * 0.1)
+
+                // Eyes
+                HStack(spacing: size * 0.2) {
+                    Circle()
+                        .fill(Colors.border)
+                        .frame(width: eyeSize, height: eyeSize)
+                        .scaleEffect(y: isBlinking ? 0.2 : 1.0)
+
+                    Circle()
+                        .fill(Colors.border)
+                        .frame(width: eyeSize, height: eyeSize)
+                        .scaleEffect(y: isBlinking ? 0.2 : 1.0)
+                }
+                .offset(y: -size * 0.08)
+
+                // Smile
+                WidgetMascotMouth()
+                    .stroke(Colors.border, style: StrokeStyle(lineWidth: borderWidth, lineCap: .round))
+                    .frame(width: size * 0.28, height: size * 0.12)
+                    .offset(y: size * 0.12)
+            }
+            .frame(width: size, height: size)
+        }
+    }
+}
+
 // MARK: - Quick Reference
 
 /*
@@ -802,8 +1011,8 @@ struct Theme {
 │   Yellow #FFE566 = Today/Now (current week highlight)          │
 │   Cyan   #A5F3FC = Events (calendar items)                     │
 │   Pink   #FECDD3 = Holidays (special days)                     │
-│   Orange #FED7AA = Trips (travel)                              │
-│   Green  #BBF7D0 = Expenses (money)                            │
+│   (Trips use Cyan - no separate Orange in 6-color palette)     │
+│   Green  #4ADE80 = Expenses (money)                            │
 │   Purple #E9D5FF = Contacts/Saturday                           │
 │   Red    #E53935 = Warnings/Sunday                             │
 ├─────────────────────────────────────────────────────────────────┤

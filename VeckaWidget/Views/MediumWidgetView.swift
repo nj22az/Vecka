@@ -73,6 +73,12 @@ struct VeckaMediumWidgetView: View {
         entry.todaysBirthdays.first?.displayName
     }
 
+    /// Simulate blinking by checking if minute is divisible by 7
+    private var isBlinking: Bool {
+        let minute = Calendar.current.component(.minute, from: entry.date)
+        return minute % 7 == 0
+    }
+
     // MARK: - Body
 
     var body: some View {
@@ -102,16 +108,19 @@ struct VeckaMediumWidgetView: View {
         .accessibilityLabel("Week \(weekNumber), \(monthName) \(today)")
     }
 
-    // MARK: - Week Number Hero
+    // MARK: - Week Number Hero (Mascot)
 
     private func weekNumberHero(metrics: AdaptiveMetrics) -> some View {
-        VStack(spacing: metrics.spacing * 0.25) {
-            Text("\(weekNumber)")
-                .font(.system(size: metrics.weekNumberSize, weight: .black, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text)
-                .minimumScaleFactor(0.7)
+        VStack(spacing: metrics.spacing * 0.3) {
+            // Mascot with week number
+            JohoWidget.WidgetMascot(
+                size: metrics.mascotSize,
+                weekNumber: weekNumber,
+                isBlinking: isBlinking,
+                accentColor: JohoWidget.Colors.now
+            )
 
-            Text("WEEK")
+            Text("WEEK \(weekNumber)")
                 .font(.system(size: metrics.labelSize, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.textSecondary)
                 .tracking(metrics.isLarge ? 2 : 1)
@@ -167,9 +176,9 @@ struct VeckaMediumWidgetView: View {
         HStack(spacing: metrics.dayCellSpacing) {
             ForEach(Array(currentWeekDays.enumerated()), id: \.offset) { index, weekDay in
                 VStack(spacing: metrics.spacing * 0.1) {
-                    // Weekday label
+                    // Weekday label (情報デザイン: never below .medium weight)
                     Text(weekdayLabels[index])
-                        .font(.system(size: metrics.labelSize, weight: .semibold, design: .rounded))
+                        .font(.system(size: metrics.labelSize, weight: .bold, design: .rounded))
                         .foregroundStyle(
                             weekDay.isSunday
                                 ? JohoWidget.Colors.alert
@@ -190,7 +199,7 @@ struct VeckaMediumWidgetView: View {
                                 .fill(JohoWidget.Colors.holiday)
                                 .frame(width: metrics.dayCellSize, height: metrics.dayCellSize)
                             Circle()
-                                .stroke(JohoWidget.Colors.border, lineWidth: metrics.borderWidth * 0.7)
+                                .stroke(JohoWidget.Colors.border, lineWidth: metrics.cellBorderWidth)
                                 .frame(width: metrics.dayCellSize, height: metrics.dayCellSize)
                         }
                         Text("\(weekDay.day)")
@@ -242,7 +251,7 @@ struct VeckaMediumWidgetView: View {
         .clipShape(RoundedRectangle(cornerRadius: metrics.cornerRadius, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: metrics.cornerRadius, style: .continuous)
-                .stroke(JohoWidget.Colors.border, lineWidth: metrics.borderWidth * 0.7)
+                .stroke(JohoWidget.Colors.border, lineWidth: metrics.rowBorderWidth)
         )
     }
 
@@ -255,7 +264,7 @@ struct VeckaMediumWidgetView: View {
                 .foregroundStyle(JohoWidget.Colors.text)
 
             Text(name)
-                .font(.system(size: metrics.captionSize, weight: .semibold, design: .rounded))
+                .font(.system(size: metrics.captionSize, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
@@ -268,7 +277,7 @@ struct VeckaMediumWidgetView: View {
         .clipShape(RoundedRectangle(cornerRadius: metrics.cornerRadius, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: metrics.cornerRadius, style: .continuous)
-                .stroke(JohoWidget.Colors.border, lineWidth: metrics.borderWidth * 0.7)
+                .stroke(JohoWidget.Colors.border, lineWidth: metrics.rowBorderWidth)
         )
     }
 
@@ -330,6 +339,11 @@ private struct AdaptiveMetrics {
 
     // MARK: - Layout (scaled)
 
+    var mascotSize: CGFloat {
+        let base: CGFloat = 70
+        return base * scale
+    }
+
     var dayCellSize: CGFloat {
         let base: CGFloat = 28
         return base * scale
@@ -352,6 +366,15 @@ private struct AdaptiveMetrics {
 
     var borderWidth: CGFloat {
         isLarge ? 2 : 1.5
+    }
+
+    // 情報デザイン: Spec-compliant border widths (Theme.swift medium = 0.75 cell, 1 row)
+    var cellBorderWidth: CGFloat {
+        isLarge ? 1 : 0.75
+    }
+
+    var rowBorderWidth: CGFloat {
+        isLarge ? 1.5 : 1
     }
 
     var cornerRadius: CGFloat {
