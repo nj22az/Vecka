@@ -137,6 +137,8 @@ struct VeckaMediumWidgetView: View {
                     .font(.system(size: metrics.captionSize, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoWidget.Colors.textSecondary)
                     .tracking(metrics.isLarge ? 2 : 1)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                 Spacer()
             }
             .padding(.horizontal, metrics.padding)

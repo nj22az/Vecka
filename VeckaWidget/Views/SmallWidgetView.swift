@@ -47,6 +47,8 @@ struct VeckaSmallWidgetView: View {
                     .font(.system(size: metrics.headerSize, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoWidget.Colors.textSecondary)
                     .tracking(1)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
 
                 Spacer(minLength: 0)
 
