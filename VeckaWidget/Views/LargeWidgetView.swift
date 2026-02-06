@@ -47,6 +47,7 @@ struct VeckaLargeWidgetView: View {
 
     private var weekdaySymbols: [String] {
         let symbols = calendar.veryShortWeekdaySymbols
+        guard symbols.count > 1 else { return symbols }
         return Array(symbols[1...]) + [symbols[0]]
     }
 

@@ -201,8 +201,8 @@ struct UnifiedEntryCreator: View {
     private var showTypeSelector: Bool { true }
 
     private var headerTitle: String {
-        if config.availableTypes.count == 1 {
-            return "NEW \(config.availableTypes.first!.label)"
+        if config.availableTypes.count == 1, let firstType = config.availableTypes.first {
+            return "NEW \(firstType.label)"
         }
         return "NEW ENTRY"
     }

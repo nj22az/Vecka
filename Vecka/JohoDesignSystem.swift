@@ -2818,7 +2818,7 @@ struct JohoCalendarPicker: View {
 
     private func weekNumberCell(for week: [Date]) -> some View {
         let weekNumber = calendar.component(.weekOfYear, from: week.first ?? Date())
-        let firstDayOfWeek = week.first { calendar.component(.month, from: $0) == calendar.component(.month, from: displayedMonth) } ?? week.first!
+        let firstDayOfWeek = week.first { calendar.component(.month, from: $0) == calendar.component(.month, from: displayedMonth) } ?? week.first ?? Date()
 
         return Button {
             selectedDate = firstDayOfWeek
