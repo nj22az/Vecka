@@ -786,30 +786,35 @@ struct Theme {
     }
 }
 
-// MARK: - Widget Mascot (Matching App JohoMascot)
+// MARK: - Widget Mascot (LINE/Kakao Inspired)
 
 extension JohoWidget {
 
-    /// Widget-friendly mascot matching the app's JohoMascot exactly
-    /// 情報デザイン compliant: squircle body, black borders, simple face
+    /// LINE/Kakao-inspired mascot with warmth and personality
+    /// 情報デザイン compliant: squircle body, black borders, semantic colors
+    /// Design principles: Big expressive eyes, visible blush, gentle smile
     struct WidgetMascot: View {
         let size: CGFloat
         let weekNumber: Int
-        var isBlinking: Bool = false  // Set via timeline for variety
+        var isBlinking: Bool = false
 
-        // Exact proportions from JohoMascot
-        private var eyeSize: CGFloat { size * 0.12 }
-        private var eyeSpacing: CGFloat { size * 0.22 }
-        private var eyeVerticalOffset: CGFloat { size * -0.08 }
-        private var mouthWidth: CGFloat { size * 0.28 }
-        private var mouthVerticalOffset: CGFloat { size * 0.12 }
-        private var blushSize: CGFloat { size * 0.1 }
-        private var cornerRadius: CGFloat { size * 0.18 }
-        private var borderWidth: CGFloat { 1.5 }
+        // LINE/Kakao proportions - larger features, closer together
+        private var eyeSize: CGFloat { size * 0.18 }           // Bigger eyes (was 0.12)
+        private var eyeSpacing: CGFloat { size * 0.16 }        // Closer together (was 0.22)
+        private var eyeVerticalOffset: CGFloat { size * -0.06 } // Slightly higher
+        private var highlightSize: CGFloat { eyeSize * 0.35 }  // Eye highlight
+        private var highlightOffset: CGFloat { eyeSize * 0.2 }
+        private var mouthWidth: CGFloat { size * 0.32 }        // Wider smile (was 0.28)
+        private var mouthVerticalOffset: CGFloat { size * 0.15 }
+        private var blushSize: CGFloat { size * 0.14 }         // Bigger blush (was 0.1)
+        private var blushSpacing: CGFloat { size * 0.32 }      // Wider apart
+        private var blushVerticalOffset: CGFloat { size * 0.04 }
+        private var cornerRadius: CGFloat { size * 0.24 }      // Rounder body (was 0.18)
+        private var borderWidth: CGFloat { max(1.5, size * 0.02) }
 
         var body: some View {
             ZStack {
-                // Body squircle (情報デザイン: surface + border)
+                // Body squircle (情報デザイン: white + black border)
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .fill(Colors.content)
                     .overlay(
@@ -817,51 +822,74 @@ extension JohoWidget {
                             .stroke(Colors.border, lineWidth: borderWidth)
                     )
 
-                // Face elements
-                ZStack {
-                    // Eyes - simple solid circles
+                // Face - centered, expressive
+                VStack(spacing: 0) {
+                    // Eyes with highlights (LINE/Kakao style)
                     HStack(spacing: eyeSpacing) {
-                        Circle()
-                            .fill(Colors.border)
-                            .frame(width: eyeSize, height: eyeSize)
-                            .scaleEffect(y: isBlinking ? 0.1 : 1.0)
-
-                        Circle()
-                            .fill(Colors.border)
-                            .frame(width: eyeSize, height: eyeSize)
-                            .scaleEffect(y: isBlinking ? 0.1 : 1.0)
+                        eyeView
+                        eyeView
                     }
                     .offset(y: eyeVerticalOffset)
 
-                    // Blush circles (情報デザイン: warmth)
-                    HStack(spacing: eyeSpacing * 1.8) {
+                    // Blush circles (情報デザイン: pink = celebration/warmth)
+                    HStack(spacing: blushSpacing) {
                         Circle()
-                            .fill(Colors.holiday.opacity(0.6))
+                            .fill(Colors.holiday)
                             .frame(width: blushSize, height: blushSize)
                         Circle()
-                            .fill(Colors.holiday.opacity(0.6))
+                            .fill(Colors.holiday)
                             .frame(width: blushSize, height: blushSize)
                     }
-                    .offset(y: eyeVerticalOffset + eyeSize * 1.2)
+                    .offset(y: blushVerticalOffset)
 
-                    // Mouth - curved stroke
-                    WidgetMascotMouth(curve: 0.3)
-                        .stroke(Colors.border, style: StrokeStyle(lineWidth: size * 0.04, lineCap: .round))
-                        .frame(width: mouthWidth, height: mouthWidth * 0.5)
-                        .offset(y: mouthVerticalOffset)
+                    // Gentle smile
+                    WidgetMascotMouth(curve: 0.5)
+                        .stroke(Colors.border, style: StrokeStyle(
+                            lineWidth: max(2, size * 0.035),
+                            lineCap: .round
+                        ))
+                        .frame(width: mouthWidth, height: mouthWidth * 0.35)
+                        .offset(y: mouthVerticalOffset - blushSize)
                 }
 
-                // Week number badge (bottom right corner)
+                // Week number badge (bottom right)
                 weekBadge
-                    .offset(x: size * 0.32, y: size * 0.32)
+                    .offset(x: size * 0.30, y: size * 0.30)
             }
             .frame(width: size, height: size)
+        }
+
+        // MARK: - Eye with Highlight (LINE/Kakao signature)
+
+        private var eyeView: some View {
+            ZStack {
+                if isBlinking {
+                    // Closed eye - happy arc
+                    WidgetClosedEye()
+                        .stroke(Colors.border, style: StrokeStyle(
+                            lineWidth: max(2, size * 0.03),
+                            lineCap: .round
+                        ))
+                        .frame(width: eyeSize, height: eyeSize * 0.5)
+                } else {
+                    // Open eye with highlight
+                    Circle()
+                        .fill(Colors.border)
+                        .frame(width: eyeSize, height: eyeSize)
+
+                    // Highlight (top-left, gives life)
+                    Circle()
+                        .fill(Colors.content)
+                        .frame(width: highlightSize, height: highlightSize)
+                        .offset(x: -highlightOffset, y: -highlightOffset)
+                }
+            }
         }
 
         // MARK: - Week Badge
 
         private var weekBadge: some View {
-            let badgeSize = size * 0.38
+            let badgeSize = size * 0.36
             return ZStack {
                 Circle()
                     .fill(Colors.now)
@@ -871,12 +899,12 @@ extension JohoWidget {
                             .stroke(Colors.border, lineWidth: borderWidth)
                     )
 
-                VStack(spacing: -2) {
+                VStack(spacing: -1) {
                     Text("W")
-                        .font(.system(size: badgeSize * 0.22, weight: .bold, design: .rounded))
+                        .font(.system(size: badgeSize * 0.24, weight: .bold, design: .rounded))
                         .foregroundStyle(Colors.text)
                     Text("\(weekNumber)")
-                        .font(.system(size: badgeSize * 0.42, weight: .black, design: .rounded))
+                        .font(.system(size: badgeSize * 0.44, weight: .black, design: .rounded))
                         .foregroundStyle(Colors.text)
                         .minimumScaleFactor(0.7)
                 }
@@ -884,41 +912,52 @@ extension JohoWidget {
         }
     }
 
-    /// Mouth shape matching JohoMascot's MascotMouth
+    /// Gentle smile curve
     struct WidgetMascotMouth: Shape {
-        var curve: CGFloat = 0.3  // Positive = smile
+        var curve: CGFloat = 0.5
 
         func path(in rect: CGRect) -> Path {
             var path = Path()
-            let startX = rect.minX
-            let endX = rect.maxX
-            let midX = rect.midX
-            let baseY = rect.midY
-            let curveOffset = rect.height * curve
-
-            path.move(to: CGPoint(x: startX, y: baseY))
+            path.move(to: CGPoint(x: rect.minX, y: rect.minY))
             path.addQuadCurve(
-                to: CGPoint(x: endX, y: baseY),
-                control: CGPoint(x: midX, y: baseY + curveOffset)
+                to: CGPoint(x: rect.maxX, y: rect.minY),
+                control: CGPoint(x: rect.midX, y: rect.maxY)
             )
             return path
         }
     }
 
-    /// Compact mascot for medium widget left panel
+    /// Happy closed eye (^) for blinking
+    struct WidgetClosedEye: Shape {
+        func path(in rect: CGRect) -> Path {
+            var path = Path()
+            path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
+            path.addQuadCurve(
+                to: CGPoint(x: rect.maxX, y: rect.maxY),
+                control: CGPoint(x: rect.midX, y: rect.minY)
+            )
+            return path
+        }
+    }
+
+    /// Compact mascot for medium widget (no badge, just face)
     struct CompactWidgetMascot: View {
         let size: CGFloat
         var isBlinking: Bool = false
 
-        // Exact proportions from JohoMascot
-        private var eyeSize: CGFloat { size * 0.12 }
-        private var eyeSpacing: CGFloat { size * 0.22 }
-        private var eyeVerticalOffset: CGFloat { size * -0.08 }
-        private var mouthWidth: CGFloat { size * 0.28 }
-        private var mouthVerticalOffset: CGFloat { size * 0.12 }
-        private var blushSize: CGFloat { size * 0.1 }
-        private var cornerRadius: CGFloat { size * 0.18 }
-        private var borderWidth: CGFloat { 1.5 }
+        // LINE/Kakao proportions
+        private var eyeSize: CGFloat { size * 0.18 }
+        private var eyeSpacing: CGFloat { size * 0.16 }
+        private var eyeVerticalOffset: CGFloat { size * -0.06 }
+        private var highlightSize: CGFloat { eyeSize * 0.35 }
+        private var highlightOffset: CGFloat { eyeSize * 0.2 }
+        private var mouthWidth: CGFloat { size * 0.32 }
+        private var mouthVerticalOffset: CGFloat { size * 0.15 }
+        private var blushSize: CGFloat { size * 0.14 }
+        private var blushSpacing: CGFloat { size * 0.32 }
+        private var blushVerticalOffset: CGFloat { size * 0.04 }
+        private var cornerRadius: CGFloat { size * 0.24 }
+        private var borderWidth: CGFloat { max(1.5, size * 0.02) }
 
         var body: some View {
             ZStack {
@@ -931,40 +970,57 @@ extension JohoWidget {
                     )
 
                 // Face
-                ZStack {
-                    // Eyes
+                VStack(spacing: 0) {
+                    // Eyes with highlights
                     HStack(spacing: eyeSpacing) {
-                        Circle()
-                            .fill(Colors.border)
-                            .frame(width: eyeSize, height: eyeSize)
-                            .scaleEffect(y: isBlinking ? 0.1 : 1.0)
-
-                        Circle()
-                            .fill(Colors.border)
-                            .frame(width: eyeSize, height: eyeSize)
-                            .scaleEffect(y: isBlinking ? 0.1 : 1.0)
+                        eyeView
+                        eyeView
                     }
                     .offset(y: eyeVerticalOffset)
 
                     // Blush
-                    HStack(spacing: eyeSpacing * 1.8) {
+                    HStack(spacing: blushSpacing) {
                         Circle()
-                            .fill(Colors.holiday.opacity(0.6))
+                            .fill(Colors.holiday)
                             .frame(width: blushSize, height: blushSize)
                         Circle()
-                            .fill(Colors.holiday.opacity(0.6))
+                            .fill(Colors.holiday)
                             .frame(width: blushSize, height: blushSize)
                     }
-                    .offset(y: eyeVerticalOffset + eyeSize * 1.2)
+                    .offset(y: blushVerticalOffset)
 
-                    // Mouth
-                    WidgetMascotMouth(curve: 0.3)
-                        .stroke(Colors.border, style: StrokeStyle(lineWidth: size * 0.04, lineCap: .round))
-                        .frame(width: mouthWidth, height: mouthWidth * 0.5)
-                        .offset(y: mouthVerticalOffset)
+                    // Smile
+                    WidgetMascotMouth(curve: 0.5)
+                        .stroke(Colors.border, style: StrokeStyle(
+                            lineWidth: max(2, size * 0.035),
+                            lineCap: .round
+                        ))
+                        .frame(width: mouthWidth, height: mouthWidth * 0.35)
+                        .offset(y: mouthVerticalOffset - blushSize)
                 }
             }
             .frame(width: size, height: size)
+        }
+
+        private var eyeView: some View {
+            ZStack {
+                if isBlinking {
+                    WidgetClosedEye()
+                        .stroke(Colors.border, style: StrokeStyle(
+                            lineWidth: max(2, size * 0.03),
+                            lineCap: .round
+                        ))
+                        .frame(width: eyeSize, height: eyeSize * 0.5)
+                } else {
+                    Circle()
+                        .fill(Colors.border)
+                        .frame(width: eyeSize, height: eyeSize)
+                    Circle()
+                        .fill(Colors.content)
+                        .frame(width: highlightSize, height: highlightSize)
+                        .offset(x: -highlightOffset, y: -highlightOffset)
+                }
+            }
         }
     }
 }
