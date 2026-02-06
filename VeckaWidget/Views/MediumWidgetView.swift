@@ -116,8 +116,7 @@ struct VeckaMediumWidgetView: View {
             JohoWidget.WidgetMascot(
                 size: metrics.mascotSize,
                 weekNumber: weekNumber,
-                isBlinking: isBlinking,
-                accentColor: JohoWidget.Colors.now
+                isBlinking: isBlinking
             )
 
             Text("WEEK \(weekNumber)")

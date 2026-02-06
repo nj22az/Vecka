@@ -54,8 +54,7 @@ struct VeckaSmallWidgetView: View {
                 JohoWidget.WidgetMascot(
                     size: metrics.mascotSize,
                     weekNumber: weekNumber,
-                    isBlinking: isBlinking,
-                    accentColor: JohoWidget.Colors.now
+                    isBlinking: isBlinking
                 )
 
                 Spacer(minLength: 0)

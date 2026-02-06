@@ -786,30 +786,30 @@ struct Theme {
     }
 }
 
-// MARK: - Widget Mascot (LINE/Kakao Style)
+// MARK: - Widget Mascot (Matching App JohoMascot)
 
 extension JohoWidget {
 
-    /// Widget-friendly mascot for warm, friendly appearance
-    /// 情報デザイン compliant: squircle body, black borders, semantic colors
-    /// Uses SF Symbol effects for subtle "life" in static widget context
+    /// Widget-friendly mascot matching the app's JohoMascot exactly
+    /// 情報デザイン compliant: squircle body, black borders, simple face
     struct WidgetMascot: View {
         let size: CGFloat
         let weekNumber: Int
         var isBlinking: Bool = false  // Set via timeline for variety
-        var accentColor: Color = Colors.now
 
-        // Computed dimensions
-        private var eyeSize: CGFloat { size * 0.09 }
-        private var eyeSpacing: CGFloat { size * 0.18 }
-        private var mouthWidth: CGFloat { size * 0.22 }
-        private var borderWidth: CGFloat { max(1.5, size * 0.015) }
-        private var cornerRadius: CGFloat { size * 0.2 }
-        private var weekBadgeSize: CGFloat { size * 0.35 }
+        // Exact proportions from JohoMascot
+        private var eyeSize: CGFloat { size * 0.12 }
+        private var eyeSpacing: CGFloat { size * 0.22 }
+        private var eyeVerticalOffset: CGFloat { size * -0.08 }
+        private var mouthWidth: CGFloat { size * 0.28 }
+        private var mouthVerticalOffset: CGFloat { size * 0.12 }
+        private var blushSize: CGFloat { size * 0.1 }
+        private var cornerRadius: CGFloat { size * 0.18 }
+        private var borderWidth: CGFloat { 1.5 }
 
         var body: some View {
             ZStack {
-                // Body (情報デザイン: squircle + border)
+                // Body squircle (情報デザイン: surface + border)
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .fill(Colors.content)
                     .overlay(
@@ -817,147 +817,112 @@ extension JohoWidget {
                             .stroke(Colors.border, lineWidth: borderWidth)
                     )
 
-                // Face area with tinted background
-                RoundedRectangle(cornerRadius: cornerRadius * 0.7, style: .continuous)
-                    .fill(accentColor.opacity(0.15))
-                    .padding(size * 0.08)
-
                 // Face elements
-                VStack(spacing: size * 0.04) {
-                    // Eyes
+                ZStack {
+                    // Eyes - simple solid circles
                     HStack(spacing: eyeSpacing) {
-                        eyeView
-                        eyeView
-                    }
-                    .offset(y: size * -0.06)
-
-                    // Blush circles (情報デザイン: warmth indicator)
-                    HStack(spacing: eyeSpacing * 1.5) {
-                        Circle()
-                            .fill(Colors.holiday.opacity(0.5))
-                            .frame(width: size * 0.08, height: size * 0.08)
-                        Circle()
-                            .fill(Colors.holiday.opacity(0.5))
-                            .frame(width: size * 0.08, height: size * 0.08)
-                    }
-                    .offset(y: size * -0.02)
-
-                    // Smile
-                    WidgetMascotMouth()
-                        .stroke(Colors.border, style: StrokeStyle(lineWidth: borderWidth, lineCap: .round))
-                        .frame(width: mouthWidth, height: mouthWidth * 0.4)
-                        .offset(y: size * 0.02)
-                }
-
-                // Week number badge (bottom right, held by mascot)
-                weekBadge
-                    .offset(x: size * 0.28, y: size * 0.32)
-            }
-            .frame(width: size, height: size)
-        }
-
-        // MARK: - Eye View
-
-        private var eyeView: some View {
-            ZStack {
-                // Eye background
-                Circle()
-                    .fill(Colors.content)
-                    .frame(width: eyeSize * 1.3, height: eyeSize * 1.3)
-                    .overlay(
-                        Circle()
-                            .stroke(Colors.border, lineWidth: borderWidth * 0.5)
-                    )
-
-                // Pupil (blink = flat line)
-                if isBlinking {
-                    // Closed eye (^)
-                    WidgetWinkShape()
-                        .stroke(Colors.border, style: StrokeStyle(lineWidth: borderWidth * 0.8, lineCap: .round))
-                        .frame(width: eyeSize, height: eyeSize * 0.4)
-                } else {
-                    // Open eye with highlight
-                    ZStack {
                         Circle()
                             .fill(Colors.border)
                             .frame(width: eyeSize, height: eyeSize)
+                            .scaleEffect(y: isBlinking ? 0.1 : 1.0)
 
-                        // Cute eye highlight
                         Circle()
-                            .fill(Colors.content)
-                            .frame(width: eyeSize * 0.3, height: eyeSize * 0.3)
-                            .offset(x: -eyeSize * 0.15, y: -eyeSize * 0.15)
+                            .fill(Colors.border)
+                            .frame(width: eyeSize, height: eyeSize)
+                            .scaleEffect(y: isBlinking ? 0.1 : 1.0)
                     }
+                    .offset(y: eyeVerticalOffset)
+
+                    // Blush circles (情報デザイン: warmth)
+                    HStack(spacing: eyeSpacing * 1.8) {
+                        Circle()
+                            .fill(Colors.holiday.opacity(0.6))
+                            .frame(width: blushSize, height: blushSize)
+                        Circle()
+                            .fill(Colors.holiday.opacity(0.6))
+                            .frame(width: blushSize, height: blushSize)
+                    }
+                    .offset(y: eyeVerticalOffset + eyeSize * 1.2)
+
+                    // Mouth - curved stroke
+                    WidgetMascotMouth(curve: 0.3)
+                        .stroke(Colors.border, style: StrokeStyle(lineWidth: size * 0.04, lineCap: .round))
+                        .frame(width: mouthWidth, height: mouthWidth * 0.5)
+                        .offset(y: mouthVerticalOffset)
                 }
+
+                // Week number badge (bottom right corner)
+                weekBadge
+                    .offset(x: size * 0.32, y: size * 0.32)
             }
+            .frame(width: size, height: size)
         }
 
         // MARK: - Week Badge
 
         private var weekBadge: some View {
-            ZStack {
-                // Badge background
+            let badgeSize = size * 0.38
+            return ZStack {
                 Circle()
-                    .fill(accentColor)
-                    .frame(width: weekBadgeSize, height: weekBadgeSize)
+                    .fill(Colors.now)
+                    .frame(width: badgeSize, height: badgeSize)
                     .overlay(
                         Circle()
                             .stroke(Colors.border, lineWidth: borderWidth)
                     )
 
-                // Week number
-                VStack(spacing: 0) {
+                VStack(spacing: -2) {
                     Text("W")
-                        .font(.system(size: weekBadgeSize * 0.2, weight: .bold, design: .rounded))
+                        .font(.system(size: badgeSize * 0.22, weight: .bold, design: .rounded))
                         .foregroundStyle(Colors.text)
                     Text("\(weekNumber)")
-                        .font(.system(size: weekBadgeSize * 0.4, weight: .black, design: .rounded))
+                        .font(.system(size: badgeSize * 0.42, weight: .black, design: .rounded))
                         .foregroundStyle(Colors.text)
-                        .minimumScaleFactor(0.8)
+                        .minimumScaleFactor(0.7)
                 }
             }
         }
     }
 
-    /// Simple smile shape for widget mascot
+    /// Mouth shape matching JohoMascot's MascotMouth
     struct WidgetMascotMouth: Shape {
+        var curve: CGFloat = 0.3  // Positive = smile
+
         func path(in rect: CGRect) -> Path {
             var path = Path()
-            path.move(to: CGPoint(x: rect.minX, y: rect.midY))
+            let startX = rect.minX
+            let endX = rect.maxX
+            let midX = rect.midX
+            let baseY = rect.midY
+            let curveOffset = rect.height * curve
+
+            path.move(to: CGPoint(x: startX, y: baseY))
             path.addQuadCurve(
-                to: CGPoint(x: rect.maxX, y: rect.midY),
-                control: CGPoint(x: rect.midX, y: rect.maxY)
+                to: CGPoint(x: endX, y: baseY),
+                control: CGPoint(x: midX, y: baseY + curveOffset)
             )
             return path
         }
     }
 
-    /// Wink/closed eye shape (^)
-    struct WidgetWinkShape: Shape {
-        func path(in rect: CGRect) -> Path {
-            var path = Path()
-            path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
-            path.addQuadCurve(
-                to: CGPoint(x: rect.maxX, y: rect.maxY),
-                control: CGPoint(x: rect.midX, y: rect.minY)
-            )
-            return path
-        }
-    }
-
-    /// Compact mascot for medium/large widgets (header use)
+    /// Compact mascot for medium widget left panel
     struct CompactWidgetMascot: View {
         let size: CGFloat
-        var accentColor: Color = Colors.now
         var isBlinking: Bool = false
 
+        // Exact proportions from JohoMascot
         private var eyeSize: CGFloat { size * 0.12 }
-        private var borderWidth: CGFloat { max(1, size * 0.03) }
-        private var cornerRadius: CGFloat { size * 0.22 }
+        private var eyeSpacing: CGFloat { size * 0.22 }
+        private var eyeVerticalOffset: CGFloat { size * -0.08 }
+        private var mouthWidth: CGFloat { size * 0.28 }
+        private var mouthVerticalOffset: CGFloat { size * 0.12 }
+        private var blushSize: CGFloat { size * 0.1 }
+        private var cornerRadius: CGFloat { size * 0.18 }
+        private var borderWidth: CGFloat { 1.5 }
 
         var body: some View {
             ZStack {
-                // Body
+                // Body squircle
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .fill(Colors.content)
                     .overlay(
@@ -965,30 +930,39 @@ extension JohoWidget {
                             .stroke(Colors.border, lineWidth: borderWidth)
                     )
 
-                // Tint
-                RoundedRectangle(cornerRadius: cornerRadius * 0.7, style: .continuous)
-                    .fill(accentColor.opacity(0.15))
-                    .padding(size * 0.1)
+                // Face
+                ZStack {
+                    // Eyes
+                    HStack(spacing: eyeSpacing) {
+                        Circle()
+                            .fill(Colors.border)
+                            .frame(width: eyeSize, height: eyeSize)
+                            .scaleEffect(y: isBlinking ? 0.1 : 1.0)
 
-                // Eyes
-                HStack(spacing: size * 0.2) {
-                    Circle()
-                        .fill(Colors.border)
-                        .frame(width: eyeSize, height: eyeSize)
-                        .scaleEffect(y: isBlinking ? 0.2 : 1.0)
+                        Circle()
+                            .fill(Colors.border)
+                            .frame(width: eyeSize, height: eyeSize)
+                            .scaleEffect(y: isBlinking ? 0.1 : 1.0)
+                    }
+                    .offset(y: eyeVerticalOffset)
 
-                    Circle()
-                        .fill(Colors.border)
-                        .frame(width: eyeSize, height: eyeSize)
-                        .scaleEffect(y: isBlinking ? 0.2 : 1.0)
+                    // Blush
+                    HStack(spacing: eyeSpacing * 1.8) {
+                        Circle()
+                            .fill(Colors.holiday.opacity(0.6))
+                            .frame(width: blushSize, height: blushSize)
+                        Circle()
+                            .fill(Colors.holiday.opacity(0.6))
+                            .frame(width: blushSize, height: blushSize)
+                    }
+                    .offset(y: eyeVerticalOffset + eyeSize * 1.2)
+
+                    // Mouth
+                    WidgetMascotMouth(curve: 0.3)
+                        .stroke(Colors.border, style: StrokeStyle(lineWidth: size * 0.04, lineCap: .round))
+                        .frame(width: mouthWidth, height: mouthWidth * 0.5)
+                        .offset(y: mouthVerticalOffset)
                 }
-                .offset(y: -size * 0.08)
-
-                // Smile
-                WidgetMascotMouth()
-                    .stroke(Colors.border, style: StrokeStyle(lineWidth: borderWidth, lineCap: .round))
-                    .frame(width: size * 0.28, height: size * 0.12)
-                    .offset(y: size * 0.12)
             }
             .frame(width: size, height: size)
         }
