@@ -14,12 +14,26 @@ struct AnalogClockView: View {
     let timezone: TimeZone
     let size: CGFloat
     let accentColor: Color
+    @Environment(\.scenePhase) private var scenePhase
+
+    private var shouldAnimate: Bool {
+        scenePhase == .active && !AppEnvironment.disableAnimations
+    }
 
     var body: some View {
-        // TimelineView properly manages its lifecycle - no memory leaks
-        TimelineView(.periodic(from: .now, by: 1)) { context in
+        if shouldAnimate {
+            // TimelineView properly manages its lifecycle - no memory leaks
+            TimelineView(.periodic(from: .now, by: 1)) { context in
+                ClockFaceView(
+                    currentTime: context.date,
+                    timezone: timezone,
+                    size: size,
+                    accentColor: accentColor
+                )
+            }
+        } else {
             ClockFaceView(
-                currentTime: context.date,
+                currentTime: Date(),
                 timezone: timezone,
                 size: size,
                 accentColor: accentColor
@@ -131,12 +145,29 @@ struct WorldClockCell: View {
     let accentColor: Color
     let lightBackground: Color
     let isLocal: Bool
+    @Environment(\.scenePhase) private var scenePhase
+
+    private var shouldAnimate: Bool {
+        scenePhase == .active && !AppEnvironment.disableAnimations
+    }
 
     var body: some View {
-        // TimelineView properly manages its lifecycle - no memory leaks
-        TimelineView(.periodic(from: .now, by: 1)) { context in
+        if shouldAnimate {
+            // TimelineView properly manages its lifecycle - no memory leaks
+            TimelineView(.periodic(from: .now, by: 1)) { context in
+                WorldClockCellContent(
+                    currentTime: context.date,
+                    cityCode: cityCode,
+                    cityName: cityName,
+                    timezone: timezone,
+                    accentColor: accentColor,
+                    lightBackground: lightBackground,
+                    isLocal: isLocal
+                )
+            }
+        } else {
             WorldClockCellContent(
-                currentTime: context.date,
+                currentTime: Date(),
                 cityCode: cityCode,
                 cityName: cityName,
                 timezone: timezone,

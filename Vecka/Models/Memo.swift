@@ -184,14 +184,14 @@ final class Memo {
         }
         // Countdown events use pink (celebration)
         if hasCountdown { return "FECDD3" }   // Pink (祝) - CELEBRATION
+        // Person/birthday memos use purple
+        if hasPerson || hasLinkedContact { return "E9D5FF" }  // Purple (人) - PEOPLE
         // Money memos use green
-        if hasMoney { return "BBF7D0" }       // Green (金) - MONEY
+        if hasMoney { return "4ADE80" }       // Green (金) - MONEY
         // Place/trip memos use cyan
         if hasPlace || hasTrip { return "A5F3FC" }  // Cyan (予定) - SCHEDULED
-        // Person memos use purple
-        if hasPerson { return "E9D5FF" }      // Purple (人) - PERSON
-        // Default is green (memo)
-        return "4ADE80"                        // Green - memo default
+        // Default is yellow (NOW - notes, today, memos)
+        return "FFE566"                        // Yellow - NOW (notes, today, memos)
     }
 
     /// Days until countdown target

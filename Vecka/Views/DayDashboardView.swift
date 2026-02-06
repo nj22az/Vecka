@@ -47,15 +47,15 @@ struct DayDashboardView: View {
     var onAddEntry: (() -> Void)? = nil  // 情報デザイン: Opens add entry menu
 
     /// 情報デザイン: Check if day has any content
-    /// Birthdays are memos with linkedContactID, so only check holidays and memos
     private var hasAnyContent: Bool {
-        !holidays.isEmpty || !memos.isEmpty
+        !holidays.isEmpty || !memos.isEmpty || !birthdays.isEmpty
     }
 
     @State private var isExpanded = false
     @State private var showSummarySheet = false
     @State private var selectedMemo: Memo? = nil  // For single memo detail view
     @State private var selectedHoliday: HolidayInfo? = nil  // For single holiday detail view
+    @State private var selectedBirthday: BirthdayInfo? = nil  // For single birthday detail view
 
     @Environment(\.locale) private var locale
     @Environment(\.johoColorMode) private var colorMode
@@ -126,6 +126,9 @@ struct DayDashboardView: View {
         }
         .sheet(item: $selectedHoliday) { holiday in
             SingleHolidayDetailSheet(holiday: holiday, date: date)
+        }
+        .sheet(item: $selectedBirthday) { birthday in
+            SingleBirthdayDetailSheet(birthday: birthday, date: date)
         }
     }
 
@@ -241,6 +244,7 @@ struct DayDashboardView: View {
     private enum CardItemType {
         case holiday(HolidayInfo)
         case memo(Memo)
+        case birthday(BirthdayInfo)
     }
 
     private struct CardItem: Identifiable {
@@ -264,6 +268,20 @@ struct DayDashboardView: View {
                 title: holiday.name,
                 badge: holiday.isBankHoliday ? "HOLIDAY" : nil,
                 itemType: .holiday(holiday)
+            ))
+        }
+
+        // Birthdays (from Contacts) - 情報デザイン: Pink celebration color
+        let birthdaySlots = max(0, 4 - items.count)
+        for birthday in birthdays.prefix(birthdaySlots) {
+            let ageText = birthday.age.map { "Turns \($0)" }
+            items.append(CardItem(
+                id: "b-\(birthday.id)",
+                icon: "birthday.cake.fill",
+                color: JohoColors.pink,
+                title: birthday.name,
+                badge: ageText,
+                itemType: .birthday(birthday)
             ))
         }
 
@@ -347,6 +365,8 @@ struct DayDashboardView: View {
                 selectedMemo = memo
             case .holiday(let holiday):
                 selectedHoliday = holiday
+            case .birthday(let birthday):
+                selectedBirthday = birthday
             }
         } label: {
             tileContent
@@ -365,10 +385,17 @@ struct DayDashboardView: View {
     }
 
     private func memoColor(for memo: Memo) -> Color {
-        // All memos use green (情報デザイン: memos = green)
-        // Birthday memos are still memos, so green
-        if memo.hasPlace && !memo.hasMoney { return JohoColors.cyan }  // Trips = cyan
-        return JohoColors.green  // Everything else = green (including birthdays)
+        // 情報デザイン: Semantic color system
+        // Person/birthday memos use purple (PEOPLE)
+        if memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill" || memo.hasPerson {
+            return JohoColors.purple  // Purple (人) - PEOPLE
+        }
+        // Money memos use green (MONEY)
+        if memo.hasMoney { return JohoColors.green }  // Green (金) - MONEY
+        // Place/trip memos use cyan (SCHEDULED)
+        if memo.hasPlace { return JohoColors.cyan }  // Cyan (予定) - SCHEDULED
+        // Default memos use yellow (NOW)
+        return JohoColors.yellow  // Yellow - NOW (notes, today, memos)
     }
 
     /// Get SF Symbol for currency code
@@ -494,11 +521,11 @@ struct DayDashboardView: View {
 
         var accentColor: Color {
             switch self {
-            case .holidays: return JohoColors.red       // Holidays = red (day off)
-            case .birthdays: return JohoColors.pink
-            case .notes: return JohoColors.green        // Notes = stark green (memo)
-            case .expenses: return JohoColors.green     // Expenses = stark green (memo)
-            case .trips: return JohoColors.cyan
+            case .holidays: return JohoColors.pink      // Holidays = pink (CELEBRATION)
+            case .birthdays: return JohoColors.pink     // Birthdays = pink (CELEBRATION)
+            case .notes: return JohoColors.yellow       // Notes = yellow (NOW)
+            case .expenses: return JohoColors.green     // Expenses = green (MONEY)
+            case .trips: return JohoColors.cyan         // Trips = cyan (SCHEDULED)
             }
         }
     }
@@ -720,8 +747,13 @@ struct SingleMemoDetailSheet: View {
     }
 
     private var memoColor: Color {
-        if memo.hasPlace && !memo.hasMoney { return JohoColors.cyan }
-        return JohoColors.green
+        // 情報デザイン: Semantic color system
+        if memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill" || memo.hasPerson {
+            return JohoColors.purple  // Purple (人) - PEOPLE
+        }
+        if memo.hasMoney { return JohoColors.green }  // Green (金) - MONEY
+        if memo.hasPlace { return JohoColors.cyan }  // Cyan (予定) - SCHEDULED
+        return JohoColors.yellow  // Yellow - NOW (notes, today, memos)
     }
 
     private var categoryLabel: String {
@@ -1176,8 +1208,13 @@ struct ShareableMemoCard: View {
     }
 
     private var memoColor: Color {
-        if memo.hasPlace && !memo.hasMoney { return JohoColors.cyan }
-        return JohoColors.green
+        // 情報デザイン: Semantic color system
+        if memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill" || memo.hasPerson {
+            return JohoColors.purple  // Purple (人) - PEOPLE
+        }
+        if memo.hasMoney { return JohoColors.green }  // Green (金) - MONEY
+        if memo.hasPlace { return JohoColors.cyan }  // Cyan (予定) - SCHEDULED
+        return JohoColors.yellow  // Yellow - NOW (notes, today, memos)
     }
 
     private var categoryLabel: String {
@@ -1684,6 +1721,116 @@ struct SingleHolidayDetailSheet: View {
             HolidayManager.shared.calculateAndCacheHolidays(context: modelContext, focusYear: Calendar.current.component(.year, from: date))
             HapticManager.notification(.success)
         }
+    }
+}
+
+// MARK: - Single Birthday Detail Sheet (情報デザイン: Pink celebration style)
+
+struct SingleBirthdayDetailSheet: View {
+    let birthday: DayDashboardView.BirthdayInfo
+    let date: Date
+
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    private var formattedDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM d"
+        return formatter.string(from: date)
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // DARK HEADER
+            HStack {
+                Text("BIRTHDAY")
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .tracking(1.5)
+                    .foregroundStyle(colors.primaryInverted)
+
+                Spacer()
+
+                // Close button
+                Button { dismiss() } label: {
+                    ZStack {
+                        Circle()
+                            .fill(colors.surface)
+                            .frame(width: 28, height: 28)
+                        Image(systemName: "xmark")
+                            .font(.system(size: 11, weight: .black, design: .rounded))
+                            .foregroundStyle(colors.primary)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .background(colors.surfaceInverted)
+
+            // CARD CONTENT
+            VStack(spacing: 0) {
+                // Large icon zone (情報デザイン: Hero display)
+                VStack(spacing: JohoDimensions.spacingSM) {
+                    Image(systemName: "birthday.cake.fill")
+                        .font(.system(size: 64, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoColors.pink)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 120)
+                .background(JohoColors.pink.opacity(0.2))
+
+                // Thick divider
+                Rectangle()
+                    .fill(colors.border)
+                    .frame(height: 2)
+
+                // Title (date)
+                Text(formattedDate)
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+                    .padding(.top, JohoDimensions.spacingMD)
+
+                // Thin divider
+                Rectangle()
+                    .fill(colors.border.opacity(0.2))
+                    .frame(height: 1)
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+                    .padding(.vertical, JohoDimensions.spacingSM)
+
+                // Birthday name
+                Text(birthday.name)
+                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+
+                // Age if known
+                if let age = birthday.age, age > 0 {
+                    Text("Turns \(age)")
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .padding(.top, JohoDimensions.spacingSM)
+                }
+
+                Spacer().frame(height: JohoDimensions.spacingLG)
+            }
+            .background(colors.surface)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
+            )
+            .padding(JohoDimensions.spacingMD)
+
+            Spacer()
+        }
+        .background(JohoColors.pink.opacity(0.3))
+        .presentationDetents([.medium])
+        .presentationCornerRadius(JohoDimensions.radiusLarge)
+        .presentationDragIndicator(.hidden)
     }
 }
 

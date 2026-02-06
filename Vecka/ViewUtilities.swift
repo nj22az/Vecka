@@ -9,6 +9,12 @@
 import SwiftUI
 import Foundation
 
+// MARK: - App Runtime Flags
+enum AppEnvironment {
+    static let isUITesting = ProcessInfo.processInfo.arguments.contains("-ui-testing")
+    static let disableAnimations = ProcessInfo.processInfo.arguments.contains("-disable-animations") || isUITesting
+}
+
 // MARK: - Performance-Optimized Date Formatters
 /// Thread-safe, cached formatters following Apple performance guidelines
 enum DateFormatterCache {

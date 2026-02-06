@@ -20,8 +20,7 @@ struct VeckaWidgetEntryView: View {
         case .systemSmall:
             VeckaSmallWidgetView(entry: entry)
         case .systemMedium:
-            // Use world clock widget if clocks are configured
-            WorldClockMediumWidgetView(entry: entry)
+            VeckaMediumWidgetView(entry: entry)
         case .systemLarge:
             VeckaLargeWidgetView(entry: entry)
         default:

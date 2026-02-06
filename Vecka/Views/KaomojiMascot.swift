@@ -135,8 +135,12 @@ struct JohoMascot: View {
     var autoOnsen: Bool = false  // Enable random ♨️ transformation
 
     @Environment(\.johoColorMode) private var colorMode
+    @Environment(\.scenePhase) private var scenePhase
 
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+    private var shouldAnimate: Bool {
+        scenePhase == .active && !AppEnvironment.disableAnimations
+    }
 
     // MARK: - State
 
@@ -187,10 +191,17 @@ struct JohoMascot: View {
 
             // Steam puffs (情報デザイン: Onsen atmosphere)
             ForEach(steamPuffs) { puff in
-                Image(systemName: "cloud.fill")
+                let baseImage = Image(systemName: "cloud.fill")
                     .font(.system(size: size * 0.18, weight: .medium))
                     .foregroundStyle(JohoColors.cyan.opacity(0.6))
-                    .symbolEffect(.variableColor.iterative, options: .repeating.speed(0.5))
+
+                Group {
+                    if shouldAnimate {
+                        baseImage.symbolEffect(.variableColor.iterative, options: .repeating.speed(0.5))
+                    } else {
+                        baseImage
+                    }
+                }
                     .offset(x: puff.xOffset, y: puff.yOffset)
                     .opacity(puff.opacity)
                     .scaleEffect(puff.scale)
@@ -216,12 +227,19 @@ struct JohoMascot: View {
 
             // Floating sparkle (情報デザイン: Playful SF Symbol animation)
             if sparkleVisible {
-                Image(systemName: "sparkle")
+                let baseImage = Image(systemName: "sparkle")
                     .font(.system(size: size * 0.15, weight: .medium))
                     .foregroundStyle(JohoColors.cyan)
-                    .symbolEffect(.variableColor.iterative.reversing, options: .repeating)
-                    .offset(x: size * -0.35, y: size * -0.35)
-                    .transition(.scale.combined(with: .opacity))
+
+                Group {
+                    if shouldAnimate {
+                        baseImage.symbolEffect(.variableColor.iterative.reversing, options: .repeating)
+                    } else {
+                        baseImage
+                    }
+                }
+                .offset(x: size * -0.35, y: size * -0.35)
+                .transition(.scale.combined(with: .opacity))
             }
         }
         .frame(width: size, height: size)
@@ -251,6 +269,15 @@ struct JohoMascot: View {
             isActive = false
             stopAnimations()
         }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                isActive = true
+                startAnimations()
+            } else {
+                isActive = false
+                stopAnimations()
+            }
+        }
         .accessibilityLabel("Mascot")
         .accessibilityHidden(true)
     }
@@ -270,24 +297,31 @@ struct JohoMascot: View {
                 )
                 .offset(y: size * 0.15)
                 .scaleEffect(1.0 + waterRipple * 0.05)
-                .animation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: waterRipple)
+                .animation(shouldAnimate ? .easeInOut(duration: 1.5).repeatForever(autoreverses: true) : nil, value: waterRipple)
 
             // Steam rising from water (SF Symbol)
             HStack(spacing: size * 0.08) {
-                Image(systemName: "humidity.fill")
+                let leftSteam = Image(systemName: "humidity.fill")
                     .font(.system(size: size * 0.14, weight: .medium))
                     .foregroundStyle(JohoColors.cyan.opacity(0.7))
-                    .symbolEffect(.variableColor.iterative.reversing, options: .repeating.speed(0.3))
 
-                Image(systemName: "humidity.fill")
+                let middleSteam = Image(systemName: "humidity.fill")
                     .font(.system(size: size * 0.18, weight: .medium))
                     .foregroundStyle(JohoColors.cyan.opacity(0.8))
-                    .symbolEffect(.variableColor.iterative, options: .repeating.speed(0.4))
 
-                Image(systemName: "humidity.fill")
+                let rightSteam = Image(systemName: "humidity.fill")
                     .font(.system(size: size * 0.14, weight: .medium))
                     .foregroundStyle(JohoColors.cyan.opacity(0.7))
-                    .symbolEffect(.variableColor.iterative.reversing, options: .repeating.speed(0.35))
+
+                if shouldAnimate {
+                    leftSteam.symbolEffect(.variableColor.iterative.reversing, options: .repeating.speed(0.3))
+                    middleSteam.symbolEffect(.variableColor.iterative, options: .repeating.speed(0.4))
+                    rightSteam.symbolEffect(.variableColor.iterative.reversing, options: .repeating.speed(0.35))
+                } else {
+                    leftSteam
+                    middleSteam
+                    rightSteam
+                }
             }
             .offset(y: size * -0.05)
 
@@ -340,11 +374,18 @@ struct JohoMascot: View {
 
                 // Accent symbol (mood-dependent sparkle/zzz) - with SF Symbol effects
                 if let symbol = displayedMood.accentSymbol {
-                    Image(systemName: symbol)
+                    let baseImage = Image(systemName: symbol)
                         .font(.system(size: size * 0.12, weight: .bold))
                         .foregroundStyle(colors.primary.opacity(0.5))
-                        .symbolEffect(.bounce, options: .repeating.speed(0.3), value: heartBounce)
-                        .offset(x: size * 0.28, y: size * -0.28)
+
+                    Group {
+                        if shouldAnimate {
+                            baseImage.symbolEffect(.bounce, options: .repeating.speed(0.3), value: heartBounce)
+                        } else {
+                            baseImage
+                        }
+                    }
+                    .offset(x: size * 0.28, y: size * -0.28)
                 }
             }
         }
@@ -423,6 +464,9 @@ struct JohoMascot: View {
     // MARK: - Animation Control
 
     private func startAnimations() {
+        guard shouldAnimate else { return }
+        stopAnimations()
+
         // Bobbing animation
         if showBob {
             withAnimation(
@@ -460,6 +504,13 @@ struct JohoMascot: View {
         eyeLookTimer = nil
         onsenTimer?.invalidate()
         onsenTimer = nil
+
+        // Reset animated state so the view can become idle
+        bobOffset = 0
+        waterRipple = 0
+        eyeOffset = .zero
+        isOnsenMode = false
+        steamPuffs.removeAll()
     }
 
     // MARK: - Onsen Transformation Animation
@@ -602,6 +653,7 @@ struct JohoMascot: View {
     }
 
     private func startWaterRipple() {
+        guard shouldAnimate else { return }
         withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
             waterRipple = 1.0
         }

@@ -52,14 +52,14 @@ enum DisplayCategory: String, CaseIterable, Identifiable {
     }
 
     /// 情報デザイン: Category accent color (extremely readable, distinct)
-    /// - Holidays: Red (day off, like Sunday)
-    /// - Observances: Blue (special but not holiday)
-    /// - Memos: Green (stark green for readability)
+    /// - Holidays: Pink (celebration)
+    /// - Observances: Cyan (scheduled)
+    /// - Memos: Yellow (NOW - notes, today)
     var accentColor: Color {
         switch self {
-        case .holiday: return JohoColors.red         // Red - day off (like Sunday)
-        case .observance: return JohoColors.tripBlue // Blue - cultural observances
-        case .memo: return JohoColors.green          // Green - stark green for memos
+        case .holiday: return JohoColors.pink        // Pink - CELEBRATION (holidays)
+        case .observance: return JohoColors.cyan     // Cyan - SCHEDULED (observances)
+        case .memo: return JohoColors.yellow         // Yellow - NOW (notes, today, memos)
         }
     }
 
@@ -131,10 +131,10 @@ enum SpecialDayType: String, CaseIterable {
         switch self {
         case .holiday: return Color(hex: "E53E3E")    // Red - "day off!"
         case .observance: return JohoColors.tripBlue    // Blue - cultural observances
-        case .birthday: return Color(hex: "D53F8C")   // Pink - birthdays
-        case .memo, .note, .event: return Color(hex: "4ADE80")  // Green - memos
-        case .trip: return Color(hex: "22D3EE")       // Cyan - trips (予定)
-        case .expense: return Color(hex: "4ADE80")    // Green - money (金)
+        case .birthday: return JohoColors.pink        // Pink - birthdays (CELEBRATION)
+        case .memo, .note, .event: return JohoColors.yellow  // Yellow - memos (NOW)
+        case .trip: return JohoColors.cyan            // Cyan - trips (SCHEDULED)
+        case .expense: return JohoColors.green        // Green - money (MONEY)
         }
     }
 
@@ -143,10 +143,10 @@ enum SpecialDayType: String, CaseIterable {
         switch self {
         case .holiday: return Color(hex: "FDE8E8")    // Light red
         case .observance: return JohoColors.tripBlue.opacity(0.2) // Light blue
-        case .birthday: return Color(hex: "FECDD3")   // Light pink
-        case .memo, .note, .event: return Color(hex: "BBF7D0")  // Light green
-        case .trip: return Color(hex: "A5F3FC")       // Light cyan
-        case .expense: return Color(hex: "BBF7D0")    // Light green
+        case .birthday: return JohoColors.pink.opacity(0.3)  // Light pink (CELEBRATION)
+        case .memo, .note, .event: return JohoColors.yellow.opacity(0.3)  // Light yellow (NOW)
+        case .trip: return JohoColors.cyan.opacity(0.3)  // Light cyan (SCHEDULED)
+        case .expense: return JohoColors.green.opacity(0.3)  // Light green (MONEY)
         }
     }
 

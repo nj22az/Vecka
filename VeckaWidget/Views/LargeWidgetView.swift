@@ -88,76 +88,77 @@ struct VeckaLargeWidgetView: View {
     // MARK: - Body
 
     var body: some View {
-        VStack(spacing: 12) {
-            // Header: Month/Year + Week badge
-            HStack {
-                Text(monthYear)
-                    .font(.system(size: typo.title, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.text)
+        GeometryReader { geo in
+            let metrics = LargeWidgetMetrics(size: geo.size)
 
-                Spacer()
+            VStack(spacing: metrics.verticalSpacing) {
+                // Header: Month/Year + Week badge
+                HStack {
+                    Text(monthYear)
+                        .font(.system(size: metrics.titleSize, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.text)
 
-                // Week badge (情報デザイン: with border)
-                Text("W\(entry.weekNumber)")
-                    .font(.system(size: typo.label, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.text)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(JohoWidget.Colors.now)
-                    .clipShape(Capsule())
-                    .overlay(
-                        Capsule()
-                            .stroke(JohoWidget.Colors.border, lineWidth: borders.button)
-                    )
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 8)  // 情報デザイン: Max 8pt top padding
+                    Spacer()
 
-            // Calendar Grid
-            VStack(spacing: 4) {
-                // Weekday headers (情報デザイン: functional labels, minimum readable size)
-                HStack(spacing: 0) {
-                    Text("W")
-                        .font(.system(size: typo.micro, weight: .bold, design: .rounded))
-                        // 情報デザイン: Use secondary color weight instead of opacity
-                        .foregroundStyle(JohoWidget.Colors.textSecondary)
-                        .frame(width: 28)
-
-                    ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { index, symbol in
-                        Text(symbol)
-                            .font(.system(size: typo.micro, weight: .medium, design: .rounded))
-                            .foregroundStyle(weekdayColor(for: index))
-                            .frame(maxWidth: .infinity)
-                    }
+                    // Week badge (情報デザイン: with border)
+                    Text("W\(entry.weekNumber)")
+                        .font(.system(size: metrics.labelSize, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.text)
+                        .padding(.horizontal, 10 * metrics.scale)
+                        .padding(.vertical, 4 * metrics.scale)
+                        .background(JohoWidget.Colors.now)
+                        .clipShape(Capsule())
+                        .overlay(
+                            Capsule()
+                                .stroke(JohoWidget.Colors.border, lineWidth: metrics.borderButton)
+                        )
                 }
-                .padding(.horizontal, 12)
+                .padding(.horizontal, metrics.horizontalPadding)
+                .padding(.top, 8 * metrics.scale)
 
-                // Calendar rows
-                ForEach(Array(weeksInMonth.enumerated()), id: \.offset) { weekIndex, week in
+                // Calendar Grid
+                VStack(spacing: 4 * metrics.scale) {
+                    // Weekday headers (情報デザイン: functional labels, minimum readable size)
                     HStack(spacing: 0) {
-                        // Week number (情報デザイン: functional, visible)
-                        Text("\(weekNumber(for: weekIndex))")
-                            .font(.system(size: typo.label, weight: .bold, design: .rounded))
-                            // 情報デザイン: Use secondary color weight instead of opacity
+                        Text("W")
+                            .font(.system(size: metrics.microSize, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoWidget.Colors.textSecondary)
-                            .frame(width: 28)
+                            .frame(width: metrics.weekColumnWidth)
 
-                        ForEach(0..<7, id: \.self) { dayIndex in
-                            if let day = week[dayIndex] {
-                                dayCell(day: day, dayIndex: dayIndex)
-                            } else {
-                                Color.clear.frame(maxWidth: .infinity, minHeight: 36)
+                        ForEach(Array(weekdaySymbols.enumerated()), id: \.offset) { index, symbol in
+                            Text(symbol)
+                                .font(.system(size: metrics.microSize, weight: .medium, design: .rounded))
+                                .foregroundStyle(weekdayColor(for: index))
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    .padding(.horizontal, metrics.rowPadding)
+
+                    // Calendar rows
+                    ForEach(Array(weeksInMonth.enumerated()), id: \.offset) { weekIndex, week in
+                        HStack(spacing: 0) {
+                            // Week number (情報デザイン: functional, visible)
+                            Text("\(weekNumber(for: weekIndex))")
+                                .font(.system(size: metrics.labelSize, weight: .bold, design: .rounded))
+                                .foregroundStyle(JohoWidget.Colors.textSecondary)
+                                .frame(width: metrics.weekColumnWidth)
+
+                            ForEach(0..<7, id: \.self) { dayIndex in
+                                if let day = week[dayIndex] {
+                                    dayCell(day: day, dayIndex: dayIndex, metrics: metrics)
+                                } else {
+                                    Color.clear.frame(maxWidth: .infinity, minHeight: metrics.cellHeight)
+                                }
                             }
                         }
                     }
+                    .padding(.horizontal, metrics.rowPadding)
                 }
-                .padding(.horizontal, 12)
+                .padding(.bottom, metrics.rowPadding)
             }
-            .padding(.bottom, 12)
         }
         .widgetURL(URL(string: "vecka://week/\(entry.weekNumber)/\(entry.year)"))
         .containerBackground(for: .widget) {
-            // 情報デザイン: Clean white background - iOS handles rounded corners
             JohoWidget.Colors.content
         }
         .accessibilityElement(children: .combine)
@@ -167,11 +168,10 @@ struct VeckaLargeWidgetView: View {
     // MARK: - Day Cell
 
     @ViewBuilder
-    private func dayCell(day: Int, dayIndex: Int) -> some View {
+    private func dayCell(day: Int, dayIndex: Int, metrics: LargeWidgetMetrics) -> some View {
         let isToday = self.isToday(day: day)
         let dayDate = dateFor(day: day)
         let dayStart = dayDate.map { calendar.startOfDay(for: $0) }
-        // 情報デザイン: Use pre-computed holidays from entry (O(1) lookup, no memory allocation)
         let holidays = dayDate.map { entry.holidays(for: $0) } ?? []
         let birthdays = dayStart.flatMap { entry.weekBirthdays[$0] } ?? []
         let isBankHoliday = holidays.first?.isBankHoliday ?? false
@@ -179,46 +179,45 @@ struct VeckaLargeWidgetView: View {
         let hasHoliday = !holidays.isEmpty
         let hasBirthday = !birthdays.isEmpty
 
-        // 情報デザイン: Fixed height cell with overlay icons (no jumping)
         ZStack {
-            // Today indicator: Circle background (Theme.Borders.large.selected = 2.5pt)
+            // Today indicator
             if isToday {
                 Circle()
                     .fill(JohoWidget.Colors.now)
-                    .frame(width: 32, height: 32)
+                    .frame(width: metrics.todayCircleSize, height: metrics.todayCircleSize)
                     .overlay(
                         Circle()
-                            .stroke(JohoWidget.Colors.border, lineWidth: borders.selected)
+                            .stroke(JohoWidget.Colors.border, lineWidth: metrics.borderSelected)
                     )
             }
 
-            // Day number (always centered, Theme.Typography.large.body = 14pt)
+            // Day number
             Text("\(day)")
-                .font(.system(size: typo.body, weight: isToday ? .bold : .medium, design: .rounded))
+                .font(.system(size: metrics.bodySize, weight: isToday ? .bold : .medium, design: .rounded))
                 .foregroundStyle(cellTextColor(isToday: isToday, isBankHoliday: isBankHoliday, isSunday: isSunday))
 
-            // 情報デザイン: Event dots as overlay in corner (no layout shift)
+            // Event dots overlay
             if hasHoliday || hasBirthday {
                 VStack {
                     Spacer()
-                    HStack(spacing: 2) {
+                    HStack(spacing: 2 * metrics.scale) {
                         if hasHoliday {
                             Circle()
                                 .fill(isBankHoliday ? JohoWidget.Colors.alert : JohoWidget.Colors.event)
-                                .frame(width: 6, height: 6)
+                                .frame(width: metrics.eventDotSize, height: metrics.eventDotSize)
                         }
                         if hasBirthday {
                             Circle()
                                 .fill(JohoWidget.Colors.holiday)
-                                .frame(width: 6, height: 6)
+                                .frame(width: metrics.eventDotSize, height: metrics.eventDotSize)
                         }
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(.bottom, 2)
+                .padding(.bottom, 2 * metrics.scale)
             }
         }
-        .frame(maxWidth: .infinity, minHeight: 36)
+        .frame(maxWidth: .infinity, minHeight: metrics.cellHeight)
     }
 
     // MARK: - Helper Functions
@@ -260,4 +259,38 @@ struct VeckaLargeWidgetView: View {
         }
         return label
     }
+}
+
+// MARK: - Adaptive Metrics
+
+/// Calculates adaptive sizes based on widget dimensions
+/// iPhone large widget: ~338 x 354 pt
+/// iPad large widget: ~364 x 382 pt to ~432 x 454 pt
+private struct LargeWidgetMetrics {
+    let size: CGSize
+
+    /// Scale factor based on widget height (baseline: 354pt for iPhone)
+    var scale: CGFloat {
+        let baseline: CGFloat = 354
+        return max(1.0, size.height / baseline)
+    }
+
+    // Typography (scaled)
+    var titleSize: CGFloat { 18 * scale }
+    var labelSize: CGFloat { 11 * scale }
+    var bodySize: CGFloat { 14 * scale }
+    var microSize: CGFloat { 10 * scale }
+
+    // Layout (scaled)
+    var cellHeight: CGFloat { 36 * scale }
+    var todayCircleSize: CGFloat { 32 * scale }
+    var eventDotSize: CGFloat { 6 * scale }
+    var weekColumnWidth: CGFloat { 28 * scale }
+    var horizontalPadding: CGFloat { 16 * scale }
+    var rowPadding: CGFloat { 12 * scale }
+    var verticalSpacing: CGFloat { 12 * scale }
+
+    // Borders (slightly thicker on iPad)
+    var borderButton: CGFloat { scale > 1.05 ? 2.5 : 2 }
+    var borderSelected: CGFloat { scale > 1.05 ? 3 : 2.5 }
 }

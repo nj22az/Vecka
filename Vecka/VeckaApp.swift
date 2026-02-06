@@ -84,28 +84,34 @@ struct VeckaApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(navigationManager)
-                // 情報デザイン: Apply color mode to entire app
-                .johoColorMode(colorMode)
-                // 情報デザイン: Match system chrome to user's color mode choice
-                .preferredColorScheme(colorMode == .dark ? .dark : .light)
-            .onOpenURL { url in
-                handleWidgetURL(url)
-            }
-            .onAppear {
-                Log.i("App launched. System language: \(LanguageManager.shared.currentLanguageCode)")
-                // Show onboarding on first launch
-                if !hasCompletedOnboarding {
-                    showOnboarding = true
+            Group {
+                if AppEnvironment.isUITesting {
+                    UITestRootView()
+                } else {
+                    ContentView()
+                        .environment(navigationManager)
+                        // 情報デザイン: Apply color mode to entire app
+                        .johoColorMode(colorMode)
+                        // 情報デザイン: Match system chrome to user's color mode choice
+                        .preferredColorScheme(colorMode == .dark ? .dark : .light)
+                        .onOpenURL { url in
+                            handleWidgetURL(url)
+                        }
+                        .onAppear {
+                            Log.i("App launched. System language: \(LanguageManager.shared.currentLanguageCode)")
+                            // Show onboarding on first launch
+                            if !hasCompletedOnboarding {
+                                showOnboarding = true
+                            }
+                            // Seed quirky facts from JSON on first launch
+                            QuirkyFactsLoader.seedIfNeeded(context: sharedModelContainer.mainContext)
+                            // Seed calendar facts from JSON on first launch
+                            CalendarFactsLoader.seedIfNeeded(context: sharedModelContainer.mainContext)
+                        }
+                        .fullScreenCover(isPresented: $showOnboarding) {
+                            OnboardingView(hasCompletedOnboarding: $hasCompletedOnboarding)
+                        }
                 }
-                // Seed quirky facts from JSON on first launch
-                QuirkyFactsLoader.seedIfNeeded(context: sharedModelContainer.mainContext)
-                // Seed calendar facts from JSON on first launch
-                CalendarFactsLoader.seedIfNeeded(context: sharedModelContainer.mainContext)
-            }
-            .fullScreenCover(isPresented: $showOnboarding) {
-                OnboardingView(hasCompletedOnboarding: $hasCompletedOnboarding)
             }
         }
         .modelContainer(sharedModelContainer)

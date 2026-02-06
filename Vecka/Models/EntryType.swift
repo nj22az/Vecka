@@ -40,14 +40,14 @@ enum EntryType: String, CaseIterable, Identifiable {
     }
 
     /// Semantic color for this entry type (情報デザイン 6-color palette)
-    /// Yellow=NOW, Cyan=SCHEDULED, Pink=CELEBRATION, Green=MONEY
+    /// Yellow=NOW, Cyan=SCHEDULED, Pink=CELEBRATION, Green=MONEY, Purple=PEOPLE
     var color: Color {
         switch self {
-        case .note: return JohoColors.green         // MEMO - notes are memos
+        case .note: return JohoColors.yellow        // NOW - notes are immediate
         case .trip: return JohoColors.cyan          // SCHEDULED - time-based items
         case .expense: return JohoColors.green      // MONEY - financial items
         case .holiday: return JohoColors.pink       // CELEBRATION - special days
-        case .birthday: return Color(hex: "78350F") // PEOPLE - matches contacts brown
+        case .birthday: return JohoColors.purple    // PEOPLE - birthday celebrations
         case .event: return JohoColors.cyan         // SCHEDULED - countdown events
         }
     }

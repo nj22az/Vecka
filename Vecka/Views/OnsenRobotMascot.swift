@@ -26,8 +26,12 @@ struct OnsenRobotMascot: View {
     var showHand: Bool = true
 
     @Environment(\.johoColorMode) private var colorMode
+    @Environment(\.scenePhase) private var scenePhase
 
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+    private var shouldAnimate: Bool {
+        scenePhase == .active && !AppEnvironment.disableAnimations
+    }
 
     // MARK: - Animation State
 
@@ -77,6 +81,15 @@ struct OnsenRobotMascot: View {
             isActive = false
             stopAnimations()
         }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                isActive = true
+                startAnimations()
+            } else {
+                isActive = false
+                stopAnimations()
+            }
+        }
     }
 
     // MARK: - Antenna View
@@ -96,11 +109,20 @@ struct OnsenRobotMascot: View {
         }
         .overlay(
             // Radio waves (情報デザイン: Semantic animation)
-            Image(systemName: "antenna.radiowaves.left.and.right")
-                .font(.system(size: antennaSize, weight: .medium))
-                .foregroundStyle(accentColor.opacity(0.7))
-                .symbolEffect(.variableColor.iterative.reversing, options: .repeating)
-                .offset(y: -size * 0.06)
+            Group {
+                if shouldAnimate {
+                    Image(systemName: "antenna.radiowaves.left.and.right")
+                        .font(.system(size: antennaSize, weight: .medium))
+                        .foregroundStyle(accentColor.opacity(0.7))
+                        .symbolEffect(.variableColor.iterative.reversing, options: .repeating)
+                        .offset(y: -size * 0.06)
+                } else {
+                    Image(systemName: "antenna.radiowaves.left.and.right")
+                        .font(.system(size: antennaSize, weight: .medium))
+                        .foregroundStyle(accentColor.opacity(0.7))
+                        .offset(y: -size * 0.06)
+                }
+            }
         )
     }
 
@@ -202,7 +224,7 @@ struct OnsenRobotMascot: View {
                 anchor: .bottom
             )
             .animation(
-                .easeInOut(duration: 0.4).repeatForever(autoreverses: true),
+                shouldAnimate ? .easeInOut(duration: 0.4).repeatForever(autoreverses: true) : nil,
                 value: isWaving
             )
     }
@@ -210,6 +232,9 @@ struct OnsenRobotMascot: View {
     // MARK: - Animations
 
     private func startAnimations() {
+        guard shouldAnimate else { return }
+        stopAnimations()
+
         // Bobbing hover
         withAnimation(
             .easeInOut(duration: 1.8).repeatForever(autoreverses: true)
@@ -227,6 +252,9 @@ struct OnsenRobotMascot: View {
     private func stopAnimations() {
         blinkTimer?.invalidate()
         blinkTimer = nil
+        bobOffset = 0
+        isWaving = false
+        isBlinking = false
     }
 
     private func startBlinkLoop() {
@@ -261,8 +289,12 @@ struct CompactRobotMascot: View {
     var accentColor: Color = JohoColors.cyan
 
     @Environment(\.johoColorMode) private var colorMode
+    @Environment(\.scenePhase) private var scenePhase
 
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+    private var shouldAnimate: Bool {
+        scenePhase == .active && !AppEnvironment.disableAnimations
+    }
 
     @State private var isActive = false  // Memory safety: prevents async callbacks after disappear
     @State private var isBlinking = false
@@ -314,12 +346,28 @@ struct CompactRobotMascot: View {
         }
         .onAppear {
             isActive = true
-            startBlinking()
+            if shouldAnimate {
+                startBlinking()
+            }
         }
         .onDisappear {
             isActive = false
             blinkTimer?.invalidate()
             blinkTimer = nil
+            isBlinking = false
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                isActive = true
+                if shouldAnimate {
+                    startBlinking()
+                }
+            } else {
+                isActive = false
+                blinkTimer?.invalidate()
+                blinkTimer = nil
+                isBlinking = false
+            }
         }
     }
 

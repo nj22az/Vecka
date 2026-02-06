@@ -308,8 +308,15 @@ struct ShareableDaySummaryCard: View {
         // Detect birthday memos (linked to contact or has birthday symbol)
         let isBirthday = memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill"
         let icon = isBirthday ? "gift.fill" : (memo.hasMoney ? currencyIcon(for: memo.currency ?? baseCurrency) : (memo.hasPlace ? "airplane" : "note.text"))
-        // All memos use green, except trips which use cyan
-        let iconColor = (memo.hasPlace && !memo.hasMoney) ? JohoColors.cyan : JohoColors.green
+        // 情報デザイン: Semantic color system
+        let iconColor: Color = {
+            if memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill" || memo.hasPerson {
+                return JohoColors.purple  // Purple (人) - PEOPLE
+            }
+            if memo.hasMoney { return JohoColors.green }  // Green (金) - MONEY
+            if memo.hasPlace { return JohoColors.cyan }  // Cyan (予定) - SCHEDULED
+            return JohoColors.yellow  // Yellow - NOW (notes, today, memos)
+        }()
 
         return HStack(spacing: JohoDimensions.spacingSM) {
             // Icon
@@ -607,7 +614,15 @@ struct DaySummarySheetView: View {
     private func sheetMemoRow(memo: Memo) -> some View {
         let isBirthday = memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill"
         let icon = isBirthday ? "gift.fill" : (memo.hasMoney ? currencyIcon(for: memo.currency ?? baseCurrency) : (memo.hasPlace ? "airplane" : "note.text"))
-        let iconColor = (memo.hasPlace && !memo.hasMoney) ? JohoColors.cyan : JohoColors.green
+        // 情報デザイン: Semantic color system
+        let iconColor: Color = {
+            if memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill" || memo.hasPerson {
+                return JohoColors.purple  // Purple (人) - PEOPLE
+            }
+            if memo.hasMoney { return JohoColors.green }  // Green (金) - MONEY
+            if memo.hasPlace { return JohoColors.cyan }  // Cyan (予定) - SCHEDULED
+            return JohoColors.yellow  // Yellow - NOW (notes, today, memos)
+        }()
 
         return HStack(spacing: JohoDimensions.spacingSM) {
             // Icon

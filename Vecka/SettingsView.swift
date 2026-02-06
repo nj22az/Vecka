@@ -242,9 +242,6 @@ struct SettingsView: View {
                 // World Clocks Section (Onsen landing page)
                 worldClocksSection
 
-                // Developer Tools Section (情報デザイン: Test data for development)
-                developerToolsSection
-
                 // About Section
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
                     // Section label

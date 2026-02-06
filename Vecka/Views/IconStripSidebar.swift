@@ -267,13 +267,13 @@ private struct SidebarLegendView: View {
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private let legendItems: [(code: String, label: String, icon: String, color: Color)] = [
-        ("HOL", "HOLIDAY", "star.fill", Color(hex: "E53E3E")),
-        ("OBS", "OBSERVANCE", "sparkles", Color(hex: "ED8936")),
-        ("EVT", "EVENT", "calendar.badge.clock", Color(hex: "805AD5")),
-        ("BDY", "BIRTHDAY", "birthday.cake.fill", Color(hex: "78350F")),
-        ("NTE", "NOTE", "note.text", Color(hex: "4ADE80")),
-        ("TRP", "TRIP", "airplane", Color(hex: "3182CE")),
-        ("EXP", "EXPENSE", "dollarsign.circle.fill", Color(hex: "38A169"))
+        ("HOL", "HOLIDAY", "star.fill", JohoColors.pink),     // CELEBRATION
+        ("OBS", "OBSERVANCE", "sparkles", JohoColors.cyan),  // SCHEDULED
+        ("EVT", "EVENT", "calendar.badge.clock", JohoColors.cyan),  // SCHEDULED
+        ("BDY", "BIRTHDAY", "birthday.cake.fill", JohoColors.purple),  // PEOPLE
+        ("NTE", "NOTE", "note.text", JohoColors.yellow),     // NOW
+        ("TRP", "TRIP", "airplane", JohoColors.cyan),        // SCHEDULED
+        ("EXP", "EXPENSE", "dollarsign.circle.fill", JohoColors.green)  // MONEY
     ]
 
     var body: some View {

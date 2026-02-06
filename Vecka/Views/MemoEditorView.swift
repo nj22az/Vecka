@@ -10,6 +10,22 @@
 import SwiftUI
 import SwiftData
 
+// MARK: - Date Type
+
+enum DateType: String, CaseIterable {
+    case fullDay = "Full Day"
+    case specificTime = "Time"
+    case dateRange = "Range"
+
+    var icon: String {
+        switch self {
+        case .fullDay: return "calendar"
+        case .specificTime: return "clock"
+        case .dateRange: return "calendar.badge.clock"
+        }
+    }
+}
+
 struct MemoEditorView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.johoColorMode) private var colorMode
@@ -22,6 +38,11 @@ struct MemoEditorView: View {
     // Core state
     @State private var text: String = ""
     @State private var date: Date = Date()
+
+    // Date type state
+    @State private var dateType: DateType = .fullDay
+    @State private var scheduledTime: Date = Date()
+    @State private var endDate: Date = Date()
 
     // Optional details (progressive disclosure)
     @State private var amount: String = ""
@@ -40,6 +61,8 @@ struct MemoEditorView: View {
 
     // UI state
     @State private var showDatePicker = false
+    @State private var showTimePicker = false
+    @State private var showEndDatePicker = false
     @State private var showDeleteConfirm = false
 
     // 情報デザイン: Blue system UI accent (unified across all entry sheets)
@@ -79,8 +102,25 @@ struct MemoEditorView: View {
 
                     Rectangle().fill(colors.border).frame(height: 1.5)
 
+                    // Date type selector
+                    dateTypeRow
+
+                    Rectangle().fill(colors.border).frame(height: 1.5)
+
                     // Date row
                     dateRow
+
+                    // Time picker (when Time type selected)
+                    if dateType == .specificTime {
+                        Rectangle().fill(colors.border).frame(height: 1.5)
+                        timeRow
+                    }
+
+                    // End date picker (when Range type selected)
+                    if dateType == .dateRange {
+                        Rectangle().fill(colors.border).frame(height: 1.5)
+                        endDateRow
+                    }
 
                     // Expanded detail rows (when chips active)
                     if showAmount {
@@ -122,6 +162,19 @@ struct MemoEditorView: View {
         .johoCalendarPicker(
             isPresented: $showDatePicker,
             selectedDate: $date,
+            accentColor: accentColor
+        )
+        .sheet(isPresented: $showTimePicker) {
+            JohoTimePicker(
+                selectedTime: $scheduledTime,
+                accentColor: accentColor
+            )
+            .presentationBackground(colors.canvas)
+            .presentationDetents([.height(320)])
+        }
+        .johoCalendarPicker(
+            isPresented: $showEndDatePicker,
+            selectedDate: $endDate,
             accentColor: accentColor
         )
         .sheet(isPresented: $showContactPicker) {
@@ -245,6 +298,52 @@ struct MemoEditorView: View {
         .frame(minHeight: 48)
     }
 
+    // MARK: - Date Type Row
+
+    private var dateTypeRow: some View {
+        HStack(spacing: 0) {
+            Image(systemName: "calendar.badge.clock")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 48)
+
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(height: 48)
+
+            HStack(spacing: 8) {
+                ForEach(DateType.allCases, id: \.self) { type in
+                    dateTypeChip(type: type)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+
+            Spacer()
+        }
+        .frame(height: 48)
+    }
+
+    private func dateTypeChip(type: DateType) -> some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                dateType = type
+            }
+            HapticManager.selection()
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: type.icon)
+                    .font(.system(size: 10, weight: .bold))
+                Text(type.rawValue)
+                    .font(.system(size: 10, weight: .heavy, design: .rounded))
+            }
+            .foregroundStyle(dateType == type ? .white : colors.primary)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .background(dateType == type ? accentColor : colors.surface)
+            .clipShape(Squircle(cornerRadius: 8))
+            .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
+        }
+        .buttonStyle(.plain)
+    }
+
     // MARK: - Date Row (identical to Holiday/Observance)
 
     private var dateRow: some View {
@@ -283,6 +382,86 @@ struct MemoEditorView: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy    MM    dd"
         return formatter.string(from: date)
+    }
+
+    // MARK: - Time Row
+
+    private var timeRow: some View {
+        HStack(spacing: 0) {
+            Image(systemName: "clock")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 48)
+
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(height: 48)
+
+            Button {
+                showTimePicker = true
+                HapticManager.impact(.light)
+            } label: {
+                HStack {
+                    Text(formattedTime)
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .monospacedDigit()
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+            }
+            .buttonStyle(.plain)
+        }
+        .frame(height: 48)
+    }
+
+    private var formattedTime: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        return formatter.string(from: scheduledTime)
+    }
+
+    // MARK: - End Date Row
+
+    private var endDateRow: some View {
+        HStack(spacing: 0) {
+            Image(systemName: "calendar.badge.clock")
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 48)
+
+            Rectangle().fill(colors.border).frame(width: 1.5).frame(height: 48)
+
+            Button {
+                showEndDatePicker = true
+                HapticManager.impact(.light)
+            } label: {
+                HStack {
+                    Text(formattedEndDate)
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .monospacedDigit()
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+            }
+            .buttonStyle(.plain)
+        }
+        .frame(height: 48)
+    }
+
+    private var formattedEndDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy    MM    dd"
+        return formatter.string(from: endDate)
     }
 
     // MARK: - Amount Row
@@ -448,11 +627,29 @@ struct MemoEditorView: View {
     private func loadExisting() {
         guard let memo = existingMemo else {
             date = initialDate
+            endDate = initialDate
+            scheduledTime = initialDate
             return
         }
 
         text = memo.text
         date = memo.date
+
+        // Load date type
+        if let scheduled = memo.scheduledAt {
+            dateType = .specificTime
+            scheduledTime = scheduled
+        } else if let tripEnd = memo.tripEndDate {
+            dateType = .dateRange
+            endDate = tripEnd
+        } else {
+            dateType = .fullDay
+        }
+
+        // Initialize endDate to be after date if not set
+        if endDate <= date {
+            endDate = Calendar.current.date(byAdding: .day, value: 1, to: date) ?? date
+        }
 
         if let amt = memo.amount {
             amount = String(format: "%.2f", amt)
@@ -486,6 +683,20 @@ struct MemoEditorView: View {
 
         memo.text = text
         memo.date = date
+
+        // Save date type fields
+        switch dateType {
+        case .fullDay:
+            memo.scheduledAt = nil
+            memo.tripEndDate = nil
+        case .specificTime:
+            memo.scheduledAt = scheduledTime
+            memo.tripEndDate = nil
+        case .dateRange:
+            memo.scheduledAt = nil
+            memo.tripEndDate = endDate
+        }
+
         memo.amount = showAmount ? Double(amount) : nil
         memo.currency = showAmount ? currency : nil
         memo.place = showPlace && !place.isEmpty ? place : nil
@@ -629,6 +840,130 @@ struct MemoContactPicker: View {
             .padding(.vertical, 10)
         }
         .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Time Picker (情報デザイン compliant)
+
+struct JohoTimePicker: View {
+    @Environment(\.johoColorMode) private var colorMode
+    @Environment(\.dismiss) private var dismiss
+
+    @Binding var selectedTime: Date
+    let accentColor: Color
+
+    @State private var hours: Int = 0
+    @State private var minutes: Int = 0
+
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    init(selectedTime: Binding<Date>, accentColor: Color) {
+        self._selectedTime = selectedTime
+        self.accentColor = accentColor
+
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.hour, .minute], from: selectedTime.wrappedValue)
+        self._hours = State(initialValue: components.hour ?? 0)
+        self._minutes = State(initialValue: components.minute ?? 0)
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .frame(width: 32, height: 32)
+                        .background(colors.surface)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
+                }
+
+                Spacer()
+
+                Text("SELECT TIME")
+                    .font(.system(size: 16, weight: .heavy, design: .rounded))
+                    .foregroundStyle(colors.primary)
+
+                Spacer()
+
+                Button {
+                    updateTime()
+                    dismiss()
+                } label: {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+                        .frame(width: 32, height: 32)
+                        .background(accentColor)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.vertical, JohoDimensions.spacingMD)
+            .background(colors.surface)
+
+            Rectangle().fill(colors.border).frame(height: 2)
+
+            // Time pickers
+            HStack(spacing: 8) {
+                // Hours
+                VStack(spacing: 4) {
+                    Text("HOUR")
+                        .font(.system(size: 10, weight: .heavy, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+
+                    Picker("Hour", selection: $hours) {
+                        ForEach(0..<24, id: \.self) { hour in
+                            Text(String(format: "%02d", hour))
+                                .font(.system(size: 20, weight: .bold, design: .rounded))
+                                .monospacedDigit()
+                                .tag(hour)
+                        }
+                    }
+                    .pickerStyle(.wheel)
+                }
+
+                Text(":")
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .padding(.top, 20)
+
+                // Minutes
+                VStack(spacing: 4) {
+                    Text("MINUTE")
+                        .font(.system(size: 10, weight: .heavy, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+
+                    Picker("Minute", selection: $minutes) {
+                        ForEach(0..<60, id: \.self) { minute in
+                            Text(String(format: "%02d", minute))
+                                .font(.system(size: 20, weight: .bold, design: .rounded))
+                                .monospacedDigit()
+                                .tag(minute)
+                        }
+                    }
+                    .pickerStyle(.wheel)
+                }
+            }
+            .padding(JohoDimensions.spacingMD)
+        }
+        .background(colors.canvas)
+    }
+
+    private func updateTime() {
+        let calendar = Calendar.current
+        var components = calendar.dateComponents([.year, .month, .day], from: selectedTime)
+        components.hour = hours
+        components.minute = minutes
+        if let newTime = calendar.date(from: components) {
+            selectedTime = newTime
+        }
     }
 }
 
