@@ -151,7 +151,7 @@ struct VeckaSmallWidgetView: View {
                     }
                 }
                 .padding(.horizontal, 12 * scale)
-                .padding(.bottom, 12 * scale)
+                .padding(.bottom, 16 * scale)
                 .padding(.top, 6 * scale)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
