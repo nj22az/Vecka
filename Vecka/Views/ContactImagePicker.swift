@@ -99,29 +99,35 @@ struct ContactPhotoPicker: UIViewControllerRepresentable {
         private func makeCircular(image: UIImage) -> UIImage {
             let size = CGSize(width: 300, height: 300)
 
-            // First, resize the image to square
-            let squareSize = min(image.size.width, image.size.height)
+            // Normalize orientation first so cgImage coordinates match
+            let normalized: UIImage
+            if image.imageOrientation != .up {
+                let renderer = UIGraphicsImageRenderer(size: image.size)
+                normalized = renderer.image { _ in image.draw(at: .zero) }
+            } else {
+                normalized = image
+            }
+
+            // Center-crop to square
+            let squareSize = min(normalized.size.width, normalized.size.height)
             let cropRect = CGRect(
-                x: (image.size.width - squareSize) / 2,
-                y: (image.size.height - squareSize) / 2,
+                x: (normalized.size.width - squareSize) / 2,
+                y: (normalized.size.height - squareSize) / 2,
                 width: squareSize,
                 height: squareSize
             )
 
-            guard let croppedCGImage = image.cgImage?.cropping(to: cropRect) else {
+            guard let croppedCGImage = normalized.cgImage?.cropping(to: cropRect) else {
                 return image
             }
 
-            let croppedImage = UIImage(cgImage: croppedCGImage, scale: image.scale, orientation: image.imageOrientation)
+            let croppedImage = UIImage(cgImage: croppedCGImage)
 
-            // Now make it circular
+            // Render as circular
             let renderer = UIGraphicsImageRenderer(size: size)
-            return renderer.image { context in
-                // Clip to circle
+            return renderer.image { _ in
                 let circlePath = UIBezierPath(ovalIn: CGRect(origin: .zero, size: size))
                 circlePath.addClip()
-
-                // Draw image
                 croppedImage.draw(in: CGRect(origin: .zero, size: size))
             }
         }

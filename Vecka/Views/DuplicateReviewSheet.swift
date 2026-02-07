@@ -396,8 +396,12 @@ struct DuplicateReviewSheet: View {
                     modelContext: modelContext
                 )
             } else {
-                // No suggestion for this pair, just delete the secondary
-                modelContext.delete(secondary)
+                // No suggestion for this pair - merge data before deleting
+                duplicateManager.manualMerge(
+                    primary: primary,
+                    secondary: secondary,
+                    modelContext: modelContext
+                )
             }
         }
 

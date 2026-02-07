@@ -160,28 +160,26 @@ struct ContactDetailView: View {
                 }
             )
         }
-        .sheet(isPresented: $showingMergeContactPicker) {
-            // Contact picker for manual merge (excludes current contact)
+        .sheet(isPresented: $showingMergeContactPicker, onDismiss: {
+            // Show merge sheet after picker dismisses (if contact was selected)
+            if selectedMergeContact != nil {
+                showingMergeSheet = true
+            }
+        }) {
             ContactPickerSheet(
                 excludeContact: contact,
                 onSelect: { selectedContact in
                     selectedMergeContact = selectedContact
                     showingMergeContactPicker = false
-                    // Slight delay to let sheet dismiss before showing merge
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        showingMergeSheet = true
-                    }
                 }
             )
         }
         .sheet(isPresented: $showingMergeSheet) {
             if let mergeTarget = selectedMergeContact {
-                // Use existing MergeContactSheet with current + selected contact
                 ManualMergeSheet(
                     contact1: contact,
                     contact2: mergeTarget,
                     onMerged: {
-                        // Contact merged - dismiss detail view
                         dismiss()
                     }
                 )
@@ -1368,34 +1366,53 @@ struct ContactDetailView: View {
         contact.familyName = editLastName.trimmingCharacters(in: .whitespaces)
         contact.organizationName = editCompany.trimmingCharacters(in: .whitespaces).isEmpty ? nil : editCompany.trimmingCharacters(in: .whitespaces)
 
-        // Phone
+        // Phone (preserve additional entries from merges)
         let trimmedPhone = editPhone.trimmed
         if !trimmedPhone.isEmpty {
-            contact.phoneNumbers = [ContactPhoneNumber(label: "mobile", value: trimmedPhone)]
-        } else {
+            if contact.phoneNumbers.isEmpty {
+                contact.phoneNumbers = [ContactPhoneNumber(label: "mobile", value: trimmedPhone)]
+            } else {
+                // Update the first entry, keep the rest
+                contact.phoneNumbers[0] = ContactPhoneNumber(label: contact.phoneNumbers[0].label, value: trimmedPhone)
+            }
+        } else if contact.phoneNumbers.count <= 1 {
             contact.phoneNumbers = []
         }
 
-        // Email
+        // Email (preserve additional entries from merges)
         let trimmedEmail = editEmail.trimmed
         if !trimmedEmail.isEmpty {
-            contact.emailAddresses = [ContactEmailAddress(label: "home", value: trimmedEmail)]
-        } else {
+            if contact.emailAddresses.isEmpty {
+                contact.emailAddresses = [ContactEmailAddress(label: "home", value: trimmedEmail)]
+            } else {
+                contact.emailAddresses[0] = ContactEmailAddress(label: contact.emailAddresses[0].label, value: trimmedEmail)
+            }
+        } else if contact.emailAddresses.count <= 1 {
             contact.emailAddresses = []
         }
 
-        // Address
+        // Address (preserve additional entries from merges)
         let trimmedStreet = editStreet.trimmed
         let trimmedCity = editCity.trimmed
         let trimmedPostalCode = editPostalCode.trimmed
         if !trimmedStreet.isEmpty || !trimmedCity.isEmpty || !trimmedPostalCode.isEmpty {
-            contact.postalAddresses = [ContactPostalAddress(
-                label: "home",
-                street: trimmedStreet,
-                city: trimmedCity,
-                postalCode: trimmedPostalCode
-            )]
-        } else {
+            let label = contact.postalAddresses.first?.label ?? "home"
+            if contact.postalAddresses.isEmpty {
+                contact.postalAddresses = [ContactPostalAddress(
+                    label: label,
+                    street: trimmedStreet,
+                    city: trimmedCity,
+                    postalCode: trimmedPostalCode
+                )]
+            } else {
+                contact.postalAddresses[0] = ContactPostalAddress(
+                    label: label,
+                    street: trimmedStreet,
+                    city: trimmedCity,
+                    postalCode: trimmedPostalCode
+                )
+            }
+        } else if contact.postalAddresses.count <= 1 {
             contact.postalAddresses = []
         }
 
@@ -2307,43 +2324,65 @@ struct CircularImageCropperView: View {
     }
 
     private func cropImage() -> UIImage {
-        let outputSize: CGFloat = 400 // Output image size
+        let outputSize: CGFloat = 400
 
-        // Calculate the crop rect
-        let imageSize = image.size
-        let scaledImageSize = CGSize(
-            width: imageSize.width * scale,
-            height: imageSize.height * scale
-        )
+        // Normalize orientation so cgImage coordinates match UIImage coordinates
+        let normalizedImage = normalizeOrientation(image)
+        let imageSize = normalizedImage.size
 
-        // Center of the crop area in image coordinates
-        let centerX = scaledImageSize.width / 2 - offset.width * (imageSize.width / cropSize)
-        let centerY = scaledImageSize.height / 2 - offset.height * (imageSize.height / cropSize)
+        // scaledToFill: the image fills the cropSize square
+        let fillScale = max(cropSize / imageSize.width, cropSize / imageSize.height)
 
-        // The visible portion of the image
-        let visibleSize = imageSize.width / scale * (cropSize / cropSize)
+        // The displayed image size (before user zoom)
+        let displayedWidth = imageSize.width * fillScale
+        let displayedHeight = imageSize.height * fillScale
+
+        // Center offset of the displayed image within the crop square
+        let baseOffsetX = (displayedWidth - cropSize) / 2
+        let baseOffsetY = (displayedHeight - cropSize) / 2
+
+        // Convert the crop circle center to image pixel coordinates
+        // The user's offset shifts the image; the visible center shifts opposite
+        let visibleCenterX = baseOffsetX + cropSize / 2 - offset.width
+        let visibleCenterY = baseOffsetY + cropSize / 2 - offset.height
+
+        // Convert from displayed coordinates to image pixel coordinates
+        let pixelCenterX = visibleCenterX / (fillScale * scale)
+        let pixelCenterY = visibleCenterY / (fillScale * scale)
+
+        // The visible square side in image pixel coordinates
+        let visiblePixelSize = cropSize / (fillScale * scale)
+
         let cropRect = CGRect(
-            x: (centerX / scale) - (visibleSize / 2),
-            y: (centerY / scale) - (visibleSize / 2),
-            width: visibleSize,
-            height: visibleSize
+            x: pixelCenterX - visiblePixelSize / 2,
+            y: pixelCenterY - visiblePixelSize / 2,
+            width: visiblePixelSize,
+            height: visiblePixelSize
         )
 
         // Render the cropped circular image
         let renderer = UIGraphicsImageRenderer(size: CGSize(width: outputSize, height: outputSize))
-        return renderer.image { context in
-            // Clip to circle
+        return renderer.image { _ in
             let circlePath = UIBezierPath(ovalIn: CGRect(x: 0, y: 0, width: outputSize, height: outputSize))
             circlePath.addClip()
 
-            // Draw the image scaled and positioned
+            let scaleRatio = outputSize / visiblePixelSize
             let drawRect = CGRect(
-                x: -cropRect.origin.x * (outputSize / visibleSize),
-                y: -cropRect.origin.y * (outputSize / visibleSize),
-                width: imageSize.width * (outputSize / visibleSize),
-                height: imageSize.height * (outputSize / visibleSize)
+                x: -cropRect.origin.x * scaleRatio,
+                y: -cropRect.origin.y * scaleRatio,
+                width: imageSize.width * scaleRatio,
+                height: imageSize.height * scaleRatio
             )
-            image.draw(in: drawRect)
+            normalizedImage.draw(in: drawRect)
+        }
+    }
+
+    /// Normalize image orientation to .up so pixel coordinates match display coordinates
+    private func normalizeOrientation(_ image: UIImage) -> UIImage {
+        guard image.imageOrientation != .up else { return image }
+        let renderer = UIGraphicsImageRenderer(size: image.size)
+        return renderer.image { _ in
+            image.draw(at: .zero)
         }
     }
 }
