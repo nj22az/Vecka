@@ -159,15 +159,6 @@ struct VeckaLargeWidgetView: View {
 
     private func upcomingRow(item: UpcomingItem, scale: CGFloat) -> some View {
         HStack(spacing: 8 * scale) {
-            // Color indicator stripe
-            RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
-                .fill(item.color)
-                .frame(width: 4 * scale, height: 24 * scale)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
-                        .stroke(JohoWidget.Colors.border, lineWidth: 1)
-                )
-
             // Symbol
             Image(systemName: item.symbol)
                 .font(.system(size: 14 * scale, weight: .bold))
@@ -223,24 +214,7 @@ struct VeckaLargeWidgetView: View {
     // MARK: - Fact Bar
 
     private func factBar(scale: CGFloat) -> some View {
-        let factColor: Color = {
-            switch fact.type {
-            case .dateBased: return JohoWidget.Colors.event
-            case .nordic: return JohoWidget.Colors.now
-            case .trivia: return JohoWidget.Colors.event
-            }
-        }()
-
-        return HStack(spacing: 8 * scale) {
-            // Color indicator stripe
-            RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
-                .fill(factColor)
-                .frame(width: 4 * scale, height: 20 * scale)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
-                        .stroke(JohoWidget.Colors.border, lineWidth: 1)
-                )
-
+        HStack(spacing: 8 * scale) {
             Text("TODAY")
                 .font(.system(size: 10 * scale, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.textSecondary)

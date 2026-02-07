@@ -243,15 +243,6 @@ struct VeckaMediumWidgetView: View {
 
     private func specialRow(item: SpecialItem, scale: CGFloat, showBackground: Bool) -> some View {
         HStack(spacing: 6 * scale) {
-            // Color indicator stripe
-            RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
-                .fill(item.color)
-                .frame(width: 3 * scale, height: 20 * scale)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
-                        .stroke(JohoWidget.Colors.border, lineWidth: 0.5)
-                )
-
             Image(systemName: item.symbol)
                 .font(.system(size: 12 * scale, weight: .bold))
                 .foregroundStyle(JohoWidget.Colors.text)
@@ -279,24 +270,7 @@ struct VeckaMediumWidgetView: View {
     }
 
     private func factRow(scale: CGFloat) -> some View {
-        let factColor: Color = {
-            switch fact.type {
-            case .dateBased: return JohoWidget.Colors.event
-            case .nordic: return JohoWidget.Colors.now
-            case .trivia: return JohoWidget.Colors.event
-            }
-        }()
-
-        return HStack(spacing: 6 * scale) {
-            // Color indicator stripe
-            RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
-                .fill(factColor)
-                .frame(width: 3 * scale, height: 20 * scale)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
-                        .stroke(JohoWidget.Colors.border, lineWidth: 0.5)
-                )
-
+        HStack(spacing: 6 * scale) {
             Image(systemName: fact.symbol)
                 .font(.system(size: 12 * scale, weight: .bold))
                 .foregroundStyle(JohoWidget.Colors.text)

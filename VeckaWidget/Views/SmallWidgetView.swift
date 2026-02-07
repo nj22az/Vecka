@@ -65,26 +65,6 @@ struct VeckaSmallWidgetView: View {
         return JohoWidget.Colors.content
     }
 
-    /// Color indicator for the current day type
-    private var indicatorColor: Color {
-        if !entry.todaysHolidays.isEmpty {
-            return JohoWidget.Colors.holiday  // Pink
-        }
-        if !entry.todaysBirthdays.isEmpty {
-            return JohoWidget.Colors.contact  // Purple
-        }
-        // Fact colors based on type
-        let fact = WidgetFacts.randomFact(for: entry.date)
-        switch fact.type {
-        case .dateBased:
-            return JohoWidget.Colors.event  // Cyan
-        case .nordic:
-            return JohoWidget.Colors.now  // Yellow
-        case .trivia:
-            return JohoWidget.Colors.event  // Cyan
-        }
-    }
-
     private var fact: WidgetFacts.Fact {
         WidgetFacts.randomFact(for: entry.date)
     }
@@ -96,63 +76,51 @@ struct VeckaSmallWidgetView: View {
             let scale = min(geo.size.width, geo.size.height) / 155
 
             VStack(spacing: 0) {
-                // Top color indicator stripe
-                RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
-                    .fill(indicatorColor)
-                    .frame(maxWidth: .infinity, maxHeight: 6 * scale)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
-                            .stroke(JohoWidget.Colors.border, lineWidth: 1)
-                    )
-                    .padding(.horizontal, 12 * scale)
-                    .padding(.top, 8 * scale)
+                // Top: SF Symbol + special text or fact
+                HStack(spacing: 6 * scale) {
+                    Image(systemName: hasSpecialDay ? specialDaySymbol : fact.symbol)
+                        .font(.system(size: 14 * scale, weight: .bold))
+                        .foregroundStyle(JohoWidget.Colors.text)
 
-                VStack(spacing: 6 * scale) {
-                    // Top: SF Symbol + special text or fact
-                    HStack(spacing: 6 * scale) {
-                        Image(systemName: hasSpecialDay ? specialDaySymbol : fact.symbol)
-                            .font(.system(size: 14 * scale, weight: .bold))
-                            .foregroundStyle(JohoWidget.Colors.text)
-
-                        Text(hasSpecialDay ? (specialDayName ?? "") : fact.text)
-                            .font(.system(size: 11 * scale, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoWidget.Colors.text)
-                            .lineLimit(2)
-                            .minimumScaleFactor(0.7)
-
-                        Spacer(minLength: 0)
-                    }
+                    Text(hasSpecialDay ? (specialDayName ?? "") : fact.text)
+                        .font(.system(size: 11 * scale, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.text)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.7)
 
                     Spacer(minLength: 0)
-
-                    // Center: Big date
-                    VStack(spacing: 2 * scale) {
-                        Text(monthShort)
-                            .font(.system(size: 12 * scale, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoWidget.Colors.textSecondary)
-                            .tracking(1)
-
-                        Text("\(dayOfMonth)")
-                            .font(.system(size: 48 * scale, weight: .black, design: .rounded))
-                            .foregroundStyle(JohoWidget.Colors.text)
-
-                        Text(weekdayFull)
-                            .font(.system(size: 12 * scale, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoWidget.Colors.textSecondary)
-                            .tracking(1)
-                    }
-
-                    Spacer(minLength: 0)
-
-                    // Bottom: Week badge
-                    HStack {
-                        Spacer()
-                        weekBadge(scale: scale)
-                    }
                 }
                 .padding(.horizontal, 12 * scale)
-                .padding(.bottom, 16 * scale)
-                .padding(.top, 6 * scale)
+                .padding(.top, 12 * scale)
+
+                Spacer(minLength: 0)
+
+                // Center: Big date
+                VStack(spacing: 2 * scale) {
+                    Text(monthShort)
+                        .font(.system(size: 12 * scale, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.textSecondary)
+                        .tracking(1)
+
+                    Text("\(dayOfMonth)")
+                        .font(.system(size: 48 * scale, weight: .black, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.text)
+
+                    Text(weekdayFull)
+                        .font(.system(size: 12 * scale, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.textSecondary)
+                        .tracking(1)
+                }
+
+                Spacer(minLength: 0)
+
+                // Bottom: Week badge with proper spacing
+                HStack {
+                    Spacer()
+                    weekBadge(scale: scale)
+                }
+                .padding(.horizontal, 12 * scale)
+                .padding(.bottom, 14 * scale)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
