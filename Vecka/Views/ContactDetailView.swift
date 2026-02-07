@@ -48,10 +48,6 @@ struct ContactDetailView: View {
 
     // MARK: - Photo Picker
     @State private var selectedPhotoItem: PhotosPickerItem?
-    @State private var cropImageItem: CropImageItem?
-    @State private var cropScale: CGFloat = 1.0
-    @State private var cropOffset: CGSize = .zero
-
     // MARK: - Share
     @State private var showingQRCard = false
 
@@ -136,24 +132,43 @@ struct ContactDetailView: View {
             .padding(.top, JohoDimensions.spacingSM)
         }
         .sheet(isPresented: $showingQRCard) {
-            ScrollView {
-                ShareableContactCard(contact: contact)
-                    .padding(JohoDimensions.spacingLG)
+            VStack(spacing: 0) {
+                // Header with share and close buttons (matches RandomFactDetailSheet pattern)
+                HStack {
+                    Text("CONTACT")
+                        .font(.system(size: 12, weight: .black, design: .rounded))
+                        .tracking(1.5)
+                        .foregroundStyle(colors.primaryInverted)
+
+                    Spacer()
+
+                    // Share button (28x28 circle matching FactShareButton)
+                    ContactShareIconButton(contact: contact)
+
+                    Button { showingQRCard = false } label: {
+                        ZStack {
+                            Circle()
+                                .fill(colors.surface)
+                                .frame(width: 28, height: 28)
+                            Image(systemName: "xmark")
+                                .font(.system(size: 11, weight: .black, design: .rounded))
+                                .foregroundStyle(colors.primary)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .padding(.vertical, JohoDimensions.spacingSM)
+                .background(colors.surfaceInverted)
+
+                ScrollView {
+                    ShareableContactCard(contact: contact)
+                        .padding(JohoDimensions.spacingLG)
+                }
             }
             .johoBackground()
             .presentationDetents([.medium, .large])
-        }
-        .fullScreenCover(item: $cropImageItem) { item in
-            CircularImageCropperView(
-                image: item.image,
-                scale: $cropScale,
-                offset: $cropOffset,
-                onCancel: { cropImageItem = nil },
-                onDone: { croppedImage in
-                    editImageData = croppedImage.jpegData(compressionQuality: 0.8)
-                    cropImageItem = nil
-                }
-            )
+            .presentationDragIndicator(.hidden)
         }
         .onAppear {
             populateEditFields()
@@ -164,9 +179,7 @@ struct ContactDetailView: View {
                 do {
                     if let data = try await item.loadTransferable(type: Data.self),
                        let image = UIImage(data: data) {
-                        cropScale = 1.0
-                        cropOffset = .zero
-                        cropImageItem = CropImageItem(image: image)
+                        editImageData = image.jpegData(compressionQuality: 0.8)
                     }
                 } catch {
                     Log.e("Failed to load photo: \(error)")
@@ -805,7 +818,7 @@ struct ContactDetailView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         if let birthday = contact.birthday {
-                            Text(birthday.formatted(.dateTime.month(.wide).day()))
+                            Text(birthday.formatted(.dateTime.year().month(.wide).day()))
                                 .font(JohoFont.headline)
                                 .foregroundStyle(colors.primary)
 
@@ -1395,11 +1408,6 @@ struct JohoContactEditorSheet: View {
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var selectedImageData: Data?
 
-    // Image cropper state - using Identifiable wrapper for reliable fullScreenCover
-    @State private var cropImageItem: CropImageItem?
-    @State private var cropScale: CGFloat = 1.0
-    @State private var cropOffset: CGSize = .zero
-
     // Icon picker
     @State private var selectedSymbol: String
     @State private var showingIconPicker = false
@@ -1564,10 +1572,7 @@ struct JohoContactEditorSheet: View {
                                 do {
                                     if let data = try await item.loadTransferable(type: Data.self),
                                        let image = UIImage(data: data) {
-                                        // Show cropper using item-based presentation (more reliable)
-                                        cropScale = 1.0
-                                        cropOffset = .zero
-                                        cropImageItem = CropImageItem(image: image)
+                                        selectedImageData = image.jpegData(compressionQuality: 0.8)
                                     }
                                 } catch {
                                     Log.e("Failed to load photo: \(error)")
@@ -1802,20 +1807,6 @@ struct JohoContactEditorSheet: View {
         }
         .johoBackground()
         .navigationBarHidden(true)
-        .fullScreenCover(item: $cropImageItem) { item in
-            CircularImageCropperView(
-                image: item.image,
-                scale: $cropScale,
-                offset: $cropOffset,
-                onCancel: {
-                    cropImageItem = nil
-                },
-                onDone: { croppedImage in
-                    selectedImageData = croppedImage.jpegData(compressionQuality: 0.8)
-                    cropImageItem = nil
-                }
-            )
-        }
     }
 
     // MARK: - Symbol Decoration Picker
@@ -2015,252 +2006,6 @@ struct JohoContactEditorSheet: View {
 
 /// Convenience alias for birthday-focused editor (from Special Days page)
 typealias JohoBirthdayEditorSheet = JohoContactEditorSheet
-
-// MARK: - Crop Image Item (Identifiable wrapper for fullScreenCover)
-
-/// Wrapper to make UIImage work with item-based fullScreenCover presentation
-struct CropImageItem: Identifiable {
-    let id = UUID()
-    let image: UIImage
-}
-
-// MARK: - Circular Image Cropper
-
-/// Full-screen image cropper with pinch-to-zoom and drag-to-pan
-struct CircularImageCropperView: View {
-    let image: UIImage
-    @Binding var scale: CGFloat
-    @Binding var offset: CGSize
-    let onCancel: () -> Void
-    let onDone: (UIImage) -> Void
-
-    // Gesture state
-    @State private var lastScale: CGFloat = 1.0
-    @State private var lastOffset: CGSize = .zero
-
-    private let cropSize: CGFloat = 280
-    private let minScale: CGFloat = 0.5
-    private let maxScale: CGFloat = 4.0
-
-    var body: some View {
-        ZStack {
-            // Dark background
-            Color.black.ignoresSafeArea()
-
-            VStack(spacing: 0) {
-                // Top bar with title only
-                Text("Move and Scale")
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .foregroundStyle(.white)
-                    .padding(.top, 8)  // 情報デザイン: Max 8pt top padding
-                    .padding(.bottom, 8)
-
-                Spacer()
-
-                // Crop area
-                ZStack {
-                    // The image (can be zoomed/panned)
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                        .scaleEffect(scale)
-                        .offset(offset)
-                        .frame(width: cropSize, height: cropSize)
-                        .clipped()
-
-                    // Circular mask overlay
-                    CircularMaskOverlay(cropSize: cropSize)
-                }
-                .frame(width: cropSize, height: cropSize)
-                .gesture(dragGesture)
-                .gesture(magnificationGesture)
-
-                Spacer()
-
-                // Hint text
-                Text("Pinch to zoom • Drag to move")
-                    .font(.system(size: 13, weight: .medium, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.6))
-                    .padding(.bottom, 24)
-
-                // Cancel/Done buttons below photo (情報デザイン マルバツ style)
-                HStack(spacing: 20) {
-                    // × Cancel (Batsu = No/Wrong)
-                    Button(action: onCancel) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 16, weight: .bold, design: .rounded))
-                            Text("Cancel")
-                                .font(.system(size: 16, weight: .semibold, design: .rounded))
-                        }
-                        .foregroundStyle(Color.black)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(Color.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .stroke(Color.black, lineWidth: 2)
-                        )
-                    }
-
-                    // ○ Done (Maru = Yes/Correct)
-                    Button(action: cropAndSave) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "circle")
-                                .font(.system(size: 16, weight: .bold, design: .rounded))
-                            Text("Done")
-                                .font(.system(size: 16, weight: .bold, design: .rounded))
-                        }
-                        .foregroundStyle(Color.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(Color.black)
-                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    }
-                }
-                .padding(.horizontal, 32)
-                .padding(.bottom, 50)
-            }
-        }
-    }
-
-    // MARK: - Gestures
-
-    private var dragGesture: some Gesture {
-        DragGesture()
-            .onChanged { value in
-                offset = CGSize(
-                    width: lastOffset.width + value.translation.width,
-                    height: lastOffset.height + value.translation.height
-                )
-            }
-            .onEnded { _ in
-                lastOffset = offset
-                constrainOffset()
-            }
-    }
-
-    private var magnificationGesture: some Gesture {
-        MagnificationGesture()
-            .onChanged { value in
-                let newScale = lastScale * value
-                scale = min(max(newScale, minScale), maxScale)
-            }
-            .onEnded { _ in
-                lastScale = scale
-                constrainOffset()
-            }
-    }
-
-    private func constrainOffset() {
-        // Keep image within reasonable bounds
-        let maxOffset = cropSize * scale / 2
-        withAnimation(.easeOut(duration: 0.2)) {
-            offset.width = min(max(offset.width, -maxOffset), maxOffset)
-            offset.height = min(max(offset.height, -maxOffset), maxOffset)
-            lastOffset = offset
-        }
-    }
-
-    // MARK: - Crop and Save
-
-    private func cropAndSave() {
-        let croppedImage = cropImage()
-        onDone(croppedImage)
-    }
-
-    private func cropImage() -> UIImage {
-        let outputSize: CGFloat = 400
-
-        // Normalize orientation so cgImage coordinates match UIImage coordinates
-        let normalizedImage = normalizeOrientation(image)
-        let imageSize = normalizedImage.size
-
-        // scaledToFill: the image fills the cropSize square
-        let fillScale = max(cropSize / imageSize.width, cropSize / imageSize.height)
-
-        // The displayed image size (before user zoom)
-        let displayedWidth = imageSize.width * fillScale
-        let displayedHeight = imageSize.height * fillScale
-
-        // Center offset of the displayed image within the crop square
-        let baseOffsetX = (displayedWidth - cropSize) / 2
-        let baseOffsetY = (displayedHeight - cropSize) / 2
-
-        // Convert the crop circle center to image pixel coordinates
-        // The user's offset shifts the image; the visible center shifts opposite
-        let visibleCenterX = baseOffsetX + cropSize / 2 - offset.width
-        let visibleCenterY = baseOffsetY + cropSize / 2 - offset.height
-
-        // Convert from displayed coordinates to image pixel coordinates
-        let pixelCenterX = visibleCenterX / (fillScale * scale)
-        let pixelCenterY = visibleCenterY / (fillScale * scale)
-
-        // The visible square side in image pixel coordinates
-        let visiblePixelSize = cropSize / (fillScale * scale)
-
-        let cropRect = CGRect(
-            x: pixelCenterX - visiblePixelSize / 2,
-            y: pixelCenterY - visiblePixelSize / 2,
-            width: visiblePixelSize,
-            height: visiblePixelSize
-        )
-
-        // Render the cropped circular image
-        let renderer = UIGraphicsImageRenderer(size: CGSize(width: outputSize, height: outputSize))
-        return renderer.image { _ in
-            let circlePath = UIBezierPath(ovalIn: CGRect(x: 0, y: 0, width: outputSize, height: outputSize))
-            circlePath.addClip()
-
-            let scaleRatio = outputSize / visiblePixelSize
-            let drawRect = CGRect(
-                x: -cropRect.origin.x * scaleRatio,
-                y: -cropRect.origin.y * scaleRatio,
-                width: imageSize.width * scaleRatio,
-                height: imageSize.height * scaleRatio
-            )
-            normalizedImage.draw(in: drawRect)
-        }
-    }
-
-    /// Normalize image orientation to .up so pixel coordinates match display coordinates
-    private func normalizeOrientation(_ image: UIImage) -> UIImage {
-        guard image.imageOrientation != .up else { return image }
-        let renderer = UIGraphicsImageRenderer(size: image.size)
-        return renderer.image { _ in
-            image.draw(at: .zero)
-        }
-    }
-}
-
-// MARK: - Circular Mask Overlay
-
-private struct CircularMaskOverlay: View {
-    let cropSize: CGFloat
-
-    var body: some View {
-        ZStack {
-            // Semi-transparent overlay with circular hole
-            Rectangle()
-                .fill(Color.black.opacity(0.5))
-                .mask(
-                    ZStack {
-                        Rectangle()
-                        Circle()
-                            .frame(width: cropSize, height: cropSize)
-                            .blendMode(.destinationOut)
-                    }
-                    .compositingGroup()
-                )
-
-            // Circle border
-            Circle()
-                .stroke(Color.white, lineWidth: 2)
-                .frame(width: cropSize, height: cropSize)
-        }
-    }
-}
 
 // MARK: - Contact Symbol Picker (情報デザイン Compliant)
 

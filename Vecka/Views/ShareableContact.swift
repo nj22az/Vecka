@@ -254,7 +254,7 @@ struct ShareableContactCard: View {
                                 Image(systemName: "birthday.cake.fill")
                                     .font(.system(size: 11, weight: .bold))
                                     .foregroundStyle(JohoColors.pink)
-                                Text(birthday.formatted(.dateTime.month(.abbreviated).day()))
+                                Text(birthday.formatted(.dateTime.year().month(.abbreviated).day()))
                                     .font(.system(size: 12, weight: .medium, design: .rounded))
                                     .foregroundStyle(colors.primary)
                             }
@@ -383,10 +383,12 @@ struct ContactShareButton: View {
     }
 }
 
-/// Compact share button for toolbars
+/// Compact share button for toolbars (28x28 circle matching FactShareButton pattern)
 @available(iOS 16.0, *)
 struct ContactShareIconButton: View {
     let contact: Contact
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private var snapshot: ShareableContactSnapshot {
         let size = ShareableContactSnapshot.calculateSize(for: contact)
@@ -401,8 +403,16 @@ struct ContactShareIconButton: View {
                 image: Image(systemName: contact.group.icon)
             )
         ) {
-            Image(systemName: "square.and.arrow.up")
+            ZStack {
+                Circle()
+                    .fill(colors.surface)
+                    .frame(width: 28, height: 28)
+                Image(systemName: "square.and.arrow.up")
+                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .foregroundStyle(colors.primary)
+            }
         }
+        .buttonStyle(.plain)
     }
 }
 
