@@ -89,20 +89,19 @@ struct VeckaLargeWidgetView: View {
                     .frame(height: 1.5)
                     .padding(.horizontal, 12 * scale)
 
-                // Upcoming list
-                ScrollView {
-                    VStack(spacing: 6 * scale) {
-                        if upcomingItems.isEmpty {
-                            emptyState(scale: scale)
-                        } else {
-                            ForEach(Array(upcomingItems.enumerated()), id: \.offset) { _, item in
-                                upcomingRow(item: item, scale: scale)
-                            }
+                // Upcoming list (no ScrollView - widgets must be static)
+                VStack(spacing: 6 * scale) {
+                    if upcomingItems.isEmpty {
+                        emptyState(scale: scale)
+                    } else {
+                        ForEach(Array(upcomingItems.enumerated()), id: \.offset) { _, item in
+                            upcomingRow(item: item, scale: scale)
                         }
                     }
-                    .padding(.horizontal, 12 * scale)
-                    .padding(.vertical, 8 * scale)
+                    Spacer(minLength: 0)
                 }
+                .padding(.horizontal, 12 * scale)
+                .padding(.vertical, 8 * scale)
 
                 // Divider
                 Rectangle()
