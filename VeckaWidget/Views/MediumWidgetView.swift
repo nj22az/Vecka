@@ -12,6 +12,7 @@ import WidgetKit
 
 struct VeckaMediumWidgetView: View {
     let entry: VeckaWidgetEntry
+    @Environment(\.colorScheme) private var colorScheme
 
     // MARK: - Calendar
 
@@ -130,7 +131,7 @@ struct VeckaMediumWidgetView: View {
 
                 // Divider
                 Rectangle()
-                    .fill(JohoWidget.Colors.border)
+                    .fill(JohoWidget.Colors.border(for: colorScheme))
                     .frame(width: 1.5)
 
                 // Right column: This week / Coming up
@@ -140,7 +141,7 @@ struct VeckaMediumWidgetView: View {
         }
         .widgetURL(URL(string: "vecka://today"))
         .containerBackground(for: .widget) {
-            JohoWidget.Colors.content
+            JohoWidget.Colors.content(for: colorScheme)
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(accessibilityLabel)
@@ -154,19 +155,19 @@ struct VeckaMediumWidgetView: View {
             HStack {
                 Text("TODAY")
                     .font(.system(size: 10 * scale, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.textSecondary)
+                    .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
                     .tracking(1)
                 Spacer()
                 Text("W\(entry.weekNumber)")
                     .font(.system(size: 9 * scale, weight: .black, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.text)
+                    .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
                     .padding(.horizontal, 6 * scale)
                     .padding(.vertical, 2 * scale)
                     .background(JohoWidget.Colors.now)
                     .clipShape(RoundedRectangle(cornerRadius: 4 * scale, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: 4 * scale, style: .continuous)
-                            .stroke(JohoWidget.Colors.border, lineWidth: 1)
+                            .stroke(JohoWidget.Colors.border(for: colorScheme), lineWidth: 1)
                     )
             }
             .padding(.horizontal, 10 * scale)
@@ -189,7 +190,7 @@ struct VeckaMediumWidgetView: View {
             // Date display
             Text(entry.date.formatted(.dateTime.weekday(.wide).month(.abbreviated).day().locale(.autoupdatingCurrent)))
                 .font(.system(size: 10 * scale, weight: .medium, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.textSecondary)
+                .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
                 .padding(.bottom, 8 * scale)
         }
     }
@@ -202,7 +203,7 @@ struct VeckaMediumWidgetView: View {
             HStack {
                 Text(thisWeekSpecials.isEmpty ? "COMING UP" : "THIS WEEK")
                     .font(.system(size: 10 * scale, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.textSecondary)
+                    .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
                     .tracking(1)
                 Spacer()
             }
@@ -217,7 +218,7 @@ struct VeckaMediumWidgetView: View {
                 // No specials - show a message
                 Text("No specials this week")
                     .font(.system(size: 11 * scale, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.textSecondary)
+                    .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
                     .frame(maxWidth: .infinity)
             } else {
                 VStack(spacing: 6 * scale) {
@@ -233,7 +234,7 @@ struct VeckaMediumWidgetView: View {
             // Month indicator
             Text(monthShort)
                 .font(.system(size: 10 * scale, weight: .medium, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.textSecondary)
+                .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
                 .padding(.horizontal, 10 * scale)
                 .padding(.bottom, 8 * scale)
         }
@@ -245,11 +246,11 @@ struct VeckaMediumWidgetView: View {
         HStack(spacing: 6 * scale) {
             Image(systemName: item.symbol)
                 .font(.system(size: 12 * scale, weight: .bold))
-                .foregroundStyle(JohoWidget.Colors.text)
+                .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
 
             Text(item.name)
                 .font(.system(size: 11 * scale, weight: .semibold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text)
+                .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
 
@@ -257,15 +258,15 @@ struct VeckaMediumWidgetView: View {
 
             Text(item.weekday ?? item.dateString ?? "")
                 .font(.system(size: 10 * scale, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.textSecondary)
+                .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
         }
         .padding(.horizontal, 8 * scale)
         .padding(.vertical, 6 * scale)
-        .background(JohoWidget.Colors.content)
+        .background(JohoWidget.Colors.content(for: colorScheme))
         .clipShape(RoundedRectangle(cornerRadius: 8 * scale, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 8 * scale, style: .continuous)
-                .stroke(JohoWidget.Colors.border, lineWidth: 2)
+                .stroke(JohoWidget.Colors.border(for: colorScheme), lineWidth: 2)
         )
     }
 
@@ -273,11 +274,11 @@ struct VeckaMediumWidgetView: View {
         HStack(spacing: 6 * scale) {
             Image(systemName: fact.symbol)
                 .font(.system(size: 12 * scale, weight: .bold))
-                .foregroundStyle(JohoWidget.Colors.text)
+                .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
 
             Text(fact.text)
                 .font(.system(size: 11 * scale, weight: .semibold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text)
+                .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
                 .lineLimit(2)
                 .minimumScaleFactor(0.8)
 
@@ -285,11 +286,11 @@ struct VeckaMediumWidgetView: View {
         }
         .padding(.horizontal, 8 * scale)
         .padding(.vertical, 6 * scale)
-        .background(JohoWidget.Colors.content)
+        .background(JohoWidget.Colors.content(for: colorScheme))
         .clipShape(RoundedRectangle(cornerRadius: 8 * scale, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 8 * scale, style: .continuous)
-                .stroke(JohoWidget.Colors.border, lineWidth: 2)
+                .stroke(JohoWidget.Colors.border(for: colorScheme), lineWidth: 2)
         )
     }
 

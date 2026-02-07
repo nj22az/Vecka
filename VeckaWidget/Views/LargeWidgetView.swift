@@ -12,6 +12,7 @@ import WidgetKit
 
 struct VeckaLargeWidgetView: View {
     let entry: VeckaWidgetEntry
+    @Environment(\.colorScheme) private var colorScheme
 
     // MARK: - Calendar
 
@@ -85,7 +86,7 @@ struct VeckaLargeWidgetView: View {
 
                 // Divider
                 Rectangle()
-                    .fill(JohoWidget.Colors.border)
+                    .fill(JohoWidget.Colors.border(for: colorScheme))
                     .frame(height: 1.5)
                     .padding(.horizontal, 12 * scale)
 
@@ -105,7 +106,7 @@ struct VeckaLargeWidgetView: View {
 
                 // Divider
                 Rectangle()
-                    .fill(JohoWidget.Colors.border)
+                    .fill(JohoWidget.Colors.border(for: colorScheme))
                     .frame(height: 1.5)
                     .padding(.horizontal, 12 * scale)
 
@@ -117,7 +118,7 @@ struct VeckaLargeWidgetView: View {
         }
         .widgetURL(URL(string: "vecka://upcoming"))
         .containerBackground(for: .widget) {
-            JohoWidget.Colors.content
+            JohoWidget.Colors.content(for: colorScheme)
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(accessibilityLabel)
@@ -129,7 +130,7 @@ struct VeckaLargeWidgetView: View {
         HStack {
             Text("UPCOMING")
                 .font(.system(size: 14 * scale, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text)
+                .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
                 .tracking(1)
 
             Spacer()
@@ -138,19 +139,19 @@ struct VeckaLargeWidgetView: View {
             HStack(spacing: 6 * scale) {
                 Text("W\(entry.weekNumber)")
                     .font(.system(size: 11 * scale, weight: .black, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.text)
+                    .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
                     .padding(.horizontal, 8 * scale)
                     .padding(.vertical, 4 * scale)
                     .background(JohoWidget.Colors.now)
                     .clipShape(RoundedRectangle(cornerRadius: 6 * scale, style: .continuous))
                     .overlay(
                         RoundedRectangle(cornerRadius: 6 * scale, style: .continuous)
-                            .stroke(JohoWidget.Colors.border, lineWidth: 1.5)
+                            .stroke(JohoWidget.Colors.border(for: colorScheme), lineWidth: 1.5)
                     )
 
                 Text(yearString)
                     .font(.system(size: 11 * scale, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.textSecondary)
+                    .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
             }
         }
     }
@@ -162,13 +163,13 @@ struct VeckaLargeWidgetView: View {
             // Symbol
             Image(systemName: item.symbol)
                 .font(.system(size: 14 * scale, weight: .bold))
-                .foregroundStyle(JohoWidget.Colors.text)
+                .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
                 .frame(width: 20 * scale)
 
             // Name
             Text(item.name)
                 .font(.system(size: 13 * scale, weight: .semibold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text)
+                .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
 
@@ -178,20 +179,20 @@ struct VeckaLargeWidgetView: View {
             VStack(alignment: .trailing, spacing: 0) {
                 Text(item.date.formatted(.dateTime.weekday(.abbreviated).locale(.autoupdatingCurrent)).uppercased())
                     .font(.system(size: 10 * scale, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.textSecondary)
+                    .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
 
                 Text(item.date.formatted(.dateTime.month(.abbreviated).day().locale(.autoupdatingCurrent)).uppercased())
                     .font(.system(size: 11 * scale, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.text)
+                    .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
             }
         }
         .padding(.horizontal, 10 * scale)
         .padding(.vertical, 8 * scale)
-        .background(JohoWidget.Colors.content)
+        .background(JohoWidget.Colors.content(for: colorScheme))
         .clipShape(RoundedRectangle(cornerRadius: 10 * scale, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 10 * scale, style: .continuous)
-                .stroke(JohoWidget.Colors.border, lineWidth: 2)
+                .stroke(JohoWidget.Colors.border(for: colorScheme), lineWidth: 2)
         )
     }
 
@@ -201,11 +202,11 @@ struct VeckaLargeWidgetView: View {
         VStack(spacing: 8 * scale) {
             Image(systemName: "calendar.badge.checkmark")
                 .font(.system(size: 32 * scale, weight: .medium))
-                .foregroundStyle(JohoWidget.Colors.textSecondary)
+                .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
 
             Text("No upcoming specials")
                 .font(.system(size: 13 * scale, weight: .medium, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.textSecondary)
+                .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 40 * scale)
@@ -217,20 +218,20 @@ struct VeckaLargeWidgetView: View {
         HStack(spacing: 8 * scale) {
             Text("TODAY")
                 .font(.system(size: 10 * scale, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.textSecondary)
+                .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
                 .tracking(1)
 
             Rectangle()
-                .fill(JohoWidget.Colors.border)
+                .fill(JohoWidget.Colors.border(for: colorScheme))
                 .frame(width: 1, height: 14 * scale)
 
             Image(systemName: fact.symbol)
                 .font(.system(size: 12 * scale, weight: .bold))
-                .foregroundStyle(JohoWidget.Colors.text)
+                .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
 
             Text(fact.text)
                 .font(.system(size: 11 * scale, weight: .semibold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text)
+                .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
 
@@ -238,11 +239,11 @@ struct VeckaLargeWidgetView: View {
         }
         .padding(.horizontal, 10 * scale)
         .padding(.vertical, 8 * scale)
-        .background(JohoWidget.Colors.content)
+        .background(JohoWidget.Colors.content(for: colorScheme))
         .clipShape(RoundedRectangle(cornerRadius: 8 * scale, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 8 * scale, style: .continuous)
-                .stroke(JohoWidget.Colors.border, lineWidth: 2)
+                .stroke(JohoWidget.Colors.border(for: colorScheme), lineWidth: 2)
         )
     }
 

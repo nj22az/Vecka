@@ -11,10 +11,10 @@ enum JohoWidget {
 
     // MARK: - Semantic Colors
     /// Colors have MEANING - never decorative
-    /// High-contrast design: Black boxes, red text, white background
+    /// High-contrast design with dark mode support
     /// Note: Widget extensions cannot use Color("name") from asset catalogs
     enum Colors {
-        // Primary semantic colors
+        // Primary semantic colors (same in light/dark - they're semantic)
         static let now = Color(hex: "FFE566")           // Yellow - Today/Current
         static let event = Color(hex: "A5F3FC")         // Cyan - Scheduled events
         static let holiday = Color(hex: "FECDD3")       // Pink - Special days
@@ -24,7 +24,7 @@ enum JohoWidget {
         static let alert = Color(hex: "E53935")         // Red - Warnings/Sunday
         static let note = Color(hex: "FFE566")          // Yellow - Personal notes
 
-        // Structural colors - HIGH CONTRAST (hex values for widget compatibility)
+        // MARK: - Light Mode Structural Colors
         static let border = Color.black                  // Always pure black
         static let content = Color.white                 // Container backgrounds
         static let canvas = Color.white                  // Widget background
@@ -32,10 +32,49 @@ enum JohoWidget {
         static let textSecondary = Color(hex: "1A1A1A")  // Near-black for secondary
         static let textInverted = Color.white            // Text on dark backgrounds
 
+        // MARK: - Dark Mode Structural Colors
+        static let borderDark = Color.white              // White borders in dark mode
+        static let contentDark = Color(hex: "1C1C1E")    // Dark container backgrounds
+        static let canvasDark = Color(hex: "1C1C1E")     // Dark widget background
+        static let textDark = Color(hex: "FF6B6B")       // Lighter red for dark mode
+        static let textSecondaryDark = Color(hex: "EBEBF5") // Light gray for dark mode
+        static let textInvertedDark = Color.black        // Text on light backgrounds in dark mode
+
         // Day-specific (for calendar grids)
         static let sunday = Color(hex: "E53935")        // Red - weekend end
         static let saturday = Color(hex: "E9D5FF")      // Purple - weekend start
         static let weekday = Color.white                 // Normal days
+
+        // MARK: - Color Scheme Aware Accessors
+        /// Returns appropriate border color for the given color scheme
+        static func border(for scheme: ColorScheme) -> Color {
+            scheme == .dark ? borderDark : border
+        }
+
+        /// Returns appropriate content background color
+        static func content(for scheme: ColorScheme) -> Color {
+            scheme == .dark ? contentDark : content
+        }
+
+        /// Returns appropriate canvas background color
+        static func canvas(for scheme: ColorScheme) -> Color {
+            scheme == .dark ? canvasDark : canvas
+        }
+
+        /// Returns appropriate primary text color
+        static func text(for scheme: ColorScheme) -> Color {
+            scheme == .dark ? textDark : text
+        }
+
+        /// Returns appropriate secondary text color
+        static func textSecondary(for scheme: ColorScheme) -> Color {
+            scheme == .dark ? textSecondaryDark : textSecondary
+        }
+
+        /// Returns appropriate inverted text color
+        static func textInverted(for scheme: ColorScheme) -> Color {
+            scheme == .dark ? textInvertedDark : textInverted
+        }
     }
 
     // MARK: - Border Weights by Widget Size

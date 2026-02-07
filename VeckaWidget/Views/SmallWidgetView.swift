@@ -12,6 +12,7 @@ import WidgetKit
 
 struct VeckaSmallWidgetView: View {
     let entry: VeckaWidgetEntry
+    @Environment(\.colorScheme) private var colorScheme
 
     // MARK: - Computed Properties
 
@@ -61,8 +62,8 @@ struct VeckaSmallWidgetView: View {
     }
 
     private var backgroundColor: Color {
-        // High contrast: white background for all states
-        return JohoWidget.Colors.content
+        // High contrast: adapts to color scheme
+        return JohoWidget.Colors.content(for: colorScheme)
     }
 
     private var fact: WidgetFacts.Fact {
@@ -80,11 +81,11 @@ struct VeckaSmallWidgetView: View {
                 HStack(spacing: 6 * scale) {
                     Image(systemName: hasSpecialDay ? specialDaySymbol : fact.symbol)
                         .font(.system(size: 14 * scale, weight: .bold))
-                        .foregroundStyle(JohoWidget.Colors.text)
+                        .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
 
                     Text(hasSpecialDay ? (specialDayName ?? "") : fact.text)
                         .font(.system(size: 11 * scale, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoWidget.Colors.text)
+                        .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
                         .lineLimit(2)
                         .minimumScaleFactor(0.7)
 
@@ -99,16 +100,16 @@ struct VeckaSmallWidgetView: View {
                 VStack(spacing: 2 * scale) {
                     Text(monthShort)
                         .font(.system(size: 12 * scale, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoWidget.Colors.textSecondary)
+                        .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
                         .tracking(1)
 
                     Text("\(dayOfMonth)")
                         .font(.system(size: 48 * scale, weight: .black, design: .rounded))
-                        .foregroundStyle(JohoWidget.Colors.text)
+                        .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
 
                     Text(weekdayFull)
                         .font(.system(size: 12 * scale, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoWidget.Colors.textSecondary)
+                        .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
                         .tracking(1)
                 }
 
