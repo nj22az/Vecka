@@ -113,15 +113,8 @@ struct VeckaSmallWidgetView: View {
                 }
 
                 Spacer(minLength: 0)
-
-                // Bottom: Week badge with proper spacing
-                HStack {
-                    Spacer()
-                    weekBadge(scale: scale)
-                }
-                .padding(.horizontal, 12 * scale)
-                .padding(.bottom, 14 * scale)
             }
+            .padding(.bottom, 12 * scale)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .widgetURL(URL(string: "vecka://today"))
@@ -130,22 +123,6 @@ struct VeckaSmallWidgetView: View {
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(accessibilityLabel)
-    }
-
-    // MARK: - Week Badge
-
-    private func weekBadge(scale: CGFloat) -> some View {
-        Text("W\(entry.weekNumber)")
-            .font(.system(size: 10 * scale, weight: .black, design: .rounded))
-            .foregroundStyle(JohoWidget.Colors.text)
-            .padding(.horizontal, 8 * scale)
-            .padding(.vertical, 4 * scale)
-            .background(JohoWidget.Colors.content)
-            .clipShape(RoundedRectangle(cornerRadius: 6 * scale, style: .continuous))
-            .overlay(
-                RoundedRectangle(cornerRadius: 6 * scale, style: .continuous)
-                    .stroke(JohoWidget.Colors.border, lineWidth: 1.5)
-            )
     }
 
     private var accessibilityLabel: String {
