@@ -39,7 +39,6 @@ struct VeckaApp: App {
             ContactSocialProfile.self,
             ContactURL.self,
             ContactRelation.self,
-            DuplicateSuggestion.self,
             // World Clocks
             WorldClock.self,
             // Facts

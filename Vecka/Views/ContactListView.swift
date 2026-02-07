@@ -25,21 +25,13 @@ struct ContactListView: View {
     @State private var showingContactPicker = false
     @State private var selectedContact: Contact?
     @State private var editingContact: Contact?
-    @State private var showingDuplicateReview = false
-    @State private var duplicateSuggestionCount = 0
-    @State private var showingExportSheet = false
-    @State private var exportURL: URL?
     @State private var isEditMode = false  // 情報デザイン: Edit mode for contact management
     @State private var selectedForDeletion: Set<UUID> = []  // Multi-select for bulk delete
 
     // 情報デザイン: Cached computed properties to prevent recalculation on every render
     @State private var cachedFilteredContacts: [Contact] = []
     @State private var cachedGroupedContacts: [String: [Contact]] = [:]
-    @State private var cachedAvailableLetters: [String] = []
     @State private var cachedSortedSections: [String] = []
-
-    // Duplicate detection manager
-    private let duplicateManager = DuplicateContactManager.shared
 
     // 情報デザイン accent color for Contacts (Warm Brown - from PageHeaderColor)
     private var accentColor: Color { PageHeaderColor.contacts.accent }
@@ -59,7 +51,6 @@ struct ContactListView: View {
     var filteredContacts: [Contact] { cachedFilteredContacts }
     var groupedContacts: [String: [Contact]] { cachedGroupedContacts }
     var sortedSections: [String] { cachedSortedSections }
-    var allAvailableLetters: [String] { cachedAvailableLetters }
 
     // MARK: - Cache Management (情報デザイン: Memoization for performance)
 
@@ -83,16 +74,6 @@ struct ContactListView: View {
             result = result.filter { $0.group == group }
         }
 
-        // 情報デザイン: Filter by selected letter (show one group at a time)
-        if let letter = filterLetter {
-            result = result.filter { contact in
-                let firstLetter = contact.familyName.isEmpty ?
-                    (contact.givenName.isEmpty ? "#" : String(contact.givenName.prefix(1).uppercased())) :
-                    String(contact.familyName.prefix(1).uppercased())
-                return firstLetter.uppercased() == letter
-            }
-        }
-
         cachedFilteredContacts = result
 
         // Step 2: Build grouped contacts from filtered
@@ -106,15 +87,6 @@ struct ContactListView: View {
 
         // Step 3: Build sorted sections
         cachedSortedSections = grouped.keys.sorted()
-
-        // Step 4: Build all available letters (from unfiltered contacts)
-        let allGrouped = Dictionary(grouping: contacts) { contact in
-            let firstLetter = contact.familyName.isEmpty ?
-                (contact.givenName.isEmpty ? "#" : String(contact.givenName.prefix(1).uppercased())) :
-                String(contact.familyName.prefix(1).uppercased())
-            return firstLetter.uppercased()
-        }
-        cachedAvailableLetters = allGrouped.keys.sorted()
     }
 
     var body: some View {
@@ -124,14 +96,6 @@ struct ContactListView: View {
                 contactsHeader
                     .padding(.horizontal, JohoDimensions.spacingLG)
                     .padding(.top, JohoDimensions.spacingSM)
-
-                // Duplicate suggestion banner (情報デザイン: non-aggressive warning)
-                if duplicateSuggestionCount > 0 {
-                    DuplicateSuggestionBanner(suggestionCount: duplicateSuggestionCount) {
-                        showingDuplicateReview = true
-                    }
-                    .padding(.horizontal, JohoDimensions.spacingLG)
-                }
 
                 // MAIN CONTENT CONTAINER (情報デザイン: All content in white container)
                 VStack(spacing: 0) {
@@ -182,34 +146,11 @@ struct ContactListView: View {
             JohoContactEditorSheet(mode: .contact, existingContact: contact)
                 .presentationCornerRadius(20)
         }
-        .sheet(isPresented: $showingDuplicateReview) {
-            DuplicateReviewSheet()
-                .onDisappear {
-                    loadDuplicateSuggestions()
-                }
-        }
-        .sheet(isPresented: $showingExportSheet) {
-            ContactExportSheet(contacts: contacts)
-        }
-        .sheet(isPresented: Binding(
-            get: { exportURL != nil },
-            set: { if !$0 { exportURL = nil } }
-        )) {
-            if let url = exportURL {
-                ShareSheet(url: url)
-            }
-        }
         .onAppear {
-            loadDuplicateSuggestions()
             refreshContactCache()  // 情報デザイン: Initialize cache on appear
         }
         .onChange(of: contacts.count) { _, _ in
-            // Rescan when contacts change
             refreshContactCache()  // 情報デザイン: Rebuild cache when contacts change
-            Task { @MainActor in
-                await duplicateManager.scanForDuplicates(contacts: contacts, modelContext: modelContext)
-                loadDuplicateSuggestions()
-            }
         }
         .onChange(of: searchText) { _, _ in
             refreshContactCache()  // 情報デザイン: Rebuild cache when search changes
@@ -217,23 +158,6 @@ struct ContactListView: View {
         .onChange(of: selectedGroup) { _, _ in
             refreshContactCache()  // 情報デザイン: Rebuild cache when group filter changes
         }
-        .onChange(of: filterLetter) { _, _ in
-            refreshContactCache()  // 情報デザイン: Rebuild cache when letter filter changes
-        }
-    }
-
-    // MARK: - Duplicate Detection
-
-    private func loadDuplicateSuggestions() {
-        let suggestions = duplicateManager.loadPendingSuggestions(modelContext: modelContext)
-
-        // Only count suggestions where BOTH contacts still exist
-        // This prevents showing "duplicates" banner when contacts have been deleted
-        let contactIds = Set(contacts.map { $0.id })
-        let validSuggestions = suggestions.filter { suggestion in
-            contactIds.contains(suggestion.contact1Id) && contactIds.contains(suggestion.contact2Id)
-        }
-        duplicateSuggestionCount = validSuggestions.count
     }
 
     // MARK: - Contacts Page Header (情報デザイン: Golden Standard Pattern)
@@ -333,24 +257,6 @@ struct ContactListView: View {
                         .buttonStyle(.plain)
                         .disabled(contacts.isEmpty)
                         .opacity(contacts.isEmpty ? 0.3 : 1.0)
-
-                        // Thin separator (情報デザイン: solid black, reduced height)
-                        Rectangle()
-                            .fill(colors.border)
-                            .frame(width: 0.5)
-                            .padding(.vertical, 8)
-
-                        // Export button
-                        Button {
-                            showingExportSheet = true
-                        } label: {
-                            Image(systemName: "square.and.arrow.up")
-                                .font(.system(size: 16, weight: .bold, design: .rounded))
-                                .foregroundStyle(PageHeaderColor.contacts.accent)
-                                .johoTouchTarget()
-                                .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
 
                         // Thin separator (情報デザイン: solid black, reduced height)
                         Rectangle()
@@ -505,10 +411,8 @@ struct ContactListView: View {
 
     // MARK: - Contact List Content (情報デザイン: Clean grouped list with letter picker)
 
-    @State private var filterLetter: String?  // 情報デザイン: Filter to show only one letter group
     @State private var selectedGroup: ContactGroup?  // 情報デザイン: Filter by contact group
     @State private var isGroupsExpanded = false  // 情報デザイン: Collapsible group filter
-    @State private var isIndexExpanded = false  // 情報デザイン: Collapsible letter index
 
     private var contactsListContent: some View {
         VStack(spacing: 0) {
@@ -574,78 +478,39 @@ struct ContactListView: View {
         }
     }
 
-    // MARK: - Filter Header Row (情報デザイン: Collapsible GROUPS and INDEX)
+    // MARK: - Filter Header Row (情報デザイン: Collapsible GROUPS)
 
     private var filterHeaderRow: some View {
         VStack(spacing: 0) {
-            // Header row with two collapsible toggles
-            HStack(spacing: 0) {
-                // GROUPS toggle (情報デザイン: Both filters can be active simultaneously)
-                Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        isGroupsExpanded.toggle()
-                    }
-                    HapticManager.selection()
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "folder.fill")
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
-                        Text("GROUPS")
-                            .font(.system(size: 11, weight: .black, design: .rounded))
-                            .tracking(0.5)
-                        if let group = selectedGroup {
-                            Text("• \(group.localizedName)")
-                                .font(.system(size: 10, weight: .bold, design: .rounded))
-                                .foregroundStyle(Color(hex: group.color))
-                        }
-                        Spacer()
-                        Image(systemName: isGroupsExpanded ? "chevron.up" : "chevron.down")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.5))
-                    }
-                    .foregroundStyle(colors.primary)
-                    .padding(.horizontal, JohoDimensions.spacingMD)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .contentShape(Rectangle())
+            // GROUPS toggle
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isGroupsExpanded.toggle()
                 }
-                .buttonStyle(.plain)
-
-                // Vertical divider
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(width: 1)
-
-                // INDEX toggle (情報デザイン: Both filters can be active simultaneously)
-                Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        isIndexExpanded.toggle()
-                    }
-                    HapticManager.selection()
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: "textformat.abc")
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
-                        Text("INDEX")
-                            .font(.system(size: 11, weight: .black, design: .rounded))
-                            .tracking(0.5)
-                        if let letter = filterLetter {
-                            Text("• \(letter)")
-                                .font(.system(size: 11, weight: .black, design: .rounded))
-                                .foregroundStyle(accentColor)
-                        }
-                        Spacer()
-                        Image(systemName: isIndexExpanded ? "chevron.up" : "chevron.down")
+                HapticManager.selection()
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "folder.fill")
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                    Text("GROUPS")
+                        .font(.system(size: 11, weight: .black, design: .rounded))
+                        .tracking(0.5)
+                    if let group = selectedGroup {
+                        Text("• \(group.localizedName)")
                             .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .foregroundStyle(group.swiftUIColor)
                     }
-                    .foregroundStyle(colors.primary)
-                    .padding(.horizontal, JohoDimensions.spacingMD)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .contentShape(Rectangle())
+                    Spacer()
+                    Image(systemName: isGroupsExpanded ? "chevron.up" : "chevron.down")
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.5))
                 }
-                .buttonStyle(.plain)
+                .foregroundStyle(colors.primary)
+                .padding(.horizontal, JohoDimensions.spacingMD)
+                .frame(height: 40)
+                .contentShape(Rectangle())
             }
-            .frame(height: 40)
+            .buttonStyle(.plain)
             .background(colors.surface)
 
             // Expanded: Group filter grid
@@ -655,15 +520,6 @@ struct ContactListView: View {
                     .frame(height: 0.5)
 
                 groupFilterGrid
-            }
-
-            // Expanded: Letter index grid
-            if isIndexExpanded {
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(height: 0.5)
-
-                letterIndexGrid
             }
         }
         .background(colors.surface)
@@ -722,66 +578,12 @@ struct ContactListView: View {
                     .foregroundStyle(selectedGroup == group ? colors.primaryInverted : colors.primary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
-                    .background(selectedGroup == group ? Color(hex: group.color) : colors.inputBackground)
+                    .background(selectedGroup == group ? group.swiftUIColor : colors.inputBackground)
                     .clipShape(Squircle(cornerRadius: 8))
                     .overlay(
                         Squircle(cornerRadius: 8)
                             .stroke(colors.border, lineWidth: selectedGroup == group ? 2 : 1)
                     )
-                }
-            }
-        }
-        .padding(.horizontal, JohoDimensions.spacingMD)
-        .padding(.vertical, JohoDimensions.spacingSM)
-        .background(colors.surface)
-    }
-
-    // MARK: - Letter Index Grid (情報デザイン: Wrapping grid, no scroll)
-
-    private var letterIndexGrid: some View {
-        let populatedLetters = allAvailableLetters
-        let columns = Array(repeating: GridItem(.flexible(), spacing: 6), count: 8)
-
-        return LazyVGrid(columns: columns, spacing: 6) {
-            // "ALL" button
-            Button {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    filterLetter = nil
-                }
-                HapticManager.selection()
-            } label: {
-                Text("ALL")
-                    .font(.system(size: 10, weight: .black, design: .rounded))
-                    .foregroundStyle(filterLetter == nil ? colors.primaryInverted : colors.primary)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 32)
-                    .background(filterLetter == nil ? accentColor : colors.inputBackground)
-                    .clipShape(Squircle(cornerRadius: 6))
-                    .overlay(
-                        Squircle(cornerRadius: 6)
-                            .stroke(colors.border, lineWidth: filterLetter == nil ? 2 : 1)
-                    )
-            }
-
-            // Letter buttons
-            ForEach(populatedLetters, id: \.self) { letter in
-                Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        filterLetter = filterLetter == letter ? nil : letter
-                    }
-                    HapticManager.selection()
-                } label: {
-                    Text(letter)
-                        .font(.system(size: 13, weight: .black, design: .rounded))
-                        .foregroundStyle(filterLetter == letter ? colors.primaryInverted : colors.primary)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 32)
-                        .background(filterLetter == letter ? accentColor : colors.inputBackground)
-                        .clipShape(Squircle(cornerRadius: 6))
-                        .overlay(
-                            Squircle(cornerRadius: 6)
-                                .stroke(colors.border, lineWidth: filterLetter == letter ? 2 : 1)
-                        )
                 }
             }
         }
@@ -1033,7 +835,7 @@ struct JohoContactAvatar: View {
 
     // 情報デザイン: Avatar color based on contact group for visual variety
     // Family=Pink, Friends=Purple, Work=Cyan, Other=Purple
-    private var avatarColor: Color { Color(hex: contact.group.avatarColor) }
+    private var avatarColor: Color { contact.group.swiftUIAvatarColor }
 
     private var fontSize: CGFloat {
         size * 0.4

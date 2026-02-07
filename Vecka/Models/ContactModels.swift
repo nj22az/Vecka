@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 import SwiftData
 import Contacts
 
@@ -44,6 +45,16 @@ enum ContactGroup: String, Codable, CaseIterable {
         case .work: return "0891B2"     // Cyan-600 - professional
         case .other: return "7C3AED"    // Violet-600 - default purple (PEOPLE)
         }
+    }
+
+    /// SwiftUI Color from hex string - eliminates Color(hex:) in views
+    var swiftUIColor: Color {
+        Color(hex: color)
+    }
+
+    /// SwiftUI avatar Color from hex string - eliminates Color(hex:) in views
+    var swiftUIAvatarColor: Color {
+        Color(hex: avatarColor)
     }
 
     var localizedName: String {

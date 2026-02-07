@@ -83,37 +83,16 @@ struct ShareableContactSnapshot: Transferable, @unchecked Sendable {
         // Header: 40pt + divider 2pt
         height += 42
 
-        // Name section (always): 60pt
-        height += 60
+        // Main content: hero left | info right (minHeight 140pt) + divider 2pt
+        height += 140 + 2
 
-        // Contact info rows (28pt each)
-        height += CGFloat(contact.phoneNumbers.count) * 28
-        height += CGFloat(contact.emailAddresses.count) * 28
-
-        // Organization if present: 28pt
-        if let org = contact.organizationName, !org.isEmpty {
-            height += 28
-        }
-
-        // Birthday if present: 28pt
-        if contact.birthday != nil && contact.birthdayKnown {
-            height += 28
-        }
-
-        // Divider before QR: 2pt
-        height += 2
-
-        // QR code section: 120pt
-        height += 120
-
-        // Divider before footer: 2pt
-        height += 2
+        // QR code section: 120pt + divider 2pt
+        height += 120 + 2
 
         // Footer: 32pt
         height += 32
 
-        // Minimum height for cards with little info
-        return CGSize(width: width, height: max(height, 300))
+        return CGSize(width: width, height: height)
     }
 }
 
@@ -136,7 +115,7 @@ struct ShareableContactCard: View {
 
     /// Contact group color for accents
     private var accentColor: Color {
-        Color(hex: contact.group.color)
+        contact.group.swiftUIColor
     }
 
     var body: some View {
@@ -154,11 +133,11 @@ struct ShareableContactCard: View {
                 HStack(spacing: 0) {
                     // LEFT: App branding
                     HStack(spacing: JohoDimensions.spacingSM) {
-                        Image(systemName: "person.crop.rectangle.stack.fill")
+                        Image(systemName: "calendar.badge.clock")
                             .font(.system(size: 14, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary)
 
-                        Text("CONTACTS")
+                        Text("ONSEN PLANNER")
                             .font(.system(size: 12, weight: .black, design: .rounded))
                             .foregroundStyle(colors.primary)
                     }
@@ -188,69 +167,104 @@ struct ShareableContactCard: View {
                     .frame(height: 2)
 
                 // ═══════════════════════════════════════════════════════════════
-                // MAIN CONTENT: Contact info
+                // MAIN CONTENT: Hero photo/initials on left | WALL | Info on right
                 // ═══════════════════════════════════════════════════════════════
-                VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                    // Name (always prominent)
-                    Text(contact.displayName)
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary)
-                        .lineLimit(2)
+                HStack(alignment: .top, spacing: 0) {
+                    // LEFT: Hero avatar
+                    VStack {
+                        Spacer()
+                        if let imageData = contact.imageData, let uiImage = UIImage(data: imageData) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 72, height: 72)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
+                        } else {
+                            ZStack {
+                                Circle()
+                                    .fill(contact.group.swiftUIAvatarColor)
+                                    .frame(width: 72, height: 72)
+                                Text(contact.initials.isEmpty ? "?" : contact.initials)
+                                    .font(.system(size: 28, weight: .black, design: .rounded))
+                                    .foregroundStyle(.white)
+                            }
+                            .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
+                        }
+                        Spacer()
+                    }
+                    .frame(width: 100)
+                    .frame(minHeight: 140)
 
-                    // Organization
-                    if let org = contact.organizationName, !org.isEmpty {
-                        HStack(spacing: 6) {
-                            Image(systemName: "building.2.fill")
-                                .font(.system(size: 11, weight: .bold))
-                                .foregroundStyle(JohoColors.cyan)
-                            Text(org)
-                                .font(.system(size: 12, weight: .medium, design: .rounded))
-                                .foregroundStyle(colors.primary)
-                                .lineLimit(1)
+                    // WALL
+                    Rectangle()
+                        .fill(colors.border)
+                        .frame(width: 1.5)
+
+                    // RIGHT: Contact info
+                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                        // Name (always prominent)
+                        Text(contact.displayName)
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primary)
+                            .lineLimit(2)
+
+                        // Organization
+                        if let org = contact.organizationName, !org.isEmpty {
+                            HStack(spacing: 6) {
+                                Image(systemName: "building.2.fill")
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundStyle(JohoColors.cyan)
+                                Text(org)
+                                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                                    .foregroundStyle(colors.primary)
+                                    .lineLimit(1)
+                            }
+                        }
+
+                        // Phone numbers
+                        ForEach(contact.phoneNumbers.prefix(2), id: \.id) { phone in
+                            HStack(spacing: 6) {
+                                Image(systemName: "phone.fill")
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundStyle(JohoColors.green)
+                                Text(phone.value)
+                                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                                    .foregroundStyle(colors.primary)
+                                    .lineLimit(1)
+                            }
+                        }
+
+                        // Email addresses
+                        ForEach(contact.emailAddresses.prefix(2), id: \.id) { email in
+                            HStack(spacing: 6) {
+                                Image(systemName: "envelope.fill")
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundStyle(JohoColors.yellow)
+                                Text(email.value)
+                                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                                    .foregroundStyle(colors.primary)
+                                    .lineLimit(1)
+                            }
+                        }
+
+                        // Birthday
+                        if let birthday = contact.birthday, contact.birthdayKnown {
+                            HStack(spacing: 6) {
+                                Image(systemName: "birthday.cake.fill")
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundStyle(JohoColors.pink)
+                                Text(birthday.formatted(.dateTime.month(.abbreviated).day()))
+                                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                                    .foregroundStyle(colors.primary)
+                            }
                         }
                     }
-
-                    // Phone numbers
-                    ForEach(contact.phoneNumbers.prefix(2), id: \.id) { phone in
-                        HStack(spacing: 6) {
-                            Image(systemName: "phone.fill")
-                                .font(.system(size: 11, weight: .bold))
-                                .foregroundStyle(JohoColors.green)
-                            Text(phone.value)
-                                .font(.system(size: 12, weight: .medium, design: .rounded))
-                                .foregroundStyle(colors.primary)
-                                .lineLimit(1)
-                        }
-                    }
-
-                    // Email addresses
-                    ForEach(contact.emailAddresses.prefix(2), id: \.id) { email in
-                        HStack(spacing: 6) {
-                            Image(systemName: "envelope.fill")
-                                .font(.system(size: 11, weight: .bold))
-                                .foregroundStyle(JohoColors.yellow)
-                            Text(email.value)
-                                .font(.system(size: 12, weight: .medium, design: .rounded))
-                                .foregroundStyle(colors.primary)
-                                .lineLimit(1)
-                        }
-                    }
-
-                    // Birthday
-                    if let birthday = contact.birthday, contact.birthdayKnown {
-                        HStack(spacing: 6) {
-                            Image(systemName: "birthday.cake.fill")
-                                .font(.system(size: 11, weight: .bold))
-                                .foregroundStyle(JohoColors.pink)
-                            Text(birthday.formatted(.dateTime.month(.abbreviated).day()))
-                                .font(.system(size: 12, weight: .medium, design: .rounded))
-                                .foregroundStyle(colors.primary)
-                        }
-                    }
+                    .padding(JohoDimensions.spacingMD)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(JohoDimensions.spacingMD)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(accentColor.opacity(0.1))
+                .frame(minHeight: 140)
+                .background(accentColor.opacity(0.15))
 
                 // Divider
                 Rectangle()

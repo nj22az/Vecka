@@ -70,11 +70,6 @@ class ContactsManager {
 
         try modelContext.save()
 
-        // Scan for duplicates after import (non-blocking)
-        if importedCount > 0 {
-            await scanForDuplicatesAfterImport(modelContext: modelContext)
-        }
-
         return importedCount
     }
 
@@ -113,24 +108,6 @@ class ContactsManager {
         }
         try modelContext.save()
 
-        // Scan for duplicates after import (non-blocking)
-        if actuallyImported > 0 {
-            await scanForDuplicatesAfterImport(modelContext: modelContext)
-        }
-    }
-
-    // MARK: - Duplicate Detection Integration
-
-    /// Scan for duplicates after import
-    private func scanForDuplicatesAfterImport(modelContext: ModelContext) async {
-        // Fetch all contacts for comparison
-        let descriptor = FetchDescriptor<Contact>(sortBy: [SortDescriptor(\.familyName)])
-        guard let allContacts = try? modelContext.fetch(descriptor) else { return }
-
-        await DuplicateContactManager.shared.scanForDuplicates(
-            contacts: allContacts,
-            modelContext: modelContext
-        )
     }
 
     /// Fetches all iOS contacts for picker

@@ -46,11 +46,6 @@ struct ContactDetailView: View {
     @State private var editImageData: Data? = nil
     @State private var editGroup: ContactGroup = .other
 
-    // MARK: - Merge Contact
-    @State private var showingMergeContactPicker = false
-    @State private var selectedMergeContact: Contact?
-    @State private var showingMergeSheet = false
-
     // MARK: - Photo Picker
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var cropImageItem: CropImageItem?
@@ -100,11 +95,6 @@ struct ContactDetailView: View {
                     emailSection
                 }
 
-                // Social links section (情報デザイン: LINE-style social profiles)
-                if !contact.socialProfiles.isEmpty {
-                    socialLinksSection
-                }
-
                 // Address section
                 if isEditMode || !contact.postalAddresses.isEmpty {
                     addressSection
@@ -146,7 +136,12 @@ struct ContactDetailView: View {
             .padding(.top, JohoDimensions.spacingSM)
         }
         .sheet(isPresented: $showingQRCard) {
-            ContactQRCardSheet(contact: contact)
+            ScrollView {
+                ShareableContactCard(contact: contact)
+                    .padding(JohoDimensions.spacingLG)
+            }
+            .johoBackground()
+            .presentationDetents([.medium, .large])
         }
         .fullScreenCover(item: $cropImageItem) { item in
             CircularImageCropperView(
@@ -159,31 +154,6 @@ struct ContactDetailView: View {
                     cropImageItem = nil
                 }
             )
-        }
-        .sheet(isPresented: $showingMergeContactPicker, onDismiss: {
-            // Show merge sheet after picker dismisses (if contact was selected)
-            if selectedMergeContact != nil {
-                showingMergeSheet = true
-            }
-        }) {
-            ContactPickerSheet(
-                excludeContact: contact,
-                onSelect: { selectedContact in
-                    selectedMergeContact = selectedContact
-                    showingMergeContactPicker = false
-                }
-            )
-        }
-        .sheet(isPresented: $showingMergeSheet) {
-            if let mergeTarget = selectedMergeContact {
-                ManualMergeSheet(
-                    contact1: contact,
-                    contact2: mergeTarget,
-                    onMerged: {
-                        dismiss()
-                    }
-                )
-            }
         }
         .onAppear {
             populateEditFields()
@@ -571,124 +541,6 @@ struct ContactDetailView: View {
         }
     }
 
-    // MARK: - Social Links Section (情報デザイン: LINE-style social profiles)
-
-    private var socialLinksSection: some View {
-        johoDetailSection(title: "SOCIAL", icon: "link", iconColor: PageHeaderColor.contacts.accent) {
-            VStack(spacing: JohoDimensions.spacingSM) {
-                ForEach(contact.socialProfiles, id: \.id) { profile in
-                    Button {
-                        // Open the profile URL or construct one
-                        if let urlString = profile.url, let url = URL(string: urlString) {
-                            UIApplication.shared.open(url)
-                        } else {
-                            // Construct URL based on service
-                            let url = constructSocialURL(service: profile.service, username: profile.username)
-                            if let url = url {
-                                UIApplication.shared.open(url)
-                            }
-                        }
-                    } label: {
-                        socialProfileRow(profile: profile)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-        }
-    }
-
-    /// 情報デザイン: Social profile row with service icon and username
-    @ViewBuilder
-    private func socialProfileRow(profile: ContactSocialProfile) -> some View {
-        HStack(spacing: JohoDimensions.spacingMD) {
-            // Service icon in colored zone
-            Image(systemName: socialServiceIcon(for: profile.service))
-                .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundStyle(socialServiceColor(for: profile.service))
-                .frame(width: 32, height: 32)
-                .background(colors.inputBackground)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .stroke(colors.border, lineWidth: 1)
-                )
-
-            // Service name + username
-            VStack(alignment: .leading, spacing: 2) {
-                Text(profile.service.uppercased())
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primary.opacity(0.6))
-
-                Text("@\(profile.username)")
-                    .font(JohoFont.body)
-                    .foregroundStyle(colors.primary)
-            }
-
-            Spacer()
-
-            // External link indicator
-            Image(systemName: "arrow.up.right")
-                .font(.system(size: 12, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.primary.opacity(0.6))
-        }
-        .padding(JohoDimensions.spacingSM)
-        .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(colors.border, lineWidth: 1)
-        )
-    }
-
-    /// Get appropriate icon for social service
-    private func socialServiceIcon(for service: String) -> String {
-        switch service.lowercased() {
-        case "twitter", "x": return "at"
-        case "instagram": return "camera.fill"
-        case "facebook": return "person.2.fill"
-        case "linkedin": return "briefcase.fill"
-        case "tiktok": return "music.note"
-        case "youtube": return "play.rectangle.fill"
-        case "snapchat": return "camera.viewfinder"
-        case "pinterest": return "pin.fill"
-        case "tumblr": return "text.quote"
-        case "reddit": return "bubble.left.and.bubble.right.fill"
-        case "github": return "chevron.left.forwardslash.chevron.right"
-        case "mastodon": return "text.bubble.fill"
-        default: return "link"
-        }
-    }
-
-    /// Get semantic color for social service
-    private func socialServiceColor(for service: String) -> Color {
-        switch service.lowercased() {
-        case "twitter", "x": return JohoColors.cyan
-        case "instagram": return Color(hex: "#E1306C")  // Instagram pink
-        case "facebook": return Color(hex: "#1877F2")   // Facebook blue
-        case "linkedin": return Color(hex: "#0A66C2")   // LinkedIn blue
-        case "tiktok": return JohoColors.black
-        case "youtube": return Color(hex: "#FF0000")    // YouTube red
-        case "snapchat": return JohoColors.yellow
-        case "github": return JohoColors.black
-        default: return PageHeaderColor.contacts.accent
-        }
-    }
-
-    /// Construct URL for social service if not provided
-    private func constructSocialURL(service: String, username: String) -> URL? {
-        let cleanUsername = username.hasPrefix("@") ? String(username.dropFirst()) : username
-        switch service.lowercased() {
-        case "twitter", "x": return URL(string: "https://twitter.com/\(cleanUsername)")
-        case "instagram": return URL(string: "https://instagram.com/\(cleanUsername)")
-        case "facebook": return URL(string: "https://facebook.com/\(cleanUsername)")
-        case "linkedin": return URL(string: "https://linkedin.com/in/\(cleanUsername)")
-        case "tiktok": return URL(string: "https://tiktok.com/@\(cleanUsername)")
-        case "youtube": return URL(string: "https://youtube.com/@\(cleanUsername)")
-        case "github": return URL(string: "https://github.com/\(cleanUsername)")
-        default: return nil
-        }
-    }
-
     // MARK: - Address Section
 
     private var addressSection: some View {
@@ -1049,7 +901,7 @@ struct ContactDetailView: View {
     // MARK: - Group Section (情報デザイン: 4-button grid for contact categories)
 
     private var groupSection: some View {
-        let groupAccentColor = Color(hex: editGroup.color)
+        let groupAccentColor = editGroup.swiftUIColor
 
         return johoDetailSection(title: "GROUP", icon: "folder.fill", iconColor: groupAccentColor) {
             if isEditMode {
@@ -1063,7 +915,7 @@ struct ContactDetailView: View {
                 ], spacing: 8) {
                     ForEach(groups, id: \.rawValue) { group in
                         let isSelected = editGroup == group
-                        let groupColor = Color(hex: group.color)
+                        let groupColor = group.swiftUIColor
 
                         Button {
                             editGroup = group
@@ -1100,7 +952,7 @@ struct ContactDetailView: View {
                 }
             } else {
                 // View mode: Show current group as a pill
-                let groupColor = Color(hex: contact.group.color)
+                let groupColor = contact.group.swiftUIColor
                 HStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: contact.group.icon)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
@@ -1124,7 +976,7 @@ struct ContactDetailView: View {
     private var shareActionsSection: some View {
         johoDetailSection(title: "SHARE", icon: "qrcode", iconColor: accentColor) {
             VStack(spacing: JohoDimensions.spacingSM) {
-                // Show QR Code (情報デザイン: Beautiful card presentation like RandomFact)
+                // Show QR Code (情報デザイン: Beautiful card presentation)
                 Button {
                     showingQRCard = true
                 } label: {
@@ -1135,13 +987,8 @@ struct ContactDetailView: View {
                 Divider()
                     .padding(.vertical, 4)
 
-                // Manual Merge (情報デザイン: User-initiated merge for contacts system didn't detect)
-                Button {
-                    showingMergeContactPicker = true
-                } label: {
-                    johoActionRow(icon: "arrow.triangle.merge", title: "Merge with another contact...")
-                }
-                .buttonStyle(.plain)
+                // Share as image (情報デザイン: Bento card with embedded QR)
+                ContactShareButton(contact: contact)
             }
         }
     }
@@ -1152,7 +999,7 @@ struct ContactDetailView: View {
     private func johoDetailSection<Content: View>(
         title: String,
         icon: String,
-        iconColor: Color = Color(hex: "805AD5"),
+        iconColor: Color = JohoColors.purple,
         @ViewBuilder content: () -> Content
     ) -> some View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
