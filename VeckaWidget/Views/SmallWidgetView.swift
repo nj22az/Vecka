@@ -2,9 +2,9 @@
 //  SmallWidgetView.swift
 //  VeckaWidget
 //
-//  情報デザイン (Jōhō Dezain) Small Widget
-//  LINE/Kakao-inspired mascot design with week number
-//  Cute character + functional information
+//  Small Widget: "Is today special?"
+//  Shows holiday/birthday OR random fact
+//  Clean typography, SF Symbol accent
 //
 
 import SwiftUI
@@ -15,107 +15,154 @@ struct VeckaSmallWidgetView: View {
 
     // MARK: - Computed Properties
 
-    private var weekNumber: Int { entry.weekNumber }
-    private var dayOfMonth: Int { Calendar.current.component(.day, from: entry.date) }
+    private var calendar: Calendar {
+        var cal = Calendar(identifier: .iso8601)
+        cal.firstWeekday = 2
+        cal.minimumDaysInFirstWeek = 4
+        cal.locale = .autoupdatingCurrent
+        return cal
+    }
 
-    private var weekdayShort: String {
-        entry.date.formatted(.dateTime.weekday(.abbreviated).locale(.autoupdatingCurrent)).uppercased()
+    private var dayOfMonth: Int {
+        calendar.component(.day, from: entry.date)
     }
 
     private var monthShort: String {
         entry.date.formatted(.dateTime.month(.abbreviated).locale(.autoupdatingCurrent)).uppercased()
     }
 
-    private var year: String { String(entry.year) }
+    private var weekdayFull: String {
+        entry.date.formatted(.dateTime.weekday(.wide).locale(.autoupdatingCurrent)).uppercased()
+    }
 
-    /// Simulate blinking by checking if minute is divisible by 7 (random-ish)
-    /// This creates variety across timeline updates
-    private var isBlinking: Bool {
-        let minute = Calendar.current.component(.minute, from: entry.date)
-        return minute % 7 == 0
+    private var hasSpecialDay: Bool {
+        !entry.todaysHolidays.isEmpty || !entry.todaysBirthdays.isEmpty
+    }
+
+    private var specialDayName: String? {
+        if let holiday = entry.todaysHolidays.first {
+            return holiday.displayName
+        }
+        if let birthday = entry.todaysBirthdays.first {
+            return birthday.displayName
+        }
+        return nil
+    }
+
+    private var specialDaySymbol: String {
+        if !entry.todaysHolidays.isEmpty {
+            let holiday = entry.todaysHolidays.first
+            return holiday?.isBankHoliday == true ? "star.fill" : "sparkles"
+        }
+        if !entry.todaysBirthdays.isEmpty {
+            return "gift.fill"
+        }
+        return "calendar"
+    }
+
+    private var backgroundColor: Color {
+        if !entry.todaysHolidays.isEmpty {
+            return JohoWidget.Colors.holiday  // Pink
+        }
+        if !entry.todaysBirthdays.isEmpty {
+            return JohoWidget.Colors.contact  // Purple
+        }
+        // Fact colors based on type
+        let fact = WidgetFacts.randomFact(for: entry.date)
+        switch fact.type {
+        case .dateBased:
+            return JohoWidget.Colors.event  // Cyan
+        case .nordic:
+            return JohoWidget.Colors.now  // Yellow
+        case .trivia:
+            return JohoWidget.Colors.event  // Cyan
+        }
+    }
+
+    private var fact: WidgetFacts.Fact {
+        WidgetFacts.randomFact(for: entry.date)
     }
 
     // MARK: - Body
 
     var body: some View {
         GeometryReader { geo in
-            let metrics = SmallWidgetMetrics(size: geo.size)
+            let scale = min(geo.size.width, geo.size.height) / 155
 
-            VStack(spacing: metrics.spacing) {
-                // Month + Year header
-                Text("\(monthShort) \(year)")
-                    .font(.system(size: metrics.headerSize, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.textSecondary)
-                    .tracking(1)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
+            VStack(spacing: 6 * scale) {
+                // Top: SF Symbol + special text or fact
+                HStack(spacing: 6 * scale) {
+                    Image(systemName: hasSpecialDay ? specialDaySymbol : fact.symbol)
+                        .font(.system(size: 14 * scale, weight: .bold))
+                        .foregroundStyle(JohoWidget.Colors.text)
 
-                Spacer(minLength: 0)
+                    Text(hasSpecialDay ? (specialDayName ?? "") : fact.text)
+                        .font(.system(size: 11 * scale, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.text)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.7)
 
-                // 情報デザイン + LINE/Kakao: Mascot with week number
-                JohoWidget.WidgetMascot(
-                    size: metrics.mascotSize,
-                    weekNumber: weekNumber,
-                    isBlinking: isBlinking
-                )
+                    Spacer(minLength: 0)
+                }
 
                 Spacer(minLength: 0)
 
-                // Today indicator row
-                HStack(spacing: metrics.spacing) {
-                    Text(weekdayShort)
-                        .font(.system(size: metrics.weekdaySize, weight: .bold, design: .rounded))
+                // Center: Big date
+                VStack(spacing: 2 * scale) {
+                    Text(monthShort)
+                        .font(.system(size: 12 * scale, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoWidget.Colors.textSecondary)
+                        .tracking(1)
 
-                    // Today badge (情報デザイン: Yellow + border)
-                    ZStack {
-                        Circle()
-                            .fill(JohoWidget.Colors.now)
-                        Circle()
-                            .stroke(JohoWidget.Colors.border, lineWidth: metrics.borderWidth)
-                        Text("\(dayOfMonth)")
-                            .font(.system(size: metrics.daySize, weight: .black, design: .rounded))
-                            .foregroundStyle(JohoWidget.Colors.text)
-                    }
-                    .frame(width: metrics.todayCircleSize, height: metrics.todayCircleSize)
+                    Text("\(dayOfMonth)")
+                        .font(.system(size: 48 * scale, weight: .black, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.text)
+
+                    Text(weekdayFull)
+                        .font(.system(size: 12 * scale, weight: .bold, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.textSecondary)
+                        .tracking(1)
+                }
+
+                Spacer(minLength: 0)
+
+                // Bottom: Week badge
+                HStack {
+                    Spacer()
+                    weekBadge(scale: scale)
                 }
             }
-            .padding(metrics.padding)
+            .padding(12 * scale)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .widgetURL(URL(string: "vecka://week/\(weekNumber)/\(entry.year)"))
+        .widgetURL(URL(string: "vecka://today"))
         .containerBackground(for: .widget) {
-            JohoWidget.Colors.content
+            backgroundColor
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Week \(weekNumber), \(weekdayShort) \(dayOfMonth)")
-    }
-}
-
-// MARK: - Adaptive Metrics
-
-/// Calculates adaptive sizes based on widget dimensions
-/// iPhone small widget: ~158 x 158 pt
-/// iPad small widget: ~170 x 170 pt to ~200 x 200 pt
-private struct SmallWidgetMetrics {
-    let size: CGSize
-
-    /// Scale factor based on widget size (baseline: 155pt for iPhone)
-    var scale: CGFloat {
-        let baseline: CGFloat = 155
-        let minDimension = min(size.width, size.height)
-        return max(1.0, minDimension / baseline)
+        .accessibilityLabel(accessibilityLabel)
     }
 
-    // Typography (scaled)
-    var headerSize: CGFloat { 10 * scale }
-    var weekdaySize: CGFloat { 11 * scale }
-    var daySize: CGFloat { 13 * scale }
+    // MARK: - Week Badge
 
-    // Layout (scaled)
-    var mascotSize: CGFloat { 80 * scale }
-    var todayCircleSize: CGFloat { 26 * scale }
-    var spacing: CGFloat { 6 * scale }
-    var padding: CGFloat { 10 * scale }
-    var borderWidth: CGFloat { scale > 1.1 ? 2 : 1.5 }
+    private func weekBadge(scale: CGFloat) -> some View {
+        Text("W\(entry.weekNumber)")
+            .font(.system(size: 10 * scale, weight: .black, design: .rounded))
+            .foregroundStyle(JohoWidget.Colors.text)
+            .padding(.horizontal, 8 * scale)
+            .padding(.vertical, 4 * scale)
+            .background(JohoWidget.Colors.content)
+            .clipShape(RoundedRectangle(cornerRadius: 6 * scale, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 6 * scale, style: .continuous)
+                    .stroke(JohoWidget.Colors.border, lineWidth: 1.5)
+            )
+    }
+
+    private var accessibilityLabel: String {
+        if let special = specialDayName {
+            return "\(special), \(weekdayFull) \(monthShort) \(dayOfMonth)"
+        }
+        return "\(weekdayFull) \(monthShort) \(dayOfMonth), \(fact.text)"
+    }
 }

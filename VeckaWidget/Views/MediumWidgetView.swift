@@ -2,10 +2,9 @@
 //  MediumWidgetView.swift
 //  VeckaWidget
 //
-//  情報デザイン (Jōhō Dezain) Medium Widget
-//  Japanese minimalism: MA (negative space), focused hierarchy
-//  Hero week number left | Clean week strip right
-//  ADAPTIVE: Scales properly for iPhone and iPad widget sizes
+//  Medium Widget: This week's specials
+//  Today section + upcoming specials this week
+//  Falls back to showing next upcoming special if week is empty
 //
 
 import SwiftUI
@@ -14,7 +13,8 @@ import WidgetKit
 struct VeckaMediumWidgetView: View {
     let entry: VeckaWidgetEntry
 
-    // 情報デザイン: Use computed property to avoid storing Calendar instance
+    // MARK: - Calendar
+
     private var calendar: Calendar {
         var cal = Calendar(identifier: .iso8601)
         cal.firstWeekday = 2
@@ -25,372 +25,301 @@ struct VeckaMediumWidgetView: View {
 
     // MARK: - Computed Properties
 
-    private var weekNumber: Int { entry.weekNumber }
-    private var today: Int { calendar.component(.day, from: entry.date) }
-    private var todayWeekday: Int {
-        let wd = calendar.component(.weekday, from: entry.date)
-        return wd == 1 ? 7 : wd - 1  // Monday=1 system
+    private var monthShort: String {
+        entry.date.formatted(.dateTime.month(.abbreviated).locale(.autoupdatingCurrent)).uppercased()
     }
 
-    private var monthName: String {
-        entry.date.formatted(.dateTime.month(.wide).locale(.autoupdatingCurrent)).uppercased()
+    private var hasSpecialToday: Bool {
+        !entry.todaysHolidays.isEmpty || !entry.todaysBirthdays.isEmpty
     }
 
-    private var year: String {
-        String(entry.year)
-    }
-
-    private var currentWeekDays: [WeekDay] {
-        let startOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: entry.date)) ?? entry.date
-        return (0..<7).map { offset in
-            let date = calendar.date(byAdding: .day, value: offset, to: startOfWeek) ?? entry.date
-            let dayStart = calendar.startOfDay(for: date)
-            let day = calendar.component(.day, from: date)
-            let holidays = entry.holidays(for: date)
-            let birthdays = entry.weekBirthdays[dayStart] ?? []
-            let isToday = calendar.isDate(date, inSameDayAs: entry.date)
-            let isSunday = offset == 6
-            return WeekDay(
-                day: day,
-                isToday: isToday,
-                isSunday: isSunday,
-                isBankHoliday: holidays.first?.isBankHoliday ?? false,
-                hasEvent: !holidays.isEmpty,
-                hasBirthday: !birthdays.isEmpty
+    private var todayDisplay: SpecialItem? {
+        if let holiday = entry.todaysHolidays.first {
+            return SpecialItem(
+                name: holiday.displayName,
+                symbol: holiday.isBankHoliday ? "star.fill" : "sparkles",
+                color: JohoWidget.Colors.holiday,
+                weekday: entry.date.formatted(.dateTime.weekday(.abbreviated).locale(.autoupdatingCurrent)).uppercased(),
+                isBankHoliday: holiday.isBankHoliday
             )
         }
+        if let birthday = entry.todaysBirthdays.first {
+            return SpecialItem(
+                name: birthday.displayName,
+                symbol: "gift.fill",
+                color: JohoWidget.Colors.contact,
+                weekday: entry.date.formatted(.dateTime.weekday(.abbreviated).locale(.autoupdatingCurrent)).uppercased(),
+                isBankHoliday: false
+            )
+        }
+        return nil
     }
 
-    private var weekdayLabels: [String] {
-        ["M", "T", "W", "T", "F", "S", "S"]
+    private var fact: WidgetFacts.Fact {
+        WidgetFacts.randomFact(for: entry.date)
     }
 
-    private var todayHolidayName: String? {
-        entry.todaysHolidays.first?.displayName
+    /// Get this week's upcoming specials (excluding today)
+    private var thisWeekSpecials: [SpecialItem] {
+        guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: entry.date) else {
+            return []
+        }
+
+        var items: [SpecialItem] = []
+        let tomorrow = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: entry.date)) ?? entry.date
+
+        // Check upcoming holidays this week
+        for holiday in entry.upcomingHolidays {
+            guard holiday.date >= tomorrow && holiday.date < weekInterval.end else { continue }
+            items.append(SpecialItem(
+                name: holiday.displayName,
+                symbol: holiday.isBankHoliday ? "star.fill" : "sparkles",
+                color: JohoWidget.Colors.holiday,
+                weekday: holiday.date.formatted(.dateTime.weekday(.abbreviated).locale(.autoupdatingCurrent)).uppercased(),
+                isBankHoliday: holiday.isBankHoliday
+            ))
+        }
+
+        // Check week birthdays
+        for (date, birthdays) in entry.weekBirthdays where date >= tomorrow && date < weekInterval.end {
+            for birthday in birthdays {
+                items.append(SpecialItem(
+                    name: birthday.displayName,
+                    symbol: "gift.fill",
+                    color: JohoWidget.Colors.contact,
+                    weekday: date.formatted(.dateTime.weekday(.abbreviated).locale(.autoupdatingCurrent)).uppercased(),
+                    isBankHoliday: false
+                ))
+            }
+        }
+
+        return Array(items.prefix(2))  // Max 2 items
     }
 
-    private var todayBirthdayName: String? {
-        entry.todaysBirthdays.first?.displayName
-    }
+    /// Get upcoming specials beyond this week (for "Coming Up" section)
+    private var upcomingSpecials: [SpecialItem] {
+        guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: entry.date) else {
+            return []
+        }
 
-    /// Simulate blinking by checking if minute is divisible by 7
-    private var isBlinking: Bool {
-        let minute = Calendar.current.component(.minute, from: entry.date)
-        return minute % 7 == 0
+        var items: [SpecialItem] = []
+
+        for holiday in entry.upcomingHolidays where holiday.date >= weekInterval.end {
+            items.append(SpecialItem(
+                name: holiday.displayName,
+                symbol: holiday.isBankHoliday ? "star.fill" : "sparkles",
+                color: JohoWidget.Colors.holiday,
+                dateString: holiday.date.formatted(.dateTime.month(.abbreviated).day().locale(.autoupdatingCurrent)).uppercased(),
+                isBankHoliday: holiday.isBankHoliday
+            ))
+        }
+
+        return Array(items.prefix(2))  // Max 2 items
     }
 
     // MARK: - Body
 
     var body: some View {
         GeometryReader { geo in
-            let metrics = AdaptiveMetrics(size: geo.size)
+            let scale = geo.size.height / 155
 
             HStack(spacing: 0) {
-                // LEFT: Week Number Hero
-                weekNumberHero(metrics: metrics)
-                    .frame(width: geo.size.width * 0.32)
+                // Left column: Today
+                todayColumn(scale: scale)
+                    .frame(width: geo.size.width * 0.45)
 
-                // Vertical divider
+                // Divider
                 Rectangle()
                     .fill(JohoWidget.Colors.border)
-                    .frame(width: metrics.borderWidth)
+                    .frame(width: 1.5)
 
-                // RIGHT: Minimal calendar strip
-                rightPanel(metrics: metrics)
+                // Right column: This week / Coming up
+                weekColumn(scale: scale)
                     .frame(maxWidth: .infinity)
             }
         }
-        .widgetURL(URL(string: "vecka://week/\(weekNumber)/\(entry.year)"))
+        .widgetURL(URL(string: "vecka://today"))
         .containerBackground(for: .widget) {
             JohoWidget.Colors.content
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Week \(weekNumber), \(monthName) \(today)")
+        .accessibilityLabel(accessibilityLabel)
     }
 
-    // MARK: - Week Number Hero (Mascot)
+    // MARK: - Today Column
 
-    private func weekNumberHero(metrics: AdaptiveMetrics) -> some View {
-        VStack(spacing: metrics.spacing * 0.3) {
-            // Mascot with week number
-            JohoWidget.WidgetMascot(
-                size: metrics.mascotSize,
-                weekNumber: weekNumber,
-                isBlinking: isBlinking
-            )
-
-            Text("WEEK \(weekNumber)")
-                .font(.system(size: metrics.labelSize, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.textSecondary)
-                .tracking(metrics.isLarge ? 2 : 1)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    // MARK: - Right Panel
-
-    private func rightPanel(metrics: AdaptiveMetrics) -> some View {
-        VStack(spacing: 0) {
-            // Top: Month + Year label
+    private func todayColumn(scale: CGFloat) -> some View {
+        VStack(spacing: 4 * scale) {
+            // Header
             HStack {
-                Text("\(monthName) \(year)")
-                    .font(.system(size: metrics.captionSize, weight: .bold, design: .rounded))
+                Text("TODAY")
+                    .font(.system(size: 10 * scale, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoWidget.Colors.textSecondary)
-                    .tracking(metrics.isLarge ? 2 : 1)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
+                    .tracking(1)
+                Spacer()
+                Text("W\(entry.weekNumber)")
+                    .font(.system(size: 9 * scale, weight: .black, design: .rounded))
+                    .foregroundStyle(JohoWidget.Colors.text)
+                    .padding(.horizontal, 6 * scale)
+                    .padding(.vertical, 2 * scale)
+                    .background(JohoWidget.Colors.now)
+                    .clipShape(RoundedRectangle(cornerRadius: 4 * scale, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4 * scale, style: .continuous)
+                            .stroke(JohoWidget.Colors.border, lineWidth: 1)
+                    )
+            }
+            .padding(.horizontal, 10 * scale)
+            .padding(.top, 8 * scale)
+
+            Spacer(minLength: 0)
+
+            // Today content
+            if let today = todayDisplay {
+                specialRow(item: today, scale: scale, showBackground: true)
+                    .padding(.horizontal, 8 * scale)
+            } else {
+                // Show fact
+                factRow(scale: scale)
+                    .padding(.horizontal, 8 * scale)
+            }
+
+            Spacer(minLength: 0)
+
+            // Date display
+            Text(entry.date.formatted(.dateTime.weekday(.wide).month(.abbreviated).day().locale(.autoupdatingCurrent)))
+                .font(.system(size: 10 * scale, weight: .medium, design: .rounded))
+                .foregroundStyle(JohoWidget.Colors.textSecondary)
+                .padding(.bottom, 8 * scale)
+        }
+    }
+
+    // MARK: - Week Column
+
+    private func weekColumn(scale: CGFloat) -> some View {
+        VStack(alignment: .leading, spacing: 4 * scale) {
+            // Header
+            HStack {
+                Text(thisWeekSpecials.isEmpty ? "COMING UP" : "THIS WEEK")
+                    .font(.system(size: 10 * scale, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoWidget.Colors.textSecondary)
+                    .tracking(1)
                 Spacer()
             }
-            .padding(.horizontal, metrics.padding)
-            .padding(.top, metrics.padding * 0.6)
+            .padding(.horizontal, 10 * scale)
+            .padding(.top, 8 * scale)
 
-            Spacer(minLength: metrics.spacing * 0.5)
+            Spacer(minLength: 0)
 
-            // Center: Clean week strip
-            weekStrip(metrics: metrics)
-                .padding(.horizontal, metrics.padding * 0.5)
-
-            Spacer(minLength: metrics.spacing * 0.5)
-
-            // Bottom: Holiday/Birthday indicators
-            VStack(spacing: metrics.spacing * 0.3) {
-                if let holiday = todayHolidayName {
-                    holidayIndicator(name: holiday, metrics: metrics)
-                }
-                if let birthday = todayBirthdayName {
-                    birthdayIndicator(name: birthday, metrics: metrics)
-                }
-            }
-            .padding(.horizontal, metrics.padding * 0.8)
-            .padding(.bottom, todayHolidayName == nil && todayBirthdayName == nil ? metrics.padding * 0.6 : metrics.spacing * 0.3)
-
-            if todayHolidayName == nil && todayBirthdayName == nil {
-                Color.clear.frame(height: metrics.padding)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    // MARK: - Week Strip
-
-    private func weekStrip(metrics: AdaptiveMetrics) -> some View {
-        HStack(spacing: metrics.dayCellSpacing) {
-            ForEach(Array(currentWeekDays.enumerated()), id: \.offset) { index, weekDay in
-                VStack(spacing: metrics.spacing * 0.1) {
-                    // Weekday label (情報デザイン: never below .medium weight)
-                    Text(weekdayLabels[index])
-                        .font(.system(size: metrics.labelSize, weight: .bold, design: .rounded))
-                        .foregroundStyle(
-                            weekDay.isSunday
-                                ? JohoWidget.Colors.alert
-                                : JohoWidget.Colors.textSecondary
-                        )
-
-                    // Day number with circle
-                    ZStack {
-                        if weekDay.isToday {
-                            Circle()
-                                .fill(JohoWidget.Colors.now)
-                                .frame(width: metrics.dayCellSize, height: metrics.dayCellSize)
-                            Circle()
-                                .stroke(JohoWidget.Colors.border, lineWidth: metrics.borderWidth)
-                                .frame(width: metrics.dayCellSize, height: metrics.dayCellSize)
-                        } else if weekDay.isBankHoliday {
-                            Circle()
-                                .fill(JohoWidget.Colors.holiday)
-                                .frame(width: metrics.dayCellSize, height: metrics.dayCellSize)
-                            Circle()
-                                .stroke(JohoWidget.Colors.border, lineWidth: metrics.cellBorderWidth)
-                                .frame(width: metrics.dayCellSize, height: metrics.dayCellSize)
-                        }
-                        Text("\(weekDay.day)")
-                            .font(.system(size: metrics.bodySize, weight: weekDay.isToday ? .black : .medium, design: .rounded))
-                            .foregroundStyle(dayTextColor(weekDay))
+            // Week specials or upcoming
+            let items = thisWeekSpecials.isEmpty ? upcomingSpecials : thisWeekSpecials
+            if items.isEmpty {
+                // No specials - show a message
+                Text("No specials this week")
+                    .font(.system(size: 11 * scale, weight: .medium, design: .rounded))
+                    .foregroundStyle(JohoWidget.Colors.textSecondary)
+                    .frame(maxWidth: .infinity)
+            } else {
+                VStack(spacing: 6 * scale) {
+                    ForEach(Array(items.enumerated()), id: \.offset) { _, item in
+                        specialRow(item: item, scale: scale, showBackground: false)
                     }
-                    .frame(width: metrics.dayCellSize, height: metrics.dayCellSize)
-
-                    // Event indicators
-                    HStack(spacing: 1) {
-                        if weekDay.hasEvent {
-                            Image(systemName: "star.fill")
-                                .font(.system(size: metrics.indicatorSize, weight: .bold))
-                                .foregroundStyle(weekDay.isBankHoliday ? JohoWidget.Colors.alert : JohoWidget.Colors.event)
-                        }
-                        if weekDay.hasBirthday {
-                            Image(systemName: "birthday.cake.fill")
-                                .font(.system(size: metrics.indicatorSize, weight: .bold))
-                                .foregroundStyle(JohoWidget.Colors.holiday)
-                        }
-                    }
-                    .frame(height: metrics.indicatorSize + 2)
                 }
-                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 8 * scale)
             }
+
+            Spacer(minLength: 0)
+
+            // Month indicator
+            Text(monthShort)
+                .font(.system(size: 10 * scale, weight: .medium, design: .rounded))
+                .foregroundStyle(JohoWidget.Colors.textSecondary)
+                .padding(.horizontal, 10 * scale)
+                .padding(.bottom, 8 * scale)
         }
     }
 
-    // MARK: - Holiday Indicator
+    // MARK: - Row Components
 
-    private func holidayIndicator(name: String, metrics: AdaptiveMetrics) -> some View {
-        HStack(spacing: metrics.spacing * 0.5) {
-            Image(systemName: "star.fill")
-                .font(.system(size: metrics.indicatorSize + 2, weight: .bold))
-                .foregroundStyle(JohoWidget.Colors.alert)
+    private func specialRow(item: SpecialItem, scale: CGFloat, showBackground: Bool) -> some View {
+        HStack(spacing: 6 * scale) {
+            Image(systemName: item.symbol)
+                .font(.system(size: 12 * scale, weight: .bold))
+                .foregroundStyle(item.isBankHoliday ? JohoWidget.Colors.alert : JohoWidget.Colors.text)
 
-            Text(name)
-                .font(.system(size: metrics.captionSize, weight: .semibold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text)
-                .lineLimit(2)
-                .minimumScaleFactor(0.8)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Spacer()
-        }
-        .padding(.vertical, metrics.spacing * 0.3)
-        .padding(.horizontal, metrics.padding * 0.6)
-        .background(JohoWidget.Colors.holiday)
-        .clipShape(RoundedRectangle(cornerRadius: metrics.cornerRadius, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: metrics.cornerRadius, style: .continuous)
-                .stroke(JohoWidget.Colors.border, lineWidth: metrics.rowBorderWidth)
-        )
-    }
-
-    // MARK: - Birthday Indicator
-
-    private func birthdayIndicator(name: String, metrics: AdaptiveMetrics) -> some View {
-        HStack(spacing: metrics.spacing * 0.5) {
-            Image(systemName: "birthday.cake.fill")
-                .font(.system(size: metrics.indicatorSize + 2, weight: .bold))
-                .foregroundStyle(JohoWidget.Colors.text)
-
-            Text(name)
-                .font(.system(size: metrics.captionSize, weight: .bold, design: .rounded))
+            Text(item.name)
+                .font(.system(size: 11 * scale, weight: .semibold, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
 
-            Spacer()
+            Spacer(minLength: 0)
+
+            Text(item.weekday ?? item.dateString ?? "")
+                .font(.system(size: 10 * scale, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoWidget.Colors.textSecondary)
         }
-        .padding(.vertical, metrics.spacing * 0.3)
-        .padding(.horizontal, metrics.padding * 0.6)
-        .background(JohoWidget.Colors.holiday)
-        .clipShape(RoundedRectangle(cornerRadius: metrics.cornerRadius, style: .continuous))
+        .padding(.horizontal, 8 * scale)
+        .padding(.vertical, 6 * scale)
+        .background(showBackground ? item.color : Color.clear)
+        .clipShape(RoundedRectangle(cornerRadius: 8 * scale, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: metrics.cornerRadius, style: .continuous)
-                .stroke(JohoWidget.Colors.border, lineWidth: metrics.rowBorderWidth)
+            RoundedRectangle(cornerRadius: 8 * scale, style: .continuous)
+                .stroke(JohoWidget.Colors.border, lineWidth: showBackground ? 1.5 : 1)
         )
     }
 
-    // MARK: - Styling Helpers
+    private func factRow(scale: CGFloat) -> some View {
+        let factColor: Color = {
+            switch fact.type {
+            case .dateBased: return JohoWidget.Colors.event
+            case .nordic: return JohoWidget.Colors.now
+            case .trivia: return JohoWidget.Colors.event
+            }
+        }()
 
-    private func dayTextColor(_ weekDay: WeekDay) -> Color {
-        if weekDay.isToday { return JohoWidget.Colors.text }
-        if weekDay.isBankHoliday { return JohoWidget.Colors.alert }
-        if weekDay.isSunday { return JohoWidget.Colors.alert }
-        return JohoWidget.Colors.text
+        return HStack(spacing: 6 * scale) {
+            Image(systemName: fact.symbol)
+                .font(.system(size: 12 * scale, weight: .bold))
+                .foregroundStyle(JohoWidget.Colors.text)
+
+            Text(fact.text)
+                .font(.system(size: 11 * scale, weight: .semibold, design: .rounded))
+                .foregroundStyle(JohoWidget.Colors.text)
+                .lineLimit(2)
+                .minimumScaleFactor(0.8)
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 8 * scale)
+        .padding(.vertical, 6 * scale)
+        .background(factColor)
+        .clipShape(RoundedRectangle(cornerRadius: 8 * scale, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 8 * scale, style: .continuous)
+                .stroke(JohoWidget.Colors.border, lineWidth: 1.5)
+        )
+    }
+
+    private var accessibilityLabel: String {
+        var label = "Week \(entry.weekNumber)"
+        if let today = todayDisplay {
+            label += ", Today: \(today.name)"
+        }
+        if !thisWeekSpecials.isEmpty {
+            label += ", This week: \(thisWeekSpecials.map(\.name).joined(separator: ", "))"
+        }
+        return label
     }
 }
 
-// MARK: - Adaptive Metrics
+// MARK: - Special Item Model
 
-/// Calculates adaptive sizes based on widget dimensions
-/// iPhone medium widget: ~329 x 155 pt
-/// iPad medium widget: ~348 x 159 pt (small iPad) to ~412 x 188 pt (large iPad)
-private struct AdaptiveMetrics {
-    let size: CGSize
-
-    /// Scale factor based on widget height (baseline: 155pt for iPhone)
-    private var scale: CGFloat {
-        let baselineHeight: CGFloat = 155
-        return max(1.0, size.height / baselineHeight)
-    }
-
-    /// True if this appears to be iPad-sized
-    var isLarge: Bool {
-        size.height > 170 || size.width > 380
-    }
-
-    // MARK: - Typography (scaled)
-
-    var weekNumberSize: CGFloat {
-        let base: CGFloat = 56
-        return base * scale
-    }
-
-    var labelSize: CGFloat {
-        let base: CGFloat = 9
-        return max(9, base * scale)  // Minimum 9pt for readability
-    }
-
-    var bodySize: CGFloat {
-        let base: CGFloat = 13
-        return base * scale
-    }
-
-    var captionSize: CGFloat {
-        let base: CGFloat = 11
-        return max(10, base * scale)
-    }
-
-    var indicatorSize: CGFloat {
-        let base: CGFloat = 7
-        return base * scale
-    }
-
-    // MARK: - Layout (scaled)
-
-    var mascotSize: CGFloat {
-        let base: CGFloat = 70
-        return base * scale
-    }
-
-    var dayCellSize: CGFloat {
-        let base: CGFloat = 28
-        return base * scale
-    }
-
-    var dayCellSpacing: CGFloat {
-        let base: CGFloat = 2
-        return base * scale
-    }
-
-    var padding: CGFloat {
-        let base: CGFloat = 12
-        return base * scale
-    }
-
-    var spacing: CGFloat {
-        let base: CGFloat = 8
-        return base * scale
-    }
-
-    var borderWidth: CGFloat {
-        isLarge ? 2 : 1.5
-    }
-
-    // 情報デザイン: Spec-compliant border widths (Theme.swift medium = 0.75 cell, 1 row)
-    var cellBorderWidth: CGFloat {
-        isLarge ? 1 : 0.75
-    }
-
-    var rowBorderWidth: CGFloat {
-        isLarge ? 1.5 : 1
-    }
-
-    var cornerRadius: CGFloat {
-        let base: CGFloat = 6
-        return base * scale
-    }
-}
-
-// MARK: - Week Day Model
-
-private struct WeekDay {
-    let day: Int
-    let isToday: Bool
-    let isSunday: Bool
+private struct SpecialItem {
+    let name: String
+    let symbol: String
+    let color: Color
+    var weekday: String? = nil
+    var dateString: String? = nil
     let isBankHoliday: Bool
-    let hasEvent: Bool
-    let hasBirthday: Bool
 }
