@@ -159,10 +159,19 @@ struct VeckaLargeWidgetView: View {
 
     private func upcomingRow(item: UpcomingItem, scale: CGFloat) -> some View {
         HStack(spacing: 8 * scale) {
+            // Color indicator stripe
+            RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
+                .fill(item.color)
+                .frame(width: 4 * scale)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
+                        .stroke(JohoWidget.Colors.border, lineWidth: 1)
+                )
+
             // Symbol
             Image(systemName: item.symbol)
                 .font(.system(size: 14 * scale, weight: .bold))
-                .foregroundStyle(item.isBankHoliday ? JohoWidget.Colors.alert : JohoWidget.Colors.text)
+                .foregroundStyle(JohoWidget.Colors.text)
                 .frame(width: 20 * scale)
 
             // Name
@@ -187,11 +196,11 @@ struct VeckaLargeWidgetView: View {
         }
         .padding(.horizontal, 10 * scale)
         .padding(.vertical, 8 * scale)
-        .background(item.color)
+        .background(JohoWidget.Colors.content)
         .clipShape(RoundedRectangle(cornerRadius: 10 * scale, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 10 * scale, style: .continuous)
-                .stroke(JohoWidget.Colors.border, lineWidth: 1.5)
+                .stroke(JohoWidget.Colors.border, lineWidth: 2)
         )
     }
 
@@ -223,6 +232,15 @@ struct VeckaLargeWidgetView: View {
         }()
 
         return HStack(spacing: 8 * scale) {
+            // Color indicator stripe
+            RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
+                .fill(factColor)
+                .frame(width: 4 * scale)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
+                        .stroke(JohoWidget.Colors.border, lineWidth: 1)
+                )
+
             Text("TODAY")
                 .font(.system(size: 10 * scale, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.textSecondary)
@@ -246,11 +264,11 @@ struct VeckaLargeWidgetView: View {
         }
         .padding(.horizontal, 10 * scale)
         .padding(.vertical, 8 * scale)
-        .background(factColor)
+        .background(JohoWidget.Colors.content)
         .clipShape(RoundedRectangle(cornerRadius: 8 * scale, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 8 * scale, style: .continuous)
-                .stroke(JohoWidget.Colors.border, lineWidth: 1.5)
+                .stroke(JohoWidget.Colors.border, lineWidth: 2)
         )
     }
 

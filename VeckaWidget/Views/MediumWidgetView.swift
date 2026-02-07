@@ -243,9 +243,18 @@ struct VeckaMediumWidgetView: View {
 
     private func specialRow(item: SpecialItem, scale: CGFloat, showBackground: Bool) -> some View {
         HStack(spacing: 6 * scale) {
+            // Color indicator stripe
+            RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
+                .fill(item.color)
+                .frame(width: 3 * scale)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
+                        .stroke(JohoWidget.Colors.border, lineWidth: 0.5)
+                )
+
             Image(systemName: item.symbol)
                 .font(.system(size: 12 * scale, weight: .bold))
-                .foregroundStyle(item.isBankHoliday ? JohoWidget.Colors.alert : JohoWidget.Colors.text)
+                .foregroundStyle(JohoWidget.Colors.text)
 
             Text(item.name)
                 .font(.system(size: 11 * scale, weight: .semibold, design: .rounded))
@@ -261,11 +270,11 @@ struct VeckaMediumWidgetView: View {
         }
         .padding(.horizontal, 8 * scale)
         .padding(.vertical, 6 * scale)
-        .background(showBackground ? item.color : Color.clear)
+        .background(JohoWidget.Colors.content)
         .clipShape(RoundedRectangle(cornerRadius: 8 * scale, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 8 * scale, style: .continuous)
-                .stroke(JohoWidget.Colors.border, lineWidth: showBackground ? 1.5 : 1)
+                .stroke(JohoWidget.Colors.border, lineWidth: 2)
         )
     }
 
@@ -279,6 +288,15 @@ struct VeckaMediumWidgetView: View {
         }()
 
         return HStack(spacing: 6 * scale) {
+            // Color indicator stripe
+            RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
+                .fill(factColor)
+                .frame(width: 3 * scale)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
+                        .stroke(JohoWidget.Colors.border, lineWidth: 0.5)
+                )
+
             Image(systemName: fact.symbol)
                 .font(.system(size: 12 * scale, weight: .bold))
                 .foregroundStyle(JohoWidget.Colors.text)
@@ -293,11 +311,11 @@ struct VeckaMediumWidgetView: View {
         }
         .padding(.horizontal, 8 * scale)
         .padding(.vertical, 6 * scale)
-        .background(factColor)
+        .background(JohoWidget.Colors.content)
         .clipShape(RoundedRectangle(cornerRadius: 8 * scale, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 8 * scale, style: .continuous)
-                .stroke(JohoWidget.Colors.border, lineWidth: 1.5)
+                .stroke(JohoWidget.Colors.border, lineWidth: 2)
         )
     }
 

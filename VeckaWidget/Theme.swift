@@ -11,8 +11,10 @@ enum JohoWidget {
 
     // MARK: - Semantic Colors
     /// Colors have MEANING - never decorative
+    /// High-contrast design: Black boxes, red text, white background
+    /// Dark mode support via adaptive colors
     enum Colors {
-        // Primary semantic colors
+        // Primary semantic colors (same in both modes)
         static let now = Color(hex: "FFE566")           // Yellow - Today/Current
         static let event = Color(hex: "A5F3FC")         // Cyan - Scheduled events
         static let holiday = Color(hex: "FECDD3")       // Pink - Special days
@@ -22,18 +24,18 @@ enum JohoWidget {
         static let alert = Color(hex: "E53935")         // Red - Warnings/Sunday
         static let note = Color(hex: "FFE566")          // Yellow - Personal notes
 
-        // Structural colors
-        static let border = Color.black                  // Always pure black
-        static let content = Color.white                 // Container backgrounds
-        static let canvas = Color(hex: "1A1A2E")        // Widget background
-        static let text = Color.black                    // Primary text
-        static let textSecondary = Color(hex: "6B7280") // 情報デザイン: Gray-500 secondary (no opacity)
-        static let textInverted = Color.white           // Text on dark backgrounds
+        // Structural colors - HIGH CONTRAST (adaptive for light/dark)
+        static let border = Color("WidgetBorder")        // Black in light, white in dark
+        static let content = Color("WidgetContent")      // White in light, near-black in dark
+        static let canvas = Color("WidgetCanvas")        // Widget background
+        static let text = Color("WidgetText")            // Red in light, lighter red in dark
+        static let textSecondary = Color("WidgetTextSecondary")  // Dark gray in light, light gray in dark
+        static let textInverted = Color.white            // Text on dark backgrounds
 
         // Day-specific (for calendar grids)
         static let sunday = Color(hex: "E53935")        // Red - weekend end
         static let saturday = Color(hex: "E9D5FF")      // Purple - weekend start
-        static let weekday = Color.white                 // Normal days
+        static let weekday = Color("WidgetContent")      // Adaptive weekday background
     }
 
     // MARK: - Border Weights by Widget Size

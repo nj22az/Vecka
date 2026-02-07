@@ -155,6 +155,10 @@ struct VeckaApp: App {
                 navigationManager.navigateToLanding()
             }
 
+        case "upcoming":
+            // Large widget upcoming specials tapped - navigate to star page
+            navigationManager.navigateToStarPage()
+
         default:
             // Unknown URL - navigate to today as fallback
             navigationManager.navigateToToday()
@@ -216,6 +220,12 @@ class NavigationManager {
         targetPage = .landing
         shouldNavigateToPage = true
         factIdToShow = factId
+    }
+
+    /// Navigate to star page (holidays, specials, upcoming events)
+    func navigateToStarPage() {
+        targetPage = .specialDays
+        shouldNavigateToPage = true
     }
 }
 
