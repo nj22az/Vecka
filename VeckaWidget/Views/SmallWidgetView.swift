@@ -99,7 +99,7 @@ struct VeckaSmallWidgetView: View {
                 // Top color indicator stripe
                 RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
                     .fill(indicatorColor)
-                    .frame(height: 6 * scale)
+                    .frame(maxWidth: .infinity, maxHeight: 6 * scale)
                     .overlay(
                         RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
                             .stroke(JohoWidget.Colors.border, lineWidth: 1)

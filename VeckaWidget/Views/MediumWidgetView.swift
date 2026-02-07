@@ -246,7 +246,7 @@ struct VeckaMediumWidgetView: View {
             // Color indicator stripe
             RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
                 .fill(item.color)
-                .frame(width: 3 * scale)
+                .frame(width: 3 * scale, height: 20 * scale)
                 .overlay(
                     RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
                         .stroke(JohoWidget.Colors.border, lineWidth: 0.5)
@@ -291,7 +291,7 @@ struct VeckaMediumWidgetView: View {
             // Color indicator stripe
             RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
                 .fill(factColor)
-                .frame(width: 3 * scale)
+                .frame(width: 3 * scale, height: 20 * scale)
                 .overlay(
                     RoundedRectangle(cornerRadius: 2 * scale, style: .continuous)
                         .stroke(JohoWidget.Colors.border, lineWidth: 0.5)
