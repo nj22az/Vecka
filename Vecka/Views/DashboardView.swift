@@ -669,7 +669,9 @@ struct DashboardView: View {
     private func getThisMonthExpenses() -> [Memo] {
         let calendar = Calendar.iso8601
         let today = Date()
-        let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: today))!
+        guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: today)) else {
+            return allExpenses.filter { $0.date >= today }
+        }
 
         return allExpenses.filter { $0.date >= startOfMonth }
     }

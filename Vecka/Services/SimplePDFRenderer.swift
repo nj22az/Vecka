@@ -51,6 +51,7 @@ class SimplePDFRenderer {
             var mediaBox = CGRect(origin: .zero, size: pageSize)
 
             guard let pdf = CGContext(url as CFURL, mediaBox: &mediaBox, nil) else {
+                Log.w("SimplePDFRenderer: Failed to create CGContext")
                 return
             }
 
@@ -77,6 +78,7 @@ class SimplePDFRenderer {
         var mediaBox = CGRect(origin: .zero, size: pageSize)
 
         guard let pdf = CGContext(url as CFURL, mediaBox: &mediaBox, nil) else {
+            Log.w("SimplePDFRenderer: Failed to create CGContext for multiple pages")
             return nil
         }
 

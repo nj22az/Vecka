@@ -264,7 +264,7 @@ private struct WorldClockCellContent: View {
 #Preview {
     VStack(spacing: 20) {
         AnalogClockView(
-            timezone: TimeZone(identifier: "Europe/Stockholm")!,
+            timezone: TimeZone(identifier: "Europe/Stockholm") ?? .current,
             size: 100,
             accentColor: Color(hex: "4A90D9")
         )
@@ -272,7 +272,7 @@ private struct WorldClockCellContent: View {
         WorldClockCell(
             cityCode: "STM",
             cityName: "Stora Mellösa",
-            timezone: TimeZone(identifier: "Europe/Stockholm")!,
+            timezone: TimeZone(identifier: "Europe/Stockholm") ?? .current,
             accentColor: Color(hex: "4A90D9"),
             lightBackground: Color(hex: "E8F4FD"),
             isLocal: true

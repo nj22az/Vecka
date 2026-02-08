@@ -222,7 +222,7 @@ struct CountdownPickerSheet: View {
     @State private var editMode: EditMode = .inactive
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 // Selected summary
                 Section(Localization.selectedHeader) {

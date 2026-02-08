@@ -1134,7 +1134,8 @@ struct ContactImportView: View {
                 await MainActor.run {
                     importMessage = "Successfully imported \(count) contacts"
                     isImporting = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    Task {
+                        try? await Task.sleep(for: .seconds(1.5))
                         dismiss()
                     }
                 }
@@ -1157,7 +1158,8 @@ struct ContactImportView: View {
                 await MainActor.run {
                     importMessage = "Successfully imported \(cnContacts.count) contacts"
                     isImporting = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    Task {
+                        try? await Task.sleep(for: .seconds(1.5))
                         dismiss()
                     }
                 }

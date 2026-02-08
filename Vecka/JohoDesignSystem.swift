@@ -78,12 +78,6 @@ enum JohoColors {
     static let purpleLight = Color(hex: "F3E8FF")   // Light purple for contacts
     static let redLight = Color(hex: "FECACA")      // Light red for alerts
 
-    // DEPRECATED: Use yellow instead (kept for migration)
-    // Historical: cream was #FFFBF5 (beige tint), now aliased to yellow #FFE566
-    // Reason: 6-color palette simplification - notes are "present moment" items
-    @available(*, deprecated, message: "Use JohoColors.yellow instead - notes are 'present moment' items")
-    static let cream = JohoColors.yellow
-
     // DEPRECATED: Use cyan instead (kept for migration)
     // Historical: orange was #FDBA74 (trip indicator), now aliased to cyan #A5F3FC
     // Reason: 6-color palette simplification - trips are "scheduled time" items

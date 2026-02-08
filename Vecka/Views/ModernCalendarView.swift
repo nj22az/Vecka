@@ -567,7 +567,8 @@ struct ModernCalendarView: View {
         JohoAddContactSheet(
             onSelectContact: {
                 showContactMenu = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                Task {
+                    try? await Task.sleep(for: .seconds(0.3))
                     contactEditorMode = .contact
                     showContactEditor = true
                 }

@@ -270,7 +270,8 @@ struct OnsenRobotMascot: View {
             isBlinking = true
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) { [self] in
+        Task { [self] in
+            try? await Task.sleep(for: .seconds(0.12))
             guard isActive else { return }  // Memory safety: stop if view disappeared
 
             withAnimation(.easeIn(duration: 0.06)) {
@@ -377,7 +378,8 @@ struct CompactRobotMascot: View {
             guard isActive else { return }  // Memory safety: stop if view disappeared
 
             withAnimation(.easeOut(duration: 0.06)) { isBlinking = true }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [self] in
+            Task { [self] in
+                try? await Task.sleep(for: .seconds(0.1))
                 guard isActive else { return }  // Memory safety: stop if view disappeared
 
                 withAnimation(.easeIn(duration: 0.06)) { isBlinking = false }

@@ -2669,7 +2669,8 @@ extension SpecialDaysListView {
                     showUndoToast = true
                 }
 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                Task {
+                    try? await Task.sleep(for: .seconds(4))
                     withAnimation {
                         showUndoToast = false
                     }

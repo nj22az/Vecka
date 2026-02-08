@@ -37,6 +37,18 @@ class ContactsManager {
 
     // MARK: - Import from iOS Contacts
 
+    private func existingContactIdentifiers(in modelContext: ModelContext) -> Set<String> {
+        let descriptor = FetchDescriptor<Contact>()
+        let contacts: [Contact]
+        do {
+            contacts = try modelContext.fetch(descriptor)
+        } catch {
+            Log.w("ContactsManager.existingContactIdentifiers fetch failed: \(error.localizedDescription)")
+            contacts = []
+        }
+        return Set(contacts.compactMap { $0.cnContactIdentifier })
+    }
+
     /// Imports all contacts from iOS Contacts app
     /// 情報デザイン: Deduplication check prevents double imports
     /// iOS 18+: .limited access returns only user-selected contacts
@@ -45,16 +57,7 @@ class ContactsManager {
             throw ContactsError.notAuthorized
         }
 
-        // Fetch existing contacts to check for duplicates by cnContactIdentifier
-        let existingDescriptor = FetchDescriptor<Contact>()
-        let existingContacts: [Contact]
-        do {
-            existingContacts = try modelContext.fetch(existingDescriptor)
-        } catch {
-            Log.w("ContactsManager.importAllContacts dedup fetch failed: \(error.localizedDescription)")
-            existingContacts = []
-        }
-        let existingIdentifiers = Set(existingContacts.compactMap { $0.cnContactIdentifier })
+        let existingIdentifiers = existingContactIdentifiers(in: modelContext)
 
         let keys = Self.contactKeys
         let request = CNContactFetchRequest(keysToFetch: keys)
@@ -83,16 +86,7 @@ class ContactsManager {
     /// Note: Contacts from picker may have minimal data, so we re-fetch with all keys
     /// 情報デザイン: Deduplication check prevents double imports
     func importContacts(_ cnContacts: [CNContact], to modelContext: ModelContext) async throws {
-        // Fetch existing contacts to check for duplicates by cnContactIdentifier
-        let existingDescriptor = FetchDescriptor<Contact>()
-        let existingContacts: [Contact]
-        do {
-            existingContacts = try modelContext.fetch(existingDescriptor)
-        } catch {
-            Log.w("ContactsManager.importContacts dedup fetch failed: \(error.localizedDescription)")
-            existingContacts = []
-        }
-        let existingIdentifiers = Set(existingContacts.compactMap { $0.cnContactIdentifier })
+        let existingIdentifiers = existingContactIdentifiers(in: modelContext)
 
         var actuallyImported = 0
 
