@@ -143,13 +143,13 @@ final class Memo {
     // ═══════════════════════════════════════════════════════════════════
 
     /// Does this memo have money details?
-    var hasMoney: Bool { amount != nil && amount! > 0 }
+    var hasMoney: Bool { (amount ?? 0) > 0 }
 
     /// Does this memo have a place?
-    var hasPlace: Bool { place != nil && !place!.isEmpty }
+    var hasPlace: Bool { !(place ?? "").isEmpty }
 
     /// Does this memo have a person?
-    var hasPerson: Bool { person != nil && !person!.isEmpty }
+    var hasPerson: Bool { !(person ?? "").isEmpty }
 
     /// Does this memo have a linked contact?
     var hasLinkedContact: Bool { linkedContactID != nil }
@@ -365,7 +365,7 @@ extension Memo {
     static func forDate(_ date: Date, in context: ModelContext) -> [Memo] {
         let calendar = Calendar.current
         let dayStart = calendar.startOfDay(for: date)
-        let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart)!
+        guard let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) else { return [] }
 
         let descriptor = FetchDescriptor<Memo>(
             predicate: #Predicate<Memo> { memo in
@@ -374,7 +374,12 @@ extension Memo {
             sortBy: [SortDescriptor(\.date)]
         )
 
-        return (try? context.fetch(descriptor)) ?? []
+        do {
+            return try context.fetch(descriptor)
+        } catch {
+            Log.w("Memo.forDate fetch failed: \(error.localizedDescription)")
+            return []
+        }
     }
 
     /// Fetch all memos with amounts (expenses)
@@ -386,7 +391,12 @@ extension Memo {
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
 
-        return (try? context.fetch(descriptor)) ?? []
+        do {
+            return try context.fetch(descriptor)
+        } catch {
+            Log.w("Memo.withAmounts fetch failed: \(error.localizedDescription)")
+            return []
+        }
     }
 
     /// Fetch all countdowns
@@ -398,7 +408,12 @@ extension Memo {
             sortBy: [SortDescriptor(\.date)]
         )
 
-        return (try? context.fetch(descriptor)) ?? []
+        do {
+            return try context.fetch(descriptor)
+        } catch {
+            Log.w("Memo.countdowns fetch failed: \(error.localizedDescription)")
+            return []
+        }
     }
 
     /// Fetch future countdowns only
@@ -411,7 +426,12 @@ extension Memo {
             sortBy: [SortDescriptor(\.date)]
         )
 
-        return (try? context.fetch(descriptor)) ?? []
+        do {
+            return try context.fetch(descriptor)
+        } catch {
+            Log.w("Memo.futureCountdowns fetch failed: \(error.localizedDescription)")
+            return []
+        }
     }
 
     /// Fetch all trips
@@ -423,7 +443,12 @@ extension Memo {
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
 
-        return (try? context.fetch(descriptor)) ?? []
+        do {
+            return try context.fetch(descriptor)
+        } catch {
+            Log.w("Memo.trips fetch failed: \(error.localizedDescription)")
+            return []
+        }
     }
 
     /// Fetch pinned memos
@@ -435,14 +460,19 @@ extension Memo {
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
 
-        return (try? context.fetch(descriptor)) ?? []
+        do {
+            return try context.fetch(descriptor)
+        } catch {
+            Log.w("Memo.pinned fetch failed: \(error.localizedDescription)")
+            return []
+        }
     }
 
     /// Fetch scheduled memos for a date
     static func scheduled(for date: Date, in context: ModelContext) -> [Memo] {
         let calendar = Calendar.current
         let dayStart = calendar.startOfDay(for: date)
-        let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart)!
+        guard let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) else { return [] }
 
         let descriptor = FetchDescriptor<Memo>(
             predicate: #Predicate<Memo> { memo in
@@ -453,7 +483,12 @@ extension Memo {
             sortBy: [SortDescriptor(\.scheduledAt)]
         )
 
-        return (try? context.fetch(descriptor)) ?? []
+        do {
+            return try context.fetch(descriptor)
+        } catch {
+            Log.w("Memo.scheduled fetch failed: \(error.localizedDescription)")
+            return []
+        }
     }
 
     /// Fetch all memos (for migration and listing)
@@ -462,7 +497,12 @@ extension Memo {
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
 
-        return (try? context.fetch(descriptor)) ?? []
+        do {
+            return try context.fetch(descriptor)
+        } catch {
+            Log.w("Memo.all fetch failed: \(error.localizedDescription)")
+            return []
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -479,7 +519,12 @@ extension Memo {
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
 
-        return (try? context.fetch(descriptor)) ?? []
+        do {
+            return try context.fetch(descriptor)
+        } catch {
+            Log.w("Memo.notes fetch failed: \(error.localizedDescription)")
+            return []
+        }
     }
 
     /// Fetch all expenses (memoType == "expense")
@@ -492,7 +537,12 @@ extension Memo {
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
 
-        return (try? context.fetch(descriptor)) ?? []
+        do {
+            return try context.fetch(descriptor)
+        } catch {
+            Log.w("Memo.expenses fetch failed: \(error.localizedDescription)")
+            return []
+        }
     }
 
     /// Fetch all trips (memoType == "trip")
@@ -505,7 +555,12 @@ extension Memo {
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
 
-        return (try? context.fetch(descriptor)) ?? []
+        do {
+            return try context.fetch(descriptor)
+        } catch {
+            Log.w("Memo.tripsQuery fetch failed: \(error.localizedDescription)")
+            return []
+        }
     }
 
     /// Fetch all countdown events (memoType == "countdown")
@@ -518,7 +573,12 @@ extension Memo {
             sortBy: [SortDescriptor(\.date)]
         )
 
-        return (try? context.fetch(descriptor)) ?? []
+        do {
+            return try context.fetch(descriptor)
+        } catch {
+            Log.w("Memo.countdownEvents fetch failed: \(error.localizedDescription)")
+            return []
+        }
     }
 
     /// Fetch future countdown events
@@ -532,6 +592,11 @@ extension Memo {
             sortBy: [SortDescriptor(\.date)]
         )
 
-        return (try? context.fetch(descriptor)) ?? []
+        do {
+            return try context.fetch(descriptor)
+        } catch {
+            Log.w("Memo.futureCountdownEvents fetch failed: \(error.localizedDescription)")
+            return []
+        }
     }
 }

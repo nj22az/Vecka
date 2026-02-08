@@ -1354,18 +1354,18 @@ struct SpecialDaysListView: View {
             if selectedCategory == nil {
                 // 情報デザイン: Show category cards grid (mirrors month grid structure)
                 categoryCardsGrid(for: month)
-            } else {
+            } else if let category = selectedCategory {
                 // Show filtered day cards for selected category
-                let dayCards = filteredDayCardsForMonth(month, category: selectedCategory!)
+                let dayCards = filteredDayCardsForMonth(month, category: category)
 
                 if dayCards.isEmpty {
                     // 情報デザイン: Use customized icon if set, otherwise default
-                    let displayIcon = customCategoryIcon(for: selectedCategory!) ?? selectedCategory!.outlineIcon
+                    let displayIcon = customCategoryIcon(for: category) ?? category.outlineIcon
                     JohoEmptyState(
-                        title: "No \(selectedCategory!.localizedLabel)",
+                        title: "No \(category.localizedLabel)",
                         message: "Tap + to add",
                         icon: displayIcon,
-                        zone: selectedCategory!.sectionZone
+                        zone: category.sectionZone
                     )
                     .padding(.top, JohoDimensions.spacingSM)
                 } else {
@@ -1400,9 +1400,12 @@ struct SpecialDaysListView: View {
         .onChange(of: selectedCategory) { _, _ in
             expandedDays.removeAll()
             if let month = selectedMonth {
-                let dayCards = selectedCategory != nil
-                    ? filteredDayCardsForMonth(month, category: selectedCategory!)
-                    : dayCardsForMonth(month)
+                let dayCards: [DayCardData]
+                if let category = selectedCategory {
+                    dayCards = filteredDayCardsForMonth(month, category: category)
+                } else {
+                    dayCards = dayCardsForMonth(month)
+                }
                 initializeExpandedDays(for: dayCards)
             }
         }

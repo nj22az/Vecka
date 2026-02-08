@@ -108,23 +108,29 @@ final class RandomFactProvider: ObservableObject {
             predicate: #Predicate { regions.contains($0.region) }
         )
 
-        let facts = (try? context.fetch(descriptor)) ?? []
+        let facts: [QuirkyFact]
+        do {
+            facts = try context.fetch(descriptor)
+        } catch {
+            Log.w("RandomFactProvider.randomRegionFact fetch failed: \(error.localizedDescription)")
+            facts = []
+        }
         let available = facts.filter { !usedFactIDs.contains($0.id) }
         let pool = available.isEmpty ? facts : available
 
-        guard !pool.isEmpty else {
-            return RandomFact(
-                id: "fallback",
-                text: "Week numbers matter.",
-                icon: "calendar",
-                color: JohoColors.cyan,
-                explanation: "ISO 8601 week numbers are the international standard for numbering weeks. This app helps you track weeks the Swedish way.",
-                source: "Calendar"
-            )
-        }
+        let fallbackFact = RandomFact(
+            id: "fallback",
+            text: "Week numbers matter.",
+            icon: "calendar",
+            color: JohoColors.cyan,
+            explanation: "ISO 8601 week numbers are the international standard for numbering weeks. This app helps you track weeks the Swedish way.",
+            source: "Calendar"
+        )
+
+        guard !pool.isEmpty else { return fallbackFact }
 
         // True random selection for maximum variety
-        let fact = pool.randomElement()!
+        guard let fact = pool.randomElement() else { return fallbackFact }
 
         usedFactIDs.insert(fact.id)
 
@@ -143,7 +149,13 @@ final class RandomFactProvider: ObservableObject {
             predicate: #Predicate { $0.region == "XX" }
         )
 
-        let eggs = (try? context.fetch(descriptor)) ?? []
+        let eggs: [QuirkyFact]
+        do {
+            eggs = try context.fetch(descriptor)
+        } catch {
+            Log.w("RandomFactProvider.randomEasterEgg fetch failed: \(error.localizedDescription)")
+            eggs = []
+        }
         let available = eggs.filter { !usedFactIDs.contains($0.id) }
         guard !available.isEmpty else { return nil }
 
@@ -167,7 +179,13 @@ final class RandomFactProvider: ObservableObject {
     private func randomCalendarFact() -> RandomFact? {
         // Query all calendar facts from database
         let descriptor = FetchDescriptor<CalendarFact>()
-        let allFacts = (try? context.fetch(descriptor)) ?? []
+        let allFacts: [CalendarFact]
+        do {
+            allFacts = try context.fetch(descriptor)
+        } catch {
+            Log.w("RandomFactProvider.randomCalendarFact fetch failed: \(error.localizedDescription)")
+            allFacts = []
+        }
 
         // Filter to applicable facts for today
         let applicableFacts = allFacts.filter { $0.isApplicable(for: today) }
@@ -177,7 +195,7 @@ final class RandomFactProvider: ObservableObject {
         guard !available.isEmpty else { return nil }
 
         // 情報デザイン: True random selection for variety
-        let picked = available.randomElement()!
+        guard let picked = available.randomElement() else { return nil }
         usedFactIDs.insert(picked.id)
 
         return RandomFact(

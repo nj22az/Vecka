@@ -47,7 +47,13 @@ class ContactsManager {
 
         // Fetch existing contacts to check for duplicates by cnContactIdentifier
         let existingDescriptor = FetchDescriptor<Contact>()
-        let existingContacts = (try? modelContext.fetch(existingDescriptor)) ?? []
+        let existingContacts: [Contact]
+        do {
+            existingContacts = try modelContext.fetch(existingDescriptor)
+        } catch {
+            Log.w("ContactsManager.importAllContacts dedup fetch failed: \(error.localizedDescription)")
+            existingContacts = []
+        }
         let existingIdentifiers = Set(existingContacts.compactMap { $0.cnContactIdentifier })
 
         let keys = Self.contactKeys
@@ -79,7 +85,13 @@ class ContactsManager {
     func importContacts(_ cnContacts: [CNContact], to modelContext: ModelContext) async throws {
         // Fetch existing contacts to check for duplicates by cnContactIdentifier
         let existingDescriptor = FetchDescriptor<Contact>()
-        let existingContacts = (try? modelContext.fetch(existingDescriptor)) ?? []
+        let existingContacts: [Contact]
+        do {
+            existingContacts = try modelContext.fetch(existingDescriptor)
+        } catch {
+            Log.w("ContactsManager.importContacts dedup fetch failed: \(error.localizedDescription)")
+            existingContacts = []
+        }
         let existingIdentifiers = Set(existingContacts.compactMap { $0.cnContactIdentifier })
 
         var actuallyImported = 0
