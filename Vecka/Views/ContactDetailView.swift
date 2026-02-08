@@ -870,19 +870,19 @@ struct ContactDetailView: View {
                                 // Icon
                                 Image(systemName: group.icon)
                                     .font(.system(size: 18, weight: .bold, design: .rounded))
-                                    .foregroundStyle(colors.primaryInverted)
+                                    .foregroundStyle(isSelected ? colors.primaryInverted : groupColor)
 
                                 // Label
                                 Text(group.localizedName)
                                     .font(.system(size: 10, weight: .bold, design: .rounded))
-                                    .foregroundStyle(colors.primaryInverted)
+                                    .foregroundStyle(isSelected ? colors.primaryInverted : colors.primary)
                                     .lineLimit(1)
 
                                 // Selection indicator
                                 Circle()
-                                    .fill(isSelected ? colors.primary : colors.inputBackground)
-                                    .frame(width: 8, height: 8)
-                                    .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
+                                    .fill(isSelected ? colors.primaryInverted : colors.inputBackground)
+                                    .frame(width: 10, height: 10)
+                                    .overlay(Circle().stroke(isSelected ? colors.primaryInverted : colors.border, lineWidth: isSelected ? 2 : JohoDimensions.borderThin))
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
@@ -890,7 +890,7 @@ struct ContactDetailView: View {
                             .clipShape(Squircle(cornerRadius: 10))
                             .overlay(
                                 Squircle(cornerRadius: 10)
-                                    .stroke(colors.border, lineWidth: isSelected ? 2 : 1)
+                                    .stroke(isSelected ? groupColor : colors.border, lineWidth: isSelected ? 2.5 : 1)
                             )
                         }
                         .buttonStyle(.plain)
@@ -921,21 +921,12 @@ struct ContactDetailView: View {
 
     private var shareActionsSection: some View {
         johoDetailSection(title: "SHARE", icon: "qrcode", iconColor: accentColor) {
-            VStack(spacing: JohoDimensions.spacingSM) {
-                // Show QR Code (情報デザイン: Beautiful card presentation)
-                Button {
-                    showingQRCard = true
-                } label: {
-                    johoActionRow(icon: "qrcode", title: "Show QR Code")
-                }
-                .buttonStyle(.plain)
-
-                Divider()
-                    .padding(.vertical, 4)
-
-                // Share as image (情報デザイン: Bento card with embedded QR)
-                ContactShareButton(contact: contact)
+            Button {
+                showingQRCard = true
+            } label: {
+                johoActionRow(icon: "square.and.arrow.up", title: "Share Contact")
             }
+            .buttonStyle(.plain)
         }
     }
 
@@ -986,7 +977,7 @@ struct ContactDetailView: View {
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(iconColor)
                     .frame(width: 32, height: 32)
-                    .background(colors.inputBackground)
+                    .background(iconColor.opacity(0.2))
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
@@ -1019,7 +1010,7 @@ struct ContactDetailView: View {
                 .font(.system(size: 16, weight: .bold, design: .rounded))
                 .foregroundStyle(rowColor)
                 .frame(width: 36, height: 36)
-                .background(colors.inputBackground)
+                .background(rowColor.opacity(0.2))
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusSmall)
