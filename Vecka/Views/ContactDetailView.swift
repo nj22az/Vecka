@@ -972,26 +972,6 @@ struct ContactDetailView: View {
         )
     }
 
-    @ViewBuilder
-    private func johoActionRow(icon: String, title: String, color: Color? = nil) -> some View {
-        let rowColor = color ?? accentColor
-        HStack(spacing: JohoDimensions.spacingMD) {
-            Image(systemName: icon)
-                .font(.system(size: 18, weight: .bold, design: .rounded))
-                .foregroundStyle(rowColor)
-
-            Text(title)
-                .font(JohoFont.body)
-                .foregroundStyle(colors.primary)
-
-            Spacer()
-
-            Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.primary.opacity(0.4))
-        }
-    }
-
     // MARK: - Info Row Helper (情報デザイン: white background with colored action icons)
 
     @ViewBuilder
