@@ -969,8 +969,8 @@ final class StateConsistencyTests: XCTestCase {
     }
 
     func testHolidayCacheItemEquatability() {
-        let item1 = HolidayCacheItem(id: "test", region: "SE", name: "Test", titleOverride: nil, isBankHoliday: true, symbolName: nil, iconColor: nil, notes: nil, isUserCreated: false)
-        let item2 = HolidayCacheItem(id: "test", region: "SE", name: "Test", titleOverride: nil, isBankHoliday: true, symbolName: nil, iconColor: nil, notes: nil, isUserCreated: false)
+        let item1 = HolidayCacheItem(id: "test", region: "SE", name: "Test", titleOverride: nil, isBankHoliday: true, symbolName: nil, iconColor: nil, notes: nil, localName: nil, isUserCreated: false)
+        let item2 = HolidayCacheItem(id: "test", region: "SE", name: "Test", titleOverride: nil, isBankHoliday: true, symbolName: nil, iconColor: nil, notes: nil, localName: nil, isUserCreated: false)
 
         XCTAssertEqual(item1, item2)
         XCTAssertEqual(item1.hashValue, item2.hashValue)
@@ -978,11 +978,11 @@ final class StateConsistencyTests: XCTestCase {
 
     func testHolidayCacheItemDisplayTitle() {
         // Without override, should return localized name
-        let item1 = HolidayCacheItem(id: "test", region: "SE", name: "holiday.christmas", titleOverride: nil, isBankHoliday: true, symbolName: nil, iconColor: nil, notes: nil, isUserCreated: false)
+        let item1 = HolidayCacheItem(id: "test", region: "SE", name: "holiday.christmas", titleOverride: nil, isBankHoliday: true, symbolName: nil, iconColor: nil, notes: nil, localName: nil, isUserCreated: false)
         XCTAssertFalse(item1.displayTitle.isEmpty)
 
         // With override, should return override
-        let item2 = HolidayCacheItem(id: "test", region: "SE", name: "holiday.christmas", titleOverride: "Custom Title", isBankHoliday: true, symbolName: nil, iconColor: nil, notes: nil, isUserCreated: false)
+        let item2 = HolidayCacheItem(id: "test", region: "SE", name: "holiday.christmas", titleOverride: "Custom Title", isBankHoliday: true, symbolName: nil, iconColor: nil, notes: nil, localName: nil, isUserCreated: false)
         XCTAssertEqual(item2.displayTitle, "Custom Title")
     }
 
