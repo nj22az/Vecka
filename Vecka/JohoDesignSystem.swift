@@ -1232,6 +1232,46 @@ struct JohoEditorHeader: View {
     }
 }
 
+// MARK: - Sheet Header (情報デザイン: Consistent header for detail sheets)
+// Pattern: [Title] Spacer [ShareButton] [CloseButton]
+// Used by RandomFactDetailSheet and Contact QR sheet
+
+struct JohoSheetHeader<ShareButton: View>: View {
+    let title: String
+    let shareButton: ShareButton
+    let onClose: () -> Void
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    var body: some View {
+        HStack {
+            Text(title)
+                .font(.system(size: 12, weight: .black, design: .rounded))
+                .tracking(1.5)
+                .foregroundStyle(colors.primaryInverted)
+
+            Spacer()
+
+            shareButton
+
+            Button { onClose() } label: {
+                ZStack {
+                    Circle()
+                        .fill(colors.surface)
+                        .frame(width: 28, height: 28)
+                    Image(systemName: "xmark")
+                        .font(.system(size: 11, weight: .black, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                }
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, JohoDimensions.spacingMD)
+        .padding(.vertical, JohoDimensions.spacingSM)
+        .background(colors.surfaceInverted)
+    }
+}
+
 // MARK: - Metric Row (for stats display)
 
 struct JohoMetricRow: View {

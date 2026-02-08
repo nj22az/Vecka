@@ -5169,33 +5169,11 @@ struct RandomFactDetailSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header with share and close buttons
-            HStack {
-                Text("FACT")
-                    .font(.system(size: 12, weight: .black, design: .rounded))
-                    .tracking(1.5)
-                    .foregroundStyle(colors.primaryInverted)
-
-                Spacer()
-
-                // Share button (meme-style PNG export)
-                FactShareButton(fact: fact)
-
-                Button { dismiss() } label: {
-                    ZStack {
-                        Circle()
-                            .fill(colors.surface)
-                            .frame(width: 28, height: 28)
-                        Image(systemName: "xmark")
-                            .font(.system(size: 11, weight: .black, design: .rounded))
-                            .foregroundStyle(colors.primary)
-                    }
-                }
-                .buttonStyle(.plain)
-            }
-            .padding(.horizontal, JohoDimensions.spacingMD)
-            .padding(.vertical, JohoDimensions.spacingSM)
-            .background(colors.surfaceInverted)
+            JohoSheetHeader(
+                title: "FACT",
+                shareButton: FactShareButton(fact: fact),
+                onClose: { dismiss() }
+            )
 
             // Main content card
             VStack(spacing: 0) {

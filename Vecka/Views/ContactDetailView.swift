@@ -133,41 +133,20 @@ struct ContactDetailView: View {
         }
         .sheet(isPresented: $showingQRCard) {
             VStack(spacing: 0) {
-                // Header with share and close buttons (matches RandomFactDetailSheet pattern)
-                HStack {
-                    Text("CONTACT")
-                        .font(.system(size: 12, weight: .black, design: .rounded))
-                        .tracking(1.5)
-                        .foregroundStyle(colors.primaryInverted)
+                JohoSheetHeader(
+                    title: "CONTACT",
+                    shareButton: ContactShareIconButton(contact: contact),
+                    onClose: { showingQRCard = false }
+                )
 
-                    Spacer()
+                ShareableContactCard(contact: contact)
+                    .padding(JohoDimensions.spacingMD)
 
-                    // Share button (28x28 circle matching FactShareButton)
-                    ContactShareIconButton(contact: contact)
-
-                    Button { showingQRCard = false } label: {
-                        ZStack {
-                            Circle()
-                                .fill(colors.surface)
-                                .frame(width: 28, height: 28)
-                            Image(systemName: "xmark")
-                                .font(.system(size: 11, weight: .black, design: .rounded))
-                                .foregroundStyle(colors.primary)
-                        }
-                    }
-                    .buttonStyle(.plain)
-                }
-                .padding(.horizontal, JohoDimensions.spacingMD)
-                .padding(.vertical, JohoDimensions.spacingSM)
-                .background(colors.surfaceInverted)
-
-                ScrollView {
-                    ShareableContactCard(contact: contact)
-                        .padding(JohoDimensions.spacingLG)
-                }
+                Spacer()
             }
-            .johoBackground()
+            .background(accentColor.opacity(0.3))
             .presentationDetents([.medium, .large])
+            .presentationCornerRadius(JohoDimensions.radiusLarge)
             .presentationDragIndicator(.hidden)
         }
         .onAppear {
@@ -475,24 +454,12 @@ struct ContactDetailView: View {
     private var phoneSection: some View {
         johoDetailSection(title: "PHONE", icon: "phone.fill", iconColor: JohoColors.green) {
             if isEditMode {
-                // Edit mode: editable text field
-                HStack(spacing: JohoDimensions.spacingMD) {
-                    Image(systemName: "phone.fill")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.green)
-                        .frame(width: 24)
-
-                    TextField("Phone number", text: $editPhone)
-                        .font(JohoFont.body)
-                        .foregroundStyle(colors.primary)
-                        .keyboardType(.phonePad)
-                }
-                .padding(JohoDimensions.spacingMD)
-                .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
+                johoEditField(
+                    icon: "phone.fill",
+                    iconColor: JohoColors.green,
+                    placeholder: "Phone number",
+                    text: $editPhone,
+                    keyboard: .phonePad
                 )
             } else {
                 // View mode: display with action buttons
@@ -517,25 +484,12 @@ struct ContactDetailView: View {
     private var emailSection: some View {
         johoDetailSection(title: "EMAIL", icon: "envelope.fill", iconColor: accentColor) {
             if isEditMode {
-                // Edit mode: editable text field
-                HStack(spacing: JohoDimensions.spacingMD) {
-                    Image(systemName: "envelope.fill")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(accentColor)
-                        .frame(width: 24)
-
-                    TextField("Email address", text: $editEmail)
-                        .font(JohoFont.body)
-                        .foregroundStyle(colors.primary)
-                        .keyboardType(.emailAddress)
-                        .textInputAutocapitalization(.never)
-                }
-                .padding(JohoDimensions.spacingMD)
-                .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
+                johoEditField(
+                    icon: "envelope.fill",
+                    iconColor: accentColor,
+                    placeholder: "Email address",
+                    text: $editEmail,
+                    keyboard: .emailAddress
                 )
             } else {
                 // View mode
@@ -559,52 +513,31 @@ struct ContactDetailView: View {
     private var addressSection: some View {
         johoDetailSection(title: "ADDRESS", icon: "mappin", iconColor: JohoColors.cyan) {
             if isEditMode {
-                // Edit mode: editable address fields
                 VStack(spacing: JohoDimensions.spacingSM) {
-                    // Street
-                    HStack(spacing: JohoDimensions.spacingMD) {
-                        Image(systemName: "mappin")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(JohoColors.cyan)
-                            .frame(width: 24)
-
-                        TextField("Street address", text: $editStreet)
-                            .font(JohoFont.body)
-                            .foregroundStyle(colors.primary)
-                    }
-                    .padding(JohoDimensions.spacingMD)
-                    .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
+                    johoEditField(
+                        icon: "mappin",
+                        iconColor: JohoColors.cyan,
+                        placeholder: "Street address",
+                        text: $editStreet
                     )
 
                     // City + Postal code row
                     HStack(spacing: JohoDimensions.spacingSM) {
-                        TextField("City", text: $editCity)
-                            .font(JohoFont.body)
-                            .foregroundStyle(colors.primary)
-                            .padding(JohoDimensions.spacingMD)
-                            .background(colors.surface)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                    .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                            )
+                        johoEditField(
+                            icon: "building.2.fill",
+                            iconColor: JohoColors.cyan,
+                            placeholder: "City",
+                            text: $editCity
+                        )
 
-                        TextField("Postal", text: $editPostalCode)
-                            .font(JohoFont.body)
-                            .foregroundStyle(colors.primary)
-                            .keyboardType(.numbersAndPunctuation)
-                            .padding(JohoDimensions.spacingMD)
-                            .frame(width: 100)
-                            .background(colors.surface)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                    .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                            )
+                        johoEditField(
+                            icon: "number",
+                            iconColor: JohoColors.cyan,
+                            placeholder: "Postal",
+                            text: $editPostalCode,
+                            keyboard: .numbersAndPunctuation
+                        )
+                        .frame(width: 130)
                     }
                 }
             } else {
@@ -1004,6 +937,36 @@ struct ContactDetailView: View {
                 ContactShareButton(contact: contact)
             }
         }
+    }
+
+    // MARK: - Edit Field Helper (情報デザイン: Consistent edit-mode text field)
+
+    @ViewBuilder
+    private func johoEditField(
+        icon: String,
+        iconColor: Color,
+        placeholder: String,
+        text: Binding<String>,
+        keyboard: UIKeyboardType = .default
+    ) -> some View {
+        HStack(spacing: JohoDimensions.spacingMD) {
+            Image(systemName: icon)
+                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .foregroundStyle(iconColor)
+                .frame(width: 24)
+
+            TextField(placeholder, text: text)
+                .font(JohoFont.body)
+                .foregroundStyle(colors.primary)
+                .keyboardType(keyboard)
+        }
+        .padding(JohoDimensions.spacingMD)
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
+        )
     }
 
     // MARK: - 情報デザイン Section Container (white card with colored icon zone)
