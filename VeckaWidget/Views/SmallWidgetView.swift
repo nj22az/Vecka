@@ -118,7 +118,7 @@ struct VeckaSmallWidgetView: View {
             .padding(.bottom, 12 * scale)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .widgetURL(URL(string: "vecka://today"))
+        .widgetURL(URL(string: hasSpecialDay ? "vecka://today" : "vecka://facts/\(fact.id)"))
         .containerBackground(for: .widget) {
             backgroundColor
         }

@@ -116,7 +116,7 @@ struct VeckaLargeWidgetView: View {
                     .padding(.vertical, 10 * scale)
             }
         }
-        .widgetURL(URL(string: "vecka://upcoming"))
+        .widgetURL(URL(string: "vecka://facts/\(fact.id)"))
         .containerBackground(for: .widget) {
             JohoWidget.Colors.content(for: colorScheme)
         }

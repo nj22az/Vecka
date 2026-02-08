@@ -139,7 +139,7 @@ struct VeckaMediumWidgetView: View {
                     .frame(maxWidth: .infinity)
             }
         }
-        .widgetURL(URL(string: "vecka://today"))
+        .widgetURL(URL(string: hasSpecialToday ? "vecka://today" : "vecka://facts/\(fact.id)"))
         .containerBackground(for: .widget) {
             JohoWidget.Colors.content(for: colorScheme)
         }
