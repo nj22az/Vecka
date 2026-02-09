@@ -845,7 +845,6 @@ final class UIAccessibilityTests: XCTestCase {
         XCTAssertNotNil(JohoColors.cyan)
         XCTAssertNotNil(JohoColors.red)
         XCTAssertNotNil(JohoColors.pink)
-        XCTAssertNotNil(JohoColors.orange)
         XCTAssertNotNil(JohoColors.green)
     }
 

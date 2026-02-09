@@ -78,12 +78,6 @@ enum JohoColors {
     static let purpleLight = Color(hex: "F3E8FF")   // Light purple for contacts
     static let redLight = Color(hex: "FECACA")      // Light red for alerts
 
-    // DEPRECATED: Use cyan instead (kept for migration)
-    // Historical: orange was #FDBA74 (trip indicator), now aliased to cyan #A5F3FC
-    // Reason: 6-color palette simplification - trips are "scheduled time" items
-    @available(*, deprecated, message: "Use JohoColors.cyan instead - trips are 'scheduled time' items")
-    static let orange = JohoColors.cyan
-
     // Today highlight - bright orange (distinct from yellow memos)
     static let todayOrange = Color(hex: "FF9500")
 
