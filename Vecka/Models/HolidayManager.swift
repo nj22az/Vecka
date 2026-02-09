@@ -103,8 +103,12 @@ class HolidayManager {
     func loadDefaults(for region: String, context: ModelContext) {
         Log.i("Loading defaults for region: \(region)")
 
-        // Get all default rules for this region from the seed data
-        let defaultRules = getDefaultRulesForRegion(region)
+        // Filter the single source of truth by region
+        let effectiveRegion = (region.isEmpty) ? "SE" : region
+        let defaultRules = buildAllDefaultRules().filter {
+            let ruleRegion = $0.region.isEmpty ? "SE" : $0.region
+            return ruleRegion == effectiveRegion
+        }
         guard !defaultRules.isEmpty else {
             Log.w("No default rules found for region: \(region)")
             return
@@ -197,240 +201,6 @@ class HolidayManager {
         } catch {
             Log.w("Failed to reset rule: \(error.localizedDescription)")
             return false
-        }
-    }
-
-    /// Get default rules for a specific region (used by loadDefaults)
-    private func getDefaultRulesForRegion(_ region: String) -> [HolidayRule] {
-        // Helper to create system default rules
-        func systemRule(
-            name: String,
-            isBankHoliday: Bool,
-            type: HolidayRuleType,
-            month: Int? = nil,
-            day: Int? = nil,
-            daysOffset: Int? = nil,
-            weekday: Int? = nil,
-            ordinal: Int? = nil,
-            dayRangeStart: Int? = nil,
-            dayRangeEnd: Int? = nil,
-            titleOverride: String? = nil,
-            localName: String? = nil,
-            notes: String? = nil
-        ) -> HolidayRule {
-            HolidayRule(
-                name: name,
-                region: region,
-                isBankHoliday: isBankHoliday,
-                titleOverride: titleOverride,
-                notes: notes,
-                localName: localName,
-                type: type,
-                month: month,
-                day: day,
-                daysOffset: daysOffset,
-                weekday: weekday,
-                ordinal: ordinal,
-                dayRangeStart: dayRangeStart,
-                dayRangeEnd: dayRangeEnd,
-                isSystemDefault: true,
-                isEnabled: true
-            )
-        }
-
-        switch region {
-        case "SE", "":
-            return [
-                systemRule(name: "holiday.nyarsdagen", isBankHoliday: true, type: .fixed, month: 1, day: 1, titleOverride: "New Year's Day", localName: "Nyårsdagen", notes: "The first day of the year. Celebrated with fireworks and festivities at midnight."),
-                systemRule(name: "holiday.trettondedag_jul", isBankHoliday: true, type: .fixed, month: 1, day: 6, titleOverride: "Epiphany", localName: "Trettondedag jul", notes: "Marks the end of the Christmas season. Traditionally when the Three Wise Men visited the infant Jesus."),
-                systemRule(name: "holiday.forsta_maj", isBankHoliday: true, type: .fixed, month: 5, day: 1, titleOverride: "May Day", localName: "Första maj", notes: "International Workers' Day. Marked by political rallies and demonstrations across Sweden."),
-                systemRule(name: "holiday.sveriges_nationaldag", isBankHoliday: true, type: .fixed, month: 6, day: 6, titleOverride: "National Day of Sweden", localName: "Sveriges nationaldag", notes: "Commemorates the election of King Gustav Vasa in 1523. Celebrated with flag ceremonies and citizenship events."),
-                systemRule(name: "holiday.juldagen", isBankHoliday: true, type: .fixed, month: 12, day: 25, titleOverride: "Christmas Day", localName: "Juldagen", notes: "The main Christmas celebration. Swedish traditions include the julbord feast and watching Donald Duck on TV."),
-                systemRule(name: "holiday.annandag_jul", isBankHoliday: true, type: .fixed, month: 12, day: 26, titleOverride: "Second Day of Christmas", localName: "Annandag jul", notes: "Traditionally for visiting relatives. Swedes enjoy leftover julbord and many attend sporting events like the Allsvenskan finale."),
-                systemRule(name: "holiday.nyarsafton", isBankHoliday: false, type: .fixed, month: 12, day: 31, titleOverride: "New Year's Eve", localName: "Nyårsafton", notes: "The last day of the year. Celebrated with fireworks, champagne toasts, and watching the clock strike midnight."),
-                systemRule(name: "holiday.julafton", isBankHoliday: false, type: .fixed, month: 12, day: 24, titleOverride: "Christmas Eve", localName: "Julafton", notes: "The main day of Christmas celebration in Sweden. Families gather for julbord, gift-giving, and watching Kalle Anka (Donald Duck)."),
-                systemRule(name: "holiday.alla_hjartans_dag", isBankHoliday: false, type: .fixed, month: 2, day: 14, titleOverride: "Valentine's Day", localName: "Alla hjärtans dag", notes: "Adopted in Sweden in the 1980s. Red roses and heart-shaped candy are popular, though some Swedes prefer the tongue-in-cheek name."),
-                systemRule(name: "holiday.internationella_kvinnodagen", isBankHoliday: false, type: .fixed, month: 3, day: 8, titleOverride: "International Women's Day", localName: "Internationella kvinnodagen", notes: "A significant day in equality-focused Sweden. Rallies, seminars, and cultural events highlight women's rights and achievements."),
-                systemRule(name: "holiday.langfredagen", isBankHoliday: true, type: .easterRelative, daysOffset: -2, titleOverride: "Good Friday", localName: "Långfredagen", notes: "Commemorates the crucifixion of Jesus Christ. A solemn day of reflection in the Christian calendar."),
-                systemRule(name: "holiday.paskdagen", isBankHoliday: true, type: .easterRelative, daysOffset: 0, titleOverride: "Easter Sunday", localName: "Påskdagen", notes: "Celebrates the resurrection of Jesus Christ. Swedish traditions include Easter eggs and påskkärringar (Easter witches)."),
-                systemRule(name: "holiday.annandag_pask", isBankHoliday: true, type: .easterRelative, daysOffset: 1, titleOverride: "Easter Monday", localName: "Annandag påsk", notes: "Closes the Easter weekend. Swedes enjoy leftover Easter candy and the spring sunshine as nature begins to thaw."),
-                systemRule(name: "holiday.kristi_himmelsfardsdag", isBankHoliday: true, type: .easterRelative, daysOffset: 39, titleOverride: "Ascension Day", localName: "Kristi himmelsfärdsdag", notes: "Commemorates the ascension of Jesus into heaven, 40 days after Easter. Often used as a long weekend."),
-                systemRule(name: "holiday.pingstdagen", isBankHoliday: true, type: .easterRelative, daysOffset: 49, titleOverride: "Whit Sunday", localName: "Pingstdagen", notes: "Celebrates the descent of the Holy Spirit. Falls 49 days after Easter and marks the beginning of summer."),
-                systemRule(name: "holiday.midsommardagen", isBankHoliday: true, type: .floating, month: 6, weekday: 7, dayRangeStart: 20, dayRangeEnd: 26, titleOverride: "Midsummer Day", localName: "Midsommardagen", notes: "One of Sweden's most beloved holidays. Celebrated with maypole dancing, flower wreaths, and herring feasts."),
-                systemRule(name: "holiday.midsommarafton", isBankHoliday: false, type: .floating, month: 6, weekday: 6, dayRangeStart: 19, dayRangeEnd: 25, titleOverride: "Midsummer Eve", localName: "Midsommarafton", notes: "The main celebration day of Midsummer. Swedes raise the maypole, dance, and feast on pickled herring and strawberries."),
-                systemRule(name: "holiday.alla_helgons_dag", isBankHoliday: true, type: .nthWeekday, month: 11, weekday: 7, ordinal: 1, titleOverride: "All Saints' Day", localName: "Alla helgons dag", notes: "A day to honor the deceased. Swedes visit cemeteries and light candles on the graves of loved ones."),
-                systemRule(name: "holiday.mors_dag", isBankHoliday: false, type: .nthWeekday, month: 5, weekday: 1, ordinal: -1, titleOverride: "Mother's Day", localName: "Mors dag", notes: "Falls on the last Sunday of May in Sweden — later than most countries. Children serve breakfast in bed and give spring flowers."),
-                systemRule(name: "holiday.fars_dag", isBankHoliday: false, type: .nthWeekday, month: 11, weekday: 1, ordinal: 2, titleOverride: "Father's Day", localName: "Fars dag", notes: "Celebrated on the second Sunday of November. Children make handmade cards and families share an autumn Sunday dinner."),
-                systemRule(name: "holiday.virdagjamning", isBankHoliday: false, type: .astronomical, month: 3, titleOverride: "Vernal Equinox", localName: "Vårdagjämning", notes: "The spring equinox when day and night are equal length. Marks the astronomical start of spring."),
-                systemRule(name: "holiday.sommarsolstand", isBankHoliday: false, type: .astronomical, month: 6, titleOverride: "Summer Solstice", localName: "Sommarsolstånd", notes: "The longest day of the year. In northern Sweden, the sun barely sets during this period."),
-                systemRule(name: "holiday.hostdagjamning", isBankHoliday: false, type: .astronomical, month: 9, titleOverride: "Autumnal Equinox", localName: "Höstdagjämning", notes: "The autumn equinox when day and night are equal length. Marks the astronomical start of autumn."),
-                systemRule(name: "holiday.vintersolstand", isBankHoliday: false, type: .astronomical, month: 12, titleOverride: "Winter Solstice", localName: "Vintersolstånd", notes: "The shortest day of the year. In northern Sweden, the sun barely rises during this period.")
-            ]
-        case "US":
-            return [
-                systemRule(name: "New Year's Day", isBankHoliday: true, type: .fixed, month: 1, day: 1, notes: "The first day of the year. Celebrated with parties, fireworks, and the ball drop in Times Square."),
-                systemRule(name: "Martin Luther King Jr. Day", isBankHoliday: true, type: .nthWeekday, month: 1, weekday: 2, ordinal: 3, notes: "Honors the civil rights leader Dr. Martin Luther King Jr. A day of community service and reflection on equality."),
-                systemRule(name: "Presidents' Day", isBankHoliday: true, type: .nthWeekday, month: 2, weekday: 2, ordinal: 3, notes: "Honors all U.S. presidents, originally celebrating George Washington's birthday."),
-                systemRule(name: "Memorial Day", isBankHoliday: true, type: .nthWeekday, month: 5, weekday: 2, ordinal: -1, notes: "Honors military personnel who died in service. Marks the unofficial start of summer with barbecues and parades."),
-                systemRule(name: "Juneteenth", isBankHoliday: true, type: .fixed, month: 6, day: 19, notes: "Commemorates the end of slavery in the United States on June 19, 1865."),
-                systemRule(name: "Independence Day", isBankHoliday: true, type: .fixed, month: 7, day: 4, notes: "Celebrates the Declaration of Independence in 1776. Marked by fireworks, barbecues, and patriotic ceremonies."),
-                systemRule(name: "Labor Day", isBankHoliday: true, type: .nthWeekday, month: 9, weekday: 2, ordinal: 1, notes: "Honors the American labor movement. Marks the unofficial end of summer."),
-                systemRule(name: "Columbus Day", isBankHoliday: true, type: .nthWeekday, month: 10, weekday: 2, ordinal: 2, notes: "Commemorates Christopher Columbus's arrival in the Americas in 1492. Increasingly observed as Indigenous Peoples' Day."),
-                systemRule(name: "Veterans Day", isBankHoliday: true, type: .fixed, month: 11, day: 11, notes: "Honors all who have served in the U.S. Armed Forces. Marked by ceremonies, parades, and moments of silence."),
-                systemRule(name: "Thanksgiving Day", isBankHoliday: true, type: .nthWeekday, month: 11, weekday: 5, ordinal: 4, notes: "A day of giving thanks with family. Celebrated with a large turkey dinner, parades, and football."),
-                systemRule(name: "Christmas Day", isBankHoliday: true, type: .fixed, month: 12, day: 25, notes: "Celebrates the birth of Jesus Christ. Marked by gift-giving, decorating trees, and family gatherings."),
-                systemRule(name: "Valentine's Day", isBankHoliday: false, type: .fixed, month: 2, day: 14, notes: "A day to celebrate romantic love. Couples exchange cards, chocolates, and flowers."),
-                systemRule(name: "St. Patrick's Day", isBankHoliday: false, type: .fixed, month: 3, day: 17, notes: "Celebrates Irish culture and heritage. Known for wearing green, parades, and festive gatherings."),
-                systemRule(name: "Mother's Day", isBankHoliday: false, type: .nthWeekday, month: 5, weekday: 1, ordinal: 2, notes: "A day to honor mothers and motherhood. Celebrated with flowers, cards, and family meals."),
-                systemRule(name: "Father's Day", isBankHoliday: false, type: .nthWeekday, month: 6, weekday: 1, ordinal: 3, notes: "A day to honor fathers and fatherhood. Celebrated with gifts and quality family time."),
-                systemRule(name: "Halloween", isBankHoliday: false, type: .fixed, month: 10, day: 31, notes: "An evening of costumes, trick-or-treating, and spooky decorations. Rooted in ancient Celtic harvest festivals.")
-            ]
-        case "VN":
-            return [
-                // Public Holidays
-                systemRule(name: "Tết Dương lịch", isBankHoliday: true, type: .fixed, month: 1, day: 1, titleOverride: "New Year's Day", localName: "Tết Dương lịch", notes: "A quieter prelude to the main Tết celebration. Vietnamese enjoy a day off but save the big festivities for Lunar New Year."),
-                systemRule(name: "Tết Nguyên Đán", isBankHoliday: true, type: .lunar, month: 1, day: 1, titleOverride: "Lunar New Year (Tết)", localName: "Tết Nguyên Đán", notes: "Vietnam's most important holiday. Families reunite, visit temples, and exchange lì xì (lucky money) in red envelopes."),
-                systemRule(name: "Giỗ Tổ Hùng Vương", isBankHoliday: true, type: .lunar, month: 3, day: 10, titleOverride: "Hùng Kings' Temple Festival", localName: "Giỗ Tổ Hùng Vương", notes: "Honours the legendary Hùng Kings, founders of the first Vietnamese state."),
-                systemRule(name: "Ngày Thống nhất", isBankHoliday: true, type: .fixed, month: 4, day: 30, titleOverride: "Reunification Day", localName: "Ngày Thống nhất", notes: "Marks the fall of Saigon in 1975 and reunification of North and South Vietnam."),
-                systemRule(name: "Quốc tế Lao động", isBankHoliday: true, type: .fixed, month: 5, day: 1, titleOverride: "International Labour Day", localName: "Quốc tế Lao động", notes: "Combined with Reunification Day for a treasured long weekend. Vietnamese travel to beaches, mountains, and ancestral hometowns."),
-                systemRule(name: "Quốc khánh", isBankHoliday: true, type: .fixed, month: 9, day: 2, titleOverride: "National Day", localName: "Quốc khánh", notes: "Celebrates Vietnamese independence declared by Hồ Chí Minh in 1945."),
-                // Observances
-                systemRule(name: "Tết Trung Thu", isBankHoliday: false, type: .lunar, month: 8, day: 15, titleOverride: "Mid-Autumn Festival", localName: "Tết Trung Thu", notes: "A children's festival with lantern processions, lion dances, and mooncakes under the full autumn moon."),
-                systemRule(name: "Ngày Quốc tế Phụ nữ", isBankHoliday: false, type: .fixed, month: 3, day: 8, titleOverride: "International Women's Day", localName: "Ngày Quốc tế Phụ nữ", notes: "A major celebration in Vietnam. Women receive flowers, gifts, and special attention from family and colleagues."),
-                systemRule(name: "Ngày Phụ nữ Việt Nam", isBankHoliday: false, type: .fixed, month: 10, day: 20, titleOverride: "Vietnamese Women's Day", localName: "Ngày Phụ nữ Việt Nam", notes: "Celebrates Vietnamese women's contributions. Commemorates the founding of the Vietnam Women's Union in 1930."),
-                systemRule(name: "Ngày Nhà giáo Việt Nam", isBankHoliday: false, type: .fixed, month: 11, day: 20, titleOverride: "Vietnamese Teachers' Day", localName: "Ngày Nhà giáo Việt Nam", notes: "Honouring teachers is deeply important in Vietnamese culture. Students give flowers and gifts to their teachers."),
-                systemRule(name: "Tết Đoan Ngọ", isBankHoliday: false, type: .lunar, month: 5, day: 5, titleOverride: "Mid-Year Festival", localName: "Tết Đoan Ngọ", notes: "A festival to eliminate parasites and disease. Vietnamese eat fermented sticky rice and seasonal fruits at dawn."),
-                systemRule(name: "Lễ Vu Lan", isBankHoliday: false, type: .lunar, month: 7, day: 15, titleOverride: "Vu Lan Festival", localName: "Lễ Vu Lan", notes: "A Buddhist festival honouring parents and ancestors. Those with living mothers wear red roses; without, white roses."),
-                systemRule(name: "Ngày Valentine", isBankHoliday: false, type: .fixed, month: 2, day: 14, titleOverride: "Valentine's Day", localName: "Ngày Valentine", notes: "A popular celebration of romantic love among young Vietnamese. Couples exchange flowers and gifts.")
-            ]
-        case "NO":
-            return [
-                // Bank Holidays
-                systemRule(name: "Nyttårsdag", isBankHoliday: true, type: .fixed, month: 1, day: 1, titleOverride: "New Year's Day", localName: "Nyttårsdag", notes: "The first day of the year. Norwegians celebrate with fireworks and festive gatherings."),
-                systemRule(name: "Skjærtorsdag", isBankHoliday: true, type: .easterRelative, daysOffset: -3, titleOverride: "Maundy Thursday", localName: "Skjærtorsdag", notes: "Commemorates Jesus washing his disciples' feet at the Last Supper. In Norway, this begins the Easter holiday week (påskeferie)."),
-                systemRule(name: "Langfredag", isBankHoliday: true, type: .easterRelative, daysOffset: -2, titleOverride: "Good Friday", localName: "Langfredag", notes: "The most solemn day in the Norwegian church calendar. Traditionally, all entertainment was banned and shops closed early."),
-                systemRule(name: "Første påskedag", isBankHoliday: true, type: .easterRelative, daysOffset: 0, titleOverride: "Easter Sunday", localName: "Første påskedag", notes: "Celebrates the resurrection of Jesus Christ. Norwegians enjoy Easter eggs, skiing trips, and crime novels (påskekrim)."),
-                systemRule(name: "Andre påskedag", isBankHoliday: true, type: .easterRelative, daysOffset: 1, titleOverride: "Easter Monday", localName: "Andre påskedag", notes: "Wraps up Norway's beloved påskeferie. Many return home from mountain cabins after a week of skiing and Kvikk Lunsj chocolate."),
-                systemRule(name: "Arbeidernes dag", isBankHoliday: true, type: .fixed, month: 5, day: 1, titleOverride: "Labour Day", localName: "Arbeidernes dag", notes: "Workers march with red flags and banners through Norwegian cities. The labour movement shaped Norway's welfare state model."),
-                systemRule(name: "Grunnlovsdagen", isBankHoliday: true, type: .fixed, month: 5, day: 17, titleOverride: "Constitution Day", localName: "Grunnlovsdagen", notes: "Norway's national day celebrating the 1814 constitution. Famous for children's parades, bunads, and ice cream."),
-                systemRule(name: "Kristi himmelfartsdag", isBankHoliday: true, type: .easterRelative, daysOffset: 39, titleOverride: "Ascension Day", localName: "Kristi himmelfartsdag", notes: "Falls 40 days after Easter. Norwegians often take a bridge day on Friday, creating a beloved four-day weekend in late spring."),
-                systemRule(name: "Første pinsedag", isBankHoliday: true, type: .easterRelative, daysOffset: 49, titleOverride: "Whit Sunday", localName: "Første pinsedag", notes: "Marks the arrival of the Holy Spirit. In Norway, Pentecost signals the true start of summer and outdoor season."),
-                systemRule(name: "Andre pinsedag", isBankHoliday: true, type: .easterRelative, daysOffset: 50, titleOverride: "Whit Monday", localName: "Andre pinsedag", notes: "Extends the Pentecost weekend. Norwegians flock to cabins and coastal towns for the first warm-weather long weekend."),
-                systemRule(name: "Første juledag", isBankHoliday: true, type: .fixed, month: 12, day: 25, titleOverride: "Christmas Day", localName: "Første juledag", notes: "The main Christmas celebration. Norwegian traditions include ribbe (pork ribs) and walking around the Christmas tree."),
-                systemRule(name: "Andre juledag", isBankHoliday: true, type: .fixed, month: 12, day: 26, titleOverride: "Second Day of Christmas", localName: "Andre juledag", notes: "Traditionally a day for visiting extended family and neighbours. Many Norwegians enjoy leftover ribbe and go for winter walks."),
-                // Observances
-                systemRule(name: "Julaften", isBankHoliday: false, type: .fixed, month: 12, day: 24, titleOverride: "Christmas Eve", localName: "Julaften", notes: "The main day of Christmas celebration in Norway. Families gather for dinner, gifts, and walking around the tree."),
-                systemRule(name: "Nyttårsaften", isBankHoliday: false, type: .fixed, month: 12, day: 31, titleOverride: "New Year's Eve", localName: "Nyttårsaften", notes: "The last day of the year. Celebrated with fireworks, champagne, and watching the clock strike midnight."),
-                systemRule(name: "Morsdag", isBankHoliday: false, type: .nthWeekday, month: 2, weekday: 1, ordinal: 2, titleOverride: "Mother's Day", localName: "Morsdag", notes: "Falls in February, earlier than most countries. Norwegian children make handmade cards and serve breakfast in bed."),
-                systemRule(name: "Farsdag", isBankHoliday: false, type: .nthWeekday, month: 11, weekday: 1, ordinal: 2, titleOverride: "Father's Day", localName: "Farsdag", notes: "Celebrated on the second Sunday of November. Children prepare homemade gifts and families gather for Sunday dinner.")
-            ]
-        case "DK":
-            return [
-                // Bank Holidays
-                systemRule(name: "Nytårsdag", isBankHoliday: true, type: .fixed, month: 1, day: 1, titleOverride: "New Year's Day", localName: "Nytårsdag", notes: "The first day of the year. Danes celebrate with the Queen's New Year speech and fireworks."),
-                systemRule(name: "Skærtorsdag", isBankHoliday: true, type: .easterRelative, daysOffset: -3, titleOverride: "Maundy Thursday", localName: "Skærtorsdag", notes: "Commemorates the Last Supper. Danes traditionally brew påskeøl (Easter beer) and decorate with yellow daffodils and chicks."),
-                systemRule(name: "Langfredag", isBankHoliday: true, type: .easterRelative, daysOffset: -2, titleOverride: "Good Friday", localName: "Langfredag", notes: "A deeply quiet day in Denmark. Shops close, entertainment stops, and families attend church or share simple meals."),
-                systemRule(name: "Påskedag", isBankHoliday: true, type: .easterRelative, daysOffset: 0, titleOverride: "Easter Sunday", localName: "Påskedag", notes: "Danish traditions include sending gækkebreve (teaser letters) and decorating eggs. Easter lunch features lamb and herring."),
-                systemRule(name: "2. Påskedag", isBankHoliday: true, type: .easterRelative, daysOffset: 1, titleOverride: "Easter Monday", localName: "2. Påskedag", notes: "Extends the Easter weekend. Danes enjoy spring walks, Easter egg hunts, and leftover påskefrokost (Easter lunch)."),
-                systemRule(name: "Kristi himmelfartsdag", isBankHoliday: true, type: .easterRelative, daysOffset: 39, titleOverride: "Ascension Day", localName: "Kristi himmelfartsdag", notes: "Known as 'Store Bededag's replacement' since the prayer day was abolished in 2024. A popular day for outdoor excursions."),
-                systemRule(name: "Pinsedag", isBankHoliday: true, type: .easterRelative, daysOffset: 49, titleOverride: "Whit Sunday", localName: "Pinsedag", notes: "Marks the arrival of the Holy Spirit. Danes celebrate the start of summer with garden parties and outdoor dining."),
-                systemRule(name: "2. Pinsedag", isBankHoliday: true, type: .easterRelative, daysOffset: 50, titleOverride: "Whit Monday", localName: "2. Pinsedag", notes: "The last spring bank holiday. Danes flock to beaches, Tivoli Gardens, and countryside picnics as summer begins."),
-                systemRule(name: "Grundlovsdag", isBankHoliday: true, type: .fixed, month: 6, day: 5, titleOverride: "Constitution Day", localName: "Grundlovsdag", notes: "Celebrates the signing of the Danish constitution in 1849. Marked by political speeches and outdoor events."),
-                systemRule(name: "Juledag", isBankHoliday: true, type: .fixed, month: 12, day: 25, titleOverride: "Christmas Day", localName: "Juledag", notes: "The main Christmas celebration. Danish traditions include risalamande (rice pudding) and dancing around the tree."),
-                systemRule(name: "2. Juledag", isBankHoliday: true, type: .fixed, month: 12, day: 26, titleOverride: "Second Day of Christmas", localName: "2. Juledag", notes: "A day for visiting family and enjoying leftover flæskesteg (roast pork) and risalamande. Many Danes go for winter walks."),
-                // Observances
-                systemRule(name: "Juleaftensdag", isBankHoliday: false, type: .fixed, month: 12, day: 24, titleOverride: "Christmas Eve", localName: "Juleaftensdag", notes: "The main day of Christmas celebration in Denmark. Families gather for duck or goose dinner and dance around the tree."),
-                systemRule(name: "Nytårsaften", isBankHoliday: false, type: .fixed, month: 12, day: 31, titleOverride: "New Year's Eve", localName: "Nytårsaften", notes: "The last day of the year. Danes watch the Queen's speech, jump off chairs at midnight, and set off fireworks."),
-                systemRule(name: "Mors dag", isBankHoliday: false, type: .nthWeekday, month: 5, weekday: 1, ordinal: 2, titleOverride: "Mother's Day", localName: "Mors dag", notes: "Falls on the second Sunday of May. Danish children bake cake and pick flowers from the garden for their mothers."),
-                systemRule(name: "Valdemarsdag", isBankHoliday: false, type: .fixed, month: 6, day: 15, titleOverride: "Valdemar's Day", localName: "Valdemarsdag", notes: "Celebrates the Danish flag (Dannebrog), said to have fallen from the sky during battle in 1219.")
-            ]
-        case "FI":
-            return [
-                // Bank Holidays
-                systemRule(name: "Uudenvuodenpäivä", isBankHoliday: true, type: .fixed, month: 1, day: 1, titleOverride: "New Year's Day", localName: "Uudenvuodenpäivä", notes: "The first day of the year. Finns celebrate with fireworks and the tradition of casting tin for fortune-telling."),
-                systemRule(name: "Loppiainen", isBankHoliday: true, type: .fixed, month: 1, day: 6, titleOverride: "Epiphany", localName: "Loppiainen", notes: "Marks the visit of the Three Wise Men. The end of the Finnish Christmas season."),
-                systemRule(name: "Pitkäperjantai", isBankHoliday: true, type: .easterRelative, daysOffset: -2, titleOverride: "Good Friday", localName: "Pitkäperjantai", notes: "One of Finland's quietest days. Shops and restaurants close, and traditional meals include mämmi (a dark malt dessert)."),
-                systemRule(name: "Pääsiäispäivä", isBankHoliday: true, type: .easterRelative, daysOffset: 0, titleOverride: "Easter Sunday", localName: "Pääsiäispäivä", notes: "Finnish children dress as Easter witches (trulli) and go door-to-door with decorated willow branches to ward off evil spirits."),
-                systemRule(name: "2. pääsiäispäivä", isBankHoliday: true, type: .easterRelative, daysOffset: 1, titleOverride: "Easter Monday", localName: "2. pääsiäispäivä", notes: "Wraps up the Easter break. Families enjoy pasha (cream cheese dessert), mämmi, and chocolate eggs before spring arrives."),
-                systemRule(name: "Vappu", isBankHoliday: true, type: .fixed, month: 5, day: 1, titleOverride: "May Day", localName: "Vappu", notes: "Finland's carnival-like spring celebration. Students wear white caps and everyone enjoys sima (mead) and tippaleipä."),
-                systemRule(name: "Helatorstai", isBankHoliday: true, type: .easterRelative, daysOffset: 39, titleOverride: "Ascension Day", localName: "Helatorstai", notes: "Falls 40 days after Easter. Many Finns use the Thursday off to create a long weekend at their summer cottages (mökki)."),
-                systemRule(name: "Helluntaipäivä", isBankHoliday: true, type: .easterRelative, daysOffset: 49, titleOverride: "Whit Sunday", localName: "Helluntaipäivä", notes: "Marks the descent of the Holy Spirit. In Finland, Pentecost signals late spring and the approach of the beloved cottage season."),
-                systemRule(name: "Juhannuspäivä", isBankHoliday: true, type: .floating, month: 6, weekday: 7, dayRangeStart: 20, dayRangeEnd: 26, titleOverride: "Midsummer Day", localName: "Juhannuspäivä", notes: "One of Finland's most important holidays. Celebrated at summer cottages with bonfires, sauna, and the midnight sun."),
-                systemRule(name: "Pyhäinpäivä", isBankHoliday: true, type: .nthWeekday, month: 11, weekday: 7, ordinal: 1, titleOverride: "All Saints' Day", localName: "Pyhäinpäivä", notes: "A day to honour the deceased. Finns visit cemeteries and light candles on graves."),
-                systemRule(name: "Itsenäisyyspäivä", isBankHoliday: true, type: .fixed, month: 12, day: 6, titleOverride: "Independence Day", localName: "Itsenäisyyspäivä", notes: "Celebrates Finland's independence from Russia in 1917. Marked by candles in windows and the Presidential Ball."),
-                systemRule(name: "Joulupäivä", isBankHoliday: true, type: .fixed, month: 12, day: 25, titleOverride: "Christmas Day", localName: "Joulupäivä", notes: "The main Christmas celebration. Finnish traditions include Christmas sauna and visiting Santa Claus in Rovaniemi."),
-                systemRule(name: "Tapaninpäivä", isBankHoliday: true, type: .fixed, month: 12, day: 26, titleOverride: "St. Stephen's Day", localName: "Tapaninpäivä", notes: "Named after the first Christian martyr. Historically a day for horseback riding; today Finns visit friends and enjoy winter sports."),
-                // Observances
-                systemRule(name: "Jouluaatto", isBankHoliday: false, type: .fixed, month: 12, day: 24, titleOverride: "Christmas Eve", localName: "Jouluaatto", notes: "The main day of Christmas celebration in Finland. Families enjoy Christmas sauna, ham dinner, and gift-giving."),
-                systemRule(name: "Uudenvuodenaatto", isBankHoliday: false, type: .fixed, month: 12, day: 31, titleOverride: "New Year's Eve", localName: "Uudenvuodenaatto", notes: "The last day of the year. Finns celebrate with fireworks and the tradition of molten tin fortune-telling."),
-                systemRule(name: "Juhannusaatto", isBankHoliday: false, type: .floating, month: 6, weekday: 6, dayRangeStart: 19, dayRangeEnd: 25, titleOverride: "Midsummer Eve", localName: "Juhannusaatto", notes: "The eve of Midsummer. Finns head to summer cottages for bonfires, sauna, and swimming."),
-                systemRule(name: "Äitienpäivä", isBankHoliday: false, type: .nthWeekday, month: 5, weekday: 1, ordinal: 2, titleOverride: "Mother's Day", localName: "Äitienpäivä", notes: "Children present mothers with a white rose — the symbol of Finnish motherhood. The President awards the Mother's Cross to prolific mothers."),
-                systemRule(name: "Isänpäivä", isBankHoliday: false, type: .nthWeekday, month: 11, weekday: 1, ordinal: 2, titleOverride: "Father's Day", localName: "Isänpäivä", notes: "Falls in November, marking the start of Finland's cosy dark season. Children visit their fathers, often with homemade gifts.")
-            ]
-        case "IS":
-            return [
-                // Bank Holidays
-                systemRule(name: "Nýársdagur", isBankHoliday: true, type: .fixed, month: 1, day: 1, titleOverride: "New Year's Day", localName: "Nýársdagur", notes: "The first day of the year. Icelanders celebrate with bonfires, fireworks, and community gatherings."),
-                systemRule(name: "Skírdagur", isBankHoliday: true, type: .easterRelative, daysOffset: -3, titleOverride: "Maundy Thursday", localName: "Skírdagur", notes: "Begins Iceland's Easter break. Shops close at noon and families prepare for the holiday by decorating eggs and buying chocolate."),
-                systemRule(name: "Föstudagurinn langi", isBankHoliday: true, type: .easterRelative, daysOffset: -2, titleOverride: "Good Friday", localName: "Föstudagurinn langi", notes: "Literally 'the long Friday.' Iceland practically shuts down — one of the few days even Reykjavik's nightlife goes silent."),
-                systemRule(name: "Páskadagur", isBankHoliday: true, type: .easterRelative, daysOffset: 0, titleOverride: "Easter Sunday", localName: "Páskadagur", notes: "Celebrates the resurrection of Jesus Christ. Icelanders exchange chocolate eggs with proverbs inside."),
-                systemRule(name: "Annar í páskum", isBankHoliday: true, type: .easterRelative, daysOffset: 1, titleOverride: "Easter Monday", localName: "Annar í páskum", notes: "Wraps up Iceland's five-day Easter break. Families enjoy leftover lamb, hot chocolate, and the last of the giant chocolate eggs."),
-                systemRule(name: "Sumardagurinn fyrsti", isBankHoliday: true, type: .floating, month: 4, weekday: 5, dayRangeStart: 19, dayRangeEnd: 25, titleOverride: "First Day of Summer", localName: "Sumardagurinn fyrsti", notes: "Celebrates the arrival of summer in the old Icelandic calendar. A uniquely Icelandic holiday with parades and festivities."),
-                systemRule(name: "Verkalýðsdagurinn", isBankHoliday: true, type: .fixed, month: 5, day: 1, titleOverride: "Labour Day", localName: "Verkalýðsdagurinn", notes: "International Workers' Day. Marked by union rallies and celebrations across Iceland."),
-                systemRule(name: "Uppstigningardagur", isBankHoliday: true, type: .easterRelative, daysOffset: 39, titleOverride: "Ascension Day", localName: "Uppstigningardagur", notes: "Falls 40 days after Easter. Icelanders enjoy the long weekend as the subarctic landscape finally warms and daylight stretches."),
-                systemRule(name: "Hvítasunnudagur", isBankHoliday: true, type: .easterRelative, daysOffset: 49, titleOverride: "Whit Sunday", localName: "Hvítasunnudagur", notes: "Marks the descent of the Holy Spirit. By Pentecost, Iceland enjoys nearly 24 hours of daylight — the bright nights have begun."),
-                systemRule(name: "Annar í hvítasunnu", isBankHoliday: true, type: .easterRelative, daysOffset: 50, titleOverride: "Whit Monday", localName: "Annar í hvítasunnu", notes: "Extends the Pentecost weekend. Families take advantage of the endless daylight for hiking and outdoor barbecues."),
-                systemRule(name: "Þjóðhátíðardagur", isBankHoliday: true, type: .fixed, month: 6, day: 17, titleOverride: "Icelandic National Day", localName: "Þjóðhátíðardagur", notes: "Celebrates Iceland's independence from Denmark in 1944. Marked by parades, music, and the Lady of the Mountain."),
-                systemRule(name: "Verslunarmannahelgi", isBankHoliday: true, type: .nthWeekday, month: 8, weekday: 2, ordinal: 1, titleOverride: "Commerce Day", localName: "Verslunarmannahelgi", notes: "A long weekend holiday. Icelanders celebrate with outdoor festivals and camping."),
-                systemRule(name: "Jóladagur", isBankHoliday: true, type: .fixed, month: 12, day: 25, titleOverride: "Christmas Day", localName: "Jóladagur", notes: "The main Christmas celebration. Icelandic traditions include the 13 Yule Lads who visit children before Christmas."),
-                systemRule(name: "Annar í jólum", isBankHoliday: true, type: .fixed, month: 12, day: 26, titleOverride: "Second Day of Christmas", localName: "Annar í jólum", notes: "A day for visiting family and enjoying hangikjöt (smoked lamb) leftovers. The 13th Yule Lad departs, ending their visits."),
-                // Observances
-                systemRule(name: "Aðfangadagur", isBankHoliday: false, type: .fixed, month: 12, day: 24, titleOverride: "Christmas Eve", localName: "Aðfangadagur", notes: "The main day of Christmas celebration in Iceland. Gifts are exchanged at 6 PM and families enjoy smoked lamb."),
-                systemRule(name: "Gamlársdagur", isBankHoliday: false, type: .fixed, month: 12, day: 31, titleOverride: "New Year's Eve", localName: "Gamlársdagur", notes: "The last day of the year. Iceland's spectacular fireworks display is funded by the national rescue service."),
-                systemRule(name: "Dagur íslenskrar tungu", isBankHoliday: false, type: .fixed, month: 11, day: 16, titleOverride: "Icelandic Language Day", localName: "Dagur íslenskrar tungu", notes: "Celebrates the Icelandic language on the birthday of poet Jónas Hallgrímsson."),
-                systemRule(name: "Mæðradagurinn", isBankHoliday: false, type: .nthWeekday, month: 5, weekday: 1, ordinal: 2, titleOverride: "Mother's Day", localName: "Mæðradagurinn", notes: "Children wake mothers with flowers and breakfast. Icelandic florists see their busiest day of the year."),
-                systemRule(name: "Feðradagurinn", isBankHoliday: false, type: .nthWeekday, month: 11, weekday: 1, ordinal: 2, titleOverride: "Father's Day", localName: "Feðradagurinn", notes: "Celebrated in November's growing darkness. Families gather for Sunday dinner and children present handmade gifts.")
-            ]
-        case "GL":
-            return [
-                // Bank Holidays - Greenland (Kalaallit Nunaat)
-                systemRule(name: "Ukiortaaq", isBankHoliday: true, type: .fixed, month: 1, day: 1, titleOverride: "New Year's Day", localName: "Ukiortaaq", notes: "The first day of the year. Greenlanders celebrate with fireworks and community gatherings."),
-                systemRule(name: "Sisamanngorneq Illernartoq", isBankHoliday: true, type: .easterRelative, daysOffset: -3, titleOverride: "Maundy Thursday", localName: "Sisamanngorneq Illernartoq", notes: "Begins the Easter holiday in Greenland. Lutheran church services are central to Greenlandic community life, even in remote settlements."),
-                systemRule(name: "Tallimanngorneq Illernartoq", isBankHoliday: true, type: .easterRelative, daysOffset: -2, titleOverride: "Good Friday", localName: "Tallimanngorneq Illernartoq", notes: "A day of solemn reflection across Greenland's scattered settlements. Church hymns sung in Kalaallisut fill small wooden churches."),
-                systemRule(name: "Poorskip ullua", isBankHoliday: true, type: .easterRelative, daysOffset: 0, titleOverride: "Easter Sunday", localName: "Poorskip ullua", notes: "Families gather for festive meals of seal, whale, or lamb. Easter arrives as Greenland's long polar winter begins to break."),
-                systemRule(name: "Poorskip aappaa", isBankHoliday: true, type: .easterRelative, daysOffset: 1, titleOverride: "Easter Monday", localName: "Poorskip aappaa", notes: "Extends the Easter break. Communities enjoy outdoor activities as daylight hours grow rapidly in the Arctic spring."),
-                systemRule(name: "Qilalugaq", isBankHoliday: true, type: .easterRelative, daysOffset: 39, titleOverride: "Ascension Day", localName: "Qilalugaq", notes: "Falls 40 days after Easter. By this time, the midnight sun is approaching and Greenlandic hunters prepare for summer expeditions."),
-                systemRule(name: "Pinikkoq", isBankHoliday: true, type: .easterRelative, daysOffset: 49, titleOverride: "Whit Sunday", localName: "Pinikkoq", notes: "Pentecost arrives during Greenland's brief but intense summer. Communities gather outdoors as the sun barely dips below the horizon."),
-                systemRule(name: "Pinikkoq aappaa", isBankHoliday: true, type: .easterRelative, daysOffset: 50, titleOverride: "Whit Monday", localName: "Pinikkoq aappaa", notes: "Extends the Pentecost weekend. Greenlanders enjoy kayaking, fishing, and gathering around kaffemik (coffee gatherings) with cakes."),
-                systemRule(name: "Ullortuneq", isBankHoliday: true, type: .fixed, month: 6, day: 21, titleOverride: "National Day", localName: "Ullortuneq", notes: "Greenland's national day on the summer solstice. Celebrated with traditional Inuit music, food, and cultural events."),
-                systemRule(name: "Juulli ullua", isBankHoliday: true, type: .fixed, month: 12, day: 25, titleOverride: "Christmas Day", localName: "Juulli ullua", notes: "The main Christmas celebration. Greenlandic traditions blend Danish customs with Inuit culture."),
-                systemRule(name: "Juulli aappaa", isBankHoliday: true, type: .fixed, month: 12, day: 26, titleOverride: "Second Day of Christmas", localName: "Juulli aappaa", notes: "Communities hold kaffemik gatherings with cakes and coffee. In the polar night, Christmas lights shine across the snow-covered towns."),
-                // Observances
-                systemRule(name: "Juulli siullia", isBankHoliday: false, type: .fixed, month: 12, day: 24, titleOverride: "Christmas Eve", localName: "Juulli siullia", notes: "The main day of Christmas celebration in Greenland. Families gather for traditional meals and gift-giving."),
-                systemRule(name: "Ukiortaami siullia", isBankHoliday: false, type: .fixed, month: 12, day: 31, titleOverride: "New Year's Eve", localName: "Ukiortaami siullia", notes: "The last day of the year. Celebrated with fireworks visible across the arctic landscape.")
-            ]
-        case "FO":
-            return [
-                // Bank Holidays - Faroe Islands (Føroyar)
-                systemRule(name: "Nýggjársdagur", isBankHoliday: true, type: .fixed, month: 1, day: 1, titleOverride: "New Year's Day", localName: "Nýggjársdagur", notes: "The first day of the year. Faroese celebrate with fireworks and festive gatherings."),
-                systemRule(name: "Skírhósdagur", isBankHoliday: true, type: .easterRelative, daysOffset: -3, titleOverride: "Maundy Thursday", localName: "Skírhósdagur", notes: "Begins the Faroese Easter break. The deeply Lutheran islands hold church services in their distinctive turf-roofed churches."),
-                systemRule(name: "Langifríggjadagur", isBankHoliday: true, type: .easterRelative, daysOffset: -2, titleOverride: "Good Friday", localName: "Langifríggjadagur", notes: "The most solemn day on the Faroese calendar. Villages fall silent and families share simple meals of dried fish and lamb."),
-                systemRule(name: "Páskadagur", isBankHoliday: true, type: .easterRelative, daysOffset: 0, titleOverride: "Easter Sunday", localName: "Páskadagur", notes: "Faroese families gather for lamb dinners. Children exchange chocolate eggs and enjoy the lengthening North Atlantic daylight."),
-                systemRule(name: "Annar páskadagur", isBankHoliday: true, type: .easterRelative, daysOffset: 1, titleOverride: "Easter Monday", localName: "Annar páskadagur", notes: "Closes the Easter weekend. Faroese visit between villages and enjoy the dramatic spring landscapes of the windswept islands."),
-                systemRule(name: "Flaggdagur", isBankHoliday: false, type: .fixed, month: 4, day: 25, titleOverride: "Flag Day", localName: "Flaggdagur", notes: "Celebrates the Faroese flag (Merkið). The flag was first used during World War II when the islands were under British protection."),
-                systemRule(name: "Kristi himmalsferðardagur", isBankHoliday: true, type: .easterRelative, daysOffset: 39, titleOverride: "Ascension Day", localName: "Kristi himmalsferðardagur", notes: "Falls 40 days after Easter. Faroese enjoy the long weekend as puffins return and the bird cliffs come alive with nesting seabirds."),
-                systemRule(name: "Hvítasunnudagur", isBankHoliday: true, type: .easterRelative, daysOffset: 49, titleOverride: "Whit Sunday", localName: "Hvítasunnudagur", notes: "Marks the descent of the Holy Spirit. The Faroes' brief summer begins with long daylight hours and green hillsides."),
-                systemRule(name: "Annar hvítasunnudagur", isBankHoliday: true, type: .easterRelative, daysOffset: 50, titleOverride: "Whit Monday", localName: "Annar hvítasunnudagur", notes: "Extends the Pentecost weekend. Faroese enjoy hiking the dramatic sea cliffs and gathering for community meals."),
-                systemRule(name: "Ólavsøkuaftan", isBankHoliday: false, type: .fixed, month: 7, day: 28, titleOverride: "St. Olav's Eve", localName: "Ólavsøkuaftan", notes: "The eve of the Faroese national holiday. Opening ceremonies and cultural events begin in Tórshavn."),
-                systemRule(name: "Ólavsøkudagur", isBankHoliday: true, type: .fixed, month: 7, day: 29, titleOverride: "St. Olav's Day", localName: "Ólavsøkudagur", notes: "The Faroese national holiday. Celebrated with rowing races, chain dancing, and the opening of Parliament."),
-                systemRule(name: "Jólafturansaftan", isBankHoliday: false, type: .fixed, month: 12, day: 24, titleOverride: "Christmas Eve", localName: "Jólafturansaftan", notes: "The main day of Christmas celebration in the Faroe Islands. Families gather for traditional dinner and gift-giving."),
-                systemRule(name: "Jóladagur", isBankHoliday: true, type: .fixed, month: 12, day: 25, titleOverride: "Christmas Day", localName: "Jóladagur", notes: "Celebrated with ræst kjøt (fermented mutton), a uniquely Faroese delicacy. Families attend church and sing traditional hymns."),
-                systemRule(name: "Annar jóladagur", isBankHoliday: true, type: .fixed, month: 12, day: 26, titleOverride: "Second Day of Christmas", localName: "Annar jóladagur", notes: "Villages host chain dancing (kvæði) gatherings where communities sing medieval ballads and dance in linked circles."),
-                systemRule(name: "Nýggjársaftan", isBankHoliday: false, type: .fixed, month: 12, day: 31, titleOverride: "New Year's Eve", localName: "Nýggjársaftan", notes: "The last day of the year. Celebrated with fireworks and festive gatherings across the islands.")
-            ]
-        default:
-            // For other regions, return empty - they will be seeded from the main seed function
-            return []
         }
     }
 
@@ -593,14 +363,8 @@ class HolidayManager {
         return nil
     }
     
-    /// Seed the Database with Holiday Rules (The "DNA")
-    /// All seeded rules are marked as system defaults with originalDefaultJSON for reset capability
-    private func seedSwedishRules(context: ModelContext) {
-        Log.d("Seeding holiday rules (non-destructive)...")
-
-        migrateLegacySwedishRuleNames(context: context)
-
-        // Helper to create system default rules
+    /// Single source of truth for all default holiday rules across all regions
+    private func buildAllDefaultRules() -> [HolidayRule] {
         func systemRule(
             name: String,
             region: String = "SE",
@@ -632,12 +396,12 @@ class HolidayManager {
                 ordinal: ordinal,
                 dayRangeStart: dayRangeStart,
                 dayRangeEnd: dayRangeEnd,
-                isSystemDefault: true,  // 情報デザイン: Mark as system default
+                isSystemDefault: true,
                 isEnabled: true
             )
         }
 
-        let rules: [HolidayRule] = [
+        return [
             // --- RÖDA DAGAR (Red Days - Official Public Holidays) ---
             systemRule(name: "holiday.nyarsdagen", isBankHoliday: true, type: .fixed, month: 1, day: 1, titleOverride: "New Year's Day", localName: "Nyårsdagen", notes: "The first day of the year. Celebrated with fireworks and festivities at midnight."),
             systemRule(name: "holiday.trettondedag_jul", isBankHoliday: true, type: .fixed, month: 1, day: 6, titleOverride: "Epiphany", localName: "Trettondedag jul", notes: "Marks the end of the Christmas season. Traditionally when the Three Wise Men visited the infant Jesus."),
@@ -990,6 +754,16 @@ class HolidayManager {
             systemRule(name: "Annar jóladagur", region: "FO", isBankHoliday: true, type: .fixed, month: 12, day: 26, titleOverride: "Second Day of Christmas", localName: "Annar jóladagur", notes: "Villages host chain dancing (kvæði) gatherings where communities sing medieval ballads and dance in linked circles."),
             systemRule(name: "Nýggjársaftan", region: "FO", isBankHoliday: false, type: .fixed, month: 12, day: 31, titleOverride: "New Year's Eve", localName: "Nýggjársaftan", notes: "The last day of the year. Celebrated with fireworks and festive gatherings across the islands.")
         ]
+    }
+
+    /// Seed the Database with Holiday Rules (The "DNA")
+    /// All seeded rules are marked as system defaults with originalDefaultJSON for reset capability
+    private func seedSwedishRules(context: ModelContext) {
+        Log.d("Seeding holiday rules (non-destructive)...")
+
+        migrateLegacySwedishRuleNames(context: context)
+
+        let rules = buildAllDefaultRules()
 
         do {
             let existing = try context.fetch(FetchDescriptor<HolidayRule>())
