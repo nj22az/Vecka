@@ -51,8 +51,7 @@ struct DaySummaryData {
     }
 
     var hasContent: Bool {
-        // Birthdays are now memos with linkedContactID, so only check holidays and memos
-        !holidays.isEmpty || !memos.isEmpty
+        !holidays.isEmpty || !memos.isEmpty || !birthdays.isEmpty
     }
 }
 
@@ -181,6 +180,26 @@ struct ShareableDaySummaryCard: View {
                             )
 
                             if holiday.id != data.holidays.prefix(isShareable ? 10 : 3).last?.id ||
+                               !data.birthdays.isEmpty || !data.memos.isEmpty {
+                                Rectangle()
+                                    .fill(colors.border.opacity(0.3))
+                                    .frame(height: 1)
+                                    .padding(.horizontal, JohoDimensions.spacingMD)
+                            }
+                        }
+
+                        // Birthdays
+                        ForEach(data.birthdays.prefix(isShareable ? 6 : 3)) { birthday in
+                            summaryRow(
+                                icon: "gift.fill",
+                                iconColor: JohoColors.purple,
+                                title: birthday.name,
+                                badge: birthday.age != nil ? "\(birthday.age!)" : "BIRTHDAY",
+                                badgeColor: JohoColors.purple,
+                                subtitle: nil
+                            )
+
+                            if birthday.id != data.birthdays.prefix(isShareable ? 6 : 3).last?.id ||
                                !data.memos.isEmpty {
                                 Rectangle()
                                     .fill(colors.border.opacity(0.3))
@@ -189,7 +208,7 @@ struct ShareableDaySummaryCard: View {
                             }
                         }
 
-                        // Memos (includes birthday memos - those with linkedContactID or birthday symbol)
+                        // Memos
                         ForEach(data.memos.prefix(isShareable ? 8 : 4)) { memo in
                             memoSummaryRow(memo: memo)
 
@@ -485,6 +504,26 @@ struct DaySummarySheetView: View {
                             )
 
                             if holiday.id != data.holidays.prefix(3).last?.id ||
+                               !data.birthdays.isEmpty || !data.memos.isEmpty {
+                                Rectangle()
+                                    .fill(colors.border.opacity(0.3))
+                                    .frame(height: 1)
+                                    .padding(.horizontal, contentInset)
+                            }
+                        }
+
+                        // Birthdays
+                        ForEach(data.birthdays.prefix(3)) { birthday in
+                            sheetSummaryRow(
+                                icon: "gift.fill",
+                                iconColor: JohoColors.purple,
+                                title: birthday.name,
+                                badge: birthday.age != nil ? "\(birthday.age!)" : "BIRTHDAY",
+                                badgeColor: JohoColors.purple,
+                                subtitle: nil
+                            )
+
+                            if birthday.id != data.birthdays.prefix(3).last?.id ||
                                !data.memos.isEmpty {
                                 Rectangle()
                                     .fill(colors.border.opacity(0.3))

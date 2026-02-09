@@ -150,7 +150,7 @@ struct VeckaMediumWidgetView: View {
     // MARK: - Today Column
 
     private func todayColumn(scale: CGFloat) -> some View {
-        VStack(spacing: 4 * scale) {
+        VStack(spacing: 0) {
             // Header
             HStack {
                 Text("TODAY")
@@ -172,6 +172,13 @@ struct VeckaMediumWidgetView: View {
             }
             .padding(.horizontal, 10 * scale)
             .padding(.top, 8 * scale)
+            .padding(.bottom, 4 * scale)
+
+            // Header divider
+            Rectangle()
+                .fill(JohoWidget.Colors.border(for: colorScheme).opacity(0.3))
+                .frame(height: 1)
+                .padding(.horizontal, 8 * scale)
 
             Spacer(minLength: 0)
 
@@ -198,7 +205,7 @@ struct VeckaMediumWidgetView: View {
     // MARK: - Week Column
 
     private func weekColumn(scale: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: 4 * scale) {
+        VStack(alignment: .leading, spacing: 0) {
             // Header
             HStack {
                 Text(thisWeekSpecials.isEmpty ? "COMING UP" : "THIS WEEK")
@@ -209,6 +216,13 @@ struct VeckaMediumWidgetView: View {
             }
             .padding(.horizontal, 10 * scale)
             .padding(.top, 8 * scale)
+            .padding(.bottom, 4 * scale)
+
+            // Header divider
+            Rectangle()
+                .fill(JohoWidget.Colors.border(for: colorScheme).opacity(0.3))
+                .frame(height: 1)
+                .padding(.horizontal, 8 * scale)
 
             Spacer(minLength: 0)
 
@@ -221,9 +235,17 @@ struct VeckaMediumWidgetView: View {
                     .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
                     .frame(maxWidth: .infinity)
             } else {
-                VStack(spacing: 6 * scale) {
-                    ForEach(Array(items.enumerated()), id: \.offset) { _, item in
+                VStack(spacing: 0) {
+                    ForEach(Array(items.enumerated()), id: \.offset) { index, item in
                         specialRow(item: item, scale: scale, showBackground: false)
+
+                        // Divider between items
+                        if index < items.count - 1 {
+                            Rectangle()
+                                .fill(JohoWidget.Colors.border(for: colorScheme).opacity(0.3))
+                                .frame(height: 1)
+                                .padding(.horizontal, 4 * scale)
+                        }
                     }
                 }
                 .padding(.horizontal, 8 * scale)
@@ -245,7 +267,7 @@ struct VeckaMediumWidgetView: View {
     private func specialRow(item: SpecialItem, scale: CGFloat, showBackground: Bool) -> some View {
         HStack(spacing: 6 * scale) {
             Image(systemName: item.symbol)
-                .font(.system(size: 12 * scale, weight: .bold))
+                .font(.system(size: 16 * scale, weight: .bold))
                 .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
 
             Text(item.name)
@@ -273,7 +295,7 @@ struct VeckaMediumWidgetView: View {
     private func factRow(scale: CGFloat) -> some View {
         HStack(spacing: 6 * scale) {
             Image(systemName: fact.symbol)
-                .font(.system(size: 12 * scale, weight: .bold))
+                .font(.system(size: 16 * scale, weight: .bold))
                 .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
 
             Text(fact.text)

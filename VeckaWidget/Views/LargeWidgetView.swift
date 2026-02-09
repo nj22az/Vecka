@@ -2,9 +2,8 @@
 //  LargeWidgetView.swift
 //  VeckaWidget
 //
-//  Large Widget: Upcoming specials list
-//  Shows next 5-7 holidays/birthdays with dates
-//  Bottom bar shows daily fact
+//  Large Widget: Three-section bento
+//  Header → Today's holiday with notes → Upcoming list → Fact bar
 //
 
 import SwiftUI
@@ -34,6 +33,27 @@ struct VeckaLargeWidgetView: View {
         WidgetFacts.randomFact(for: entry.date)
     }
 
+    /// Today's holiday/birthday for the TODAY section
+    private var todayItem: TodayDisplayItem? {
+        if let holiday = entry.todaysHolidays.first {
+            return TodayDisplayItem(
+                name: holiday.displayName,
+                symbol: holiday.isBankHoliday ? "star.fill" : "sparkles",
+                notes: holiday.notes,
+                isBankHoliday: holiday.isBankHoliday
+            )
+        }
+        if let birthday = entry.todaysBirthdays.first {
+            return TodayDisplayItem(
+                name: birthday.displayName,
+                symbol: "gift.fill",
+                notes: nil,
+                isBankHoliday: false
+            )
+        }
+        return nil
+    }
+
     /// Combined list of upcoming specials (holidays + birthdays)
     private var upcomingItems: [UpcomingItem] {
         var items: [UpcomingItem] = []
@@ -50,10 +70,9 @@ struct VeckaLargeWidgetView: View {
             ))
         }
 
-        // Add upcoming birthdays from week (we only have week data, but show what we have)
+        // Add upcoming birthdays from week
         for (date, birthdays) in entry.weekBirthdays {
             for birthday in birthdays {
-                // Only add if it's in the future
                 if date > calendar.startOfDay(for: entry.date) {
                     items.append(UpcomingItem(
                         name: birthday.displayName,
@@ -67,8 +86,8 @@ struct VeckaLargeWidgetView: View {
             }
         }
 
-        // Sort by date and limit
-        return items.sorted { $0.date < $1.date }.prefix(6).map { $0 }
+        // Sort by date and limit to 4
+        return items.sorted { $0.date < $1.date }.prefix(4).map { $0 }
     }
 
     // MARK: - Body
@@ -90,9 +109,36 @@ struct VeckaLargeWidgetView: View {
                     .frame(height: 1.5)
                     .padding(.horizontal, 12 * scale)
 
-                // Upcoming list (no ScrollView - widgets must be static)
+                // TODAY section (holiday with notes)
+                if let today = todayItem {
+                    todaySection(item: today, scale: scale)
+                        .padding(.horizontal, 12 * scale)
+                        .padding(.vertical, 8 * scale)
+
+                    // Divider
+                    Rectangle()
+                        .fill(JohoWidget.Colors.border(for: colorScheme))
+                        .frame(height: 1.5)
+                        .padding(.horizontal, 12 * scale)
+                }
+
+                // UPCOMING header
+                if !upcomingItems.isEmpty {
+                    HStack {
+                        Text("UPCOMING")
+                            .font(.system(size: 10 * scale, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
+                            .tracking(1)
+                        Spacer()
+                    }
+                    .padding(.horizontal, 14 * scale)
+                    .padding(.top, 6 * scale)
+                    .padding(.bottom, 4 * scale)
+                }
+
+                // Upcoming list
                 VStack(spacing: 6 * scale) {
-                    if upcomingItems.isEmpty {
+                    if upcomingItems.isEmpty && todayItem == nil {
                         emptyState(scale: scale)
                     } else {
                         ForEach(Array(upcomingItems.enumerated()), id: \.offset) { _, item in
@@ -102,7 +148,7 @@ struct VeckaLargeWidgetView: View {
                     Spacer(minLength: 0)
                 }
                 .padding(.horizontal, 12 * scale)
-                .padding(.vertical, 8 * scale)
+                .padding(.vertical, 4 * scale)
 
                 // Divider
                 Rectangle()
@@ -128,7 +174,7 @@ struct VeckaLargeWidgetView: View {
 
     private func headerRow(scale: CGFloat) -> some View {
         HStack {
-            Text("UPCOMING")
+            Text("TODAY")
                 .font(.system(size: 14 * scale, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
                 .tracking(1)
@@ -156,13 +202,43 @@ struct VeckaLargeWidgetView: View {
         }
     }
 
+    // MARK: - Today Section
+
+    private func todaySection(item: TodayDisplayItem, scale: CGFloat) -> some View {
+        HStack(alignment: .top, spacing: 8 * scale) {
+            // Symbol
+            Image(systemName: item.symbol)
+                .font(.system(size: 18 * scale, weight: .bold))
+                .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
+                .frame(width: 24 * scale)
+
+            // Name + Notes
+            VStack(alignment: .leading, spacing: 4 * scale) {
+                Text(item.name)
+                    .font(.system(size: 14 * scale, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
+                    .lineLimit(1)
+
+                if let notes = item.notes {
+                    Text(notes)
+                        .font(.system(size: 11 * scale, weight: .medium, design: .rounded))
+                        .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
+                        .lineLimit(3)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+
+            Spacer(minLength: 0)
+        }
+    }
+
     // MARK: - Upcoming Row
 
     private func upcomingRow(item: UpcomingItem, scale: CGFloat) -> some View {
         HStack(spacing: 8 * scale) {
             // Symbol
             Image(systemName: item.symbol)
-                .font(.system(size: 14 * scale, weight: .bold))
+                .font(.system(size: 18 * scale, weight: .bold))
                 .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
                 .frame(width: 20 * scale)
 
@@ -248,15 +324,25 @@ struct VeckaLargeWidgetView: View {
     }
 
     private var accessibilityLabel: String {
-        var label = "Upcoming specials, Week \(entry.weekNumber)"
+        var label = "Week \(entry.weekNumber)"
+        if let today = todayItem {
+            label += ", Today: \(today.name)"
+        }
         if !upcomingItems.isEmpty {
-            label += ": \(upcomingItems.prefix(3).map(\.name).joined(separator: ", "))"
+            label += ", Upcoming: \(upcomingItems.prefix(3).map(\.name).joined(separator: ", "))"
         }
         return label
     }
 }
 
-// MARK: - Upcoming Item Model
+// MARK: - Models
+
+private struct TodayDisplayItem {
+    let name: String
+    let symbol: String
+    let notes: String?
+    let isBankHoliday: Bool
+}
 
 private struct UpcomingItem {
     let name: String

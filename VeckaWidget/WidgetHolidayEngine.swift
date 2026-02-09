@@ -25,6 +25,7 @@ struct WidgetHolidayRule {
     let name: String           // Localization key (e.g., "holiday.juldagen")
     let isBankHoliday: Bool
     let type: WidgetHolidayRuleType
+    var notes: String?         // Holiday description for large widget
 
     // Parameters (based on type)
     var month: Int?
@@ -43,6 +44,7 @@ struct WidgetHoliday: Identifiable {
     let date: Date
     let name: String
     let isBankHoliday: Bool
+    var notes: String?
 
     var displayName: String {
         // Try localization first
@@ -70,42 +72,90 @@ struct WidgetHolidayEngine {
 
     private let swedishHolidayRules: [WidgetHolidayRule] = [
         // --- RED DAYS (Official Public Holidays) ---
-        WidgetHolidayRule(name: "holiday.nyarsdagen", isBankHoliday: true, type: .fixed, month: 1, day: 1),
-        WidgetHolidayRule(name: "holiday.trettondedag_jul", isBankHoliday: true, type: .fixed, month: 1, day: 6),
-        WidgetHolidayRule(name: "holiday.forsta_maj", isBankHoliday: true, type: .fixed, month: 5, day: 1),
-        WidgetHolidayRule(name: "holiday.sveriges_nationaldag", isBankHoliday: true, type: .fixed, month: 6, day: 6),
-        WidgetHolidayRule(name: "holiday.juldagen", isBankHoliday: true, type: .fixed, month: 12, day: 25),
-        WidgetHolidayRule(name: "holiday.annandag_jul", isBankHoliday: true, type: .fixed, month: 12, day: 26),
+        WidgetHolidayRule(name: "holiday.nyarsdagen", isBankHoliday: true, type: .fixed,
+                          notes: "The first day of the year. Celebrated with fireworks and festivities at midnight.",
+                          month: 1, day: 1),
+        WidgetHolidayRule(name: "holiday.trettondedag_jul", isBankHoliday: true, type: .fixed,
+                          notes: "Marks the end of the Christmas season. Traditionally when the Three Wise Men visited the infant Jesus.",
+                          month: 1, day: 6),
+        WidgetHolidayRule(name: "holiday.forsta_maj", isBankHoliday: true, type: .fixed,
+                          notes: "International Workers' Day. Marked by political rallies and demonstrations across Sweden.",
+                          month: 5, day: 1),
+        WidgetHolidayRule(name: "holiday.sveriges_nationaldag", isBankHoliday: true, type: .fixed,
+                          notes: "Commemorates the election of King Gustav Vasa in 1523. Celebrated with flag ceremonies.",
+                          month: 6, day: 6),
+        WidgetHolidayRule(name: "holiday.juldagen", isBankHoliday: true, type: .fixed,
+                          notes: "The main Christmas celebration. Swedish traditions include the julbord feast and watching Donald Duck on TV.",
+                          month: 12, day: 25),
+        WidgetHolidayRule(name: "holiday.annandag_jul", isBankHoliday: true, type: .fixed,
+                          notes: "Traditionally for visiting relatives. Swedes enjoy leftover julbord and many attend sporting events.",
+                          month: 12, day: 26),
 
         // --- HOLIDAYS (Not Red Days) ---
-        WidgetHolidayRule(name: "holiday.nyarsafton", isBankHoliday: false, type: .fixed, month: 12, day: 31),
-        WidgetHolidayRule(name: "holiday.julafton", isBankHoliday: false, type: .fixed, month: 12, day: 24),
+        WidgetHolidayRule(name: "holiday.nyarsafton", isBankHoliday: false, type: .fixed,
+                          notes: "The last day of the year. Celebrated with fireworks, champagne toasts, and watching the clock strike midnight.",
+                          month: 12, day: 31),
+        WidgetHolidayRule(name: "holiday.julafton", isBankHoliday: false, type: .fixed,
+                          notes: "The main day of Christmas in Sweden. Families gather for julbord, gift-giving, and watching Kalle Anka.",
+                          month: 12, day: 24),
 
         // --- Observances ---
-        WidgetHolidayRule(name: "holiday.alla_hjartans_dag", isBankHoliday: false, type: .fixed, month: 2, day: 14),
-        WidgetHolidayRule(name: "holiday.internationella_kvinnodagen", isBankHoliday: false, type: .fixed, month: 3, day: 8),
+        WidgetHolidayRule(name: "holiday.alla_hjartans_dag", isBankHoliday: false, type: .fixed,
+                          notes: "Adopted in Sweden in the 1980s. Red roses and heart-shaped candy are popular.",
+                          month: 2, day: 14),
+        WidgetHolidayRule(name: "holiday.internationella_kvinnodagen", isBankHoliday: false, type: .fixed,
+                          notes: "A significant day in equality-focused Sweden. Rallies and events highlight women's rights.",
+                          month: 3, day: 8),
 
         // --- Easter Relative ---
-        WidgetHolidayRule(name: "holiday.langfredagen", isBankHoliday: true, type: .easterRelative, daysOffset: -2),
-        WidgetHolidayRule(name: "holiday.paskdagen", isBankHoliday: true, type: .easterRelative, daysOffset: 0),
-        WidgetHolidayRule(name: "holiday.annandag_pask", isBankHoliday: true, type: .easterRelative, daysOffset: 1),
-        WidgetHolidayRule(name: "holiday.kristi_himmelsfardsdag", isBankHoliday: true, type: .easterRelative, daysOffset: 39),
-        WidgetHolidayRule(name: "holiday.pingstdagen", isBankHoliday: true, type: .easterRelative, daysOffset: 49),
+        WidgetHolidayRule(name: "holiday.langfredagen", isBankHoliday: true, type: .easterRelative,
+                          notes: "Commemorates the crucifixion of Jesus Christ. A solemn day of reflection.",
+                          daysOffset: -2),
+        WidgetHolidayRule(name: "holiday.paskdagen", isBankHoliday: true, type: .easterRelative,
+                          notes: "Celebrates the resurrection of Jesus. Swedish traditions include Easter eggs and Easter witches.",
+                          daysOffset: 0),
+        WidgetHolidayRule(name: "holiday.annandag_pask", isBankHoliday: true, type: .easterRelative,
+                          notes: "Closes the Easter weekend. Swedes enjoy leftover Easter candy and the spring sunshine.",
+                          daysOffset: 1),
+        WidgetHolidayRule(name: "holiday.kristi_himmelsfardsdag", isBankHoliday: true, type: .easterRelative,
+                          notes: "Commemorates the ascension of Jesus into heaven, 40 days after Easter.",
+                          daysOffset: 39),
+        WidgetHolidayRule(name: "holiday.pingstdagen", isBankHoliday: true, type: .easterRelative,
+                          notes: "Celebrates the descent of the Holy Spirit. Falls 49 days after Easter.",
+                          daysOffset: 49),
 
         // --- Floating Red Days ---
-        WidgetHolidayRule(name: "holiday.midsommardagen", isBankHoliday: true, type: .floating, month: 6, weekday: 7, dayRangeStart: 20, dayRangeEnd: 26),
-        WidgetHolidayRule(name: "holiday.midsommarafton", isBankHoliday: false, type: .floating, month: 6, weekday: 6, dayRangeStart: 19, dayRangeEnd: 25),
-        WidgetHolidayRule(name: "holiday.alla_helgons_dag", isBankHoliday: true, type: .nthWeekday, month: 11, weekday: 7, ordinal: 1),
+        WidgetHolidayRule(name: "holiday.midsommardagen", isBankHoliday: true, type: .floating,
+                          notes: "One of Sweden's most beloved holidays. Maypole dancing, flower wreaths, and herring feasts.",
+                          month: 6, weekday: 7, dayRangeStart: 20, dayRangeEnd: 26),
+        WidgetHolidayRule(name: "holiday.midsommarafton", isBankHoliday: false, type: .floating,
+                          notes: "The main celebration day. Swedes raise the maypole, dance, and feast on pickled herring.",
+                          month: 6, weekday: 6, dayRangeStart: 19, dayRangeEnd: 25),
+        WidgetHolidayRule(name: "holiday.alla_helgons_dag", isBankHoliday: true, type: .nthWeekday,
+                          notes: "A day to honor the deceased. Swedes visit cemeteries and light candles on graves.",
+                          month: 11, weekday: 7, ordinal: 1),
 
         // --- Other Observances ---
-        WidgetHolidayRule(name: "holiday.mors_dag", isBankHoliday: false, type: .nthWeekday, month: 5, weekday: 1, ordinal: -1),
-        WidgetHolidayRule(name: "holiday.fars_dag", isBankHoliday: false, type: .nthWeekday, month: 11, weekday: 1, ordinal: 2),
+        WidgetHolidayRule(name: "holiday.mors_dag", isBankHoliday: false, type: .nthWeekday,
+                          notes: "Falls on the last Sunday of May. Children serve breakfast in bed and give spring flowers.",
+                          month: 5, weekday: 1, ordinal: -1),
+        WidgetHolidayRule(name: "holiday.fars_dag", isBankHoliday: false, type: .nthWeekday,
+                          notes: "Celebrated on the second Sunday of November. Children make handmade cards.",
+                          month: 11, weekday: 1, ordinal: 2),
 
         // --- Astronomical Events ---
-        WidgetHolidayRule(name: "holiday.virdagjamning", isBankHoliday: false, type: .astronomical, month: 3),
-        WidgetHolidayRule(name: "holiday.sommarsolstand", isBankHoliday: false, type: .astronomical, month: 6),
-        WidgetHolidayRule(name: "holiday.hostdagjamning", isBankHoliday: false, type: .astronomical, month: 9),
-        WidgetHolidayRule(name: "holiday.vintersolstand", isBankHoliday: false, type: .astronomical, month: 12),
+        WidgetHolidayRule(name: "holiday.virdagjamning", isBankHoliday: false, type: .astronomical,
+                          notes: "Day and night are equal length. Marks the astronomical start of spring.",
+                          month: 3),
+        WidgetHolidayRule(name: "holiday.sommarsolstand", isBankHoliday: false, type: .astronomical,
+                          notes: "The longest day of the year. In northern Sweden, the sun barely sets.",
+                          month: 6),
+        WidgetHolidayRule(name: "holiday.hostdagjamning", isBankHoliday: false, type: .astronomical,
+                          notes: "Day and night are equal length. Marks the astronomical start of autumn.",
+                          month: 9),
+        WidgetHolidayRule(name: "holiday.vintersolstand", isBankHoliday: false, type: .astronomical,
+                          notes: "The shortest day of the year. In northern Sweden, the sun barely rises.",
+                          month: 12),
     ]
 
     // MARK: - Public API
@@ -124,7 +174,8 @@ struct WidgetHolidayEngine {
                     id: rule.name,
                     date: holidayDate,
                     name: rule.name,
-                    isBankHoliday: rule.isBankHoliday
+                    isBankHoliday: rule.isBankHoliday,
+                    notes: rule.notes
                 ))
             }
         }
@@ -160,7 +211,8 @@ struct WidgetHolidayEngine {
                             id: "\(rule.name)-\(checkYear)",
                             date: normalizedDate,
                             name: rule.name,
-                            isBankHoliday: rule.isBankHoliday
+                            isBankHoliday: rule.isBankHoliday,
+                            notes: rule.notes
                         ))
                     }
                 }

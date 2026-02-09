@@ -2,9 +2,9 @@
 //  SmallWidgetView.swift
 //  VeckaWidget
 //
-//  Small Widget: "Is today special?"
-//  Shows holiday/birthday OR random fact
-//  Clean typography, SF Symbol accent
+//  Small Widget: Two-compartment bento
+//  Top: holiday/birthday or daily fact
+//  Bottom: Big date + weekday + month + week badge
 //
 
 import SwiftUI
@@ -62,7 +62,6 @@ struct VeckaSmallWidgetView: View {
     }
 
     private var backgroundColor: Color {
-        // High contrast: adapts to color scheme
         return JohoWidget.Colors.content(for: colorScheme)
     }
 
@@ -77,10 +76,12 @@ struct VeckaSmallWidgetView: View {
             let scale = min(geo.size.width, geo.size.height) / 155
 
             VStack(spacing: 0) {
-                // Top: SF Symbol + special text or fact
+                // ═══════════════════════════════════════════
+                // TOP: Holiday/birthday or daily fact
+                // ═══════════════════════════════════════════
                 HStack(spacing: 6 * scale) {
                     Image(systemName: hasSpecialDay ? specialDaySymbol : fact.symbol)
-                        .font(.system(size: 14 * scale, weight: .bold))
+                        .font(.system(size: 18 * scale, weight: .bold))
                         .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
 
                     Text(hasSpecialDay ? (specialDayName ?? "") : fact.text)
@@ -92,30 +93,50 @@ struct VeckaSmallWidgetView: View {
                     Spacer(minLength: 0)
                 }
                 .padding(.horizontal, 12 * scale)
-                .padding(.top, 12 * scale)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-                Spacer(minLength: 0)
+                // ═══════════════════════════════════════════
+                // DIVIDER
+                // ═══════════════════════════════════════════
+                Rectangle()
+                    .fill(JohoWidget.Colors.border(for: colorScheme))
+                    .frame(height: 1.5)
+                    .padding(.horizontal, 8 * scale)
 
-                // Center: Big date
-                VStack(spacing: 2 * scale) {
-                    Text(monthShort)
-                        .font(.system(size: 12 * scale, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
-                        .tracking(1)
-
+                // ═══════════════════════════════════════════
+                // BOTTOM: Big date + weekday + month + week
+                // ═══════════════════════════════════════════
+                VStack(spacing: 1 * scale) {
                     Text("\(dayOfMonth)")
-                        .font(.system(size: 48 * scale, weight: .black, design: .rounded))
+                        .font(.system(size: 44 * scale, weight: .black, design: .rounded))
                         .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
 
                     Text(weekdayFull)
-                        .font(.system(size: 12 * scale, weight: .bold, design: .rounded))
+                        .font(.system(size: 11 * scale, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
                         .tracking(1)
-                }
 
-                Spacer(minLength: 0)
+                    HStack(spacing: 6 * scale) {
+                        Text(monthShort)
+                            .font(.system(size: 10 * scale, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
+
+                        // Week badge pill
+                        Text("W\(entry.weekNumber)")
+                            .font(.system(size: 9 * scale, weight: .black, design: .rounded))
+                            .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
+                            .padding(.horizontal, 6 * scale)
+                            .padding(.vertical, 2 * scale)
+                            .background(JohoWidget.Colors.now)
+                            .clipShape(RoundedRectangle(cornerRadius: 4 * scale, style: .continuous))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 4 * scale, style: .continuous)
+                                    .stroke(JohoWidget.Colors.border(for: colorScheme), lineWidth: 1)
+                            )
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .padding(.bottom, 12 * scale)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .widgetURL(URL(string: hasSpecialDay ? "vecka://today" : "vecka://facts/\(fact.id)"))
