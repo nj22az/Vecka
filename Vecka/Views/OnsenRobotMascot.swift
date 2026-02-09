@@ -39,7 +39,6 @@ struct OnsenRobotMascot: View {
     @State private var isWaving = false
     @State private var isBlinking = false
     @State private var bobOffset: CGFloat = 0
-    @State private var blinkTimer: Timer?
 
     // MARK: - Computed Dimensions
 
@@ -250,34 +249,21 @@ struct OnsenRobotMascot: View {
     }
 
     private func stopAnimations() {
-        blinkTimer?.invalidate()
-        blinkTimer = nil
         bobOffset = 0
         isWaving = false
         isBlinking = false
     }
 
     private func startBlinkLoop() {
-        let interval = Double.random(in: 2.5...5.0)
-
-        blinkTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { _ in
-            triggerBlink()
-        }
-    }
-
-    private func triggerBlink() {
-        withAnimation(.easeOut(duration: 0.06)) {
-            isBlinking = true
-        }
-
-        Task { [self] in
-            try? await Task.sleep(for: .seconds(0.12))
-            guard isActive else { return }  // Memory safety: stop if view disappeared
-
-            withAnimation(.easeIn(duration: 0.06)) {
-                isBlinking = false
+        Task { @MainActor in
+            while isActive {
+                try? await Task.sleep(for: .seconds(Double.random(in: 2.5...5.0)))
+                guard isActive else { return }
+                withAnimation(.easeOut(duration: 0.06)) { isBlinking = true }
+                try? await Task.sleep(for: .seconds(0.12))
+                guard isActive else { return }
+                withAnimation(.easeIn(duration: 0.06)) { isBlinking = false }
             }
-            startBlinkLoop()
         }
     }
 }
@@ -299,7 +285,6 @@ struct CompactRobotMascot: View {
 
     @State private var isActive = false  // Memory safety: prevents async callbacks after disappear
     @State private var isBlinking = false
-    @State private var blinkTimer: Timer?
 
     var body: some View {
         ZStack {
@@ -353,8 +338,6 @@ struct CompactRobotMascot: View {
         }
         .onDisappear {
             isActive = false
-            blinkTimer?.invalidate()
-            blinkTimer = nil
             isBlinking = false
         }
         .onChange(of: scenePhase) { _, newPhase in
@@ -365,25 +348,20 @@ struct CompactRobotMascot: View {
                 }
             } else {
                 isActive = false
-                blinkTimer?.invalidate()
-                blinkTimer = nil
                 isBlinking = false
             }
         }
     }
 
     private func startBlinking() {
-        let interval = Double.random(in: 3.0...6.0)
-        blinkTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [self] _ in
-            guard isActive else { return }  // Memory safety: stop if view disappeared
-
-            withAnimation(.easeOut(duration: 0.06)) { isBlinking = true }
-            Task { [self] in
+        Task { @MainActor in
+            while isActive {
+                try? await Task.sleep(for: .seconds(Double.random(in: 3.0...6.0)))
+                guard isActive else { return }
+                withAnimation(.easeOut(duration: 0.06)) { isBlinking = true }
                 try? await Task.sleep(for: .seconds(0.1))
-                guard isActive else { return }  // Memory safety: stop if view disappeared
-
+                guard isActive else { return }
                 withAnimation(.easeIn(duration: 0.06)) { isBlinking = false }
-                startBlinking()
             }
         }
     }
