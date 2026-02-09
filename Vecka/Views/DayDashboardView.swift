@@ -1270,7 +1270,7 @@ struct ShareableMemoCard: View {
                 .background(memoColor.opacity(0.5))
 
                 // Divider
-                Rectangle().fill(colors.border).frame(height: 2)
+                JohoDivider()
 
                 // DATE STAMP row
                 HStack {
@@ -1284,7 +1284,7 @@ struct ShareableMemoCard: View {
                 .background(colors.surface)
 
                 // Divider
-                Rectangle().fill(colors.border).frame(height: 1)
+                JohoDivider(weight: 1)
 
                 // MAIN CONTENT: Large icon + text
                 HStack(alignment: .top, spacing: 0) {
@@ -1337,7 +1337,7 @@ struct ShareableMemoCard: View {
                 .background(memoColor.opacity(0.15))
 
                 // Divider
-                Rectangle().fill(colors.border).frame(height: 2)
+                JohoDivider()
 
                 // FOOTER
                 HStack {
@@ -2000,7 +2000,7 @@ struct ShareableHolidayCard: View {
                 .background(holidayColor.opacity(0.5))
 
                 // Divider
-                Rectangle().fill(colors.border).frame(height: 2)
+                JohoDivider()
 
                 // DATE STAMP row
                 HStack {
@@ -2014,7 +2014,7 @@ struct ShareableHolidayCard: View {
                 .background(colors.surface)
 
                 // Divider
-                Rectangle().fill(colors.border).frame(height: 1)
+                JohoDivider(weight: 1)
 
                 // MAIN CONTENT: Large icon + text
                 HStack(alignment: .top, spacing: 0) {
@@ -2067,7 +2067,7 @@ struct ShareableHolidayCard: View {
                 .background(holidayColor.opacity(0.15))
 
                 // Divider
-                Rectangle().fill(colors.border).frame(height: 2)
+                JohoDivider()
 
                 // FOOTER
                 HStack {

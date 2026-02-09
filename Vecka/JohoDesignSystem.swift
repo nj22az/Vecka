@@ -1499,6 +1499,7 @@ struct JohoToggleRow: View {
 // MARK: - Divider
 
 struct JohoDivider: View {
+    var weight: CGFloat = 2
     @Environment(\.johoColorMode) private var colorMode
 
     /// Dynamic colors based on color mode
@@ -1507,7 +1508,7 @@ struct JohoDivider: View {
     var body: some View {
         Rectangle()
             .fill(colors.border)
-            .frame(height: 2)
+            .frame(height: weight)
     }
 }
 
@@ -2688,12 +2689,12 @@ struct JohoCalendarPicker: View {
             // Header with buttons
             headerRow
 
-            Rectangle().fill(colors.border).frame(height: 2)
+            JohoDivider()
 
             // Month navigation
             monthNavigationRow
 
-            Rectangle().fill(colors.border).frame(height: 1.5)
+            JohoDivider(weight: 1.5)
 
             // Calendar grid
             calendarGrid
@@ -3619,12 +3620,12 @@ struct JohoMonthYearPicker: View {
             // Header row
             headerRow
 
-            Rectangle().fill(colors.border).frame(height: 1.5)
+            JohoDivider(weight: 1.5)
 
             // Year navigation row
             yearNavigationRow
 
-            Rectangle().fill(colors.border).frame(height: 1.5)
+            JohoDivider(weight: 1.5)
 
             // Month grid (3x4)
             monthGrid

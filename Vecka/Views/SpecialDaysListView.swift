@@ -3333,32 +3333,32 @@ struct CustomHolidayCreatorSheet: View {
             // Header with month context
             headerRow
 
-            Rectangle().fill(colors.border).frame(height: 2)
+            JohoDivider()
 
             // Type selector (Holiday/Observance)
             typeRow
 
-            Rectangle().fill(colors.border).frame(height: 1.5)
+            JohoDivider(weight: 1.5)
 
             // Date picker (day of month)
             dateRow
 
-            Rectangle().fill(colors.border).frame(height: 1.5)
+            JohoDivider(weight: 1.5)
 
             // Name input
             nameRow
 
-            Rectangle().fill(colors.border).frame(height: 1.5)
+            JohoDivider(weight: 1.5)
 
             // About/Purpose input
             aboutRow
 
-            Rectangle().fill(colors.border).frame(height: 1.5)
+            JohoDivider(weight: 1.5)
 
             // Region picker
             regionRow
 
-            Rectangle().fill(colors.border).frame(height: 2)
+            JohoDivider()
 
             // Save button
             saveRow
@@ -3734,7 +3734,7 @@ struct CustomHolidayCreatorSheet: View {
             .padding(.vertical, JohoDimensions.spacingMD)
             .background(colors.surface)
 
-            Rectangle().fill(colors.border).frame(height: 2)
+            JohoDivider()
 
             // Input row
             HStack(spacing: 0) {
@@ -3755,7 +3755,7 @@ struct CustomHolidayCreatorSheet: View {
             .frame(height: 48)
             .background(colors.surface)
 
-            Rectangle().fill(colors.border).frame(height: 2)
+            JohoDivider()
 
             // Add button
             Button {

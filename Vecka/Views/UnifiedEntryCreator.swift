@@ -240,12 +240,12 @@ struct UnifiedEntryCreator: View {
             // Header
             headerRow
 
-            Rectangle().fill(colors.border).frame(height: 2)
+            JohoDivider()
 
             // Type selector (only if multiple types available)
             if showTypeSelector {
                 typeRow
-                Rectangle().fill(colors.border).frame(height: 1.5)
+                JohoDivider(weight: 1.5)
             }
 
             // Content
@@ -254,42 +254,42 @@ struct UnifiedEntryCreator: View {
                     // Text input
                     textRow
 
-                    Rectangle().fill(colors.border).frame(height: 1.5)
+                    JohoDivider(weight: 1.5)
 
                     // Date row
                     dateRow
 
                     // Holiday/Observance specific rows
                     if isHolidayMode {
-                        Rectangle().fill(colors.border).frame(height: 1.5)
+                        JohoDivider(weight: 1.5)
                         aboutRow
 
-                        Rectangle().fill(colors.border).frame(height: 1.5)
+                        JohoDivider(weight: 1.5)
                         regionRow
                     }
 
                     // Memo specific rows
                     if isMemoMode {
-                        Rectangle().fill(colors.border).frame(height: 1.5)
+                        JohoDivider(weight: 1.5)
                         memoOptionsRow
 
                         if showAmount {
-                            Rectangle().fill(colors.border).frame(height: 1.5)
+                            JohoDivider(weight: 1.5)
                             amountRow
                         }
 
                         if showPlace {
-                            Rectangle().fill(colors.border).frame(height: 1.5)
+                            JohoDivider(weight: 1.5)
                             placeRow
                         }
 
                         if showContact {
-                            Rectangle().fill(colors.border).frame(height: 1.5)
+                            JohoDivider(weight: 1.5)
                             contactRow
                         }
 
                         if showPhoto {
-                            Rectangle().fill(colors.border).frame(height: 1.5)
+                            JohoDivider(weight: 1.5)
                             photoRow
                         }
                     }

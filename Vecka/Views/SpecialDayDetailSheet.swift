@@ -639,7 +639,7 @@ struct ShareableSpecialDayCard: View {
                 .background(item.type.lightBackground)
 
                 // Divider
-                Rectangle().fill(colors.border).frame(height: 2)
+                JohoDivider()
 
                 // DATE STAMP row
                 HStack {
@@ -653,7 +653,7 @@ struct ShareableSpecialDayCard: View {
                 .background(colors.surface)
 
                 // Divider
-                Rectangle().fill(colors.border).frame(height: 1)
+                JohoDivider(weight: 1)
 
                 // MAIN CONTENT: Large icon + text
                 HStack(alignment: .top, spacing: 0) {
@@ -705,7 +705,7 @@ struct ShareableSpecialDayCard: View {
                 .background(item.type.lightBackground.opacity(0.5))
 
                 // Divider
-                Rectangle().fill(colors.border).frame(height: 2)
+                JohoDivider()
 
                 // FOOTER
                 HStack {

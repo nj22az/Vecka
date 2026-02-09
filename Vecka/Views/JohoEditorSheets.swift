@@ -398,7 +398,7 @@ struct JohoSpecialDayEditorSheet: View {
                 .frame(height: 56)
                 .background(type.accentColor.opacity(0.7))
 
-                Rectangle().fill(colors.border).frame(height: 1.5)
+                JohoDivider(weight: 1.5)
 
                 // Name row
                 HStack(spacing: 0) {
@@ -417,7 +417,7 @@ struct JohoSpecialDayEditorSheet: View {
                 .frame(height: 48)
                 .background(type.lightBackground)
 
-                Rectangle().fill(colors.border).frame(height: 1.5)
+                JohoDivider(weight: 1.5)
 
                 // Date row
                 HStack(spacing: 0) {
@@ -468,7 +468,7 @@ struct JohoSpecialDayEditorSheet: View {
                 .frame(height: 48)
                 .background(type.lightBackground)
 
-                Rectangle().fill(colors.border).frame(height: 1.5)
+                JohoDivider(weight: 1.5)
 
                 // Icon picker row
                 Button {
@@ -508,7 +508,7 @@ struct JohoSpecialDayEditorSheet: View {
 
                 // 情報デザイン: Region picker row (only for holidays/observances)
                 if type == .holiday || type == .observance {
-                    Rectangle().fill(colors.border).frame(height: 1.5)
+                    JohoDivider(weight: 1.5)
                     regionPickerRow
                 }
             }
@@ -638,7 +638,7 @@ struct JohoAddSpecialDaySheet: View {
             .frame(height: 48)
             .background(colors.surfaceInverted)
 
-            Rectangle().fill(colors.border).frame(height: 3)
+            JohoDivider(weight: 3)
 
             VStack(spacing: 0) {
                 ForEach(Array(options.enumerated()), id: \.element.id) { index, option in
@@ -651,7 +651,7 @@ struct JohoAddSpecialDaySheet: View {
                     .buttonStyle(.plain)
 
                     if index < options.count - 1 {
-                        Rectangle().fill(colors.border).frame(height: 1.5)
+                        JohoDivider(weight: 1.5)
                     }
                 }
             }

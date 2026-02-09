@@ -87,12 +87,12 @@ struct MemoEditorView: View {
             // Header
             headerRow
 
-            Rectangle().fill(colors.border).frame(height: 2)
+            JohoDivider()
 
             // Subtitle: Option chips (same position as HOLIDAY/OBSERVANCE pills)
             optionChipsRow
 
-            Rectangle().fill(colors.border).frame(height: 1.5)
+            JohoDivider(weight: 1.5)
 
             // Content
             ScrollView(.vertical, showsIndicators: false) {
@@ -100,41 +100,41 @@ struct MemoEditorView: View {
                     // Text input (required)
                     textRow
 
-                    Rectangle().fill(colors.border).frame(height: 1.5)
+                    JohoDivider(weight: 1.5)
 
                     // Date type selector
                     dateTypeRow
 
-                    Rectangle().fill(colors.border).frame(height: 1.5)
+                    JohoDivider(weight: 1.5)
 
                     // Date row
                     dateRow
 
                     // Time picker (when Time type selected)
                     if dateType == .specificTime {
-                        Rectangle().fill(colors.border).frame(height: 1.5)
+                        JohoDivider(weight: 1.5)
                         timeRow
                     }
 
                     // End date picker (when Range type selected)
                     if dateType == .dateRange {
-                        Rectangle().fill(colors.border).frame(height: 1.5)
+                        JohoDivider(weight: 1.5)
                         endDateRow
                     }
 
                     // Expanded detail rows (when chips active)
                     if showAmount {
-                        Rectangle().fill(colors.border).frame(height: 1.5)
+                        JohoDivider(weight: 1.5)
                         amountRow
                     }
 
                     if showPlace {
-                        Rectangle().fill(colors.border).frame(height: 1.5)
+                        JohoDivider(weight: 1.5)
                         placeRow
                     }
 
                     if showContact {
-                        Rectangle().fill(colors.border).frame(height: 1.5)
+                        JohoDivider(weight: 1.5)
                         contactRow
                     }
                 }
@@ -770,7 +770,7 @@ struct MemoContactPicker: View {
             .padding(.vertical, JohoDimensions.spacingMD)
             .background(colors.surface)
 
-            Rectangle().fill(colors.border).frame(height: 2)
+            JohoDivider()
 
             // Contact list
             ScrollView {
@@ -908,7 +908,7 @@ struct JohoTimePicker: View {
             .padding(.vertical, JohoDimensions.spacingMD)
             .background(colors.surface)
 
-            Rectangle().fill(colors.border).frame(height: 2)
+            JohoDivider()
 
             // Time pickers
             HStack(spacing: 8) {
