@@ -1,0 +1,304 @@
+//
+//  JohoTheme.swift
+//  Vecka
+//
+//  Theme preset system for unified category color theming
+//  Themes change category colors + icons + UI accent
+//  Month seasonal colors (季節の色) are identity-locked and never change
+//
+
+import SwiftUI
+
+// MARK: - Theme Preset Model
+
+struct JohoThemePreset: Codable, Identifiable {
+    let id: String              // "default", "sakura", "nordic"
+    let name: String            // Display name
+    let description: String     // One-liner
+    let previewIcon: String     // SF Symbol for theme card
+
+    // Category colors (hex)
+    let holidayColorHex: String
+    let observanceColorHex: String
+    let memoColorHex: String
+
+    // Category icons (nil = keep default)
+    let holidayIcon: String?
+    let observanceIcon: String?
+    let memoIcon: String?
+
+    // UI accent
+    let systemAccent: String    // "black", "indigo", "navy", "blue", "slate"
+
+    // Structural overrides (nil = use JohoScheme defaults)
+    let lightBorderHex: String?
+    let lightSurfaceHex: String?
+    let lightCanvasHex: String?
+    let darkBorderHex: String?
+    let darkSurfaceHex: String?
+    let darkCanvasHex: String?
+
+    init(
+        id: String, name: String, description: String, previewIcon: String,
+        holidayColorHex: String, observanceColorHex: String, memoColorHex: String,
+        holidayIcon: String?, observanceIcon: String?, memoIcon: String?,
+        systemAccent: String,
+        lightBorderHex: String? = nil, lightSurfaceHex: String? = nil, lightCanvasHex: String? = nil,
+        darkBorderHex: String? = nil, darkSurfaceHex: String? = nil, darkCanvasHex: String? = nil
+    ) {
+        self.id = id
+        self.name = name
+        self.description = description
+        self.previewIcon = previewIcon
+        self.holidayColorHex = holidayColorHex
+        self.observanceColorHex = observanceColorHex
+        self.memoColorHex = memoColorHex
+        self.holidayIcon = holidayIcon
+        self.observanceIcon = observanceIcon
+        self.memoIcon = memoIcon
+        self.systemAccent = systemAccent
+        self.lightBorderHex = lightBorderHex
+        self.lightSurfaceHex = lightSurfaceHex
+        self.lightCanvasHex = lightCanvasHex
+        self.darkBorderHex = darkBorderHex
+        self.darkSurfaceHex = darkSurfaceHex
+        self.darkCanvasHex = darkCanvasHex
+    }
+}
+
+// MARK: - Theme Loader
+
+enum JohoThemeLoader {
+
+    /// Load theme presets from bundled JSON
+    static func loadPresets() -> [JohoThemePreset] {
+        guard let url = Bundle.main.url(forResource: "theme-presets", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let presets = try? JSONDecoder().decode([JohoThemePreset].self, from: data)
+        else {
+            return builtInPresets
+        }
+        return presets
+    }
+
+    /// Fallback built-in presets if JSON fails to load
+    static let builtInPresets: [JohoThemePreset] = [
+        JohoThemePreset(
+            id: "default", name: "Default", description: "Original 情報デザイン palette",
+            previewIcon: "circle.hexagongrid.fill",
+            holidayColorHex: "FECDD3", observanceColorHex: "A5F3FC", memoColorHex: "FFE566",
+            holidayIcon: nil, observanceIcon: nil, memoIcon: nil,
+            systemAccent: "indigo"
+        ),
+        JohoThemePreset(
+            id: "sakura", name: "Sakura", description: "Cherry blossom warmth",
+            previewIcon: "leaf.fill",
+            holidayColorHex: "F9A8D4", observanceColorHex: "FBCFE8", memoColorHex: "FDE68A",
+            holidayIcon: "heart.fill", observanceIcon: "sparkles", memoIcon: "note.text",
+            systemAccent: "indigo",
+            lightBorderHex: "8B5E7E", lightSurfaceHex: "FFF5F7", lightCanvasHex: nil,
+            darkBorderHex: "C084A0", darkSurfaceHex: "2D1B25", darkCanvasHex: nil
+        ),
+        JohoThemePreset(
+            id: "nordic", name: "Nordic", description: "Scandinavian minimalism",
+            previewIcon: "snowflake",
+            holidayColorHex: "BFDBFE", observanceColorHex: "C7D2FE", memoColorHex: "E2E8F0",
+            holidayIcon: "star.fill", observanceIcon: "diamond.fill", memoIcon: "doc.text",
+            systemAccent: "navy",
+            lightBorderHex: "64748B", lightSurfaceHex: "F8FAFC", lightCanvasHex: nil,
+            darkBorderHex: "64748B", darkSurfaceHex: "1E293B", darkCanvasHex: nil
+        ),
+        JohoThemePreset(
+            id: "earth", name: "Earth", description: "Natural tones",
+            previewIcon: "mountain.2.fill",
+            holidayColorHex: "BBF7D0", observanceColorHex: "FED7AA", memoColorHex: "FDE68A",
+            holidayIcon: "leaf.fill", observanceIcon: "sun.max.fill", memoIcon: "note.text",
+            systemAccent: "slate",
+            lightBorderHex: "78603F", lightSurfaceHex: "FEFCE8", lightCanvasHex: nil,
+            darkBorderHex: "A0896D", darkSurfaceHex: "1C1917", darkCanvasHex: nil
+        ),
+        JohoThemePreset(
+            id: "mono", name: "Mono", description: "Minimal grayscale",
+            previewIcon: "circle.lefthalf.filled",
+            holidayColorHex: "D4D4D8", observanceColorHex: "E4E4E7", memoColorHex: "F4F4F5",
+            holidayIcon: nil, observanceIcon: nil, memoIcon: nil,
+            systemAccent: "black",
+            lightBorderHex: "71717A", lightSurfaceHex: "FAFAFA", lightCanvasHex: nil,
+            darkBorderHex: "71717A", darkSurfaceHex: "18181B", darkCanvasHex: nil
+        ),
+        JohoThemePreset(
+            id: "ocean", name: "Ocean", description: "Deep sea blues",
+            previewIcon: "water.waves",
+            holidayColorHex: "99F6E4", observanceColorHex: "A5F3FC", memoColorHex: "BAE6FD",
+            holidayIcon: "fish.fill", observanceIcon: "sparkles", memoIcon: "note.text",
+            systemAccent: "blue",
+            lightBorderHex: "0D7377", lightSurfaceHex: "F0FDFA", lightCanvasHex: nil,
+            darkBorderHex: "2DD4BF", darkSurfaceHex: "0F1729", darkCanvasHex: nil
+        ),
+        JohoThemePreset(
+            id: "sunset", name: "Sunset", description: "Warm evening glow",
+            previewIcon: "sun.horizon.fill",
+            holidayColorHex: "FECACA", observanceColorHex: "FED7AA", memoColorHex: "FDE68A",
+            holidayIcon: "flame.fill", observanceIcon: "sparkles", memoIcon: "note.text",
+            systemAccent: "slate",
+            lightBorderHex: "8B6348", lightSurfaceHex: "FFFBEB", lightCanvasHex: nil,
+            darkBorderHex: "C2866B", darkSurfaceHex: "1C1412", darkCanvasHex: nil
+        ),
+        JohoThemePreset(
+            id: "ink", name: "Ink", description: "True AMOLED monochrome",
+            previewIcon: "drop.fill",
+            holidayColorHex: "FFFFFF", observanceColorHex: "B0B0B0", memoColorHex: "787878",
+            holidayIcon: nil, observanceIcon: nil, memoIcon: nil,
+            systemAccent: "black",
+            lightBorderHex: "48484A", lightSurfaceHex: "000000", lightCanvasHex: "000000",
+            darkBorderHex: "333333", darkSurfaceHex: "000000", darkCanvasHex: "000000"
+        ),
+    ]
+}
+
+// MARK: - Structural Color Overrides
+
+extension JohoThemePreset {
+
+    /// Apply structural color overrides from this theme to a base color scheme.
+    /// Auto-derives text colors from surface luminance — guarantees readable text on any surface.
+    func applyStructuralOverrides(to base: JohoScheme, mode: JohoColorMode) -> JohoScheme {
+        let surfaceHex: String?
+        let borderHex: String?
+        let canvasHex: String?
+
+        switch mode {
+        case .light:
+            surfaceHex = lightSurfaceHex
+            borderHex = lightBorderHex
+            canvasHex = lightCanvasHex
+        case .dark:
+            surfaceHex = darkSurfaceHex
+            borderHex = darkBorderHex
+            canvasHex = darkCanvasHex
+        }
+
+        let surface = surfaceHex.map { Color(hex: $0) } ?? base.surface
+        let border = borderHex.map { Color(hex: $0) } ?? base.border
+        let canvas = canvasHex.map { Color(hex: $0) } ?? base.canvas
+
+        // Auto-derive text colors from surface luminance
+        let lum = surface.relativeLuminance
+        let isDark = lum <= 0.5
+
+        let primary = isDark ? Color(hex: "F0F0F0") : Color(hex: "000000")
+        let secondary = isDark ? Color(hex: "F0F0F0").opacity(0.6) : Color(hex: "000000").opacity(0.6)
+        let surfaceInverted = isDark ? Color(hex: "F0F0F0") : Color(hex: "000000")
+        let primaryInverted = isDark ? Color(hex: "1C1C1E") : Color(hex: "FFFFFF")
+        let inputBackground = isDark ? surface.adjustedBrightness(by: 0.08) : surface.adjustedBrightness(by: -0.04)
+
+        return JohoScheme(
+            primary: primary,
+            secondary: secondary,
+            surface: surface,
+            border: border,
+            canvas: canvas,
+            surfaceInverted: surfaceInverted,
+            primaryInverted: primaryInverted,
+            inputBackground: inputBackground
+        )
+    }
+
+    /// Whether this theme has any structural overrides
+    var hasStructuralOverrides: Bool {
+        lightBorderHex != nil || lightSurfaceHex != nil || lightCanvasHex != nil ||
+        darkBorderHex != nil || darkSurfaceHex != nil || darkCanvasHex != nil
+    }
+}
+
+// MARK: - Theme Cache (avoids JSON parsing on every colors(for:) call)
+
+enum JohoThemeCache {
+    private static var cachedThemeId: String?
+    private static var cachedTheme: JohoThemePreset?
+
+    /// Get the active theme, using cache when possible
+    static func activeTheme() -> JohoThemePreset? {
+        guard let themeId = UserDefaults.standard.string(forKey: "activeThemeId") else {
+            cachedThemeId = nil
+            cachedTheme = nil
+            return nil
+        }
+        if themeId == cachedThemeId, let theme = cachedTheme {
+            return theme
+        }
+        let theme = JohoThemeLoader.loadPresets().first { $0.id == themeId }
+        cachedThemeId = themeId
+        cachedTheme = theme
+        return theme
+    }
+
+    /// Invalidate the cache (call when theme changes)
+    static func invalidate() {
+        cachedThemeId = nil
+        cachedTheme = nil
+    }
+}
+
+// MARK: - Theme Application
+
+extension CategoryColorSettings {
+
+    /// Apply a theme preset, updating all category colors and icons
+    func applyTheme(_ theme: JohoThemePreset) {
+        // Update category colors
+        setColorHex(theme.holidayColorHex, for: .holiday)
+        setColorHex(theme.observanceColorHex, for: .observance)
+        setColorHex(theme.memoColorHex, for: .memo)
+
+        // Update category icons if specified
+        if let icon = theme.holidayIcon {
+            setCategoryIcon(icon, for: .holiday)
+        }
+        if let icon = theme.observanceIcon {
+            setCategoryIcon(icon, for: .observance)
+        }
+        if let icon = theme.memoIcon {
+            setCategoryIcon(icon, for: .memo)
+        }
+
+        // Update system UI accent
+        UserDefaults.standard.set(theme.systemAccent, forKey: "systemUIAccent")
+
+        // Save active theme ID
+        UserDefaults.standard.set(theme.id, forKey: "activeThemeId")
+
+        // Invalidate theme cache so colors(for:) picks up the new theme
+        JohoThemeCache.invalidate()
+
+        // Sync to widget (includes structural colors)
+        CategoryColorStorage.save()
+    }
+
+    /// Get the currently active theme ID (nil if custom/no theme)
+    var activeThemeId: String? {
+        UserDefaults.standard.string(forKey: "activeThemeId")
+    }
+
+    /// Set category icon for a display category
+    func setCategoryIcon(_ icon: String, for category: DisplayCategory) {
+        UserDefaults.standard.set(icon, forKey: "categoryIcon_\(category.rawValue)")
+    }
+
+    /// Get category icon for a display category (nil = use default)
+    func categoryIcon(for category: DisplayCategory) -> String? {
+        UserDefaults.standard.string(forKey: "categoryIcon_\(category.rawValue)")
+    }
+
+    /// Reset category icon to default
+    func resetCategoryIcon(for category: DisplayCategory) {
+        UserDefaults.standard.removeObject(forKey: "categoryIcon_\(category.rawValue)")
+    }
+
+    /// Check if current colors match a specific theme
+    func matchesTheme(_ theme: JohoThemePreset) -> Bool {
+        holidayColorHex == theme.holidayColorHex &&
+        observanceColorHex == theme.observanceColorHex &&
+        memoColorHex == theme.memoColorHex
+    }
+}

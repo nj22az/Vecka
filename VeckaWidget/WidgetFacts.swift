@@ -17,6 +17,7 @@ enum WidgetFacts {
         let id: String       // For deep link: vecka://facts/{id}
         let text: String
         let symbol: String   // SF Symbol name
+        var region: String?  // ISO country code (SE, VN, US, etc.)
     }
 
     // MARK: - JSON DTO
@@ -27,6 +28,25 @@ enum WidgetFacts {
         let category: String
         let text: String
         let explanation: String?
+    }
+
+    // MARK: - Helpers
+
+    private static func ordinal(_ n: Int) -> String {
+        let ones = n % 10
+        let tens = (n / 10) % 10
+        let suffix: String
+        if tens == 1 {
+            suffix = "th"
+        } else {
+            switch ones {
+            case 1: suffix = "st"
+            case 2: suffix = "nd"
+            case 3: suffix = "rd"
+            default: suffix = "th"
+            }
+        }
+        return "\(n)\(suffix)"
     }
 
     // MARK: - Category to SF Symbol mapping
@@ -51,7 +71,7 @@ enum WidgetFacts {
               let dtos = try? JSONDecoder().decode([FactDTO].self, from: data) else {
             return []
         }
-        return dtos.map { Fact(id: $0.id, text: $0.text, symbol: symbol(for: $0.category)) }
+        return dtos.map { Fact(id: $0.id, text: $0.text, symbol: symbol(for: $0.category), region: $0.region) }
     }()
 
     // MARK: - Date-Based Facts (dynamic)
@@ -72,6 +92,20 @@ enum WidgetFacts {
             ("date-pct", "\(percentComplete)% of \(year) complete", "chart.pie.fill"),
             ("date-rem", "\(daysRemaining) days left in \(year)", "hourglass"),
         ]
+
+        // Nth weekday of the year (e.g. "6th Monday of 2026")
+        let weekdayIndex = calendar.component(.weekday, from: date)
+        let weekdayName = date.formatted(.dateTime.weekday(.wide).locale(.autoupdatingCurrent))
+        if let startOfYear = calendar.date(from: DateComponents(year: year, month: 1, day: 1)) {
+            let firstDayWeekday = calendar.component(.weekday, from: startOfYear)
+            var daysToFirst = weekdayIndex - firstDayWeekday
+            if daysToFirst < 0 { daysToFirst += 7 }
+            if let firstOccurrence = calendar.date(byAdding: .day, value: daysToFirst, to: startOfYear) {
+                let daysBetween = calendar.dateComponents([.day], from: firstOccurrence, to: date).day ?? 0
+                let nth = (daysBetween / 7) + 1
+                facts.append(("date-nth-wd", "\(ordinal(nth)) \(weekdayName) of \(year)", "calendar"))
+            }
+        }
 
         // Summer solstice countdown (June 21)
         if month < 6 || (month == 6 && day < 21) {

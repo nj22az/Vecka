@@ -2,7 +2,7 @@
 //  LargeWidgetView.swift
 //  VeckaWidget
 //
-//  Large Widget: Three-section bento
+//  Large Widget: Three-section bento with star card
 //  Header → Today's holiday with notes → Upcoming list → Fact bar
 //
 
@@ -23,7 +23,26 @@ struct VeckaLargeWidgetView: View {
         return cal
     }
 
+    // MARK: - Month Theme
+
+    private var monthTheme: WidgetMonthTheme {
+        let month = calendar.component(.month, from: entry.date)
+        return WidgetMonthTheme.theme(for: month)
+    }
+
     // MARK: - Computed Properties
+
+    private var dayOfMonth: Int {
+        calendar.component(.day, from: entry.date)
+    }
+
+    private var monthShort: String {
+        entry.date.formatted(.dateTime.month(.abbreviated).locale(.autoupdatingCurrent)).uppercased()
+    }
+
+    private var weekdayFull: String {
+        entry.date.formatted(.dateTime.weekday(.wide).locale(.autoupdatingCurrent)).uppercased()
+    }
 
     private var yearString: String {
         String(calendar.component(.year, from: entry.date))
@@ -95,17 +114,18 @@ struct VeckaLargeWidgetView: View {
     var body: some View {
         GeometryReader { geo in
             let scale = geo.size.height / 354
+            let borderColor = JohoWidget.Colors.border(for: colorScheme)
 
             VStack(spacing: 0) {
-                // Header
-                headerRow(scale: scale)
-                    .padding(.horizontal, 14 * scale)
-                    .padding(.top, 12 * scale)
-                    .padding(.bottom, 8 * scale)
+                // Header bento card — colored zone + month label
+                headerCard(scale: scale, borderColor: borderColor)
+                    .padding(.horizontal, 8 * scale)
+                    .padding(.top, 6 * scale)
+                    .padding(.bottom, 6 * scale)
 
                 // Divider
                 Rectangle()
-                    .fill(JohoWidget.Colors.border(for: colorScheme))
+                    .fill(borderColor)
                     .frame(height: 1.5)
                     .padding(.horizontal, 12 * scale)
 
@@ -170,36 +190,67 @@ struct VeckaLargeWidgetView: View {
         .accessibilityLabel(accessibilityLabel)
     }
 
-    // MARK: - Header
+    // MARK: - Header Card (Star Page Pattern: colored top + white bottom)
 
-    private func headerRow(scale: CGFloat) -> some View {
-        HStack {
-            Text("TODAY")
-                .font(.system(size: 14 * scale, weight: .bold, design: .rounded))
-                .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
-                .tracking(1)
+    private func headerCard(scale: CGFloat, borderColor: Color) -> some View {
+        let cardRadius: CGFloat = 12 * scale
+        let secondaryColor = JohoWidget.Colors.textSecondary(for: colorScheme)
 
-            Spacer()
+        return VStack(spacing: 0) {
+            // TOP: Colored zone with icon + TODAY
+            HStack(alignment: .center, spacing: 8 * scale) {
+                Image(systemName: monthTheme.icon)
+                    .font(.system(size: 20 * scale, weight: .bold, design: .rounded))
+                    .foregroundStyle(monthTheme.accentColor)
 
-            // Week + Year badge
-            HStack(spacing: 6 * scale) {
+                Text("TODAY")
+                    .font(.system(size: 13 * scale, weight: .black, design: .rounded))
+                    .foregroundStyle(monthTheme.accentColor)
+                    .tracking(1)
+
+                Spacer()
+
+                // Week badge
                 Text("W\(entry.weekNumber)")
                     .font(.system(size: 11 * scale, weight: .black, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
-                    .padding(.horizontal, 8 * scale)
-                    .padding(.vertical, 4 * scale)
-                    .background(JohoWidget.Colors.now)
-                    .clipShape(RoundedRectangle(cornerRadius: 6 * scale, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 6 * scale, style: .continuous)
-                            .stroke(JohoWidget.Colors.border(for: colorScheme), lineWidth: 1.5)
-                    )
-
-                Text(yearString)
-                    .font(.system(size: 11 * scale, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
+                    .foregroundStyle(monthTheme.accentColor)
+                    .padding(.horizontal, 6 * scale)
+                    .padding(.vertical, 3 * scale)
+                    .background(monthTheme.accentColor.opacity(0.15))
+                    .clipShape(RoundedRectangle(cornerRadius: 5 * scale, style: .continuous))
             }
+            .padding(.horizontal, 10 * scale)
+            .padding(.vertical, 8 * scale)
+            .frame(maxWidth: .infinity)
+            .background(monthTheme.lightBackground)
+
+            // Divider
+            Rectangle()
+                .fill(borderColor)
+                .frame(height: 1)
+
+            // BOTTOM: White zone with date info
+            HStack(spacing: 6 * scale) {
+                Text("\(dayOfMonth)")
+                    .font(.system(size: 20 * scale, weight: .black, design: .rounded))
+                    .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
+
+                Text("\(weekdayFull) \(monthShort) \(yearString)")
+                    .font(.system(size: 9 * scale, weight: .bold, design: .rounded))
+                    .foregroundStyle(secondaryColor)
+                    .tracking(0.5)
+
+                Spacer()
+            }
+            .padding(.horizontal, 10 * scale)
+            .padding(.vertical, 6 * scale)
+            .background(JohoWidget.Colors.content(for: colorScheme))
         }
+        .clipShape(WidgetSquircle(cornerRadius: cardRadius))
+        .overlay(
+            WidgetSquircle(cornerRadius: cardRadius)
+                .stroke(borderColor, lineWidth: 1.5)
+        )
     }
 
     // MARK: - Today Section

@@ -17,25 +17,50 @@ enum JohoWidget {
         // Primary semantic colors (same in light/dark - they're semantic)
         static let now = Color(hex: "FFE566")           // Yellow - Today/Current
         static let event = Color(hex: "A5F3FC")         // Cyan - Scheduled events
-        static let holiday = Color(hex: "FECDD3")       // Pink - Special days
         static let trip = Color(hex: "A5F3FC")          // Cyan - Travel/Movement
         static let expense = Color(hex: "4ADE80")       // Green - Money (GOLDEN_STANDARD)
         static let contact = Color(hex: "E9D5FF")       // Purple - People
         static let alert = Color(hex: "E53935")         // Red - Warnings/Sunday
-        static let note = Color(hex: "FFE566")          // Yellow - Personal notes
 
-        // MARK: - Light Mode Structural Colors
-        static let border = Color.black                  // Always pure black
-        static let content = Color.white                 // Container backgrounds
-        static let canvas = Color.white                  // Widget background
+        // Category colors — synced from main app via App Group
+        static var holiday: Color {
+            let colors = loadCategoryColors()
+            return Color(hex: colors.holiday)
+        }
+        static var note: Color {
+            let colors = loadCategoryColors()
+            return Color(hex: colors.memo)
+        }
+        static var observance: Color {
+            let colors = loadCategoryColors()
+            return Color(hex: colors.observance)
+        }
+
+        private static func loadCategoryColors() -> (holiday: String, observance: String, memo: String) {
+            guard let dict = loadSharedDict() else {
+                return ("FECDD3", "A5F3FC", "FFE566")
+            }
+            return (
+                dict["holiday"] ?? "FECDD3",
+                dict["observance"] ?? "A5F3FC",
+                dict["memo"] ?? "FFE566"
+            )
+        }
+
+        private static func loadSharedDict() -> [String: String]? {
+            guard let defaults = UserDefaults(suiteName: "group.Johansson.Vecka"),
+                  let data = defaults.data(forKey: "shared_category_colors"),
+                  let dict = try? JSONDecoder().decode([String: String].self, from: data)
+            else { return nil }
+            return dict
+        }
+
+        // MARK: - Light Mode Structural Colors (with theme overrides)
         static let text = Color(hex: "E53935")           // Red text for high contrast
         static let textSecondary = Color(hex: "1A1A1A")  // Near-black for secondary
         static let textInverted = Color.white            // Text on dark backgrounds
 
         // MARK: - Dark Mode Structural Colors
-        static let borderDark = Color.white              // White borders in dark mode
-        static let contentDark = Color(hex: "1C1C1E")    // Dark container backgrounds
-        static let canvasDark = Color(hex: "1C1C1E")     // Dark widget background
         static let textDark = Color(hex: "FF6B6B")       // Lighter red for dark mode
         static let textSecondaryDark = Color(hex: "EBEBF5") // Light gray for dark mode
         static let textInvertedDark = Color.black        // Text on light backgrounds in dark mode
@@ -45,30 +70,75 @@ enum JohoWidget {
         static let saturday = Color(hex: "E9D5FF")      // Purple - weekend start
         static let weekday = Color.white                 // Normal days
 
-        // MARK: - Color Scheme Aware Accessors
-        /// Returns appropriate border color for the given color scheme
+        // MARK: - Light Mode Structural Colors
+        static let border = Color.black                  // Always pure black
+        static let content = Color.white                 // Container backgrounds
+        static let canvas = Color.white                  // Widget background
+
+        // MARK: - Dark Mode Structural Colors
+        static let borderDark = Color.white              // White borders in dark mode
+        static let contentDark = Color(hex: "1C1C1E")    // Dark container backgrounds
+        static let canvasDark = Color(hex: "1C1C1E")     // Dark widget background
+
+        // MARK: - Color Scheme Aware Accessors (with theme overrides)
+        /// Returns appropriate border color, checking theme overrides first
         static func border(for scheme: ColorScheme) -> Color {
-            scheme == .dark ? borderDark : border
+            let dict = loadSharedDict()
+            if scheme == .dark {
+                if let hex = dict?["border_dark"] { return Color(hex: hex) }
+                return borderDark
+            } else {
+                if let hex = dict?["border_light"] { return Color(hex: hex) }
+                return border
+            }
         }
 
-        /// Returns appropriate content background color
+        /// Returns appropriate content/surface background color
         static func content(for scheme: ColorScheme) -> Color {
-            scheme == .dark ? contentDark : content
+            let dict = loadSharedDict()
+            if scheme == .dark {
+                if let hex = dict?["surface_dark"] { return Color(hex: hex) }
+                return contentDark
+            } else {
+                if let hex = dict?["surface_light"] { return Color(hex: hex) }
+                return content
+            }
         }
 
         /// Returns appropriate canvas background color
         static func canvas(for scheme: ColorScheme) -> Color {
-            scheme == .dark ? canvasDark : canvas
+            let dict = loadSharedDict()
+            if scheme == .dark {
+                if let hex = dict?["canvas_dark"] { return Color(hex: hex) }
+                return canvasDark
+            } else {
+                if let hex = dict?["canvas_light"] { return Color(hex: hex) }
+                return canvas
+            }
         }
 
-        /// Returns appropriate primary text color
+        /// Returns appropriate primary text color, checking theme overrides first
         static func text(for scheme: ColorScheme) -> Color {
-            scheme == .dark ? textDark : text
+            let dict = loadSharedDict()
+            if scheme == .dark {
+                if let hex = dict?["primary_dark"] { return Color(hex: hex) }
+                return textDark
+            } else {
+                if let hex = dict?["primary_light"] { return Color(hex: hex) }
+                return text
+            }
         }
 
-        /// Returns appropriate secondary text color
+        /// Returns appropriate secondary text color, checking theme overrides first
         static func textSecondary(for scheme: ColorScheme) -> Color {
-            scheme == .dark ? textSecondaryDark : textSecondary
+            let dict = loadSharedDict()
+            if scheme == .dark {
+                if let hex = dict?["primary_dark"] { return Color(hex: hex).opacity(0.6) }
+                return textSecondaryDark
+            } else {
+                if let hex = dict?["primary_light"] { return Color(hex: hex).opacity(0.6) }
+                return textSecondary
+            }
         }
 
         /// Returns appropriate inverted text color
