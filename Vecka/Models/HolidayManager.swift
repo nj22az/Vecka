@@ -20,6 +20,7 @@ struct HolidayCacheItem: Identifiable, Hashable, Sendable {
     let notes: String?
     let localName: String?   // Native language name (e.g., "Julafton" for Christmas Eve)
     let isUserCreated: Bool  // True if userModifiedAt != nil
+    var mergedRegions: [String] = []  // All regions after dedup (e.g., ["SE", "VN"])
 }
 
 extension HolidayCacheItem {
@@ -273,7 +274,8 @@ class HolidayManager {
             var sortedCache: [Date: [HolidayCacheItem]] = [:]
             sortedCache.reserveCapacity(newCache.count)
             for (day, items) in newCache {
-                sortedCache[day] = items.sorted(by: { sortHolidays(lhs: $0, rhs: $1) })
+                let sorted = items.sorted(by: { sortHolidays(lhs: $0, rhs: $1) })
+                sortedCache[day] = Self.deduplicateByTitle(sorted)
             }
 
             setHolidayCache(sortedCache)
@@ -281,6 +283,46 @@ class HolidayManager {
         } catch {
             Log.w("Failed to fetch holiday rules: \(error.localizedDescription)")
         }
+    }
+
+    /// Merge same-title holidays from multiple regions into a single item per date.
+    /// E.g., Valentine's Day from SE + VN becomes one item with mergedRegions: ["SE", "VN"].
+    /// Bank holiday status, notes, icons merge by taking the most significant value.
+    private static func deduplicateByTitle(_ items: [HolidayCacheItem]) -> [HolidayCacheItem] {
+        var seen: [String: Int] = [:]  // displayTitle → index in result
+        var result: [HolidayCacheItem] = []
+
+        for item in items {
+            let title = item.displayTitle
+            if let idx = seen[title] {
+                // Merge this region into existing item
+                let existing = result[idx]
+                var regions = existing.mergedRegions
+                if !regions.contains(item.region) {
+                    regions.append(item.region)
+                }
+                result[idx] = HolidayCacheItem(
+                    id: existing.id,
+                    region: existing.region,
+                    name: existing.name,
+                    titleOverride: existing.titleOverride,
+                    isBankHoliday: existing.isBankHoliday || item.isBankHoliday,
+                    symbolName: existing.symbolName ?? item.symbolName,
+                    iconColor: existing.iconColor ?? item.iconColor,
+                    notes: existing.notes ?? item.notes,
+                    localName: existing.localName ?? item.localName,
+                    isUserCreated: existing.isUserCreated || item.isUserCreated,
+                    mergedRegions: regions
+                )
+            } else {
+                seen[title] = result.count
+                var merged = item
+                merged.mergedRegions = [item.region]
+                result.append(merged)
+            }
+        }
+
+        return result
     }
 
     private func sortHolidays(lhs: HolidayCacheItem, rhs: HolidayCacheItem) -> Bool {

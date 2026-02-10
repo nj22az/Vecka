@@ -266,7 +266,8 @@ struct SpecialDaysListView: View {
                         isCustom: holiday.isCustom,
                         isMemo: false,
                         originalBirthday: nil,
-                        turningAge: nil
+                        turningAge: nil,
+                        mergedRegions: holiday.mergedRegions
                     )
                 }
             }
@@ -1971,9 +1972,10 @@ struct CollapsibleSpecialDayCard: View {
 
                 Spacer(minLength: 8)
 
-                // Region code as plain text (情報デザイン: Clean, minimal)
+                // Region codes as plain text (情報デザイン: Clean, minimal)
                 if item.hasCountryPill {
-                    Text(item.region)
+                    let regions = item.mergedRegions.isEmpty ? [item.region] : item.mergedRegions
+                    Text(regions.joined(separator: " "))
                         .font(.system(size: 11, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary.opacity(0.6))
                         .padding(.trailing, JohoDimensions.spacingMD)

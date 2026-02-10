@@ -787,10 +787,12 @@ struct LandingPageView: View {
         for dayOffset in 1...7 {
             guard let date = calendar.date(byAdding: .day, value: -dayOffset, to: todayStart) else { continue }
 
-            // Holidays
+            // Holidays (already deduplicated at cache level)
             if let holidays = holidayManager.holidayCache[date] {
                 for holiday in holidays {
-                    let color = holiday.isBankHoliday ? JohoColors.red : JohoColors.cyan
+                    let color = holiday.isBankHoliday
+                        ? CategoryColorSettings.shared.color(for: .holiday)
+                        : CategoryColorSettings.shared.color(for: .observance)
                     let badge = holiday.isBankHoliday ? "HOL" : "OBS"
                     items.append(TodayItem(
                         title: holiday.displayTitle,
@@ -1095,28 +1097,23 @@ struct LandingPageView: View {
             let dayNumber = calendar.component(.day, from: date)
             let isToday = dayOffset == 0
 
-            // Holidays (deduplicate same-title entries from multiple regions)
+            // Holidays (already deduplicated at cache level with mergedRegions)
             if let holidays = holidayManager.holidayCache[date] {
-                // Group by displayTitle to merge multi-region duplicates
-                let grouped = Dictionary(grouping: holidays, by: { $0.displayTitle })
-                for (title, group) in grouped {
-                    let isBankHoliday = group.contains { $0.isBankHoliday }
-                    let color = isBankHoliday
+                for holiday in holidays {
+                    let color = holiday.isBankHoliday
                         ? CategoryColorSettings.shared.color(for: .holiday)
                         : CategoryColorSettings.shared.color(for: .observance)
-                    let badge = isBankHoliday ? "HOL" : "OBS"
-                    let regions = group.map { $0.region }
-                    let notes = group.compactMap { $0.notes }.first
+                    let badge = holiday.isBankHoliday ? "HOL" : "OBS"
                     items.append(UpcomingItem(
                         date: date,
                         dayName: dayName,
                         dayNumber: dayNumber,
                         isToday: isToday,
-                        title: title,
+                        title: holiday.displayTitle,
                         color: color,
                         typeBadge: badge,
-                        regions: regions,
-                        notes: notes
+                        regions: holiday.mergedRegions,
+                        notes: holiday.notes
                     ))
                 }
             }
@@ -1195,10 +1192,12 @@ struct LandingPageView: View {
         let calendar = Calendar.iso8601
         var items: [TodayItem] = []
 
-        // 1. Holidays today
+        // 1. Holidays today (already deduplicated at cache level)
         if let holidays = holidayManager.holidayCache[todayStart] {
             for holiday in holidays {
-                let color = holiday.isBankHoliday ? JohoColors.red : JohoColors.cyan
+                let color = holiday.isBankHoliday
+                    ? CategoryColorSettings.shared.color(for: .holiday)
+                    : CategoryColorSettings.shared.color(for: .observance)
                 let badge = holiday.isBankHoliday ? "HOL" : "OBS"
                 items.append(TodayItem(
                     title: holiday.displayTitle,

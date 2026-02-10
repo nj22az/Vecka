@@ -372,6 +372,7 @@ struct SpecialDayRow: Identifiable {
     let isMemo: Bool          // True if this is a memo
     let originalBirthday: Date?  // For birthdays: the original birth date (to calculate age)
     let turningAge: Int?         // For birthdays: the age they're turning
+    var mergedRegions: [String] = []  // All regions after cache dedup (e.g., ["SE", "VN"])
 
     /// Determine category based on holiday characteristics
     var category: HolidayCategory {
@@ -460,19 +461,37 @@ struct ConsolidatedHoliday: Identifiable {
 
     /// Create from a group of same-DATE holidays (not same-name)
     /// 情報デザイン: Semantic grouping - same date + same type = same holiday
+    /// Uses mergedRegions from cache-level dedup when available
     static func from(holidays: [SpecialDayRow]) -> ConsolidatedHoliday? {
         guard let first = holidays.first else { return nil }
+
+        // Build regions from mergedRegions (cache-level dedup) or fallback to per-row region
+        let allRegions = holidays.flatMap { row in
+            row.mergedRegions.isEmpty ? [row.region] : row.mergedRegions
+        }
+        let uniqueRegions = allRegions.reduce(into: [String]()) { result, region in
+            if !result.contains(region) { result.append(region) }
+        }
+
+        // Build name/icon lookups from all regions
+        var names: [String: String] = [:]
+        var icons: [String: String] = [:]
+        for row in holidays {
+            let regions = row.mergedRegions.isEmpty ? [row.region] : row.mergedRegions
+            let icon = row.symbolName ?? SpecialDayType.holiday.defaultIcon
+            for region in regions {
+                if names[region] == nil { names[region] = row.title }
+                if icons[region] == nil { icons[region] = icon }
+            }
+        }
 
         return ConsolidatedHoliday(
             id: "holiday-\(first.date.timeIntervalSince1970)",
             date: first.date,
             type: .holiday,
-            regions: holidays.map { $0.region },
-            names: Dictionary(uniqueKeysWithValues: holidays.map { ($0.region, $0.title) }),
-            icons: Dictionary(uniqueKeysWithValues: holidays.compactMap { holiday in
-                let icon = holiday.symbolName ?? SpecialDayType.holiday.defaultIcon
-                return (holiday.region, icon)
-            }),
+            regions: uniqueRegions,
+            names: names,
+            icons: icons,
             isSystemHoliday: holidays.allSatisfy { $0.isSystem },
             sourceRows: holidays
         )
