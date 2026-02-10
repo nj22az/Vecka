@@ -33,9 +33,8 @@ struct DaySummaryData {
     }
 
     var yearString: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy"
-        return formatter.string(from: date)
+        let components = Calendar.current.dateComponents([.year], from: date)
+        return String(components.year ?? 0)
     }
 
     var weekNumber: Int {
@@ -422,11 +421,7 @@ struct DaySummarySheetView: View {
                 ShareableCardFooter(leftLabel: "DAY SUMMARY", rightLabel: "ONSEN PLANNER")
             }
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-            )
+            .johoBordered(borderWidth: JohoDimensions.borderThick)
             .padding(contentInset)
 
             Spacer()

@@ -52,15 +52,11 @@ struct RegionQuickPicker: View {
             }
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
         .alert("Limit Reached", isPresented: $showSelectionLimitAlert) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("You can select up to five regions.")
+            Text("You can select up to three regions.")
         }
     }
 
@@ -201,7 +197,7 @@ struct RegionQuickPicker: View {
 
             // Footer with count
             HStack {
-                Text("\(selectedCount)/5 selected")
+                Text("\(selectedCount)/3 selected")
                     .font(.system(size: 10, weight: .medium, design: .rounded))
                     .foregroundStyle(colors.primary.opacity(0.5))
 
@@ -320,7 +316,7 @@ struct RegionQuickPicker: View {
                 HapticManager.selection()
             }
         } else {
-            if selectedRegions.addRegionIfPossible(code, maxCount: 5) {
+            if selectedRegions.addRegionIfPossible(code, maxCount: 3) {
                 HapticManager.selection()
             } else {
                 showSelectionLimitAlert = true

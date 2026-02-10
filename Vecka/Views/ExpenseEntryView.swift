@@ -116,8 +116,7 @@ struct JohoExpenseEditorSheet: View {
                             .foregroundStyle(expenseAccentColor)
                             .frame(width: 36, height: 36)
                             .background(expenseLightBackground)
-                            .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
+                            .johoBordered(cornerRadius: 8, borderWidth: 1.5)
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text(isEditing ? "EDIT EXPENSE" : "NEW EXPENSE")
@@ -149,8 +148,7 @@ struct JohoExpenseEditorSheet: View {
                             .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(0.4))
                             .frame(width: 56, height: 32)
                             .background(canSave ? expenseAccentColor : colors.surface)
-                            .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
+                            .johoBordered(cornerRadius: 8, borderWidth: 1.5)
                     }
                     .disabled(!canSave)
                     .frame(width: 72)
@@ -399,11 +397,7 @@ struct JohoExpenseEditorSheet: View {
                 .buttonStyle(.plain)
             }
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-            )
+            .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
             .padding(.horizontal, JohoDimensions.spacingLG)
 
             Spacer()
@@ -423,11 +417,9 @@ struct JohoExpenseEditorSheet: View {
     }
 
     private func monthName(_ month: Int) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM"
         let components = DateComponents(year: 2024, month: month, day: 1)
         let tempDate = calendar.date(from: components) ?? Date()
-        return formatter.string(from: tempDate)
+        return DateFormatterCache.monthAbbr.string(from: tempDate)
     }
 
     private func daysInMonth(_ month: Int, year: Int) -> Int {

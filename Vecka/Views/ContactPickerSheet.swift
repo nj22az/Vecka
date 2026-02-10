@@ -56,11 +56,7 @@ struct ContactPickerSheet: View {
                 }
                 .padding(JohoDimensions.spacingMD)
                 .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(colors.border, lineWidth: 1.5)
-                )
+                .johoBordered(borderWidth: 1.5)
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.vertical, JohoDimensions.spacingSM)
 

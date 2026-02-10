@@ -27,11 +27,9 @@ enum PDFExportScope: Equatable, Hashable {
         case .week(let week, let year):
             return "Week \(week), \(year)"
         case .month(let month, let year):
-            let formatter = DateFormatter()
-            formatter.dateFormat = "MMMM yyyy"
             let components = DateComponents(year: year, month: month, day: 1)
             if let date = Calendar.iso8601.date(from: components) {
-                return formatter.string(from: date)
+                return DateFormatterCache.monthYear.string(from: date)
             }
             return "Month \(month), \(year)"
         case .range(let start, let end):

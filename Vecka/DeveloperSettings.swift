@@ -83,11 +83,7 @@ struct DeveloperSettingsView: View {
                         .foregroundStyle(JohoColors.cyan)
                         .frame(width: 40, height: 40)
                         .background(JohoColors.cyan.opacity(0.2))
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(colors.border, lineWidth: 1.5)
-                        )
+                        .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
 
                     Text("DEVELOPER")
                         .font(JohoFont.headline)
@@ -111,11 +107,7 @@ struct DeveloperSettingsView: View {
             .frame(height: 56)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
     }
 
     // MARK: - Dummy Data Section
@@ -135,11 +127,7 @@ struct DeveloperSettingsView: View {
                             .foregroundStyle(JohoColors.cyan)
                             .johoTouchTarget()
                             .background(JohoColors.cyan.opacity(0.2))
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(colors.border, lineWidth: 1)
-                            )
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1)
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Generate All Test Data")
@@ -164,11 +152,7 @@ struct DeveloperSettingsView: View {
                     }
                     .padding(JohoDimensions.spacingMD)
                     .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                            .stroke(colors.border, lineWidth: 1)
-                    )
+                    .johoBordered(borderWidth: 1)
                 }
                 .buttonStyle(.plain)
                 .disabled(isGeneratingData)
@@ -329,11 +313,7 @@ struct DeveloperSettingsView: View {
                             .foregroundStyle(JohoColors.purple)
                             .johoTouchTarget()
                             .background(JohoColors.purple.opacity(0.2))
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(colors.border, lineWidth: 1)
-                            )
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1)
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Assign Sample Avatars")
@@ -353,11 +333,7 @@ struct DeveloperSettingsView: View {
                     }
                     .padding(JohoDimensions.spacingMD)
                     .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                            .stroke(colors.border, lineWidth: 1)
-                    )
+                    .johoBordered(borderWidth: 1)
                 }
                 .buttonStyle(.plain)
 
@@ -381,11 +357,7 @@ struct DeveloperSettingsView: View {
         }
         .padding(JohoDimensions.spacingLG)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
@@ -453,19 +425,11 @@ struct DeveloperSettingsView: View {
                 debugInfoRow(label: "iOS Version", value: UIDevice.current.systemVersion)
                 debugInfoRow(label: "Color Mode", value: colorMode == .dark ? "Dark" : "Light")
             }
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: 1)
-            )
+            .johoBordered(borderWidth: 1)
         }
         .padding(JohoDimensions.spacingLG)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
 

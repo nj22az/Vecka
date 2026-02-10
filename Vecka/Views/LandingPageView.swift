@@ -36,25 +36,11 @@ struct LandingPageView: View {
     @Query private var contacts: [Contact]
     @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
 
-    /// Filtered notes from Memo
-    private var allNotes: [Memo] {
-        allMemos.filter { $0.type == .note }
-    }
-
-    /// Filtered expenses from Memo
-    private var allExpenses: [Memo] {
-        allMemos.filter { $0.type == .expense }
-    }
-
-    /// Filtered trips from Memo
-    private var allTrips: [Memo] {
-        allMemos.filter { $0.type == .trip }
-    }
-
-    /// Filtered countdown events from Memo
-    private var countdownMemos: [Memo] {
-        allMemos.filter { $0.type == .countdown }
-    }
+    /// Filtered memos by type
+    private var allNotes: [Memo] { allMemos.notes }
+    private var allExpenses: [Memo] { allMemos.expenses }
+    private var allTrips: [Memo] { allMemos.trips }
+    private var countdownMemos: [Memo] { allMemos.countdowns }
 
     private var holidayManager = HolidayManager.shared
 
@@ -226,11 +212,7 @@ struct LandingPageView: View {
                         .foregroundStyle(PageHeaderColor.landing.accent)
                         .frame(width: 40, height: 40)
                         .background(PageHeaderColor.landing.lightBackground)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(colors.border, lineWidth: 1.5)
-                        )
+                        .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
 
                     Text(displayTitle)
                         .font(JohoFont.headline)
@@ -300,11 +282,7 @@ struct LandingPageView: View {
             .padding(.vertical, JohoDimensions.spacingSM)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
     }
 
     /// Mascot mood - happy default, with occasional ♨️ onsen transformation
@@ -358,11 +336,7 @@ struct LandingPageView: View {
             .padding(.vertical, JohoDimensions.spacingSM)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
     }
 
     /// Individual clock cell (bento compartment) - 情報デザイン: Analog clock with region colors
@@ -465,11 +439,7 @@ struct LandingPageView: View {
                 }
                 .frame(width: 24, height: 24)
                 .background(JohoColors.cyan.opacity(0.15))
-                .clipShape(Squircle(cornerRadius: 6))
-                .overlay(
-                    Squircle(cornerRadius: 6)
-                        .stroke(colors.border, lineWidth: 1)
-                )
+                .johoBordered(cornerRadius: 6, borderWidth: 1)
 
                 Text("RANDOM FACTS")
                     .font(.system(size: 11, weight: .black, design: .rounded))
@@ -513,11 +483,7 @@ struct LandingPageView: View {
             .padding(JohoDimensions.spacingSM)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
     }
 
     /// Load 6 quirky facts from database (情報デザイン: Simple, database-driven)
@@ -607,11 +573,7 @@ struct LandingPageView: View {
                 .frame(maxWidth: .infinity, minHeight: 52)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: 1.5)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 1.5)
     }
 
     // MARK: - Row Helpers
@@ -904,11 +866,7 @@ struct LandingPageView: View {
             }
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
     }
 
     /// Item count for agenda mode
@@ -1354,11 +1312,7 @@ struct RandomFactDetailSheet: View {
                     .padding(.bottom, JohoDimensions.spacingLG)
             }
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-            )
+            .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderThick)
             .padding(JohoDimensions.spacingMD)
 
             Spacer()

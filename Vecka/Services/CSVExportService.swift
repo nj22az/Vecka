@@ -107,9 +107,7 @@ class CSVExportService {
     // MARK: - Helpers
 
     private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter.string(from: date)
+        return DateFormatterCache.isoDate.string(from: date)
     }
 
     /// Escape CSV special characters
@@ -126,9 +124,9 @@ class CSVExportService {
 
     /// Save CSV string to temporary file
     private func saveCSV(_ content: String, filename: String) throws -> URL {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyyMMdd_HHmmss"
-        let timestamp = dateFormatter.string(from: Date())
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd_HHmmss"
+        let timestamp = formatter.string(from: Date())
 
         let fullFilename = "Onsen_\(filename)_\(timestamp).csv"
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(fullFilename)

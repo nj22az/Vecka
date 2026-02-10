@@ -24,32 +24,26 @@ struct CalendarMonth: Identifiable, Hashable {
 
     /// Display name for the month (localized)
     var monthName: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM"
-
         var components = DateComponents()
         components.year = year
         components.month = month
         components.day = 1
 
         if let date = Calendar.iso8601.date(from: components) {
-            return formatter.string(from: date)
+            return DateFormatterCache.monthName.string(from: date)
         }
         return ""
     }
 
     /// Abbreviated month name (localized, e.g., "Dec" instead of "December")
     var shortMonthName: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM"
-
         var components = DateComponents()
         components.year = year
         components.month = month
         components.day = 1
 
         if let date = Calendar.iso8601.date(from: components) {
-            return formatter.string(from: date)
+            return DateFormatterCache.monthAbbr.string(from: date)
         }
         return ""
     }
@@ -220,11 +214,9 @@ struct CalendarWeek: Identifiable, Hashable {
     /// Formatted date range (e.g., "Nov 25 – Dec 1")
     var dateRange: String {
         let endDate = Calendar.iso8601.date(byAdding: .day, value: 6, to: startDate) ?? startDate
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
 
-        let startStr = formatter.string(from: startDate)
-        let endStr = formatter.string(from: endDate)
+        let startStr = DateFormatterCache.monthDay.string(from: startDate)
+        let endStr = DateFormatterCache.monthDay.string(from: endDate)
 
         return "\(startStr) – \(endStr)"
     }
@@ -436,20 +428,16 @@ struct MonthSection: Identifiable {
 extension CalendarWeek {
     static func groupWeeksByMonth(_ weeks: [CalendarWeek]) -> [MonthSection] {
         let grouped = Dictionary(grouping: weeks) { week -> String in
-            let formatter = DateFormatter()
-            formatter.dateFormat = "MMMM"
-            return formatter.string(from: week.startDate)
+            return DateFormatterCache.monthName.string(from: week.startDate)
         }
-        
+
         // Sort months by date (using the first week of the group)
         let sortedKeys = grouped.keys.sorted { name1, name2 in
-            let formatter = DateFormatter()
-            formatter.dateFormat = "MMMM"
-            let date1 = formatter.date(from: name1) ?? Date.distantPast
-            let date2 = formatter.date(from: name2) ?? Date.distantPast
+            let date1 = DateFormatterCache.monthName.date(from: name1) ?? Date.distantPast
+            let date2 = DateFormatterCache.monthName.date(from: name2) ?? Date.distantPast
             return date1 < date2
         }
-        
+
         return sortedKeys.compactMap { monthName in
             guard let weeks = grouped[monthName] else { return nil }
             let weeksInMonth = weeks.sorted { $0.weekNumber < $1.weekNumber }

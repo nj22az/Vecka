@@ -29,21 +29,10 @@ struct DashboardView: View {
     @State private var spotlightItem: SpotlightItem?
 
     // Computed: Filter memos by type
-    private var allNotes: [Memo] {
-        allMemos.filter { $0.type == .note }
-    }
-
-    private var allExpenses: [Memo] {
-        allMemos.filter { $0.type == .expense }
-    }
-
-    private var allTrips: [Memo] {
-        allMemos.filter { $0.type == .trip }
-    }
-
-    private var countdownMemos: [Memo] {
-        allMemos.filter { $0.type == .countdown }
-    }
+    private var allNotes: [Memo] { allMemos.notes }
+    private var allExpenses: [Memo] { allMemos.expenses }
+    private var allTrips: [Memo] { allMemos.trips }
+    private var countdownMemos: [Memo] { allMemos.countdowns }
 
     // Computed active trips (end date >= today)
     private var activeTrips: [Memo] {
@@ -96,11 +85,7 @@ struct DashboardView: View {
                         .foregroundStyle(PageHeaderColor.tools.accent)
                         .frame(width: 40, height: 40)
                         .background(PageHeaderColor.tools.lightBackground)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(colors.border, lineWidth: 1.5)
-                        )
+                        .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
 
                     Text("DATA")
                         .font(JohoFont.headline)
@@ -143,11 +128,7 @@ struct DashboardView: View {
             .padding(.vertical, JohoDimensions.spacingSM)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
     }
 
     // MARK: - Stats Row (情報デザイン: Colored indicators like Star Page)
@@ -711,11 +692,7 @@ private struct DataCard<Content: View>: View {
                     .foregroundStyle(zone.textColor(for: colorMode))
                     .frame(width: 28, height: 28)
                     .background(zone.background(for: colorMode))
-                    .clipShape(Squircle(cornerRadius: 6))
-                    .overlay(
-                        Squircle(cornerRadius: 6)
-                            .stroke(colors.border, lineWidth: 1)
-                    )
+                    .johoBordered(cornerRadius: 6, borderWidth: 1)
 
                 Text(title)
                     .font(.system(size: 11, weight: .black, design: .rounded))
@@ -737,11 +714,7 @@ private struct DataCard<Content: View>: View {
                 .padding(JohoDimensions.spacingMD)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
     }
 }
 

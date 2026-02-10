@@ -357,6 +357,15 @@ final class Memo {
     }
 }
 
+// MARK: - Array Type Filtering (情報デザイン: DRY memo filtering)
+
+extension Array where Element == Memo {
+    var notes: [Memo] { filter { $0.type == .note } }
+    var expenses: [Memo] { filter { $0.type == .expense } }
+    var trips: [Memo] { filter { $0.type == .trip } }
+    var countdowns: [Memo] { filter { $0.type == .countdown } }
+}
+
 // MARK: - Queries
 
 extension Memo {

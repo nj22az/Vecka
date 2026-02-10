@@ -105,11 +105,7 @@ struct SettingsView: View {
                     }
                     .padding(JohoDimensions.spacingMD)
                     .background(colors.inputBackground)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                    )
+                    .johoBordered(borderWidth: JohoDimensions.borderThin)
 
                     // Copyright
                     VStack(alignment: .leading, spacing: 6) {
@@ -220,11 +216,7 @@ struct SettingsView: View {
             .padding(.vertical, JohoDimensions.spacingSM)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .strokeBorder(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
     }
 
     private var selectedColorMode: JohoColorMode {
@@ -281,11 +273,7 @@ struct SettingsView: View {
                 }
                 .buttonStyle(.plain)
             }
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                    .strokeBorder(colors.border, lineWidth: 1.5)
-            )
+            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
 
             // Theme preset cards — horizontal scroll
             ScrollView(.horizontal, showsIndicators: false) {
@@ -343,11 +331,7 @@ struct SettingsView: View {
             }
             .padding(JohoDimensions.spacingMD)
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .strokeBorder(colors.border, lineWidth: JohoDimensions.borderMedium)
-            )
+            .johoBordered()
 
             // Footer
             Text("Themes transform borders, surfaces, category colors, and UI accent. Month colors (季節の色) stay locked.")
@@ -357,11 +341,7 @@ struct SettingsView: View {
         }
         .padding(JohoDimensions.spacingLG)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .strokeBorder(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
@@ -427,11 +407,7 @@ struct SettingsView: View {
             .frame(width: 72)
             .padding(.vertical, 10)
             .background(isActive ? Color(hex: theme.holidayColorHex).opacity(0.1) : colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .strokeBorder(isActive ? colors.primary : colors.border, lineWidth: isActive ? 2.5 : 1.5)
-            )
+            .johoBordered(borderWidth: isActive ? 2.5 : 1.5, borderColor: isActive ? colors.primary : nil)
         }
         .buttonStyle(.plain)
     }
@@ -522,12 +498,8 @@ struct SettingsView: View {
                 }
             }
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .strokeBorder(colors.border, lineWidth: JohoDimensions.borderMedium)
-                    .allowsHitTesting(false)
-            )
+            .johoBordered()
+            .allowsHitTesting(false)
         }
         .padding(.horizontal, JohoDimensions.spacingLG)
         .sheet(item: $editingCategory) { category in
@@ -631,12 +603,8 @@ struct SettingsView: View {
                 }
             }
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .strokeBorder(colors.border, lineWidth: JohoDimensions.borderMedium)
-                    .allowsHitTesting(false)
-            )
+            .johoBordered()
+            .allowsHitTesting(false)
 
             // Footer
             Text("Customize month cards with icons, colors, and messages. 季節の色 stay locked.")
@@ -728,11 +696,7 @@ struct SettingsView: View {
             .buttonStyle(.plain)
             .padding(JohoDimensions.spacingMD)
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .strokeBorder(colors.border, lineWidth: JohoDimensions.borderMedium)
-            )
+            .johoBordered()
 
             // Footer
             Text("Display Vietnamese lunar calendar dates (Âm Lịch) alongside Gregorian dates in the calendar.")
@@ -742,11 +706,7 @@ struct SettingsView: View {
         }
         .padding(JohoDimensions.spacingLG)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .strokeBorder(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
@@ -845,11 +805,7 @@ struct SettingsView: View {
         }
         .padding(JohoDimensions.spacingLG)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .strokeBorder(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
         .padding(.horizontal, JohoDimensions.spacingLG)
         .sheet(isPresented: $isEditingTitle) {
             EditLandingTitleView(
@@ -955,11 +911,7 @@ struct SettingsView: View {
             .padding(.vertical, JohoDimensions.spacingSM)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .strokeBorder(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
@@ -1131,11 +1083,7 @@ struct SettingsView: View {
         }
         .padding(JohoDimensions.spacingLG)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .strokeBorder(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
         .padding(.horizontal, JohoDimensions.spacingLG)
         .alert("Reset All Data?", isPresented: $showingResetConfirmation) {
             Button("Cancel", role: .cancel) { }

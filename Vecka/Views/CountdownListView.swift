@@ -74,11 +74,7 @@ struct CountdownListView: View {
                 .foregroundStyle(colors.primary)
                 .johoTouchTarget(52)
                 .background(JohoColors.purple.opacity(0.3))
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                )
+                .johoBordered()
 
             // Title area
             VStack(alignment: .leading, spacing: 2) {
@@ -101,11 +97,7 @@ struct CountdownListView: View {
         }
         .padding(JohoDimensions.spacingLG)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
         .padding(.horizontal, JohoDimensions.spacingLG)
         .padding(.top, JohoDimensions.spacingSM)
     }
@@ -224,11 +216,7 @@ struct CountdownListView: View {
             .frame(height: 72)
         }
         .background(JohoColors.purple)  // Light purple (情報デザイン bento - matches HOLIDAYS style)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
@@ -449,8 +437,7 @@ struct CountdownListView: View {
                     .foregroundStyle(JohoColors.cyan)
                     .frame(width: 24, height: 24)
                     .background(JohoColors.cyan.opacity(0.15))
-                    .clipShape(Squircle(cornerRadius: 6))
-                    .overlay(Squircle(cornerRadius: 6).stroke(colors.border, lineWidth: 1))
+                    .johoBordered(cornerRadius: 6, borderWidth: 1)
             }
             .frame(width: 48, alignment: .center)
             .frame(maxHeight: .infinity)

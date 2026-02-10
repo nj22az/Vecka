@@ -276,9 +276,7 @@ actor SimplePDFExportService {
             throw PDFExportError.noData
         }
 
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM yyyy"
-        let dateRange = formatter.string(from: monthStart)
+        let dateRange = DateFormatterCache.monthYear.string(from: monthStart)
 
         return try await exportExpenseReport(
             expenses: expenses,
@@ -332,10 +330,10 @@ struct PDFSummaryPage: View {
     @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
 
     // Filter by type
-    private var trips: [Memo] { allMemos.filter { $0.type == .trip } }
-    private var expenses: [Memo] { allMemos.filter { $0.type == .expense } }
-    private var notes: [Memo] { allMemos.filter { $0.type == .note } }
-    private var countdowns: [Memo] { allMemos.filter { $0.type == .countdown } }
+    private var trips: [Memo] { allMemos.trips }
+    private var expenses: [Memo] { allMemos.expenses }
+    private var notes: [Memo] { allMemos.notes }
+    private var countdowns: [Memo] { allMemos.countdowns }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -598,10 +596,10 @@ struct PDFWeekSummaryPage: View {
     @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
 
     // Filter by type
-    private var allExpenses: [Memo] { allMemos.filter { $0.type == .expense } }
-    private var allNotes: [Memo] { allMemos.filter { $0.type == .note } }
-    private var allTrips: [Memo] { allMemos.filter { $0.type == .trip } }
-    private var allCountdowns: [Memo] { allMemos.filter { $0.type == .countdown } }
+    private var allExpenses: [Memo] { allMemos.expenses }
+    private var allNotes: [Memo] { allMemos.notes }
+    private var allTrips: [Memo] { allMemos.trips }
+    private var allCountdowns: [Memo] { allMemos.countdowns }
 
     private var weekDates: [Date] {
         WeekCalculator.shared.dates(in: weekNumber, year: year)
@@ -851,9 +849,7 @@ struct PDFWeekSummaryPage: View {
     private var expensesByCategory: [(category: String, total: Double)] {
         // Memo doesn't have categories, group by day instead
         let grouped = Dictionary(grouping: weekExpenses) { expense in
-            let formatter = DateFormatter()
-            formatter.dateFormat = "EEE"
-            return formatter.string(from: expense.date)
+            DateFormatterCache.weekdayShort.string(from: expense.date)
         }
         return grouped.map { (day, expenses) in
             let total = expenses.reduce(0.0) { $0 + ($1.amount ?? 0) }
@@ -1110,10 +1106,10 @@ struct PDFWeekCompactPage: View {
     @Query private var contacts: [Contact]
 
     // Filter by type
-    private var notes: [Memo] { allMemos.filter { $0.type == .note } }
-    private var expenses: [Memo] { allMemos.filter { $0.type == .expense } }
-    private var trips: [Memo] { allMemos.filter { $0.type == .trip } }
-    private var events: [Memo] { allMemos.filter { $0.type == .countdown } }
+    private var notes: [Memo] { allMemos.notes }
+    private var expenses: [Memo] { allMemos.expenses }
+    private var trips: [Memo] { allMemos.trips }
+    private var events: [Memo] { allMemos.countdowns }
 
     private let calendar = Calendar.iso8601
     private let pageSize = CGSize(width: 595.2, height: 841.8) // A4
@@ -1234,13 +1230,11 @@ struct PDFWeekCompactPage: View {
 
     private func compactDayRow(for date: Date) -> some View {
         let dayData = getDayData(for: date)
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "EEEE, MMM d"
 
         return VStack(alignment: .leading, spacing: 6) {
             // Day header
             HStack {
-                Text(dateFormatter.string(from: date))
+                Text(DateFormatterCache.longDateWithYear.string(from: date))
                     .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.black)
 
@@ -1377,9 +1371,7 @@ struct PDFWeekCompactPage: View {
 
     private var dateRangeString: String {
         guard let first = weekDates.first, let last = weekDates.last else { return "" }
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
-        return "\(formatter.string(from: first)) – \(formatter.string(from: last)), \(year)"
+        return "\(DateFormatterCache.weekRange.string(from: first)) – \(DateFormatterCache.weekRange.string(from: last)), \(year)"
     }
 
     private struct DayData {
@@ -1451,10 +1443,10 @@ struct PDFMonthCompactPage: View {
     @Query private var contacts: [Contact]
 
     // Filter by type
-    private var notes: [Memo] { allMemos.filter { $0.type == .note } }
-    private var expenses: [Memo] { allMemos.filter { $0.type == .expense } }
-    private var trips: [Memo] { allMemos.filter { $0.type == .trip } }
-    private var events: [Memo] { allMemos.filter { $0.type == .countdown } }
+    private var notes: [Memo] { allMemos.notes }
+    private var expenses: [Memo] { allMemos.expenses }
+    private var trips: [Memo] { allMemos.trips }
+    private var events: [Memo] { allMemos.countdowns }
 
     private let calendar = Calendar.iso8601
     private let pageSize = CGSize(width: 595.2, height: 841.8) // A4
@@ -1701,11 +1693,9 @@ struct PDFMonthCompactPage: View {
     // MARK: - Data Helpers
 
     private var monthName: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM"
         let components = DateComponents(year: year, month: month, day: 1)
         guard let date = calendar.date(from: components) else { return "" }
-        return formatter.string(from: date)
+        return DateFormatterCache.monthName.string(from: date)
     }
 
     private var weeksInMonth: [Date] {
@@ -1822,10 +1812,10 @@ struct PDFWeekAuditReport: View {
     @Query private var contacts: [Contact]
 
     // Filter by type
-    private var notes: [Memo] { allMemos.filter { $0.type == .note } }
-    private var expenses: [Memo] { allMemos.filter { $0.type == .expense } }
-    private var trips: [Memo] { allMemos.filter { $0.type == .trip } }
-    private var events: [Memo] { allMemos.filter { $0.type == .countdown } }
+    private var notes: [Memo] { allMemos.notes }
+    private var expenses: [Memo] { allMemos.expenses }
+    private var trips: [Memo] { allMemos.trips }
+    private var events: [Memo] { allMemos.countdowns }
 
     private let calendar = Calendar.iso8601
     private let pageSize = CGSize(width: 595.2, height: 841.8) // A4
@@ -2118,9 +2108,7 @@ struct PDFWeekAuditReport: View {
     }
 
     private var formattedGenerationDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "d MMM yyyy, HH:mm"
-        return formatter.string(from: Date())
+        DateFormatterCache.dayMonthYearTime.string(from: Date())
     }
 
     private func formatCurrency(_ amount: Double, currency: String) -> String {
@@ -2156,10 +2144,10 @@ struct PDFMonthAuditReport: View {
     @Query private var contacts: [Contact]
 
     // Filter by type
-    private var notes: [Memo] { allMemos.filter { $0.type == .note } }
-    private var expenses: [Memo] { allMemos.filter { $0.type == .expense } }
-    private var trips: [Memo] { allMemos.filter { $0.type == .trip } }
-    private var events: [Memo] { allMemos.filter { $0.type == .countdown } }
+    private var notes: [Memo] { allMemos.notes }
+    private var expenses: [Memo] { allMemos.expenses }
+    private var trips: [Memo] { allMemos.trips }
+    private var events: [Memo] { allMemos.countdowns }
 
     private let calendar = Calendar.iso8601
     private let pageSize = CGSize(width: 595.2, height: 841.8) // A4
@@ -2239,11 +2227,9 @@ struct PDFMonthAuditReport: View {
     }
 
     private var monthName: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM"
         let components = DateComponents(year: year, month: month, day: 1)
         if let date = calendar.date(from: components) {
-            return formatter.string(from: date)
+            return DateFormatterCache.monthName.string(from: date)
         }
         return "Month \(month)"
     }
@@ -2445,9 +2431,7 @@ struct PDFMonthAuditReport: View {
     // MARK: - Helpers
 
     private var formattedGenerationDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "d MMM yyyy, HH:mm"
-        return formatter.string(from: Date())
+        DateFormatterCache.dayMonthYearTime.string(from: Date())
     }
 
     private func formatCurrency(_ amount: Double, currency: String) -> String {

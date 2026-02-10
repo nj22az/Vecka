@@ -623,22 +623,14 @@ struct SpecialDaysListView: View {
                             .foregroundStyle(headerIconColor)
                             .johoTouchTarget()
                             .background(theme.lightBackground)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                            )
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall)
                     } else {
                         Image(systemName: "star.fill")
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(PageHeaderColor.specialDays.accent)
                             .johoTouchTarget()
                             .background(PageHeaderColor.specialDays.lightBackground)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                            )
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall)
                     }
 
                     // Title
@@ -697,11 +689,7 @@ struct SpecialDaysListView: View {
             }
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: 2)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 2)
         .padding(.horizontal, JohoDimensions.spacingLG)
         .padding(.top, JohoDimensions.spacingSM)
     }
@@ -1242,11 +1230,7 @@ struct SpecialDaysListView: View {
             }
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: 1.5)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 1.5)
         .contentShape(Rectangle())
         .onTapGesture {
             withAnimation(.easeInOut(duration: 0.2)) {
@@ -1386,11 +1370,7 @@ struct SpecialDaysListView: View {
             .background(colors.surface)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: 1.5)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 1.5)
         .contentShape(Rectangle())
         // 情報デザイン: NO opacity change - colors define identity regardless of content
         // Category customization moved to Settings → CATEGORIES section
@@ -1560,11 +1540,7 @@ struct CollapsibleSpecialDayCard: View {
             }
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: isToday ? JohoDimensions.borderThick : JohoDimensions.borderMedium)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: isToday ? JohoDimensions.borderThick : JohoDimensions.borderMedium)
     }
 
     // MARK: - Header Row
@@ -1618,11 +1594,7 @@ struct CollapsibleSpecialDayCard: View {
         .padding(.horizontal, JohoDimensions.spacingSM)
         .padding(.vertical, JohoDimensions.spacingXS)
         .background(isToday ? JohoColors.todayOrange : colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: JohoDimensions.borderThin)
     }
 
     // MARK: - Content Indicator Icons (情報デザイン: Black outline shapes)
@@ -1775,11 +1747,7 @@ struct CollapsibleSpecialDayCard: View {
             .padding(.vertical, 4)
             .background(colors.surface)  // WHITE body instead of colored
         }
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
     }
 
     // MARK: - Consolidated Holiday Section (情報デザイン: Same-name holidays merged)
@@ -1839,11 +1807,7 @@ struct CollapsibleSpecialDayCard: View {
             .padding(.vertical, 4)
             .background(colors.surface)  // WHITE body instead of colored
         }
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
     }
 
     // MARK: - Consolidated Holiday Row (情報デザイン: Multiple countries, one name)
@@ -2077,9 +2041,7 @@ struct CollapsibleSpecialDayCard: View {
     // MARK: - Formatters
 
     private var weekdayShort: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEE"
-        return formatter.string(from: dayCard.date).uppercased()
+        DateFormatterCache.weekdayShort.string(from: dayCard.date).uppercased()
     }
 
     private var fullDateText: String {
@@ -2209,11 +2171,7 @@ extension SpecialDaysListView {
                 .frame(maxWidth: .infinity)
             }
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                    .stroke(colors.border.opacity(0.2), lineWidth: 1)  // Thin technical border
-            )
+            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1, borderColor: colors.border.opacity(0.2))  // Thin technical border
             .shadow(color: colors.border.opacity(0.05), radius: 2, x: 0, y: 1)
         }
         .buttonStyle(.plain)
@@ -2306,11 +2264,7 @@ extension SpecialDaysListView {
             }
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(colors.border.opacity(0.2), lineWidth: 1)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1, borderColor: colors.border.opacity(0.2))
         .shadow(color: colors.border.opacity(0.05), radius: 2, x: 0, y: 1)
     }
 

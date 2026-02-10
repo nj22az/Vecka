@@ -19,21 +19,10 @@ struct PhoneLibraryView: View {
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     // Computed: Filter memos by type
-    private var notes: [Memo] {
-        memos.filter { $0.type == .note }
-    }
-
-    private var trips: [Memo] {
-        memos.filter { $0.type == .trip }
-    }
-
-    private var expenses: [Memo] {
-        memos.filter { $0.type == .expense }
-    }
-
-    private var countdowns: [Memo] {
-        memos.filter { $0.type == .countdown }
-    }
+    private var notes: [Memo] { memos.notes }
+    private var trips: [Memo] { memos.trips }
+    private var expenses: [Memo] { memos.expenses }
+    private var countdowns: [Memo] { memos.countdowns }
 
     var body: some View {
         ScrollView {
@@ -147,11 +136,7 @@ struct PhoneLibraryView: View {
                 .foregroundStyle(colors.primary)
                 .johoTouchTarget(52)
                 .background(Color(hex: "FFD700"))  // Gold - Library accent
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                )
+                .johoBordered()
 
             // Title and stats zone
             VStack(alignment: .leading, spacing: 2) {
@@ -170,11 +155,7 @@ struct PhoneLibraryView: View {
         }
         .padding(JohoDimensions.spacingMD)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
     }
 
     private var librarySubtitle: String {

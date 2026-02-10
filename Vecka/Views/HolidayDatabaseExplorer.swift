@@ -173,22 +173,14 @@ struct HolidayDatabaseExplorer: View {
                             .foregroundStyle(region.accentColor(colors: colors))
                             .frame(width: 40, height: 40)
                             .background(region.lightBackground(colors: colors))
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(colors.border, lineWidth: 1.5)
-                            )
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
                     } else {
                         Image(systemName: "globe")
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.pink)
                             .frame(width: 40, height: 40)
                             .background(JohoColors.pink.opacity(0.15))
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(colors.border, lineWidth: 1.5)
-                            )
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
                     }
 
                     // Title
@@ -284,11 +276,7 @@ struct HolidayDatabaseExplorer: View {
             .padding(.vertical, JohoDimensions.spacingSM)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: 2)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 2)
         .padding(.horizontal, JohoDimensions.spacingLG)
         .padding(.top, JohoDimensions.spacingSM)
     }
@@ -486,8 +474,7 @@ struct HolidayDatabaseExplorer: View {
                         .foregroundStyle(colors.primary)
                         .frame(width: 24, height: 24)
                         .background(color.opacity(0.3))
-                        .clipShape(Squircle(cornerRadius: 5))
-                        .overlay(Squircle(cornerRadius: 5).stroke(colors.border, lineWidth: 1))
+                        .johoBordered(cornerRadius: 5, borderWidth: 1)
 
                     VStack(alignment: .leading, spacing: 0) {
                         Text(title)
@@ -539,11 +526,7 @@ struct HolidayDatabaseExplorer: View {
             }
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
     }
 
     // MARK: - Rule Row (情報デザイン: Clean, tappable row)
@@ -633,11 +616,7 @@ struct HolidayDatabaseExplorer: View {
         .frame(maxWidth: .infinity)
         .padding(JohoDimensions.spacingXL)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.primary.opacity(0.2), lineWidth: 1)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 1, borderColor: colors.primary.opacity(0.2))
     }
 
     // MARK: - Action Buttons Section
@@ -672,11 +651,7 @@ struct HolidayDatabaseExplorer: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, JohoDimensions.spacingMD)
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: 1.5)
-            )
+            .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 1.5)
         }
         .buttonStyle(.plain)
     }
@@ -695,11 +670,7 @@ struct HolidayDatabaseExplorer: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, JohoDimensions.spacingMD)
             .background(JohoColors.green)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: 1.5)
-            )
+            .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 1.5)
         }
         .buttonStyle(.plain)
     }
@@ -720,11 +691,9 @@ struct HolidayDatabaseExplorer: View {
         switch rule.type {
         case .fixed:
             if let month = rule.month, let day = rule.day {
-                let formatter = DateFormatter()
-                formatter.dateFormat = "MMM d"
                 let components = DateComponents(month: month, day: day)
                 if let date = Calendar.current.date(from: components) {
-                    return "Fixed: \(formatter.string(from: date))"
+                    return "Fixed: \(DateFormatterCache.weekRange.string(from: date))"
                 }
             }
             return "Fixed date"

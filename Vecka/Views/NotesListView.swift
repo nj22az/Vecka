@@ -19,9 +19,7 @@ struct NotesListView: View {
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     // Filter to notes only
-    private var notes: [Memo] {
-        allMemos.filter { $0.type == .note }
-    }
+    private var notes: [Memo] { allMemos.notes }
 
     // Helper to get day from memo date
     private func dayFor(_ memo: Memo) -> Date {
@@ -297,11 +295,7 @@ private struct NotesDayRow: View {
         }
         .padding(JohoDimensions.spacingMD)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
     }
 }
 
@@ -365,11 +359,7 @@ private struct MemoPinnedNoteRow: View {
         }
         .padding(JohoDimensions.spacingMD)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(borderWidth: JohoDimensions.borderThick)
     }
 
     private func formatDuration(_ seconds: TimeInterval) -> String {

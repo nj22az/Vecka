@@ -187,12 +187,8 @@ enum CalendarFactsLoader {
     }
 
     private static func loadFromJSON(context: ModelContext) {
-        guard let url = Bundle.main.url(forResource: "calendar-facts", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let facts = try? JSONDecoder().decode([CalendarFactDTO].self, from: data) else {
-            Log.e("Failed to load calendar-facts.json")
-            return
-        }
+        let facts: [CalendarFactDTO] = BundleJSON.load("calendar-facts", fallback: [])
+        guard !facts.isEmpty else { return }
 
         for dto in facts {
             let fact = CalendarFact(

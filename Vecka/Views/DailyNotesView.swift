@@ -123,11 +123,7 @@ struct DailyNotesView: View {
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, JohoDimensions.spacingMD)
                         .background(JohoColors.yellow)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                        )
+                        .johoBordered()
                     }
                     .padding(.horizontal, JohoDimensions.spacingLG)
                 }
@@ -282,11 +278,7 @@ private struct JohoNoteCard: View {
         }
         .padding(JohoDimensions.spacingMD)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
     }
 }
 
@@ -321,11 +313,7 @@ private struct JohoNoteEditor: View {
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .padding(.vertical, JohoDimensions.spacingMD)
                         .background(colors.surface)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                        )
+                        .johoBordered(cornerRadius: JohoDimensions.radiusSmall)
                 }
 
                 Spacer()
@@ -340,11 +328,7 @@ private struct JohoNoteEditor: View {
                         .padding(.horizontal, JohoDimensions.spacingLG)
                         .padding(.vertical, JohoDimensions.spacingMD)
                         .background(canSave ? accentColor : colors.surface)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                        )
+                        .johoBordered(cornerRadius: JohoDimensions.radiusSmall)
                 }
                 .disabled(!canSave)
             }
@@ -398,20 +382,12 @@ private struct JohoNoteEditor: View {
                     }
                     .padding(JohoDimensions.spacingSM)
                     .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                    )
+                    .johoBordered()
                 }
             }
             .padding(JohoDimensions.spacingLG)
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-            )
+            .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
         }
         .onAppear {
             isFocused = true
@@ -520,8 +496,7 @@ struct JohoNoteEditorSheet: View {
                             .foregroundStyle(noteAccentColor)
                             .frame(width: 36, height: 36)
                             .background(noteLightBackground)
-                            .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(colors.primaryInverted, lineWidth: 1.5))
+                            .johoBordered(cornerRadius: 8, borderWidth: 1.5, borderColor: colors.primaryInverted)
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text("NEW NOTE")
@@ -553,8 +528,7 @@ struct JohoNoteEditorSheet: View {
                             .foregroundStyle(canSave ? colors.primaryInverted : colors.primaryInverted.opacity(0.4))
                             .frame(width: 56, height: 32)
                             .background(canSave ? noteAccentColor : colors.primaryInverted.opacity(0.2))
-                            .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(colors.primaryInverted, lineWidth: 1.5))
+                            .johoBordered(cornerRadius: 8, borderWidth: 1.5, borderColor: colors.primaryInverted)
                     }
                     .disabled(!canSave)
                     .frame(width: 72)
@@ -712,11 +686,7 @@ struct JohoNoteEditorSheet: View {
                 .buttonStyle(.plain)
             }
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-            )
+            .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
             .padding(.horizontal, JohoDimensions.spacingLG)
 
             Spacer()

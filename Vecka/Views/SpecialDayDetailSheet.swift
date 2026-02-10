@@ -37,10 +37,8 @@ struct SpecialDayDetailSheet: View {
 
     /// Full date stamp for shareable: YYYYMMDD · W{n}
     private var fullDateStamp: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd"
         let weekNumber = Calendar.iso8601.component(.weekOfYear, from: item.date)
-        return "\(formatter.string(from: item.date)) · W\(weekNumber)"
+        return "\(DateFormatterCache.compactDate.string(from: item.date)) · W\(weekNumber)"
     }
 
     /// The icon to display (custom or default)
@@ -165,11 +163,7 @@ struct SpecialDayDetailSheet: View {
             .buttonStyle(.plain)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
@@ -257,11 +251,7 @@ struct SpecialDayDetailSheet: View {
         .frame(maxWidth: .infinity)
         .frame(height: 120)
         .background(CategoryColorSettings.shared.color(for: item.type.displayCategory).opacity(0.2))
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge)
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
@@ -338,11 +328,7 @@ struct SpecialDayDetailSheet: View {
             }
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
@@ -444,11 +430,7 @@ struct SpecialDayDetailSheet: View {
             }
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
@@ -589,16 +571,12 @@ struct ShareableSpecialDayCard: View {
 
     /// Full date stamp: YYYYMMDD · W{n}
     private var fullDateStamp: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd"
         let weekNumber = Calendar.iso8601.component(.weekOfYear, from: item.date)
-        return "\(formatter.string(from: item.date)) · W\(weekNumber)"
+        return "\(DateFormatterCache.compactDate.string(from: item.date)) · W\(weekNumber)"
     }
 
     private var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM d"
-        return formatter.string(from: item.date)
+        return DateFormatterCache.monthDay.string(from: item.date)
     }
 
     var body: some View {

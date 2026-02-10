@@ -241,8 +241,7 @@ struct CountdownShareButton: View {
                 .foregroundStyle(JohoColors.cyan)
                 .frame(width: 32, height: 32)
                 .background(JohoColors.cyan.opacity(0.15))
-                .clipShape(Squircle(cornerRadius: 8))
-                .overlay(Squircle(cornerRadius: 8).stroke(Color.black, lineWidth: 1))
+                .johoBordered(cornerRadius: 8, borderWidth: 1, borderColor: Color.black)
         }
     }
 }

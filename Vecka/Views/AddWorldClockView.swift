@@ -79,11 +79,7 @@ struct AddWorldClockView: View {
                     }
                     .padding(JohoDimensions.spacingMD)
                     .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                    )
+                    .johoBordered()
                     .padding(.horizontal, JohoDimensions.spacingLG)
 
                     // Search hint
@@ -166,11 +162,7 @@ struct AddWorldClockView: View {
                         }
                     }
                     .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-                    )
+                    .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
                     .padding(.horizontal, JohoDimensions.spacingLG)
                 }
                 .padding(.bottom, JohoDimensions.spacingXL)
@@ -193,9 +185,8 @@ struct AddWorldClockView: View {
 
     private func currentTime(for timezoneId: String) -> String {
         guard let tz = TimeZone(identifier: timezoneId) else { return "--:--" }
-        let formatter = DateFormatter()
+        var formatter = DateFormatterCache.time24h
         formatter.timeZone = tz
-        formatter.dateFormat = "HH:mm"
         return formatter.string(from: Date())
     }
 }

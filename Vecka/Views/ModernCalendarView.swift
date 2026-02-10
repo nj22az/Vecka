@@ -676,8 +676,7 @@ struct ModernCalendarView: View {
                         .foregroundStyle(colors.primary)
                         .frame(width: 24, height: 24)
                         .background(JohoColors.cyan.opacity(0.3))
-                        .clipShape(Squircle(cornerRadius: 5))
-                        .overlay(Squircle(cornerRadius: 5).stroke(colors.border, lineWidth: 1))
+                        .johoBordered(cornerRadius: 5, borderWidth: 1)
 
                     Text("LEGEND")
                         .font(.system(size: 12, weight: .black, design: .rounded))
@@ -730,11 +729,7 @@ struct ModernCalendarView: View {
             }
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusSmall)
         .accessibilityElement(children: .combine)
         .accessibilityLabel("Legend, \(presentIndicators.count) indicator types")
         .accessibilityHint(isLegendExpanded ? "Tap to collapse" : "Tap to expand")
@@ -827,11 +822,7 @@ struct ModernCalendarView: View {
                             .foregroundStyle(PageHeaderColor.calendar.accent)
                             .frame(width: 40, height: 40)
                             .background(PageHeaderColor.calendar.lightBackground)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(colors.border, lineWidth: 1.5)
-                            )
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
 
                         // Month + Year (tappable)
                         VStack(alignment: .leading, spacing: 0) {
@@ -873,11 +864,7 @@ struct ModernCalendarView: View {
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                         .background(JohoColors.yellow)
-                        .clipShape(Squircle(cornerRadius: 6))
-                        .overlay(
-                            Squircle(cornerRadius: 6)
-                                .stroke(Color.black, lineWidth: 1.5)
-                        )
+                        .johoBordered(cornerRadius: 6, borderWidth: 1.5, borderColor: Color.black)
                     }
                     .buttonStyle(.plain)
                     .padding(.horizontal, JohoDimensions.spacingSM)
@@ -930,11 +917,7 @@ struct ModernCalendarView: View {
             .padding(.vertical, JohoDimensions.spacingSM)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
     }
 
     /// Month picker for Calendar header (< January 2026 >)

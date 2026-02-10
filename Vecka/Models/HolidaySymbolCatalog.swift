@@ -59,12 +59,7 @@ private enum HolidaySymbolsLoader {
 
     /// Loaded JSON data with fallback
     private static let loadedData: HolidaySymbolsJSON = {
-        guard let url = Bundle.main.url(forResource: "holiday-symbols", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let json = try? JSONDecoder().decode(HolidaySymbolsJSON.self, from: data) else {
-            Log.e("Failed to load holiday-symbols.json")
-            return defaultData
-        }
+        let json = BundleJSON.load("holiday-symbols", fallback: defaultData)
         Log.i("Loaded \(json.suggestedSymbols.count) holiday symbols from JSON")
         return json
     }()

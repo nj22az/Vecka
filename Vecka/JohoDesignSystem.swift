@@ -510,6 +510,12 @@ enum JohoDimensions {
     static let spacingMD: CGFloat = 12
     static let spacingLG: CGFloat = 16
     static let spacingXL: CGFloat = 20
+
+    // Opacity levels (情報デザイン: consistent transparency)
+    static let opacitySubtle: Double = 0.1
+    static let opacityLight: Double = 0.15
+    static let opacityMedium: Double = 0.3
+    static let opacityHeavy: Double = 0.5
 }
 
 // MARK: - Card Size (Regular vs Compact)

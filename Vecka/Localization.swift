@@ -188,13 +188,9 @@ struct Localization {
 
     // MARK: - Date Formatting
     static func formatDateRange(_ startDate: Date, _ endDate: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale.current
-        formatter.dateFormat = "MMM d"
-        
-        let startString = formatter.string(from: startDate)
-        let endString = formatter.string(from: endDate)
-        
+        let startString = DateFormatterCache.weekRange.string(from: startDate)
+        let endString = DateFormatterCache.weekRange.string(from: endDate)
+
         let separator = NSLocalizedString("date.range_separator", value: " – ", comment: "Date range separator")
         return "\(startString)\(separator)\(endString)"
     }
@@ -207,10 +203,7 @@ struct Localization {
     }
     
     static func formatShortDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale.current
-        formatter.dateFormat = "MMM d"
-        return formatter.string(from: date)
+        DateFormatterCache.weekRange.string(from: date)
     }
     
     // MARK: - Week Display

@@ -143,8 +143,7 @@ struct MemoEditorView: View {
                     }
                 }
                 .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: 16))
-                .overlay(Squircle(cornerRadius: 16).stroke(colors.border, lineWidth: 2))
+                .johoBordered(cornerRadius: 16, borderWidth: 2)
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.top, JohoDimensions.spacingMD)
             }
@@ -286,8 +285,7 @@ struct MemoEditorView: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
             .background(isActive ? accentColor : colors.surface)
-            .clipShape(Squircle(cornerRadius: 8))
-            .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
+            .johoBordered(cornerRadius: 8, borderWidth: 1.5)
         }
         .buttonStyle(.plain)
     }
@@ -353,8 +351,7 @@ struct MemoEditorView: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
             .background(dateType == type ? accentColor : colors.surface)
-            .clipShape(Squircle(cornerRadius: 8))
-            .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
+            .johoBordered(cornerRadius: 8, borderWidth: 1.5)
         }
         .buttonStyle(.plain)
     }
@@ -505,8 +502,7 @@ struct MemoEditorView: View {
                     .padding(.horizontal, 6)
                     .padding(.vertical, 6)
                     .background(colors.inputBackground)
-                    .clipShape(Squircle(cornerRadius: 6))
-                    .overlay(Squircle(cornerRadius: 6).stroke(colors.border, lineWidth: 1.5))
+                    .johoBordered(cornerRadius: 6, borderWidth: 1.5)
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
         }
@@ -601,8 +597,7 @@ struct MemoEditorView: View {
             .frame(maxWidth: .infinity)
             .frame(height: 48)
             .background(canSave ? accentColor : colors.inputBackground)
-            .clipShape(Squircle(cornerRadius: 12))
-            .overlay(Squircle(cornerRadius: 12).stroke(colors.border, lineWidth: 2))
+            .johoBordered(cornerRadius: 12, borderWidth: 2)
         }
         .buttonStyle(.plain)
         .disabled(!canSave)

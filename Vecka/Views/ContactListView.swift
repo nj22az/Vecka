@@ -119,11 +119,7 @@ struct ContactListView: View {
                     }
                 }
                 .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-                )
+                .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
                 .padding(.horizontal, JohoDimensions.spacingLG)
             }
             .padding(.bottom, JohoDimensions.spacingLG)
@@ -174,11 +170,7 @@ struct ContactListView: View {
                         .foregroundStyle(PageHeaderColor.contacts.accent)
                         .frame(width: 40, height: 40)
                         .background(PageHeaderColor.contacts.lightBackground)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(colors.border, lineWidth: 1.5)
-                        )
+                        .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
 
                     Text("CONTACTS")
                         .font(JohoFont.headline)
@@ -211,11 +203,7 @@ struct ContactListView: View {
                                 .frame(height: 32)
                                 .padding(.horizontal, 12)
                                 .background(JohoColors.red)
-                                .clipShape(Squircle(cornerRadius: 8))
-                                .overlay(
-                                    Squircle(cornerRadius: 8)
-                                        .stroke(colors.border, lineWidth: 1.5)
-                                )
+                                .johoBordered(cornerRadius: 8, borderWidth: 1.5)
                             }
                             .buttonStyle(.plain)
                             .padding(.trailing, 8)
@@ -234,11 +222,7 @@ struct ContactListView: View {
                                 .frame(height: 32)
                                 .padding(.horizontal, 12)
                                 .background(PageHeaderColor.contacts.accent)
-                                .clipShape(Squircle(cornerRadius: 8))
-                                .overlay(
-                                    Squircle(cornerRadius: 8)
-                                        .stroke(colors.border, lineWidth: 1.5)
-                                )
+                                .johoBordered(cornerRadius: 8, borderWidth: 1.5)
                         }
                         .buttonStyle(.plain)
                     } else {
@@ -323,11 +307,7 @@ struct ContactListView: View {
             .padding(.vertical, JohoDimensions.spacingSM)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
     }
 
     // MARK: - Empty State (情報デザイン: Black text in white container)
@@ -343,11 +323,7 @@ struct ContactListView: View {
                 .foregroundStyle(accentColor)
                 .frame(width: 80, height: 80)
                 .background(PageHeaderColor.contacts.lightBackground)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(colors.border, lineWidth: 2)
-                )
+                .johoBordered(borderWidth: 2)
 
             // Title and subtitle
             VStack(spacing: JohoDimensions.spacingSM) {
@@ -394,11 +370,7 @@ struct ContactListView: View {
                 }
                 .frame(height: 56)
                 .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(colors.border, lineWidth: 2)
-                )
+                .johoBordered(borderWidth: 2)
             }
             .buttonStyle(.plain)
             .padding(.horizontal, JohoDimensions.spacingMD)
@@ -548,11 +520,7 @@ struct ContactListView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)
                 .background(selectedGroup == nil ? accentColor : colors.inputBackground)
-                .clipShape(Squircle(cornerRadius: 8))
-                .overlay(
-                    Squircle(cornerRadius: 8)
-                        .stroke(colors.border, lineWidth: selectedGroup == nil ? 2 : 1)
-                )
+                .johoBordered(cornerRadius: 8, borderWidth: selectedGroup == nil ? 2 : 1)
             }
 
             // Group buttons
@@ -579,11 +547,7 @@ struct ContactListView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
                     .background(selectedGroup == group ? group.swiftUIColor : colors.inputBackground)
-                    .clipShape(Squircle(cornerRadius: 8))
-                    .overlay(
-                        Squircle(cornerRadius: 8)
-                            .stroke(colors.border, lineWidth: selectedGroup == group ? 2 : 1)
-                    )
+                    .johoBordered(cornerRadius: 8, borderWidth: selectedGroup == group ? 2 : 1)
                 }
             }
         }
@@ -847,11 +811,7 @@ struct ContactImportView: View {
                                 .padding(.horizontal, JohoDimensions.spacingMD)
                                 .padding(.vertical, JohoDimensions.spacingMD)
                                 .background(colors.surface)
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(colors.border, lineWidth: 1.5)
-                                )
+                                .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
                         }
                         .buttonStyle(.plain)
 
@@ -870,11 +830,7 @@ struct ContactImportView: View {
                                 .foregroundStyle(accentColor)
                                 .frame(width: 40, height: 40)
                                 .background(PageHeaderColor.contacts.lightBackground)
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(colors.border, lineWidth: 1.5)
-                                )
+                                .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
 
                             Text("IMPORT CONTACTS")
                                 .font(JohoFont.headline)
@@ -982,11 +938,7 @@ struct ContactImportView: View {
                                     }
                                     .frame(height: 48)
                                     .background(colors.surface)
-                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                                    .overlay(
-                                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                            .stroke(colors.border, lineWidth: 1.5)
-                                    )
+                                    .johoBordered(borderWidth: 1.5)
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -1015,11 +967,7 @@ struct ContactImportView: View {
                         }
                     }
                     .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-                    )
+                    .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
                     .padding(.horizontal, JohoDimensions.spacingLG)
                 }
                 .padding(.bottom, JohoDimensions.spacingLG)
@@ -1038,8 +986,7 @@ struct ContactImportView: View {
                     }
                     .padding(JohoDimensions.spacingXL)
                     .background(colors.primary)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                    .overlay(Squircle(cornerRadius: JohoDimensions.radiusLarge).stroke(colors.primaryInverted, lineWidth: 2))
+                    .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: 2, borderColor: colors.primaryInverted)
                 }
             }
             .sheet(isPresented: $showingIOSContactPicker) {
@@ -1060,11 +1007,7 @@ struct ContactImportView: View {
                 .foregroundStyle(accentColor)
                 .johoTouchTarget()
                 .background(PageHeaderColor.contacts.lightBackground)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .stroke(colors.border, lineWidth: 1.5)
-                )
+                .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
                 .padding(.leading, JohoDimensions.spacingSM)
 
             // Wall (full height, no vertical padding)
@@ -1095,11 +1038,7 @@ struct ContactImportView: View {
         }
         .frame(height: 56)
         .background(colors.inputBackground)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: 1.5)
-        )
+        .johoBordered(borderWidth: 1.5)
     }
 
     private func requestPermission() {
@@ -1292,11 +1231,7 @@ struct JohoAddContactSheet: View {
             .padding(.vertical, 8)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(borderWidth: JohoDimensions.borderThick)
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, JohoDimensions.spacingLG)
         .frame(maxWidth: .infinity)
@@ -1328,11 +1263,7 @@ struct JohoAddContactSheet: View {
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(color)
-                .clipShape(Squircle(cornerRadius: 4))
-                .overlay(
-                    Squircle(cornerRadius: 4)
-                        .stroke(colors.border, lineWidth: 1.5)
-                )
+                .johoBordered(cornerRadius: 4, borderWidth: 1.5)
 
             // Label - bold rounded for 情報デザイン
             Text(label)

@@ -72,13 +72,7 @@ enum JohoThemeLoader {
 
     /// Load theme presets from bundled JSON
     static func loadPresets() -> [JohoThemePreset] {
-        guard let url = Bundle.main.url(forResource: "theme-presets", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let presets = try? JSONDecoder().decode([JohoThemePreset].self, from: data)
-        else {
-            return builtInPresets
-        }
-        return presets
+        BundleJSON.load("theme-presets", fallback: builtInPresets)
     }
 
     /// Fallback built-in presets if JSON fails to load

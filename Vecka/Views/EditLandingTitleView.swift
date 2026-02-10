@@ -44,11 +44,7 @@ struct EditLandingTitleView: View {
                         .frame(maxWidth: .infinity)
                         .padding(JohoDimensions.spacingMD)
                         .background(PageHeaderColor.landing.lightBackground)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                .stroke(colors.border, lineWidth: 1.5)
-                        )
+                        .johoBordered(borderWidth: 1.5)
 
                         // Text field
                         VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
@@ -107,11 +103,7 @@ struct EditLandingTitleView: View {
                     }
                     .padding(JohoDimensions.spacingLG)
                     .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-                    )
+                    .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
                     .padding(.horizontal, JohoDimensions.spacingLG)
 
                     Spacer(minLength: JohoDimensions.spacingXL)
@@ -159,11 +151,7 @@ struct EditLandingTitleView: View {
                 .frame(maxWidth: .infinity)
                 .padding(JohoDimensions.spacingSM)
                 .background(colors.inputBackground)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .stroke(colors.border.opacity(0.3), lineWidth: 1)
-                )
+                .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1, borderColor: colors.border.opacity(0.3))
         }
         .buttonStyle(.plain)
     }

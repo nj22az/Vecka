@@ -161,11 +161,7 @@ struct EventTasksSection: View {
             .padding(.vertical, JohoDimensions.spacingXS)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
     }
 
     // MARK: - Subviews

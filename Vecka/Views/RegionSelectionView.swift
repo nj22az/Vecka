@@ -110,7 +110,7 @@ struct RegionSelectionView: View {
                     HStack(alignment: .top) {
                         JohoPageHeader(
                             title: "Holidays",
-                            badge: "\(selectedCount)/5",
+                            badge: "\(selectedCount)/3",
                             subtitle: subtitleText
                         )
 
@@ -122,11 +122,7 @@ struct RegionSelectionView: View {
                             .tint(selectedColor)
                             .padding(8)
                             .background(colors.surface)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                            )
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall)
                     }
                     .padding(.horizontal, JohoDimensions.spacingLG)
                     .padding(.top, JohoDimensions.spacingSM)
@@ -152,11 +148,7 @@ struct RegionSelectionView: View {
                         }
                     }
                     .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-                    )
+                    .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
                     .padding(.horizontal, JohoDimensions.spacingLG)
                 }
                 .padding(.bottom, JohoDimensions.spacingLG)
@@ -170,7 +162,7 @@ struct RegionSelectionView: View {
         .alert("Limit Reached", isPresented: $showSelectionLimitAlert) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("You can select up to five regions.")
+            Text("You can select up to three regions.")
         }
     }
 
@@ -250,11 +242,7 @@ struct RegionSelectionView: View {
                         .padding(.horizontal, 32)
                         .padding(.vertical, JohoDimensions.spacingMD)
                         .background(selectedCount > 0 ? selectedColor : colors.primary)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-                        )
+                        .johoBordered(borderWidth: JohoDimensions.borderThick)
                 }
             }
             .padding(.horizontal, JohoDimensions.spacingLG)
@@ -378,7 +366,7 @@ struct RegionSelectionView: View {
                 HapticManager.selection()
             }
         } else {
-            if selectedRegions.addRegionIfPossible(code, maxCount: 5) {
+            if selectedRegions.addRegionIfPossible(code, maxCount: 3) {
                 HapticManager.selection()
             } else {
                 showSelectionLimitAlert = true

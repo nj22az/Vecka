@@ -106,11 +106,7 @@ struct AppSidebar: View {
             }
             .padding(JohoDimensions.spacingMD)
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-            )
+            .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
             .padding(.horizontal, JohoDimensions.spacingMD)
 
             Spacer()

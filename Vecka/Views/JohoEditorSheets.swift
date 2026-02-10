@@ -114,11 +114,7 @@ struct JohoIconPickerSheet: View {
                                 .padding(.horizontal, JohoDimensions.spacingMD)
                                 .padding(.vertical, JohoDimensions.spacingSM)
                                 .background(colors.surface)
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                                )
+                                .johoBordered(cornerRadius: JohoDimensions.radiusSmall)
                         }
                         Spacer()
                     }
@@ -130,11 +126,7 @@ struct JohoIconPickerSheet: View {
                 }
                 .padding(JohoDimensions.spacingLG)
                 .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-                )
+                .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.top, JohoDimensions.spacingSM)
 
@@ -179,11 +171,7 @@ struct JohoIconPickerSheet: View {
                     }
                     .padding(JohoDimensions.spacingMD)
                     .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                    )
+                    .johoBordered(cornerRadius: JohoDimensions.radiusLarge)
                     .padding(.horizontal, JohoDimensions.spacingLG)
                 }
 
@@ -221,11 +209,7 @@ struct JohoIconPickerSheet: View {
                     }
                     .padding(JohoDimensions.spacingMD)
                     .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                    )
+                    .johoBordered(cornerRadius: JohoDimensions.radiusLarge)
                     .padding(.horizontal, JohoDimensions.spacingLG)
                 }
 
@@ -513,8 +497,7 @@ struct JohoSpecialDayEditorSheet: View {
                 }
             }
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-            .overlay(Squircle(cornerRadius: JohoDimensions.radiusLarge).stroke(colors.border, lineWidth: JohoDimensions.borderThick))
+            .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
             .padding(.horizontal, JohoDimensions.spacingLG)
 
             Spacer()
@@ -575,10 +558,8 @@ struct JohoSpecialDayEditorSheet: View {
     }
 
     private func monthName(_ month: Int) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM"
         let date = Calendar.current.date(from: DateComponents(year: 2024, month: month, day: 1)) ?? Date()
-        return formatter.string(from: date)
+        return DateFormatterCache.monthAbbr.string(from: date)
     }
 
     private func daysInMonth(_ month: Int, year: Int = Calendar.current.component(.year, from: Date())) -> Int {
@@ -657,8 +638,7 @@ struct JohoAddSpecialDaySheet: View {
             }
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(Squircle(cornerRadius: JohoDimensions.radiusLarge).stroke(colors.border, lineWidth: 3))
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: 3)
         .padding(.horizontal, JohoDimensions.spacingMD)
         .padding(.vertical, JohoDimensions.spacingLG)
         .frame(maxWidth: .infinity)
@@ -806,11 +786,7 @@ struct MonthCustomizationSheet: View {
                             .padding(.horizontal, 12)
                             .padding(.vertical, 10)
                             .background(colors.inputBackground)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                            )
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: JohoDimensions.borderThin)
                     }
 
                     // Reset button

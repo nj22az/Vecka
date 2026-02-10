@@ -101,6 +101,27 @@ enum DateFormatterCache {
         formatter.locale = Locale.current
         return formatter
     }()
+
+    static let monthYear: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM yyyy"
+        formatter.locale = Locale.current
+        return formatter
+    }()
+
+    static let dayMonthYearTime: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMM yyyy, HH:mm"
+        formatter.locale = Locale.current
+        return formatter
+    }()
+
+    static let timeWithSeconds: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm:ss"
+        formatter.locale = Locale.current
+        return formatter
+    }()
 }
 
 // MARK: - Calendar Extension (ISO 8601)

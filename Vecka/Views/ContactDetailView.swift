@@ -278,11 +278,7 @@ struct ContactDetailView: View {
                             .padding(.horizontal, JohoDimensions.spacingMD)
                             .padding(.vertical, JohoDimensions.spacingSM)
                             .background(colors.surface)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                    .stroke(JohoColors.red.opacity(0.4), lineWidth: JohoDimensions.borderThin)
-                            )
+                            .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: JohoColors.red.opacity(0.4))
 
                         TextField("Last Name", text: $editLastName)
                             .font(.system(size: 16, weight: .medium, design: .rounded))
@@ -291,11 +287,7 @@ struct ContactDetailView: View {
                             .padding(.horizontal, JohoDimensions.spacingMD)
                             .padding(.vertical, JohoDimensions.spacingSM)
                             .background(colors.surface)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                    .stroke(JohoColors.red.opacity(0.4), lineWidth: JohoDimensions.borderThin)
-                            )
+                            .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: JohoColors.red.opacity(0.4))
 
                         TextField("Company", text: $editCompany)
                             .font(.system(size: 14, weight: .medium, design: .rounded))
@@ -304,11 +296,7 @@ struct ContactDetailView: View {
                             .padding(.horizontal, JohoDimensions.spacingMD)
                             .padding(.vertical, JohoDimensions.spacingSM)
                             .background(colors.surface)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                    .stroke(JohoColors.red.opacity(0.4), lineWidth: JohoDimensions.borderThin)
-                            )
+                            .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: JohoColors.red.opacity(0.4))
                     }
                 } else {
                     // View mode: Display name
@@ -420,11 +408,7 @@ struct ContactDetailView: View {
             .padding(.horizontal, JohoDimensions.spacingSM)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(isEditMode ? JohoColors.red.opacity(0.4) : colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick, borderColor: isEditMode ? JohoColors.red.opacity(0.4) : nil)
     }
 
     /// 情報デザイン: LINE-style action button (circular icon + label below)
@@ -735,11 +719,9 @@ struct ContactDetailView: View {
     // MARK: - Date Helpers
 
     private func monthName(_ month: Int) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM"
         let dateComponents = DateComponents(year: 2024, month: month, day: 1)
         let tempDate = calendar.date(from: dateComponents) ?? Date()
-        return formatter.string(from: tempDate)
+        return DateFormatterCache.monthAbbr.string(from: tempDate)
     }
 
     private func daysInMonth(_ month: Int, year: Int = 2024) -> Int {
@@ -771,11 +753,7 @@ struct ContactDetailView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(JohoDimensions.spacingMD)
                     .background(colors.surface)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                            .stroke(JohoColors.red.opacity(0.4), lineWidth: JohoDimensions.borderThin)
-                    )
+                    .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: JohoColors.red.opacity(0.4))
             }
         } else {
             johoDetailSection(title: "NOTES", icon: "doc.text", iconColor: JohoColors.yellow) {
@@ -871,11 +849,7 @@ struct ContactDetailView: View {
             }
             .padding(JohoDimensions.spacingMD)
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-            )
+            .johoBordered()
         }
         .buttonStyle(.plain)
     }
@@ -903,11 +877,7 @@ struct ContactDetailView: View {
         }
         .padding(JohoDimensions.spacingMD)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(iconColor.opacity(0.4), lineWidth: JohoDimensions.borderThin)
-        )
+        .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: iconColor.opacity(0.4))
     }
 
     // MARK: - Edit Section Label (flat, no card)
@@ -938,11 +908,7 @@ struct ContactDetailView: View {
                     .foregroundStyle(iconColor)
                     .frame(width: 28, height: 28)
                     .background(iconColor.opacity(0.35))
-                    .clipShape(Squircle(cornerRadius: 6))
-                    .overlay(
-                        Squircle(cornerRadius: 6)
-                            .stroke(colors.border, lineWidth: 1)
-                    )
+                    .johoBordered(cornerRadius: 6, borderWidth: 1)
 
                 Text(title)
                     .font(.system(size: 11, weight: .black, design: .rounded))
@@ -965,11 +931,7 @@ struct ContactDetailView: View {
                 .padding(JohoDimensions.spacingMD)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
     }
 
     // MARK: - Info Row Helper (情報デザイン: white background with colored action icons)
@@ -1377,8 +1339,7 @@ struct JohoContactEditorSheet: View {
                             .foregroundStyle(colors.primary)
                             .johoTouchTarget()
                             .background(colors.surface)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: 1.5))
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
                     }
 
                     Spacer()
@@ -1393,8 +1354,7 @@ struct JohoContactEditorSheet: View {
                             .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(0.6))
                             .johoTouchTarget()
                             .background(canSave ? accentColor : colors.surface)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: 1.5))
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
                     }
                     .disabled(!canSave)
                 }
@@ -1671,11 +1631,7 @@ struct JohoContactEditorSheet: View {
                 }
                 .padding(.vertical, JohoDimensions.spacingLG)
                 .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-                )
+                .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
                 .padding(.horizontal, JohoDimensions.spacingLG)
 
                 Spacer().frame(height: 40)
@@ -1699,11 +1655,7 @@ struct JohoContactEditorSheet: View {
                     .foregroundStyle(accentColor)
                     .frame(width: 36, height: 36)
                     .background(lightBackground)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(colors.border, lineWidth: 1.5)
-                    )
+                    .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("DECORATION")
@@ -1722,11 +1674,7 @@ struct JohoContactEditorSheet: View {
             }
             .padding(JohoDimensions.spacingMD)
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: 1)
-            )
+            .johoBordered(borderWidth: 1)
         }
         .buttonStyle(.plain)
         .sheet(isPresented: $showingIconPicker) {
@@ -1760,12 +1708,10 @@ struct JohoContactEditorSheet: View {
     // MARK: - Helper Functions
 
     private func monthName(_ month: Int) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM"
         let calendar = Calendar.current
         let dateComponents = DateComponents(year: 2024, month: month, day: 1)
         let tempDate = calendar.date(from: dateComponents) ?? Date()
-        return formatter.string(from: tempDate)
+        return DateFormatterCache.monthAbbr.string(from: tempDate)
     }
 
     private func daysInMonth(_ month: Int, year: Int = 2024) -> Int {
@@ -1928,11 +1874,7 @@ private struct ContactSymbolPicker: View {
                             .padding(.horizontal, JohoDimensions.spacingMD)
                             .padding(.vertical, JohoDimensions.spacingSM)
                             .background(colors.surface)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(colors.border, lineWidth: 1.5)
-                            )
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
                     }
 
                     Spacer()
@@ -1950,11 +1892,7 @@ private struct ContactSymbolPicker: View {
                             .padding(.horizontal, JohoDimensions.spacingMD)
                             .padding(.vertical, JohoDimensions.spacingSM)
                             .background(accentColor)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(colors.border, lineWidth: 1.5)
-                            )
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
                     }
                 }
                 .padding(.horizontal, JohoDimensions.spacingLG)
@@ -1982,11 +1920,7 @@ private struct ContactSymbolPicker: View {
                                         .foregroundStyle(isSelected ? accentColor : colors.primary)
                                         .johoTouchTarget(52)
                                         .background(isSelected ? lightBackground : colors.surface)
-                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                                        .overlay(
-                                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                                .stroke(colors.border, lineWidth: isSelected ? 2 : 1)
-                                        )
+                                        .johoBordered(borderWidth: isSelected ? 2 : 1)
                                 }
                                 .buttonStyle(.plain)
                             }

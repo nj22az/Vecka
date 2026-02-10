@@ -179,10 +179,8 @@ final class WeekCalculator {
         let startDate = startOfWeek(for: date)
         let endDate = endOfWeek(for: date)
 
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d"
-        let startString = formatter.string(from: startDate)
-        let endString = formatter.string(from: endDate)
+        let startString = DateFormatterCache.weekRange.string(from: startDate)
+        let endString = DateFormatterCache.weekRange.string(from: endDate)
 
         let startYear = calendar.component(.year, from: startDate)
         let endYear = calendar.component(.year, from: endDate)

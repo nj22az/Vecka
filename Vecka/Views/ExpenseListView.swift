@@ -20,9 +20,7 @@ struct ExpenseListView: View {
     @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
 
     // Filter to expense type only
-    private var allExpenses: [Memo] {
-        allMemos.filter { $0.type == .expense }
-    }
+    private var allExpenses: [Memo] { allMemos.expenses }
 
     // Base Currency
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
@@ -268,11 +266,7 @@ struct ExpenseListView: View {
                 }
             }
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-            )
+            .johoBordered()
         }
         .padding(.horizontal, JohoDimensions.spacingLG)
         .padding(.top, JohoDimensions.spacingSM)
@@ -377,9 +371,7 @@ struct ExpenseListView: View {
         let calendar = Calendar.iso8601
         let grouped = Dictionary(grouping: filteredExpenses) { expense in
             let components = calendar.dateComponents([.year, .month], from: expense.date)
-            let monthFormatter = DateFormatter()
-            monthFormatter.dateFormat = "MMM"
-            return calendar.date(from: components).map { monthFormatter.string(from: $0) } ?? "Other"
+            return calendar.date(from: components).map { DateFormatterCache.monthAbbr.string(from: $0) } ?? "Other"
         }
 
         let sorted = grouped.map { (month, expenses) -> (String, Double) in
@@ -475,9 +467,7 @@ struct ExpenseListView: View {
             components.append(merchant)
         }
 
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        components.append(formatter.string(from: expense.date))
+        components.append(expense.date.formatted(date: .abbreviated, time: .omitted))
 
         return components.joined(separator: " • ")
     }
@@ -533,9 +523,7 @@ struct ExpenseListView: View {
         Dictionary(grouping: filteredExpenses) { expense in
             switch groupBy {
             case .date:
-                let formatter = DateFormatter()
-                formatter.dateStyle = .medium
-                return formatter.string(from: expense.date)
+                return expense.date.formatted(date: .abbreviated, time: .omitted)
             case .merchant:
                 return expense.place ?? "Unknown"  // Group by merchant/place
             }
@@ -689,13 +677,9 @@ struct SimplifiedFilterSheet: View {
                                     }
                                     .padding(JohoDimensions.spacingMD)
                                     .background(colors.surface)
-                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                                    .overlay(
-                                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                            .stroke(
-                                                selectedDateRange == range ? colors.primary : colors.primary.opacity(0.3),
-                                                lineWidth: selectedDateRange == range ? JohoDimensions.borderMedium : JohoDimensions.borderThin
-                                            )
+                                    .johoBordered(
+                                        borderWidth: selectedDateRange == range ? JohoDimensions.borderMedium : JohoDimensions.borderThin,
+                                        borderColor: selectedDateRange == range ? colors.primary : colors.primary.opacity(0.3)
                                     )
                                 }
                                 .buttonStyle(.plain)

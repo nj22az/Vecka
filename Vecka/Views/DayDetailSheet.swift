@@ -100,11 +100,7 @@ struct DayDetailSheet: View {
         .padding(JohoDimensions.spacingLG)
         .frame(height: 100)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
     }
 
     // MARK: - Content Sections
@@ -277,19 +273,14 @@ struct DayDetailSheet: View {
                 .foregroundStyle(colors.primaryInverted)
                 .frame(width: 28, height: 28)
                 .background(color)
-                .clipShape(Squircle(cornerRadius: 7))
-                .overlay(Squircle(cornerRadius: 7).stroke(colors.border, lineWidth: 1.5))
+                .johoBordered(cornerRadius: 7, borderWidth: 1.5)
                 .frame(width: 52)
                 .frame(maxHeight: .infinity)
                 .background(colors.surface)
         }
         .frame(height: 56)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
+        .johoBordered()
     }
 
     // MARK: - Helper Functions
@@ -344,11 +335,7 @@ struct DayDetailSheet: View {
         .frame(maxWidth: .infinity)
         .padding(JohoDimensions.spacingXL)
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border.opacity(0.3), lineWidth: 1.5)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: 1.5, borderColor: colors.border.opacity(0.3))
     }
 }
 

@@ -208,11 +208,7 @@ struct DayDashboardView: View {
             }
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
     }
 
     private var isToday: Bool {
@@ -220,10 +216,7 @@ struct DayDashboardView: View {
     }
 
     private var monthName: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM"
-        formatter.locale = locale
-        return formatter.string(from: date)
+        DateFormatterCache.monthName.string(from: date)
     }
 
 
@@ -352,11 +345,7 @@ struct DayDashboardView: View {
             .frame(maxWidth: .infinity, minHeight: 32)
         }
         .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(colors.border, lineWidth: 1.5)
-        )
+        .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
 
         // All items are tappable - opens appropriate detail view
         Button {
@@ -491,17 +480,11 @@ struct DayDashboardView: View {
     }
 
     private var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "d MMMM"
-        formatter.locale = locale
-        return formatter.string(from: date)
+        DateFormatterCache.monthDay.string(from: date)
     }
 
     private var weekdayName: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE"
-        formatter.locale = locale
-        return formatter.string(from: date).uppercased()
+        DateFormatterCache.weekdayFull.string(from: date).uppercased()
     }
 
     private var subtitleText: String? {
@@ -765,23 +748,17 @@ struct SingleMemoDetailSheet: View {
     }
 
     private var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM d"
-        return formatter.string(from: date)
+        DateFormatterCache.monthDay.string(from: date)
     }
 
     private var formattedTime: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
-        return formatter.string(from: memo.date)
+        DateFormatterCache.time24h.string(from: memo.date)
     }
 
     /// Full date stamp for shareable: YYYYMMDD · W{n}
     private var fullDateStamp: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd"
         let weekNumber = Calendar.iso8601.component(.weekOfYear, from: date)
-        return "\(formatter.string(from: date)) · W\(weekNumber)"
+        return "\(DateFormatterCache.compactDate.string(from: date)) · W\(weekNumber)"
     }
 
     /// The icon to display (custom or default)
@@ -977,11 +954,7 @@ struct SingleMemoDetailSheet: View {
                 }
             }
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-            )
+            .johoBordered(borderWidth: JohoDimensions.borderThick)
             .padding(JohoDimensions.spacingMD)
 
             Spacer()
@@ -1227,10 +1200,8 @@ struct ShareableMemoCard: View {
 
     /// Full date stamp: YYYYMMDD · W{n}
     private var fullDateStamp: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd"
         let weekNumber = Calendar.iso8601.component(.weekOfYear, from: date)
-        return "\(formatter.string(from: date)) · W\(weekNumber)"
+        return "\(DateFormatterCache.compactDate.string(from: date)) · W\(weekNumber)"
     }
 
     var body: some View {
@@ -1365,9 +1336,7 @@ struct ShareableMemoCard: View {
     }
 
     private var titleText: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM d"
-        return formatter.string(from: date)
+        DateFormatterCache.monthDay.string(from: date)
     }
 }
 
@@ -1382,9 +1351,7 @@ struct SingleBirthdayDetailSheet: View {
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM d"
-        return formatter.string(from: date)
+        DateFormatterCache.monthDay.string(from: date)
     }
 
     var body: some View {
@@ -1465,11 +1432,7 @@ struct SingleBirthdayDetailSheet: View {
                 Spacer().frame(height: JohoDimensions.spacingLG)
             }
             .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-            )
+            .johoBordered(borderWidth: JohoDimensions.borderThick)
             .padding(JohoDimensions.spacingMD)
 
             Spacer()

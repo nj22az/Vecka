@@ -574,8 +574,7 @@ struct CustomCountdownDialog: View {
                             .foregroundStyle(eventAccentColor)
                             .frame(width: 36, height: 36)
                             .background(eventLightBackground)
-                            .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(colors.primaryInverted, lineWidth: 1.5))
+                            .johoBordered(cornerRadius: 8, borderWidth: 1.5, borderColor: colors.primaryInverted)
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text("NEW EVENT")
@@ -609,8 +608,7 @@ struct CustomCountdownDialog: View {
                             .foregroundStyle(canSave ? colors.primaryInverted : colors.primaryInverted.opacity(0.4))
                             .frame(width: 56, height: 32)
                             .background(canSave ? eventAccentColor : colors.primaryInverted.opacity(0.2))
-                            .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(colors.primaryInverted, lineWidth: 1.5))
+                            .johoBordered(cornerRadius: 8, borderWidth: 1.5, borderColor: colors.primaryInverted)
                     }
                     .disabled(!canSave)
                     .frame(width: 72)
@@ -1040,11 +1038,7 @@ private struct JohoIconPicker: View {
                                         .foregroundStyle(selectedSymbol == symbol ? SpecialDayType.event.accentColor : colors.primary)
                                         .johoTouchTarget(52)
                                         .background(selectedSymbol == symbol ? SpecialDayType.event.lightBackground : colors.surface)
-                                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                        .overlay(
-                                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                                .stroke(colors.border, lineWidth: selectedSymbol == symbol ? JohoDimensions.borderMedium : JohoDimensions.borderThin)
-                                        )
+                                        .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: selectedSymbol == symbol ? JohoDimensions.borderMedium : JohoDimensions.borderThin)
                                 }
                             }
                         }

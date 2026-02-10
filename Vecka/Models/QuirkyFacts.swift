@@ -51,14 +51,9 @@ enum QuirkyFactsLoader {
         let count = (try? context.fetchCount(descriptor)) ?? 0
         guard count == 0 else { return }
 
-        // Load from JSON
-        guard let url = Bundle.main.url(forResource: "quirky-facts", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let facts = try? JSONDecoder().decode([FactDTO].self, from: data) else {
-            return
-        }
+        let facts: [FactDTO] = BundleJSON.load("quirky-facts", fallback: [])
+        guard !facts.isEmpty else { return }
 
-        // Insert into SwiftData
         for dto in facts {
             let fact = QuirkyFact(id: dto.id, region: dto.region, category: dto.category, text: dto.text, explanation: dto.explanation ?? "")
             context.insert(fact)
@@ -78,12 +73,8 @@ enum QuirkyFactsLoader {
         }
         try? context.save()
 
-        // Reload from JSON
-        guard let url = Bundle.main.url(forResource: "quirky-facts", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let facts = try? JSONDecoder().decode([FactDTO].self, from: data) else {
-            return
-        }
+        let facts: [FactDTO] = BundleJSON.load("quirky-facts", fallback: [])
+        guard !facts.isEmpty else { return }
 
         for dto in facts {
             let fact = QuirkyFact(id: dto.id, region: dto.region, category: dto.category, text: dto.text, explanation: dto.explanation ?? "")
