@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import UIKit
 import CoreTransferable
 
 // MARK: - Shareable Fact Snapshot (Transferable)
@@ -28,23 +27,10 @@ struct ShareableFactSnapshot: Transferable {
     /// Renders the fact card view to PNG data
     @MainActor
     func renderToPNG() -> Data {
-        let renderer = ImageRenderer(content: shareableView())
-        renderer.scale = 3.0  // 3x for crisp sharing
-        renderer.isOpaque = false  // 情報デザイン: Allow transparency for rounded corners
-
-        guard let uiImage = renderer.uiImage else {
-            return Data()
-        }
-
-        return uiImage.pngData() ?? Data()
-    }
-
-    /// The view to render for sharing
-    @MainActor
-    func shareableView() -> some View {
-        ShareableFactCard(fact: fact, isShareable: true)
-            .frame(width: size.width)
-            .fixedSize(horizontal: false, vertical: true)
+        CardSnapshotRenderer.renderToPNG(
+            ShareableFactCard(fact: fact, isShareable: true),
+            size: size
+        )
     }
 }
 
@@ -58,136 +44,63 @@ struct ShareableFactCard: View {
     var isShareable: Bool = false
 
     @Environment(\.johoColorMode) private var colorMode
-
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
-    private let cornerRadius: CGFloat = 16
-
-    private var cardShape: RoundedRectangle {
-        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-    }
-
     var body: some View {
-        // 情報デザイン: ZStack ensures white background fills corners before content
-        ZStack {
-            // Layer 1: Solid background (fills squircle corners)
-            cardShape
-                .fill(colors.surface)
+        ShareableCardShell(
+            headerIcon: fact.icon ?? "lightbulb.fill",
+            headerIconColor: fact.color,
+            headerAccentColor: fact.color,
+            footerLeftLabel: "RANDOM FACTS",
+            footerRightLabel: fact.displaySource.uppercased()
+        ) {
+            // Divider after header
+            ShareableCardDivider()
 
-            // Layer 2: Content compartments
-            VStack(spacing: 0) {
-                // ═══════════════════════════════════════════════════════════════
-                // HEADER: App branding + icon
-                // ═══════════════════════════════════════════════════════════════
-                HStack(spacing: 0) {
-                    // LEFT: App branding
-                    HStack(spacing: JohoDimensions.spacingSM) {
-                        Image(systemName: "calendar.badge.clock")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(colors.primary)
-
-                        Text("ONSEN PLANNER")
-                            .font(.system(size: 12, weight: .black, design: .rounded))
-                            .foregroundStyle(colors.primary)
-                    }
-                    .padding(.leading, JohoDimensions.spacingMD)
-
+            // ═══════════════════════════════════════════════════════════════
+            // MAIN CONTENT: Large icon + fact text
+            // ═══════════════════════════════════════════════════════════════
+            HStack(alignment: .top, spacing: 0) {
+                // LEFT: Large icon
+                VStack {
                     Spacer()
-
-                    // WALL
-                    Rectangle()
-                        .fill(colors.border)
-                        .frame(width: 1.5)
-                        .frame(maxHeight: .infinity)
-
-                    // RIGHT: Fact icon
                     Image(systemName: fact.icon ?? "lightbulb.fill")
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .font(.system(size: 48, weight: .bold, design: .rounded))
                         .foregroundStyle(fact.color)
-                        .frame(width: 48)
-                        .frame(maxHeight: .infinity)
-                }
-                .frame(height: 40)
-                .background(fact.color.opacity(0.5))
-
-                // Divider
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(height: 2)
-
-                // ═══════════════════════════════════════════════════════════════
-                // MAIN CONTENT: Large icon + fact text
-                // ═══════════════════════════════════════════════════════════════
-                HStack(alignment: .top, spacing: 0) {
-                    // LEFT: Large icon
-                    VStack {
-                        Spacer()
-                        Image(systemName: fact.icon ?? "lightbulb.fill")
-                            .font(.system(size: 48, weight: .bold, design: .rounded))
-                            .foregroundStyle(fact.color)
-                        Spacer()
-                    }
-                    .frame(width: 100)
-                    .frame(minHeight: 140)
-
-                    // WALL
-                    Rectangle()
-                        .fill(colors.border)
-                        .frame(width: 1.5)
-
-                    // RIGHT: Fact text
-                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                        Text(fact.text)
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
-                            .foregroundStyle(colors.primary)
-                            .lineLimit(isShareable ? nil : 4)
-                            .multilineTextAlignment(.leading)
-
-                        if !fact.explanation.isEmpty {
-                            Text(fact.explanation)
-                                .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(colors.primary.opacity(0.6))
-                                .lineLimit(isShareable ? nil : 3)
-                                .multilineTextAlignment(.leading)
-                        }
-                    }
-                    .padding(JohoDimensions.spacingMD)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .frame(minHeight: 140)
-                .background(fact.color.opacity(0.15))
-
-                // Divider
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(height: 2)
-
-                // ═══════════════════════════════════════════════════════════════
-                // FOOTER: Random Facts branding with source country
-                // ═══════════════════════════════════════════════════════════════
-                HStack {
-                    Text("RANDOM FACTS")
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.5))
-                        .tracking(1)
-
                     Spacer()
-
-                    // Source country/category
-                    Text(fact.displaySource.uppercased())
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.4))
-                        .tracking(0.5)
                 }
-                .padding(.horizontal, JohoDimensions.spacingMD)
-                .padding(.vertical, JohoDimensions.spacingSM)
-                .frame(height: 32)
-            }
-            .clipShape(cardShape)
+                .frame(width: 100)
+                .frame(minHeight: 140)
 
-            // Layer 3: Border (strokeBorder keeps it inside the shape)
-            cardShape
-                .strokeBorder(colors.border, lineWidth: 3)
+                // WALL
+                Rectangle()
+                    .fill(colors.border)
+                    .frame(width: 1.5)
+
+                // RIGHT: Fact text
+                VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                    Text(fact.text)
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .lineLimit(isShareable ? nil : 4)
+                        .multilineTextAlignment(.leading)
+
+                    if !fact.explanation.isEmpty {
+                        Text(fact.explanation)
+                            .font(.system(size: 11, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .lineLimit(isShareable ? nil : 3)
+                            .multilineTextAlignment(.leading)
+                    }
+                }
+                .padding(JohoDimensions.spacingMD)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .frame(minHeight: 140)
+            .background(fact.color.opacity(0.15))
+
+            // Divider before footer
+            ShareableCardDivider()
         }
     }
 }
@@ -198,8 +111,6 @@ struct ShareableFactCard: View {
 @available(iOS 16.0, *)
 struct FactShareButton: View {
     let fact: RandomFact
-    @Environment(\.johoColorMode) private var colorMode
-    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private var snapshot: ShareableFactSnapshot {
         ShareableFactSnapshot(
@@ -216,14 +127,7 @@ struct FactShareButton: View {
                 image: Image(systemName: fact.icon ?? "lightbulb.fill")
             )
         ) {
-            ZStack {
-                Circle()
-                    .fill(colors.surface)
-                    .frame(width: 28, height: 28)
-                Image(systemName: "square.and.arrow.up")
-                    .font(.system(size: 11, weight: .black, design: .rounded))
-                    .foregroundStyle(colors.primary)
-            }
+            JohoShareCircleButton()
         }
         .buttonStyle(.plain)
     }

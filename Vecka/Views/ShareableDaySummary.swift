@@ -25,15 +25,11 @@ struct DaySummaryData {
     }
 
     var weekdayName: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE"
-        return formatter.string(from: date).uppercased()
+        return DateFormatterCache.weekdayFull.string(from: date).uppercased()
     }
 
     var monthName: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM"
-        return formatter.string(from: date)
+        return DateFormatterCache.monthName.string(from: date)
     }
 
     var yearString: String {
@@ -70,22 +66,10 @@ struct ShareableDaySummarySnapshot: Transferable {
 
     @MainActor
     func renderToPNG() -> Data {
-        let renderer = ImageRenderer(content: shareableView())
-        renderer.scale = 3.0
-        renderer.isOpaque = false
-
-        guard let uiImage = renderer.uiImage else {
-            return Data()
-        }
-
-        return uiImage.pngData() ?? Data()
-    }
-
-    @MainActor
-    func shareableView() -> some View {
-        ShareableDaySummaryCard(data: data, isShareable: true)
-            .frame(width: size.width)
-            .fixedSize(horizontal: false, vertical: true)
+        CardSnapshotRenderer.renderToPNG(
+            ShareableDaySummaryCard(data: data, isShareable: true),
+            size: size
+        )
     }
 }
 
@@ -159,9 +143,7 @@ struct ShareableDaySummaryCard: View {
                 .background(data.isToday ? JohoColors.todayOrange.opacity(0.1) : colors.inputBackground)
 
                 // Divider
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(height: 2)
+                ShareableCardDivider()
 
                 // ═══════════════════════════════════════════════════════════════
                 // CONTENT: Items list
@@ -170,13 +152,15 @@ struct ShareableDaySummaryCard: View {
                     VStack(spacing: 0) {
                         // Holidays
                         ForEach(data.holidays.prefix(isShareable ? 10 : 3)) { holiday in
-                            summaryRow(
+                            DaySummaryRow(
                                 icon: holiday.isBankHoliday ? "star.fill" : "calendar",
                                 iconColor: holiday.isBankHoliday ? CategoryColorSettings.shared.color(for: .holiday) : CategoryColorSettings.shared.color(for: .observance),
                                 title: holiday.name,
                                 badge: holiday.isBankHoliday ? "HOLIDAY" : "OBSERVANCE",
                                 badgeColor: holiday.isBankHoliday ? CategoryColorSettings.shared.color(for: .holiday) : CategoryColorSettings.shared.color(for: .observance),
-                                subtitle: holiday.regionCode?.uppercased()
+                                subtitle: holiday.regionCode?.uppercased(),
+                                lineLimit: isShareable ? nil : 1,
+                                horizontalPadding: JohoDimensions.spacingMD
                             )
 
                             if holiday.id != data.holidays.prefix(isShareable ? 10 : 3).last?.id ||
@@ -190,13 +174,15 @@ struct ShareableDaySummaryCard: View {
 
                         // Birthdays
                         ForEach(data.birthdays.prefix(isShareable ? 6 : 3)) { birthday in
-                            summaryRow(
+                            DaySummaryRow(
                                 icon: "gift.fill",
                                 iconColor: JohoColors.purple,
                                 title: birthday.name,
                                 badge: birthday.age != nil ? "\(birthday.age!)" : "BIRTHDAY",
                                 badgeColor: JohoColors.purple,
-                                subtitle: nil
+                                subtitle: nil,
+                                lineLimit: isShareable ? nil : 1,
+                                horizontalPadding: JohoDimensions.spacingMD
                             )
 
                             if birthday.id != data.birthdays.prefix(isShareable ? 6 : 3).last?.id ||
@@ -210,7 +196,11 @@ struct ShareableDaySummaryCard: View {
 
                         // Memos
                         ForEach(data.memos.prefix(isShareable ? 8 : 4)) { memo in
-                            memoSummaryRow(memo: memo)
+                            DayMemoRow(
+                                memo: memo,
+                                lineLimit: isShareable ? nil : 1,
+                                horizontalPadding: JohoDimensions.spacingMD
+                            )
 
                             if memo.id != data.memos.prefix(isShareable ? 8 : 4).last?.id {
                                 Rectangle()
@@ -237,161 +227,18 @@ struct ShareableDaySummaryCard: View {
                 }
 
                 // Divider
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(height: 2)
+                ShareableCardDivider()
 
                 // ═══════════════════════════════════════════════════════════════
                 // FOOTER: Branding
                 // ═══════════════════════════════════════════════════════════════
-                HStack {
-                    Text("DAY SUMMARY")
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.5))
-                        .tracking(1)
-
-                    Spacer()
-
-                    Text("ONSEN PLANNER")
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.4))
-                        .tracking(0.5)
-                }
-                .padding(.horizontal, JohoDimensions.spacingMD)
-                .padding(.vertical, JohoDimensions.spacingSM)
-                .frame(height: 32)
+                ShareableCardFooter(leftLabel: "DAY SUMMARY", rightLabel: "ONSEN PLANNER")
             }
             .clipShape(cardShape)
 
             // Layer 3: Border
             cardShape
                 .strokeBorder(colors.border, lineWidth: 3)
-        }
-    }
-
-    // MARK: - Summary Row
-
-    private func summaryRow(
-        icon: String,
-        iconColor: Color,
-        title: String,
-        badge: String?,
-        badgeColor: Color,
-        subtitle: String?
-    ) -> some View {
-        HStack(spacing: JohoDimensions.spacingSM) {
-            // Icon
-            Image(systemName: icon)
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(iconColor)
-                .frame(width: 32, height: 32)
-                .background(iconColor.opacity(0.15))
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-
-            // Title + subtitle
-            VStack(alignment: .leading, spacing: 1) {
-                Text(title)
-                    .font(.system(size: 14, weight: .semibold, design: .rounded))
-                    .foregroundStyle(colors.primary)
-                    .lineLimit(isShareable ? nil : 1)
-
-                if let subtitle = subtitle {
-                    Text(subtitle)
-                        .font(.system(size: 11, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.secondary)
-                }
-            }
-
-            Spacer()
-
-            // Badge
-            if let badge = badge {
-                Text(badge)
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(badgeColor)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(badgeColor.opacity(0.15))
-                    .clipShape(Capsule())
-            }
-        }
-        .padding(.horizontal, JohoDimensions.spacingMD)
-        .padding(.vertical, JohoDimensions.spacingSM)
-    }
-
-    // MARK: - Memo Row
-
-    @AppStorage("baseCurrency") private var baseCurrency = "SEK"
-
-    private func memoSummaryRow(memo: Memo) -> some View {
-        // Detect birthday memos (linked to contact or has birthday symbol)
-        let isBirthday = memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill"
-        let icon = isBirthday ? "gift.fill" : (memo.hasMoney ? currencyIcon(for: memo.currency ?? baseCurrency) : (memo.hasPlace ? "airplane" : "note.text"))
-        // 情報デザイン: Semantic color system
-        let iconColor: Color = {
-            if memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill" || memo.hasPerson {
-                return JohoColors.purple  // Purple (人) - PEOPLE
-            }
-            if memo.hasMoney { return JohoColors.green }  // Green (金) - MONEY
-            if memo.hasPlace { return JohoColors.cyan }  // Cyan (予定) - SCHEDULED
-            return JohoColors.yellow  // Yellow - NOW (notes, today, memos)
-        }()
-
-        return HStack(spacing: JohoDimensions.spacingSM) {
-            // Icon
-            Image(systemName: icon)
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(iconColor)
-                .frame(width: 32, height: 32)
-                .background(iconColor.opacity(0.15))
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-
-            // Content
-            VStack(alignment: .leading, spacing: 1) {
-                Text(memo.preview)
-                    .font(.system(size: 14, weight: .semibold, design: .rounded))
-                    .foregroundStyle(colors.primary)
-                    .lineLimit(isShareable ? nil : 1)
-
-                if let place = memo.place {
-                    Text(place)
-                        .font(.system(size: 11, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.secondary)
-                }
-            }
-
-            Spacer()
-
-            // Amount for expenses
-            if let amount = memo.amount {
-                Text(String(format: "%.0f %@", amount, memo.currency ?? baseCurrency))
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.green)
-            }
-        }
-        .padding(.horizontal, JohoDimensions.spacingMD)
-        .padding(.vertical, JohoDimensions.spacingSM)
-    }
-
-    /// Get SF Symbol for currency code
-    private func currencyIcon(for currency: String) -> String {
-        switch currency.uppercased() {
-        case "USD": return "dollarsign.circle.fill"
-        case "EUR": return "eurosign.circle.fill"
-        case "GBP": return "sterlingsign.circle.fill"
-        case "JPY": return "yensign.circle.fill"
-        case "CNY", "RMB": return "yensign.circle.fill"
-        case "KRW": return "wonsign.circle.fill"
-        case "INR": return "indianrupeesign.circle.fill"
-        case "RUB": return "rublesign.circle.fill"
-        case "BRL": return "brazilianrealsign.circle.fill"
-        case "THB": return "bahtsign.circle.fill"
-        case "TRY": return "turkishlirasign.circle.fill"
-        case "SEK", "NOK", "DKK", "ISK": return "swedishkronasign.circle.fill"
-        case "CHF": return "francsign.circle.fill"
-        case "PLN": return "polishzlotysign.circle.fill"
-        case "MXN", "ARS", "CLP", "COP": return "pesosign.circle.fill"
-        default: return "banknote.fill"
         }
     }
 }
@@ -483,9 +330,7 @@ struct DaySummarySheetView: View {
                 .background(data.isToday ? JohoColors.todayOrange.opacity(0.1) : colors.inputBackground)
 
                 // Divider
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(height: 2)
+                ShareableCardDivider()
 
                 // ═══════════════════════════════════════════════════════════════
                 // CONTENT: Items list (unified inset system)
@@ -494,13 +339,15 @@ struct DaySummarySheetView: View {
                     VStack(spacing: 0) {
                         // Holidays
                         ForEach(data.holidays.prefix(3)) { holiday in
-                            sheetSummaryRow(
+                            DaySummaryRow(
                                 icon: holiday.isBankHoliday ? "star.fill" : "calendar",
                                 iconColor: holiday.isBankHoliday ? CategoryColorSettings.shared.color(for: .holiday) : CategoryColorSettings.shared.color(for: .observance),
                                 title: holiday.name,
                                 badge: holiday.isBankHoliday ? "HOLIDAY" : "OBSERVANCE",
                                 badgeColor: holiday.isBankHoliday ? CategoryColorSettings.shared.color(for: .holiday) : CategoryColorSettings.shared.color(for: .observance),
-                                subtitle: holiday.regionCode?.uppercased()
+                                subtitle: holiday.regionCode?.uppercased(),
+                                lineLimit: 1,
+                                horizontalPadding: contentInset
                             )
 
                             if holiday.id != data.holidays.prefix(3).last?.id ||
@@ -514,13 +361,15 @@ struct DaySummarySheetView: View {
 
                         // Birthdays
                         ForEach(data.birthdays.prefix(3)) { birthday in
-                            sheetSummaryRow(
+                            DaySummaryRow(
                                 icon: "gift.fill",
                                 iconColor: JohoColors.purple,
                                 title: birthday.name,
                                 badge: birthday.age != nil ? "\(birthday.age!)" : "BIRTHDAY",
                                 badgeColor: JohoColors.purple,
-                                subtitle: nil
+                                subtitle: nil,
+                                lineLimit: 1,
+                                horizontalPadding: contentInset
                             )
 
                             if birthday.id != data.birthdays.prefix(3).last?.id ||
@@ -534,7 +383,11 @@ struct DaySummarySheetView: View {
 
                         // Memos
                         ForEach(data.memos.prefix(4)) { memo in
-                            sheetMemoRow(memo: memo)
+                            DayMemoRow(
+                                memo: memo,
+                                lineLimit: 1,
+                                horizontalPadding: contentInset
+                            )
 
                             if memo.id != data.memos.prefix(4).last?.id {
                                 Rectangle()
@@ -561,28 +414,12 @@ struct DaySummarySheetView: View {
                 }
 
                 // Divider
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(height: 2)
+                ShareableCardDivider()
 
                 // ═══════════════════════════════════════════════════════════════
                 // FOOTER: Branding (same baseline margin as Fact body text)
                 // ═══════════════════════════════════════════════════════════════
-                HStack {
-                    Text("DAY SUMMARY")
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.5))
-                        .tracking(1)
-
-                    Spacer()
-
-                    Text("ONSEN PLANNER")
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.4))
-                        .tracking(0.5)
-                }
-                .padding(.horizontal, contentInset)
-                .padding(.vertical, contentInset)
+                ShareableCardFooter(leftLabel: "DAY SUMMARY", rightLabel: "ONSEN PLANNER")
             }
             .background(colors.surface)
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
@@ -598,126 +435,6 @@ struct DaySummarySheetView: View {
         .presentationDetents([.medium])
         .presentationCornerRadius(JohoDimensions.radiusLarge)
         .presentationDragIndicator(.hidden)
-    }
-
-    // MARK: - Sheet Row Helpers
-
-    private func sheetSummaryRow(
-        icon: String,
-        iconColor: Color,
-        title: String,
-        badge: String?,
-        badgeColor: Color,
-        subtitle: String?
-    ) -> some View {
-        HStack(spacing: JohoDimensions.spacingSM) {
-            // Icon
-            Image(systemName: icon)
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(iconColor)
-                .frame(width: 32, height: 32)
-                .background(iconColor.opacity(0.15))
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-
-            // Title + subtitle
-            VStack(alignment: .leading, spacing: 1) {
-                Text(title)
-                    .font(.system(size: 14, weight: .semibold, design: .rounded))
-                    .foregroundStyle(colors.primary)
-                    .lineLimit(1)
-
-                if let subtitle = subtitle {
-                    Text(subtitle)
-                        .font(.system(size: 11, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.secondary)
-                }
-            }
-
-            Spacer()
-
-            // Badge
-            if let badge = badge {
-                Text(badge)
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(badgeColor)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(badgeColor.opacity(0.15))
-                    .clipShape(Capsule())
-            }
-        }
-        .padding(.horizontal, contentInset)
-        .padding(.vertical, JohoDimensions.spacingSM)
-    }
-
-    private func sheetMemoRow(memo: Memo) -> some View {
-        let isBirthday = memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill"
-        let icon = isBirthday ? "gift.fill" : (memo.hasMoney ? currencyIcon(for: memo.currency ?? baseCurrency) : (memo.hasPlace ? "airplane" : "note.text"))
-        // 情報デザイン: Semantic color system
-        let iconColor: Color = {
-            if memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill" || memo.hasPerson {
-                return JohoColors.purple  // Purple (人) - PEOPLE
-            }
-            if memo.hasMoney { return JohoColors.green }  // Green (金) - MONEY
-            if memo.hasPlace { return JohoColors.cyan }  // Cyan (予定) - SCHEDULED
-            return JohoColors.yellow  // Yellow - NOW (notes, today, memos)
-        }()
-
-        return HStack(spacing: JohoDimensions.spacingSM) {
-            // Icon
-            Image(systemName: icon)
-                .font(.system(size: 16, weight: .bold))
-                .foregroundStyle(iconColor)
-                .frame(width: 32, height: 32)
-                .background(iconColor.opacity(0.15))
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-
-            // Content
-            VStack(alignment: .leading, spacing: 1) {
-                Text(memo.preview)
-                    .font(.system(size: 14, weight: .semibold, design: .rounded))
-                    .foregroundStyle(colors.primary)
-                    .lineLimit(1)
-
-                if let place = memo.place {
-                    Text(place)
-                        .font(.system(size: 11, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.secondary)
-                }
-            }
-
-            Spacer()
-
-            // Amount for expenses
-            if let amount = memo.amount {
-                Text(String(format: "%.0f %@", amount, memo.currency ?? baseCurrency))
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.green)
-            }
-        }
-        .padding(.horizontal, contentInset)
-        .padding(.vertical, JohoDimensions.spacingSM)
-    }
-
-    private func currencyIcon(for currency: String) -> String {
-        switch currency.uppercased() {
-        case "USD": return "dollarsign.circle.fill"
-        case "EUR": return "eurosign.circle.fill"
-        case "GBP": return "sterlingsign.circle.fill"
-        case "JPY": return "yensign.circle.fill"
-        case "CNY", "RMB": return "yensign.circle.fill"
-        case "KRW": return "wonsign.circle.fill"
-        case "INR": return "indianrupeesign.circle.fill"
-        case "RUB": return "rublesign.circle.fill"
-        case "BRL": return "brazilianrealsign.circle.fill"
-        case "THB": return "bahtsign.circle.fill"
-        case "TRY": return "turkishlirasign.circle.fill"
-        case "SEK", "NOK", "DKK", "ISK": return "swedishkronasign.circle.fill"
-        case "CHF": return "francsign.circle.fill"
-        case "PLN": return "polishzlotysign.circle.fill"
-        case "MXN", "ARS", "CLP", "COP": return "pesosign.circle.fill"
-        default: return "banknote.fill"
-        }
     }
 
     /// Background color based on primary content type
@@ -756,16 +473,148 @@ struct DaySummaryShareButton: View {
                 image: Image(systemName: "calendar")
             )
         ) {
-            ZStack {
-                Circle()
-                    .fill(colors.surface)
-                    .frame(width: 28, height: 28)
-                Image(systemName: "square.and.arrow.up")
-                    .font(.system(size: 11, weight: .black, design: .rounded))
-                    .foregroundStyle(colors.primary)
-            }
+            JohoShareCircleButton()
         }
         .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Shared Row Components
+
+/// Get SF Symbol for currency code
+private func currencyIcon(for currency: String) -> String {
+    switch currency.uppercased() {
+    case "USD": return "dollarsign.circle.fill"
+    case "EUR": return "eurosign.circle.fill"
+    case "GBP": return "sterlingsign.circle.fill"
+    case "JPY": return "yensign.circle.fill"
+    case "CNY", "RMB": return "yensign.circle.fill"
+    case "KRW": return "wonsign.circle.fill"
+    case "INR": return "indianrupeesign.circle.fill"
+    case "RUB": return "rublesign.circle.fill"
+    case "BRL": return "brazilianrealsign.circle.fill"
+    case "THB": return "bahtsign.circle.fill"
+    case "TRY": return "turkishlirasign.circle.fill"
+    case "SEK", "NOK", "DKK", "ISK": return "swedishkronasign.circle.fill"
+    case "CHF": return "francsign.circle.fill"
+    case "PLN": return "polishzlotysign.circle.fill"
+    case "MXN", "ARS", "CLP", "COP": return "pesosign.circle.fill"
+    default: return "banknote.fill"
+    }
+}
+
+private struct DaySummaryRow: View {
+    let icon: String
+    let iconColor: Color
+    let title: String
+    let badge: String?
+    let badgeColor: Color
+    let subtitle: String?
+    let lineLimit: Int?
+    let horizontalPadding: CGFloat
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    var body: some View {
+        HStack(spacing: JohoDimensions.spacingSM) {
+            // Icon
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(iconColor)
+                .frame(width: 32, height: 32)
+                .background(iconColor.opacity(0.15))
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+
+            // Title + subtitle
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title)
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .lineLimit(lineLimit)
+
+                if let subtitle = subtitle {
+                    Text(subtitle)
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+            }
+
+            Spacer()
+
+            // Badge
+            if let badge = badge {
+                Text(badge)
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .foregroundStyle(badgeColor)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(badgeColor.opacity(0.15))
+                    .clipShape(Capsule())
+            }
+        }
+        .padding(.horizontal, horizontalPadding)
+        .padding(.vertical, JohoDimensions.spacingSM)
+    }
+}
+
+private struct DayMemoRow: View {
+    let memo: Memo
+    let lineLimit: Int?
+    let horizontalPadding: CGFloat
+    @AppStorage("baseCurrency") private var baseCurrency = "SEK"
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    var body: some View {
+        // Detect birthday memos (linked to contact or has birthday symbol)
+        let isBirthday = memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill"
+        let icon = isBirthday ? "gift.fill" : (memo.hasMoney ? currencyIcon(for: memo.currency ?? baseCurrency) : (memo.hasPlace ? "airplane" : "note.text"))
+        // 情報デザイン: Semantic color system
+        let iconColor: Color = {
+            if memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill" || memo.hasPerson {
+                return JohoColors.purple  // Purple (人) - PEOPLE
+            }
+            if memo.hasMoney { return JohoColors.green }  // Green (金) - MONEY
+            if memo.hasPlace { return JohoColors.cyan }  // Cyan (予定) - SCHEDULED
+            return JohoColors.yellow  // Yellow - NOW (notes, today, memos)
+        }()
+
+        return HStack(spacing: JohoDimensions.spacingSM) {
+            // Icon
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundStyle(iconColor)
+                .frame(width: 32, height: 32)
+                .background(iconColor.opacity(0.15))
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+
+            // Content
+            VStack(alignment: .leading, spacing: 1) {
+                Text(memo.preview)
+                    .font(.system(size: 14, weight: .semibold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+                    .lineLimit(lineLimit)
+
+                if let place = memo.place {
+                    Text(place)
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.secondary)
+                }
+            }
+
+            Spacer()
+
+            // Amount for expenses
+            if let amount = memo.amount {
+                Text(String(format: "%.0f %@", amount, memo.currency ?? baseCurrency))
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.green)
+            }
+        }
+        .padding(.horizontal, horizontalPadding)
+        .padding(.vertical, JohoDimensions.spacingSM)
     }
 }
 

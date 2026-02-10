@@ -57,22 +57,10 @@ struct ShareableContactSnapshot: Transferable, @unchecked Sendable {
     /// Renders the contact card view to PNG data
     @MainActor
     func renderToPNG() -> Data {
-        let renderer = ImageRenderer(content: shareableView())
-        renderer.scale = 3.0  // 3x for crisp sharing
-        renderer.isOpaque = false  // 情報デザイン: Allow transparency for rounded corners
-
-        guard let uiImage = renderer.uiImage else {
-            return Data()
-        }
-
-        return uiImage.pngData() ?? Data()
-    }
-
-    /// The view to render for sharing
-    @MainActor
-    func shareableView() -> some View {
-        ShareableContactCard(contact: contact)
-            .frame(width: size.width, height: size.height)
+        CardSnapshotRenderer.renderToPNG(
+            ShareableContactCard(contact: contact),
+            size: size
+        )
     }
 
     /// Calculate dynamic size based on contact content
@@ -107,253 +95,179 @@ struct ShareableContactCard: View {
 
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
-    private let cornerRadius: CGFloat = 16
-
-    private var cardShape: RoundedRectangle {
-        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-    }
-
     /// Contact group color for accents
     private var accentColor: Color {
         contact.group.swiftUIColor
     }
 
     var body: some View {
-        // 情報デザイン: ZStack ensures white background fills corners before content
-        ZStack {
-            // Layer 1: Solid background (fills squircle corners)
-            cardShape
-                .fill(colors.surface)
+        ShareableCardShell(
+            headerIcon: contact.group.icon,
+            headerIconColor: colors.primary,
+            headerAccentColor: accentColor,
+            footerLeftLabel: "CONTACT CARD",
+            footerRightLabel: contact.group.localizedName.uppercased()
+        ) {
+            // Divider after header
+            ShareableCardDivider()
 
-            // Layer 2: Content compartments
-            VStack(spacing: 0) {
-                // ═══════════════════════════════════════════════════════════════
-                // HEADER: App branding + contact icon
-                // ═══════════════════════════════════════════════════════════════
-                HStack(spacing: 0) {
-                    // LEFT: App branding
-                    HStack(spacing: JohoDimensions.spacingSM) {
-                        Image(systemName: "calendar.badge.clock")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(colors.primary)
-
-                        Text("ONSEN PLANNER")
-                            .font(.system(size: 12, weight: .black, design: .rounded))
-                            .foregroundStyle(colors.primary)
-                    }
-                    .padding(.leading, JohoDimensions.spacingMD)
-
+            // ═══════════════════════════════════════════════════════════════
+            // MAIN CONTENT: Hero photo/initials on left | WALL | Info on right
+            // ═══════════════════════════════════════════════════════════════
+            HStack(alignment: .top, spacing: 0) {
+                // LEFT: Hero avatar
+                VStack {
                     Spacer()
-
-                    // WALL
-                    Rectangle()
-                        .fill(colors.border)
-                        .frame(width: 1.5)
-                        .frame(maxHeight: .infinity)
-
-                    // RIGHT: Group icon
-                    Image(systemName: contact.group.icon)
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary)
-                        .frame(width: 48)
-                        .frame(maxHeight: .infinity)
-                }
-                .frame(height: 40)
-                .background(accentColor.opacity(0.5))
-
-                // Divider
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(height: 2)
-
-                // ═══════════════════════════════════════════════════════════════
-                // MAIN CONTENT: Hero photo/initials on left | WALL | Info on right
-                // ═══════════════════════════════════════════════════════════════
-                HStack(alignment: .top, spacing: 0) {
-                    // LEFT: Hero avatar
-                    VStack {
-                        Spacer()
-                        if let imageData = contact.imageData, let uiImage = UIImage(data: imageData) {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 72, height: 72)
-                                .clipShape(Circle())
-                                .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
-                        } else {
-                            ZStack {
-                                Circle()
-                                    .fill(contact.group.swiftUIAvatarColor)
-                                    .frame(width: 72, height: 72)
-                                Text(contact.initials.isEmpty ? "?" : contact.initials)
-                                    .font(.system(size: 28, weight: .black, design: .rounded))
-                                    .foregroundStyle(.white)
-                            }
-                            .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
-                        }
-                        Spacer()
-                    }
-                    .frame(width: 100)
-                    .frame(minHeight: 140)
-
-                    // WALL
-                    Rectangle()
-                        .fill(colors.border)
-                        .frame(width: 1.5)
-
-                    // RIGHT: Contact info
-                    VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                        // Name (always prominent)
-                        Text(contact.displayName)
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
-                            .foregroundStyle(colors.primary)
-                            .lineLimit(2)
-
-                        // Organization
-                        if let org = contact.organizationName, !org.isEmpty {
-                            HStack(spacing: 6) {
-                                Image(systemName: "building.2.fill")
-                                    .font(.system(size: 11, weight: .bold))
-                                    .foregroundStyle(JohoColors.cyan)
-                                Text(org)
-                                    .font(.system(size: 12, weight: .medium, design: .rounded))
-                                    .foregroundStyle(colors.primary)
-                                    .lineLimit(1)
-                            }
-                        }
-
-                        // Phone numbers
-                        ForEach(contact.phoneNumbers.prefix(2), id: \.id) { phone in
-                            HStack(spacing: 6) {
-                                Image(systemName: "phone.fill")
-                                    .font(.system(size: 11, weight: .bold))
-                                    .foregroundStyle(JohoColors.green)
-                                Text(phone.value)
-                                    .font(.system(size: 12, weight: .medium, design: .rounded))
-                                    .foregroundStyle(colors.primary)
-                                    .lineLimit(1)
-                            }
-                        }
-
-                        // Email addresses
-                        ForEach(contact.emailAddresses.prefix(2), id: \.id) { email in
-                            HStack(spacing: 6) {
-                                Image(systemName: "envelope.fill")
-                                    .font(.system(size: 11, weight: .bold))
-                                    .foregroundStyle(JohoColors.yellow)
-                                Text(email.value)
-                                    .font(.system(size: 12, weight: .medium, design: .rounded))
-                                    .foregroundStyle(colors.primary)
-                                    .lineLimit(1)
-                            }
-                        }
-
-                        // Birthday
-                        if let birthday = contact.birthday, contact.birthdayKnown {
-                            HStack(spacing: 6) {
-                                Image(systemName: "birthday.cake.fill")
-                                    .font(.system(size: 11, weight: .bold))
-                                    .foregroundStyle(JohoColors.pink)
-                                Text(birthday.formatted(.dateTime.year().month(.abbreviated).day()))
-                                    .font(.system(size: 12, weight: .medium, design: .rounded))
-                                    .foregroundStyle(colors.primary)
-                            }
-                        }
-                    }
-                    .padding(JohoDimensions.spacingMD)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .frame(minHeight: 140)
-                .background(accentColor.opacity(0.15))
-
-                // Divider
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(height: 2)
-
-                // ═══════════════════════════════════════════════════════════════
-                // QR CODE SECTION: Scannable vCard
-                // ═══════════════════════════════════════════════════════════════
-                HStack(spacing: JohoDimensions.spacingMD) {
-                    // QR Code (generated from vCard without photo)
-                    if let qrImage = QRCodeGenerator.generate(from: contact.toVCard(includePhoto: false), size: 200) {
-                        Image(uiImage: qrImage)
-                            .interpolation(.none)
+                    if let imageData = contact.imageData, let uiImage = UIImage(data: imageData) {
+                        Image(uiImage: uiImage)
                             .resizable()
-                            .frame(width: 90, height: 90)
-                            .background(colors.surface)
-                            .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 4, style: .continuous)
-                                    .stroke(colors.border, lineWidth: 1)
-                            )
+                            .scaledToFill()
+                            .frame(width: 72, height: 72)
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
                     } else {
-                        // Fallback if QR generation fails
-                        RoundedRectangle(cornerRadius: 4, style: .continuous)
-                            .fill(colors.surface)
-                            .frame(width: 90, height: 90)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 4, style: .continuous)
-                                    .stroke(colors.border, lineWidth: 1)
-                            )
-                            .overlay {
-                                Image(systemName: "qrcode")
-                                    .font(.system(size: 32))
-                                    .foregroundStyle(colors.primary.opacity(0.3))
-                            }
+                        ZStack {
+                            Circle()
+                                .fill(contact.group.swiftUIAvatarColor)
+                                .frame(width: 72, height: 72)
+                            Text(contact.initials.isEmpty ? "?" : contact.initials)
+                                .font(.system(size: 28, weight: .black, design: .rounded))
+                                .foregroundStyle(.white)
+                        }
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
                     }
-
-                    // Instructions
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("SCAN TO SAVE")
-                            .font(.system(size: 10, weight: .black, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.5))
-                            .tracking(0.5)
-
-                        Text("Point your camera at this QR code to add contact")
-                            .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundStyle(colors.primary)
-                            .lineLimit(2)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-
                     Spacer()
+                }
+                .frame(width: 100)
+                .frame(minHeight: 140)
+
+                // WALL
+                Rectangle()
+                    .fill(colors.border)
+                    .frame(width: 1.5)
+
+                // RIGHT: Contact info
+                VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                    // Name (always prominent)
+                    Text(contact.displayName)
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .lineLimit(2)
+
+                    // Organization
+                    if let org = contact.organizationName, !org.isEmpty {
+                        HStack(spacing: 6) {
+                            Image(systemName: "building.2.fill")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundStyle(JohoColors.cyan)
+                            Text(org)
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundStyle(colors.primary)
+                                .lineLimit(1)
+                        }
+                    }
+
+                    // Phone numbers
+                    ForEach(contact.phoneNumbers.prefix(2), id: \.id) { phone in
+                        HStack(spacing: 6) {
+                            Image(systemName: "phone.fill")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundStyle(JohoColors.green)
+                            Text(phone.value)
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundStyle(colors.primary)
+                                .lineLimit(1)
+                        }
+                    }
+
+                    // Email addresses
+                    ForEach(contact.emailAddresses.prefix(2), id: \.id) { email in
+                        HStack(spacing: 6) {
+                            Image(systemName: "envelope.fill")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundStyle(JohoColors.yellow)
+                            Text(email.value)
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundStyle(colors.primary)
+                                .lineLimit(1)
+                        }
+                    }
+
+                    // Birthday
+                    if let birthday = contact.birthday, contact.birthdayKnown {
+                        HStack(spacing: 6) {
+                            Image(systemName: "birthday.cake.fill")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundStyle(JohoColors.pink)
+                            Text(birthday.formatted(.dateTime.year().month(.abbreviated).day()))
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .foregroundStyle(colors.primary)
+                        }
+                    }
                 }
                 .padding(JohoDimensions.spacingMD)
-                .frame(height: 120)
-                .background(colors.surface)
-
-                // Divider
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(height: 2)
-
-                // ═══════════════════════════════════════════════════════════════
-                // FOOTER: Contact card branding with group
-                // ═══════════════════════════════════════════════════════════════
-                HStack {
-                    Text("CONTACT CARD")
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.5))
-                        .tracking(1)
-
-                    Spacer()
-
-                    // Group badge
-                    Text(contact.group.localizedName.uppercased())
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.4))
-                        .tracking(0.5)
-                }
-                .padding(.horizontal, JohoDimensions.spacingMD)
-                .padding(.vertical, JohoDimensions.spacingSM)
-                .frame(height: 32)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .clipShape(cardShape)
+            .frame(minHeight: 140)
+            .background(accentColor.opacity(0.15))
 
-            // Layer 3: Border (strokeBorder keeps it inside the shape)
-            cardShape
-                .strokeBorder(colors.border, lineWidth: 3)
+            // Divider before QR section
+            ShareableCardDivider()
+
+            // ═══════════════════════════════════════════════════════════════
+            // QR CODE SECTION: Scannable vCard
+            // ═══════════════════════════════════════════════════════════════
+            HStack(spacing: JohoDimensions.spacingMD) {
+                // QR Code (generated from vCard without photo)
+                if let qrImage = QRCodeGenerator.generate(from: contact.toVCard(includePhoto: false), size: 200) {
+                    Image(uiImage: qrImage)
+                        .interpolation(.none)
+                        .resizable()
+                        .frame(width: 90, height: 90)
+                        .background(colors.surface)
+                        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                                .stroke(colors.border, lineWidth: 1)
+                        )
+                } else {
+                    // Fallback if QR generation fails
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                        .fill(colors.surface)
+                        .frame(width: 90, height: 90)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                                .stroke(colors.border, lineWidth: 1)
+                        )
+                        .overlay {
+                            Image(systemName: "qrcode")
+                                .font(.system(size: 32))
+                                .foregroundStyle(colors.primary.opacity(0.3))
+                        }
+                }
+
+                // Instructions
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("SCAN TO SAVE")
+                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .tracking(0.5)
+
+                    Text("Point your camera at this QR code to add contact")
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer()
+            }
+            .padding(JohoDimensions.spacingMD)
+            .frame(height: 120)
+            .background(colors.surface)
+
+            // Divider before footer
+            ShareableCardDivider()
         }
     }
 }
@@ -387,8 +301,6 @@ struct ContactShareButton: View {
 @available(iOS 16.0, *)
 struct ContactShareIconButton: View {
     let contact: Contact
-    @Environment(\.johoColorMode) private var colorMode
-    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private var snapshot: ShareableContactSnapshot {
         let size = ShareableContactSnapshot.calculateSize(for: contact)
@@ -403,14 +315,7 @@ struct ContactShareIconButton: View {
                 image: Image(systemName: contact.group.icon)
             )
         ) {
-            ZStack {
-                Circle()
-                    .fill(colors.surface)
-                    .frame(width: 28, height: 28)
-                Image(systemName: "square.and.arrow.up")
-                    .font(.system(size: 11, weight: .black, design: .rounded))
-                    .foregroundStyle(colors.primary)
-            }
+            JohoShareCircleButton()
         }
         .buttonStyle(.plain)
     }

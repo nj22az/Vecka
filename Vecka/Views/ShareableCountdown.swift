@@ -28,20 +28,8 @@ struct ShareableCountdownSnapshot: Transferable {
     /// Renders the countdown card view to PNG data
     @MainActor
     func renderToPNG() -> Data {
-        let renderer = ImageRenderer(content: shareableView())
-        renderer.scale = 3.0  // 3x for crisp sharing
-
-        guard let uiImage = renderer.uiImage else {
-            return Data()
-        }
-
-        return uiImage.pngData() ?? Data()
-    }
-
-    /// The view to render for sharing
-    @MainActor
-    func shareableView() -> some View {
-        ShareableCountdownCard(
+        // Use shared CardSnapshotRenderer for countdown (fixed height)
+        let view = ShareableCountdownCard(
             name: countdown.name,
             daysRemaining: daysRemaining,
             targetDate: countdown.date,
@@ -50,6 +38,16 @@ struct ShareableCountdownSnapshot: Transferable {
             tasks: countdown.tasks
         )
         .frame(width: size.width, height: size.height)
+
+        let renderer = ImageRenderer(content: view)
+        renderer.scale = 3.0
+        renderer.isOpaque = false
+
+        guard let uiImage = renderer.uiImage else {
+            return Data()
+        }
+
+        return uiImage.pngData() ?? Data()
     }
 }
 
@@ -86,41 +84,14 @@ struct ShareableCountdownCard: View {
             // ═══════════════════════════════════════════════════════════════
             // HEADER: App branding + icon
             // ═══════════════════════════════════════════════════════════════
-            HStack(spacing: 0) {
-                // LEFT: App branding
-                HStack(spacing: JohoDimensions.spacingSM) {
-                    Image(systemName: "calendar.badge.clock")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary)
-
-                    Text("ONSEN PLANNER")
-                        .font(.system(size: 12, weight: .black, design: .rounded))
-                        .foregroundStyle(colors.primary)
-                }
-                .padding(.leading, JohoDimensions.spacingMD)
-
-                Spacer()
-
-                // WALL
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(width: 1.5)
-                    .frame(maxHeight: .infinity)
-
-                // RIGHT: Event icon
-                Image(systemName: iconName)
-                    .font(.system(size: 18, weight: .bold, design: .rounded))
-                    .foregroundStyle(accentColor)
-                    .frame(width: 48)
-                    .frame(maxHeight: .infinity)
-            }
-            .frame(height: 40)
-            .background(accentColor.opacity(0.5))
+            ShareableCardHeader(
+                icon: iconName,
+                iconColor: accentColor,
+                accentColor: accentColor
+            )
 
             // Divider
-            Rectangle()
-                .fill(colors.border)
-                .frame(height: 2)
+            ShareableCardDivider()
 
             // ═══════════════════════════════════════════════════════════════
             // MAIN CONTENT: Days countdown + event name
@@ -196,12 +167,10 @@ struct ShareableCountdownCard: View {
             .background(lightBackground)
 
             // Divider
-            Rectangle()
-                .fill(colors.border)
-                .frame(height: 2)
+            ShareableCardDivider()
 
             // ═══════════════════════════════════════════════════════════════
-            // FOOTER: Countdown message
+            // FOOTER: Countdown message (custom - uses different font sizing)
             // ═══════════════════════════════════════════════════════════════
             HStack {
                 Text(countdownMessage)
