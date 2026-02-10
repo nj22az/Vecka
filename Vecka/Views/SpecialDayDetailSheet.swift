@@ -184,7 +184,7 @@ struct SpecialDayDetailSheet: View {
                 memo.id == targetUUID
             })
             if let memos = try? modelContext.fetch(descriptor), let memo = memos.first {
-                memo.symbolName = iconName == item.type.categoryAwareIcon ? nil : iconName
+                memo.symbolName = iconName
                 try? modelContext.save()
                 HapticManager.notification(.success)
             }
@@ -195,7 +195,7 @@ struct SpecialDayDetailSheet: View {
                 rule.id == targetID
             })
             if let rules = try? modelContext.fetch(descriptor), let rule = rules.first {
-                rule.symbolName = iconName == item.type.categoryAwareIcon ? nil : iconName
+                rule.symbolName = iconName
                 rule.userModifiedAt = Date()
                 try? modelContext.save()
                 // Refresh holiday cache
