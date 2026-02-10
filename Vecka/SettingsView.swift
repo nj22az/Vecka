@@ -246,8 +246,8 @@ struct SettingsView: View {
                     HapticManager.selection()
                 } label: {
                     HStack(spacing: 6) {
-                        Image(systemName: "sun.max")
-                            .font(.system(size: 12, weight: .bold))
+                        Image(systemName: "sun.min")
+                            .font(.system(size: 11, weight: .bold))
                         Text("LIGHT")
                             .font(.system(size: 12, weight: .black, design: .rounded))
                     }
@@ -284,7 +284,7 @@ struct SettingsView: View {
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                    .stroke(colors.border, lineWidth: 1.5)
+                    .strokeBorder(colors.border, lineWidth: 1.5)
             )
 
             // Theme preset cards — horizontal scroll
@@ -387,7 +387,7 @@ struct SettingsView: View {
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(isActive ? colors.primary : colors.border, lineWidth: isActive ? 2.5 : 1)
+                            .strokeBorder(isActive ? colors.primary : colors.border, lineWidth: isActive ? 2.5 : 1.5)
                     )
                     .overlay(alignment: .bottomTrailing) {
                         if isActive {
@@ -430,20 +430,8 @@ struct SettingsView: View {
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(isActive ? colors.primary : colors.border, lineWidth: isActive ? 2.5 : 1)
+                    .strokeBorder(isActive ? colors.primary : colors.border, lineWidth: isActive ? 2.5 : 1.5)
             )
-            .overlay(alignment: .topLeading) {
-                if isActive {
-                    Image(systemName: selectedColorMode == .dark ? "moon.fill" : "sun.max.fill")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(colors.primary)
-                        .padding(4)
-                        .background(colors.surface)
-                        .clipShape(Circle())
-                        .overlay(Circle().stroke(colors.border, lineWidth: 1))
-                        .offset(x: -4, y: -4)
-                }
-            }
         }
         .buttonStyle(.plain)
     }
@@ -520,6 +508,7 @@ struct SettingsView: View {
                         }
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .padding(.vertical, JohoDimensions.spacingSM + 2)
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
 
@@ -537,6 +526,7 @@ struct SettingsView: View {
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
                     .strokeBorder(colors.border, lineWidth: JohoDimensions.borderMedium)
+                    .allowsHitTesting(false)
             )
         }
         .padding(.horizontal, JohoDimensions.spacingLG)
@@ -600,7 +590,7 @@ struct SettingsView: View {
                                 .clipShape(Squircle(cornerRadius: 8))
                                 .overlay(
                                     Squircle(cornerRadius: 8)
-                                        .stroke(colors.border, lineWidth: 1.5)
+                                        .strokeBorder(colors.border, lineWidth: 1.5)
                                 )
 
                             // Month name
@@ -624,6 +614,7 @@ struct SettingsView: View {
                         }
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .padding(.vertical, JohoDimensions.spacingSM + 2)
+                        .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
 
@@ -641,6 +632,7 @@ struct SettingsView: View {
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
                     .strokeBorder(colors.border, lineWidth: JohoDimensions.borderMedium)
+                    .allowsHitTesting(false)
             )
 
             // Footer

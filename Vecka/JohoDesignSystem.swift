@@ -72,6 +72,34 @@ extension Color {
         let newB = min(1, max(0, b + CGFloat(delta)))
         return Color(UIColor(hue: h, saturation: s, brightness: newB, alpha: a))
     }
+
+    /// Readable foreground variant: maps pastel JohoColors to darker versions
+    /// for icon/text use on light backgrounds. Passthrough for already-dark colors.
+    var readableForeground: Color {
+        let hex = self.toHex()
+        switch hex {
+        // Default theme pastels
+        case "A5F3FC": return JohoColors.cyanDark     // cyan → dark teal
+        case "FECDD3": return JohoColors.pinkDark     // pink → dark rose
+        case "E9D5FF": return JohoColors.purpleDark   // purple → dark violet
+        case "FFE566": return JohoColors.yellowDark   // yellow → dark gold
+        case "4ADE80": return JohoColors.greenDark    // green → dark green
+        // Nordic theme
+        case "93C5FD": return Color(hex: "2563EB")    // blue → blue-600
+        case "C4B5FD": return Color(hex: "7C3AED")    // purple → violet-600
+        case "CBD5E1": return Color(hex: "475569")    // slate → slate-600
+        // Earth theme
+        case "86EFAC": return Color(hex: "15803D")    // green → green-700
+        case "FDBA74": return Color(hex: "C2410C")    // orange → orange-700
+        case "FDE68A": return Color(hex: "A16207")    // amber → yellow-700
+        // Ink theme (grays are intentional)
+        case "E4E4E7": return Color(hex: "52525B")    // zinc-200 → zinc-600
+        case "A1A1AA": return Color(hex: "52525B")    // zinc-400 → zinc-600
+        default:
+            // For unknown colors, darken if too light for foreground use
+            return relativeLuminance > 0.45 ? adjustedBrightness(by: -0.35) : self
+        }
+    }
 }
 
 // MARK: - Core Colors (Like Muhi/Rohto Packaging)
@@ -100,6 +128,13 @@ enum JohoColors {
     static let green = Color(hex: "4ADE80")     // MONEY - expenses (stark green for readability)
     static let purple = Color(hex: "E9D5FF")    // PEOPLE - contacts
     static let red = Color(hex: "E53935")       // ALERT - warnings, errors (system)
+
+    // Dark foreground variants (readable on white backgrounds)
+    static let yellowDark = Color(hex: "B8860B")    // Dark gold for icon/text on white
+    static let cyanDark = Color(hex: "0891B2")      // Dark teal for icon/text on white
+    static let pinkDark = Color(hex: "BE123C")      // Dark rose for icon/text on white
+    static let greenDark = Color(hex: "15803D")     // Dark green for icon/text on white
+    static let purpleDark = Color(hex: "7C3AED")    // Dark violet for icon/text on white
 
     // Light tints for bento box backgrounds
     static let yellowLight = Color(hex: "FEF3C7")   // Light yellow for notes

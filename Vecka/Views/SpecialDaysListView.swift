@@ -619,10 +619,13 @@ struct SpecialDaysListView: View {
 
                     // Icon zone - star for main view, month icon for detail
                     // 情報デザイン: 44pt touch target for consistency
-                    if let theme = theme {
-                        Image(systemName: theme.icon)
+                    if let month = selectedMonth, let theme = theme {
+                        let headerIcon = customIcon(for: month) ?? theme.icon
+                        let headerIconColor: Color = customIconColor(for: month).map { Color(hex: $0) } ?? theme.accentColor
+
+                        Image(systemName: headerIcon)
                             .font(.system(size: 20, weight: .bold, design: .rounded))
-                            .foregroundStyle(theme.accentColor)
+                            .foregroundStyle(headerIconColor)
                             .johoTouchTarget()
                             .background(theme.lightBackground)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))

@@ -584,7 +584,7 @@ struct LandingPageView: View {
             VStack {
                 Image(systemName: fact.icon ?? "star.fill")
                     .font(.system(size: 24, weight: .bold, design: .rounded))
-                    .foregroundStyle(fact.color)
+                    .foregroundStyle(fact.color.readableForeground)
             }
             .frame(maxWidth: .infinity)
             .frame(height: 48)
@@ -629,7 +629,7 @@ struct LandingPageView: View {
             // Icon
             Image(systemName: item.icon)
                 .font(.system(size: size.iconSize, weight: .medium, design: .rounded))
-                .foregroundStyle(item.color)
+                .foregroundStyle(item.color.readableForeground)
                 .frame(width: isCompact ? 12 : 16)
 
             // Title
@@ -643,7 +643,7 @@ struct LandingPageView: View {
             // Type badge
             Text(item.typeBadge)
                 .font(.system(size: size.badgeFontSize, weight: .bold, design: .rounded))
-                .foregroundStyle(item.color)
+                .foregroundStyle(item.color.readableForeground)
                 .padding(.horizontal, isCompact ? 4 : 6)
                 .padding(.vertical, isCompact ? 1 : 2)
                 .background(item.color.opacity(0.15))
@@ -683,18 +683,35 @@ struct LandingPageView: View {
                 .frame(width: 8, height: 8)
                 .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
 
-            // Title
-            Text(item.title)
-                .font(JohoFont.bodySmall)
-                .foregroundStyle(colors.primary)
-                .lineLimit(1)
+            // Title + optional regions
+            VStack(alignment: .leading, spacing: 2) {
+                Text(item.title)
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(colors.primary)
+                    .lineLimit(1)
+
+                // Region pills for multi-region holidays
+                if !item.regions.isEmpty {
+                    HStack(spacing: 3) {
+                        ForEach(item.regions, id: \.self) { code in
+                            Text(code)
+                                .font(.system(size: 7, weight: .black, design: .rounded))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 4)
+                                .padding(.vertical, 1)
+                                .background(CountryColorScheme.scheme(for: code)?.backgroundColor ?? colors.primary)
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
+            }
 
             Spacer()
 
             // Type badge
             Text(item.typeBadge)
                 .font(.system(size: 8, weight: .bold, design: .rounded))
-                .foregroundStyle(item.color)
+                .foregroundStyle(item.color.readableForeground)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
                 .background(item.color.opacity(0.15))
@@ -1022,7 +1039,7 @@ struct LandingPageView: View {
             // Icon
             Image(systemName: item.icon)
                 .font(.system(size: 12, weight: .medium, design: .rounded))
-                .foregroundStyle(item.color)
+                .foregroundStyle(item.color.readableForeground)
                 .frame(width: 16)
 
             // Title + subtitle
@@ -1044,7 +1061,7 @@ struct LandingPageView: View {
             // Type badge
             Text(item.typeBadge)
                 .font(.system(size: 8, weight: .bold, design: .rounded))
-                .foregroundStyle(item.color)
+                .foregroundStyle(item.color.readableForeground)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
                 .background(item.color.opacity(0.15))
@@ -1063,6 +1080,8 @@ struct LandingPageView: View {
         let title: String
         let color: Color
         let typeBadge: String
+        var regions: [String] = []  // Region codes for holidays (e.g., ["SE", "VN"])
+        var notes: String? = nil    // Holiday notes
     }
 
     /// Get upcoming items for next 7 days
@@ -1076,19 +1095,28 @@ struct LandingPageView: View {
             let dayNumber = calendar.component(.day, from: date)
             let isToday = dayOffset == 0
 
-            // Holidays
+            // Holidays (deduplicate same-title entries from multiple regions)
             if let holidays = holidayManager.holidayCache[date] {
-                for holiday in holidays {
-                    let color = holiday.isBankHoliday ? JohoColors.red : JohoColors.cyan
-                    let badge = holiday.isBankHoliday ? "HOL" : "OBS"
+                // Group by displayTitle to merge multi-region duplicates
+                let grouped = Dictionary(grouping: holidays, by: { $0.displayTitle })
+                for (title, group) in grouped {
+                    let isBankHoliday = group.contains { $0.isBankHoliday }
+                    let color = isBankHoliday
+                        ? CategoryColorSettings.shared.color(for: .holiday)
+                        : CategoryColorSettings.shared.color(for: .observance)
+                    let badge = isBankHoliday ? "HOL" : "OBS"
+                    let regions = group.map { $0.region }
+                    let notes = group.compactMap { $0.notes }.first
                     items.append(UpcomingItem(
                         date: date,
                         dayName: dayName,
                         dayNumber: dayNumber,
                         isToday: isToday,
-                        title: holiday.displayTitle,
+                        title: title,
                         color: color,
-                        typeBadge: badge
+                        typeBadge: badge,
+                        regions: regions,
+                        notes: notes
                     ))
                 }
             }
