@@ -780,7 +780,7 @@ struct DaySummaryShareButton: View {
     let data = DaySummaryData(
         date: Date(),
         holidays: [
-            DayDashboardView.HolidayInfo(id: "1", name: "Midsummer Eve", isBankHoliday: true, symbolName: "sun.max.fill", regionCode: "SE", ruleID: "SE-midsummer")
+            DayDashboardView.HolidayInfo(id: "1", name: "Midsummer Eve", isBankHoliday: true, symbolName: "sun.max.fill", regionCode: "SE", ruleID: "SE-midsummer", notes: nil)
         ],
         birthdays: [
             DayDashboardView.BirthdayInfo(id: "1", name: "Anna Larsson", age: 30)

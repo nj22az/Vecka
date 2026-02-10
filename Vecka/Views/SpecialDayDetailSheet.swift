@@ -684,14 +684,27 @@ struct ShareableSpecialDayCard: View {
                             .foregroundStyle(colors.primary.opacity(0.6))
                             .multilineTextAlignment(.leading)
 
+                        // Holiday notes (built-in description)
+                        if let notes = item.notes, !notes.isEmpty {
+                            Rectangle()
+                                .fill(colors.border.opacity(0.3))
+                                .frame(height: 1)
+                                .padding(.vertical, 2)
+
+                            Text(notes)
+                                .font(.system(size: 10, weight: .medium, design: .rounded))
+                                .foregroundStyle(colors.primary.opacity(0.5))
+                                .multilineTextAlignment(.leading)
+                        }
+
                         // Personal note (if provided)
                         if let note = personalNote, !note.isEmpty {
                             Rectangle()
                                 .fill(colors.border.opacity(0.3))
                                 .frame(height: 1)
-                                .padding(.vertical, 4)
+                                .padding(.vertical, 2)
 
-                            Text(note)
+                            Text("\" \(note) \"")
                                 .font(.system(size: 10, weight: .medium, design: .rounded))
                                 .foregroundStyle(colors.primary.opacity(0.5))
                                 .italic()

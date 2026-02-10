@@ -402,6 +402,28 @@ struct SpecialDayRow: Identifiable {
     var isSystem: Bool {
         !isCustom
     }
+
+}
+
+// MARK: - SpecialDayRow + HolidayInfo Adapter
+
+extension SpecialDayRow {
+    /// Adapter: Create from DayDashboardView.HolidayInfo for unified detail sheet
+    init(from holiday: DayDashboardView.HolidayInfo, date: Date) {
+        self.id = holiday.id
+        self.ruleID = holiday.ruleID ?? ""
+        self.region = holiday.regionCode ?? ""
+        self.date = date
+        self.title = holiday.name
+        self.type = holiday.isBankHoliday ? .holiday : .observance
+        self.symbolName = holiday.symbolName
+        self.iconColor = nil
+        self.notes = holiday.notes
+        self.isCustom = false
+        self.isMemo = false
+        self.originalBirthday = nil
+        self.turningAge = nil
+    }
 }
 
 // MARK: - Consolidated Holiday (Merged same-date holidays)

@@ -1098,7 +1098,8 @@ struct ModernCalendarView: View {
                 isBankHoliday: holiday.isBankHoliday,
                 symbolName: holiday.symbolName,
                 regionCode: holiday.region,
-                ruleID: holiday.id  // HolidayCacheItem.id == HolidayRule.id
+                ruleID: holiday.id,  // HolidayCacheItem.id == HolidayRule.id
+                notes: holiday.notes
             )
         }
     }
