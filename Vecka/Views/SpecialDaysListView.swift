@@ -2139,8 +2139,8 @@ extension SpecialDaysListView {
 
         // Get icon
         let icon = row.symbolName ?? row.type.defaultIcon
-        let headerBgColor: Color = row.type.accentColor.opacity(0.15)
-        let iconColor: Color = row.type.accentColor
+        let headerBgColor: Color = CategoryColorSettings.shared.color(for: row.type.displayCategory).opacity(0.15)
+        let iconColor: Color = CategoryColorSettings.shared.color(for: row.type.displayCategory)
 
         Button {
             // Only holidays/observances use the special day editor
@@ -2661,10 +2661,8 @@ struct CustomHolidayCreatorSheet: View {
     }
 
     private func monthName(_ month: Int) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM"
         let date = Calendar.current.date(from: DateComponents(year: 2024, month: month, day: 1)) ?? Date()
-        return formatter.string(from: date)
+        return DateFormatterCache.monthAbbr.string(from: date)
     }
 
     private var daysInSelectedMonth: Int {

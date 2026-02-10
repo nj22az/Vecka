@@ -502,12 +502,12 @@ extension CalendarGridView {
 
         // 1. HOLIDAY (Red) - Bank holidays only (day off, like Sunday)
         if day.isHoliday || dataCheck?.hasHoliday == true {
-            indicators.append(IndicatorInfo(icon: "star.fill", color: JohoColors.red))
+            indicators.append(IndicatorInfo(icon: "star.fill", color: CategoryColorSettings.shared.color(for: .holiday)))
         }
 
         // 2. OBSERVANCE (Blue) - Cultural observances (special but not holiday)
         if dataCheck?.hasObservance == true {
-            indicators.append(IndicatorInfo(icon: "sparkles", color: JohoColors.tripBlue))
+            indicators.append(IndicatorInfo(icon: "sparkles", color: CategoryColorSettings.shared.color(for: .observance)))
         }
 
         // 3. MEMO (Green) - All memos: notes, expenses, trips, birthdays
@@ -518,7 +518,7 @@ extension CalendarGridView {
                       dataCheck?.hasBirthday == true ||
                       dataCheck?.hasEvent == true
         if hasMemo {
-            indicators.append(IndicatorInfo(icon: "note.text", color: JohoColors.green))
+            indicators.append(IndicatorInfo(icon: "note.text", color: CategoryColorSettings.shared.color(for: .memo)))
         }
 
         return indicators

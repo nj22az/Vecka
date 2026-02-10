@@ -88,19 +88,19 @@ struct ModernCalendarView: View {
 
             // 1. Holiday - RED (highest priority)
             if dataCheck.hasHoliday && !foundTypes.contains("HOL") {
-                items.append(LegendItem(type: "HOL", label: "Holiday", color: JohoColors.red))
+                items.append(LegendItem(type: "HOL", label: "Holiday", color: CategoryColorSettings.shared.color(for: .holiday)))
                 foundTypes.insert("HOL")
             }
 
             // 2. Birthday - PINK
             if dataCheck.hasBirthday && !foundTypes.contains("BDY") {
-                items.append(LegendItem(type: "BDY", label: "Birthday", color: JohoColors.pink))
+                items.append(LegendItem(type: "BDY", label: "Birthday", color: CategoryColorSettings.shared.color(for: .memo)))
                 foundTypes.insert("BDY")
             }
 
             // 3. Observance - CYAN (cultural observances)
             if dataCheck.hasObservance && !foundTypes.contains("OBS") {
-                items.append(LegendItem(type: "OBS", label: "Observance", color: JohoColors.cyan))
+                items.append(LegendItem(type: "OBS", label: "Observance", color: CategoryColorSettings.shared.color(for: .observance)))
                 foundTypes.insert("OBS")
             }
 

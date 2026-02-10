@@ -102,8 +102,8 @@ struct SpecialDayDetailSheet: View {
                     get: { customIcon ?? defaultIcon },
                     set: { customIcon = $0 }
                 ),
-                accentColor: item.type.accentColor,
-                lightBackground: item.type.lightBackground,
+                accentColor: CategoryColorSettings.shared.color(for: item.type.displayCategory),
+                lightBackground: CategoryColorSettings.shared.color(for: item.type.displayCategory).opacity(0.2),
                 onDone: {}
             )
         }
@@ -252,11 +252,11 @@ struct SpecialDayDetailSheet: View {
         VStack(spacing: JohoDimensions.spacingSM) {
             Image(systemName: displayIcon)
                 .font(.system(size: 64, weight: .bold, design: .rounded))
-                .foregroundStyle(item.type.accentColor)
+                .foregroundStyle(CategoryColorSettings.shared.color(for: item.type.displayCategory))
         }
         .frame(maxWidth: .infinity)
         .frame(height: 120)
-        .background(item.type.lightBackground)
+        .background(CategoryColorSettings.shared.color(for: item.type.displayCategory).opacity(0.2))
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)

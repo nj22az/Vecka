@@ -549,7 +549,10 @@ struct SettingsView: View {
               let decoded = try? JSONDecoder().decode([Int: MonthCustomization].self, from: monthCustomizationsData) else {
             return [:]
         }
-        return decoded
+        // Filter out entries where all fields are nil or empty strings
+        return decoded.filter { _, custom in
+            custom.icon?.isEmpty == false || custom.iconColorHex?.isEmpty == false || custom.colorHex?.isEmpty == false || custom.message?.isEmpty == false
+        }
     }
 
     private func saveMonthCustomization(_ customization: MonthCustomization?, for month: Int) {
@@ -575,7 +578,7 @@ struct SettingsView: View {
                     let theme = MonthTheme.theme(for: month)
                     let custom = monthCustomizations[month]
                     let displayIcon = custom?.icon ?? theme.icon
-                    let hasCustomization = custom?.icon != nil || custom?.iconColorHex != nil || custom?.message != nil
+                    let hasCustomization = custom?.icon?.isEmpty == false || custom?.iconColorHex?.isEmpty == false || custom?.message?.isEmpty == false
 
                     Button {
                         editingMonthID = IdentifiableMonth(id: month)
@@ -647,7 +650,7 @@ struct SettingsView: View {
                 month: item.id,
                 currentCustomization: monthCustomizations[item.id] ?? MonthCustomization(),
                 onSave: { customization in
-                    if customization.icon != nil || customization.iconColorHex != nil || customization.message != nil {
+                    if customization.icon?.isEmpty == false || customization.iconColorHex?.isEmpty == false || customization.message?.isEmpty == false {
                         saveMonthCustomization(customization, for: item.id)
                     } else {
                         saveMonthCustomization(nil, for: item.id)
