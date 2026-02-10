@@ -14,6 +14,7 @@
 
 import SwiftUI
 import SwiftData
+import WidgetKit
 
 struct LandingPageView: View {
     @Environment(\.modelContext) private var modelContext
@@ -33,7 +34,7 @@ struct LandingPageView: View {
     // Unified Memo query - filter by type in computed properties
     @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
     @Query private var contacts: [Contact]
-    @Query(sort: \WorldClock.sortOrder) private var worldClocks: [WorldClock]
+    @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
 
     /// Filtered notes from Memo
     private var allNotes: [Memo] {
@@ -98,18 +99,16 @@ struct LandingPageView: View {
         customLandingTitle.isEmpty ? "ONSEN" : customLandingTitle.uppercased()
     }
 
-    /// Limit world clocks to max 3, with 3 defaults if none configured
+    /// 情報デザイン: Derive world clocks from selected holiday regions
     private var displayClocks: [WorldClock] {
-        if worldClocks.isEmpty {
-            // 情報デザイン: Always show content, never empty states
-            // Default clocks: Tokyo, London, New York
-            return [
-                WorldClock(cityName: "Tokyo", timezoneIdentifier: "Asia/Tokyo", sortOrder: 0),
-                WorldClock(cityName: "London", timezoneIdentifier: "Europe/London", sortOrder: 1),
-                WorldClock(cityName: "New York", timezoneIdentifier: "America/New_York", sortOrder: 2)
-            ]
+        let cities = WorldCityDatabase.clockCities(for: holidayRegions)
+        if cities.isEmpty {
+            // Fallback: Stockholm if no regions resolve
+            return [WorldClock(cityName: "Stockholm", timezoneIdentifier: "Europe/Stockholm", sortOrder: 0)]
         }
-        return Array(worldClocks.prefix(3))
+        return cities.enumerated().map { i, city in
+            WorldClock(cityName: city.name, timezoneIdentifier: city.timezone, sortOrder: i)
+        }
     }
 
     /// Today's items for summary
@@ -190,6 +189,10 @@ struct LandingPageView: View {
             if newFactId != nil {
                 checkForDeepLinkFact()
             }
+        }
+        .onChange(of: holidayRegions) { _, newRegions in
+            WorldClockStorage.syncFromRegions(newRegions)
+            WidgetCenter.shared.reloadTimelines(ofKind: "VeckaWidget")
         }
         .sheet(isPresented: $showTripsSheet) {
             NavigationStack {

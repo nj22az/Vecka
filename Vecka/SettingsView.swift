@@ -10,19 +10,18 @@ import SwiftUI
 import SwiftData
 import WidgetKit
 
+/// Wrapper to make month number (Int) identifiable for sheet binding
+private struct IdentifiableMonth: Identifiable {
+    let id: Int
+}
+
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.johoColorMode) private var colorMode
     @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
-    @AppStorage("appBackgroundColor") private var appBackgroundColor = "black"
     @AppStorage("johoColorMode") private var johoColorMode = "light"
     @AppStorage("showLunarCalendar") private var showLunarCalendar = false  // For Vietnamese holidays
     @AppStorage("customLandingTitle") private var customLandingTitle = ""
-    @AppStorage("systemUIAccent") private var systemUIAccent = "blue"  // 情報デザイン: System UI accent color
-    @AppStorage("customBackgroundColorHex") private var customBackgroundColorHex = ""  // Empty = use black
-    // PDF Export settings (情報デザイン: User-configurable branding)
-    @AppStorage("pdfExportTitle") private var pdfExportTitle = "Contact Directory"
-    @AppStorage("pdfExportFooter") private var pdfExportFooter = ""  // Empty = page number only
     /// Dynamic colors based on color mode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
@@ -30,22 +29,21 @@ struct SettingsView: View {
     @Query private var holidayRules: [HolidayRule]
     @Query private var memos: [Memo]
     @Query private var contacts: [Contact]
-    @Query(sort: \WorldClock.sortOrder) private var worldClocks: [WorldClock]
-
-    // World clocks state
-    @State private var showAddClockSheet = false
     @State private var isEditingTitle = false
     @State private var editingTitle = ""
 
     // Developer tools state
     @State private var showingResetConfirmation = false
     @State private var isGeneratingData = false
-    @State private var showBackgroundColorPicker = false
     @State private var showThemeConfirmation = false
     @State private var pendingTheme: JohoThemePreset?
 
     // Category customization state
     @State private var editingCategory: DisplayCategory? = nil
+
+    // Month customization state
+    @AppStorage("monthCustomizations") private var monthCustomizationsData: Data = Data()
+    @State private var editingMonthID: IdentifiableMonth? = nil
 
     var body: some View {
         ScrollView {
@@ -55,189 +53,14 @@ struct SettingsView: View {
                     .padding(.horizontal, JohoDimensions.spacingLG)
                     .padding(.top, JohoDimensions.spacingSM)
 
-                // Display Section (AMOLED-friendly background options)
-                VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
-                    JohoPill(text: "DISPLAY", style: .whiteOnBlack, size: .small)
-
-                    // Background color picker
-                    VStack(spacing: JohoDimensions.spacingSM) {
-                        HStack(spacing: JohoDimensions.spacingMD) {
-                            // Icon zone
-                            Image(systemName: "circle.lefthalf.filled")
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundStyle(colors.primary)
-                                .johoTouchTarget()
-                                .background(PageHeaderColor.settings.lightBackground)
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                                )
-
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("Background Color")
-                                    .font(JohoFont.headline)
-                                    .foregroundStyle(colors.primary)
-
-                                Text(backgroundDisplayName)
-                                    .font(JohoFont.body)
-                                    .foregroundStyle(colors.secondary)
-                            }
-
-                            Spacer()
-                        }
-                        .padding(JohoDimensions.spacingMD)
-                        .background(colors.surface)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                        )
-
-                        // Color options: BLACK or CUSTOM
-                        HStack(spacing: JohoDimensions.spacingSM) {
-                            // BLACK option
-                            Button {
-                                withAnimation(.easeInOut(duration: 0.15)) {
-                                    appBackgroundColor = "black"
-                                    customBackgroundColorHex = ""
-                                }
-                                HapticManager.selection()
-                            } label: {
-                                VStack(spacing: 4) {
-                                    Circle()
-                                        .fill(Color.black)
-                                        .frame(width: 32, height: 32)
-                                        .overlay(
-                                            Circle()
-                                                .stroke(
-                                                    isBlackSelected ? colors.border : colors.border.opacity(0.3),
-                                                    lineWidth: isBlackSelected ? 2.5 : 1.5
-                                                )
-                                        )
-                                        .overlay {
-                                            if isBlackSelected {
-                                                Image(systemName: "checkmark")
-                                                    .font(.system(size: 14, weight: .bold))
-                                                    .foregroundStyle(.white)
-                                            }
-                                        }
-
-                                    Text("BLACK")
-                                        .font(.system(size: 9, weight: .bold, design: .rounded))
-                                        .foregroundStyle(colors.primary)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, JohoDimensions.spacingSM)
-                                .background(isBlackSelected ? JohoColors.yellow.opacity(0.3) : colors.surface)
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(
-                                            isBlackSelected ? colors.border : colors.border.opacity(0.3),
-                                            lineWidth: isBlackSelected ? 2 : 1
-                                        )
-                                )
-                            }
-                            .buttonStyle(.plain)
-
-                            // CUSTOM option
-                            Button {
-                                showBackgroundColorPicker = true
-                            } label: {
-                                VStack(spacing: 4) {
-                                    Circle()
-                                        .fill(customBackgroundColor)
-                                        .frame(width: 32, height: 32)
-                                        .overlay(
-                                            Circle()
-                                                .stroke(
-                                                    isCustomSelected ? colors.border : colors.border.opacity(0.3),
-                                                    lineWidth: isCustomSelected ? 2.5 : 1.5
-                                                )
-                                        )
-                                        .overlay {
-                                            if isCustomSelected {
-                                                Image(systemName: "checkmark")
-                                                    .font(.system(size: 14, weight: .bold))
-                                                    .foregroundStyle(customBackgroundColorHex.isEmpty ? .white : JohoColors.black)
-                                            } else {
-                                                Image(systemName: "paintpalette")
-                                                    .font(.system(size: 12, weight: .bold))
-                                                    .foregroundStyle(colors.secondary)
-                                            }
-                                        }
-
-                                    Text("CUSTOM")
-                                        .font(.system(size: 9, weight: .bold, design: .rounded))
-                                        .foregroundStyle(colors.primary)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, JohoDimensions.spacingSM)
-                                .background(isCustomSelected ? JohoColors.yellow.opacity(0.3) : colors.surface)
-                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                                .overlay(
-                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                        .stroke(
-                                            isCustomSelected ? colors.border : colors.border.opacity(0.3),
-                                            lineWidth: isCustomSelected ? 2 : 1
-                                        )
-                                )
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-
-                    // Footer text
-                    Text("True Black saves battery on OLED displays. Custom lets you pick any color.")
-                        .font(JohoFont.caption)
-                        .foregroundStyle(colors.secondary)
-                        .padding(.horizontal, JohoDimensions.spacingSM)
-
-                    // Divider
-                    Rectangle()
-                        .fill(colors.border.opacity(0.1))
-                        .frame(height: 1)
-                        .padding(.vertical, JohoDimensions.spacingSM)
-
-                    // 夜間モード (Night Mode) toggle - AMOLED dark mode
-                    darkModeToggleRow
-
-                    // Divider
-                    Rectangle()
-                        .fill(colors.border.opacity(0.1))
-                        .frame(height: 1)
-                        .padding(.vertical, JohoDimensions.spacingSM)
-
-                    // System UI Accent (情報デザイン: Navigation element color)
-                    systemUIAccentSection
-                }
-                .padding(JohoDimensions.spacingLG)
-                .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-                )
-                .padding(.horizontal, JohoDimensions.spacingLG)
-                .sheet(isPresented: $showBackgroundColorPicker) {
-                    BackgroundColorPickerSheet(
-                        selectedColorHex: $customBackgroundColorHex,
-                        onDone: {
-                            if !customBackgroundColorHex.isEmpty {
-                                appBackgroundColor = "custom"
-                            }
-                            showBackgroundColorPicker = false
-                        }
-                    )
-                    .presentationDetents([.medium])
-                }
-
                 // Theme Section (情報デザイン: Unified theming)
                 themeSection
 
                 // Categories Section (情報デザイン: Master icon + color per category)
                 categoriesSection
+
+                // Months Section (情報デザイン: Month card customization)
+                monthsSection
 
                 // Lunar Calendar Section (情報デザイン: VN holidays only)
                 if holidayRegions.regions.contains("VN") {
@@ -246,12 +69,6 @@ struct SettingsView: View {
 
                 // Personalization Section (情報デザイン: User customization)
                 personalizationSection
-
-                // Export Section (情報デザイン: PDF branding options)
-                exportSettingsSection
-
-                // World Clocks Section (Onsen landing page)
-                worldClocksSection
 
                 // About Section
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
@@ -316,7 +133,7 @@ struct SettingsView: View {
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
+                        .strokeBorder(colors.border, lineWidth: JohoDimensions.borderThick)
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
 
@@ -397,21 +214,6 @@ struct SettingsView: View {
                         .foregroundStyle(colors.secondary)
                 }
 
-                // World clocks count (if any)
-                if !worldClocks.isEmpty {
-                    HStack(spacing: 4) {
-                        Image(systemName: "globe")
-                            .font(.system(size: 10, weight: .bold))
-                            .foregroundStyle(colors.secondary)
-                        Text("\(worldClocks.count)")
-                            .font(JohoFont.labelSmall)
-                            .foregroundStyle(colors.secondary)
-                        Text("clocks")
-                            .font(JohoFont.labelSmall)
-                            .foregroundStyle(colors.secondary)
-                    }
-                }
-
                 Spacer()
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
@@ -421,202 +223,12 @@ struct SettingsView: View {
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
+                .strokeBorder(colors.border, lineWidth: JohoDimensions.borderThick)
         )
-    }
-
-    // MARK: - Dark Mode Picker (情報デザイン: Segmented control)
-
-    private var darkModeToggleRow: some View {
-        VStack(spacing: JohoDimensions.spacingSM) {
-            VStack(spacing: JohoDimensions.spacingMD) {
-                // Header row
-                HStack(spacing: JohoDimensions.spacingMD) {
-                    // Icon zone
-                    Image(systemName: "circle.lefthalf.filled")
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundStyle(colors.primary)
-                        .johoTouchTarget()
-                        .background(colors.inputBackground)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                        )
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Appearance")
-                            .font(JohoFont.headline)
-                            .foregroundStyle(colors.primary)
-
-                        Text(selectedColorMode == .dark ? "Dark mode active" : "Light mode active")
-                            .font(JohoFont.body)
-                            .foregroundStyle(colors.secondary)
-                    }
-
-                    Spacer()
-                }
-
-                // Segmented control (情報デザイン: Two-button picker)
-                HStack(spacing: 0) {
-                    // LIGHT button
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.15)) {
-                            johoColorMode = "light"
-                        }
-                        HapticManager.selection()
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: "sun.max")
-                                .font(.system(size: 12, weight: .bold))
-                            Text("LIGHT")
-                                .font(.system(size: 12, weight: .black, design: .rounded))
-                        }
-                        .foregroundStyle(selectedColorMode == .light ? colors.primaryInverted : colors.primary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(selectedColorMode == .light ? colors.primary : colors.surface)
-                    }
-                    .buttonStyle(.plain)
-
-                    // Vertical divider
-                    Rectangle()
-                        .fill(colors.border)
-                        .frame(width: 1.5)
-
-                    // DARK button
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.15)) {
-                            johoColorMode = "dark"
-                        }
-                        HapticManager.selection()
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: "moon")
-                                .font(.system(size: 12, weight: .bold))
-                            Text("DARK")
-                                .font(.system(size: 12, weight: .black, design: .rounded))
-                        }
-                        .foregroundStyle(selectedColorMode == .dark ? colors.primaryInverted : colors.primary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(selectedColorMode == .dark ? colors.primary : colors.surface)
-                    }
-                    .buttonStyle(.plain)
-                }
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                        .stroke(colors.border, lineWidth: 1.5)
-                )
-            }
-            .padding(JohoDimensions.spacingMD)
-            .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-            )
-
-            // Footer
-            Text("Dark mode uses white text on black. Saves battery on OLED screens.")
-                .font(JohoFont.caption)
-                .foregroundStyle(colors.secondary)
-                .padding(.horizontal, JohoDimensions.spacingSM)
-        }
     }
 
     private var selectedColorMode: JohoColorMode {
         JohoColorMode(rawValue: johoColorMode) ?? .light
-    }
-
-    // MARK: - System UI Accent Section (情報デザイン: Navigation elements)
-
-    private var systemUIAccentSection: some View {
-        VStack(spacing: JohoDimensions.spacingSM) {
-            // Header row
-            HStack(spacing: JohoDimensions.spacingMD) {
-                Image(systemName: "slider.horizontal.3")
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(colors.primary)
-                    .johoTouchTarget()
-                    .background(colors.inputBackground)
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                    )
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("UI Accent")
-                        .font(JohoFont.headline)
-                        .foregroundStyle(colors.primary)
-
-                    Text((SystemUIAccent(rawValue: systemUIAccent) ?? .indigo).description)
-                        .font(JohoFont.body)
-                        .foregroundStyle(colors.secondary)
-                }
-
-                Spacer()
-            }
-
-            // Color option buttons (horizontal scroll for 5 options)
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: JohoDimensions.spacingSM) {
-                    ForEach(SystemUIAccent.allCases) { option in
-                        Button {
-                            withAnimation(.easeInOut(duration: 0.15)) {
-                                systemUIAccent = option.rawValue
-                            }
-                            HapticManager.selection()
-                        } label: {
-                            VStack(spacing: 4) {
-                                // Color circle preview
-                                Circle()
-                                    .fill(option.color)
-                                    .frame(width: 28, height: 28)
-                                    .overlay(
-                                        Circle()
-                                            .stroke(systemUIAccent == option.rawValue ? colors.primary : colors.border, lineWidth: systemUIAccent == option.rawValue ? 2.5 : 1)
-                                    )
-
-                                // Label
-                                Text(option.displayName)
-                                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                                    .foregroundStyle(colors.primary)
-
-                                // Japanese name
-                                Text(option.japaneseName)
-                                    .font(.system(size: 8, weight: .medium, design: .rounded))
-                                    .foregroundStyle(colors.secondary)
-                            }
-                            .frame(width: 60)
-                            .padding(.vertical, 8)
-                            .background(systemUIAccent == option.rawValue ? option.color.opacity(0.15) : colors.surface)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(systemUIAccent == option.rawValue ? option.color : colors.border, lineWidth: systemUIAccent == option.rawValue ? 2 : 1)
-                            )
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-            }
-
-            // Footer
-            Text("Color for pickers, navigation buttons, and system UI elements.")
-                .font(JohoFont.caption)
-                .foregroundStyle(colors.secondary)
-                .padding(.horizontal, JohoDimensions.spacingSM)
-        }
-        .padding(JohoDimensions.spacingMD)
-        .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-        )
     }
 
     // MARK: - Theme Section (情報デザイン: Unified Category Theming)
@@ -625,9 +237,59 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
             JohoPill(text: "THEME", style: .whiteOnBlack, size: .small)
 
+            // Light/Dark mode toggle
+            HStack(spacing: 0) {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.15)) {
+                        johoColorMode = "light"
+                    }
+                    HapticManager.selection()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "sun.max")
+                            .font(.system(size: 12, weight: .bold))
+                        Text("LIGHT")
+                            .font(.system(size: 12, weight: .black, design: .rounded))
+                    }
+                    .foregroundStyle(selectedColorMode == .light ? colors.primaryInverted : colors.primary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(selectedColorMode == .light ? colors.primary : colors.surface)
+                }
+                .buttonStyle(.plain)
+
+                Rectangle()
+                    .fill(colors.border)
+                    .frame(width: 1.5)
+
+                Button {
+                    withAnimation(.easeInOut(duration: 0.15)) {
+                        johoColorMode = "dark"
+                    }
+                    HapticManager.selection()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "moon")
+                            .font(.system(size: 12, weight: .bold))
+                        Text("DARK")
+                            .font(.system(size: 12, weight: .black, design: .rounded))
+                    }
+                    .foregroundStyle(selectedColorMode == .dark ? colors.primaryInverted : colors.primary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(selectedColorMode == .dark ? colors.primary : colors.surface)
+                }
+                .buttonStyle(.plain)
+            }
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                    .stroke(colors.border, lineWidth: 1.5)
+            )
+
             // Theme preset cards — horizontal scroll
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: JohoDimensions.spacingSM) {
+                HStack(alignment: .top, spacing: JohoDimensions.spacingSM) {
                     ForEach(JohoThemeLoader.loadPresets()) { theme in
                         themePresetCard(theme)
                     }
@@ -684,7 +346,7 @@ struct SettingsView: View {
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+                    .strokeBorder(colors.border, lineWidth: JohoDimensions.borderMedium)
             )
 
             // Footer
@@ -698,7 +360,7 @@ struct SettingsView: View {
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
+                .strokeBorder(colors.border, lineWidth: JohoDimensions.borderThick)
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
@@ -750,20 +412,16 @@ struct SettingsView: View {
                     Circle().fill(Color(hex: theme.memoColorHex)).frame(width: 8, height: 8)
                 }
 
-                // Structural color preview with "Aa" text readability sample
-                if theme.hasStructuralOverrides {
-                    HStack(spacing: 2) {
-                        // Light mode preview
-                        themeTextSample(
-                            surfaceHex: theme.lightSurfaceHex ?? "FFFFFF",
-                            borderHex: theme.lightBorderHex ?? "000000"
-                        )
-                        // Dark mode preview
-                        themeTextSample(
-                            surfaceHex: theme.darkSurfaceHex ?? "1C1C1E",
-                            borderHex: theme.darkBorderHex ?? "48484A"
-                        )
-                    }
+                // Light/dark mode text readability samples
+                HStack(spacing: 2) {
+                    themeTextSample(
+                        surfaceHex: theme.lightSurfaceHex ?? "FFFFFF",
+                        borderHex: theme.lightBorderHex ?? "000000"
+                    )
+                    themeTextSample(
+                        surfaceHex: theme.darkSurfaceHex ?? "1C1C1E",
+                        borderHex: theme.darkBorderHex ?? "48484A"
+                    )
                 }
             }
             .frame(width: 72)
@@ -774,6 +432,18 @@ struct SettingsView: View {
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
                     .stroke(isActive ? colors.primary : colors.border, lineWidth: isActive ? 2.5 : 1)
             )
+            .overlay(alignment: .topLeading) {
+                if isActive {
+                    Image(systemName: selectedColorMode == .dark ? "moon.fill" : "sun.max.fill")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(colors.primary)
+                        .padding(4)
+                        .background(colors.surface)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(colors.border, lineWidth: 1))
+                        .offset(x: -4, y: -4)
+                }
+            }
         }
         .buttonStyle(.plain)
     }
@@ -866,7 +536,7 @@ struct SettingsView: View {
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+                    .strokeBorder(colors.border, lineWidth: JohoDimensions.borderMedium)
             )
         }
         .padding(.horizontal, JohoDimensions.spacingLG)
@@ -877,6 +547,130 @@ struct SettingsView: View {
                     editingCategory = nil
                 }
             )
+            .presentationCornerRadius(20)
+        }
+    }
+
+    // MARK: - Months Section (情報デザイン: Month card customization)
+
+    /// Month customizations read helper
+    private var monthCustomizations: [Int: MonthCustomization] {
+        guard !monthCustomizationsData.isEmpty,
+              let decoded = try? JSONDecoder().decode([Int: MonthCustomization].self, from: monthCustomizationsData) else {
+            return [:]
+        }
+        return decoded
+    }
+
+    private func saveMonthCustomization(_ customization: MonthCustomization?, for month: Int) {
+        var customizations = monthCustomizations
+        if let customization = customization {
+            customizations[month] = customization
+        } else {
+            customizations.removeValue(forKey: month)
+        }
+        if let encoded = try? JSONEncoder().encode(customizations) {
+            monthCustomizationsData = encoded
+        }
+        MonthThemeStorage.syncCustomizations(customizations)
+        WidgetCenter.shared.reloadTimelines(ofKind: "VeckaWidget")
+    }
+
+    private var monthsSection: some View {
+        VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
+            JohoPill(text: "MONTHS", style: .whiteOnBlack, size: .small)
+
+            VStack(spacing: 0) {
+                ForEach(1...12, id: \.self) { month in
+                    let theme = MonthTheme.theme(for: month)
+                    let custom = monthCustomizations[month]
+                    let displayIcon = custom?.icon ?? theme.icon
+                    let hasCustomization = custom?.icon != nil || custom?.iconColorHex != nil || custom?.message != nil
+
+                    Button {
+                        editingMonthID = IdentifiableMonth(id: month)
+                    } label: {
+                        HStack(spacing: JohoDimensions.spacingMD) {
+                            // Seasonal icon in squircle
+                            Image(systemName: displayIcon)
+                                .font(.system(size: 16, weight: .bold, design: .rounded))
+                                .foregroundStyle(theme.accentColor)
+                                .frame(width: 32, height: 32)
+                                .background(theme.lightBackground)
+                                .clipShape(Squircle(cornerRadius: 8))
+                                .overlay(
+                                    Squircle(cornerRadius: 8)
+                                        .stroke(colors.border, lineWidth: 1.5)
+                                )
+
+                            // Month name
+                            Text(theme.name.uppercased())
+                                .font(.system(size: 12, weight: .black, design: .rounded))
+                                .foregroundStyle(colors.primary)
+
+                            // Customization indicator
+                            if hasCustomization {
+                                Circle()
+                                    .fill(theme.accentColor)
+                                    .frame(width: 6, height: 6)
+                            }
+
+                            Spacer()
+
+                            // Chevron
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(colors.primary.opacity(0.4))
+                        }
+                        .padding(.horizontal, JohoDimensions.spacingMD)
+                        .padding(.vertical, JohoDimensions.spacingSM + 2)
+                    }
+                    .buttonStyle(.plain)
+
+                    // Divider between rows (not after last)
+                    if month < 12 {
+                        Rectangle()
+                            .fill(colors.border)
+                            .frame(height: 1)
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+                    }
+                }
+            }
+            .background(colors.surface)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                    .strokeBorder(colors.border, lineWidth: JohoDimensions.borderMedium)
+            )
+
+            // Footer
+            Text("Customize month cards with icons, colors, and messages. 季節の色 stay locked.")
+                .font(JohoFont.caption)
+                .foregroundStyle(colors.secondary)
+                .padding(.horizontal, JohoDimensions.spacingSM)
+        }
+        .padding(.horizontal, JohoDimensions.spacingLG)
+        .sheet(item: $editingMonthID) { item in
+            MonthCustomizationSheet(
+                month: item.id,
+                currentCustomization: monthCustomizations[item.id] ?? MonthCustomization(),
+                onSave: { customization in
+                    if customization.icon != nil || customization.iconColorHex != nil || customization.message != nil {
+                        saveMonthCustomization(customization, for: item.id)
+                    } else {
+                        saveMonthCustomization(nil, for: item.id)
+                    }
+                    editingMonthID = nil
+                },
+                onCancel: {
+                    editingMonthID = nil
+                },
+                onReset: {
+                    saveMonthCustomization(nil, for: item.id)
+                    editingMonthID = nil
+                }
+            )
+            .presentationDetents([.height(520)])
             .presentationCornerRadius(20)
         }
     }
@@ -942,7 +736,7 @@ struct SettingsView: View {
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+                    .strokeBorder(colors.border, lineWidth: JohoDimensions.borderMedium)
             )
 
             // Footer
@@ -956,34 +750,11 @@ struct SettingsView: View {
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
+                .strokeBorder(colors.border, lineWidth: JohoDimensions.borderThick)
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
-    // MARK: - Background Color Helpers
-
-    private var isBlackSelected: Bool {
-        appBackgroundColor == "black" && customBackgroundColorHex.isEmpty
-    }
-
-    private var isCustomSelected: Bool {
-        !customBackgroundColorHex.isEmpty
-    }
-
-    private var customBackgroundColor: Color {
-        if customBackgroundColorHex.isEmpty {
-            return Color(hex: "333333")  // Preview gray when not set
-        }
-        return Color(hex: customBackgroundColorHex)
-    }
-
-    private var backgroundDisplayName: String {
-        if isCustomSelected {
-            return "Custom Color"
-        }
-        return "True Black (AMOLED)"
-    }
 
     // MARK: - Personalization Section (情報デザイン: Custom landing page title)
 
@@ -1039,7 +810,7 @@ struct SettingsView: View {
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+                        .strokeBorder(colors.border, lineWidth: JohoDimensions.borderMedium)
                 )
 
                 // Examples hint
@@ -1082,7 +853,7 @@ struct SettingsView: View {
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
+                .strokeBorder(colors.border, lineWidth: JohoDimensions.borderThick)
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
         .sheet(isPresented: $isEditingTitle) {
@@ -1097,300 +868,6 @@ struct SettingsView: View {
                 }
             )
         }
-    }
-
-    // MARK: - Export Settings Section (情報デザイン: PDF branding)
-
-    private var exportSettingsSection: some View {
-        VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
-            // Section label
-            JohoPill(text: "EXPORT", style: .whiteOnBlack, size: .small)
-
-            // PDF Title setting (EXCEPTION: Keep JohoColors.black on purple background)
-            HStack(spacing: JohoDimensions.spacingMD) {
-                // Icon zone
-                Image(systemName: "doc.text")
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(JohoColors.black)
-                    .johoTouchTarget()
-                    .background(JohoColors.purple.opacity(0.3))
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                    )
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("PDF Title")
-                        .font(JohoFont.headline)
-                        .foregroundStyle(colors.primary)
-
-                    TextField("Contact Directory", text: $pdfExportTitle)
-                        .font(JohoFont.body)
-                        .foregroundStyle(colors.secondary)
-                }
-
-                Spacer()
-            }
-            .padding(JohoDimensions.spacingMD)
-            .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-            )
-
-            // PDF Footer setting (EXCEPTION: Keep JohoColors.black on purple background)
-            HStack(spacing: JohoDimensions.spacingMD) {
-                // Icon zone
-                Image(systemName: "text.alignleft")
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(JohoColors.black)
-                    .johoTouchTarget()
-                    .background(JohoColors.purple.opacity(0.2))
-                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                    .overlay(
-                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                            .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                    )
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("PDF Footer")
-                        .font(JohoFont.headline)
-                        .foregroundStyle(colors.primary)
-
-                    TextField("Page number only", text: $pdfExportFooter)
-                        .font(JohoFont.body)
-                        .foregroundStyle(colors.secondary)
-                }
-
-                Spacer()
-            }
-            .padding(JohoDimensions.spacingMD)
-            .background(colors.surface)
-            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-            .overlay(
-                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-            )
-
-            // Footer hint
-            Text("Leave footer empty to show page numbers only.")
-                .font(JohoFont.caption)
-                .foregroundStyle(colors.secondary)
-                .padding(.horizontal, JohoDimensions.spacingSM)
-        }
-        .padding(JohoDimensions.spacingLG)
-        .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
-        .padding(.horizontal, JohoDimensions.spacingLG)
-    }
-
-    // MARK: - World Clocks Section (情報デザイン: Onsen landing page clocks)
-
-    private var worldClocksSection: some View {
-        VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
-            // Section label
-            JohoPill(text: "WORLD CLOCKS", style: .whiteOnBlack, size: .small)
-
-            // Current clocks list
-            if worldClocks.isEmpty {
-                // Empty state
-                HStack(spacing: JohoDimensions.spacingMD) {
-                    Image(systemName: "globe")
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundStyle(colors.secondary)
-                        .johoTouchTarget()
-                        .background(colors.border.opacity(0.05))
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(colors.border.opacity(0.2), lineWidth: JohoDimensions.borderThin)
-                        )
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("No World Clocks")
-                            .font(JohoFont.headline)
-                            .foregroundStyle(colors.primary)
-
-                        Text("Add clocks to see times on your Onsen page")
-                            .font(JohoFont.body)
-                            .foregroundStyle(colors.secondary)
-                    }
-
-                    Spacer()
-                }
-                .padding(JohoDimensions.spacingMD)
-                .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(colors.border.opacity(0.2), lineWidth: JohoDimensions.borderMedium)
-                )
-            } else {
-                // Clock list
-                VStack(spacing: 0) {
-                    ForEach(Array(worldClocks.enumerated()), id: \.element.id) { index, clock in
-                        HStack(spacing: JohoDimensions.spacingMD) {
-                            // City code pill + City name (情報デザイン: NO emoji)
-                            HStack(spacing: 8) {
-                                Text(clock.cityCode)
-                                    .font(.system(size: 10, weight: .black, design: .rounded))
-                                    .foregroundStyle(colors.primaryInverted)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(colors.primary)
-                                    .clipShape(Capsule())
-
-                                Text(clock.cityName)
-                                    .font(JohoFont.headline)
-                                    .foregroundStyle(colors.primary)
-                            }
-
-                            Spacer()
-
-                            // Current time
-                            Text(clock.formattedTime)
-                                .font(.system(size: 16, weight: .bold, design: .monospaced))
-                                .foregroundStyle(colors.primary)
-
-                            // Offset
-                            Text(clock.offsetFromLocal)
-                                .font(.system(size: 10, weight: .bold, design: .rounded))
-                                .foregroundStyle(colors.secondary)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(colors.border.opacity(0.05))
-                                .clipShape(Capsule())
-
-                            // Delete button
-                            Button {
-                                deleteClock(clock)
-                            } label: {
-                                Image(systemName: "xmark")
-                                    .font(.system(size: 10, weight: .bold))
-                                    .foregroundStyle(JohoColors.red)
-                                    .frame(width: 28, height: 28)
-                                    .background(JohoColors.red.opacity(0.1))
-                                    .clipShape(Circle())
-                            }
-                            .buttonStyle(.plain)
-                        }
-                        .padding(JohoDimensions.spacingMD)
-
-                        if index < worldClocks.count - 1 {
-                            Rectangle()
-                                .fill(colors.border.opacity(0.1))
-                                .frame(height: 1)
-                                .padding(.horizontal, JohoDimensions.spacingMD)
-                        }
-                    }
-                }
-                .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                )
-            }
-
-            // Add clock button (情報デザイン: Max 3 clocks) - EXCEPTION: Keep JohoColors.black on cyan background
-            Button {
-                if worldClocks.count < 3 {
-                    showAddClockSheet = true
-                }
-            } label: {
-                HStack(spacing: JohoDimensions.spacingMD) {
-                    Image(systemName: "plus.circle.fill")
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundStyle(JohoColors.black)
-                        .johoTouchTarget()
-                        .background(JohoColors.cyan)
-                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                        .overlay(
-                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                        )
-
-                    Text(worldClocks.count >= 3 ? "Maximum 3 Clocks" : "Add World Clock")
-                        .font(JohoFont.headline)
-                        .foregroundStyle(worldClocks.count >= 3 ? colors.secondary : colors.primary)
-
-                    Spacer()
-
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(colors.secondary)
-                }
-                .padding(JohoDimensions.spacingMD)
-                .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
-                )
-            }
-            .buttonStyle(.plain)
-
-            // Footer text
-            Text("Up to 3 world clocks appear on your Onsen landing page.")
-                .font(JohoFont.caption)
-                .foregroundStyle(colors.secondary)
-                .padding(.horizontal, JohoDimensions.spacingSM)
-        }
-        .padding(JohoDimensions.spacingLG)
-        .background(colors.surface)
-        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
-        .overlay(
-            Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-        )
-        .padding(.horizontal, JohoDimensions.spacingLG)
-        .sheet(isPresented: $showAddClockSheet) {
-            AddWorldClockView { cityName, timezone in
-                addClock(cityName: cityName, timezone: timezone)
-            }
-        }
-    }
-
-    // MARK: - World Clock Actions
-
-    private func addClock(cityName: String, timezone: String) {
-        let clock = WorldClock(
-            cityName: cityName,
-            timezoneIdentifier: timezone,
-            sortOrder: worldClocks.count
-        )
-        modelContext.insert(clock)
-        try? modelContext.save()
-        syncWorldClocksToWidget()
-    }
-
-    private func deleteClock(_ clock: WorldClock) {
-        modelContext.delete(clock)
-        try? modelContext.save()
-        syncWorldClocksToWidget()
-    }
-
-    /// Sync world clocks to App Group for widget access
-    private func syncWorldClocksToWidget() {
-        // Convert SwiftData WorldClock to shared Codable format
-        let sharedClocks = worldClocks.prefix(3).enumerated().map { index, clock in
-            SharedWorldClock(
-                id: clock.id,
-                cityName: clock.cityName,
-                timezoneIdentifier: clock.timezoneIdentifier,
-                sortOrder: index
-            )
-        }
-        WorldClockStorage.save(Array(sharedClocks))
-
-        // Reload widget timeline
-        WidgetCenter.shared.reloadTimelines(ofKind: "VeckaWidget")
     }
 
     // MARK: - Unified DATABASE Section (情報デザイン: Star Page Month Card Style)
@@ -1486,7 +963,7 @@ struct SettingsView: View {
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
+                .strokeBorder(colors.border, lineWidth: JohoDimensions.borderThick)
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
@@ -1662,7 +1139,7 @@ struct SettingsView: View {
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
+                .strokeBorder(colors.border, lineWidth: JohoDimensions.borderThick)
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
         .alert("Reset All Data?", isPresented: $showingResetConfirmation) {
@@ -1863,106 +1340,6 @@ struct SettingsView: View {
         } catch {
             Log.e("Failed to reset data: \(error)")
         }
-    }
-}
-
-// MARK: - Background Color Picker Sheet
-
-struct BackgroundColorPickerSheet: View {
-    @Binding var selectedColorHex: String
-    let onDone: () -> Void
-    @Environment(\.johoColorMode) private var colorMode
-    @Environment(\.dismiss) private var dismiss
-
-    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
-
-    // Dark background color presets
-    private let presetColors: [(name: String, hex: String)] = [
-        ("Navy", "1A1A2E"),
-        ("Charcoal", "1C1C1E"),
-        ("Slate", "2C3E50"),
-        ("Dark Gray", "333333"),
-        ("Midnight", "191970"),
-        ("Forest", "1B4332"),
-        ("Wine", "4A1C2E"),
-        ("Espresso", "3C2415"),
-    ]
-
-    var body: some View {
-        VStack(spacing: 0) {
-            // Header
-            HStack {
-                Button("Cancel") {
-                    dismiss()
-                }
-                .font(JohoFont.body)
-                .foregroundStyle(colors.secondary)
-
-                Spacer()
-
-                Text("BACKGROUND COLOR")
-                    .font(.system(size: 12, weight: .black, design: .rounded))
-                    .tracking(1.5)
-                    .foregroundStyle(colors.primary)
-
-                Spacer()
-
-                Button("Done") {
-                    onDone()
-                }
-                .font(JohoFont.body.bold())
-                .foregroundStyle(colors.primary)
-            }
-            .padding(JohoDimensions.spacingMD)
-
-            Rectangle()
-                .fill(colors.border)
-                .frame(height: 1.5)
-
-            // Color grid
-            LazyVGrid(columns: [
-                GridItem(.flexible()),
-                GridItem(.flexible()),
-                GridItem(.flexible()),
-                GridItem(.flexible())
-            ], spacing: JohoDimensions.spacingSM) {
-                ForEach(presetColors, id: \.hex) { preset in
-                    Button {
-                        selectedColorHex = preset.hex
-                        HapticManager.selection()
-                    } label: {
-                        VStack(spacing: 4) {
-                            Circle()
-                                .fill(Color(hex: preset.hex))
-                                .frame(width: 44, height: 44)
-                                .overlay(
-                                    Circle()
-                                        .stroke(
-                                            selectedColorHex == preset.hex ? colors.primary : colors.border,
-                                            lineWidth: selectedColorHex == preset.hex ? 3 : 1.5
-                                        )
-                                )
-                                .overlay {
-                                    if selectedColorHex == preset.hex {
-                                        Image(systemName: "checkmark")
-                                            .font(.system(size: 16, weight: .bold))
-                                            .foregroundStyle(.white)
-                                    }
-                                }
-
-                            Text(preset.name)
-                                .font(.system(size: 9, weight: .bold, design: .rounded))
-                                .foregroundStyle(colors.primary)
-                        }
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .padding(JohoDimensions.spacingMD)
-
-            Spacer()
-        }
-        .background(colors.surface)
     }
 }
 

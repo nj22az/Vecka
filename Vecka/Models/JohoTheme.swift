@@ -91,67 +91,31 @@ enum JohoThemeLoader {
             systemAccent: "indigo"
         ),
         JohoThemePreset(
-            id: "sakura", name: "Sakura", description: "Cherry blossom warmth",
-            previewIcon: "leaf.fill",
-            holidayColorHex: "F9A8D4", observanceColorHex: "FBCFE8", memoColorHex: "FDE68A",
-            holidayIcon: "heart.fill", observanceIcon: "sparkles", memoIcon: "note.text",
-            systemAccent: "indigo",
-            lightBorderHex: "8B5E7E", lightSurfaceHex: "FFF5F7", lightCanvasHex: nil,
-            darkBorderHex: "C084A0", darkSurfaceHex: "2D1B25", darkCanvasHex: nil
-        ),
-        JohoThemePreset(
             id: "nordic", name: "Nordic", description: "Scandinavian minimalism",
             previewIcon: "snowflake",
-            holidayColorHex: "BFDBFE", observanceColorHex: "C7D2FE", memoColorHex: "E2E8F0",
+            holidayColorHex: "93C5FD", observanceColorHex: "C4B5FD", memoColorHex: "CBD5E1",
             holidayIcon: "star.fill", observanceIcon: "diamond.fill", memoIcon: "doc.text",
             systemAccent: "navy",
-            lightBorderHex: "64748B", lightSurfaceHex: "F8FAFC", lightCanvasHex: nil,
+            lightBorderHex: "475569", lightSurfaceHex: "F8FAFC", lightCanvasHex: nil,
             darkBorderHex: "64748B", darkSurfaceHex: "1E293B", darkCanvasHex: nil
         ),
         JohoThemePreset(
-            id: "earth", name: "Earth", description: "Natural tones",
+            id: "earth", name: "Earth", description: "Warm, natural tones",
             previewIcon: "mountain.2.fill",
-            holidayColorHex: "BBF7D0", observanceColorHex: "FED7AA", memoColorHex: "FDE68A",
+            holidayColorHex: "86EFAC", observanceColorHex: "FDBA74", memoColorHex: "FDE68A",
             holidayIcon: "leaf.fill", observanceIcon: "sun.max.fill", memoIcon: "note.text",
             systemAccent: "slate",
-            lightBorderHex: "78603F", lightSurfaceHex: "FEFCE8", lightCanvasHex: nil,
+            lightBorderHex: "92400E", lightSurfaceHex: "FFFBEB", lightCanvasHex: nil,
             darkBorderHex: "A0896D", darkSurfaceHex: "1C1917", darkCanvasHex: nil
         ),
         JohoThemePreset(
-            id: "mono", name: "Mono", description: "Minimal grayscale",
-            previewIcon: "circle.lefthalf.filled",
-            holidayColorHex: "D4D4D8", observanceColorHex: "E4E4E7", memoColorHex: "F4F4F5",
-            holidayIcon: nil, observanceIcon: nil, memoIcon: nil,
-            systemAccent: "black",
-            lightBorderHex: "71717A", lightSurfaceHex: "FAFAFA", lightCanvasHex: nil,
-            darkBorderHex: "71717A", darkSurfaceHex: "18181B", darkCanvasHex: nil
-        ),
-        JohoThemePreset(
-            id: "ocean", name: "Ocean", description: "Deep sea blues",
-            previewIcon: "water.waves",
-            holidayColorHex: "99F6E4", observanceColorHex: "A5F3FC", memoColorHex: "BAE6FD",
-            holidayIcon: "fish.fill", observanceIcon: "sparkles", memoIcon: "note.text",
-            systemAccent: "blue",
-            lightBorderHex: "0D7377", lightSurfaceHex: "F0FDFA", lightCanvasHex: nil,
-            darkBorderHex: "2DD4BF", darkSurfaceHex: "0F1729", darkCanvasHex: nil
-        ),
-        JohoThemePreset(
-            id: "sunset", name: "Sunset", description: "Warm evening glow",
-            previewIcon: "sun.horizon.fill",
-            holidayColorHex: "FECACA", observanceColorHex: "FED7AA", memoColorHex: "FDE68A",
-            holidayIcon: "flame.fill", observanceIcon: "sparkles", memoIcon: "note.text",
-            systemAccent: "slate",
-            lightBorderHex: "8B6348", lightSurfaceHex: "FFFBEB", lightCanvasHex: nil,
-            darkBorderHex: "C2866B", darkSurfaceHex: "1C1412", darkCanvasHex: nil
-        ),
-        JohoThemePreset(
-            id: "ink", name: "Ink", description: "True AMOLED monochrome",
+            id: "ink", name: "Ink", description: "AMOLED high-contrast mono",
             previewIcon: "drop.fill",
-            holidayColorHex: "FFFFFF", observanceColorHex: "B0B0B0", memoColorHex: "787878",
+            holidayColorHex: "E4E4E7", observanceColorHex: "A1A1AA", memoColorHex: "71717A",
             holidayIcon: nil, observanceIcon: nil, memoIcon: nil,
             systemAccent: "black",
-            lightBorderHex: "48484A", lightSurfaceHex: "000000", lightCanvasHex: "000000",
-            darkBorderHex: "333333", darkSurfaceHex: "000000", darkCanvasHex: "000000"
+            lightBorderHex: "52525B", lightSurfaceHex: "000000", lightCanvasHex: "000000",
+            darkBorderHex: "3F3F46", darkSurfaceHex: "000000", darkCanvasHex: "000000"
         ),
     ]
 }
@@ -251,15 +215,21 @@ extension CategoryColorSettings {
         setColorHex(theme.observanceColorHex, for: .observance)
         setColorHex(theme.memoColorHex, for: .memo)
 
-        // Update category icons if specified
+        // Update category icons (set if specified, reset to default if nil)
         if let icon = theme.holidayIcon {
-            setCategoryIcon(icon, for: .holiday)
+            CategoryIconSettings.setIcon(icon, for: .holiday)
+        } else {
+            CategoryIconSettings.reset(for: .holiday)
         }
         if let icon = theme.observanceIcon {
-            setCategoryIcon(icon, for: .observance)
+            CategoryIconSettings.setIcon(icon, for: .observance)
+        } else {
+            CategoryIconSettings.reset(for: .observance)
         }
         if let icon = theme.memoIcon {
-            setCategoryIcon(icon, for: .memo)
+            CategoryIconSettings.setIcon(icon, for: .memo)
+        } else {
+            CategoryIconSettings.reset(for: .memo)
         }
 
         // Update system UI accent

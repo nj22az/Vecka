@@ -50,6 +50,22 @@ enum MonthThemeStorage {
         else { return [] }
         return styles
     }
+
+    /// Sync month customizations to App Group for widget access
+    static func syncCustomizations(_ customizations: [Int: MonthCustomization]) {
+        let styles: [SharedMonthStyle] = (1...12).map { month in
+            let theme = MonthTheme.theme(for: month)
+            let custom = customizations[month]
+            return SharedMonthStyle(
+                month: month,
+                icon: custom?.icon ?? theme.icon,
+                accentColorHex: custom?.iconColorHex ?? theme.accentColor.toHex(),
+                lightBackgroundHex: theme.lightBackground.toHex(),
+                message: custom?.message
+            )
+        }
+        save(styles)
+    }
 }
 
 // MARK: - Category Color Storage (App Group Sync)

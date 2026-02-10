@@ -47,4 +47,18 @@ enum WorldClockStorage {
         else { return [] }
         return Array(clocks.prefix(3))
     }
+
+    /// Derive clocks from holiday regions and sync to App Group for widget
+    static func syncFromRegions(_ regions: HolidayRegionSelection) {
+        let cities = WorldCityDatabase.clockCities(for: regions)
+        let shared = cities.enumerated().map { i, city in
+            SharedWorldClock(
+                id: UUID(),
+                cityName: city.name,
+                timezoneIdentifier: city.timezone,
+                sortOrder: i
+            )
+        }
+        save(shared)
+    }
 }

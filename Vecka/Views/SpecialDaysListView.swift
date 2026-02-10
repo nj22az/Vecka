@@ -22,6 +22,7 @@
 
 import SwiftUI
 import SwiftData
+import WidgetKit
 
 // MARK: - Local Helper Types (fileprivate to SpecialDaysListView)
 
@@ -46,12 +47,6 @@ fileprivate struct DeletedSpecialDay {
     let iconColor: String?
     let notes: String?
     let region: String
-}
-
-/// 情報デザイン: Wrapper for month customization editing (makes Int identifiable for sheet binding)
-fileprivate struct MonthLabelEdit: Identifiable {
-    let id: Int  // Month number (1-12)
-    var month: Int { id }
 }
 
 /// 情報デザイン: Custom icon, color, and message for a month card
@@ -129,9 +124,6 @@ struct SpecialDaysListView: View {
     // 情報デザイン: Region quick picker expansion
     @State private var isRegionPickerExpanded = false
 
-    // 情報デザイン: Personal month label editing
-    @State private var editingMonthLabel: MonthLabelEdit? = nil
-
     // 情報デザイン: Category filter toggles (tap stat icons to filter)
     @State private var activeFilters: Set<DisplayCategory> = [.holiday, .observance, .memo]
 
@@ -155,35 +147,6 @@ struct SpecialDaysListView: View {
             }
             return decoded
         }
-    }
-
-    private func setMonthCustomization(_ customization: MonthCustomization?, for month: Int) {
-        var customizations = monthCustomizations
-        if let customization = customization {
-            customizations[month] = customization
-        } else {
-            customizations.removeValue(forKey: month)
-        }
-        if let encoded = try? JSONEncoder().encode(customizations) {
-            monthCustomizationsData = encoded
-        }
-        syncMonthThemesToWidget(customizations)
-    }
-
-    /// Sync all month styles to App Group for widget access (follows WorldClockSync pattern)
-    private func syncMonthThemesToWidget(_ customizations: [Int: MonthCustomization]) {
-        let styles: [SharedMonthStyle] = (1...12).map { month in
-            let theme = MonthTheme.theme(for: month)
-            let custom = customizations[month]
-            return SharedMonthStyle(
-                month: month,
-                icon: custom?.icon ?? theme.icon,
-                accentColorHex: custom?.iconColorHex ?? theme.accentColor.toHex(),
-                lightBackgroundHex: theme.lightBackground.toHex(),
-                message: custom?.message
-            )
-        }
-        MonthThemeStorage.save(styles)
     }
 
     private func customIcon(for month: Int) -> String? {
@@ -229,7 +192,7 @@ struct SpecialDaysListView: View {
                         date: memo.date,
                         title: memo.preview,
                         type: .memo,
-                        symbolName: memo.hasMoney ? "yensign.circle.fill" : (memo.hasPlace ? "mappin.circle.fill" : "note.text"),
+                        symbolName: memo.symbolName ?? (memo.hasMoney ? "yensign.circle.fill" : (memo.hasPlace ? "mappin.circle.fill" : "note.text")),
                         iconColor: memo.colorHex,
                         notes: memo.text,
                         isCustom: true,
@@ -463,7 +426,6 @@ struct SpecialDaysListView: View {
             .sheet(item: $editingMemo) { memo in memoEditorSheet(memo) }
             .sheet(isPresented: $showingDatabaseExplorer) { HolidayDatabaseExplorer() }
             .sheet(item: $selectedDetailItem) { item in SpecialDayDetailSheet(item: item) }
-            .sheet(item: $editingMonthLabel) { edit in monthLabelEditorSheet(for: edit.month) }
             .sheet(isPresented: $showingHolidayCreator) { holidayCreatorSheet }
             .overlay(alignment: .bottom) { undoToastOverlay }
     }
@@ -499,8 +461,10 @@ struct SpecialDaysListView: View {
         .onChange(of: selectedYear) { _, newYear in
             holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: newYear)
         }
-        .onChange(of: holidayRegions) { _, _ in
+        .onChange(of: holidayRegions) { _, newRegions in
             holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: selectedYear)
+            WorldClockStorage.syncFromRegions(newRegions)
+            WidgetCenter.shared.reloadTimelines(ofKind: "VeckaWidget")
         }
         .onChange(of: showHolidays) { _, _ in
             holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: selectedYear)
@@ -602,33 +566,6 @@ struct SpecialDaysListView: View {
             Log.w("Failed to create custom holiday: \(error.localizedDescription)")
             HapticManager.notification(.error)
         }
-    }
-
-    // 情報デザイン: Personal month label editor
-    private func monthLabelEditorSheet(for month: Int) -> some View {
-        MonthCustomizationSheet(
-            month: month,
-            currentCustomization: monthCustomizations[month] ?? MonthCustomization(),
-            onSave: { customization in
-                // Save if any customization is set (icon, icon color, or message)
-                // Note: colorHex is locked to seasonal theme (季節の色)
-                if customization.icon != nil || customization.iconColorHex != nil || customization.message != nil {
-                    setMonthCustomization(customization, for: month)
-                } else {
-                    setMonthCustomization(nil, for: month)
-                }
-                editingMonthLabel = nil
-            },
-            onCancel: {
-                editingMonthLabel = nil
-            },
-            onReset: {
-                setMonthCustomization(nil, for: month)
-                editingMonthLabel = nil
-            }
-        )
-        .presentationDetents([.height(520)])
-        .presentationCornerRadius(20)
     }
 
     @ViewBuilder
@@ -1316,14 +1253,6 @@ struct SpecialDaysListView: View {
                 .stroke(colors.border, lineWidth: 1.5)
         )
         .contentShape(Rectangle())
-        // 情報デザイン: NO opacity change - colors define identity regardless of content
-        .simultaneousGesture(
-            LongPressGesture(minimumDuration: 0.5)
-                .onEnded { _ in
-                    HapticManager.impact(.medium)
-                    editingMonthLabel = MonthLabelEdit(id: month)
-                }
-        )
         .onTapGesture {
             withAnimation(.easeInOut(duration: 0.2)) {
                 selectedMonth = month
@@ -2661,265 +2590,6 @@ extension SpecialDaysListView {
 // Note: JohoUndoToast, JohoSpecialDayEditorSheet, JohoIconPickerSheet,
 // JohoAddSpecialDaySheet, and JohoEventEditorSheet have been extracted to
 // Views/JohoEditorSheets.swift for 情報デザイン spritesheet reuse.
-
-// MARK: - Month Label Editor Sheet (情報デザイン: Personal notes for months)
-
-/// Simple editor sheet for adding personal labels to months
-/// Long-press on a month card in Star page to trigger
-/// 情報デザイン: Month customization sheet for icon and background color
-struct MonthCustomizationSheet: View {
-    let month: Int
-    let currentCustomization: MonthCustomization
-    let onSave: (MonthCustomization) -> Void
-    let onCancel: () -> Void
-    let onReset: () -> Void
-
-    @State private var selectedIcon: String?
-    @State private var selectedIconColor: String?
-    @State private var selectedColor: String?
-    @State private var messageText: String = ""
-
-    @Environment(\.johoColorMode) private var colorMode
-    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
-
-    private var monthTheme: MonthTheme {
-        MonthTheme.theme(for: month)
-    }
-
-    // 情報デザイン: Curated icon set for months (PlayStation-style shapes + seasonal)
-    private let iconOptions: [String] = [
-        // Seasonal
-        "snowflake", "heart.fill", "leaf.fill", "sun.max.fill", "cloud.rain.fill", "drop.fill",
-        // Nature
-        "tree.fill", "moon.fill", "star.fill", "sparkles", "wind", "bolt.fill",
-        // Objects
-        "gift.fill", "flag.fill", "bell.fill", "airplane", "car.fill", "house.fill",
-        // PlayStation-style shapes (using SF Symbols that match the style)
-        "circle", "xmark", "triangle", "square", "diamond", "plus"
-    ]
-
-    // 情報デザイン: 6-color palette for backgrounds
-    private let colorOptions: [(name: String, hex: String, color: Color)] = [
-        ("Yellow", "FFE566", JohoColors.yellow),
-        ("Cyan", "A5F3FC", JohoColors.cyan),
-        ("Pink", "FECDD3", JohoColors.pink),
-        ("Green", "BBF7D0", JohoColors.green),
-        ("Purple", "E9D5FF", JohoColors.purple),
-        ("White", "FFFFFF", JohoColors.white)
-    ]
-
-    // 情報デザイン: Icon colors (darker/more saturated for visibility)
-    private let iconColorOptions: [(name: String, hex: String, color: Color)] = [
-        ("Black", "1A1A1A", JohoColors.black),
-        ("Yellow", "D4A900", Color(hex: "D4A900")),
-        ("Cyan", "0891B2", Color(hex: "0891B2")),
-        ("Pink", "E11D48", Color(hex: "E11D48")),
-        ("Green", "16A34A", Color(hex: "16A34A")),
-        ("Purple", "9333EA", Color(hex: "9333EA"))
-    ]
-
-    var body: some View {
-        VStack(spacing: 0) {
-            // Header
-            HStack {
-                Button {
-                    onCancel()
-                } label: {
-                    Text("Cancel")
-                        .font(.system(size: 14, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.6))
-                }
-                .buttonStyle(.plain)
-
-                Spacer()
-
-                Text(monthTheme.name.uppercased())
-                    .font(.system(size: 12, weight: .black, design: .rounded))
-                    .foregroundStyle(colors.primary)
-
-                Spacer()
-
-                Button {
-                    let trimmedMessage = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
-                    // 情報デザイン: colorHex is locked to seasonal theme (季節の色)
-                    onSave(MonthCustomization(
-                        icon: selectedIcon,
-                        iconColorHex: selectedIconColor,
-                        colorHex: nil,  // Locked to theme
-                        message: trimmedMessage.isEmpty ? nil : trimmedMessage
-                    ))
-                } label: {
-                    Text("Save")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.surface)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(colors.primary)
-                        .clipShape(Capsule())
-                }
-                .buttonStyle(.plain)
-            }
-            .padding(.horizontal, JohoDimensions.spacingLG)
-            .padding(.top, JohoDimensions.spacingLG)
-            .padding(.bottom, JohoDimensions.spacingMD)
-
-            // Divider
-            Rectangle()
-                .fill(colors.border)
-                .frame(height: 1.5)
-
-            ScrollView {
-                VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
-                    // Icon picker
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("ICON")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.5))
-
-                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 6), spacing: 8) {
-                            ForEach(iconOptions, id: \.self) { icon in
-                                iconButton(icon)
-                            }
-                        }
-                    }
-
-                    // Icon color picker
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("ICON COLOR")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.5))
-
-                        HStack(spacing: 8) {
-                            ForEach(iconColorOptions, id: \.hex) { option in
-                                iconColorButton(option)
-                            }
-                        }
-                    }
-
-                    // 情報デザイン: Background color is LOCKED to seasonal theme (季節の色)
-                    // Users can only customize icons, icon colors, and messages
-
-                    // Message field (情報デザイン: personal note)
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("MESSAGE")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.5))
-
-                        TextField("e.g., Birthday month...", text: $messageText)
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
-                            .foregroundStyle(colors.primary)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 10)
-                            .background(colors.inputBackground)
-                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
-                            .overlay(
-                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                                    .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
-                            )
-                    }
-
-                    // Reset button
-                    Button {
-                        HapticManager.selection()
-                        onReset()
-                    } label: {
-                        HStack(spacing: 4) {
-                            Image(systemName: "arrow.counterclockwise")
-                                .font(.system(size: 12, weight: .medium))
-                            Text("Reset to default")
-                                .font(.system(size: 12, weight: .medium, design: .rounded))
-                        }
-                        .foregroundStyle(colors.primary.opacity(0.5))
-                    }
-                    .buttonStyle(.plain)
-                }
-                .padding(.horizontal, JohoDimensions.spacingLG)
-                .padding(.top, JohoDimensions.spacingMD)
-            }
-
-            Spacer()
-        }
-        .background(colors.surface)
-        .onAppear {
-            selectedIcon = currentCustomization.icon
-            selectedIconColor = currentCustomization.iconColorHex
-            selectedColor = currentCustomization.colorHex
-            messageText = currentCustomization.message ?? ""
-        }
-    }
-
-    private func iconButton(_ icon: String) -> some View {
-        let isSelected = selectedIcon == icon
-        let isDefault = icon == monthTheme.icon && selectedIcon == nil
-
-        return Button {
-            HapticManager.selection()
-            selectedIcon = (selectedIcon == icon) ? nil : icon
-        } label: {
-            Image(systemName: icon)
-                .font(.system(size: 18, weight: .medium))
-                .foregroundStyle(isSelected || isDefault ? colors.surface : colors.primary)
-                .frame(width: 44, height: 44)
-                .background(isSelected || isDefault ? colors.primary : colors.inputBackground)
-                .clipShape(Squircle(cornerRadius: 10))
-                .overlay(
-                    Squircle(cornerRadius: 10)
-                        .stroke(colors.border, lineWidth: isSelected ? 2 : 1)
-                )
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func colorButton(_ option: (name: String, hex: String, color: Color)) -> some View {
-        let isSelected = selectedColor == option.hex
-
-        return Button {
-            HapticManager.selection()
-            selectedColor = (selectedColor == option.hex) ? nil : option.hex
-        } label: {
-            option.color
-                .frame(width: 44, height: 44)
-                .clipShape(Squircle(cornerRadius: 10))
-                .overlay(
-                    Squircle(cornerRadius: 10)
-                        .stroke(colors.border, lineWidth: isSelected ? 2.5 : 1)
-                )
-                .overlay {
-                    if isSelected {
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(colors.primary)
-                    }
-                }
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func iconColorButton(_ option: (name: String, hex: String, color: Color)) -> some View {
-        let isSelected = selectedIconColor == option.hex
-
-        return Button {
-            HapticManager.selection()
-            selectedIconColor = (selectedIconColor == option.hex) ? nil : option.hex
-        } label: {
-            option.color
-                .frame(width: 44, height: 44)
-                .clipShape(Squircle(cornerRadius: 10))
-                .overlay(
-                    Squircle(cornerRadius: 10)
-                        .stroke(colors.border, lineWidth: isSelected ? 2.5 : 1)
-                )
-                .overlay {
-                    if isSelected {
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(option.name == "Black" ? colors.surface : colors.primary)
-                    }
-                }
-        }
-        .buttonStyle(.plain)
-    }
-}
 
 // MARK: - Custom Holiday Creator Sheet (情報デザイン)
 

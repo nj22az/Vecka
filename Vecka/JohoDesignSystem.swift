@@ -230,40 +230,6 @@ enum SystemUIAccent: String, CaseIterable, Identifiable {
     }
 }
 
-// MARK: - App Background Options (AMOLED-friendly)
-// User can choose background color for battery savings on OLED screens
-
-enum AppBackgroundOption: String, CaseIterable, Identifiable {
-    case trueBlack = "black"       // #000000 - Maximum AMOLED savings
-    case darkNavy = "darkNavy"     // #1A1A2E - Current warm dark (legacy)
-    case nearBlack = "nearBlack"   // #0A0A0F - Slightly warmer than pure black
-
-    var id: String { rawValue }
-
-    var color: Color {
-        switch self {
-        case .trueBlack:  return Color(hex: "000000")
-        case .darkNavy:   return Color(hex: "1A1A2E")
-        case .nearBlack:  return Color(hex: "0A0A0F")
-        }
-    }
-
-    var displayName: String {
-        switch self {
-        case .trueBlack:  return "True Black (AMOLED)"
-        case .darkNavy:   return "Dark Navy"
-        case .nearBlack:  return "Near Black"
-        }
-    }
-
-    var description: String {
-        switch self {
-        case .trueBlack:  return "Maximum battery savings on OLED"
-        case .darkNavy:   return "Warm dark blue (original)"
-        case .nearBlack:  return "Softer than pure black"
-        }
-    }
-}
 
 // MARK: - 情報デザイン Color Scheme (夜間モード - AMOLED Dark Mode)
 // Inverted 情報デザイン for AMOLED screens: WHITE text on BLACK backgrounds
@@ -544,15 +510,27 @@ enum JohoCardSize {
 // MARK: - Squircle Shape
 // iOS app-icon style continuous corners
 
-struct Squircle: Shape {
+struct Squircle: Shape, InsettableShape {
     var cornerRadius: CGFloat
+    private var insetAmount: CGFloat = 0
+
+    init(cornerRadius: CGFloat) {
+        self.cornerRadius = cornerRadius
+    }
 
     func path(in rect: CGRect) -> Path {
-        Path(
-            roundedRect: rect,
-            cornerRadius: cornerRadius,
+        let insetRect = rect.insetBy(dx: insetAmount, dy: insetAmount)
+        return Path(
+            roundedRect: insetRect,
+            cornerRadius: max(cornerRadius - insetAmount, 0),
             style: .continuous
         )
+    }
+
+    func inset(by amount: CGFloat) -> Squircle {
+        var copy = self
+        copy.insetAmount += amount
+        return copy
     }
 }
 
@@ -1802,7 +1780,7 @@ private struct JohoBorderedModifier: ViewModifier {
             .clipShape(Squircle(cornerRadius: cornerRadius))
             .overlay(
                 Squircle(cornerRadius: cornerRadius)
-                    .stroke(resolvedColor, lineWidth: borderWidth)
+                    .strokeBorder(resolvedColor, lineWidth: borderWidth)
             )
     }
 }
@@ -2511,18 +2489,11 @@ struct JohoTypeSuggestionPill: View {
 // MARK: - 情報デザイン ViewModifier Implementations
 // Pattern from Swift Playgrounds "Laying Out Views" ThemeViews.swift
 
-/// Background modifier that uses user's AMOLED background preference
-/// Canvas is always dark (for AMOLED battery savings) - Light/Dark only affects cards/text
+/// Background modifier — always true black (AMOLED optimized)
 struct JohoBackgroundModifier: ViewModifier {
-    @AppStorage("appBackgroundColor") private var appBackgroundColor = "black"
-
-    private var backgroundColor: Color {
-        (AppBackgroundOption(rawValue: appBackgroundColor) ?? .trueBlack).color
-    }
-
     func body(content: Content) -> some View {
         content
-            .background(backgroundColor)
+            .background(Color(hex: "000000"))
             .scrollContentBackground(.hidden)
     }
 }

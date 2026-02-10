@@ -668,6 +668,229 @@ struct JohoAddSpecialDaySheet: View {
     }
 }
 
+// MARK: - Month Customization Sheet (情報デザイン: Personal notes for months)
+
+/// Editor sheet for customizing month icons, icon colors, and messages
+/// Opened from Settings → MONTHS section (moved from Star page long-press)
+struct MonthCustomizationSheet: View {
+    let month: Int
+    let currentCustomization: MonthCustomization
+    let onSave: (MonthCustomization) -> Void
+    let onCancel: () -> Void
+    let onReset: () -> Void
+
+    @State private var selectedIcon: String?
+    @State private var selectedIconColor: String?
+    @State private var selectedColor: String?
+    @State private var messageText: String = ""
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    private var monthTheme: MonthTheme {
+        MonthTheme.theme(for: month)
+    }
+
+    // 情報デザイン: Curated icon set for months (PlayStation-style shapes + seasonal)
+    private let iconOptions: [String] = [
+        // Seasonal
+        "snowflake", "heart.fill", "leaf.fill", "sun.max.fill", "cloud.rain.fill", "drop.fill",
+        // Nature
+        "tree.fill", "moon.fill", "star.fill", "sparkles", "wind", "bolt.fill",
+        // Objects
+        "gift.fill", "flag.fill", "bell.fill", "airplane", "car.fill", "house.fill",
+        // PlayStation-style shapes (using SF Symbols that match the style)
+        "circle", "xmark", "triangle", "square", "diamond", "plus"
+    ]
+
+    // 情報デザイン: Icon colors (darker/more saturated for visibility)
+    private let iconColorOptions: [(name: String, hex: String, color: Color)] = [
+        ("Black", "1A1A1A", JohoColors.black),
+        ("Yellow", "D4A900", Color(hex: "D4A900")),
+        ("Cyan", "0891B2", Color(hex: "0891B2")),
+        ("Pink", "E11D48", Color(hex: "E11D48")),
+        ("Green", "16A34A", Color(hex: "16A34A")),
+        ("Purple", "9333EA", Color(hex: "9333EA"))
+    ]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Button {
+                    onCancel()
+                } label: {
+                    Text("Cancel")
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(0.6))
+                }
+                .buttonStyle(.plain)
+
+                Spacer()
+
+                Text(monthTheme.name.uppercased())
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .foregroundStyle(colors.primary)
+
+                Spacer()
+
+                Button {
+                    let trimmedMessage = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
+                    // 情報デザイン: colorHex is locked to seasonal theme (季節の色)
+                    onSave(MonthCustomization(
+                        icon: selectedIcon,
+                        iconColorHex: selectedIconColor,
+                        colorHex: nil,  // Locked to theme
+                        message: trimmedMessage.isEmpty ? nil : trimmedMessage
+                    ))
+                } label: {
+                    Text("Save")
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(colors.surface)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(colors.primary)
+                        .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.top, JohoDimensions.spacingLG)
+            .padding(.bottom, JohoDimensions.spacingMD)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
+                    // Icon picker
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("ICON")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.5))
+
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 6), spacing: 8) {
+                            ForEach(iconOptions, id: \.self) { icon in
+                                iconButton(icon)
+                            }
+                        }
+                    }
+
+                    // Icon color picker
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("ICON COLOR")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.5))
+
+                        HStack(spacing: 8) {
+                            ForEach(iconColorOptions, id: \.hex) { option in
+                                iconColorButton(option)
+                            }
+                        }
+                    }
+
+                    // 情報デザイン: Background color is LOCKED to seasonal theme (季節の色)
+                    // Users can only customize icons, icon colors, and messages
+
+                    // Message field (情報デザイン: personal note)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("MESSAGE")
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.5))
+
+                        TextField("e.g., Birthday month...", text: $messageText)
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.primary)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 10)
+                            .background(colors.inputBackground)
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(
+                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                    .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
+                            )
+                    }
+
+                    // Reset button
+                    Button {
+                        HapticManager.selection()
+                        onReset()
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "arrow.counterclockwise")
+                                .font(.system(size: 12, weight: .medium))
+                            Text("Reset to default")
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                        }
+                        .foregroundStyle(colors.primary.opacity(0.5))
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.top, JohoDimensions.spacingMD)
+            }
+
+            Spacer()
+        }
+        .background(colors.surface)
+        .onAppear {
+            selectedIcon = currentCustomization.icon
+            selectedIconColor = currentCustomization.iconColorHex
+            selectedColor = currentCustomization.colorHex
+            messageText = currentCustomization.message ?? ""
+        }
+    }
+
+    private func iconButton(_ icon: String) -> some View {
+        let isSelected = selectedIcon == icon
+        let isDefault = icon == monthTheme.icon && selectedIcon == nil
+
+        return Button {
+            HapticManager.selection()
+            selectedIcon = (selectedIcon == icon) ? nil : icon
+        } label: {
+            Image(systemName: icon)
+                .font(.system(size: 18, weight: .medium))
+                .foregroundStyle(isSelected || isDefault ? colors.surface : colors.primary)
+                .frame(width: 44, height: 44)
+                .background(isSelected || isDefault ? colors.primary : colors.inputBackground)
+                .clipShape(Squircle(cornerRadius: 10))
+                .overlay(
+                    Squircle(cornerRadius: 10)
+                        .stroke(colors.border, lineWidth: isSelected ? 2 : 1)
+                )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func iconColorButton(_ option: (name: String, hex: String, color: Color)) -> some View {
+        let isSelected = selectedIconColor == option.hex
+
+        return Button {
+            HapticManager.selection()
+            selectedIconColor = (selectedIconColor == option.hex) ? nil : option.hex
+        } label: {
+            option.color
+                .frame(width: 44, height: 44)
+                .clipShape(Squircle(cornerRadius: 10))
+                .overlay(
+                    Squircle(cornerRadius: 10)
+                        .stroke(colors.border, lineWidth: isSelected ? 2.5 : 1)
+                )
+                .overlay {
+                    if isSelected {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(option.name == "Black" ? colors.surface : colors.primary)
+                    }
+                }
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 /// Bento option row for add sheet
 struct JohoBentoOptionRow: View {
     let option: JohoInputOption

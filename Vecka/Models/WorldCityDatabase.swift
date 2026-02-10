@@ -166,4 +166,57 @@ struct WorldCityDatabase {
     static func city(byCode code: String) -> WorldCity? {
         cities.first { $0.code == code }
     }
+
+    // MARK: - Capital City Lookup (情報デザイン: Auto-derive clocks from holiday regions)
+
+    /// Maps ISO country codes to their capital/primary city name
+    private static let capitalCityNames: [String: String] = [
+        "SE": "Stockholm",
+        "NO": "Oslo",
+        "DK": "Copenhagen",
+        "FI": "Helsinki",
+        "IS": "Reykjavik",
+        "GL": "Nuuk",
+        "FO": "Tórshavn",
+        "VN": "Hanoi",
+        "JP": "Tokyo",
+        "GB": "London",
+        "US": "New York",
+        "DE": "Berlin",
+        "FR": "Paris",
+        "ES": "Madrid",
+        "IT": "Rome",
+        "NL": "Amsterdam",
+        "AU": "Sydney",
+        "KR": "Seoul",
+    ]
+
+    /// Get capital/primary city for a country code
+    static func capitalCity(forCountryCode code: String) -> WorldCity? {
+        let upper = code.uppercased()
+        // Try named capital first
+        if let capitalName = capitalCityNames[upper],
+           let city = cities.first(where: { $0.countryCode == upper && $0.name == capitalName }) {
+            return city
+        }
+        // Fallback: first city matching the country code
+        return cities.first(where: { $0.countryCode == upper })
+    }
+
+    /// Derive up to 3 unique-timezone world clocks from selected holiday regions
+    static func clockCities(for regions: HolidayRegionSelection) -> [WorldCity] {
+        var seenTimezones = Set<String>()
+        var result: [WorldCity] = []
+
+        for code in regions.expandedRegions {
+            guard result.count < 3 else { break }
+            guard let city = capitalCity(forCountryCode: code) else { continue }
+            // De-duplicate by timezone (Nordic countries share Europe/Stockholm etc.)
+            guard !seenTimezones.contains(city.timezone) else { continue }
+            seenTimezones.insert(city.timezone)
+            result.append(city)
+        }
+
+        return result
+    }
 }

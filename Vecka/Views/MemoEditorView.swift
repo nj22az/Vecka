@@ -59,6 +59,10 @@ struct MemoEditorView: View {
     @State private var linkedContactName: String = ""
     @State private var showContactPicker = false
 
+    // Icon
+    @State private var selectedSymbol: String = ""
+    @State private var showIconPicker = false
+
     // UI state
     @State private var showDatePicker = false
     @State private var showTimePicker = false
@@ -185,6 +189,13 @@ struct MemoEditorView: View {
             .presentationBackground(colors.canvas)
             .presentationDetents([.medium, .large])
         }
+        .sheet(isPresented: $showIconPicker) {
+            JohoIconPickerSheet(
+                selectedSymbol: $selectedSymbol,
+                accentColor: accentColor,
+                lightBackground: accentColor.opacity(0.15)
+            )
+        }
         .alert("Delete?", isPresented: $showDeleteConfirm) {
             Button("Cancel", role: .cancel) { }
             Button("Delete", role: .destructive) { deleteMemo() }
@@ -246,6 +257,10 @@ struct MemoEditorView: View {
 
                 optionChip(icon: "person.crop.circle", label: "CONTACT", isActive: showContact) {
                     withAnimation(.easeInOut(duration: 0.2)) { showContact.toggle() }
+                }
+
+                optionChip(icon: "face.smiling", label: "ICON", isActive: !selectedSymbol.isEmpty) {
+                    showIconPicker = true
                 }
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
@@ -667,6 +682,10 @@ struct MemoEditorView: View {
             showContact = true
             loadContactName(for: contactID)
         }
+
+        if let sym = memo.symbolName, !sym.isEmpty {
+            selectedSymbol = sym
+        }
     }
 
     private func loadContactName(for contactID: UUID) {
@@ -701,6 +720,7 @@ struct MemoEditorView: View {
         memo.currency = showAmount ? currency : nil
         memo.place = showPlace && !place.isEmpty ? place : nil
         memo.linkedContactID = showContact ? linkedContactID : nil
+        memo.symbolName = selectedSymbol.isEmpty ? nil : selectedSymbol
 
         if existingMemo == nil {
             modelContext.insert(memo)
