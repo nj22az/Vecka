@@ -436,20 +436,6 @@ extension CalendarGridView {
 
     // MARK: - Priority Indicators (情報デザイン)
 
-    /// Indicator info with icon and color for consistency across app
-    private struct IndicatorInfo: Hashable {
-        let icon: String
-        let color: Color
-
-        func hash(into hasher: inout Hasher) {
-            hasher.combine(icon)
-        }
-
-        static func == (lhs: IndicatorInfo, rhs: IndicatorInfo) -> Bool {
-            lhs.icon == rhs.icon
-        }
-    }
-
     /// Returns 3 placeholder dots - filled with color when data exists
     /// 情報デザイン: Consistent visual weight across all cells
     /// Position 1: Holiday (Red), Position 2: Observance (Blue), Position 3: Memo (Green)
@@ -493,35 +479,6 @@ extension CalendarGridView {
                 )
         }
         .frame(height: 10)
-    }
-
-    /// 情報デザイン: Collects indicators using unified 3-category system
-    /// Categories: Holiday (Red), Observance (Blue), Memo (Yellow)
-    private func collectIndicators(for day: CalendarDay, dataCheck: DayDataCheck?) -> [IndicatorInfo] {
-        var indicators: [IndicatorInfo] = []
-
-        // 1. HOLIDAY (Red) - Bank holidays only (day off, like Sunday)
-        if day.isHoliday || dataCheck?.hasHoliday == true {
-            indicators.append(IndicatorInfo(icon: "star.fill", color: CategoryColorSettings.shared.color(for: .holiday)))
-        }
-
-        // 2. OBSERVANCE (Blue) - Cultural observances (special but not holiday)
-        if dataCheck?.hasObservance == true {
-            indicators.append(IndicatorInfo(icon: "sparkles", color: CategoryColorSettings.shared.color(for: .observance)))
-        }
-
-        // 3. MEMO (Green) - All memos: notes, expenses, trips, birthdays
-        // 情報デザイン: Stark green for readability
-        let hasMemo = dataCheck?.hasNote == true ||
-                      dataCheck?.hasExpense == true ||
-                      dataCheck?.hasTrip == true ||
-                      dataCheck?.hasBirthday == true ||
-                      dataCheck?.hasEvent == true
-        if hasMemo {
-            indicators.append(IndicatorInfo(icon: "note.text", color: CategoryColorSettings.shared.color(for: .memo)))
-        }
-
-        return indicators
     }
 
     // MARK: - Lunar Calendar View (Âm Lịch)

@@ -13,10 +13,9 @@
 //
 //  IMPORTANT: Icons are DATABASE-DRIVEN
 //  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  Category icons (holiday, observance, memo) come from customCategoryIcon(for:)
+//  Category icons resolve via DisplayCategory.categoryAwareIcon
 //  which reads from @AppStorage("categoryCustomizations").
-//  NEVER hardcode icons - always use:
-//    customCategoryIcon(for: .category) ?? DisplayCategory.category.outlineIcon
+//  NEVER hardcode icons - always use DisplayCategory.categoryAwareIcon
 //
 //
 
@@ -163,11 +162,6 @@ struct SpecialDaysListView: View {
 
     private func customMessage(for month: Int) -> String? {
         monthCustomizations[month]?.message
-    }
-
-    // 情報デザイン: Category icon lookup via shared helpers (read-only on Star page)
-    private func customCategoryIcon(for category: DisplayCategory) -> String? {
-        CategoryIconSettings.icon(for: category)
     }
 
     // 情報デザイン: Force refresh when customizations change (SwiftUI dependency workaround)
@@ -499,7 +493,7 @@ struct SpecialDaysListView: View {
             mode: .edit(
                 name: specialDay.name,
                 date: specialDay.date,
-                symbol: specialDay.symbolName ?? specialDay.type.defaultIcon,
+                symbol: specialDay.symbolName ?? specialDay.type.categoryAwareIcon,
                 iconColor: specialDay.iconColor,
                 notes: specialDay.notes,
                 region: specialDay.region
@@ -844,9 +838,6 @@ struct SpecialDaysListView: View {
             UnifiedEntryCreator(
                 config: .fullContext(
                     date: selectedMonthDate,
-                    holidayIcon: customCategoryIcon(for: .holiday) ?? DisplayCategory.holiday.outlineIcon,
-                    observanceIcon: customCategoryIcon(for: .observance) ?? DisplayCategory.observance.outlineIcon,
-                    memoIcon: customCategoryIcon(for: .memo) ?? DisplayCategory.memo.outlineIcon,
                     enabledRegions: holidayRegions.regions
                 ),
                 onSaveHoliday: { type, name, about, region, year, month, day in
@@ -1007,10 +998,10 @@ struct SpecialDaysListView: View {
     }
 
     /// 情報デザイン: Compact popover showing category details
-    /// Icons are database-driven via customCategoryIcon(for:)
+    /// Icons are database-driven via DisplayCategory.categoryAwareIcon
     private func categoryPopover(category: DisplayCategory, count: Int) -> some View {
         HStack(spacing: JohoDimensions.spacingSM) {
-            Image(systemName: customCategoryIcon(for: category) ?? category.outlineIcon)
+            Image(systemName: category.categoryAwareIcon)
                 .font(.system(size: 18, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 32, height: 32)
@@ -1281,7 +1272,7 @@ struct SpecialDaysListView: View {
 
                 if dayCards.isEmpty {
                     // 情報デザイン: Use customized icon if set, otherwise default
-                    let displayIcon = customCategoryIcon(for: category) ?? category.outlineIcon
+                    let displayIcon = category.categoryAwareIcon
                     JohoEmptyState(
                         title: "No \(category.localizedLabel)",
                         message: "Tap + to add",
@@ -1301,9 +1292,6 @@ struct SpecialDaysListView: View {
                                 deleteRow: deleteRow,
                                 openEditor: openEditor,
                                 showDetail: { item in selectedDetailItem = item },
-                                holidayIcon: customCategoryIcon(for: .holiday) ?? DisplayCategory.holiday.outlineIcon,
-                                observanceIcon: customCategoryIcon(for: .observance) ?? DisplayCategory.observance.outlineIcon,
-                                memoIcon: customCategoryIcon(for: .memo) ?? DisplayCategory.memo.outlineIcon,
                                 expandedItemID: $expandedItemID
                             )
                         }
@@ -1355,7 +1343,7 @@ struct SpecialDaysListView: View {
     @ViewBuilder
     private func categoryCard(category: DisplayCategory, count: Int) -> some View {
         // 情報デザイン: Custom icon allowed, color from CategoryColorSettings
-        let displayIcon = customCategoryIcon(for: category) ?? category.outlineIcon
+        let displayIcon = category.categoryAwareIcon
         let categoryColor = CategoryColorSettings.shared.color(for: category)
 
         VStack(spacing: 0) {
@@ -1493,11 +1481,6 @@ struct CollapsibleSpecialDayCard: View {
     let deleteRow: (SpecialDayRow) -> Void
     let openEditor: (SpecialDayRow) -> Void
     let showDetail: (SpecialDayRow) -> Void
-
-    // Category icons (database-driven via customCategoryIcon in parent)
-    let holidayIcon: String
-    let observanceIcon: String
-    let memoIcon: String
 
     // Item expansion state (情報デザイン: tap row to show details)
     @Binding var expandedItemID: String?
@@ -1706,18 +1689,15 @@ struct CollapsibleSpecialDayCard: View {
             // RED = Holidays, BLUE = Observances
             // GREEN = Memos (includes birthdays)
 
-            // Icons are database-driven via customCategoryIcon(for:)
-            // Fallback to DisplayCategory.outlineIcon only if no custom icon set
+            // Icons resolve via DisplayCategory.categoryAwareIcon
 
             // Holidays (PINK zone)
-            // Icons are database-driven - passed from parent via holidayIcon/observanceIcon/memoIcon
-
             if consolidatedHolidays.isNotEmpty {
                 consolidatedHolidaySection(
                     title: DisplayCategory.holiday.localizedLabel,
                     items: consolidatedHolidays,
                     zone: .holidays,
-                    icon: holidayIcon
+                    icon: DisplayCategory.holiday.categoryAwareIcon
                 )
             }
 
@@ -1727,7 +1707,7 @@ struct CollapsibleSpecialDayCard: View {
                     title: DisplayCategory.observance.localizedLabel,
                     items: observances,
                     zone: .observances,
-                    icon: observanceIcon
+                    icon: DisplayCategory.observance.categoryAwareIcon
                 )
             }
 
@@ -1737,7 +1717,7 @@ struct CollapsibleSpecialDayCard: View {
                     title: DisplayCategory.memo.localizedLabel,
                     items: combinedMemos,
                     zone: .memos,
-                    icon: memoIcon
+                    icon: DisplayCategory.memo.categoryAwareIcon
                 )
             }
         }
@@ -2086,19 +2066,10 @@ struct CollapsibleSpecialDayCard: View {
     }
 
     // MARK: - Type Indicator Dot (情報デザイン: Black outline shapes)
-    // Icons are database-driven - use passed icon parameters from parent
-
-    private func iconForType(_ type: SpecialDayType) -> String {
-        switch type.displayCategory {
-        case .holiday: return holidayIcon
-        case .observance: return observanceIcon
-        case .memo: return memoIcon
-        }
-    }
 
     @ViewBuilder
     private func typeIndicatorDot(for type: SpecialDayType) -> some View {
-        Image(systemName: iconForType(type))
+        Image(systemName: type.displayCategory.categoryAwareIcon)
             .font(.system(size: 10, weight: .bold, design: .rounded))
             .foregroundStyle(colors.primary)
     }
@@ -2138,7 +2109,7 @@ extension SpecialDaysListView {
         let monthName = calendar.monthSymbols[calendar.component(.month, from: row.date) - 1].uppercased()
 
         // Get icon
-        let icon = row.symbolName ?? row.type.defaultIcon
+        let icon = row.symbolName ?? row.type.categoryAwareIcon
         let headerBgColor: Color = CategoryColorSettings.shared.color(for: row.type.displayCategory).opacity(0.15)
         let iconColor: Color = CategoryColorSettings.shared.color(for: row.type.displayCategory)
 
@@ -2267,7 +2238,7 @@ extension SpecialDaysListView {
         // Use first item for header styling
         let primaryItem = dayCard.items.first
         let primaryType = primaryItem?.type ?? .holiday
-        let icon = primaryItem?.symbolName ?? primaryType.defaultIcon
+        let icon = primaryItem?.symbolName ?? primaryType.categoryAwareIcon
         let headerBgColor: Color = primaryType.accentColor.opacity(0.15)
         let iconColor: Color = primaryType.accentColor
 
@@ -2344,12 +2315,12 @@ extension SpecialDaysListView {
     }
 
     // MARK: - Type Indicator Dot (情報デザイン: Black outline shapes)
-    // Icons are database-driven via customCategoryIcon(for:)
+    // Icons are database-driven via DisplayCategory.categoryAwareIcon
 
     @ViewBuilder
     private func typeIndicatorDot(for type: SpecialDayType) -> some View {
         let category = type.displayCategory
-        Image(systemName: customCategoryIcon(for: category) ?? category.outlineIcon)
+        Image(systemName: category.categoryAwareIcon)
             .font(.system(size: 10, weight: .bold, design: .rounded))
             .foregroundStyle(colors.primary)
     }
@@ -2533,7 +2504,7 @@ extension SpecialDaysListView {
             name: row.title,
             date: row.date,
             type: row.type,
-            symbol: row.symbolName ?? row.type.defaultIcon,
+            symbol: row.symbolName ?? row.type.categoryAwareIcon,
             iconColor: row.iconColor,
             notes: row.notes,
             region: row.region
@@ -2606,8 +2577,6 @@ struct CustomHolidayCreatorSheet: View {
 
     // 情報デザイン: Initial month context (can be changed)
     let initialMonth: Int
-    let holidayIcon: String      // Custom icon from category customization
-    let observanceIcon: String   // Custom icon from category customization
     let enabledRegions: [String]
     let onSave: (SpecialDayType, String, String?, String, Int, Int, Int) -> Void  // type, name, about, region, year, month, day
 
@@ -2657,7 +2626,7 @@ struct CustomHolidayCreatorSheet: View {
 
     // 情報デザイン: Use customized icons from category picker
     private var typeIcon: String {
-        selectedType == .holiday ? holidayIcon : observanceIcon
+        selectedType == .holiday ? DisplayCategory.holiday.categoryAwareIcon : DisplayCategory.observance.categoryAwareIcon
     }
 
     private func monthName(_ month: Int) -> String {
@@ -2837,8 +2806,8 @@ struct CustomHolidayCreatorSheet: View {
 
             // Type pills with custom icons from category customization
             HStack(spacing: JohoDimensions.spacingSM) {
-                typePill(.holiday, label: "HOLIDAY", icon: holidayIcon)
-                typePill(.observance, label: "OBSERVANCE", icon: observanceIcon)
+                typePill(.holiday, label: "HOLIDAY", icon: DisplayCategory.holiday.categoryAwareIcon)
+                typePill(.observance, label: "OBSERVANCE", icon: DisplayCategory.observance.categoryAwareIcon)
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .frame(maxWidth: .infinity, alignment: .leading)

@@ -45,11 +45,11 @@ struct SpecialDayDetailSheet: View {
 
     /// The icon to display (custom or default)
     private var displayIcon: String {
-        customIcon ?? item.symbolName ?? item.type.defaultIcon
+        customIcon ?? item.symbolName ?? item.type.categoryAwareIcon
     }
 
     private var defaultIcon: String {
-        item.symbolName ?? item.type.defaultIcon
+        item.symbolName ?? item.type.categoryAwareIcon
     }
 
     var body: some View {
@@ -118,7 +118,7 @@ struct SpecialDayDetailSheet: View {
             )
         }
         .onAppear {
-            permanentIconSelection = item.symbolName ?? item.type.defaultIcon
+            permanentIconSelection = item.symbolName ?? item.type.categoryAwareIcon
         }
     }
 
@@ -143,7 +143,7 @@ struct SpecialDayDetailSheet: View {
                     Spacer()
 
                     HStack(spacing: 8) {
-                        Image(systemName: item.symbolName ?? item.type.defaultIcon)
+                        Image(systemName: item.symbolName ?? item.type.categoryAwareIcon)
                             .font(.system(size: 18, weight: .bold))
                             .foregroundStyle(CategoryColorSettings.shared.color(for: item.type.displayCategory))
 
@@ -184,7 +184,7 @@ struct SpecialDayDetailSheet: View {
                 memo.id == targetUUID
             })
             if let memos = try? modelContext.fetch(descriptor), let memo = memos.first {
-                memo.symbolName = iconName == item.type.defaultIcon ? nil : iconName
+                memo.symbolName = iconName == item.type.categoryAwareIcon ? nil : iconName
                 try? modelContext.save()
                 HapticManager.notification(.success)
             }
@@ -195,7 +195,7 @@ struct SpecialDayDetailSheet: View {
                 rule.id == targetID
             })
             if let rules = try? modelContext.fetch(descriptor), let rule = rules.first {
-                rule.symbolName = iconName == item.type.defaultIcon ? nil : iconName
+                rule.symbolName = iconName == item.type.categoryAwareIcon ? nil : iconName
                 rule.userModifiedAt = Date()
                 try? modelContext.save()
                 // Refresh holiday cache
@@ -510,7 +510,7 @@ struct SpecialDayShareButton: View {
             item: snapshot,
             preview: SharePreview(
                 item.title,
-                image: Image(systemName: customIcon ?? item.type.defaultIcon)
+                image: Image(systemName: customIcon ?? item.type.categoryAwareIcon)
             )
         ) {
             ZStack {
@@ -584,7 +584,7 @@ struct ShareableSpecialDayCard: View {
 
     /// The icon to display (custom or default)
     private var displayIcon: String {
-        customIcon ?? item.symbolName ?? item.type.defaultIcon
+        customIcon ?? item.symbolName ?? item.type.categoryAwareIcon
     }
 
     /// Full date stamp: YYYYMMDD · W{n}

@@ -477,7 +477,7 @@ struct SettingsView: View {
             VStack(spacing: 0) {
                 ForEach(DisplayCategory.allCases) { category in
                     let categoryColor = CategoryColorSettings.shared.color(for: category)
-                    let currentIcon = CategoryIconSettings.icon(for: category) ?? category.outlineIcon
+                    let currentIcon = category.categoryAwareIcon
 
                     Button {
                         editingCategory = category

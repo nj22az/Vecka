@@ -8,7 +8,6 @@
 //  Types:
 //  - SpecialDayType: Enum for all special day categories
 //  - MonthTheme: Seasonal colors and icons
-//  - HolidayCategory: Color coding for holidays
 //  - DayCardData: Grouping for same-day holidays
 //  - SpecialDayRow: Individual special day data
 //  - ConsolidatedHoliday: Merged same-date holidays
@@ -37,6 +36,11 @@ enum DisplayCategory: String, CaseIterable, Identifiable {
         case .observance: return "diamond"
         case .memo: return "doc.text"
         }
+    }
+
+    /// Theme-aware category icon: custom setting > outline default
+    var categoryAwareIcon: String {
+        CategoryIconSettings.icon(for: self) ?? outlineIcon
     }
 
     /// Localized label for display
@@ -103,17 +107,6 @@ enum SpecialDayType: String, CaseIterable {
         }
     }
 
-    var prioritySymbol: String {
-        switch self {
-        case .holiday: return "●"    // Filled circle
-        case .observance: return "○" // Outlined circle
-        case .birthday: return "★"   // Star
-        case .memo, .note, .event: return "□"       // Square
-        case .trip: return "◇"       // Diamond
-        case .expense: return "◆"    // Filled diamond
-        }
-    }
-
     var defaultIcon: String {
         switch self {
         case .holiday: return "star.fill"
@@ -123,6 +116,17 @@ enum SpecialDayType: String, CaseIterable {
         case .trip: return "airplane"
         case .expense: return "yensign.circle.fill"
         case .event: return "calendar.badge.clock"
+        }
+    }
+
+    /// Theme-aware icon: category setting (for HOL/OBS) > type default
+    /// Memo sub-types keep their distinctive icons (cake, airplane, etc.)
+    var categoryAwareIcon: String {
+        switch self {
+        case .holiday, .observance:
+            return CategoryIconSettings.icon(for: displayCategory) ?? defaultIcon
+        default:
+            return defaultIcon
         }
     }
 
@@ -298,33 +302,6 @@ private struct MonthThemeDTO: Codable {
     }
 }
 
-// MARK: - Holiday Category (for color coding)
-
-enum HolidayCategory {
-    case redDay      // Bank holidays - RED
-    case religious   // Easter, Christmas etc - PURPLE
-    case cultural    // Midsummer, etc - ORANGE
-    case personal    // Birthdays, anniversaries - BLUE
-    case seasonal    // First day of spring - GREEN
-
-    var pillColor: Color {
-        switch self {
-        case .redDay: return Color(hex: "E53E3E")      // Red
-        case .religious: return Color(hex: "805AD5")   // Purple
-        case .cultural: return Color(hex: "ED8936")    // Orange
-        case .personal: return Color(hex: "3182CE")    // Blue
-        case .seasonal: return Color(hex: "38A169")    // Green
-        }
-    }
-
-    var textColor: Color {
-        switch self {
-        case .redDay, .religious, .personal: return JohoColors.white
-        case .cultural, .seasonal: return JohoColors.black
-        }
-    }
-}
-
 // MARK: - Day Card Grouping (情報デザイン: Same-day holidays combine)
 
 /// A day card groups all special days that fall on the same date
@@ -373,18 +350,6 @@ struct SpecialDayRow: Identifiable {
     let originalBirthday: Date?  // For birthdays: the original birth date (to calculate age)
     let turningAge: Int?         // For birthdays: the age they're turning
     var mergedRegions: [String] = []  // All regions after cache dedup (e.g., ["SE", "VN"])
-
-    /// Determine category based on holiday characteristics
-    var category: HolidayCategory {
-        switch type {
-        case .holiday: return .redDay
-        case .birthday: return .personal
-        case .memo, .note, .event: return .personal
-        case .observance: return .cultural
-        case .trip: return .cultural
-        case .expense: return .personal
-        }
-    }
 
     /// Days until this event (for countdowns)
     var daysUntil: Int {
@@ -478,7 +443,7 @@ struct ConsolidatedHoliday: Identifiable {
         var icons: [String: String] = [:]
         for row in holidays {
             let regions = row.mergedRegions.isEmpty ? [row.region] : row.mergedRegions
-            let icon = row.symbolName ?? SpecialDayType.holiday.defaultIcon
+            let icon = row.symbolName ?? SpecialDayType.holiday.categoryAwareIcon
             for region in regions {
                 if names[region] == nil { names[region] = row.title }
                 if icons[region] == nil { icons[region] = icon }

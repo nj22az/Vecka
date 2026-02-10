@@ -73,32 +73,27 @@ enum UnifiedEntryType: String, CaseIterable, Identifiable {
         }
     }
 
-    var defaultIcon: String {
+    var displayCategory: DisplayCategory {
         switch self {
-        case .holiday: return "bell.fill"
-        case .observance: return "heart.fill"
-        case .memo: return "note.text"
+        case .holiday: return .holiday
+        case .observance: return .observance
+        case .memo: return .memo
         }
     }
 }
 
 /// Unified entry creator configuration
+/// Icons resolve via DisplayCategory.categoryAwareIcon (no icon pass-through needed)
 struct UnifiedEntryConfig {
     let availableTypes: Set<UnifiedEntryType>
     let initialDate: Date
-    let holidayIcon: String
-    let observanceIcon: String
-    let memoIcon: String
     let enabledRegions: [String]
 
     /// Calendar context: Only memo
-    static func calendarContext(date: Date, memoIcon: String = "note.text") -> UnifiedEntryConfig {
+    static func calendarContext(date: Date) -> UnifiedEntryConfig {
         UnifiedEntryConfig(
             availableTypes: [.memo],
             initialDate: date,
-            holidayIcon: "bell.fill",
-            observanceIcon: "heart.fill",
-            memoIcon: memoIcon,
             enabledRegions: []
         )
     }
@@ -106,35 +101,23 @@ struct UnifiedEntryConfig {
     /// Star page context: Holiday + Observance
     static func starPageContext(
         date: Date,
-        holidayIcon: String,
-        observanceIcon: String,
         enabledRegions: [String]
     ) -> UnifiedEntryConfig {
         UnifiedEntryConfig(
             availableTypes: [.holiday, .observance],
             initialDate: date,
-            holidayIcon: holidayIcon,
-            observanceIcon: observanceIcon,
-            memoIcon: "note.text",
             enabledRegions: enabledRegions
         )
     }
 
     /// Full context: All three types (Holiday, Observance, Memo)
-    /// Use this for unified entry creation across all pages
     static func fullContext(
         date: Date,
-        holidayIcon: String = "bell.fill",
-        observanceIcon: String = "heart.fill",
-        memoIcon: String = "note.text",
         enabledRegions: [String] = []
     ) -> UnifiedEntryConfig {
         UnifiedEntryConfig(
             availableTypes: [.holiday, .observance, .memo],
             initialDate: date,
-            holidayIcon: holidayIcon,
-            observanceIcon: observanceIcon,
-            memoIcon: memoIcon,
             enabledRegions: enabledRegions
         )
     }
@@ -208,11 +191,7 @@ struct UnifiedEntryCreator: View {
     }
 
     private var typeIcon: String {
-        switch selectedType {
-        case .holiday: return config.holidayIcon
-        case .observance: return config.observanceIcon
-        case .memo: return config.memoIcon
-        }
+        selectedType.displayCategory.categoryAwareIcon
     }
 
     private var canSave: Bool {
@@ -380,13 +359,7 @@ struct UnifiedEntryCreator: View {
 
     private func typePill(_ type: UnifiedEntryType) -> some View {
         let isSelected = selectedType == type
-        let icon: String = {
-            switch type {
-            case .holiday: return config.holidayIcon
-            case .observance: return config.observanceIcon
-            case .memo: return config.memoIcon
-            }
-        }()
+        let icon = type.displayCategory.categoryAwareIcon
 
         return Button {
             withAnimation(.easeInOut(duration: 0.15)) {
