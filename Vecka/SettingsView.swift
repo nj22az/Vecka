@@ -41,6 +41,11 @@ struct SettingsView: View {
     @State private var showingResetConfirmation = false
     @State private var isGeneratingData = false
     @State private var showBackgroundColorPicker = false
+    @State private var showThemeConfirmation = false
+    @State private var pendingTheme: JohoThemePreset?
+
+    // Category customization state
+    @State private var editingCategory: DisplayCategory? = nil
 
     var body: some View {
         ScrollView {
@@ -227,6 +232,12 @@ struct SettingsView: View {
                     )
                     .presentationDetents([.medium])
                 }
+
+                // Theme Section (情報デザイン: Unified theming)
+                themeSection
+
+                // Categories Section (情報デザイン: Master icon + color per category)
+                categoriesSection
 
                 // Lunar Calendar Section (情報デザイン: VN holidays only)
                 if holidayRegions.regions.contains("VN") {
@@ -608,6 +619,268 @@ struct SettingsView: View {
         )
     }
 
+    // MARK: - Theme Section (情報デザイン: Unified Category Theming)
+
+    private var themeSection: some View {
+        VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
+            JohoPill(text: "THEME", style: .whiteOnBlack, size: .small)
+
+            // Theme preset cards — horizontal scroll
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: JohoDimensions.spacingSM) {
+                    ForEach(JohoThemeLoader.loadPresets()) { theme in
+                        themePresetCard(theme)
+                    }
+                }
+            }
+
+            // Current colors preview row
+            HStack(spacing: JohoDimensions.spacingMD) {
+                Image(systemName: "paintpalette.fill")
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundStyle(colors.primary)
+                    .johoTouchTarget()
+                    .background(colors.inputBackground)
+                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                    .overlay(
+                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                            .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
+                    )
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Category Colors")
+                        .font(JohoFont.headline)
+                        .foregroundStyle(colors.primary)
+
+                    HStack(spacing: 6) {
+                        categoryDot(color: CategoryColorSettings.shared.holidayColor, label: "HOL")
+                        categoryDot(color: CategoryColorSettings.shared.observanceColor, label: "OBS")
+                        categoryDot(color: CategoryColorSettings.shared.memoColor, label: "MEM")
+                    }
+                }
+
+                Spacer()
+
+                // Reset button
+                if CategoryColorSettings.shared.activeThemeId != nil {
+                    Button {
+                        CategoryColorSettings.shared.resetToDefaults()
+                        UserDefaults.standard.removeObject(forKey: "activeThemeId")
+                        HapticManager.selection()
+                    } label: {
+                        Text("Reset")
+                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.red)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(JohoColors.red.opacity(0.1))
+                            .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(JohoDimensions.spacingMD)
+            .background(colors.surface)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+            )
+
+            // Footer
+            Text("Themes transform borders, surfaces, category colors, and UI accent. Month colors (季節の色) stay locked.")
+                .font(JohoFont.caption)
+                .foregroundStyle(colors.secondary)
+                .padding(.horizontal, JohoDimensions.spacingSM)
+        }
+        .padding(JohoDimensions.spacingLG)
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusLarge)
+                .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
+        )
+        .padding(.horizontal, JohoDimensions.spacingLG)
+    }
+
+    // MARK: - Theme Preset Card
+
+    private func themePresetCard(_ theme: JohoThemePreset) -> some View {
+        let isActive = CategoryColorSettings.shared.activeThemeId == theme.id
+
+        return Button {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                CategoryColorSettings.shared.applyTheme(theme)
+            }
+            HapticManager.notification(.success)
+            WidgetCenter.shared.reloadTimelines(ofKind: "VeckaWidget")
+        } label: {
+            VStack(spacing: 6) {
+                // Icon in colored circle with checkmark overlay
+                Image(systemName: theme.previewIcon)
+                    .font(.system(size: 22, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color(hex: theme.holidayColorHex))
+                    .frame(width: 48, height: 48)
+                    .background(Color(hex: theme.holidayColorHex).opacity(0.2))
+                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                    .overlay(
+                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                            .stroke(isActive ? colors.primary : colors.border, lineWidth: isActive ? 2.5 : 1)
+                    )
+                    .overlay(alignment: .bottomTrailing) {
+                        if isActive {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundStyle(colors.primary)
+                                .background(colors.surface)
+                                .clipShape(Circle())
+                                .offset(x: 4, y: 4)
+                        }
+                    }
+
+                // Theme name
+                Text(theme.name.uppercased())
+                    .font(.system(size: 9, weight: .black, design: .rounded))
+                    .foregroundStyle(isActive ? colors.primary : colors.secondary)
+
+                // Color dots (category + structural)
+                HStack(spacing: 3) {
+                    Circle().fill(Color(hex: theme.holidayColorHex)).frame(width: 8, height: 8)
+                    Circle().fill(Color(hex: theme.observanceColorHex)).frame(width: 8, height: 8)
+                    Circle().fill(Color(hex: theme.memoColorHex)).frame(width: 8, height: 8)
+                }
+
+                // Structural color preview with "Aa" text readability sample
+                if theme.hasStructuralOverrides {
+                    HStack(spacing: 2) {
+                        // Light mode preview
+                        themeTextSample(
+                            surfaceHex: theme.lightSurfaceHex ?? "FFFFFF",
+                            borderHex: theme.lightBorderHex ?? "000000"
+                        )
+                        // Dark mode preview
+                        themeTextSample(
+                            surfaceHex: theme.darkSurfaceHex ?? "1C1C1E",
+                            borderHex: theme.darkBorderHex ?? "48484A"
+                        )
+                    }
+                }
+            }
+            .frame(width: 72)
+            .padding(.vertical, 10)
+            .background(isActive ? Color(hex: theme.holidayColorHex).opacity(0.1) : colors.surface)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                    .stroke(isActive ? colors.primary : colors.border, lineWidth: isActive ? 2.5 : 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Category Color Dot
+
+    private func categoryDot(color: Color, label: String) -> some View {
+        HStack(spacing: 3) {
+            Circle()
+                .fill(color)
+                .frame(width: 10, height: 10)
+                .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
+            Text(label)
+                .font(.system(size: 8, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.secondary)
+        }
+    }
+
+    /// Mini "Aa" text sample showing derived text color on theme surface
+    private func themeTextSample(surfaceHex: String, borderHex: String) -> some View {
+        let surface = Color(hex: surfaceHex)
+        let textColor: Color = surface.relativeLuminance <= 0.5
+            ? Color(hex: "F0F0F0")
+            : Color(hex: "000000")
+        return Text("Aa")
+            .font(.system(size: 8, weight: .bold, design: .rounded))
+            .foregroundStyle(textColor)
+            .frame(width: 18, height: 12)
+            .background(surface)
+            .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 2, style: .continuous)
+                    .stroke(Color(hex: borderHex), lineWidth: 1.5)
+            )
+    }
+
+    // MARK: - Categories Section (情報デザイン: Master icon + color per category)
+
+    private var categoriesSection: some View {
+        VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
+            JohoPill(text: "CATEGORIES", style: .whiteOnBlack, size: .small)
+
+            VStack(spacing: 0) {
+                ForEach(DisplayCategory.allCases) { category in
+                    let categoryColor = CategoryColorSettings.shared.color(for: category)
+                    let currentIcon = CategoryIconSettings.icon(for: category) ?? category.outlineIcon
+
+                    Button {
+                        editingCategory = category
+                    } label: {
+                        HStack(spacing: JohoDimensions.spacingMD) {
+                            // Color swatch
+                            Circle()
+                                .fill(categoryColor)
+                                .frame(width: 24, height: 24)
+                                .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
+
+                            // Category name
+                            Text(category.localizedLabel.uppercased())
+                                .font(.system(size: 12, weight: .black, design: .rounded))
+                                .foregroundStyle(colors.primary)
+
+                            Spacer()
+
+                            // Current icon
+                            Image(systemName: currentIcon)
+                                .font(.system(size: 16, weight: .bold, design: .rounded))
+                                .foregroundStyle(colors.primary)
+
+                            // Chevron
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundStyle(colors.primary.opacity(0.4))
+                        }
+                        .padding(.horizontal, JohoDimensions.spacingMD)
+                        .padding(.vertical, JohoDimensions.spacingSM + 2)
+                    }
+                    .buttonStyle(.plain)
+
+                    // Divider between rows (not after last)
+                    if category != DisplayCategory.allCases.last {
+                        Rectangle()
+                            .fill(colors.border)
+                            .frame(height: 1)
+                            .padding(.horizontal, JohoDimensions.spacingMD)
+                    }
+                }
+            }
+            .background(colors.surface)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                    .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
+            )
+        }
+        .padding(.horizontal, JohoDimensions.spacingLG)
+        .sheet(item: $editingCategory) { category in
+            SettingsCategoryCustomizationSheet(
+                category: category,
+                onDone: {
+                    editingCategory = nil
+                }
+            )
+            .presentationCornerRadius(20)
+        }
+    }
+
     // MARK: - Lunar Calendar Section (情報デザイン: VN holidays)
 
     private var lunarCalendarSection: some View {
@@ -618,6 +891,8 @@ struct SettingsView: View {
                 withAnimation(.easeInOut(duration: 0.2)) {
                     showLunarCalendar.toggle()
                 }
+                // Sync to App Group for widget
+                UserDefaults(suiteName: "group.Johansson.Vecka")?.set(showLunarCalendar, forKey: "showLunarCalendar")
                 HapticManager.selection()
             } label: {
                 HStack(spacing: JohoDimensions.spacingMD) {
@@ -1688,6 +1963,278 @@ struct BackgroundColorPickerSheet: View {
             Spacer()
         }
         .background(colors.surface)
+    }
+}
+
+// MARK: - Settings Category Customization Sheet (情報デザイン: Icon + color per category)
+
+/// Editor sheet for customizing category card icons AND colors
+/// Opened from Settings → CATEGORIES section
+struct SettingsCategoryCustomizationSheet: View {
+    let category: DisplayCategory
+    let onDone: () -> Void
+
+    @State private var selectedIcon: String?
+    @State private var showColorPicker = false
+    @State private var selectedColorHex: String = ""
+
+    @Environment(\.johoColorMode) private var colorMode
+    @Environment(\.dismiss) private var dismiss
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    // Dynamic category color (reads from CategoryColorSettings)
+    private var categoryColor: Color {
+        CategoryColorSettings.shared.color(for: category)
+    }
+
+    // 情報デザイン: Curated icon set for categories (shapes + conceptual)
+    private let iconOptions: [String] = [
+        // Shapes (core category icons)
+        "circle", "diamond", "doc.text", "square", "triangle", "plus",
+        // Conceptual
+        "star.fill", "heart.fill", "flag.fill", "bell.fill", "gift.fill", "bookmark.fill",
+        // Status
+        "checkmark.circle", "xmark.circle", "exclamationmark.circle", "questionmark.circle",
+        // Nature
+        "leaf.fill", "sun.max.fill", "moon.fill", "sparkles"
+    ]
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // 情報デザイン: Bento-style header with category color banner
+            VStack(spacing: 0) {
+                HStack {
+                    Button {
+                        dismiss()
+                        onDone()
+                    } label: {
+                        Text("Cancel")
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundStyle(colors.primary.opacity(0.7))
+                    }
+                    .buttonStyle(.plain)
+
+                    Spacer()
+
+                    Text(category.localizedLabel.uppercased())
+                        .font(.system(size: 14, weight: .black, design: .rounded))
+                        .foregroundStyle(colors.primary)
+
+                    Spacer()
+
+                    Button {
+                        CategoryIconSettings.setIcon(selectedIcon, for: category)
+                        dismiss()
+                        onDone()
+                    } label: {
+                        Text("Save")
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundStyle(colors.primary)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(categoryColor)
+                            .clipShape(Squircle(cornerRadius: 8))
+                            .overlay(
+                                Squircle(cornerRadius: 8)
+                                    .stroke(colors.border, lineWidth: 1.5)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.vertical, JohoDimensions.spacingMD)
+                .background(categoryColor.opacity(0.3))
+
+                // Divider
+                Rectangle()
+                    .fill(colors.border)
+                    .frame(height: 1.5)
+            }
+
+            // Content - scrollable for smaller screens
+            ScrollView {
+                VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
+                    // 情報デザイン: Preview card - bento style
+                    HStack {
+                        Spacer()
+                        categoryPreview
+                        Spacer()
+                    }
+
+                    // MASTER ICON section
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(categoryColor)
+                                .frame(width: 8, height: 8)
+                                .overlay(Circle().stroke(colors.border, lineWidth: 1))
+                            Text("MASTER ICON")
+                                .font(.system(size: 10, weight: .black, design: .rounded))
+                                .foregroundStyle(colors.primary.opacity(0.6))
+                        }
+
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 6), spacing: 8) {
+                            ForEach(iconOptions, id: \.self) { icon in
+                                iconButton(icon)
+                            }
+                        }
+                    }
+
+                    // COLOR section - opens JohoColorPickerSheet
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 6) {
+                            Circle()
+                                .fill(categoryColor)
+                                .frame(width: 8, height: 8)
+                                .overlay(Circle().stroke(colors.border, lineWidth: 1))
+                            Text("COLOR")
+                                .font(.system(size: 10, weight: .black, design: .rounded))
+                                .foregroundStyle(colors.primary.opacity(0.6))
+                        }
+
+                        Button {
+                            showColorPicker = true
+                        } label: {
+                            HStack {
+                                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                    .fill(categoryColor)
+                                    .frame(width: 32, height: 32)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                            .stroke(colors.border, lineWidth: 1.5)
+                                    )
+
+                                Text("Change Color")
+                                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                                    .foregroundStyle(colors.primary)
+
+                                Spacer()
+
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 12, weight: .bold))
+                                    .foregroundStyle(colors.primary.opacity(0.4))
+                            }
+                            .padding(12)
+                            .background(colors.inputBackground)
+                            .clipShape(Squircle(cornerRadius: 10))
+                            .overlay(
+                                Squircle(cornerRadius: 10)
+                                    .stroke(colors.border, lineWidth: 1.5)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    // Reset button - resets both icon and color
+                    Button {
+                        CategoryColorSettings.shared.resetColor(for: category)
+                        CategoryIconSettings.reset(for: category)
+                        dismiss()
+                        onDone()
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "arrow.counterclockwise")
+                                .font(.system(size: 12, weight: .bold, design: .rounded))
+                            Text("Reset All to Defaults")
+                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                        }
+                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(colors.inputBackground)
+                        .clipShape(Squircle(cornerRadius: 10))
+                        .overlay(
+                            Squircle(cornerRadius: 10)
+                                .stroke(colors.border, lineWidth: 1.5)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+                .padding(JohoDimensions.spacingLG)
+            }
+        }
+        .background(colors.surface)
+        .onAppear {
+            selectedIcon = CategoryIconSettings.icon(for: category)
+            selectedColorHex = CategoryColorSettings.shared.colorHex(for: category)
+        }
+        .sheet(isPresented: $showColorPicker) {
+            JohoColorPickerSheet(
+                selectedColorHex: $selectedColorHex,
+                title: "\(category.localizedLabel) Color",
+                category: category,
+                onDone: {
+                    CategoryColorSettings.shared.setColorHex(selectedColorHex, for: category)
+                }
+            )
+        }
+    }
+
+    // 情報デザイン: Preview card showing current selection (bento style)
+    private var categoryPreview: some View {
+        let displayIcon = selectedIcon ?? category.outlineIcon
+
+        return VStack(spacing: 0) {
+            // TOP: Icon zone with full-width category color
+            VStack {
+                Image(systemName: displayIcon)
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 64)
+            .background(categoryColor)
+
+            // Divider
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            // BOTTOM: Category name
+            VStack(spacing: 2) {
+                Text(category.localizedLabel.uppercased())
+                    .font(.system(size: 10, weight: .black, design: .rounded))
+                    .foregroundStyle(colors.primary)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)
+            .background(colors.surface)
+        }
+        .frame(width: 100)
+        .background(colors.surface)
+        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+        .overlay(
+            Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                .stroke(colors.border, lineWidth: 1.5)
+        )
+    }
+
+    private func iconButton(_ icon: String) -> some View {
+        let isSelected = selectedIcon == icon
+        let isDefault = (selectedIcon == nil && icon == category.outlineIcon)
+
+        return Button {
+            HapticManager.selection()
+            if icon == category.outlineIcon && selectedIcon == nil {
+                // Already at default, do nothing
+            } else if selectedIcon == icon {
+                selectedIcon = nil  // Clear to default
+            } else {
+                selectedIcon = icon
+            }
+        } label: {
+            Image(systemName: icon)
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .frame(width: 44, height: 44)
+                .background((isSelected || isDefault) ? categoryColor : colors.inputBackground)
+                .clipShape(Squircle(cornerRadius: 10))
+                .overlay(
+                    Squircle(cornerRadius: 10)
+                        .stroke(colors.border, lineWidth: (isSelected || isDefault) ? 2.5 : 1)
+                )
+        }
+        .buttonStyle(.plain)
     }
 }
 

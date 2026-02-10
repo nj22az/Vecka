@@ -41,6 +41,37 @@ extension Color {
             opacity: Double(min(255, max(0, a))) / 255.0
         )
     }
+
+    /// Convert Color to hex string (6-digit, no #)
+    func toHex() -> String {
+        let uiColor = UIColor(self)
+        var r: CGFloat = 0; var g: CGFloat = 0; var b: CGFloat = 0; var a: CGFloat = 0
+        uiColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+        return String(format: "%02X%02X%02X", Int(r * 255), Int(g * 255), Int(b * 255))
+    }
+
+    /// WCAG 2.1 relative luminance (0 = black, 1 = white)
+    /// Used for auto-deriving text colors from surface backgrounds
+    var relativeLuminance: Double {
+        let uiColor = UIColor(self)
+        var r: CGFloat = 0; var g: CGFloat = 0; var b: CGFloat = 0; var a: CGFloat = 0
+        uiColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+
+        func linearize(_ c: CGFloat) -> Double {
+            let v = Double(c)
+            return v <= 0.03928 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4)
+        }
+        return 0.2126 * linearize(r) + 0.7152 * linearize(g) + 0.0722 * linearize(b)
+    }
+
+    /// Shift brightness by delta (-1...1). Positive = lighter, negative = darker.
+    func adjustedBrightness(by delta: Double) -> Color {
+        let uiColor = UIColor(self)
+        var h: CGFloat = 0; var s: CGFloat = 0; var b: CGFloat = 0; var a: CGFloat = 0
+        uiColor.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
+        let newB = min(1, max(0, b + CGFloat(delta)))
+        return Color(UIColor(hue: h, saturation: s, brightness: newB, alpha: a))
+    }
 }
 
 // MARK: - Core Colors (Like Muhi/Rohto Packaging)
@@ -281,11 +312,11 @@ struct JohoScheme {
     /// Input/text field background color
     let inputBackground: Color
 
-    /// Get the color scheme for a given mode
+    /// Get the color scheme for a given mode, with theme structural overrides applied
     static func colors(for mode: JohoColorMode) -> JohoScheme {
-        switch mode {
+        let base: JohoScheme = switch mode {
         case .light:
-            return JohoScheme(
+            JohoScheme(
                 primary: Color(hex: "000000"),       // Black text
                 secondary: Color(hex: "000000").opacity(0.6),
                 surface: Color(hex: "FFFFFF"),      // White containers
@@ -296,7 +327,7 @@ struct JohoScheme {
                 inputBackground: Color(hex: "F5F5F5")  // Light gray for text fields
             )
         case .dark:
-            return JohoScheme(
+            JohoScheme(
                 primary: Color(hex: "F0F0F0"),       // Soft off-white (less eye strain)
                 secondary: Color(hex: "F0F0F0").opacity(0.5),
                 surface: Color(hex: "1C1C1E"),      // Elevated dark gray (Apple dark elevated)
@@ -307,6 +338,13 @@ struct JohoScheme {
                 inputBackground: Color(hex: "2C2C2E")  // Dark input fields
             )
         }
+
+        // Apply theme structural overrides if active
+        guard let theme = JohoThemeCache.activeTheme(),
+              theme.hasStructuralOverrides
+        else { return base }
+
+        return theme.applyStructuralOverrides(to: base, mode: mode)
     }
 }
 
@@ -3027,7 +3065,61 @@ struct JohoCalendarPickerSheet: View {
 
 // MARK: - JohoSFSymbolPickerSheet (情報デザイン: Symbol Selection for Shareable Cards)
 
-/// A 情報デザイン compliant SF Symbol picker for customizing shareable content
+/// SF Symbol entry loaded from sf-symbols.json
+private struct SFSymbolEntry: Codable {
+    let name: String
+    let category: String
+}
+
+/// Loads and caches SF Symbols from the bundled JSON resource
+private enum SFSymbolCatalog {
+    static let shared = loadSymbols()
+
+    /// All categories in display order
+    static var categories: [String] {
+        let order = ["General", "Communication", "Weather", "Nature", "Travel",
+                     "Objects", "Sport", "People", "Devices", "Arrows",
+                     "Media", "Commerce", "Health", "Home", "Gaming", "Education"]
+        let loaded = Set(shared.map(\.category))
+        return order.filter { loaded.contains($0) }
+    }
+
+    /// Symbols grouped by category
+    static func symbols(for category: String) -> [String] {
+        shared.filter { $0.category == category }.map(\.name)
+    }
+
+    /// Search symbols by name substring
+    static func search(_ query: String) -> [String] {
+        let q = query.lowercased()
+        return shared.filter { $0.name.lowercased().contains(q) }.map(\.name)
+    }
+
+    private static func loadSymbols() -> [SFSymbolEntry] {
+        guard let url = Bundle.main.url(forResource: "sf-symbols", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let entries = try? JSONDecoder().decode([SFSymbolEntry].self, from: data)
+        else {
+            return fallbackSymbols
+        }
+        // Filter to only symbols available on this device
+        return entries.filter { UIImage(systemName: $0.name) != nil }
+    }
+
+    /// Fallback if JSON fails to load (original 56 symbols)
+    private static let fallbackSymbols: [SFSymbolEntry] = [
+        "star.fill", "sparkles", "party.popper.fill", "birthday.cake.fill", "gift.fill",
+        "heart.fill", "bell.fill", "balloon.fill", "calendar", "clock.fill",
+        "hourglass", "alarm.fill", "sun.max.fill", "moon.fill", "snowflake",
+        "leaf.fill", "flame.fill", "drop.fill", "airplane", "car.fill",
+        "tram.fill", "bicycle", "figure.walk", "ferry.fill", "sailboat.fill",
+        "mountain.2.fill", "dollarsign.circle.fill", "banknote.fill", "creditcard.fill",
+        "cart.fill", "bag.fill", "person.fill", "person.2.fill", "hand.wave.fill",
+        "circle.fill", "square.fill", "triangle.fill", "diamond.fill", "hexagon.fill",
+    ].map { SFSymbolEntry(name: $0, category: "General") }
+}
+
+/// A 情報デザイン compliant SF Symbol picker with search and full catalog
 /// Used to select custom icons when sharing memos, holidays, and special days
 struct JohoSFSymbolPickerSheet: View {
     @Binding var selectedSymbol: String
@@ -3039,16 +3131,34 @@ struct JohoSFSymbolPickerSheet: View {
     @Environment(\.johoColorMode) private var colorMode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
-    // Symbol categories for shareable content (情報デザイン: Clear semantic groupings)
-    private let symbolCategories: [(name: String, symbols: [String])] = [
-        ("EVENTS", ["star.fill", "sparkles", "party.popper.fill", "birthday.cake.fill", "gift.fill", "heart.fill", "bell.fill", "balloon.fill"]),
-        ("CALENDAR", ["calendar", "calendar.badge.clock", "clock.fill", "hourglass", "alarm.fill", "timer"]),
-        ("NATURE", ["sun.max.fill", "moon.fill", "snowflake", "leaf.fill", "flame.fill", "drop.fill", "cloud.sun.fill", "wind"]),
-        ("TRAVEL", ["airplane", "car.fill", "tram.fill", "bicycle", "figure.walk", "ferry.fill", "sailboat.fill", "mountain.2.fill"]),
-        ("MONEY", ["dollarsign.circle.fill", "banknote.fill", "creditcard.fill", "cart.fill", "bag.fill", "giftcard.fill"]),
-        ("PEOPLE", ["person.fill", "person.2.fill", "figure.wave", "hand.wave.fill", "hand.raised.fill", "heart.circle.fill"]),
-        ("SHAPES", ["circle.fill", "square.fill", "triangle.fill", "diamond.fill", "star.fill", "hexagon.fill"]),
-    ]
+    @State private var searchText = ""
+    @State private var selectedCategory: String? = nil
+    @AppStorage("recentSFSymbols") private var recentSymbolsJSON = "[]"
+
+    private var recentSymbols: [String] {
+        (try? JSONDecoder().decode([String].self, from: Data(recentSymbolsJSON.utf8))) ?? []
+    }
+
+    private func addToRecent(_ symbol: String) {
+        var recents = recentSymbols.filter { $0 != symbol }
+        recents.insert(symbol, at: 0)
+        if recents.count > 20 { recents = Array(recents.prefix(20)) }
+        if let data = try? JSONEncoder().encode(recents), let json = String(data: data, encoding: .utf8) {
+            recentSymbolsJSON = json
+        }
+    }
+
+    private var displaySymbols: [String] {
+        if !searchText.isEmpty {
+            return SFSymbolCatalog.search(searchText)
+        }
+        if let cat = selectedCategory {
+            if cat == "RECENT" { return recentSymbols }
+            return SFSymbolCatalog.symbols(for: cat)
+        }
+        // Default: show all (capped at 200 for performance)
+        return Array(SFSymbolCatalog.shared.prefix(200).map(\.name))
+    }
 
     private let columns = [GridItem(.adaptive(minimum: 52), spacing: JohoDimensions.spacingSM)]
 
@@ -3074,13 +3184,22 @@ struct JohoSFSymbolPickerSheet: View {
 
                 Spacer()
 
-                Text("ICON")
-                    .font(.system(size: 16, weight: .black, design: .rounded))
-                    .foregroundStyle(colors.primary)
+                // Selected symbol preview
+                Image(systemName: selectedSymbol)
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .foregroundStyle(accentColor)
+                    .frame(width: 44, height: 44)
+                    .background(lightBackground)
+                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                    .overlay(
+                        Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                            .stroke(colors.border, lineWidth: 2)
+                    )
 
                 Spacer()
 
                 Button {
+                    addToRecent(selectedSymbol)
                     onDone()
                     dismiss()
                 } label: {
@@ -3101,55 +3220,173 @@ struct JohoSFSymbolPickerSheet: View {
             .padding(.top, JohoDimensions.spacingMD)
             .padding(.bottom, JohoDimensions.spacingSM)
 
+            // Search bar
+            HStack(spacing: JohoDimensions.spacingSM) {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(colors.secondary)
+
+                TextField("Search symbols...", text: $searchText)
+                    .font(JohoFont.body)
+                    .foregroundStyle(colors.primary)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
+
+                if !searchText.isEmpty {
+                    Button {
+                        searchText = ""
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(colors.secondary)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .background(colors.inputBackground)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                    .stroke(colors.border, lineWidth: 1)
+            )
+            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.bottom, JohoDimensions.spacingSM)
+
+            // Category pills (horizontal scroll)
+            if searchText.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        // Recent category
+                        if !recentSymbols.isEmpty {
+                            categoryPill("RECENT", isSelected: selectedCategory == "RECENT") {
+                                selectedCategory = selectedCategory == "RECENT" ? nil : "RECENT"
+                            }
+                        }
+
+                        ForEach(SFSymbolCatalog.categories, id: \.self) { cat in
+                            categoryPill(cat.uppercased(), isSelected: selectedCategory == cat) {
+                                selectedCategory = selectedCategory == cat ? nil : cat
+                            }
+                        }
+                    }
+                    .padding(.horizontal, JohoDimensions.spacingLG)
+                }
+                .padding(.bottom, JohoDimensions.spacingSM)
+            }
+
             // Divider
             Rectangle()
                 .fill(colors.border)
                 .frame(height: 2)
 
-            // Symbol categories
+            // Symbol grid
             ScrollView {
-                VStack(spacing: JohoDimensions.spacingLG) {
-                    ForEach(symbolCategories, id: \.name) { category in
-                        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                            // Category header
-                            Text(category.name)
-                                .font(.system(size: 11, weight: .bold, design: .rounded))
-                                .foregroundStyle(colors.primary.opacity(0.5))
-                                .padding(.horizontal, JohoDimensions.spacingLG)
-
-                            // Symbol grid
-                            LazyVGrid(columns: columns, spacing: JohoDimensions.spacingSM) {
-                                ForEach(category.symbols, id: \.self) { symbol in
-                                    Button {
-                                        selectedSymbol = symbol
-                                        HapticManager.selection()
-                                    } label: {
-                                        let isSelected = selectedSymbol == symbol
-                                        Image(systemName: symbol)
-                                            .font(.system(size: 22, weight: .bold, design: .rounded))
-                                            .foregroundStyle(isSelected ? accentColor : colors.primary)
-                                            .johoTouchTarget(52)
-                                            .background(isSelected ? lightBackground : colors.surface)
-                                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                                            .overlay(
-                                                Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                                    .stroke(colors.border, lineWidth: isSelected ? 2 : 1)
-                                            )
-                                    }
-                                    .buttonStyle(.plain)
-                                }
+                if displaySymbols.isEmpty {
+                    VStack(spacing: JohoDimensions.spacingMD) {
+                        Image(systemName: "magnifyingglass")
+                            .font(.system(size: 32, weight: .bold))
+                            .foregroundStyle(colors.secondary)
+                        Text("No symbols found")
+                            .font(JohoFont.body)
+                            .foregroundStyle(colors.secondary)
+                    }
+                    .padding(.top, 60)
+                } else {
+                    LazyVGrid(columns: columns, spacing: JohoDimensions.spacingSM) {
+                        ForEach(displaySymbols, id: \.self) { symbol in
+                            Button {
+                                selectedSymbol = symbol
+                                HapticManager.selection()
+                            } label: {
+                                let isSelected = selectedSymbol == symbol
+                                Image(systemName: symbol)
+                                    .font(.system(size: 22, weight: .bold, design: .rounded))
+                                    .foregroundStyle(isSelected ? accentColor : colors.primary)
+                                    .johoTouchTarget(52)
+                                    .background(isSelected ? lightBackground : colors.surface)
+                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+                                    .overlay(
+                                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                                            .stroke(colors.border, lineWidth: isSelected ? 2 : 1)
+                                    )
                             }
-                            .padding(.horizontal, JohoDimensions.spacingMD)
+                            .buttonStyle(.plain)
                         }
                     }
+                    .padding(.horizontal, JohoDimensions.spacingMD)
+                    .padding(.vertical, JohoDimensions.spacingMD)
                 }
-                .padding(.vertical, JohoDimensions.spacingMD)
             }
         }
         .background(colors.surface)
         .presentationDetents([.medium, .large])
         .presentationCornerRadius(JohoDimensions.radiusLarge)
         .presentationDragIndicator(.visible)
+    }
+
+    private func categoryPill(_ text: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Text(text)
+                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .foregroundStyle(isSelected ? colors.primaryInverted : colors.primary)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(isSelected ? accentColor : colors.surface)
+                .clipShape(Capsule())
+                .overlay(
+                    Capsule()
+                        .stroke(isSelected ? accentColor : colors.border, lineWidth: 1)
+                )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - CategoryIconSettings (情報デザイン: Shared Category Icon Storage)
+
+/// Custom icon for category cards (color is managed by CategoryColorSettings)
+struct CategoryCustomization: Codable, Equatable {
+    var icon: String?  // SF Symbol name (nil = use default category icon)
+}
+
+/// Shared helpers for category icon customization stored in @AppStorage("categoryCustomizations")
+enum CategoryIconSettings {
+    private static let storageKey = "categoryCustomizations"
+
+    static func load() -> [String: CategoryCustomization] {
+        guard let data = UserDefaults.standard.data(forKey: storageKey),
+              let decoded = try? JSONDecoder().decode([String: CategoryCustomization].self, from: data) else {
+            return [:]
+        }
+        return decoded
+    }
+
+    static func save(_ customizations: [String: CategoryCustomization]) {
+        if let encoded = try? JSONEncoder().encode(customizations) {
+            UserDefaults.standard.set(encoded, forKey: storageKey)
+        }
+    }
+
+    static func icon(for category: DisplayCategory) -> String? {
+        load()[category.rawValue]?.icon
+    }
+
+    static func setIcon(_ icon: String?, for category: DisplayCategory) {
+        var customizations = load()
+        if let icon = icon {
+            customizations[category.rawValue] = CategoryCustomization(icon: icon)
+        } else {
+            customizations.removeValue(forKey: category.rawValue)
+        }
+        save(customizations)
+    }
+
+    static func reset(for category: DisplayCategory) {
+        var customizations = load()
+        customizations.removeValue(forKey: category.rawValue)
+        save(customizations)
     }
 }
 
@@ -3220,6 +3457,8 @@ final class CategoryColorSettings {
         case .observance: observanceColorHex = hex
         case .memo: memoColorHex = hex
         }
+        // Sync to widget via App Group
+        CategoryColorStorage.save()
     }
 
     /// Reset a specific category color to default
@@ -3229,6 +3468,7 @@ final class CategoryColorSettings {
         case .observance: observanceColorHex = Self.defaultObservanceHex
         case .memo: memoColorHex = Self.defaultMemoHex
         }
+        CategoryColorStorage.save()
     }
 
     /// Reset all colors to defaults
@@ -3236,6 +3476,8 @@ final class CategoryColorSettings {
         holidayColorHex = Self.defaultHolidayHex
         observanceColorHex = Self.defaultObservanceHex
         memoColorHex = Self.defaultMemoHex
+        JohoThemeCache.invalidate()
+        CategoryColorStorage.save()
     }
 
     /// Check if a category has a custom (non-default) color
