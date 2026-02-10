@@ -474,11 +474,9 @@ struct JohoNoteEditorSheet: View {
     }
 
     private func monthName(_ month: Int) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM"
         let components = DateComponents(year: 2024, month: month, day: 1)
         let tempDate = calendar.date(from: components) ?? Date()
-        return formatter.string(from: tempDate)
+        return DateFormatterCache.monthAbbr.string(from: tempDate)
     }
 
     init(selectedDate: Date) {

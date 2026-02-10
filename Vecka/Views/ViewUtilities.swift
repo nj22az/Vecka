@@ -59,6 +59,48 @@ enum DateFormatterCache {
         formatter.locale = Locale.current
         return formatter
     }()
+
+    static let monthDay: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM d"
+        formatter.locale = Locale.current
+        return formatter
+    }()
+
+    static let monthAbbr: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM"
+        formatter.locale = Locale.current
+        return formatter
+    }()
+
+    static let isoDate: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        formatter.locale = Locale.current
+        return formatter
+    }()
+
+    static let compactDate: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd"
+        formatter.locale = Locale.current
+        return formatter
+    }()
+
+    static let time24h: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        formatter.locale = Locale.current
+        return formatter
+    }()
+
+    static let weekdayFull: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"
+        formatter.locale = Locale.current
+        return formatter
+    }()
 }
 
 // MARK: - Calendar Extension (ISO 8601)
@@ -91,6 +133,21 @@ struct CalendarDayInfo {
         self.isSelected = isSelected
         self.isCurrentMonth = isCurrentMonth
         self.weekNumber = weekNumber
+    }
+}
+
+// MARK: - Bundle JSON Loader (情報デザイン: DRY JSON resource loading)
+
+enum BundleJSON {
+    /// Load and decode a JSON resource from the app bundle with a fallback value.
+    static func load<T: Decodable>(_ resource: String, fallback: T) -> T {
+        guard let url = Bundle.main.url(forResource: resource, withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let decoded = try? JSONDecoder().decode(T.self, from: data) else {
+            Log.e("Failed to load \(resource).json")
+            return fallback
+        }
+        return decoded
     }
 }
 

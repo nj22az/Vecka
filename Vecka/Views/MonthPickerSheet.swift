@@ -88,11 +88,7 @@ struct MonthPickerSheet: View {
                     .padding(JohoDimensions.spacingSM)
                 }
                 .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-                )
+                .johoBordered(borderWidth: JohoDimensions.borderThick)
 
                 // RIGHT: Year Grid (2x5 visible) - fills 35% width
                 VStack(spacing: 0) {
@@ -125,11 +121,7 @@ struct MonthPickerSheet: View {
                     }
                 }
                 .background(colors.surface)
-                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-                .overlay(
-                    Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(colors.border, lineWidth: JohoDimensions.borderThick)
-                )
+                .johoBordered(borderWidth: JohoDimensions.borderThick)
             }
             .padding(JohoDimensions.spacingSM)
         }

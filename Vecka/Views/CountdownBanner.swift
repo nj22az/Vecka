@@ -20,9 +20,7 @@ struct CountdownBanner: View {
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     /// Filtered countdown events
-    private var events: [Memo] {
-        allMemos.filter { $0.type == .countdown }
-    }
+    private var events: [Memo] { allMemos.countdowns }
 
     var body: some View {
         Group {
