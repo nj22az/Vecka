@@ -207,12 +207,7 @@ struct LandingPageView: View {
                 // LEFT COMPARTMENT: Icon + Title
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone with Landing accent color (Warm Amber)
-                    Image(systemName: IconCatalog.home)
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
-                        .foregroundStyle(PageHeaderColor.landing.accent)
-                        .frame(width: 40, height: 40)
-                        .background(PageHeaderColor.landing.lightBackground)
-                        .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
+                    JohoSticker(content: .icon(IconCatalog.home), color: PageHeaderColor.landing.accent, size: 40)
 
                     Text(displayTitle)
                         .font(JohoFont.headline)
@@ -546,15 +541,10 @@ struct LandingPageView: View {
     /// Month card style fact tile (情報デザイン: Star page style - strong colors)
     private func randomFactTile(_ fact: RandomFact) -> some View {
         VStack(spacing: 0) {
-            // TOP: Icon zone (情報デザイン: Strong color like Star page month icons)
-            VStack {
-                Image(systemName: fact.icon ?? IconCatalog.holiday)
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
-                    .foregroundStyle(fact.color.readableForeground)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 48)
-            .background(fact.color.opacity(0.2))
+            // TOP: Icon zone (情報デザイン: Sticker-first rendering)
+            JohoSticker.small(icon: fact.icon ?? IconCatalog.holiday, color: fact.color)
+                .frame(maxWidth: .infinity)
+                .frame(height: 48)
 
             // Divider
             Rectangle()

@@ -300,21 +300,10 @@ struct DayDashboardView: View {
     @ViewBuilder
     private func summaryCardTile(_ item: CardItem) -> some View {
         let tileContent = VStack(spacing: 0) {
-            // TOP: Icon zone with colored background
-            ZStack {
-                // Icon with subtle shadow for contrast on light backgrounds
-                Image(systemName: item.icon)
-                    .font(.system(size: 18, weight: .black, design: .rounded))
-                    .foregroundStyle(colors.primary.opacity(0.15))
-                    .offset(x: 0.5, y: 0.5)
-
-                Image(systemName: item.icon)
-                    .font(.system(size: 18, weight: .black, design: .rounded))
-                    .foregroundStyle(item.color)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 36)
-            .background(item.color.opacity(0.3))
+            // TOP: Icon zone with sticker
+            JohoSticker.small(icon: item.icon, color: item.color)
+                .frame(maxWidth: .infinity)
+                .frame(height: 36)
 
             // Divider
             Rectangle()

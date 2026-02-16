@@ -165,12 +165,7 @@ struct ContactListView: View {
                 // LEFT COMPARTMENT: Icon + Title
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone with Contacts accent color (Warm Brown)
-                    Image(systemName: IconCatalog.people)
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
-                        .foregroundStyle(PageHeaderColor.contacts.accent)
-                        .frame(width: 40, height: 40)
-                        .background(PageHeaderColor.contacts.lightBackground)
-                        .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
+                    JohoSticker(content: .icon(IconCatalog.people), color: PageHeaderColor.contacts.accent, size: 40)
 
                     Text("CONTACTS")
                         .font(JohoFont.headline)
