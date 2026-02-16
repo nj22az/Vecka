@@ -70,38 +70,11 @@ Use `IconCatalog.currencyIcon(for: currencyCode)` — returns locale-appropriate
 - **`JohoIconPicker`** — `.johoIconPicker(isPresented:selection:accentColor:)` view modifier
 - **`JohoSFSymbolPickerSheet`** — Full SF Symbol picker with search and categories
 
-## Architecture Principles
-
-### Data-Driven, Not Hardcoded
-Presentation data (icons, colors, labels, codes) should come from JSON or database — never from switch statements in enums. When you see a switch that maps a type to an icon/color/label, that's a sign it should be a data lookup instead. The goal is: **add a new type by adding a JSON entry, not by editing Swift code**.
-
-Currently being consolidated:
-- `DisplayCategory`, `SpecialDayType`, `EntryType` → will become `CategoryEngine` loading from `category-definitions.json`
-- `CategoryIconSettings` + `CategoryColorSettings` → will merge into engine's user override layer
-- `MemoType` stays as SwiftData discriminator but loses all presentation logic
-
-### Sticker-First Icon Rendering
-Every icon in the app should render through `JohoSticker` — the universal visual component with shape, border, colored background, and optional badge. Plain `Image(systemName:)` on its own is not enough. Icons should look like physical stickers you'd stamp into a paper planner. This applies to memo rows, holiday cards, countdown headers, shareable cards, and detail sheet heroes — not just contact avatars.
-
-### Three Data Models, Three Groups
-The app has exactly 3 data models and 3 display groups:
-
-| Group | Model | What |
-|-------|-------|------|
-| Holiday | `HolidayRule` (`isBankHoliday: true`) | Bank holidays |
-| Observance | `HolidayRule` (`isBankHoliday: false`) | Cultural days |
-| Memo | `Memo` (with type flavors: note, trip, expense, event) | User entries |
-
-Birthdays are a date field on `Contact`, displayed alongside memos. Everything else is a memo with optional enrichments (amount, place, countdown date). There is no separate "birthday model" or "event model."
-
 ## Rules
 
 - Always use `IconCatalog.*` (no hardcoded SF Symbol strings)
 - Always use `JohoColors.*` (no raw colors)
-- Always use `JohoSticker` for icon rendering (no bare `Image(systemName:)` for content icons)
 - Always use `.continuous` corners (squircles)
 - Always use `.rounded` font design
 - Always use black borders on containers
 - Never use gradients or glass materials
-- Never hardcode presentation data in switch statements — use data lookups
-- Never add a new enum case when a JSON entry would do

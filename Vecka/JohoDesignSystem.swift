@@ -1396,7 +1396,7 @@ struct JohoSticker: View {
 
     let content: Content
     let color: Color
-    var shape: StickerShape = .squircle
+    var shape: StickerShape = .circle
     var badge: Badge? = nil
     var size: CGFloat = 56
     var borderWidth: CGFloat? = nil
@@ -1405,9 +1405,7 @@ struct JohoSticker: View {
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private var resolvedBorderWidth: CGFloat {
-        borderWidth ?? (size >= 80 ? JohoDimensions.borderThick :
-                        size < 32 ? JohoDimensions.borderThin :
-                        JohoDimensions.borderMedium)
+        borderWidth ?? (size >= 80 ? JohoDimensions.borderThick : JohoDimensions.borderMedium)
     }
 
     private var cornerRadius: CGFloat {
@@ -1487,28 +1485,6 @@ struct JohoSticker: View {
         shape == .circle
             ? AnyInsettableShape(Circle())
             : AnyInsettableShape(Squircle(cornerRadius: cornerRadius))
-    }
-
-    // MARK: - Size Presets
-
-    /// 24pt — bento card headers, compact inline icons
-    static func mini(icon: String, color: Color, shape: StickerShape = .squircle) -> JohoSticker {
-        JohoSticker(content: .icon(icon), color: color, shape: shape, size: 24)
-    }
-
-    /// 32pt — compact list rows, tile icons
-    static func small(icon: String, color: Color, shape: StickerShape = .squircle) -> JohoSticker {
-        JohoSticker(content: .icon(icon), color: color, shape: shape, size: 32)
-    }
-
-    /// 48pt — prominent card icons, fact tiles, shareable card headers
-    static func regular(icon: String, color: Color, shape: StickerShape = .squircle) -> JohoSticker {
-        JohoSticker(content: .icon(icon), color: color, shape: shape, size: 48)
-    }
-
-    /// 80pt — hero displays
-    static func large(icon: String, color: Color, shape: StickerShape = .squircle) -> JohoSticker {
-        JohoSticker(content: .icon(icon), color: color, shape: shape, size: 80)
     }
 }
 

@@ -267,8 +267,13 @@ struct DayDetailSheet: View {
                 .frame(width: 1.5)
                 .frame(maxHeight: .infinity)
 
-            // RIGHT: Decoration icon sticker
-            JohoSticker.mini(icon: icon, color: color)
+            // RIGHT: Decoration icon with colored background
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primaryInverted)
+                .frame(width: 28, height: 28)
+                .background(color)
+                .johoBordered(cornerRadius: 7, borderWidth: 1.5)
                 .frame(width: 52)
                 .frame(maxHeight: .infinity)
                 .background(colors.surface)

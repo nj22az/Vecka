@@ -613,14 +613,24 @@ struct SpecialDaysListView: View {
                     }
 
                     // Icon zone - star for main view, month icon for detail
-                    // 情報デザイン: JohoSticker for sticker-first rendering
+                    // 情報デザイン: 44pt touch target for consistency
                     if let month = selectedMonth, let theme = theme {
                         let headerIcon = customIcon(for: month) ?? theme.icon
                         let headerIconColor: Color = customIconColor(for: month).map { Color(hex: $0) } ?? theme.accentColor
 
-                        JohoSticker(content: .icon(headerIcon), color: headerIconColor, size: 40)
+                        Image(systemName: headerIcon)
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .foregroundStyle(headerIconColor)
+                            .johoTouchTarget()
+                            .background(theme.lightBackground)
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall)
                     } else {
-                        JohoSticker(content: .icon(IconCatalog.holiday), color: PageHeaderColor.specialDays.accent, size: 40)
+                        Image(systemName: IconCatalog.holiday)
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .foregroundStyle(PageHeaderColor.specialDays.accent)
+                            .johoTouchTarget()
+                            .background(PageHeaderColor.specialDays.lightBackground)
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall)
                     }
 
                     // Title
@@ -1150,12 +1160,16 @@ struct SpecialDaysListView: View {
         let message = customMessage(for: month)
 
         VStack(spacing: 0) {
-            // TOP: Icon zone (情報デザイン: Sticker-first rendering on tinted background)
+            // TOP: Icon zone (情報デザイン: Strong accent color on light tint background)
             // Fixed height ensures banner dividers align across all cards
-            JohoSticker.small(icon: displayIcon, color: displayIconColor)
-                .frame(maxWidth: .infinity)
-                .frame(height: 64)  // Fixed height for aligned banners
-                .background(displayColor)
+            VStack {
+                Image(systemName: displayIcon)
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .foregroundStyle(displayIconColor)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 64)  // Fixed height for aligned banners
+            .background(displayColor)
 
             // Divider (情報デザイン: Black wall between compartments)
             Rectangle()
@@ -1317,12 +1331,16 @@ struct SpecialDaysListView: View {
         let categoryColor = CategoryColorSettings.shared.color(for: category)
 
         VStack(spacing: 0) {
-            // TOP: Icon zone (情報デザイン: Sticker-first rendering)
+            // TOP: Icon zone (情報デザイン: Category color background)
             // Fixed height ensures banner dividers align across all cards
-            JohoSticker.small(icon: displayIcon, color: categoryColor)
-                .frame(maxWidth: .infinity)
-                .frame(height: 64)  // Fixed height for aligned banners
-                .background(categoryColor)
+            VStack {
+                Image(systemName: displayIcon)
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 64)  // Fixed height for aligned banners
+            .background(categoryColor)
 
             // Divider (情報デザイン: Black wall between compartments)
             Rectangle()
@@ -1697,8 +1715,10 @@ struct CollapsibleSpecialDayCard: View {
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
-                // RIGHT: Icon compartment sticker
-                JohoSticker.mini(icon: icon, color: zone.background)
+                // RIGHT: Icon compartment
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
             }
@@ -1755,8 +1775,10 @@ struct CollapsibleSpecialDayCard: View {
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
-                // RIGHT: Icon compartment sticker
-                JohoSticker.mini(icon: icon, color: zone.background)
+                // RIGHT: Icon compartment
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
             }
@@ -2070,12 +2092,14 @@ extension SpecialDaysListView {
             }
         } label: {
             VStack(spacing: 0) {
-                // HEADER (情報デザイン: Docket style with sticker icon)
+                // HEADER (情報デザイン: Docket style)
                 // LEFT: Icon + Date | RIGHT: Month (monospace, uppercase)
                 HStack(spacing: 0) {
-                    // LEFT: Icon sticker + Date grouped
+                    // LEFT: Icon + Date grouped
                     HStack(spacing: 6) {
-                        JohoSticker.mini(icon: icon, color: iconColor)
+                        Image(systemName: icon)
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundStyle(iconColor)
 
                         Text("\(day)")
                             .font(.system(size: 20, weight: .black, design: .rounded))
@@ -2177,10 +2201,12 @@ extension SpecialDaysListView {
         let iconColor: Color = primaryType.accentColor
 
         VStack(spacing: 0) {
-            // HEADER: Icon sticker + Date LEFT, Month RIGHT
+            // HEADER: Icon + Date LEFT, Month RIGHT
             HStack(spacing: 0) {
                 HStack(spacing: 6) {
-                    JohoSticker.mini(icon: icon, color: iconColor)
+                    Image(systemName: icon)
+                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .foregroundStyle(iconColor)
 
                     Text("\(dayCard.day)")
                         .font(.system(size: 20, weight: .black, design: .rounded))

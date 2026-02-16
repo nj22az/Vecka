@@ -80,7 +80,12 @@ struct DashboardView: View {
                 // LEFT COMPARTMENT: Icon + Title
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone with Tools accent color (Teal)
-                    JohoSticker(content: .icon("chart.bar.xaxis"), color: PageHeaderColor.tools.accent, size: 40)
+                    Image(systemName: "chart.bar.xaxis")
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .foregroundStyle(PageHeaderColor.tools.accent)
+                        .frame(width: 40, height: 40)
+                        .background(PageHeaderColor.tools.lightBackground)
+                        .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
 
                     Text("DATA")
                         .font(JohoFont.headline)
@@ -681,8 +686,13 @@ private struct DataCard<Content: View>: View {
         VStack(alignment: .leading, spacing: 0) {
             // Header with icon zone - 情報デザイン: Colored icon in zone background
             HStack(spacing: JohoDimensions.spacingSM) {
-                // Icon zone - JohoSticker for sticker-first rendering
-                JohoSticker.mini(icon: icon, color: zone.background)
+                // Icon zone - uses SectionZone background for proper semantic color
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(zone.textColor(for: colorMode))
+                    .frame(width: 28, height: 28)
+                    .background(zone.background(for: colorMode))
+                    .johoBordered(cornerRadius: 6, borderWidth: 1)
 
                 Text(title)
                     .font(.system(size: 11, weight: .black, design: .rounded))

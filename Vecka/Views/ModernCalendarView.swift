@@ -816,8 +816,13 @@ struct ModernCalendarView: View {
                     HapticManager.selection()
                 } label: {
                     HStack(spacing: JohoDimensions.spacingSM) {
-                        // 情報デザイン: Purple calendar icon sticker (app identity)
-                        JohoSticker(content: .icon("calendar"), color: PageHeaderColor.calendar.accent, size: 40)
+                        // 情報デザイン: Purple calendar icon (app identity)
+                        Image(systemName: "calendar")
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .foregroundStyle(PageHeaderColor.calendar.accent)
+                            .frame(width: 40, height: 40)
+                            .background(PageHeaderColor.calendar.lightBackground)
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
 
                         // Month + Year (tappable)
                         VStack(alignment: .leading, spacing: 0) {

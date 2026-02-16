@@ -69,7 +69,12 @@ struct CountdownListView: View {
     private var headerSection: some View {
         HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
             // Icon zone (52×52pt) - matches Star Page month detail pattern
-            JohoSticker(content: .icon(IconCatalog.event), color: JohoColors.purple, size: 52)
+            Image(systemName: IconCatalog.event)
+                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .johoTouchTarget(52)
+                .background(JohoColors.purple.opacity(0.3))
+                .johoBordered()
 
             // Title area
             VStack(alignment: .leading, spacing: 2) {
@@ -140,7 +145,9 @@ struct CountdownListView: View {
                     .frame(maxHeight: .infinity)
 
                 // RIGHT: Event icon compartment (uses actual event icon)
-                JohoSticker.mini(icon: event.icon, color: JohoColors.purple)
+                Image(systemName: event.icon)
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
             }
@@ -316,7 +323,9 @@ struct CountdownListView: View {
                     .frame(maxHeight: .infinity)
 
                 // RIGHT: Icon compartment
-                JohoSticker.mini(icon: icon, color: JohoColors.purple)
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .foregroundStyle(colors.primary)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
             }
@@ -422,9 +431,16 @@ struct CountdownListView: View {
 
             // RIGHT COMPARTMENT: Decoration icon (fixed 48pt, centered)
             // 情報デザイン: Decoration icon ALWAYS shown (user decision)
-            JohoSticker.mini(icon: icon ?? IconCatalog.event, color: JohoColors.cyan)
-                .frame(width: 48, alignment: .center)
-                .frame(maxHeight: .infinity)
+            HStack(spacing: 4) {
+                Image(systemName: icon ?? IconCatalog.event)
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .foregroundStyle(JohoColors.cyan)
+                    .frame(width: 24, height: 24)
+                    .background(JohoColors.cyan.opacity(0.15))
+                    .johoBordered(cornerRadius: 6, borderWidth: 1)
+            }
+            .frame(width: 48, alignment: .center)
+            .frame(maxHeight: .infinity)
         }
         .frame(minHeight: tasks.isEmpty ? 36 : 48)  // 情報デザイン: Taller when showing task progress
         .contentShape(Rectangle())

@@ -131,7 +131,12 @@ struct PhoneLibraryView: View {
     private var libraryHeader: some View {
         HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
             // Icon zone (gold/yellow for Library - matches sidebar accent)
-            JohoSticker(content: .icon("books.vertical.fill"), color: Color(hex: "FFD700"), size: 52)
+            Image(systemName: "books.vertical.fill")
+                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .foregroundStyle(colors.primary)
+                .johoTouchTarget(52)
+                .background(Color(hex: "FFD700"))  // Gold - Library accent
+                .johoBordered()
 
             // Title and stats zone
             VStack(alignment: .leading, spacing: 2) {

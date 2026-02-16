@@ -151,7 +151,16 @@ struct SettingsView: View {
                 // LEFT COMPARTMENT: Icon + Title
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone with Settings accent color (Slate Blue)
-                    JohoSticker(content: .icon(IconCatalog.settings), color: PageHeaderColor.settings.accent, size: 40)
+                    Image(systemName: IconCatalog.settings)
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(PageHeaderColor.settings.accent)
+                        .frame(width: 40, height: 40)
+                        .background(PageHeaderColor.settings.lightBackground)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(colors.border, lineWidth: 1.5)
+                        )
 
                     Text("SETTINGS")
                         .font(JohoFont.headline)
@@ -713,7 +722,16 @@ struct SettingsView: View {
             VStack(spacing: JohoDimensions.spacingSM) {
                 HStack(spacing: JohoDimensions.spacingMD) {
                     // Icon zone
-                    JohoSticker(content: .icon("textformat.abc"), color: PageHeaderColor.landing.accent, size: 40)
+                    Image(systemName: "textformat.abc")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(PageHeaderColor.landing.accent)
+                        .johoTouchTarget()
+                        .background(PageHeaderColor.landing.lightBackground)
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                        .overlay(
+                            Squircle(cornerRadius: JohoDimensions.radiusSmall)
+                                .stroke(colors.border, lineWidth: JohoDimensions.borderThin)
+                        )
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Landing Page Title")

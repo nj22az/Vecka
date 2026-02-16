@@ -49,11 +49,31 @@ struct CountdownCard: View {
     // MARK: - Icon
     
     private var countdownIcon: some View {
-        JohoSticker.regular(
-            icon: iconName,
-            color: isSelected ? JohoColors.cyan : colors.primary.opacity(0.3),
-            shape: .circle
-        )
+        ZStack {
+            Circle()
+                .fill(iconBackgroundColor)
+                .frame(width: 50, height: 50)
+            
+            Image(systemName: iconName)
+                .font(.system(size: 24, weight: .medium))
+                .foregroundStyle(iconForegroundColor)
+        }
+    }
+    
+    private var iconBackgroundColor: Color {
+        if isSelected {
+            return JohoColors.cyan.opacity(0.2)
+        }
+
+        return colors.primary.opacity(0.5).opacity(0.1)
+    }
+    
+    private var iconForegroundColor: Color {
+        if isSelected {
+            return JohoColors.cyan
+        }
+
+        return colors.primary.opacity(0.7)
     }
     
     // MARK: - Text Content
