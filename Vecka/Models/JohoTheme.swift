@@ -88,7 +88,7 @@ enum JohoThemeLoader {
             id: "nordic", name: "Nordic", description: "Scandinavian minimalism",
             previewIcon: "snowflake",
             holidayColorHex: "93C5FD", observanceColorHex: "C4B5FD", memoColorHex: "CBD5E1",
-            holidayIcon: "star.fill", observanceIcon: "diamond.fill", memoIcon: "doc.text",
+            holidayIcon: "star.fill", observanceIcon: "diamond.fill", memoIcon: "note.text",
             systemAccent: "navy",
             lightBorderHex: "475569", lightSurfaceHex: "F8FAFC", lightCanvasHex: nil,
             darkBorderHex: "64748B", darkSurfaceHex: "1E293B", darkCanvasHex: nil

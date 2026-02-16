@@ -95,7 +95,7 @@ struct ExpenseListView: View {
                                     exportContext = .expenseReportWeek(weekNumber: weekInfo.weekNumber, year: weekInfo.year, baseCurrency: baseCurrency)
                                     showExportSheet = true
                                 } label: {
-                                    Label("This Week (PDF)", systemImage: "doc.text")
+                                    Label("This Week (PDF)", systemImage: IconCatalog.memo)
                                 }
 
                                 Button {

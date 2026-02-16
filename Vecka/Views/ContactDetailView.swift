@@ -144,7 +144,7 @@ struct ContactDetailView: View {
         editEmail = contact.emailAddresses.first?.value ?? ""
         editNotes = contact.note ?? ""
         editImageData = contact.imageData
-        editSymbol = contact.symbolName ?? "person.fill"
+        editSymbol = contact.symbolName ?? IconCatalog.person
 
         // Address
         let firstAddress = contact.postalAddresses.first
@@ -708,7 +708,7 @@ struct ContactDetailView: View {
 
                     Spacer()
 
-                    Image(systemName: "birthday.cake.fill")
+                    Image(systemName: IconCatalog.birthday)
                         .font(.system(size: 24, weight: .bold, design: .rounded))
                         .foregroundStyle(SpecialDayType.birthday.accentColor)
                 }
@@ -756,7 +756,7 @@ struct ContactDetailView: View {
                     .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: JohoColors.red.opacity(0.4))
             }
         } else {
-            johoDetailSection(title: "NOTES", icon: "doc.text", iconColor: JohoColors.yellow) {
+            johoDetailSection(title: "NOTES", icon: IconCatalog.memo, iconColor: JohoColors.yellow) {
                 if let note = contact.note, !note.isEmpty {
                     Text(note)
                         .font(JohoFont.body)
@@ -983,7 +983,7 @@ struct ContactDetailView: View {
                     .fill(PageHeaderColor.contacts.lightBackground)
                     .frame(width: 100, height: 100)
                     .overlay(
-                        Image(systemName: isEditMode ? editSymbol : (contact.symbolName ?? "person.fill"))
+                        Image(systemName: isEditMode ? editSymbol : (contact.symbolName ?? IconCatalog.person))
                             .font(.system(size: 36, weight: .bold, design: .rounded))
                             .foregroundStyle(accentColor)
                     )
@@ -1192,8 +1192,8 @@ enum JohoContactEditorMode {
 
     var icon: String {
         switch self {
-        case .birthday: return "birthday.cake.fill"
-        case .contact: return "person.fill"
+        case .birthday: return IconCatalog.birthday
+        case .contact: return IconCatalog.person
         }
     }
 
@@ -1284,7 +1284,7 @@ struct JohoContactEditorSheet: View {
             _email = State(initialValue: contact.emailAddresses.first?.value ?? "")
             _notes = State(initialValue: contact.note ?? "")
             _selectedImageData = State(initialValue: contact.imageData)
-            _selectedSymbol = State(initialValue: contact.symbolName ?? (mode == .birthday ? "birthday.cake.fill" : "person.fill"))
+            _selectedSymbol = State(initialValue: contact.symbolName ?? (mode == .birthday ? IconCatalog.birthday : IconCatalog.person))
 
             // Address - get first postal address if available
             let firstAddress = contact.postalAddresses.first
@@ -1319,7 +1319,7 @@ struct JohoContactEditorSheet: View {
             _selectedYear = State(initialValue: 1990)
             _selectedMonth = State(initialValue: calendar.component(.month, from: now))
             _selectedDay = State(initialValue: calendar.component(.day, from: now))
-            _selectedSymbol = State(initialValue: mode == .birthday ? "birthday.cake.fill" : "person.fill")
+            _selectedSymbol = State(initialValue: mode == .birthday ? IconCatalog.birthday : IconCatalog.person)
             // Birthday mode starts with birthday enabled and known
             _hasBirthday = State(initialValue: mode == .birthday)
             _birthdayKnown = State(initialValue: true)  // Default: birthday is known if provided

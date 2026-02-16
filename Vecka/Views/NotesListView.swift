@@ -100,7 +100,7 @@ struct NotesListView: View {
                         message: trimmedSearch.isEmpty
                             ? "Add notes from the calendar using the plus button."
                             : "Try a different search term.",
-                        icon: "note.text",
+                        icon: IconCatalog.memo,
                         zone: .notes
                     )
                     .padding(.top, JohoDimensions.spacingSM)
@@ -256,7 +256,7 @@ private struct NotesDayRow: View {
         HStack(spacing: JohoDimensions.spacingMD) {
             // Icon in yellow squircle
             JohoIconBadge(
-                icon: dayGroup.hasPinned ? "pin.fill" : "note.text",
+                icon: dayGroup.hasPinned ? "pin.fill" : IconCatalog.memo,
                 zone: .notes,
                 size: 40
             )
@@ -319,7 +319,7 @@ private struct MemoPinnedNoteRow: View {
         HStack(spacing: JohoDimensions.spacingMD) {
             // Note symbol in yellow squircle
             JohoIconBadge(
-                icon: note.symbolName ?? "note.text",
+                icon: note.symbolName ?? IconCatalog.memo,
                 zone: .notes,
                 size: 40
             )

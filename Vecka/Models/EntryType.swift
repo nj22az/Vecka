@@ -31,11 +31,11 @@ enum EntryType: String, CaseIterable, Identifiable {
     var icon: String {
         switch self {
         case .note: return "square.and.pencil"      // Clear "write note" icon
-        case .trip: return "airplane"               // Universally understood
-        case .expense: return "dollarsign.circle"    // Clean money icon
-        case .holiday: return "star.fill"           // Celebration/special
-        case .birthday: return "gift.fill"          // Birthday gift
-        case .event: return "calendar.badge.clock"  // Countdown/event
+        case .trip: return IconCatalog.trip              // Universally understood
+        case .expense: return IconCatalog.expense        // Locale-aware currency
+        case .holiday: return IconCatalog.holiday        // Celebration/special
+        case .birthday: return IconCatalog.birthday      // Birthday gift
+        case .event: return IconCatalog.event            // Countdown/event
         }
     }
 

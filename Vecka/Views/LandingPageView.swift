@@ -207,7 +207,7 @@ struct LandingPageView: View {
                 // LEFT COMPARTMENT: Icon + Title
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone with Landing accent color (Warm Amber)
-                    Image(systemName: "house.fill")
+                    Image(systemName: IconCatalog.home)
                         .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundStyle(PageHeaderColor.landing.accent)
                         .frame(width: 40, height: 40)
@@ -522,12 +522,12 @@ struct LandingPageView: View {
     /// Icon for fact category (matches RandomFactProvider)
     private func iconFor(category: QuirkyFact.Category) -> String {
         switch category {
-        case .tradition: return "person.2.fill"
+        case .tradition: return IconCatalog.people
         case .food: return "fork.knife"
         case .invention: return "lightbulb.fill"
         case .nature: return "leaf.fill"
         case .history: return "book.fill"
-        case .quirky: return "star.fill"
+        case .quirky: return IconCatalog.holiday
         }
     }
 
@@ -548,7 +548,7 @@ struct LandingPageView: View {
         VStack(spacing: 0) {
             // TOP: Icon zone (情報デザイン: Strong color like Star page month icons)
             VStack {
-                Image(systemName: fact.icon ?? "star.fill")
+                Image(systemName: fact.icon ?? IconCatalog.holiday)
                     .font(.system(size: 24, weight: .bold, design: .rounded))
                     .foregroundStyle(fact.color.readableForeground)
             }
@@ -759,7 +759,7 @@ struct LandingPageView: View {
                     items.append(TodayItem(
                         title: holiday.displayTitle,
                         subtitle: formatRelativeDate(date),
-                        icon: holiday.isBankHoliday ? "star.fill" : "sparkles",
+                        icon: holiday.isBankHoliday ? IconCatalog.holiday : IconCatalog.observance,
                         color: color,
                         typeBadge: badge
                     ))
@@ -778,7 +778,7 @@ struct LandingPageView: View {
                     items.append(TodayItem(
                         title: "\(name)'s Birthday",
                         subtitle: formatRelativeDate(date),
-                        icon: "birthday.cake.fill",
+                        icon: IconCatalog.birthday,
                         color: CategoryColorSettings.shared.color(for: .memo),
                         typeBadge: "BDY"
                     ))
@@ -793,7 +793,7 @@ struct LandingPageView: View {
                     items.append(TodayItem(
                         title: preview + (note.text.count > 30 ? "..." : ""),
                         subtitle: formatRelativeDate(date),
-                        icon: "note.text",
+                        icon: IconCatalog.memo,
                         color: JohoColors.yellow,
                         typeBadge: "NTE"
                     ))
@@ -1195,7 +1195,7 @@ struct LandingPageView: View {
                 items.append(TodayItem(
                     title: event.text,
                     subtitle: nil,
-                    icon: "calendar.badge.clock",
+                    icon: IconCatalog.event,
                     color: JohoColors.cyan,
                     typeBadge: "EVT"
                 ))
@@ -1227,7 +1227,7 @@ struct LandingPageView: View {
                 items.append(TodayItem(
                     title: trip.text,
                     subtitle: nil,
-                    icon: "airplane",
+                    icon: IconCatalog.trip,
                     color: JohoColors.cyan,
                     typeBadge: "TRP"
                 ))
@@ -1274,7 +1274,7 @@ struct RandomFactDetailSheet: View {
             VStack(spacing: 0) {
                 // Large icon zone (情報デザイン: Hero display like Star page)
                 VStack(spacing: JohoDimensions.spacingSM) {
-                    Image(systemName: fact.icon ?? "star.fill")
+                    Image(systemName: fact.icon ?? IconCatalog.holiday)
                         .font(.system(size: 64, weight: .bold, design: .rounded))
                         .foregroundStyle(fact.color)
                 }

@@ -105,9 +105,9 @@ enum MascotMood: String, CaseIterable, Codable {
         case .excited: return "sparkle"
         case .sleepy: return "moon.zzz"
         case .surprised: return "exclamationmark"
-        case .starry: return "star.fill"
-        case .calendar: return "calendar"
-        case .settings: return "gearshape"
+        case .starry: return IconCatalog.star
+        case .calendar: return IconCatalog.calendar
+        case .settings: return IconCatalog.settings
         default: return nil
         }
     }
@@ -876,7 +876,7 @@ typealias KaomojiMascot = JohoMascot
     HStack(spacing: 0) {
         // Simulated header left side
         HStack(spacing: 8) {
-            Image(systemName: "house.fill")
+            Image(systemName: IconCatalog.home)
                 .font(.system(size: 20, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoColors.cyan)
                 .frame(width: 40, height: 40)

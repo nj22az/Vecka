@@ -196,7 +196,7 @@ struct ShareableContactCard: View {
                     // Birthday
                     if let birthday = contact.birthday, contact.birthdayKnown {
                         HStack(spacing: 6) {
-                            Image(systemName: "birthday.cake.fill")
+                            Image(systemName: IconCatalog.birthday)
                                 .font(.system(size: 11, weight: .bold))
                                 .foregroundStyle(JohoColors.pink)
                             Text(birthday.formatted(.dateTime.year().month(.abbreviated).day()))

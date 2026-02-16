@@ -166,7 +166,7 @@ struct DeveloperSettingsView: View {
 
                 HStack(spacing: JohoDimensions.spacingSM) {
                     miniGeneratorButton(
-                        icon: "note.text",
+                        icon: IconCatalog.memo,
                         label: "Notes",
                         color: JohoColors.yellow
                     ) {
@@ -197,7 +197,7 @@ struct DeveloperSettingsView: View {
 
                 HStack(spacing: JohoDimensions.spacingSM) {
                     miniGeneratorButton(
-                        icon: "person.2.fill",
+                        icon: IconCatalog.people,
                         label: "Meetings",
                         color: JohoColors.cyan
                     ) {
@@ -256,7 +256,7 @@ struct DeveloperSettingsView: View {
 
                 HStack(spacing: JohoDimensions.spacingSM) {
                     miniGeneratorButton(
-                        icon: "yensign.circle.fill",
+                        icon: IconCatalog.expense,
                         label: "Expenses",
                         color: JohoColors.green
                     ) {
@@ -468,16 +468,16 @@ struct DeveloperSettingsView: View {
 
         return HStack(spacing: JohoDimensions.spacingSM) {
             // Notes (Green)
-            statChip(count: notes, icon: "note.text", color: JohoColors.green)
+            statChip(count: notes, icon: IconCatalog.memo, color: JohoColors.green)
 
             // Trips (Cyan)
-            statChip(count: trips, icon: "airplane", color: JohoColors.cyan)
+            statChip(count: trips, icon: IconCatalog.trip, color: JohoColors.cyan)
 
             // Countdowns (Pink)
             statChip(count: countdowns, icon: "timer", color: JohoColors.pink)
 
             // Expenses (Green)
-            statChip(count: expenses, icon: "yensign.circle.fill", color: JohoColors.green)
+            statChip(count: expenses, icon: IconCatalog.expense, color: JohoColors.green)
 
             // Contacts (Purple)
             statChip(count: contactCount, icon: "person.crop.circle.fill", color: JohoColors.purple)

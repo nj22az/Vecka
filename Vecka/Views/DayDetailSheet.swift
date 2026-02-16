@@ -121,7 +121,7 @@ struct DayDetailSheet: View {
                     title: holidayName,
                     subtitle: "Public Holiday",
                     color: JohoColors.red,
-                    icon: check.holidaySymbolName ?? "star.fill",
+                    icon: check.holidaySymbolName ?? IconCatalog.holiday,
                     isSystem: true
                 )
             }
@@ -135,7 +135,7 @@ struct DayDetailSheet: View {
                             title: observanceName,
                             subtitle: "Observance",
                             color: JohoColors.pink,
-                            icon: "sparkles",
+                            icon: IconCatalog.observance,
                             isSystem: true
                         )
                     }
@@ -148,7 +148,7 @@ struct DayDetailSheet: View {
                             title: eventName,
                             subtitle: "Event",
                             color: JohoColors.cyan,
-                            icon: "calendar.badge.clock",
+                            icon: IconCatalog.event,
                             isSystem: false
                         )
                     }
@@ -161,7 +161,7 @@ struct DayDetailSheet: View {
                             title: birthdayName,
                             subtitle: "Birthday",
                             color: JohoColors.pink,
-                            icon: "birthday.cake.fill",
+                            icon: IconCatalog.birthday,
                             isSystem: false
                         )
                     }
@@ -173,7 +173,7 @@ struct DayDetailSheet: View {
                         title: notePreview(noteContent),
                         subtitle: "Note",
                         color: JohoColors.yellow,
-                        icon: "note.text",
+                        icon: IconCatalog.memo,
                         isSystem: false
                     )
                 }
@@ -184,7 +184,7 @@ struct DayDetailSheet: View {
                         title: destination,
                         subtitle: "Trip",
                         color: JohoColors.cyan,
-                        icon: "airplane",
+                        icon: IconCatalog.trip,
                         isSystem: false
                     )
                 }
@@ -345,7 +345,7 @@ struct DayDetailSheet: View {
     var dataCheck = DayDataCheck()
     dataCheck.hasHoliday = true
     dataCheck.holidayName = "New Year's Day"
-    dataCheck.holidaySymbolName = "star.fill"
+    dataCheck.holidaySymbolName = IconCatalog.holiday
     dataCheck.hasEvent = true
     dataCheck.eventNames = ["Team Meeting", "Dentist Appointment"]
     dataCheck.hasBirthday = true

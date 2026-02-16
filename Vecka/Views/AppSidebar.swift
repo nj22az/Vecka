@@ -31,11 +31,11 @@ enum SidebarSelection: String, Hashable, Identifiable, CaseIterable {
 
     var icon: String {
         switch self {
-        case .landing: return "house.fill"
-        case .calendar: return "calendar"
-        case .contacts: return "person.2"
-        case .specialDays: return "star.fill"
-        case .settings: return "gearshape"
+        case .landing: return IconCatalog.home
+        case .calendar: return IconCatalog.calendar
+        case .contacts: return IconCatalog.contacts
+        case .specialDays: return IconCatalog.star
+        case .settings: return IconCatalog.settings
         }
     }
 

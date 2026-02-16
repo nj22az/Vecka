@@ -380,7 +380,7 @@ struct PDFSummaryPage: View {
 
             // Recent Notes
             if !notes.prefix(5).isEmpty {
-                PDFSection(title: NSLocalizedString("pdf.recent_notes", value: "Recent Notes", comment: ""), icon: "note.text") {
+                PDFSection(title: NSLocalizedString("pdf.recent_notes", value: "Recent Notes", comment: ""), icon: IconCatalog.memo) {
                     ForEach(Array(notes.prefix(5)), id: \.id) { note in
                         if let birthdayInfo = PersonnummerParser.extractBirthdayInfo(from: note.text) {
                             VStack(alignment: .leading, spacing: 4) {
@@ -514,7 +514,7 @@ struct PDFDayPage: View {
 
                 // Notes
                 if !dayNotes.isEmpty {
-                    PDFSection(title: NSLocalizedString("pdf.notes", value: "Notes", comment: ""), icon: "note.text") {
+                    PDFSection(title: NSLocalizedString("pdf.notes", value: "Notes", comment: ""), icon: IconCatalog.memo) {
                         ForEach(dayNotes, id: \.id) { note in
                             if !note.text.isEmpty {
                                 if let birthdayInfo = PersonnummerParser.extractBirthdayInfo(from: note.text) {
@@ -785,7 +785,7 @@ struct PDFWeekSummaryPage: View {
             if !weekNotes.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
-                        Image(systemName: "note.text")
+                        Image(systemName: IconCatalog.memo)
                             .foregroundStyle(Color(hex: "F59E0B"))
                         Text("NOTES (\(weekNotes.count))")
                             .font(.system(size: 14, weight: .black, design: .rounded))
@@ -1243,7 +1243,7 @@ struct PDFWeekCompactPage: View {
                 // Summary badges
                 HStack(spacing: 4) {
                     if dayData.noteCount > 0 {
-                        badge(count: dayData.noteCount, color: JohoColors.green, icon: "note.text")
+                        badge(count: dayData.noteCount, color: JohoColors.green, icon: IconCatalog.memo)
                     }
                     if dayData.expenseCount > 0 {
                         badge(count: dayData.expenseCount, color: JohoColors.green, icon: "yensign.circle")

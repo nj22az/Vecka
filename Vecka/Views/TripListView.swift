@@ -704,7 +704,7 @@ struct JohoTripEditorSheet: View {
                 // ═══════════════════════════════════════════════════════════════
                 HStack(spacing: 0) {
                     // LEFT: Notes icon (40pt)
-                    Image(systemName: "note.text")
+                    Image(systemName: IconCatalog.memo)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(tripAccentColor)
                         .frame(width: 40)

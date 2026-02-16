@@ -152,7 +152,7 @@ struct ShareableDaySummaryCard: View {
                         // Holidays
                         ForEach(data.holidays.prefix(isShareable ? 10 : 3)) { holiday in
                             DaySummaryRow(
-                                icon: holiday.isBankHoliday ? "star.fill" : "calendar",
+                                icon: holiday.isBankHoliday ? IconCatalog.holiday : IconCatalog.calendar,
                                 iconColor: holiday.isBankHoliday ? CategoryColorSettings.shared.color(for: .holiday) : CategoryColorSettings.shared.color(for: .observance),
                                 title: holiday.name,
                                 badge: holiday.isBankHoliday ? "HOLIDAY" : "OBSERVANCE",
@@ -339,7 +339,7 @@ struct DaySummarySheetView: View {
                         // Holidays
                         ForEach(data.holidays.prefix(3)) { holiday in
                             DaySummaryRow(
-                                icon: holiday.isBankHoliday ? "star.fill" : "calendar",
+                                icon: holiday.isBankHoliday ? IconCatalog.holiday : IconCatalog.calendar,
                                 iconColor: holiday.isBankHoliday ? CategoryColorSettings.shared.color(for: .holiday) : CategoryColorSettings.shared.color(for: .observance),
                                 title: holiday.name,
                                 badge: holiday.isBankHoliday ? "HOLIDAY" : "OBSERVANCE",
@@ -476,28 +476,6 @@ struct DaySummaryShareButton: View {
 
 // MARK: - Shared Row Components
 
-/// Get SF Symbol for currency code
-private func currencyIcon(for currency: String) -> String {
-    switch currency.uppercased() {
-    case "USD": return "dollarsign.circle.fill"
-    case "EUR": return "eurosign.circle.fill"
-    case "GBP": return "sterlingsign.circle.fill"
-    case "JPY": return "yensign.circle.fill"
-    case "CNY", "RMB": return "yensign.circle.fill"
-    case "KRW": return "wonsign.circle.fill"
-    case "INR": return "indianrupeesign.circle.fill"
-    case "RUB": return "rublesign.circle.fill"
-    case "BRL": return "brazilianrealsign.circle.fill"
-    case "THB": return "bahtsign.circle.fill"
-    case "TRY": return "turkishlirasign.circle.fill"
-    case "SEK", "NOK", "DKK", "ISK": return "swedishkronasign.circle.fill"
-    case "CHF": return "francsign.circle.fill"
-    case "PLN": return "polishzlotysign.circle.fill"
-    case "MXN", "ARS", "CLP", "COP": return "pesosign.circle.fill"
-    default: return "banknote.fill"
-    }
-}
-
 private struct DaySummaryRow: View {
     let icon: String
     let iconColor: Color
@@ -564,11 +542,11 @@ private struct DayMemoRow: View {
 
     var body: some View {
         // Detect birthday memos (linked to contact or has birthday symbol)
-        let isBirthday = memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill"
-        let icon = isBirthday ? "gift.fill" : (memo.hasMoney ? currencyIcon(for: memo.currency ?? baseCurrency) : (memo.hasPlace ? "airplane" : "note.text"))
+        let isBirthday = memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday
+        let icon = isBirthday ? "gift.fill" : (memo.hasMoney ? IconCatalog.currencyIcon(for: memo.currency ?? baseCurrency) : (memo.hasPlace ? IconCatalog.trip : IconCatalog.memo))
         // 情報デザイン: Semantic color system
         let iconColor: Color = {
-            if memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill" || memo.hasPerson {
+            if memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday || memo.hasPerson {
                 return JohoColors.purple  // Purple (人) - PEOPLE
             }
             if memo.hasMoney { return JohoColors.green }  // Green (金) - MONEY

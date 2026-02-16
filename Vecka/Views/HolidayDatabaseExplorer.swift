@@ -27,7 +27,7 @@ struct RegionDatabase: Identifiable {
         // Nordic countries (priority)
         RegionDatabase(id: "SE", name: "Sweden", localName: "Sverige", continent: "Nordic", icon: "crown.fill"),
         RegionDatabase(id: "NO", name: "Norway", localName: "Norge", continent: "Nordic", icon: "mountain.2.fill"),
-        RegionDatabase(id: "DK", name: "Denmark", localName: "Danmark", continent: "Nordic", icon: "star.fill"),
+        RegionDatabase(id: "DK", name: "Denmark", localName: "Danmark", continent: "Nordic", icon: IconCatalog.holiday),
         RegionDatabase(id: "FI", name: "Finland", localName: "Suomi", continent: "Nordic", icon: "snowflake"),
         RegionDatabase(id: "IS", name: "Iceland", localName: "Ísland", continent: "Nordic", icon: "flame.fill"),
         // Asia (priority)
@@ -432,7 +432,7 @@ struct HolidayDatabaseExplorer: View {
                 databaseSection(
                     title: "OBSERVANCES",
                     subtitle: "Notable days (not bank holidays)",
-                    icon: "star.fill",
+                    icon: IconCatalog.holiday,
                     color: JohoColors.cyan,
                     rules: obs
                 )

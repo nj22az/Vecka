@@ -28,7 +28,7 @@ struct CountdownBanner: View {
                 Menu {
                     Picker(Localization.selectCountdown, selection: $selectedCountdownID) {
                         ForEach(events) { event in
-                            Label(event.text, systemImage: event.symbolName ?? "star.fill")
+                            Label(event.text, systemImage: event.symbolName ?? IconCatalog.star)
                                 .tag(event.id.uuidString)
                         }
                     }
@@ -36,7 +36,7 @@ struct CountdownBanner: View {
                     // Compact single-line layout for decluttered UI
                     HStack(spacing: 10) {
                         // Icon
-                        Image(systemName: event.symbolName ?? "star.fill")
+                        Image(systemName: event.symbolName ?? IconCatalog.star)
                             .font(.body.weight(.semibold))
                             .foregroundStyle(Color(hex: event.colorHex))
                             .frame(width: 24, height: 24)

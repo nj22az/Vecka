@@ -257,7 +257,7 @@ struct DayDashboardView: View {
         for holiday in holidays.prefix(2) {
             items.append(CardItem(
                 id: "h-\(holiday.id)",
-                icon: holiday.isBankHoliday ? "star.fill" : "calendar",
+                icon: holiday.isBankHoliday ? IconCatalog.holiday : IconCatalog.calendar,
                 color: holiday.isBankHoliday ? CategoryColorSettings.shared.color(for: .holiday) : CategoryColorSettings.shared.color(for: .observance),
                 title: holiday.name,
                 badge: holiday.isBankHoliday ? "HOLIDAY" : nil,
@@ -271,7 +271,7 @@ struct DayDashboardView: View {
             let ageText = birthday.age.map { "Turns \($0)" }
             items.append(CardItem(
                 id: "b-\(birthday.id)",
-                icon: "birthday.cake.fill",
+                icon: IconCatalog.birthday,
                 color: JohoColors.pink,
                 title: birthday.name,
                 badge: ageText,
@@ -366,18 +366,18 @@ struct DayDashboardView: View {
 
     private func memoIcon(for memo: Memo) -> String {
         // Birthday memos (linked to contact or has birthday symbol)
-        if memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill" {
+        if memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday {
             return "gift.fill"
         }
-        if memo.hasMoney { return currencyIcon(for: memo.currency ?? baseCurrency) }
-        if memo.hasPlace { return "airplane" }
-        return "note.text"
+        if memo.hasMoney { return IconCatalog.currencyIcon(for: memo.currency ?? baseCurrency) }
+        if memo.hasPlace { return IconCatalog.trip }
+        return IconCatalog.memo
     }
 
     private func memoColor(for memo: Memo) -> Color {
         // 情報デザイン: Semantic color system
         // Person/birthday memos use purple (PEOPLE)
-        if memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill" || memo.hasPerson {
+        if memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday || memo.hasPerson {
             return JohoColors.purple  // Purple (人) - PEOPLE
         }
         // Money memos use green (MONEY)
@@ -387,29 +387,6 @@ struct DayDashboardView: View {
         // Default memos use yellow (NOW)
         return JohoColors.yellow  // Yellow - NOW (notes, today, memos)
     }
-
-    /// Get SF Symbol for currency code
-    private func currencyIcon(for currency: String) -> String {
-        switch currency.uppercased() {
-        case "USD": return "dollarsign.circle.fill"
-        case "EUR": return "eurosign.circle.fill"
-        case "GBP": return "sterlingsign.circle.fill"
-        case "JPY": return "yensign.circle.fill"
-        case "CNY", "RMB": return "yensign.circle.fill"
-        case "KRW": return "wonsign.circle.fill"
-        case "INR": return "indianrupeesign.circle.fill"
-        case "RUB": return "rublesign.circle.fill"
-        case "BRL": return "brazilianrealsign.circle.fill"
-        case "THB": return "bahtsign.circle.fill"
-        case "TRY": return "turkishlirasign.circle.fill"
-        case "SEK", "NOK", "DKK", "ISK": return "swedishkronasign.circle.fill"
-        case "CHF": return "francsign.circle.fill"
-        case "PLN": return "polishzlotysign.circle.fill"
-        case "MXN", "ARS", "CLP", "COP": return "pesosign.circle.fill"
-        default: return "banknote.fill"
-        }
-    }
-
 
     // MARK: - Empty State Content (情報デザイン: Inside combined Bento)
 
@@ -702,37 +679,15 @@ struct SingleMemoDetailSheet: View {
     @State private var permanentIconSelection: String = ""
 
     private var memoIcon: String {
-        if memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill" { return "gift.fill" }
-        if memo.hasMoney { return currencyIcon(for: memo.currency ?? baseCurrency) }
-        if memo.hasPlace { return "airplane" }
-        return "note.text"
-    }
-
-    /// Get SF Symbol for currency code
-    private func currencyIcon(for currency: String) -> String {
-        switch currency.uppercased() {
-        case "USD": return "dollarsign.circle.fill"
-        case "EUR": return "eurosign.circle.fill"
-        case "GBP": return "sterlingsign.circle.fill"
-        case "JPY": return "yensign.circle.fill"
-        case "CNY", "RMB": return "yensign.circle.fill"
-        case "KRW": return "wonsign.circle.fill"
-        case "INR": return "indianrupeesign.circle.fill"
-        case "RUB": return "rublesign.circle.fill"
-        case "BRL": return "brazilianrealsign.circle.fill"
-        case "THB": return "bahtsign.circle.fill"
-        case "TRY": return "turkishlirasign.circle.fill"
-        case "SEK", "NOK", "DKK", "ISK": return "swedishkronasign.circle.fill"
-        case "CHF": return "francsign.circle.fill"
-        case "PLN": return "polishzlotysign.circle.fill"
-        case "MXN", "ARS", "CLP", "COP": return "pesosign.circle.fill"
-        default: return "banknote.fill"
-        }
+        if memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday { return "gift.fill" }
+        if memo.hasMoney { return IconCatalog.currencyIcon(for: memo.currency ?? baseCurrency) }
+        if memo.hasPlace { return IconCatalog.trip }
+        return IconCatalog.memo
     }
 
     private var memoColor: Color {
         // 情報デザイン: Semantic color system
-        if memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill" || memo.hasPerson {
+        if memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday || memo.hasPerson {
             return JohoColors.purple  // Purple (人) - PEOPLE
         }
         if memo.hasMoney { return JohoColors.green }  // Green (金) - MONEY
@@ -741,7 +696,7 @@ struct SingleMemoDetailSheet: View {
     }
 
     private var categoryLabel: String {
-        if memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill" { return "BIRTHDAY" }
+        if memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday { return "BIRTHDAY" }
         if memo.hasMoney { return "EXPENSE" }
         if memo.hasPlace { return "TRIP" }
         return "MEMO"
@@ -1069,7 +1024,7 @@ struct SingleMemoShareButton: View {
             item: snapshot,
             preview: SharePreview(
                 memo.preview,
-                image: Image(systemName: customIcon ?? "note.text")
+                image: Image(systemName: customIcon ?? IconCatalog.memo)
             )
         ) {
             ZStack {
@@ -1148,10 +1103,10 @@ struct ShareableMemoCard: View {
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
 
     private var defaultMemoIcon: String {
-        if memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill" { return "gift.fill" }
-        if memo.hasMoney { return currencyIcon(for: memo.currency ?? baseCurrency) }
-        if memo.hasPlace { return "airplane" }
-        return "note.text"
+        if memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday { return "gift.fill" }
+        if memo.hasMoney { return IconCatalog.currencyIcon(for: memo.currency ?? baseCurrency) }
+        if memo.hasPlace { return IconCatalog.trip }
+        return IconCatalog.memo
     }
 
     /// The icon to display (custom or default)
@@ -1159,31 +1114,9 @@ struct ShareableMemoCard: View {
         customIcon ?? defaultMemoIcon
     }
 
-    /// Get SF Symbol for currency code
-    private func currencyIcon(for currency: String) -> String {
-        switch currency.uppercased() {
-        case "USD": return "dollarsign.circle.fill"
-        case "EUR": return "eurosign.circle.fill"
-        case "GBP": return "sterlingsign.circle.fill"
-        case "JPY": return "yensign.circle.fill"
-        case "CNY", "RMB": return "yensign.circle.fill"
-        case "KRW": return "wonsign.circle.fill"
-        case "INR": return "indianrupeesign.circle.fill"
-        case "RUB": return "rublesign.circle.fill"
-        case "BRL": return "brazilianrealsign.circle.fill"
-        case "THB": return "bahtsign.circle.fill"
-        case "TRY": return "turkishlirasign.circle.fill"
-        case "SEK", "NOK", "DKK", "ISK": return "swedishkronasign.circle.fill"
-        case "CHF": return "francsign.circle.fill"
-        case "PLN": return "polishzlotysign.circle.fill"
-        case "MXN", "ARS", "CLP", "COP": return "pesosign.circle.fill"
-        default: return "banknote.fill"
-        }
-    }
-
     private var memoColor: Color {
         // 情報デザイン: Semantic color system
-        if memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill" || memo.hasPerson {
+        if memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday || memo.hasPerson {
             return JohoColors.purple  // Purple (人) - PEOPLE
         }
         if memo.hasMoney { return JohoColors.green }  // Green (金) - MONEY
@@ -1192,7 +1125,7 @@ struct ShareableMemoCard: View {
     }
 
     private var categoryLabel: String {
-        if memo.hasLinkedContact || memo.symbolName == "birthday.cake.fill" { return "BIRTHDAY" }
+        if memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday { return "BIRTHDAY" }
         if memo.hasMoney { return "EXPENSE" }
         if memo.hasPlace { return "TRIP" }
         return "MEMO"
@@ -1214,7 +1147,7 @@ struct ShareableMemoCard: View {
                 // HEADER: Branding + icon
                 HStack(spacing: 0) {
                     HStack(spacing: JohoDimensions.spacingSM) {
-                        Image(systemName: "calendar.badge.clock")
+                        Image(systemName: IconCatalog.event)
                             .font(.system(size: 14, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary)
                         Text("ONSEN PLANNER")
@@ -1386,7 +1319,7 @@ struct SingleBirthdayDetailSheet: View {
             VStack(spacing: 0) {
                 // Large icon zone (情報デザイン: Hero display)
                 VStack(spacing: JohoDimensions.spacingSM) {
-                    Image(systemName: "birthday.cake.fill")
+                    Image(systemName: IconCatalog.birthday)
                         .font(.system(size: 64, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.pink)
                 }

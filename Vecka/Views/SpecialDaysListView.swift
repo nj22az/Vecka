@@ -186,7 +186,7 @@ struct SpecialDaysListView: View {
                         date: memo.date,
                         title: memo.preview,
                         type: .memo,
-                        symbolName: memo.symbolName ?? (memo.hasMoney ? "yensign.circle.fill" : (memo.hasPlace ? "mappin.circle.fill" : "note.text")),
+                        symbolName: memo.symbolName ?? (memo.hasMoney ? IconCatalog.expense : (memo.hasPlace ? "mappin.circle.fill" : IconCatalog.memo)),
                         iconColor: memo.colorHex,
                         notes: memo.text,
                         isCustom: true,
@@ -227,7 +227,7 @@ struct SpecialDaysListView: View {
                         date: birthdayForSelectedYear,
                         title: contact.displayName,
                         type: .birthday,
-                        symbolName: "birthday.cake.fill",
+                        symbolName: IconCatalog.birthday,
                         iconColor: "D53F8C",  // Pink
                         notes: nil,
                         isCustom: false,
@@ -625,7 +625,7 @@ struct SpecialDaysListView: View {
                             .background(theme.lightBackground)
                             .johoBordered(cornerRadius: JohoDimensions.radiusSmall)
                     } else {
-                        Image(systemName: "star.fill")
+                        Image(systemName: IconCatalog.holiday)
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(PageHeaderColor.specialDays.accent)
                             .johoTouchTarget()

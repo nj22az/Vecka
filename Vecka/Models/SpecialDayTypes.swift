@@ -32,9 +32,9 @@ enum DisplayCategory: String, CaseIterable, Identifiable {
     /// SF Symbol for outline icon (black stroke, no fill)
     var outlineIcon: String {
         switch self {
-        case .holiday: return "circle"
-        case .observance: return "diamond"
-        case .memo: return "doc.text"
+        case .holiday: return IconCatalog.holidayOutline
+        case .observance: return IconCatalog.observanceOutline
+        case .memo: return IconCatalog.memo
         }
     }
 
@@ -109,13 +109,13 @@ enum SpecialDayType: String, CaseIterable {
 
     var defaultIcon: String {
         switch self {
-        case .holiday: return "star.fill"
-        case .observance: return "sparkles"
-        case .birthday: return "birthday.cake.fill"
-        case .memo, .note: return "note.text"
-        case .trip: return "airplane"
-        case .expense: return "yensign.circle.fill"
-        case .event: return "calendar.badge.clock"
+        case .holiday: return IconCatalog.holiday
+        case .observance: return IconCatalog.observance
+        case .birthday: return IconCatalog.birthday
+        case .memo, .note: return IconCatalog.memo
+        case .trip: return IconCatalog.trip
+        case .expense: return IconCatalog.expense
+        case .event: return IconCatalog.event
         }
     }
 

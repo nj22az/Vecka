@@ -41,7 +41,7 @@ struct PhoneLibraryView: View {
                         JohoListRow(
                             title: "Special Days",
                             subtitle: specialDaysSubtitle,
-                            icon: "star.fill",
+                            icon: IconCatalog.holiday,
                             zone: .holidays,
                             badge: totalSpecialDaysCount > 0 ? "\(totalSpecialDaysCount)" : nil
                         )
@@ -55,7 +55,7 @@ struct PhoneLibraryView: View {
                         JohoListRow(
                             title: Localization.notes,
                             subtitle: notesSubtitle,
-                            icon: "note.text",
+                            icon: IconCatalog.memo,
                             zone: .notes,
                             badge: notes.isEmpty ? nil : "\(notes.count)"
                         )
@@ -69,7 +69,7 @@ struct PhoneLibraryView: View {
                         JohoListRow(
                             title: Localization.contacts,
                             subtitle: contactsSubtitle,
-                            icon: "person.2",
+                            icon: IconCatalog.contacts,
                             zone: .contacts,
                             badge: contacts.isEmpty ? nil : "\(contacts.count)"
                         )
@@ -83,7 +83,7 @@ struct PhoneLibraryView: View {
                         JohoListRow(
                             title: "Events",
                             subtitle: eventsSubtitle,
-                            icon: "calendar.badge.clock",
+                            icon: IconCatalog.event,
                             zone: .events,
                             badge: nil  // Custom countdowns stored in UserDefaults
                         )
@@ -97,7 +97,7 @@ struct PhoneLibraryView: View {
                         JohoListRow(
                             title: Localization.trips,
                             subtitle: tripsSubtitle,
-                            icon: "airplane",
+                            icon: IconCatalog.trip,
                             zone: .trips,
                             badge: trips.isEmpty ? nil : "\(trips.count)"
                         )

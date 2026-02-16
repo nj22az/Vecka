@@ -18,7 +18,7 @@ struct OnboardingView: View {
 
     private let pages: [OnboardingPage] = [
         OnboardingPage(
-            icon: "calendar.badge.clock",
+            icon: IconCatalog.event,
             iconColor: JohoColors.cyan,
             title: "ISO 8601 Week Numbers",
             subtitle: "Track time the way professionals do",
@@ -32,7 +32,7 @@ struct OnboardingView: View {
             description: "Notes, trips, expenses, contacts, and special days - all organized with color-coded sections. Each color has meaning: yellow for today, cyan for events, pink for holidays."
         ),
         OnboardingPage(
-            icon: "star.fill",
+            icon: IconCatalog.star,
             iconColor: JohoColors.pink,
             title: "Special Days",
             subtitle: "Never miss what matters",

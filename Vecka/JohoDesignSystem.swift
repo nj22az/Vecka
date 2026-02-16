@@ -1368,6 +1368,144 @@ struct JohoIconBadge: View {
     }
 }
 
+// MARK: - JohoSticker (Universal Avatar/Badge Component)
+
+/// Universal sticker component generalizing the contact-avatar badge pattern.
+/// Supports circle or squircle shapes, photo/initials/icon content, optional badge overlay.
+struct JohoSticker: View {
+
+    /// Content to display inside the sticker
+    enum Content {
+        case photo(Data)
+        case initials(String)
+        case icon(String)
+        case empty
+    }
+
+    /// Shape of the sticker
+    enum StickerShape {
+        case circle
+        case squircle
+    }
+
+    /// Optional badge overlay (bottom-right corner)
+    struct Badge {
+        let icon: String
+        let color: Color
+    }
+
+    let content: Content
+    let color: Color
+    var shape: StickerShape = .circle
+    var badge: Badge? = nil
+    var size: CGFloat = 56
+    var borderWidth: CGFloat? = nil
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    private var resolvedBorderWidth: CGFloat {
+        borderWidth ?? (size >= 80 ? JohoDimensions.borderThick : JohoDimensions.borderMedium)
+    }
+
+    private var cornerRadius: CGFloat {
+        shape == .circle ? size / 2 : size * 0.2
+    }
+
+    private var badgeSize: CGFloat {
+        size * 0.35
+    }
+
+    var body: some View {
+        ZStack(alignment: .bottomTrailing) {
+            mainContent
+                .frame(width: size, height: size)
+                .clipShape(stickerShape)
+                .overlay(stickerShape.stroke(colors.border, lineWidth: resolvedBorderWidth))
+
+            if let badge {
+                badgeView(badge)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var mainContent: some View {
+        switch content {
+        case .photo(let data):
+            if let uiImage = UIImage(data: data) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                fallbackContent
+            }
+        case .initials(let text):
+            ZStack {
+                color
+                Text(text.prefix(2).uppercased())
+                    .font(.system(size: size * 0.35, weight: .black, design: .rounded))
+                    .foregroundStyle(.white)
+            }
+        case .icon(let systemName):
+            ZStack {
+                color
+                Image(systemName: systemName)
+                    .font(.system(size: size * 0.4, weight: .bold))
+                    .foregroundStyle(colors.primaryInverted)
+            }
+        case .empty:
+            fallbackContent
+        }
+    }
+
+    @ViewBuilder
+    private var fallbackContent: some View {
+        ZStack {
+            color
+            Image(systemName: IconCatalog.person)
+                .font(.system(size: size * 0.4))
+                .foregroundStyle(colors.primary.opacity(0.5))
+        }
+    }
+
+    @ViewBuilder
+    private func badgeView(_ badge: Badge) -> some View {
+        Image(systemName: badge.icon)
+            .font(.system(size: badgeSize * 0.5, weight: .bold))
+            .foregroundStyle(badge.color)
+            .frame(width: badgeSize, height: badgeSize)
+            .background(colors.surface)
+            .clipShape(Circle())
+            .overlay(Circle().stroke(colors.border, lineWidth: 1))
+            .offset(x: 2, y: 2)
+    }
+
+    private var stickerShape: some InsettableShape {
+        shape == .circle
+            ? AnyInsettableShape(Circle())
+            : AnyInsettableShape(Squircle(cornerRadius: cornerRadius))
+    }
+}
+
+/// Type-erased InsettableShape for JohoSticker shape switching
+struct AnyInsettableShape: InsettableShape, @unchecked Sendable {
+    private let _path: (CGRect) -> Path
+    private let _inset: (CGFloat) -> AnyInsettableShape
+    private let _strokePath: (CGRect, StrokeStyle) -> Path
+
+    init<S: InsettableShape>(_ shape: S) {
+        _path = { shape.path(in: $0) }
+        _inset = { AnyInsettableShape(shape.inset(by: $0)) }
+        _strokePath = { rect, style in
+            shape.path(in: rect).strokedPath(style)
+        }
+    }
+
+    func path(in rect: CGRect) -> Path { _path(rect) }
+    func inset(by amount: CGFloat) -> AnyInsettableShape { _inset(amount) }
+}
+
 // MARK: - Icon Button (Actionable circular button with semantic color)
 
 /// 情報デザイン: Unified circular icon button for actions
@@ -3356,6 +3494,35 @@ struct JohoSFSymbolPickerSheet: View {
     }
 }
 
+// MARK: - JohoIconPicker (Convenience wrapper for icon selection)
+
+/// Convenience view modifier that presents a JohoSFSymbolPickerSheet.
+/// Use `.johoIconPicker(isPresented:selection:color:)` on any view.
+struct JohoIconPickerModifier: ViewModifier {
+    @Binding var isPresented: Bool
+    @Binding var selection: String
+    let accentColor: Color
+
+    func body(content: Content) -> some View {
+        content
+            .sheet(isPresented: $isPresented) {
+                JohoSFSymbolPickerSheet(
+                    selectedSymbol: $selection,
+                    accentColor: accentColor,
+                    lightBackground: accentColor.opacity(0.15),
+                    onDone: { isPresented = false }
+                )
+            }
+    }
+}
+
+extension View {
+    /// Present a JohoSFSymbolPickerSheet as a modal sheet.
+    func johoIconPicker(isPresented: Binding<Bool>, selection: Binding<String>, accentColor: Color = JohoColors.yellow) -> some View {
+        modifier(JohoIconPickerModifier(isPresented: isPresented, selection: selection, accentColor: accentColor))
+    }
+}
+
 // MARK: - CategoryIconSettings (情報デザイン: Shared Category Icon Storage)
 
 /// Custom icon for category cards (color is managed by CategoryColorSettings)
@@ -4242,10 +4409,10 @@ extension View {
                 Image(systemName: "gift.fill")
                     .johoIconBadge(color: JohoColors.pink, size: 40)
 
-                Image(systemName: "note.text")
+                Image(systemName: IconCatalog.memo)
                     .johoIconBadge(color: JohoColors.yellow, size: 40)
 
-                Image(systemName: "person.fill")
+                Image(systemName: IconCatalog.person)
                     .johoIconBadge(color: JohoColors.purple, size: 40)
             }
 

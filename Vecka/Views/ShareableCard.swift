@@ -136,7 +136,7 @@ struct ShareableCardHeader: View {
         HStack(spacing: 0) {
             // LEFT: App branding
             HStack(spacing: JohoDimensions.spacingSM) {
-                Image(systemName: "calendar.badge.clock")
+                Image(systemName: IconCatalog.event)
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
                 
@@ -238,7 +238,7 @@ struct JohoShareCircleButton: View {
     VStack(spacing: 20) {
         // Full card shell example
         ShareableCardShell(
-            headerIcon: "star.fill",
+            headerIcon: IconCatalog.holiday,
             headerIconColor: JohoColors.pink,
             headerAccentColor: JohoColors.pink,
             footerLeftLabel: "PREVIEW CARD",

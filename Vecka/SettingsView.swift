@@ -151,7 +151,7 @@ struct SettingsView: View {
                 // LEFT COMPARTMENT: Icon + Title
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone with Settings accent color (Slate Blue)
-                    Image(systemName: "gearshape.fill")
+                    Image(systemName: IconCatalog.settings)
                         .font(.system(size: 20, weight: .bold))
                         .foregroundStyle(PageHeaderColor.settings.accent)
                         .frame(width: 40, height: 40)
@@ -1310,7 +1310,7 @@ struct SettingsCategoryCustomizationSheet: View {
     // 情報デザイン: Curated icon set for categories (shapes + conceptual)
     private let iconOptions: [String] = [
         // Shapes (core category icons)
-        "circle", "diamond", "doc.text", "square", "triangle", "plus",
+        "circle", "diamond", "note.text", "square", "triangle", "plus",
         // Conceptual
         "star.fill", "heart.fill", "flag.fill", "bell.fill", "gift.fill", "bookmark.fill",
         // Status

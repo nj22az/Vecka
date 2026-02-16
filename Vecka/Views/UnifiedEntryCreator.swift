@@ -445,7 +445,7 @@ struct UnifiedEntryCreator: View {
 
     private var aboutRow: some View {
         HStack(spacing: 0) {
-            Image(systemName: "doc.text")
+            Image(systemName: IconCatalog.memo)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 48).frame(maxHeight: .infinity)
@@ -477,7 +477,7 @@ struct UnifiedEntryCreator: View {
                     selectedRegion = "PERSONAL"
                     HapticManager.selection()
                 } label: {
-                    Label("Personal", systemImage: "person.fill")
+                    Label("Personal", systemImage: IconCatalog.person)
                 }
 
                 Divider()
@@ -504,7 +504,7 @@ struct UnifiedEntryCreator: View {
                 }
             } label: {
                 HStack {
-                    Image(systemName: selectedRegion == "PERSONAL" ? "person.fill" : "flag.fill")
+                    Image(systemName: selectedRegion == "PERSONAL" ? IconCatalog.person : "flag.fill")
                         .font(.system(size: 12, weight: .bold))
                     Text(selectedRegion == "PERSONAL" ? "Personal" : selectedRegion)
                         .font(.system(size: 14, weight: .medium, design: .rounded))
@@ -661,7 +661,7 @@ struct UnifiedEntryCreator: View {
 
     private var contactRow: some View {
         HStack(spacing: 0) {
-            Image(systemName: "person.crop.circle")
+            Image(systemName: IconCatalog.person)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)

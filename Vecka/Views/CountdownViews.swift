@@ -363,7 +363,7 @@ struct CountdownPickerSheet: View {
                 let announcement = wasFavorite ? Localization.unfavorite : Localization.favorite
                 UIAccessibility.post(notification: .announcement, argument: announcement)
             }) {
-                Image(systemName: favorites.contains(SavedCountdown(type: type, custom: custom)) ? "star.fill" : "star")
+                Image(systemName: favorites.contains(SavedCountdown(type: type, custom: custom)) ? IconCatalog.star : "star")
             }
             .buttonStyle(.plain)
             .accessibilityLabel(favorites.contains(SavedCountdown(type: type, custom: custom)) ? Localization.unfavorite : Localization.favorite)
@@ -509,7 +509,7 @@ struct CustomCountdownDialog: View {
     let onSave: () -> Void
 
     // Icon selection
-    @State private var iconName: String = "calendar.badge.clock"
+    @State private var iconName: String = IconCatalog.event
     @State private var showingIconPicker = false
 
     // Tasks/checklist (情報デザイン: Event preparation items)
@@ -569,7 +569,7 @@ struct CustomCountdownDialog: View {
                     // CENTER: Icon + Title/Subtitle
                     HStack(spacing: JohoDimensions.spacingSM) {
                         // Type icon in colored box
-                        Image(systemName: "calendar.badge.clock")
+                        Image(systemName: IconCatalog.event)
                             .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(eventAccentColor)
                             .frame(width: 36, height: 36)

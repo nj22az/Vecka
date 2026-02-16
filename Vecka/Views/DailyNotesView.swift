@@ -165,7 +165,7 @@ struct DailyNotesView: View {
                 if dayNotes.isEmpty && !isCreating {
                     JohoCard(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderMedium) {
                         VStack(spacing: JohoDimensions.spacingMD) {
-                            Image(systemName: "note.text")
+                            Image(systemName: IconCatalog.memo)
                                 .font(.system(size: 32, weight: .medium))
                                 .foregroundStyle(JohoColors.yellow)
                             Text("No Notes")
@@ -354,7 +354,7 @@ private struct JohoNoteEditor: View {
                         .frame(width: 60, height: 60)
                         .overlay(Circle().stroke(colors.border, lineWidth: 2))
 
-                    Image(systemName: "note.text")
+                    Image(systemName: IconCatalog.memo)
                         .font(.system(size: 24, weight: .bold))
                         .foregroundStyle(accentColor)
                 }
@@ -491,7 +491,7 @@ struct JohoNoteEditorSheet: View {
                     // CENTER: Icon + Title/Subtitle
                     HStack(spacing: JohoDimensions.spacingSM) {
                         // Type icon in colored box
-                        Image(systemName: "note.text")
+                        Image(systemName: IconCatalog.memo)
                             .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(noteAccentColor)
                             .frame(width: 36, height: 36)

@@ -169,6 +169,17 @@ final class Memo {
     /// Does this memo have a photo?
     var hasPhoto: Bool { photoData != nil }
 
+    /// Resolved icon: user override → type default from IconCatalog
+    var displayIcon: String {
+        if let custom = symbolName, !custom.isEmpty { return custom }
+        switch type {
+        case .expense: return IconCatalog.expense
+        case .trip: return IconCatalog.trip
+        case .countdown: return IconCatalog.countdown
+        case .note: return IconCatalog.memo
+        }
+    }
+
     /// Short preview for lists
     var preview: String {
         let firstLine = text.components(separatedBy: .newlines).first ?? text

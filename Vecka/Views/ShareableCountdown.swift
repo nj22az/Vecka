@@ -33,7 +33,7 @@ struct ShareableCountdownSnapshot: Transferable {
             name: countdown.name,
             daysRemaining: daysRemaining,
             targetDate: countdown.date,
-            iconName: countdown.iconName ?? "calendar.badge.clock",
+            iconName: countdown.iconName ?? IconCatalog.event,
             isAnnual: countdown.isAnnual,
             tasks: countdown.tasks
         )
@@ -233,7 +233,7 @@ struct CountdownShareButton: View {
             item: snapshot,
             preview: SharePreview(
                 countdown.name,
-                image: Image(systemName: countdown.iconName ?? "calendar.badge.clock")
+                image: Image(systemName: countdown.iconName ?? IconCatalog.event)
             )
         ) {
             Image(systemName: "square.and.arrow.up")

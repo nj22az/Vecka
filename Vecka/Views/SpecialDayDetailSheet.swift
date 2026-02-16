@@ -589,7 +589,7 @@ struct ShareableSpecialDayCard: View {
                 // HEADER: Branding + icon
                 HStack(spacing: 0) {
                     HStack(spacing: JohoDimensions.spacingSM) {
-                        Image(systemName: "calendar.badge.clock")
+                        Image(systemName: IconCatalog.event)
                             .font(.system(size: 14, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary)
                         Text("ONSEN PLANNER")
@@ -744,7 +744,7 @@ struct ShareableSpecialDayCard: View {
             date: Date(),
             title: "New Year's Day",
             type: .holiday,
-            symbolName: "star.fill",
+            symbolName: IconCatalog.holiday,
             iconColor: nil,
             notes: "Public holiday in Sweden. Offices and shops are closed.",
             isCustom: false,

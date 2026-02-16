@@ -19,9 +19,9 @@ enum DateType: String, CaseIterable {
 
     var icon: String {
         switch self {
-        case .fullDay: return "calendar"
+        case .fullDay: return IconCatalog.calendar
         case .specificTime: return "clock"
-        case .dateRange: return "calendar.badge.clock"
+        case .dateRange: return IconCatalog.event
         }
     }
 }
@@ -254,7 +254,7 @@ struct MemoEditorView: View {
                     withAnimation(.easeInOut(duration: 0.2)) { showPlace.toggle() }
                 }
 
-                optionChip(icon: "person.crop.circle", label: "CONTACT", isActive: showContact) {
+                optionChip(icon: IconCatalog.person, label: "CONTACT", isActive: showContact) {
                     withAnimation(.easeInOut(duration: 0.2)) { showContact.toggle() }
                 }
 
@@ -315,7 +315,7 @@ struct MemoEditorView: View {
 
     private var dateTypeRow: some View {
         HStack(spacing: 0) {
-            Image(systemName: "calendar.badge.clock")
+            Image(systemName: IconCatalog.event)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
@@ -440,7 +440,7 @@ struct MemoEditorView: View {
 
     private var endDateRow: some View {
         HStack(spacing: 0) {
-            Image(systemName: "calendar.badge.clock")
+            Image(systemName: IconCatalog.event)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
@@ -532,7 +532,7 @@ struct MemoEditorView: View {
 
     private var contactRow: some View {
         HStack(spacing: 0) {
-            Image(systemName: "person.crop.circle")
+            Image(systemName: IconCatalog.person)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)

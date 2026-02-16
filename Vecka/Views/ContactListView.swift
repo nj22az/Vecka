@@ -165,7 +165,7 @@ struct ContactListView: View {
                 // LEFT COMPARTMENT: Icon + Title
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone with Contacts accent color (Warm Brown)
-                    Image(systemName: "person.2.fill")
+                    Image(systemName: IconCatalog.people)
                         .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundStyle(PageHeaderColor.contacts.accent)
                         .frame(width: 40, height: 40)
@@ -318,7 +318,7 @@ struct ContactListView: View {
                 .frame(height: JohoDimensions.spacingXL)
 
             // Icon in bordered box
-            Image(systemName: "person.2.fill")
+            Image(systemName: IconCatalog.people)
                 .font(.system(size: 40, weight: .bold, design: .rounded))
                 .foregroundStyle(accentColor)
                 .frame(width: 80, height: 80)
@@ -410,7 +410,7 @@ struct ContactListView: View {
                                 .buttonStyle(.plain)
                                 .contextMenu {
                                     Button { selectedContact = contact } label: {
-                                        Label("View", systemImage: "person.fill")
+                                        Label("View", systemImage: IconCatalog.person)
                                     }
                                     Button { editingContact = contact } label: {
                                         Label("Edit", systemImage: "pencil")
@@ -725,50 +725,28 @@ struct JohoContactAvatar: View {
         size * 0.35
     }
 
-    var body: some View {
-        ZStack(alignment: .bottomTrailing) {
-            Group {
-                if let imageData = contact.imageData, let uiImage = UIImage(data: imageData) {
-                    // Photo available - circular frame with black border
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: size, height: size)
-                        .clipShape(Circle())
-                        .overlay(
-                            Circle()
-                                .stroke(colors.border, lineWidth: borderWidth)
-                        )
-                } else {
-                    // No photo - show initials with group-based color background
-                    ZStack {
-                        Circle()
-                            .fill(avatarColor)
-
-                        Text(contact.initials.isEmpty ? "?" : contact.initials)
-                            .font(.system(size: fontSize, weight: .black, design: .rounded))
-                            .foregroundStyle(.white)
-                    }
-                    .frame(width: size, height: size)
-                    .overlay(
-                        Circle()
-                            .stroke(colors.border, lineWidth: borderWidth)
-                    )
-                }
-            }
-
-            // Symbol decoration badge (情報デザイン: bottom-right overlay)
-            if let symbolName = contact.symbolName, symbolName != "person.fill" {
-                Image(systemName: symbolName)
-                    .font(.system(size: decorationBadgeSize * 0.5, weight: .bold))
-                    .foregroundStyle(avatarColor)
-                    .frame(width: decorationBadgeSize, height: decorationBadgeSize)
-                    .background(colors.surface)
-                    .clipShape(Circle())
-                    .overlay(Circle().stroke(colors.border, lineWidth: 1))
-                    .offset(x: 2, y: 2)
-            }
+    private var stickerContent: JohoSticker.Content {
+        if let imageData = contact.imageData {
+            return .photo(imageData)
+        } else {
+            return .initials(contact.initials.isEmpty ? "?" : contact.initials)
         }
+    }
+
+    private var stickerBadge: JohoSticker.Badge? {
+        guard let symbolName = contact.symbolName, symbolName != IconCatalog.person else { return nil }
+        return JohoSticker.Badge(icon: symbolName, color: avatarColor)
+    }
+
+    var body: some View {
+        JohoSticker(
+            content: stickerContent,
+            color: avatarColor,
+            shape: .circle,
+            badge: stickerBadge,
+            size: size,
+            borderWidth: borderWidth
+        )
     }
 }
 
@@ -1219,7 +1197,7 @@ struct JohoAddContactSheet: View {
                     onSelectContact()
                 } label: {
                     johoInputRow(
-                        icon: "person.fill",
+                        icon: IconCatalog.person,
                         code: "CTT",
                         label: "CONTACT",
                         meta: "PERSON",

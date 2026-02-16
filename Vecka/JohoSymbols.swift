@@ -1,6 +1,93 @@
 import SwiftUI
 import PhotosUI
 
+// MARK: - Icon Catalog (Single Source of Truth)
+// All SF Symbol references go through IconCatalog — no hardcoded strings in views
+
+/// Canonical SF Symbol names for every concept in the app.
+/// Views reference `IconCatalog.*` instead of hardcoded strings.
+enum IconCatalog {
+
+    // MARK: - Notes & Memos
+    static let memo = "note.text"
+    static let memoOutline = "note.text"
+
+    // MARK: - People
+    static let person = "person.fill"
+    static let people = "person.2.fill"
+    static let contacts = "person.2"
+
+    // MARK: - Calendar & Time
+    static let calendar = "calendar"
+    static let event = "calendar.badge.clock"
+    static let clock = "clock.fill"
+    static let timer = "timer"
+
+    // MARK: - Settings & System
+    static let settings = "gearshape"
+
+    // MARK: - Navigation
+    static let home = "house.fill"
+    static let star = "star.fill"
+
+    // MARK: - Type Defaults
+    static let birthday = "birthday.cake.fill"
+    static let holiday = "star.fill"
+    static let observance = "sparkles"
+    static let trip = "airplane"
+    static let countdown = "calendar.badge.clock"
+
+    // MARK: - Display Category Outlines (shape = meaning)
+    static let holidayOutline = "circle"
+    static let observanceOutline = "diamond"
+
+    // MARK: - Money — locale-aware
+    static var expense: String {
+        currencyIcon(for: Locale.current)
+    }
+
+    /// Currency-specific icon based on locale
+    static func currencyIcon(for locale: Locale) -> String {
+        switch locale.currency?.identifier {
+        case "EUR": return "eurosign.circle.fill"
+        case "GBP": return "sterlingsign.circle.fill"
+        case "JPY": return "yensign.circle.fill"
+        case "SEK", "NOK", "DKK", "ISK": return "swedishkronasign.circle.fill"
+        case "CHF": return "francsign.circle.fill"
+        case "KRW": return "wonsign.circle.fill"
+        case "INR": return "indianrupeesign.circle.fill"
+        case "RUB": return "rublesign.circle.fill"
+        case "BRL": return "brazilianrealsign.circle.fill"
+        case "THB": return "bahtsign.circle.fill"
+        case "TRY": return "turkishlirasign.circle.fill"
+        case "PLN": return "polishzlotysign.circle.fill"
+        case "CNY": return "yensign.circle.fill"
+        default: return "dollarsign.circle.fill"
+        }
+    }
+
+    /// Currency-specific icon based on currency code string
+    static func currencyIcon(for currencyCode: String) -> String {
+        switch currencyCode.uppercased() {
+        case "USD": return "dollarsign.circle.fill"
+        case "EUR": return "eurosign.circle.fill"
+        case "GBP": return "sterlingsign.circle.fill"
+        case "JPY": return "yensign.circle.fill"
+        case "CNY", "RMB": return "yensign.circle.fill"
+        case "KRW": return "wonsign.circle.fill"
+        case "INR": return "indianrupeesign.circle.fill"
+        case "RUB": return "rublesign.circle.fill"
+        case "BRL": return "brazilianrealsign.circle.fill"
+        case "THB": return "bahtsign.circle.fill"
+        case "TRY": return "turkishlirasign.circle.fill"
+        case "SEK", "NOK", "DKK", "ISK": return "swedishkronasign.circle.fill"
+        case "CHF": return "francsign.circle.fill"
+        case "PLN": return "polishzlotysign.circle.fill"
+        default: return "dollarsign.circle.fill"
+        }
+    }
+}
+
 // MARK: - 情報デザイン Symbol System
 // Japanese information design symbol vocabulary
 // Reference: .claude/japanese-symbol-language.md
@@ -80,7 +167,7 @@ enum JohoSymbols {
         case heart = "heart.fill"
         case heartEmpty = "heart"
         case medical = "cross.case.fill"
-        case gear = "gearshape.fill"
+        case gear = "gearshape"
         case calendar = "calendar"
         case clock = "clock.fill"
         case location = "mappin"
@@ -251,60 +338,62 @@ struct JohoPhotoContainer: View {
         size * 0.2 // Proportional squircle
     }
 
-    var body: some View {
-        ZStack {
-            // Background
-            Squircle(cornerRadius: cornerRadius)
-                .fill(backgroundColor)
+    private var stickerContent: JohoSticker.Content {
+        if image != nil {
+            // JohoSticker expects Data, but we have Image — keep custom rendering for Image type
+            return .empty // Handled by custom overlay below
+        } else if let initials = fallbackInitials {
+            return .initials(initials)
+        } else if let symbol = fallbackSymbol {
+            return .icon(symbol) // Unicode symbols rendered as icon
+        } else if let category = category {
+            return .icon(category.sfSymbol)
+        } else {
+            return .empty
+        }
+    }
 
-            // Content
-            if let image = image {
-                // Photo - aspect fill with crop
-                image
+    private var stickerBadge: JohoSticker.Badge? {
+        guard let category = category, image != nil else { return nil }
+        return JohoSticker.Badge(icon: category.sfSymbol, color: category.color)
+    }
+
+    var body: some View {
+        // When we have an Image (not Data), we need custom rendering
+        // since JohoSticker.Content.photo expects Data
+        if image != nil {
+            ZStack(alignment: .bottomTrailing) {
+                image!
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .frame(width: size - borderWidth * 2, height: size - borderWidth * 2)
-                    .clipShape(Squircle(cornerRadius: cornerRadius - borderWidth))
-            } else if let initials = fallbackInitials {
-                // Initials fallback
-                Text(initials.prefix(2).uppercased())
-                    .font(.system(size: size * 0.35, weight: .heavy, design: .rounded))
-                    .foregroundStyle(colors.primaryInverted)
-            } else if let symbol = fallbackSymbol {
-                // Symbol fallback
-                Text(symbol)
-                    .font(.system(size: size * 0.4))
-            } else if let category = category {
-                // Category SF Symbol fallback
-                Image(systemName: category.sfSymbol)
-                    .font(.system(size: size * 0.4, weight: .bold))
-                    .foregroundStyle(colors.primaryInverted)
-            } else {
-                // Default person icon
-                Image(systemName: JohoSymbols.SFIcon.person.rawValue)
-                    .font(.system(size: size * 0.4))
-                    .foregroundStyle(colors.primary.opacity(0.5))
-            }
+                    .frame(width: size, height: size)
+                    .clipShape(Squircle(cornerRadius: cornerRadius))
+                    .overlay(
+                        Squircle(cornerRadius: cornerRadius)
+                            .stroke(colors.border, lineWidth: borderWidth)
+                    )
 
-            // Category badge (bottom-right corner)
-            if let category = category, image != nil {
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        Image(systemName: category.sfSymbol)
-                            .font(.system(size: size * 0.15, weight: .bold))
-                            .foregroundStyle(colors.primaryInverted)
-                            .padding(4)
-                            .background(category.color)
-                            .johoBordered(cornerRadius: 4, borderWidth: 1)
-                            .offset(x: 4, y: 4)
-                    }
+                if let badge = stickerBadge {
+                    Image(systemName: badge.icon)
+                        .font(.system(size: size * 0.15, weight: .bold))
+                        .foregroundStyle(colors.primaryInverted)
+                        .padding(4)
+                        .background(badge.color)
+                        .johoBordered(cornerRadius: 4, borderWidth: 1)
+                        .offset(x: 4, y: 4)
                 }
             }
+            .frame(width: size, height: size)
+        } else {
+            JohoSticker(
+                content: stickerContent,
+                color: backgroundColor,
+                shape: .squircle,
+                badge: stickerBadge,
+                size: size,
+                borderWidth: borderWidth
+            )
         }
-        .frame(width: size, height: size)
-        .johoBordered(cornerRadius: cornerRadius, borderWidth: borderWidth)
     }
 }
 

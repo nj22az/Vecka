@@ -171,7 +171,7 @@ enum PDFExportContext: Identifiable {
         case .summary: return "list.bullet.rectangle"
         case .day: return "calendar.day.timeline.left"
         case .week: return "calendar"
-        case .month: return "calendar.badge.clock"
+        case .month: return IconCatalog.event
         case .weekSummary: return "square.text.square"
         case .expenseReportWeek, .expenseReportMonth, .expenseReportTrip: return "dollarsign.circle"
         }

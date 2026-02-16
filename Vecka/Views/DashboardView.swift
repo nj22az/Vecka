@@ -291,7 +291,7 @@ struct DashboardView: View {
         let weekNumber = WeekCalculator.shared.weekNumber(for: Date())
         let daysLeft = daysLeftInWeek()
 
-        return DataCard(title: "WEEK", icon: "calendar.badge.clock", zone: .calendar) {
+        return DataCard(title: "WEEK", icon: IconCatalog.event, zone: .calendar) {
             VStack(spacing: JohoDimensions.spacingSM) {
                 Text("W\(weekNumber)")
                     .font(JohoFont.displayMedium)
@@ -362,7 +362,7 @@ struct DashboardView: View {
     // MARK: - Spotlight Card (Random special day countdown)
 
     private var spotlightCard: some View {
-        DataCard(title: "SPOTLIGHT", icon: "sparkles", zone: .events) {
+        DataCard(title: "SPOTLIGHT", icon: IconCatalog.observance, zone: .events) {
             if let item = spotlightItem {
                 VStack(spacing: JohoDimensions.spacingSM) {
                     // Days countdown - large number
@@ -396,7 +396,7 @@ struct DashboardView: View {
                 .frame(maxWidth: .infinity)
             } else {
                 VStack(spacing: JohoDimensions.spacingSM) {
-                    Image(systemName: "sparkles")
+                    Image(systemName: IconCatalog.observance)
                         .font(.system(size: 24, weight: .medium, design: .rounded))
                         .foregroundStyle(colors.primary.opacity(0.3))
 
@@ -414,7 +414,7 @@ struct DashboardView: View {
     private var upcomingHolidaysCard: some View {
         let upcomingHolidays = getUpcomingHolidays(limit: 3)
 
-        return DataCard(title: "HOLIDAYS", icon: "star.fill", zone: .holidays) {
+        return DataCard(title: "HOLIDAYS", icon: IconCatalog.holiday, zone: .holidays) {
             if upcomingHolidays.isEmpty {
                 Text("No upcoming holidays")
                     .font(JohoFont.caption)
@@ -448,7 +448,7 @@ struct DashboardView: View {
     private var recentNotesCard: some View {
         let recentNotes = Array(allNotes.prefix(3))
 
-        return DataCard(title: "NOTES", icon: "note.text", zone: .notes) {
+        return DataCard(title: "NOTES", icon: IconCatalog.memo, zone: .notes) {
             if recentNotes.isEmpty {
                 Text("No notes yet")
                     .font(JohoFont.caption)
@@ -511,7 +511,7 @@ struct DashboardView: View {
         let daysLeft = Calendar.iso8601.dateComponents([.day], from: Date(), to: trip.tripEndDate ?? Date()).day ?? 0
 
         return AnyView(
-            DataCard(title: "ACTIVE TRIP", icon: "airplane", zone: .trips) {
+            DataCard(title: "ACTIVE TRIP", icon: IconCatalog.trip, zone: .trips) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(trip.text)

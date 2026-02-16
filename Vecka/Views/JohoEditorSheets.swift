@@ -593,8 +593,8 @@ struct JohoAddSpecialDaySheet: View {
     private var options: [JohoInputOption] {
         [
             JohoInputOption(icon: "square.and.pencil", code: "MEM", label: "MEMO", meta: "NOTE / TRIP / EXPENSE / EVENT", color: JohoColors.cyan, action: onSelectEntry),
-            JohoInputOption(icon: "star.fill", code: "HOL", label: "HOLIDAY", meta: "OFFICIAL & OBSERVANCE", color: SpecialDayType.holiday.accentColor, action: onSelectHoliday),
-            JohoInputOption(icon: "birthday.cake.fill", code: "BDY", label: "BIRTHDAY", meta: "ADD TO CONTACTS", color: SpecialDayType.birthday.accentColor, action: onSelectBirthday),
+            JohoInputOption(icon: IconCatalog.star, code: "HOL", label: "HOLIDAY", meta: "OFFICIAL & OBSERVANCE", color: SpecialDayType.holiday.accentColor, action: onSelectHoliday),
+            JohoInputOption(icon: IconCatalog.birthday, code: "BDY", label: "BIRTHDAY", meta: "ADD TO CONTACTS", color: SpecialDayType.birthday.accentColor, action: onSelectBirthday),
         ]
     }
 

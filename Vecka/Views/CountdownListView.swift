@@ -69,7 +69,7 @@ struct CountdownListView: View {
     private var headerSection: some View {
         HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
             // Icon zone (52×52pt) - matches Star Page month detail pattern
-            Image(systemName: "calendar.badge.clock")
+            Image(systemName: IconCatalog.event)
                 .font(.system(size: 24, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .johoTouchTarget(52)
@@ -113,7 +113,7 @@ struct CountdownListView: View {
             if let target = custom.computeTargetDate(for: currentYear) {
                 let days = daysUntil(target)
                 if days >= 0 {
-                    allEvents.append((custom.name, custom.iconName ?? "calendar.badge.clock", days, target))
+                    allEvents.append((custom.name, custom.iconName ?? IconCatalog.event, days, target))
                 }
             }
         }
@@ -225,7 +225,7 @@ struct CountdownListView: View {
     private var eventsSection: some View {
         eventBentoSection(
             title: "Events",
-            icon: "calendar.badge.clock",
+            icon: IconCatalog.event,
             showAddButton: true,
             onAdd: { showAddEvent = true }
         ) {
@@ -432,7 +432,7 @@ struct CountdownListView: View {
             // RIGHT COMPARTMENT: Decoration icon (fixed 48pt, centered)
             // 情報デザイン: Decoration icon ALWAYS shown (user decision)
             HStack(spacing: 4) {
-                Image(systemName: icon ?? "calendar.badge.clock")
+                Image(systemName: icon ?? IconCatalog.event)
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.cyan)
                     .frame(width: 24, height: 24)
@@ -453,7 +453,7 @@ struct CountdownListView: View {
                         daysRemaining: days,
                         size: CGSize(width: 340, height: 220)
                     ),
-                    preview: SharePreview(countdown.name, image: Image(systemName: icon ?? "calendar.badge.clock"))
+                    preview: SharePreview(countdown.name, image: Image(systemName: icon ?? IconCatalog.event))
                 ) {
                     Label("Share", systemImage: "square.and.arrow.up")
                 }

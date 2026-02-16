@@ -160,7 +160,7 @@ struct IconStripSidebar: View {
     // MARK: - App Icon Header
 
     private var appIconHeader: some View {
-        Image(systemName: "calendar.badge.clock")
+        Image(systemName: IconCatalog.event)
             .font(.system(size: 24, weight: .bold, design: .rounded))
             .foregroundStyle(JohoColors.cyan)
             .frame(width: 40, height: 40)
@@ -267,12 +267,12 @@ private struct SidebarLegendView: View {
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private let legendItems: [(code: String, label: String, icon: String, color: Color)] = [
-        ("HOL", "HOLIDAY", "star.fill", JohoColors.pink),     // CELEBRATION
-        ("OBS", "OBSERVANCE", "sparkles", JohoColors.cyan),  // SCHEDULED
-        ("EVT", "EVENT", "calendar.badge.clock", JohoColors.cyan),  // SCHEDULED
-        ("BDY", "BIRTHDAY", "birthday.cake.fill", JohoColors.purple),  // PEOPLE
-        ("NTE", "NOTE", "note.text", JohoColors.yellow),     // NOW
-        ("TRP", "TRIP", "airplane", JohoColors.cyan),        // SCHEDULED
+        ("HOL", "HOLIDAY", IconCatalog.holiday, JohoColors.pink),     // CELEBRATION
+        ("OBS", "OBSERVANCE", IconCatalog.observance, JohoColors.cyan),  // SCHEDULED
+        ("EVT", "EVENT", IconCatalog.event, JohoColors.cyan),  // SCHEDULED
+        ("BDY", "BIRTHDAY", IconCatalog.birthday, JohoColors.purple),  // PEOPLE
+        ("NTE", "NOTE", IconCatalog.memo, JohoColors.yellow),     // NOW
+        ("TRP", "TRIP", IconCatalog.trip, JohoColors.cyan),        // SCHEDULED
         ("EXP", "EXPENSE", "dollarsign.circle.fill", JohoColors.green)  // MONEY
     ]
 

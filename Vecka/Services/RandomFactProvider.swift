@@ -212,7 +212,7 @@ final class RandomFactProvider: ObservableObject {
 
     private func iconFor(category: QuirkyFact.Category) -> String {
         switch category {
-        case .tradition: return "person.2.fill"
+        case .tradition: return IconCatalog.people
         case .food: return "fork.knife"
         case .invention: return "lightbulb.fill"
         case .nature: return "leaf.fill"
