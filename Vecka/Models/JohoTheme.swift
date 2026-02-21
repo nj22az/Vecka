@@ -30,6 +30,21 @@ struct JohoThemePreset: Codable, Identifiable {
     // UI accent
     let systemAccent: String    // "black", "indigo", "navy", "blue", "slate"
 
+    // Category foreground colors (nil = auto-derive from background)
+    let holidayForegroundHex: String?
+    let observanceForegroundHex: String?
+    let memoForegroundHex: String?
+
+    // Dark mode category colors (nil = use light mode value)
+    let holidayDarkColorHex: String?
+    let observanceDarkColorHex: String?
+    let memoDarkColorHex: String?
+
+    // Dark mode foreground colors (nil = auto-derive)
+    let holidayDarkForegroundHex: String?
+    let observanceDarkForegroundHex: String?
+    let memoDarkForegroundHex: String?
+
     // Structural overrides (nil = use JohoScheme defaults)
     let lightBorderHex: String?
     let lightSurfaceHex: String?
@@ -43,6 +58,9 @@ struct JohoThemePreset: Codable, Identifiable {
         holidayColorHex: String, observanceColorHex: String, memoColorHex: String,
         holidayIcon: String?, observanceIcon: String?, memoIcon: String?,
         systemAccent: String,
+        holidayForegroundHex: String? = nil, observanceForegroundHex: String? = nil, memoForegroundHex: String? = nil,
+        holidayDarkColorHex: String? = nil, observanceDarkColorHex: String? = nil, memoDarkColorHex: String? = nil,
+        holidayDarkForegroundHex: String? = nil, observanceDarkForegroundHex: String? = nil, memoDarkForegroundHex: String? = nil,
         lightBorderHex: String? = nil, lightSurfaceHex: String? = nil, lightCanvasHex: String? = nil,
         darkBorderHex: String? = nil, darkSurfaceHex: String? = nil, darkCanvasHex: String? = nil
     ) {
@@ -57,6 +75,15 @@ struct JohoThemePreset: Codable, Identifiable {
         self.observanceIcon = observanceIcon
         self.memoIcon = memoIcon
         self.systemAccent = systemAccent
+        self.holidayForegroundHex = holidayForegroundHex
+        self.observanceForegroundHex = observanceForegroundHex
+        self.memoForegroundHex = memoForegroundHex
+        self.holidayDarkColorHex = holidayDarkColorHex
+        self.observanceDarkColorHex = observanceDarkColorHex
+        self.memoDarkColorHex = memoDarkColorHex
+        self.holidayDarkForegroundHex = holidayDarkForegroundHex
+        self.observanceDarkForegroundHex = observanceDarkForegroundHex
+        self.memoDarkForegroundHex = memoDarkForegroundHex
         self.lightBorderHex = lightBorderHex
         self.lightSurfaceHex = lightSurfaceHex
         self.lightCanvasHex = lightCanvasHex
@@ -82,7 +109,10 @@ enum JohoThemeLoader {
             previewIcon: "circle.hexagongrid.fill",
             holidayColorHex: "FECDD3", observanceColorHex: "A5F3FC", memoColorHex: "FFE566",
             holidayIcon: nil, observanceIcon: nil, memoIcon: nil,
-            systemAccent: "indigo"
+            systemAccent: "indigo",
+            holidayForegroundHex: "9F1239", observanceForegroundHex: "155E75", memoForegroundHex: "854D0E",
+            holidayDarkColorHex: "881337", observanceDarkColorHex: "164E63", memoDarkColorHex: "854D0E",
+            holidayDarkForegroundHex: "FECDD3", observanceDarkForegroundHex: "A5F3FC", memoDarkForegroundHex: "FFE566"
         ),
         JohoThemePreset(
             id: "nordic", name: "Nordic", description: "Scandinavian minimalism",
@@ -90,6 +120,9 @@ enum JohoThemeLoader {
             holidayColorHex: "93C5FD", observanceColorHex: "C4B5FD", memoColorHex: "CBD5E1",
             holidayIcon: "star.fill", observanceIcon: "diamond.fill", memoIcon: "note.text",
             systemAccent: "navy",
+            holidayForegroundHex: "1E40AF", observanceForegroundHex: "5B21B6", memoForegroundHex: "334155",
+            holidayDarkColorHex: "1E3A5F", observanceDarkColorHex: "4C1D95", memoDarkColorHex: "334155",
+            holidayDarkForegroundHex: "93C5FD", observanceDarkForegroundHex: "C4B5FD", memoDarkForegroundHex: "CBD5E1",
             lightBorderHex: "475569", lightSurfaceHex: "F8FAFC", lightCanvasHex: nil,
             darkBorderHex: "64748B", darkSurfaceHex: "1E293B", darkCanvasHex: nil
         ),
@@ -99,6 +132,9 @@ enum JohoThemeLoader {
             holidayColorHex: "86EFAC", observanceColorHex: "FDBA74", memoColorHex: "FDE68A",
             holidayIcon: "leaf.fill", observanceIcon: "sun.max.fill", memoIcon: "note.text",
             systemAccent: "slate",
+            holidayForegroundHex: "15803D", observanceForegroundHex: "9A3412", memoForegroundHex: "854D0E",
+            holidayDarkColorHex: "14532D", observanceDarkColorHex: "7C2D12", memoDarkColorHex: "713F12",
+            holidayDarkForegroundHex: "86EFAC", observanceDarkForegroundHex: "FDBA74", memoDarkForegroundHex: "FDE68A",
             lightBorderHex: "92400E", lightSurfaceHex: "FFFBEB", lightCanvasHex: nil,
             darkBorderHex: "A0896D", darkSurfaceHex: "1C1917", darkCanvasHex: nil
         ),
@@ -108,6 +144,9 @@ enum JohoThemeLoader {
             holidayColorHex: "E4E4E7", observanceColorHex: "A1A1AA", memoColorHex: "71717A",
             holidayIcon: nil, observanceIcon: nil, memoIcon: nil,
             systemAccent: "black",
+            holidayForegroundHex: "27272A", observanceForegroundHex: "27272A", memoForegroundHex: "18181B",
+            holidayDarkColorHex: "3F3F46", observanceDarkColorHex: "52525B", memoDarkColorHex: "52525B",
+            holidayDarkForegroundHex: "E4E4E7", observanceDarkForegroundHex: "D4D4D8", memoDarkForegroundHex: "A1A1AA",
             lightBorderHex: "52525B", lightSurfaceHex: "000000", lightCanvasHex: "000000",
             darkBorderHex: "3F3F46", darkSurfaceHex: "000000", darkCanvasHex: "000000"
         ),
@@ -202,12 +241,30 @@ enum JohoThemeCache {
 
 extension CategoryColorSettings {
 
-    /// Apply a theme preset, updating all category colors and icons
+    /// Apply a theme preset, updating all category colors, foregrounds, and icons
     func applyTheme(_ theme: JohoThemePreset) {
-        // Update category colors
+        // Update category background colors
         setColorHex(theme.holidayColorHex, for: .holiday)
         setColorHex(theme.observanceColorHex, for: .observance)
         setColorHex(theme.memoColorHex, for: .memo)
+
+        // Update foreground colors (auto-derive if not specified)
+        setForegroundHex(theme.holidayForegroundHex ?? Self.autoDerivedForeground(theme.holidayColorHex), for: .holiday)
+        setForegroundHex(theme.observanceForegroundHex ?? Self.autoDerivedForeground(theme.observanceColorHex), for: .observance)
+        setForegroundHex(theme.memoForegroundHex ?? Self.autoDerivedForeground(theme.memoColorHex), for: .memo)
+
+        // Update dark mode background colors (fall back to light bg)
+        setDarkColorHex(theme.holidayDarkColorHex ?? theme.holidayColorHex, for: .holiday)
+        setDarkColorHex(theme.observanceDarkColorHex ?? theme.observanceColorHex, for: .observance)
+        setDarkColorHex(theme.memoDarkColorHex ?? theme.memoColorHex, for: .memo)
+
+        // Update dark mode foreground colors (auto-derive if not specified)
+        let darkHolBg = theme.holidayDarkColorHex ?? theme.holidayColorHex
+        let darkObsBg = theme.observanceDarkColorHex ?? theme.observanceColorHex
+        let darkMemBg = theme.memoDarkColorHex ?? theme.memoColorHex
+        setDarkForegroundHex(theme.holidayDarkForegroundHex ?? Self.autoDerivedLightForeground(darkHolBg), for: .holiday)
+        setDarkForegroundHex(theme.observanceDarkForegroundHex ?? Self.autoDerivedLightForeground(darkObsBg), for: .observance)
+        setDarkForegroundHex(theme.memoDarkForegroundHex ?? Self.autoDerivedLightForeground(darkMemBg), for: .memo)
 
         // Update category icons (set if specified, reset to default if nil)
         if let icon = theme.holidayIcon {
@@ -237,6 +294,18 @@ extension CategoryColorSettings {
 
         // Sync to widget (includes structural colors)
         CategoryColorStorage.save()
+    }
+
+    /// Auto-derive a dark foreground from a light background hex (darken by luminance)
+    private static func autoDerivedForeground(_ bgHex: String) -> String {
+        let color = Color(hex: bgHex)
+        return color.adjustedBrightness(by: -0.45).toHex()
+    }
+
+    /// Auto-derive a light foreground from a dark background hex (lighten by luminance)
+    private static func autoDerivedLightForeground(_ bgHex: String) -> String {
+        let color = Color(hex: bgHex)
+        return color.adjustedBrightness(by: 0.45).toHex()
     }
 
     /// Get the currently active theme ID (nil if custom/no theme)

@@ -55,16 +55,9 @@ enum DisplayCategory: String, CaseIterable, Identifiable {
         }
     }
 
-    /// 情報デザイン: Category accent color (extremely readable, distinct)
-    /// - Holidays: Pink (celebration)
-    /// - Observances: Cyan (scheduled)
-    /// - Memos: Yellow (NOW - notes, today)
+    /// 情報デザイン: Category accent color — delegates to theme-aware CategoryColorSettings
     var accentColor: Color {
-        switch self {
-        case .holiday: return JohoColors.pink        // Pink - CELEBRATION (holidays)
-        case .observance: return JohoColors.cyan     // Cyan - SCHEDULED (observances)
-        case .memo: return JohoColors.yellow         // Yellow - NOW (notes, today, memos)
-        }
+        CategoryColorSettings.shared.color(for: self)
     }
 
     /// 情報デザイン: Corresponding SectionZone for empty state styling

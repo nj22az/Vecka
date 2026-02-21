@@ -73,30 +73,33 @@ extension Color {
         return Color(UIColor(hue: h, saturation: s, brightness: newB, alpha: a))
     }
 
-    /// Readable foreground variant: maps pastel JohoColors to darker versions
-    /// for icon/text use on light backgrounds. Passthrough for already-dark colors.
+    /// Data-driven readable foreground: looks up curated foreground from CategoryColorSettings
+    /// when this color matches a known category background, otherwise auto-derives.
+    /// Mode-aware via UITraitCollection for correct light/dark contrast.
     var readableForeground: Color {
         let hex = self.toHex()
-        switch hex {
-        // Default theme pastels
-        case "A5F3FC": return JohoColors.cyanDark     // cyan → dark teal
-        case "FECDD3": return JohoColors.pinkDark     // pink → dark rose
-        case "E9D5FF": return JohoColors.purpleDark   // purple → dark violet
-        case "FFE566": return JohoColors.yellowDark   // yellow → dark gold
-        case "4ADE80": return JohoColors.greenDark    // green → dark green
-        // Nordic theme
-        case "93C5FD": return Color(hex: "2563EB")    // blue → blue-600
-        case "C4B5FD": return Color(hex: "7C3AED")    // purple → violet-600
-        case "CBD5E1": return Color(hex: "475569")    // slate → slate-600
-        // Earth theme
-        case "86EFAC": return Color(hex: "15803D")    // green → green-700
-        case "FDBA74": return Color(hex: "C2410C")    // orange → orange-700
-        case "FDE68A": return Color(hex: "A16207")    // amber → yellow-700
-        // Ink theme (grays are intentional)
-        case "E4E4E7": return Color(hex: "52525B")    // zinc-200 → zinc-600
-        case "A1A1AA": return Color(hex: "52525B")    // zinc-400 → zinc-600
-        default:
-            // For unknown colors, darken if too light for foreground use
+        let settings = CategoryColorSettings.shared
+        let isDark = UITraitCollection.current.userInterfaceStyle == .dark
+        let mode: JohoColorMode = isDark ? .dark : .light
+
+        // Check if this color matches any category background (light or dark)
+        for category in DisplayCategory.allCases {
+            let lightBg = settings.colorHex(for: category)
+            let darkBg: String
+            switch category {
+            case .holiday: darkBg = settings.holidayDarkColorHex
+            case .observance: darkBg = settings.observanceDarkColorHex
+            case .memo: darkBg = settings.memoDarkColorHex
+            }
+            if hex == lightBg || hex == darkBg {
+                return settings.foregroundColor(for: category, mode: mode)
+            }
+        }
+
+        // Fallback: darken if too light for foreground use, lighten if too dark
+        if isDark {
+            return relativeLuminance < 0.3 ? adjustedBrightness(by: 0.35) : self
+        } else {
             return relativeLuminance > 0.45 ? adjustedBrightness(by: -0.35) : self
         }
     }
@@ -3584,6 +3587,21 @@ final class CategoryColorSettings {
     static let defaultObservanceHex = "A5F3FC" // Cyan
     static let defaultMemoHex = "FFE566"       // Yellow
 
+    // Default foreground hex values (curated for >=4.5:1 contrast)
+    static let defaultHolidayForegroundHex = "9F1239"
+    static let defaultObservanceForegroundHex = "155E75"
+    static let defaultMemoForegroundHex = "854D0E"
+
+    // Default dark mode background hex values
+    static let defaultHolidayDarkHex = "881337"
+    static let defaultObservanceDarkHex = "164E63"
+    static let defaultMemoDarkHex = "854D0E"
+
+    // Default dark mode foreground hex values
+    static let defaultHolidayDarkForegroundHex = "FECDD3"
+    static let defaultObservanceDarkForegroundHex = "A5F3FC"
+    static let defaultMemoDarkForegroundHex = "FFE566"
+
     // MARK: - Tracked State (triggers SwiftUI updates)
 
     /// These are the tracked properties that SwiftUI observes
@@ -3597,12 +3615,57 @@ final class CategoryColorSettings {
         didSet { UserDefaults.standard.set(memoColorHex, forKey: "categoryColor_memo") }
     }
 
+    // Foreground hex values
+    var holidayForegroundHex: String {
+        didSet { UserDefaults.standard.set(holidayForegroundHex, forKey: "categoryForeground_holiday") }
+    }
+    var observanceForegroundHex: String {
+        didSet { UserDefaults.standard.set(observanceForegroundHex, forKey: "categoryForeground_observance") }
+    }
+    var memoForegroundHex: String {
+        didSet { UserDefaults.standard.set(memoForegroundHex, forKey: "categoryForeground_memo") }
+    }
+
+    // Dark mode background hex values
+    var holidayDarkColorHex: String {
+        didSet { UserDefaults.standard.set(holidayDarkColorHex, forKey: "categoryDarkColor_holiday") }
+    }
+    var observanceDarkColorHex: String {
+        didSet { UserDefaults.standard.set(observanceDarkColorHex, forKey: "categoryDarkColor_observance") }
+    }
+    var memoDarkColorHex: String {
+        didSet { UserDefaults.standard.set(memoDarkColorHex, forKey: "categoryDarkColor_memo") }
+    }
+
+    // Dark mode foreground hex values
+    var holidayDarkForegroundHex: String {
+        didSet { UserDefaults.standard.set(holidayDarkForegroundHex, forKey: "categoryDarkForeground_holiday") }
+    }
+    var observanceDarkForegroundHex: String {
+        didSet { UserDefaults.standard.set(observanceDarkForegroundHex, forKey: "categoryDarkForeground_observance") }
+    }
+    var memoDarkForegroundHex: String {
+        didSet { UserDefaults.standard.set(memoDarkForegroundHex, forKey: "categoryDarkForeground_memo") }
+    }
+
     // MARK: - Init (load from UserDefaults)
 
     private init() {
         self.holidayColorHex = UserDefaults.standard.string(forKey: "categoryColor_holiday") ?? Self.defaultHolidayHex
         self.observanceColorHex = UserDefaults.standard.string(forKey: "categoryColor_observance") ?? Self.defaultObservanceHex
         self.memoColorHex = UserDefaults.standard.string(forKey: "categoryColor_memo") ?? Self.defaultMemoHex
+
+        self.holidayForegroundHex = UserDefaults.standard.string(forKey: "categoryForeground_holiday") ?? Self.defaultHolidayForegroundHex
+        self.observanceForegroundHex = UserDefaults.standard.string(forKey: "categoryForeground_observance") ?? Self.defaultObservanceForegroundHex
+        self.memoForegroundHex = UserDefaults.standard.string(forKey: "categoryForeground_memo") ?? Self.defaultMemoForegroundHex
+
+        self.holidayDarkColorHex = UserDefaults.standard.string(forKey: "categoryDarkColor_holiday") ?? Self.defaultHolidayDarkHex
+        self.observanceDarkColorHex = UserDefaults.standard.string(forKey: "categoryDarkColor_observance") ?? Self.defaultObservanceDarkHex
+        self.memoDarkColorHex = UserDefaults.standard.string(forKey: "categoryDarkColor_memo") ?? Self.defaultMemoDarkHex
+
+        self.holidayDarkForegroundHex = UserDefaults.standard.string(forKey: "categoryDarkForeground_holiday") ?? Self.defaultHolidayDarkForegroundHex
+        self.observanceDarkForegroundHex = UserDefaults.standard.string(forKey: "categoryDarkForeground_observance") ?? Self.defaultObservanceDarkForegroundHex
+        self.memoDarkForegroundHex = UserDefaults.standard.string(forKey: "categoryDarkForeground_memo") ?? Self.defaultMemoDarkForegroundHex
     }
 
     // MARK: - Computed Color Properties
@@ -3620,12 +3683,85 @@ final class CategoryColorSettings {
         }
     }
 
+    /// Background color for category, mode-aware
+    func color(for category: DisplayCategory, mode: JohoColorMode) -> Color {
+        switch mode {
+        case .light:
+            return color(for: category)
+        case .dark:
+            switch category {
+            case .holiday: return Color(hex: holidayDarkColorHex)
+            case .observance: return Color(hex: observanceDarkColorHex)
+            case .memo: return Color(hex: memoDarkColorHex)
+            }
+        }
+    }
+
+    /// Foreground (text/icon) color for category, mode-aware
+    func foregroundColor(for category: DisplayCategory, mode: JohoColorMode) -> Color {
+        switch mode {
+        case .light:
+            switch category {
+            case .holiday: return Color(hex: holidayForegroundHex)
+            case .observance: return Color(hex: observanceForegroundHex)
+            case .memo: return Color(hex: memoForegroundHex)
+            }
+        case .dark:
+            switch category {
+            case .holiday: return Color(hex: holidayDarkForegroundHex)
+            case .observance: return Color(hex: observanceDarkForegroundHex)
+            case .memo: return Color(hex: memoDarkForegroundHex)
+            }
+        }
+    }
+
+    /// Foreground color for category (light mode — backward compat)
+    func foregroundColor(for category: DisplayCategory) -> Color {
+        foregroundColor(for: category, mode: .light)
+    }
+
     /// Get the hex value for a specific display category
     func colorHex(for category: DisplayCategory) -> String {
         switch category {
         case .holiday: return holidayColorHex
         case .observance: return observanceColorHex
         case .memo: return memoColorHex
+        }
+    }
+
+    /// Get foreground hex for a specific display category
+    func foregroundHex(for category: DisplayCategory) -> String {
+        switch category {
+        case .holiday: return holidayForegroundHex
+        case .observance: return observanceForegroundHex
+        case .memo: return memoForegroundHex
+        }
+    }
+
+    /// Set foreground hex for a specific display category
+    func setForegroundHex(_ hex: String, for category: DisplayCategory) {
+        switch category {
+        case .holiday: holidayForegroundHex = hex
+        case .observance: observanceForegroundHex = hex
+        case .memo: memoForegroundHex = hex
+        }
+    }
+
+    /// Set dark mode background hex for a specific display category
+    func setDarkColorHex(_ hex: String, for category: DisplayCategory) {
+        switch category {
+        case .holiday: holidayDarkColorHex = hex
+        case .observance: observanceDarkColorHex = hex
+        case .memo: memoDarkColorHex = hex
+        }
+    }
+
+    /// Set dark mode foreground hex for a specific display category
+    func setDarkForegroundHex(_ hex: String, for category: DisplayCategory) {
+        switch category {
+        case .holiday: holidayDarkForegroundHex = hex
+        case .observance: observanceDarkForegroundHex = hex
+        case .memo: memoDarkForegroundHex = hex
         }
     }
 
@@ -3643,9 +3779,21 @@ final class CategoryColorSettings {
     /// Reset a specific category color to default
     func resetColor(for category: DisplayCategory) {
         switch category {
-        case .holiday: holidayColorHex = Self.defaultHolidayHex
-        case .observance: observanceColorHex = Self.defaultObservanceHex
-        case .memo: memoColorHex = Self.defaultMemoHex
+        case .holiday:
+            holidayColorHex = Self.defaultHolidayHex
+            holidayForegroundHex = Self.defaultHolidayForegroundHex
+            holidayDarkColorHex = Self.defaultHolidayDarkHex
+            holidayDarkForegroundHex = Self.defaultHolidayDarkForegroundHex
+        case .observance:
+            observanceColorHex = Self.defaultObservanceHex
+            observanceForegroundHex = Self.defaultObservanceForegroundHex
+            observanceDarkColorHex = Self.defaultObservanceDarkHex
+            observanceDarkForegroundHex = Self.defaultObservanceDarkForegroundHex
+        case .memo:
+            memoColorHex = Self.defaultMemoHex
+            memoForegroundHex = Self.defaultMemoForegroundHex
+            memoDarkColorHex = Self.defaultMemoDarkHex
+            memoDarkForegroundHex = Self.defaultMemoDarkForegroundHex
         }
         CategoryColorStorage.save()
     }
@@ -3655,6 +3803,15 @@ final class CategoryColorSettings {
         holidayColorHex = Self.defaultHolidayHex
         observanceColorHex = Self.defaultObservanceHex
         memoColorHex = Self.defaultMemoHex
+        holidayForegroundHex = Self.defaultHolidayForegroundHex
+        observanceForegroundHex = Self.defaultObservanceForegroundHex
+        memoForegroundHex = Self.defaultMemoForegroundHex
+        holidayDarkColorHex = Self.defaultHolidayDarkHex
+        observanceDarkColorHex = Self.defaultObservanceDarkHex
+        memoDarkColorHex = Self.defaultMemoDarkHex
+        holidayDarkForegroundHex = Self.defaultHolidayDarkForegroundHex
+        observanceDarkForegroundHex = Self.defaultObservanceDarkForegroundHex
+        memoDarkForegroundHex = Self.defaultMemoDarkForegroundHex
         JohoThemeCache.invalidate()
         CategoryColorStorage.save()
     }
