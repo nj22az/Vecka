@@ -8,6 +8,7 @@
 //
 
 import Foundation
+import SwiftUI
 import SwiftData
 
 // MARK: - Memo Type (Type Discriminator)
@@ -169,11 +170,33 @@ final class Memo {
     /// Does this memo have a photo?
     var hasPhoto: Bool { photoData != nil }
 
-    /// Resolved icon: user override → CategoryEngine type default
+    /// Resolved icon: user override → content-aware → CategoryEngine type default
     var displayIcon: String {
         if let custom = symbolName, !custom.isEmpty { return custom }
         return CategoryEngine.definition(for: type.rawValue)?.resolvedIcon
             ?? IconCatalog.memo
+    }
+
+    /// Content-aware icon considering birthday, money, place context
+    func contentIcon(baseCurrency: String = "SEK") -> String {
+        if let custom = symbolName, !custom.isEmpty { return custom }
+        if hasLinkedContact { return IconCatalog.gift }
+        if hasMoney { return IconCatalog.currencyIcon(for: currency ?? baseCurrency) }
+        if hasPlace { return IconCatalog.trip }
+        return displayIcon
+    }
+
+    /// 情報デザイン: Semantic color from content
+    var displayColor: Color {
+        Color(hex: colorHex)
+    }
+
+    /// Category label for display headers
+    var categoryLabel: String {
+        if hasLinkedContact || symbolName == IconCatalog.birthday { return "BIRTHDAY" }
+        if hasMoney { return "EXPENSE" }
+        if hasPlace { return "TRIP" }
+        return "MEMO"
     }
 
     /// Short preview for lists

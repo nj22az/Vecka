@@ -365,27 +365,11 @@ struct DayDashboardView: View {
     }
 
     private func memoIcon(for memo: Memo) -> String {
-        // Birthday memos (linked to contact or has birthday symbol)
-        if memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday {
-            return "gift.fill"
-        }
-        if memo.hasMoney { return IconCatalog.currencyIcon(for: memo.currency ?? baseCurrency) }
-        if memo.hasPlace { return IconCatalog.trip }
-        return IconCatalog.memo
+        memo.contentIcon(baseCurrency: baseCurrency)
     }
 
     private func memoColor(for memo: Memo) -> Color {
-        // 情報デザイン: Semantic color system
-        // Person/birthday memos use purple (PEOPLE)
-        if memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday || memo.hasPerson {
-            return JohoColors.purple  // Purple (人) - PEOPLE
-        }
-        // Money memos use green (MONEY)
-        if memo.hasMoney { return JohoColors.green }  // Green (金) - MONEY
-        // Place/trip memos use cyan (SCHEDULED)
-        if memo.hasPlace { return JohoColors.cyan }  // Cyan (予定) - SCHEDULED
-        // Default memos use yellow (NOW)
-        return JohoColors.yellow  // Yellow - NOW (notes, today, memos)
+        memo.displayColor
     }
 
     // MARK: - Empty State Content (情報デザイン: Inside combined Bento)
@@ -679,27 +663,15 @@ struct SingleMemoDetailSheet: View {
     @State private var permanentIconSelection: String = ""
 
     private var memoIcon: String {
-        if memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday { return "gift.fill" }
-        if memo.hasMoney { return IconCatalog.currencyIcon(for: memo.currency ?? baseCurrency) }
-        if memo.hasPlace { return IconCatalog.trip }
-        return IconCatalog.memo
+        memo.contentIcon(baseCurrency: baseCurrency)
     }
 
     private var memoColor: Color {
-        // 情報デザイン: Semantic color system
-        if memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday || memo.hasPerson {
-            return JohoColors.purple  // Purple (人) - PEOPLE
-        }
-        if memo.hasMoney { return JohoColors.green }  // Green (金) - MONEY
-        if memo.hasPlace { return JohoColors.cyan }  // Cyan (予定) - SCHEDULED
-        return JohoColors.yellow  // Yellow - NOW (notes, today, memos)
+        memo.displayColor
     }
 
     private var categoryLabel: String {
-        if memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday { return "BIRTHDAY" }
-        if memo.hasMoney { return "EXPENSE" }
-        if memo.hasPlace { return "TRIP" }
-        return "MEMO"
+        memo.categoryLabel
     }
 
     private var formattedDate: String {
@@ -1102,33 +1074,17 @@ struct ShareableMemoCard: View {
 
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
 
-    private var defaultMemoIcon: String {
-        if memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday { return "gift.fill" }
-        if memo.hasMoney { return IconCatalog.currencyIcon(for: memo.currency ?? baseCurrency) }
-        if memo.hasPlace { return IconCatalog.trip }
-        return IconCatalog.memo
-    }
-
-    /// The icon to display (custom or default)
+    /// The icon to display (custom override or content-aware default)
     private var displayIcon: String {
-        customIcon ?? defaultMemoIcon
+        customIcon ?? memo.contentIcon(baseCurrency: baseCurrency)
     }
 
     private var memoColor: Color {
-        // 情報デザイン: Semantic color system
-        if memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday || memo.hasPerson {
-            return JohoColors.purple  // Purple (人) - PEOPLE
-        }
-        if memo.hasMoney { return JohoColors.green }  // Green (金) - MONEY
-        if memo.hasPlace { return JohoColors.cyan }  // Cyan (予定) - SCHEDULED
-        return JohoColors.yellow  // Yellow - NOW (notes, today, memos)
+        memo.displayColor
     }
 
     private var categoryLabel: String {
-        if memo.hasLinkedContact || memo.symbolName == IconCatalog.birthday { return "BIRTHDAY" }
-        if memo.hasMoney { return "EXPENSE" }
-        if memo.hasPlace { return "TRIP" }
-        return "MEMO"
+        memo.categoryLabel
     }
 
     /// Full date stamp: YYYYMMDD · W{n}
