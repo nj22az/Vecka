@@ -152,22 +152,27 @@ struct HolidayEngine {
     /// Calculate Gregorian date from Lunar Month/Day
     private func calculateLunarDate(month: Int, day: Int, inGregorianYear year: Int) -> Date? {
         let chinese = Calendar(identifier: .chinese)
-        
+
         // Strategy: Find the Chinese Year that overlaps significantly with the Gregorian Year.
         // We pick a date in the middle of the Gregorian year (June 15) to find the Chinese Year.
         let midYearComps = DateComponents(year: year, month: 6, day: 15)
         guard let midYearDate = calendar.date(from: midYearComps) else { return nil }
-        
+
+        // The Chinese calendar uses 60-year cycles (era = cycle number, year = 1-60 within cycle).
+        // Both era AND year are required to resolve an unambiguous date.
+        let chineseEra = chinese.component(.era, from: midYearDate)
         let chineseYear = chinese.component(.year, from: midYearDate)
-        
+
         // Construct the target Lunar Date
         var targetComps = DateComponents()
+        targetComps.era = chineseEra
         targetComps.year = chineseYear
         targetComps.month = month
         targetComps.day = day
+        targetComps.isLeapMonth = false
         // Note: We ignore leap month logic for simplicity unless specifically requested.
         // Most major holidays (Tet) are on standard months.
-        
+
         return chinese.date(from: targetComps)
     }
 

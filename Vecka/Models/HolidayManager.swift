@@ -235,9 +235,9 @@ class HolidayManager {
             let descriptor = FetchDescriptor<HolidayRule>()
             let allRules = try context.fetch(descriptor)
 
-            // Filter by selected regions.
+            // Filter by selected regions and enabled status.
             // Empty region is treated as "All Regions" (user-defined or global rules).
-            let rules = allRules.filter { $0.region.isEmpty || regions.contains($0.region) }
+            let rules = allRules.filter { $0.isEnabled && ($0.region.isEmpty || regions.contains($0.region)) }
 
             let span = ConfigurationManager.shared.getInt("holiday_cache_span", context: context, default: 2)
             let currentYear = Calendar.current.component(.year, from: Date())
