@@ -270,7 +270,7 @@ private struct NotesDayRow: View {
                 if let preview = dayGroup.preview, preview.isNotEmpty {
                     Text(preview)
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         .lineLimit(2)
                 }
             }
@@ -334,15 +334,15 @@ private struct MemoPinnedNoteRow: View {
                 HStack(spacing: JohoDimensions.spacingXS) {
                     Text(dateText)
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
 
                     if let duration = note.duration, duration > 0 {
                         Text("•")
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         Text(formatDuration(duration))
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                     }
                 }
             }

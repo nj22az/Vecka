@@ -141,7 +141,7 @@ struct RegionSelectionView: View {
 
                                 if continent != Continent.allCases.last {
                                     Rectangle()
-                                        .fill(colors.border.opacity(0.5))
+                                        .fill(colors.border.opacity(JohoDimensions.opacityHeavy))
                                         .frame(height: 1)
                                 }
                             }
@@ -217,14 +217,14 @@ struct RegionSelectionView: View {
                             Text("Clear All")
                         }
                         .font(.system(size: 14, weight: .semibold, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.7))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                         .padding(.horizontal, 16)
                         .padding(.vertical, JohoDimensions.spacingMD)
                         .background(colors.inputBackground)
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                                .stroke(colors.border.opacity(0.5), lineWidth: JohoDimensions.borderMedium)
+                                .stroke(colors.border.opacity(JohoDimensions.opacityHeavy), lineWidth: JohoDimensions.borderMedium)
                         )
                     }
                 }
@@ -272,7 +272,7 @@ struct RegionSelectionView: View {
                     // Chevron
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
                         .font(.system(size: 9, weight: .bold))
-                        .foregroundStyle(colors.primary.opacity(0.4))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         .frame(width: 12)
 
                     // Continent icon
@@ -305,7 +305,7 @@ struct RegionSelectionView: View {
                     // Region count
                     Text("\(regions.count)")
                         .font(.system(size: 9, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.3))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                 }
                 .padding(.horizontal, JohoDimensions.spacingSM)
                 .padding(.vertical, 10)

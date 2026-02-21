@@ -82,7 +82,7 @@ struct DeveloperSettingsView: View {
                         .font(JohoFont.title)
                         .foregroundStyle(JohoColors.cyan)
                         .frame(width: 40, height: 40)
-                        .background(JohoColors.cyan.opacity(0.2))
+                        .background(JohoColors.cyan.opacity(JohoDimensions.opacityMild))
                         .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
 
                     Text("DEVELOPER")
@@ -126,7 +126,7 @@ struct DeveloperSettingsView: View {
                             .font(JohoFont.title)
                             .foregroundStyle(JohoColors.cyan)
                             .johoTouchTarget()
-                            .background(JohoColors.cyan.opacity(0.2))
+                            .background(JohoColors.cyan.opacity(JohoDimensions.opacityMild))
                             .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1)
 
                         VStack(alignment: .leading, spacing: 2) {
@@ -299,7 +299,7 @@ struct DeveloperSettingsView: View {
 
                 // Sample Images section
                 Rectangle()
-                    .fill(colors.border.opacity(0.5))
+                    .fill(colors.border.opacity(JohoDimensions.opacityHeavy))
                     .frame(height: 1)
                     .padding(.vertical, JohoDimensions.spacingSM)
 
@@ -312,7 +312,7 @@ struct DeveloperSettingsView: View {
                             .font(JohoFont.title)
                             .foregroundStyle(JohoColors.purple)
                             .johoTouchTarget()
-                            .background(JohoColors.purple.opacity(0.2))
+                            .background(JohoColors.purple.opacity(JohoDimensions.opacityMild))
                             .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1)
 
                         VStack(alignment: .leading, spacing: 2) {
@@ -381,11 +381,11 @@ struct DeveloperSettingsView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, JohoDimensions.spacingMD)
-            .background(color.opacity(0.1))
+            .background(color.opacity(JohoDimensions.opacitySubtle))
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                    .stroke(color.opacity(0.5), lineWidth: 1)
+                    .stroke(color.opacity(JohoDimensions.opacityHeavy), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -483,14 +483,14 @@ struct DeveloperSettingsView: View {
             statChip(count: contactCount, icon: "person.crop.circle.fill", color: JohoColors.purple)
 
             // Holidays (Pink secondary)
-            statChip(count: holidayCount, icon: "star.fill", color: JohoColors.pink.opacity(0.7))
+            statChip(count: holidayCount, icon: "star.fill", color: JohoColors.pink.opacity(JohoDimensions.opacityBold))
         }
         .padding(JohoDimensions.spacingSM)
-        .background(colors.surface.opacity(0.5))
+        .background(colors.surface.opacity(JohoDimensions.opacityHeavy))
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                .stroke(colors.border.opacity(0.5), lineWidth: 1)
+                .stroke(colors.border.opacity(JohoDimensions.opacityHeavy), lineWidth: 1)
         )
     }
 
@@ -506,11 +506,11 @@ struct DeveloperSettingsView: View {
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
-        .background(color.opacity(0.15))
+        .background(color.opacity(JohoDimensions.opacityLight))
         .clipShape(Capsule())
         .overlay(
             Capsule()
-                .stroke(color.opacity(0.3), lineWidth: 1)
+                .stroke(color.opacity(JohoDimensions.opacityMedium), lineWidth: 1)
         )
     }
 
@@ -533,7 +533,7 @@ struct DeveloperSettingsView: View {
                         .font(JohoFont.title)
                         .foregroundStyle(JohoColors.red)
                         .johoTouchTarget()
-                        .background(JohoColors.red.opacity(0.2))
+                        .background(JohoColors.red.opacity(JohoDimensions.opacityMild))
                         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                         .overlay(
                             Squircle(cornerRadius: JohoDimensions.radiusSmall)
@@ -557,18 +557,18 @@ struct DeveloperSettingsView: View {
                         .foregroundStyle(JohoColors.red)
                 }
                 .padding(JohoDimensions.spacingMD)
-                .background(JohoColors.red.opacity(0.05))
+                .background(JohoColors.red.opacity(JohoDimensions.opacityFaint))
                 .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
                 .overlay(
                     Squircle(cornerRadius: JohoDimensions.radiusMedium)
-                        .stroke(JohoColors.red.opacity(0.3), lineWidth: 1)
+                        .stroke(JohoColors.red.opacity(JohoDimensions.opacityMedium), lineWidth: 1)
                 )
             }
             .buttonStyle(.plain)
 
             Text("This action cannot be undone. All your data will be permanently deleted.")
                 .font(JohoFont.caption)
-                .foregroundStyle(JohoColors.red.opacity(0.7))
+                .foregroundStyle(JohoColors.red.opacity(JohoDimensions.opacityBold))
                 .padding(.horizontal, JohoDimensions.spacingSM)
         }
         .padding(JohoDimensions.spacingLG)
@@ -576,7 +576,7 @@ struct DeveloperSettingsView: View {
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusLarge))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusLarge)
-                .stroke(JohoColors.red.opacity(0.3), lineWidth: JohoDimensions.borderThick)
+                .stroke(JohoColors.red.opacity(JohoDimensions.opacityMedium), lineWidth: JohoDimensions.borderThick)
         )
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
@@ -1116,14 +1116,14 @@ struct SampleAvatarView: View {
 
                 // Pattern overlay
                 patternView(for: geometry.size)
-                    .opacity(0.3)
+                    .opacity(JohoDimensions.opacityMedium)
 
                 // Initials if provided
                 if let initials = initials, !initials.isEmpty {
                     Text(initials.prefix(2).uppercased())
                         .font(.system(size: min(geometry.size.width, geometry.size.height) * 0.4, weight: .bold, design: .rounded))
                         .foregroundStyle(.white)
-                        .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+                        .shadow(color: .black.opacity(JohoDimensions.opacityMedium), radius: 2, x: 0, y: 1)
                 }
             }
         }

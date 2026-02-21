@@ -32,7 +32,7 @@ struct SimplePDFExportView: View {
                         .font(.system(size: 48, weight: .medium, design: .rounded))
                         .foregroundStyle(colors.primary)
                         .frame(width: 80, height: 80)
-                        .background(JohoColors.cyan.opacity(0.2))
+                        .background(JohoColors.cyan.opacity(JohoDimensions.opacityMild))
                         .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous))
                         .overlay(
                             RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous)
@@ -45,14 +45,14 @@ struct SimplePDFExportView: View {
 
                     Text(exportContext.subtitle)
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
 
                     Text(exportContext.pageCountDescription)
                         .font(JohoFont.caption)
-                        .foregroundStyle(colors.primary.opacity(0.4))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(colors.primary.opacity(0.05))
+                        .background(colors.primary.opacity(JohoDimensions.opacityFaint))
                         .clipShape(Capsule())
                 }
                 .padding(.top, JohoDimensions.spacingSM)

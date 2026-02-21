@@ -33,7 +33,7 @@ struct EditLandingTitleView: View {
                         VStack(spacing: JohoDimensions.spacingSM) {
                             Text("PREVIEW")
                                 .font(.system(size: 9, weight: .bold, design: .rounded))
-                                .foregroundStyle(colors.primary.opacity(0.5))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                             Text(title.isEmpty ? "ONSEN" : title.uppercased())
                                 .font(.system(size: 24, weight: .black, design: .rounded))
@@ -88,7 +88,7 @@ struct EditLandingTitleView: View {
                         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                             Text("SUGGESTIONS")
                                 .font(.system(size: 9, weight: .bold, design: .rounded))
-                                .foregroundStyle(colors.primary.opacity(0.5))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                             LazyVGrid(columns: [
                                 GridItem(.flexible()),
@@ -151,7 +151,7 @@ struct EditLandingTitleView: View {
                 .frame(maxWidth: .infinity)
                 .padding(JohoDimensions.spacingSM)
                 .background(colors.inputBackground)
-                .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1, borderColor: colors.border.opacity(0.3))
+                .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1, borderColor: colors.border.opacity(JohoDimensions.opacityMedium))
         }
         .buttonStyle(.plain)
     }

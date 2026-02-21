@@ -139,7 +139,7 @@ struct ShareableDaySummaryCard: View {
                     .frame(width: 60)
                 }
                 .frame(height: 72)
-                .background(data.isToday ? JohoColors.todayOrange.opacity(0.1) : colors.inputBackground)
+                .background(data.isToday ? JohoColors.todayOrange.opacity(JohoDimensions.opacitySubtle) : colors.inputBackground)
 
                 // Divider
                 ShareableCardDivider()
@@ -165,7 +165,7 @@ struct ShareableDaySummaryCard: View {
                             if holiday.id != data.holidays.prefix(isShareable ? 10 : 3).last?.id ||
                                !data.birthdays.isEmpty || !data.memos.isEmpty {
                                 Rectangle()
-                                    .fill(colors.border.opacity(0.3))
+                                    .fill(colors.border.opacity(JohoDimensions.opacityMedium))
                                     .frame(height: 1)
                                     .padding(.horizontal, JohoDimensions.spacingMD)
                             }
@@ -187,7 +187,7 @@ struct ShareableDaySummaryCard: View {
                             if birthday.id != data.birthdays.prefix(isShareable ? 6 : 3).last?.id ||
                                !data.memos.isEmpty {
                                 Rectangle()
-                                    .fill(colors.border.opacity(0.3))
+                                    .fill(colors.border.opacity(JohoDimensions.opacityMedium))
                                     .frame(height: 1)
                                     .padding(.horizontal, JohoDimensions.spacingMD)
                             }
@@ -203,7 +203,7 @@ struct ShareableDaySummaryCard: View {
 
                             if memo.id != data.memos.prefix(isShareable ? 8 : 4).last?.id {
                                 Rectangle()
-                                    .fill(colors.border.opacity(0.3))
+                                    .fill(colors.border.opacity(JohoDimensions.opacityMedium))
                                     .frame(height: 1)
                                     .padding(.horizontal, JohoDimensions.spacingMD)
                             }
@@ -215,7 +215,7 @@ struct ShareableDaySummaryCard: View {
                     VStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: IconCatalog.checkmarkCircle)
                             .font(.system(size: 32, weight: .bold))
-                            .foregroundStyle(colors.secondary.opacity(0.5))
+                            .foregroundStyle(colors.secondary.opacity(JohoDimensions.opacityHeavy))
 
                         Text("No events scheduled")
                             .font(JohoFont.bodySmall)
@@ -326,7 +326,7 @@ struct DaySummarySheetView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, contentInset)
-                .background(data.isToday ? JohoColors.todayOrange.opacity(0.1) : colors.inputBackground)
+                .background(data.isToday ? JohoColors.todayOrange.opacity(JohoDimensions.opacitySubtle) : colors.inputBackground)
 
                 // Divider
                 ShareableCardDivider()
@@ -352,7 +352,7 @@ struct DaySummarySheetView: View {
                             if holiday.id != data.holidays.prefix(3).last?.id ||
                                !data.birthdays.isEmpty || !data.memos.isEmpty {
                                 Rectangle()
-                                    .fill(colors.border.opacity(0.3))
+                                    .fill(colors.border.opacity(JohoDimensions.opacityMedium))
                                     .frame(height: 1)
                                     .padding(.horizontal, contentInset)
                             }
@@ -374,7 +374,7 @@ struct DaySummarySheetView: View {
                             if birthday.id != data.birthdays.prefix(3).last?.id ||
                                !data.memos.isEmpty {
                                 Rectangle()
-                                    .fill(colors.border.opacity(0.3))
+                                    .fill(colors.border.opacity(JohoDimensions.opacityMedium))
                                     .frame(height: 1)
                                     .padding(.horizontal, contentInset)
                             }
@@ -390,7 +390,7 @@ struct DaySummarySheetView: View {
 
                             if memo.id != data.memos.prefix(4).last?.id {
                                 Rectangle()
-                                    .fill(colors.border.opacity(0.3))
+                                    .fill(colors.border.opacity(JohoDimensions.opacityMedium))
                                     .frame(height: 1)
                                     .padding(.horizontal, contentInset)
                             }
@@ -402,7 +402,7 @@ struct DaySummarySheetView: View {
                     VStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: IconCatalog.checkmarkCircle)
                             .font(.system(size: 32, weight: .bold))
-                            .foregroundStyle(colors.secondary.opacity(0.5))
+                            .foregroundStyle(colors.secondary.opacity(JohoDimensions.opacityHeavy))
 
                         Text("No events scheduled")
                             .font(JohoFont.bodySmall)
@@ -426,7 +426,7 @@ struct DaySummarySheetView: View {
 
             Spacer()
         }
-        .background(summaryBackgroundColor.opacity(0.3))
+        .background(summaryBackgroundColor.opacity(JohoDimensions.opacityMedium))
         .presentationDetents([.medium])
         .presentationCornerRadius(JohoDimensions.radiusLarge)
         .presentationDragIndicator(.hidden)
@@ -496,7 +496,7 @@ private struct DaySummaryRow: View {
                 .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(iconColor)
                 .frame(width: 32, height: 32)
-                .background(iconColor.opacity(0.15))
+                .background(iconColor.opacity(JohoDimensions.opacityLight))
                 .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
 
             // Title + subtitle
@@ -522,7 +522,7 @@ private struct DaySummaryRow: View {
                     .foregroundStyle(badgeColor)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(badgeColor.opacity(0.15))
+                    .background(badgeColor.opacity(JohoDimensions.opacityLight))
                     .clipShape(Capsule())
             }
         }
@@ -560,7 +560,7 @@ private struct DayMemoRow: View {
                 .font(.system(size: 16, weight: .bold))
                 .foregroundStyle(iconColor)
                 .frame(width: 32, height: 32)
-                .background(iconColor.opacity(0.15))
+                .background(iconColor.opacity(JohoDimensions.opacityLight))
                 .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
 
             // Content

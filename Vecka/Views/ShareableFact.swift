@@ -88,7 +88,7 @@ struct ShareableFactCard: View {
                     if !fact.explanation.isEmpty {
                         Text(fact.explanation)
                             .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                             .lineLimit(isShareable ? nil : 3)
                             .multilineTextAlignment(.leading)
                     }
@@ -97,7 +97,7 @@ struct ShareableFactCard: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .frame(minHeight: 140)
-            .background(fact.color.opacity(0.15))
+            .background(fact.color.opacity(JohoDimensions.opacityLight))
 
             // Divider before footer
             ShareableCardDivider()

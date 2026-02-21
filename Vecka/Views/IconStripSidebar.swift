@@ -133,7 +133,7 @@ struct IconStripSidebar: View {
 
             // Divider before settings - 情報デザイン: solid black or subtle white
             Rectangle()
-                .fill(colors.surface.opacity(0.3))
+                .fill(colors.surface.opacity(JohoDimensions.opacityMedium))
                 .frame(height: 1.5)
                 .padding(.horizontal, JohoDimensions.spacingSM)
                 .padding(.vertical, JohoDimensions.spacingSM)
@@ -201,7 +201,7 @@ struct IconStripButton: View, Equatable {
                 // 情報デザイン: min 0.7 opacity for readability
                 Image(systemName: item.icon)
                     .font(.system(size: iconSize, weight: isSelected ? .bold : .medium, design: .rounded))
-                    .foregroundStyle(isSelected ? item.accentColor : colors.surface.opacity(0.7))
+                    .foregroundStyle(isSelected ? item.accentColor : colors.surface.opacity(JohoDimensions.opacityBold))
                     .johoTouchTarget()
 
                 Spacer()
@@ -296,7 +296,7 @@ private struct SidebarLegendView: View {
                         .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primary)
                         .frame(width: 24, height: 24)
-                        .background(colors.primary.opacity(0.1))
+                        .background(colors.primary.opacity(JohoDimensions.opacitySubtle))
                         .clipShape(Circle())
                 }
                 .buttonStyle(.plain)
@@ -346,7 +346,7 @@ private struct SidebarLegendView: View {
 
                     if index < legendItems.count - 1 {
                         Rectangle()
-                            .fill(colors.border.opacity(0.3))
+                            .fill(colors.border.opacity(JohoDimensions.opacityMedium))
                             .frame(height: 1)
                             .padding(.horizontal, JohoDimensions.spacingMD)
                     }

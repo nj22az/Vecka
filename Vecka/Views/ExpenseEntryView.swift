@@ -124,7 +124,7 @@ struct JohoExpenseEditorSheet: View {
                                 .foregroundStyle(colors.primary)
                             Text("Set amount & details")
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(colors.primary.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         }
 
                         Spacer()
@@ -145,7 +145,7 @@ struct JohoExpenseEditorSheet: View {
                     } label: {
                         Text("Save")
                             .font(JohoFont.bodySmallBold)
-                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(0.4))
+                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(JohoDimensions.opacityModerate))
                             .frame(width: 56, height: 32)
                             .background(canSave ? expenseAccentColor : colors.surface)
                             .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
@@ -155,7 +155,7 @@ struct JohoExpenseEditorSheet: View {
                     .frame(maxHeight: .infinity)
                 }
                 .frame(height: 56)
-                .background(expenseAccentColor.opacity(0.7))  // 情報デザイン: Darker header like Event editor
+                .background(expenseAccentColor.opacity(JohoDimensions.opacityBold))  // 情報デザイン: Darker header like Event editor
 
                 // Thick divider after header
                 Rectangle()
@@ -332,7 +332,7 @@ struct JohoExpenseEditorSheet: View {
                     // LEFT: Store icon (40pt)
                     Image(systemName: "storefront.fill")
                         .font(JohoFont.bodySmallBold)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
 
@@ -345,12 +345,12 @@ struct JohoExpenseEditorSheet: View {
                     // CENTER: Merchant field (optional)
                     TextField("Store name (optional)", text: $merchant)
                         .font(JohoFont.caption)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .frame(maxHeight: .infinity)
                 }
                 .frame(height: 48)
-                .background(expenseLightBackground.opacity(0.5))
+                .background(expenseLightBackground.opacity(JohoDimensions.opacityHeavy))
 
                 // 情報デザイン: Row divider
                 Rectangle()
@@ -381,14 +381,14 @@ struct JohoExpenseEditorSheet: View {
                         // CENTER: Hint text
                         Text("Tap to change icon")
                             .font(JohoFont.caption)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                             .padding(.leading, JohoDimensions.spacingMD)
 
                         Spacer()
 
                         Image(systemName: IconCatalog.chevronRight)
                             .font(.system(size: 12, weight: .semibold, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.4))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                             .padding(.trailing, JohoDimensions.spacingMD)
                     }
                     .frame(height: 48)

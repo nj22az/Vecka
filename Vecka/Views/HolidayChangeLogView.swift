@@ -141,7 +141,7 @@ struct HolidayChangeLogView: View {
 
             Image(systemName: IconCatalog.clockHistory)
                 .font(.system(size: 48, weight: .light, design: .rounded))
-                .foregroundStyle(colors.primary.opacity(0.3))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
 
             Text("No Changes Yet")
                 .font(.system(size: 18, weight: .semibold, design: .rounded))
@@ -149,7 +149,7 @@ struct HolidayChangeLogView: View {
 
             Text("Changes to the holiday database will appear here")
                 .font(.system(size: 14, weight: .regular, design: .rounded))
-                .foregroundStyle(colors.primary.opacity(0.6))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                 .multilineTextAlignment(.center)
 
             Spacer()
@@ -188,7 +188,7 @@ struct ChangeLogEntryRow: View {
         case .modified: return JohoColors.cyan
         case .deleted: return JohoColors.red
         case .enabled: return JohoColors.green
-        case .disabled: return colors.primary.opacity(0.4)
+        case .disabled: return colors.primary.opacity(JohoDimensions.opacityModerate)
         case .reset: return JohoColors.cyan
         case .migrated: return JohoColors.cyan
         case .defaultsLoaded: return JohoColors.cyan
@@ -213,31 +213,31 @@ struct ChangeLogEntryRow: View {
                         .lineLimit(1)
 
                     Text("•")
-                        .foregroundStyle(colors.primary.opacity(0.4))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
 
                     Text(entry.region)
                         .font(JohoFont.caption)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                 }
 
                 // Change description
                 Text(entry.changeDescription)
                     .font(.system(size: 12, weight: .regular, design: .rounded))
-                    .foregroundStyle(colors.primary.opacity(0.7))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                     .lineLimit(2)
 
                 // Timestamp and source
                 HStack(spacing: 4) {
                     Text(entry.formattedTimestamp)
                         .font(.system(size: 11, weight: .regular, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                     Text("•")
-                        .foregroundStyle(colors.primary.opacity(0.3))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
 
                     Text(entry.sourceLabel)
                         .font(.system(size: 11, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                 }
             }
 
@@ -246,14 +246,14 @@ struct ChangeLogEntryRow: View {
             // Chevron
             Image(systemName: IconCatalog.chevronRight)
                 .font(.system(size: 12, weight: .semibold, design: .rounded))
-                .foregroundStyle(colors.primary.opacity(0.3))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
         }
         .padding(JohoDimensions.spacingSM)
         .background(colors.surface)
         .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
-                .stroke(colors.primary.opacity(0.2), lineWidth: 1)
+                .stroke(colors.primary.opacity(JohoDimensions.opacityMild), lineWidth: 1)
         )
     }
 }
@@ -328,15 +328,15 @@ struct ChangeLogDetailSheet: View {
             }
 
             Rectangle()
-                .fill(colors.primary.opacity(0.1))
+                .fill(colors.primary.opacity(JohoDimensions.opacitySubtle))
                 .frame(height: 1)
 
             Text(entry.changeDescription)
                 .font(.system(size: 14, weight: .regular, design: .rounded))
-                .foregroundStyle(colors.primary.opacity(0.8))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityDense))
         }
         .padding(JohoDimensions.spacingMD)
-        .background(actionColor.opacity(0.1))
+        .background(actionColor.opacity(JohoDimensions.opacitySubtle))
         .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous)
@@ -350,7 +350,7 @@ struct ChangeLogDetailSheet: View {
         case .modified: return JohoColors.cyan
         case .deleted: return JohoColors.red
         case .enabled: return JohoColors.green
-        case .disabled: return colors.primary.opacity(0.4)
+        case .disabled: return colors.primary.opacity(JohoDimensions.opacityModerate)
         case .reset: return JohoColors.cyan
         case .migrated: return JohoColors.cyan
         case .defaultsLoaded: return JohoColors.cyan
@@ -363,7 +363,7 @@ struct ChangeLogDetailSheet: View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
             Text("CHANGE DETAILS")
                 .font(JohoFont.tag)
-                .foregroundStyle(colors.primary.opacity(0.5))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
             if let before = entry.beforeJSON {
                 jsonCard(title: "Before", json: before, color: .red)
@@ -384,15 +384,15 @@ struct ChangeLogDetailSheet: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 Text(formatJSON(json))
                     .font(.system(size: 11, weight: .regular, design: .monospaced))
-                    .foregroundStyle(colors.primary.opacity(0.8))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityDense))
             }
         }
         .padding(JohoDimensions.spacingSM)
-        .background(color.opacity(0.05))
+        .background(color.opacity(JohoDimensions.opacityFaint))
         .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
-                .stroke(color.opacity(0.3), lineWidth: 1)
+                .stroke(color.opacity(JohoDimensions.opacityMedium), lineWidth: 1)
         )
     }
 
@@ -412,11 +412,11 @@ struct ChangeLogDetailSheet: View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
             Text("NOTES")
                 .font(JohoFont.tag)
-                .foregroundStyle(colors.primary.opacity(0.5))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
             Text(notes)
                 .font(.system(size: 14, weight: .regular, design: .rounded))
-                .foregroundStyle(colors.primary.opacity(0.8))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityDense))
                 .padding(JohoDimensions.spacingSM)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(colors.primary.opacity(0.03))
@@ -430,7 +430,7 @@ struct ChangeLogDetailSheet: View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
             Text("METADATA")
                 .font(JohoFont.tag)
-                .foregroundStyle(colors.primary.opacity(0.5))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
             VStack(spacing: 0) {
                 metadataRow(label: "Timestamp", value: entry.formattedTimestamp)
@@ -443,7 +443,7 @@ struct ChangeLogDetailSheet: View {
             .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
-                    .stroke(colors.primary.opacity(0.1), lineWidth: 1)
+                    .stroke(colors.primary.opacity(JohoDimensions.opacitySubtle), lineWidth: 1)
             )
         }
     }
@@ -452,7 +452,7 @@ struct ChangeLogDetailSheet: View {
         HStack {
             Text(label)
                 .font(.system(size: 13, weight: .medium, design: .rounded))
-                .foregroundStyle(colors.primary.opacity(0.6))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
 
             Spacer()
 

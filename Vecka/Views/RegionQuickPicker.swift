@@ -73,7 +73,7 @@ struct RegionQuickPicker: View {
                 // Globe icon
                 Image(systemName: IconCatalog.globe)
                     .font(JohoFont.bodySmallBold)
-                    .foregroundStyle(colors.primary.opacity(0.7))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
 
                 // Selected region pills (up to 3 shown, only valid codes)
                 HStack(spacing: 4) {
@@ -95,10 +95,10 @@ struct RegionQuickPicker: View {
                     if validSelectedRegions.count > 3 {
                         Text("+\(validSelectedRegions.count - 3)")
                             .font(.system(size: 9, weight: .bold, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                             .padding(.horizontal, 6)
                             .padding(.vertical, 3)
-                            .background(colors.primary.opacity(0.1))
+                            .background(colors.primary.opacity(JohoDimensions.opacitySubtle))
                             .clipShape(Capsule())
                             .overlay(
                                 Capsule()
@@ -112,7 +112,7 @@ struct RegionQuickPicker: View {
                 // Expand/collapse indicator
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                     .font(JohoFont.labelBold)
-                    .foregroundStyle(colors.primary.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingMD)
@@ -147,14 +147,14 @@ struct RegionQuickPicker: View {
                             Text("Clear")
                                 .font(.system(size: 11, weight: .semibold, design: .rounded))
                         }
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
                         .background(colors.inputBackground)
                         .clipShape(Capsule())
                         .overlay(
                             Capsule()
-                                .stroke(colors.border.opacity(0.5), lineWidth: 1)
+                                .stroke(colors.border.opacity(JohoDimensions.opacityHeavy), lineWidth: 1)
                         )
                     }
                     .buttonStyle(.plain)
@@ -188,7 +188,7 @@ struct RegionQuickPicker: View {
 
                         if continent != RegionSelectionView.Continent.allCases.last {
                             Rectangle()
-                                .fill(colors.border.opacity(0.5))
+                                .fill(colors.border.opacity(JohoDimensions.opacityHeavy))
                                 .frame(height: 1)
                         }
                     }
@@ -199,7 +199,7 @@ struct RegionQuickPicker: View {
             HStack {
                 Text("\(selectedCount)/3 selected")
                     .font(.system(size: 10, weight: .medium, design: .rounded))
-                    .foregroundStyle(colors.primary.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                 Spacer()
             }
@@ -229,7 +229,7 @@ struct RegionQuickPicker: View {
                     // Chevron
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
                         .font(.system(size: 8, weight: .bold))
-                        .foregroundStyle(colors.primary.opacity(0.4))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         .frame(width: 10)
 
                     // Continent icon

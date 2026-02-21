@@ -260,7 +260,7 @@ struct LandingPageView: View {
 
                     Text("•")
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(colors.primary.opacity(0.4))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
 
                     Text(monthName)
                         .font(JohoFont.bodySmall)
@@ -438,7 +438,7 @@ struct LandingPageView: View {
                         .foregroundStyle(JohoColors.cyan)
                 }
                 .frame(width: 24, height: 24)
-                .background(JohoColors.cyan.opacity(0.15))
+                .background(JohoColors.cyan.opacity(JohoDimensions.opacityLight))
                 .johoBordered(cornerRadius: JohoDimensions.radiusChip, borderWidth: 1)
 
                 Text("RANDOM FACTS")
@@ -554,7 +554,7 @@ struct LandingPageView: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: 48)
-            .background(fact.color.opacity(0.2))
+            .background(fact.color.opacity(JohoDimensions.opacityMild))
 
             // Divider
             Rectangle()
@@ -608,7 +608,7 @@ struct LandingPageView: View {
                 .foregroundStyle(item.color.readableForeground)
                 .padding(.horizontal, isCompact ? 4 : 6)
                 .padding(.vertical, isCompact ? 1 : 2)
-                .background(item.color.opacity(0.15))
+                .background(item.color.opacity(JohoDimensions.opacityLight))
                 .clipShape(Capsule())
         }
         .padding(.horizontal, size.contentPadding)
@@ -632,11 +632,11 @@ struct LandingPageView: View {
             }
             .frame(width: 36)
             .padding(.vertical, 4)
-            .background(item.isToday ? JohoColors.yellow.opacity(0.15) : colors.surface)
+            .background(item.isToday ? JohoColors.yellow.opacity(JohoDimensions.opacityLight) : colors.surface)
             .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusChip, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: JohoDimensions.radiusChip, style: .continuous)
-                    .stroke(item.isToday ? JohoColors.yellow : colors.border.opacity(0.3), lineWidth: 1)
+                    .stroke(item.isToday ? JohoColors.yellow : colors.border.opacity(JohoDimensions.opacityMedium), lineWidth: 1)
             )
 
             // Type indicator
@@ -676,7 +676,7 @@ struct LandingPageView: View {
                 .foregroundStyle(item.color.readableForeground)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
-                .background(item.color.opacity(0.15))
+                .background(item.color.opacity(JohoDimensions.opacityLight))
                 .clipShape(Capsule())
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
@@ -892,7 +892,7 @@ struct LandingPageView: View {
                     ForEach(Array(todayItems.prefix(5).enumerated()), id: \.element.id) { index, item in
                         if index > 0 {
                             Rectangle()
-                                .fill(colors.border.opacity(0.2))
+                                .fill(colors.border.opacity(JohoDimensions.opacityMild))
                                 .frame(height: 1)
                                 .padding(.horizontal, JohoDimensions.spacingMD)
                         }
@@ -901,7 +901,7 @@ struct LandingPageView: View {
 
                     if todayItems.count > 5 {
                         Rectangle()
-                            .fill(colors.border.opacity(0.2))
+                            .fill(colors.border.opacity(JohoDimensions.opacityMild))
                             .frame(height: 1)
                             .padding(.horizontal, JohoDimensions.spacingMD)
 
@@ -931,7 +931,7 @@ struct LandingPageView: View {
                     ForEach(Array(items.prefix(5).enumerated()), id: \.element.id) { index, item in
                         if index > 0 {
                             Rectangle()
-                                .fill(colors.border.opacity(0.2))
+                                .fill(colors.border.opacity(JohoDimensions.opacityMild))
                                 .frame(height: 1)
                                 .padding(.horizontal, JohoDimensions.spacingMD)
                         }
@@ -940,7 +940,7 @@ struct LandingPageView: View {
 
                     if items.count > 5 {
                         Rectangle()
-                            .fill(colors.border.opacity(0.2))
+                            .fill(colors.border.opacity(JohoDimensions.opacityMild))
                             .frame(height: 1)
                             .padding(.horizontal, JohoDimensions.spacingMD)
 
@@ -963,7 +963,7 @@ struct LandingPageView: View {
                 VStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: IconCatalog.checkmarkCircle)
                         .font(.system(size: 24, weight: .medium))
-                        .foregroundStyle(colors.secondary.opacity(0.4))
+                        .foregroundStyle(colors.secondary.opacity(JohoDimensions.opacityModerate))
 
                     Text("All caught up!")
                         .font(JohoFont.body)
@@ -976,7 +976,7 @@ struct LandingPageView: View {
                     ForEach(Array(items.prefix(5).enumerated()), id: \.element.id) { index, item in
                         if index > 0 {
                             Rectangle()
-                                .fill(colors.border.opacity(0.2))
+                                .fill(colors.border.opacity(JohoDimensions.opacityMild))
                                 .frame(height: 1)
                                 .padding(.horizontal, JohoDimensions.spacingMD)
                         }
@@ -1024,7 +1024,7 @@ struct LandingPageView: View {
                 .foregroundStyle(item.color.readableForeground)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
-                .background(item.color.opacity(0.15))
+                .background(item.color.opacity(JohoDimensions.opacityLight))
                 .clipShape(Capsule())
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
@@ -1280,7 +1280,7 @@ struct RandomFactDetailSheet: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 120)
-                .background(fact.color.opacity(0.2))
+                .background(fact.color.opacity(JohoDimensions.opacityMild))
 
                 // Thick divider
                 Rectangle()
@@ -1297,7 +1297,7 @@ struct RandomFactDetailSheet: View {
 
                 // Thin divider
                 Rectangle()
-                    .fill(colors.border.opacity(0.2))
+                    .fill(colors.border.opacity(JohoDimensions.opacityMild))
                     .frame(height: 1)
                     .padding(.horizontal, JohoDimensions.spacingMD)
                     .padding(.vertical, JohoDimensions.spacingSM)
@@ -1305,7 +1305,7 @@ struct RandomFactDetailSheet: View {
                 // Explanation text (情報デザイン: Full context for understanding)
                 Text(fact.explanation)
                     .font(JohoFont.bodySmall)
-                    .foregroundStyle(colors.primary.opacity(0.8))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityDense))
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, JohoDimensions.spacingMD)
@@ -1317,7 +1317,7 @@ struct RandomFactDetailSheet: View {
 
             Spacer()
         }
-        .background(fact.color.opacity(0.3))
+        .background(fact.color.opacity(JohoDimensions.opacityMedium))
         .presentationDetents([.medium])
         .presentationCornerRadius(JohoDimensions.radiusLarge)
         .presentationDragIndicator(.hidden)

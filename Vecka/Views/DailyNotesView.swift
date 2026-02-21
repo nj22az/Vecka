@@ -56,7 +56,7 @@ struct DailyNotesView: View {
                             .foregroundStyle(colors.surface)
                         Text(selectedDate.formatted(date: .long, time: .omitted))
                             .font(JohoFont.body)
-                            .foregroundStyle(colors.surface.opacity(0.7))
+                            .foregroundStyle(colors.surface.opacity(JohoDimensions.opacityBold))
                     }
 
                     Spacer()
@@ -69,7 +69,7 @@ struct DailyNotesView: View {
                                 .font(.system(size: 14, weight: .bold))
                                 .foregroundStyle(colors.surface)
                                 .frame(width: 32, height: 32)
-                                .background(colors.surface.opacity(0.2))
+                                .background(colors.surface.opacity(JohoDimensions.opacityMild))
                                 .clipShape(Circle())
                         }
                     }
@@ -173,7 +173,7 @@ struct DailyNotesView: View {
                                 .foregroundStyle(colors.primary)
                             Text("Tap 'Add Note' to create your first note for this day.")
                                 .font(JohoFont.body)
-                                .foregroundStyle(colors.primary.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                                 .multilineTextAlignment(.center)
                         }
                         .padding(JohoDimensions.spacingLG)
@@ -273,7 +273,7 @@ private struct JohoNoteCard: View {
             if let scheduledAt = note.scheduledAt {
                 Text(scheduledAt.formatted(date: .omitted, time: .shortened))
                     .font(JohoFont.caption)
-                    .foregroundStyle(colors.primary.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
             }
         }
         .padding(JohoDimensions.spacingMD)
@@ -324,7 +324,7 @@ private struct JohoNoteEditor: View {
                 } label: {
                     Text("Save")
                         .font(JohoFont.body.bold())
-                        .foregroundStyle(canSave ? colors.primary : colors.primary.opacity(0.4))
+                        .foregroundStyle(canSave ? colors.primary : colors.primary.opacity(JohoDimensions.opacityModerate))
                         .padding(.horizontal, JohoDimensions.spacingLG)
                         .padding(.vertical, JohoDimensions.spacingMD)
                         .background(canSave ? accentColor : colors.surface)
@@ -350,7 +350,7 @@ private struct JohoNoteEditor: View {
                 // Note icon
                 ZStack {
                     Circle()
-                        .fill(accentColor.opacity(0.2))
+                        .fill(accentColor.opacity(JohoDimensions.opacityMild))
                         .frame(width: 60, height: 60)
                         .overlay(Circle().stroke(colors.border, lineWidth: 2))
 
@@ -374,7 +374,7 @@ private struct JohoNoteEditor: View {
                         if text.isEmpty {
                             Text("What's on your mind?")
                                 .font(JohoFont.body)
-                                .foregroundStyle(colors.primary.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                                 .padding(.top, 8)
                                 .padding(.leading, 4)
                                 .allowsHitTesting(false)
@@ -504,7 +504,7 @@ struct JohoNoteEditorSheet: View {
                                 .foregroundStyle(colors.primaryInverted)
                             Text("Set date & details")
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(colors.primaryInverted.opacity(0.6))
+                                .foregroundStyle(colors.primaryInverted.opacity(JohoDimensions.opacityStrong))
                         }
 
                         Spacer()
@@ -525,9 +525,9 @@ struct JohoNoteEditorSheet: View {
                     } label: {
                         Text("Save")
                             .font(JohoFont.bodySmallBold)
-                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primaryInverted.opacity(0.4))
+                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primaryInverted.opacity(JohoDimensions.opacityModerate))
                             .frame(width: 56, height: 32)
-                            .background(canSave ? noteAccentColor : colors.primaryInverted.opacity(0.2))
+                            .background(canSave ? noteAccentColor : colors.primaryInverted.opacity(JohoDimensions.opacityMild))
                             .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5, borderColor: colors.primaryInverted)
                     }
                     .disabled(!canSave)
@@ -535,7 +535,7 @@ struct JohoNoteEditorSheet: View {
                     .frame(maxHeight: .infinity)
                 }
                 .frame(height: 56)
-                .background(noteAccentColor.opacity(0.7))  // 情報デザイン: Darker header
+                .background(noteAccentColor.opacity(JohoDimensions.opacityBold))  // 情報デザイン: Darker header
 
                 // Thick divider after header
                 Rectangle()
@@ -556,7 +556,7 @@ struct JohoNoteEditorSheet: View {
                     if text.isEmpty {
                         Text("What's on your mind?")
                             .font(JohoFont.body)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                             .padding(.top, JohoDimensions.spacingMD + 8)
                             .padding(.leading, JohoDimensions.spacingMD + 4)
                             .allowsHitTesting(false)
@@ -670,14 +670,14 @@ struct JohoNoteEditorSheet: View {
                         // CENTER: Hint text
                         Text("Tap to change icon")
                             .font(JohoFont.caption)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                             .padding(.leading, JohoDimensions.spacingMD)
 
                         Spacer()
 
                         Image(systemName: IconCatalog.chevronRight)
                             .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(colors.primary.opacity(0.4))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                             .padding(.trailing, JohoDimensions.spacingMD)
                     }
                     .frame(height: 48)

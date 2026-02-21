@@ -54,12 +54,12 @@ enum EntryType: String, CaseIterable, Identifiable {
 
     /// Light background tint for form sections
     var lightBackground: Color {
-        color.opacity(0.1)
+        color.opacity(JohoDimensions.opacitySubtle)
     }
 
     /// Header background color
     var headerBackground: Color {
-        color.opacity(0.7)
+        color.opacity(JohoDimensions.opacityBold)
     }
 
     /// Display name for UI (情報デザイン: uppercase, compact)

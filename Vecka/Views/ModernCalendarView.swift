@@ -219,7 +219,7 @@ struct ModernCalendarView: View {
     private func categoryDot(count: Int, color: Color) -> some View {
         HStack(spacing: 3) {
             Circle()
-                .fill(count > 0 ? color : colors.border.opacity(0.2))
+                .fill(count > 0 ? color : colors.border.opacity(JohoDimensions.opacityMild))
                 .frame(width: 10, height: 10)
                 .overlay(
                     Circle()
@@ -675,7 +675,7 @@ struct ModernCalendarView: View {
                         .font(JohoFont.label)
                         .foregroundStyle(colors.primary)
                         .frame(width: 24, height: 24)
-                        .background(JohoColors.cyan.opacity(0.3))
+                        .background(JohoColors.cyan.opacity(JohoDimensions.opacityMedium))
                         .johoBordered(cornerRadius: 5, borderWidth: 1)
 
                     Text("LEGEND")
@@ -704,7 +704,7 @@ struct ModernCalendarView: View {
             // Expanded content - shows indicator types with colors
             if isLegendExpanded && !presentIndicators.isEmpty {
                 Rectangle()
-                    .fill(colors.border.opacity(0.2))
+                    .fill(colors.border.opacity(JohoDimensions.opacityMild))
                     .frame(height: 1)
                     .padding(.horizontal, JohoDimensions.spacingMD)
 
@@ -763,7 +763,7 @@ struct ModernCalendarView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(verbatim: "\(currentMonth.year)")
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(colors.primaryInverted.opacity(0.6))
+                        .foregroundStyle(colors.primaryInverted.opacity(JohoDimensions.opacityStrong))
 
                     Text(monthTitle)
                         .font(JohoFont.headline)
@@ -772,7 +772,7 @@ struct ModernCalendarView: View {
 
                 Image(systemName: IconCatalog.chevronDown)
                     .font(JohoFont.labelSmall)
-                    .foregroundStyle(colors.primaryInverted.opacity(0.7))
+                    .foregroundStyle(colors.primaryInverted.opacity(JohoDimensions.opacityBold))
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)

@@ -64,7 +64,7 @@ struct OnboardingView: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     ForEach(0..<pages.count, id: \.self) { index in
                         Circle()
-                            .fill(index == currentPage ? colors.primary : colors.primary.opacity(0.2))
+                            .fill(index == currentPage ? colors.primary : colors.primary.opacity(JohoDimensions.opacityMild))
                             .frame(width: 8, height: 8)
                     }
                 }
@@ -97,7 +97,7 @@ struct OnboardingView: View {
                     } label: {
                         Text("Skip")
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                     }
                     .padding(.top, JohoDimensions.spacingXS)
                 }
@@ -137,7 +137,7 @@ struct OnboardingPageView: View {
             // Icon (情報デザイン: Bordered icon zone)
             ZStack {
                 RoundedRectangle(cornerRadius: JohoDimensions.radiusXXL, style: .continuous)
-                    .fill(page.iconColor.opacity(0.2))
+                    .fill(page.iconColor.opacity(JohoDimensions.opacityMild))
                     .frame(width: 120, height: 120)
 
                 RoundedRectangle(cornerRadius: JohoDimensions.radiusXXL, style: .continuous)
@@ -159,13 +159,13 @@ struct OnboardingPageView: View {
             // Subtitle
             Text(page.subtitle)
                 .font(JohoFont.body)
-                .foregroundStyle(colors.primary.opacity(0.7))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                 .multilineTextAlignment(.center)
 
             // Description (情報デザイン: Info box with border)
             Text(page.description)
                 .font(JohoFont.bodySmall)
-                .foregroundStyle(colors.primary.opacity(0.8))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityDense))
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
                 .padding(JohoDimensions.spacingMD)
@@ -173,7 +173,7 @@ struct OnboardingPageView: View {
                 .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous)
-                        .stroke(colors.primary.opacity(0.1), lineWidth: 1)
+                        .stroke(colors.primary.opacity(JohoDimensions.opacitySubtle), lineWidth: 1)
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)
 

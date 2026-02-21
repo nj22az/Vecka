@@ -192,7 +192,7 @@ struct MemoEditorView: View {
             JohoIconPickerSheet(
                 selectedSymbol: $selectedSymbol,
                 accentColor: accentColor,
-                lightBackground: accentColor.opacity(0.15)
+                lightBackground: accentColor.opacity(JohoDimensions.opacityLight)
             )
         }
         .alert("Delete?", isPresented: $showDeleteConfirm) {
@@ -267,7 +267,7 @@ struct MemoEditorView: View {
             Spacer()
         }
         .frame(height: 56)
-        .background(accentColor.opacity(0.15))
+        .background(accentColor.opacity(JohoDimensions.opacityLight))
     }
 
     private func optionChip(icon: String, label: String, isActive: Bool, action: @escaping () -> Void) -> some View {
@@ -593,7 +593,7 @@ struct MemoEditorView: View {
                 Text("SAVE")
                     .font(.system(size: 14, weight: .heavy, design: .rounded))
             }
-            .foregroundStyle(canSave ? .white : colors.primary.opacity(0.4))
+            .foregroundStyle(canSave ? .white : colors.primary.opacity(JohoDimensions.opacityModerate))
             .frame(maxWidth: .infinity)
             .frame(height: 48)
             .background(canSave ? accentColor : colors.inputBackground)
@@ -800,7 +800,7 @@ struct MemoContactPicker: View {
                             contactRow(contact)
 
                             if contact.id != contacts.last?.id {
-                                Rectangle().fill(colors.border.opacity(0.5)).frame(height: 1)
+                                Rectangle().fill(colors.border.opacity(JohoDimensions.opacityHeavy)).frame(height: 1)
                                     .padding(.leading, 60)
                             }
                         }
@@ -822,7 +822,7 @@ struct MemoContactPicker: View {
             HStack(spacing: 12) {
                 ZStack {
                     Circle()
-                        .fill(selectedContactID == contact.id ? accentColor.opacity(0.2) : colors.primary.opacity(0.1))
+                        .fill(selectedContactID == contact.id ? accentColor.opacity(JohoDimensions.opacityMild) : colors.primary.opacity(JohoDimensions.opacitySubtle))
                         .frame(width: 40, height: 40)
                         .overlay(Circle().stroke(selectedContactID == contact.id ? accentColor : colors.border, lineWidth: 1.5))
 

@@ -353,7 +353,7 @@ struct UnifiedEntryCreator: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(height: 56)
-        .background(accentColor.opacity(0.15))
+        .background(accentColor.opacity(JohoDimensions.opacityLight))
     }
 
     private func typePill(_ type: UnifiedEntryType) -> some View {
@@ -790,7 +790,7 @@ struct UnifiedEntryCreator: View {
                 Text("SAVE")
                     .font(.system(size: 14, weight: .heavy, design: .rounded))
             }
-            .foregroundStyle(canSave ? .white : colors.primary.opacity(0.4))
+            .foregroundStyle(canSave ? .white : colors.primary.opacity(JohoDimensions.opacityModerate))
             .frame(maxWidth: .infinity)
             .frame(height: 48)
             .background(canSave ? accentColor : colors.inputBackground)

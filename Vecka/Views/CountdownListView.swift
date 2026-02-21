@@ -73,7 +73,7 @@ struct CountdownListView: View {
                 .font(JohoFont.displaySmall)
                 .foregroundStyle(colors.primary)
                 .johoTouchTarget(52)
-                .background(JohoColors.purple.opacity(0.3))
+                .background(JohoColors.purple.opacity(JohoDimensions.opacityMedium))
                 .johoBordered()
 
             // Title area
@@ -84,7 +84,7 @@ struct CountdownListView: View {
 
                 Text("\(customCountdowns.count) event\(customCountdowns.count == 1 ? "" : "s")")
                     .font(JohoFont.caption)
-                    .foregroundStyle(colors.primary.opacity(0.7))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
             }
 
             Spacer()
@@ -152,7 +152,7 @@ struct CountdownListView: View {
                     .frame(maxHeight: .infinity)
             }
             .frame(height: 32)
-            .background(JohoColors.purple.opacity(0.7))  // Light purple header (情報デザイン bento)
+            .background(JohoColors.purple.opacity(JohoDimensions.opacityBold))  // Light purple header (情報デザイン bento)
 
             // Horizontal divider
             Rectangle()
@@ -182,7 +182,7 @@ struct CountdownListView: View {
 
                     Text(event.date.formatted(.dateTime.month(.wide).day().year()))
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -207,7 +207,7 @@ struct CountdownListView: View {
 
                         Text(event.days == 1 ? "DAY" : "DAYS")
                             .font(JohoFont.label)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                     }
                 }
                 .frame(width: 84)
@@ -236,15 +236,15 @@ struct CountdownListView: View {
                     VStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: IconCatalog.calendarBadgePlus)
                             .font(JohoFont.displaySmall)
-                            .foregroundStyle(colors.primary.opacity(0.4))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
 
                         Text("No Events")
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
 
                         Text("Tap + to create your first event")
                             .font(JohoFont.caption)
-                            .foregroundStyle(colors.primary.opacity(0.4))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                     }
                     .padding(JohoDimensions.spacingLG)
                     Spacer()
@@ -269,7 +269,7 @@ struct CountdownListView: View {
                     // Divider between items (not after last) - matches Star page
                     if index < customCountdowns.count - 1 {
                         Rectangle()
-                            .fill(colors.border.opacity(0.3))
+                            .fill(colors.border.opacity(JohoDimensions.opacityMedium))
                             .frame(height: 1)
                             .padding(.horizontal, 6)
                     }
@@ -330,7 +330,7 @@ struct CountdownListView: View {
                     .frame(maxHeight: .infinity)
             }
             .frame(height: 32)
-            .background(JohoColors.purple.opacity(0.7))  // Light purple header (情報デザイン bento)
+            .background(JohoColors.purple.opacity(JohoDimensions.opacityBold))  // Light purple header (情報デザイン bento)
 
             // Horizontal divider between header and items
             Rectangle()
@@ -405,7 +405,7 @@ struct CountdownListView: View {
                                "IN \(days)D"
                 Text(daysLabel)
                     .font(.system(size: 9, weight: .bold, design: .monospaced))
-                    .foregroundStyle(colors.primary.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
             }
             .padding(.horizontal, 8)
             .frame(maxHeight: .infinity)
@@ -436,7 +436,7 @@ struct CountdownListView: View {
                     .font(JohoFont.bodySmallBold)
                     .foregroundStyle(JohoColors.cyan)
                     .frame(width: 24, height: 24)
-                    .background(JohoColors.cyan.opacity(0.15))
+                    .background(JohoColors.cyan.opacity(JohoDimensions.opacityLight))
                     .johoBordered(cornerRadius: JohoDimensions.radiusChip, borderWidth: 1)
             }
             .frame(width: 48, alignment: .center)

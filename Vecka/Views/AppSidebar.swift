@@ -115,10 +115,10 @@ struct AppSidebar: View {
             VStack(spacing: 4) {
                 Text("Onsen Planner")
                     .font(JohoFont.caption)
-                    .foregroundStyle(colors.primary.opacity(0.7))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                 Text("© 2025 The Office of Nils Johansson")
                     .font(JohoFont.labelSmall)
-                    .foregroundStyle(colors.primary.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
             }
             .frame(maxWidth: .infinity)
             .padding(.bottom, JohoDimensions.spacingMD)
@@ -148,18 +148,18 @@ struct SidebarIconButton: View {
 
                     Image(systemName: item.icon)
                         .font(.system(size: 22, weight: isSelected ? .bold : .medium, design: .rounded))
-                        .foregroundStyle(isSelected ? .white : colors.primary.opacity(0.6))
+                        .foregroundStyle(isSelected ? .white : colors.primary.opacity(JohoDimensions.opacityStrong))
                         .johoTouchTarget(52)
                 }
                 .overlay(
                     Circle()
-                        .stroke(isSelected ? colors.border : colors.border.opacity(0.2), lineWidth: isSelected ? 2 : 1)
+                        .stroke(isSelected ? colors.border : colors.border.opacity(JohoDimensions.opacityMild), lineWidth: isSelected ? 2 : 1)
                 )
 
                 // Label
                 Text(item.label)
                     .font(.caption)
-                    .foregroundStyle(isSelected ? colors.primary : colors.primary.opacity(0.6))
+                    .foregroundStyle(isSelected ? colors.primary : colors.primary.opacity(JohoDimensions.opacityStrong))
                     .lineLimit(1)
             }
         }

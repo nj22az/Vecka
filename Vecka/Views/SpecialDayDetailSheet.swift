@@ -101,7 +101,7 @@ struct SpecialDayDetailSheet: View {
                     set: { customIcon = $0 }
                 ),
                 accentColor: CategoryColorSettings.shared.color(for: item.type.displayCategory),
-                lightBackground: CategoryColorSettings.shared.color(for: item.type.displayCategory).opacity(0.2),
+                lightBackground: CategoryColorSettings.shared.color(for: item.type.displayCategory).opacity(JohoDimensions.opacityMild),
                 onDone: {}
             )
         }
@@ -109,7 +109,7 @@ struct SpecialDayDetailSheet: View {
             JohoSFSymbolPickerSheet(
                 selectedSymbol: $permanentIconSelection,
                 accentColor: CategoryColorSettings.shared.color(for: item.type.displayCategory),
-                lightBackground: CategoryColorSettings.shared.color(for: item.type.displayCategory).opacity(0.2),
+                lightBackground: CategoryColorSettings.shared.color(for: item.type.displayCategory).opacity(JohoDimensions.opacityMild),
                 onDone: {
                     savePermanentIcon(permanentIconSelection)
                 }
@@ -148,12 +148,12 @@ struct SpecialDayDetailSheet: View {
                         if item.symbolName != nil {
                             Text("CUSTOM")
                                 .font(.system(size: 8, weight: .bold, design: .rounded))
-                                .foregroundStyle(colors.primary.opacity(0.4))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         }
 
                         Image(systemName: IconCatalog.chevronRight)
                             .font(.system(size: 10, weight: .bold))
-                            .foregroundStyle(colors.primary.opacity(0.3))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                     }
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -231,7 +231,7 @@ struct SpecialDayDetailSheet: View {
                     .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primaryInverted)
                     .frame(width: 32, height: 32)
-                    .background(colors.primary.opacity(0.3))
+                    .background(colors.primary.opacity(JohoDimensions.opacityMedium))
                     .clipShape(Circle())
             }
         }
@@ -250,7 +250,7 @@ struct SpecialDayDetailSheet: View {
         }
         .frame(maxWidth: .infinity)
         .frame(height: 120)
-        .background(CategoryColorSettings.shared.color(for: item.type.displayCategory).opacity(0.2))
+        .background(CategoryColorSettings.shared.color(for: item.type.displayCategory).opacity(JohoDimensions.opacityMild))
         .johoBordered(cornerRadius: JohoDimensions.radiusLarge)
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
@@ -267,7 +267,7 @@ struct SpecialDayDetailSheet: View {
 
             // Divider
             Rectangle()
-                .fill(colors.primary.opacity(0.15))
+                .fill(colors.primary.opacity(JohoDimensions.opacityLight))
                 .frame(height: 1)
 
             // Region row (if present)
@@ -275,7 +275,7 @@ struct SpecialDayDetailSheet: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     Text("REGION")
                         .font(JohoFont.pillLabel)
-                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                         .frame(width: 60, alignment: .leading)
 
                     CountryPill(region: item.region)
@@ -287,7 +287,7 @@ struct SpecialDayDetailSheet: View {
 
                 // Divider
                 Rectangle()
-                    .fill(colors.primary.opacity(0.15))
+                    .fill(colors.primary.opacity(JohoDimensions.opacityLight))
                     .frame(height: 1)
             }
 
@@ -300,7 +300,7 @@ struct SpecialDayDetailSheet: View {
 
                 // Divider
                 Rectangle()
-                    .fill(colors.primary.opacity(0.15))
+                    .fill(colors.primary.opacity(JohoDimensions.opacityLight))
                     .frame(height: 1)
             }
 
@@ -309,7 +309,7 @@ struct SpecialDayDetailSheet: View {
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
                     Text("NOTES")
                         .font(JohoFont.pillLabel)
-                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                     Text(notes)
                         .font(JohoFont.body)
@@ -345,14 +345,14 @@ struct SpecialDayDetailSheet: View {
                 HStack {
                     Text("SHARE OPTIONS")
                         .font(JohoFont.labelBold)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         .tracking(0.5)
 
                     Spacer()
 
                     Image(systemName: showShareOptions ? "chevron.up" : IconCatalog.chevronDown)
                         .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(colors.primary.opacity(0.4))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
                 .padding(.vertical, JohoDimensions.spacingMD)
@@ -373,7 +373,7 @@ struct SpecialDayDetailSheet: View {
                         HStack {
                             Text("ICON")
                                 .font(JohoFont.labelBold)
-                                .foregroundStyle(colors.primary.opacity(0.5))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                             Spacer()
 
@@ -383,7 +383,7 @@ struct SpecialDayDetailSheet: View {
 
                             Image(systemName: IconCatalog.chevronRight)
                                 .font(.system(size: 10, weight: .bold))
-                                .foregroundStyle(colors.primary.opacity(0.3))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                         }
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .padding(.vertical, JohoDimensions.spacingMD)
@@ -392,14 +392,14 @@ struct SpecialDayDetailSheet: View {
                     .buttonStyle(.plain)
 
                     Rectangle()
-                        .fill(colors.border.opacity(0.3))
+                        .fill(colors.border.opacity(JohoDimensions.opacityMedium))
                         .frame(height: 1)
 
                     // Personal note field
                     HStack {
                         Text("NOTE")
                             .font(JohoFont.labelBold)
-                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                         TextField("Add personal note...", text: $personalNote)
                             .font(JohoFont.caption)
@@ -409,20 +409,20 @@ struct SpecialDayDetailSheet: View {
                     .padding(.vertical, JohoDimensions.spacingSM)
 
                     Rectangle()
-                        .fill(colors.border.opacity(0.3))
+                        .fill(colors.border.opacity(JohoDimensions.opacityMedium))
                         .frame(height: 1)
 
                     // Date stamp preview
                     HStack {
                         Text("DATE")
                             .font(JohoFont.labelBold)
-                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                         Spacer()
 
                         Text(fullDateStamp)
                             .font(.system(size: 11, weight: .medium, design: .monospaced))
-                            .foregroundStyle(colors.primary.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                     }
                     .padding(.horizontal, JohoDimensions.spacingMD)
                     .padding(.vertical, JohoDimensions.spacingSM)
@@ -438,7 +438,7 @@ struct SpecialDayDetailSheet: View {
         HStack(spacing: JohoDimensions.spacingSM) {
             Text(label)
                 .font(JohoFont.pillLabel)
-                .foregroundStyle(colors.primary.opacity(0.5))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                 .frame(width: 60, alignment: .leading)
 
             Text(value)
@@ -623,7 +623,7 @@ struct ShareableSpecialDayCard: View {
                 HStack {
                     Text(fullDateStamp)
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
-                        .foregroundStyle(colors.primary.opacity(0.7))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -659,32 +659,32 @@ struct ShareableSpecialDayCard: View {
 
                         Text(item.title)
                             .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                             .multilineTextAlignment(.leading)
 
                         // Holiday notes (built-in description)
                         if let notes = item.notes, !notes.isEmpty {
                             Rectangle()
-                                .fill(colors.border.opacity(0.3))
+                                .fill(colors.border.opacity(JohoDimensions.opacityMedium))
                                 .frame(height: 1)
                                 .padding(.vertical, 2)
 
                             Text(notes)
                                 .font(.system(size: 10, weight: .medium, design: .rounded))
-                                .foregroundStyle(colors.primary.opacity(0.5))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                                 .multilineTextAlignment(.leading)
                         }
 
                         // Personal note (if provided)
                         if let note = personalNote, !note.isEmpty {
                             Rectangle()
-                                .fill(colors.border.opacity(0.3))
+                                .fill(colors.border.opacity(JohoDimensions.opacityMedium))
                                 .frame(height: 1)
                                 .padding(.vertical, 2)
 
                             Text("\" \(note) \"")
                                 .font(.system(size: 10, weight: .medium, design: .rounded))
-                                .foregroundStyle(colors.primary.opacity(0.5))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                                 .italic()
                                 .multilineTextAlignment(.leading)
                         }
@@ -693,7 +693,7 @@ struct ShareableSpecialDayCard: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .frame(minHeight: 120)
-                .background(item.type.lightBackground.opacity(0.5))
+                .background(item.type.lightBackground.opacity(JohoDimensions.opacityHeavy))
 
                 // Divider
                 JohoDivider()
@@ -703,15 +703,15 @@ struct ShareableSpecialDayCard: View {
                     HStack(spacing: 4) {
                         Text(item.type.code)
                             .font(JohoFont.labelBold)
-                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                             .tracking(1)
 
                         if item.hasCountryPill {
                             Text("·")
-                                .foregroundStyle(colors.primary.opacity(0.3))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                             Text(item.region.uppercased())
                                 .font(JohoFont.labelBold)
-                                .foregroundStyle(colors.primary.opacity(0.4))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         }
                     }
 
@@ -719,7 +719,7 @@ struct ShareableSpecialDayCard: View {
 
                     Text("ONSEN PLANNER")
                         .font(.system(size: 9, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.3))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
                 .padding(.vertical, JohoDimensions.spacingSM)

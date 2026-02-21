@@ -128,7 +128,7 @@ extension CalendarGridView {
                         // Horizontal divider between weeks (not after last)
                         if index < month.weeks.count - 1 {
                             Rectangle()
-                                .fill(colors.border.opacity(0.4))
+                                .fill(colors.border.opacity(JohoDimensions.opacityModerate))
                                 .frame(height: dividerWidth)
                                 .padding(.horizontal, -edgeExtension)
                         }
@@ -457,7 +457,7 @@ extension CalendarGridView {
                 .frame(width: 6, height: 6)
                 .overlay(
                     Circle()
-                        .stroke(hasHoliday ? colors.border.opacity(0.8) : Color.clear, lineWidth: 0.5)
+                        .stroke(hasHoliday ? colors.border.opacity(JohoDimensions.opacityDense) : Color.clear, lineWidth: 0.5)
                 )
 
             // Position 2: Observance (Blue) - colored or invisible placeholder
@@ -466,7 +466,7 @@ extension CalendarGridView {
                 .frame(width: 6, height: 6)
                 .overlay(
                     Circle()
-                        .stroke(hasObservance ? colors.border.opacity(0.8) : Color.clear, lineWidth: 0.5)
+                        .stroke(hasObservance ? colors.border.opacity(JohoDimensions.opacityDense) : Color.clear, lineWidth: 0.5)
                 )
 
             // Position 3: Memo (Green) - colored or invisible placeholder
@@ -475,7 +475,7 @@ extension CalendarGridView {
                 .frame(width: 6, height: 6)
                 .overlay(
                     Circle()
-                        .stroke(hasMemo ? colors.border.opacity(0.8) : Color.clear, lineWidth: 0.5)
+                        .stroke(hasMemo ? colors.border.opacity(JohoDimensions.opacityDense) : Color.clear, lineWidth: 0.5)
                 )
         }
         .frame(height: 10)
@@ -501,11 +501,11 @@ extension CalendarGridView {
             } else if isFullMoon {
                 return JohoColors.pink
             } else if isToday {
-                return colors.primary.opacity(0.6)
+                return colors.primary.opacity(JohoDimensions.opacityStrong)
             } else if isSelected {
-                return colors.primaryInverted.opacity(0.7)
+                return colors.primaryInverted.opacity(JohoDimensions.opacityBold)
             } else {
-                return colors.primary.opacity(0.5)
+                return colors.primary.opacity(JohoDimensions.opacityHeavy)
             }
         }()
 

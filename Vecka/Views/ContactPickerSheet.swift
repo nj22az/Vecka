@@ -48,7 +48,7 @@ struct ContactPickerSheet: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: IconCatalog.search)
                         .font(JohoFont.bodySmallBold)
-                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                     TextField("Search contacts...", text: $searchText)
                         .font(JohoFont.bodySmall)
@@ -68,7 +68,7 @@ struct ContactPickerSheet: View {
 
                         Image(systemName: searchText.isEmpty ? "person.crop.circle.badge.questionmark" : "magnifyingglass")
                             .font(.system(size: 40, weight: .light, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.3))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
 
                         Text(searchText.isEmpty ? "No other contacts available" : "No contacts match '\(searchText)'")
                             .font(JohoFont.bodySmall)

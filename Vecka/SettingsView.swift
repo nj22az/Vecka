@@ -323,7 +323,7 @@ struct SettingsView: View {
                             .foregroundStyle(JohoColors.red)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 5)
-                            .background(JohoColors.red.opacity(0.1))
+                            .background(JohoColors.red.opacity(JohoDimensions.opacitySubtle))
                             .clipShape(Capsule())
                     }
                     .buttonStyle(.plain)
@@ -363,7 +363,7 @@ struct SettingsView: View {
                     .font(.system(size: 22, weight: .bold, design: .rounded))
                     .foregroundStyle(Color(hex: theme.holidayColorHex))
                     .frame(width: 48, height: 48)
-                    .background(Color(hex: theme.holidayColorHex).opacity(0.2))
+                    .background(Color(hex: theme.holidayColorHex).opacity(JohoDimensions.opacityMild))
                     .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                     .overlay(
                         Squircle(cornerRadius: JohoDimensions.radiusSmall)
@@ -406,7 +406,7 @@ struct SettingsView: View {
             }
             .frame(width: 72)
             .padding(.vertical, 10)
-            .background(isActive ? Color(hex: theme.holidayColorHex).opacity(0.1) : colors.surface)
+            .background(isActive ? Color(hex: theme.holidayColorHex).opacity(JohoDimensions.opacitySubtle) : colors.surface)
             .johoBordered(borderWidth: isActive ? 2.5 : 1.5, borderColor: isActive ? colors.primary : nil)
         }
         .buttonStyle(.plain)
@@ -480,7 +480,7 @@ struct SettingsView: View {
                             // Chevron
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 12, weight: .bold))
-                                .foregroundStyle(colors.primary.opacity(0.4))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         }
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .padding(.vertical, JohoDimensions.spacingSM + 2)
@@ -585,7 +585,7 @@ struct SettingsView: View {
                             // Chevron
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 12, weight: .bold))
-                                .foregroundStyle(colors.primary.opacity(0.4))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         }
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .padding(.vertical, JohoDimensions.spacingSM + 2)
@@ -773,21 +773,21 @@ struct SettingsView: View {
                     HStack(spacing: JohoDimensions.spacingXS) {
                         Text("Examples:")
                             .font(JohoFont.caption)
-                            .foregroundStyle(colors.secondary.opacity(0.8))
+                            .foregroundStyle(colors.secondary.opacity(JohoDimensions.opacityDense))
 
                         Text("Nils Calendar")
                             .font(JohoFont.caption.bold())
                             .foregroundStyle(colors.secondary)
 
                         Text("•")
-                            .foregroundStyle(colors.secondary.opacity(0.5))
+                            .foregroundStyle(colors.secondary.opacity(JohoDimensions.opacityHeavy))
 
                         Text("My Planner")
                             .font(JohoFont.caption.bold())
                             .foregroundStyle(colors.secondary)
 
                         Text("•")
-                            .foregroundStyle(colors.secondary.opacity(0.5))
+                            .foregroundStyle(colors.secondary.opacity(JohoDimensions.opacityHeavy))
 
                         Text("Family Hub")
                             .font(JohoFont.caption.bold())
@@ -866,7 +866,7 @@ struct SettingsView: View {
                         label: "MEMOS",
                         count: memos.count,
                         color: JohoColors.yellow,
-                        lightBg: JohoColors.yellow.opacity(0.3)
+                        lightBg: JohoColors.yellow.opacity(JohoDimensions.opacityMedium)
                     )
 
                     starStyleCard(
@@ -874,7 +874,7 @@ struct SettingsView: View {
                         label: "CONTACTS",
                         count: contacts.count,
                         color: JohoColors.purple,
-                        lightBg: JohoColors.purple.opacity(0.3)
+                        lightBg: JohoColors.purple.opacity(JohoDimensions.opacityMedium)
                     )
                 }
             }
@@ -904,7 +904,7 @@ struct SettingsView: View {
                 .foregroundStyle(colors.secondary)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
-                .background(colors.border.opacity(0.05))
+                .background(colors.border.opacity(JohoDimensions.opacityFaint))
                 .clipShape(Capsule())
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
@@ -944,7 +944,7 @@ struct SettingsView: View {
                 // Empty state - subtle dash
                 Text("—")
                     .font(.system(size: 10, weight: .medium))
-                    .foregroundStyle(colors.secondary.opacity(0.5))
+                    .foregroundStyle(colors.secondary.opacity(JohoDimensions.opacityHeavy))
             }
         }
         .frame(maxWidth: .infinity)
@@ -1115,11 +1115,11 @@ struct SettingsView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, JohoDimensions.spacingSM)
-            .background(color.opacity(0.1))
+            .background(color.opacity(JohoDimensions.opacitySubtle))
             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
             .overlay(
                 Squircle(cornerRadius: JohoDimensions.radiusSmall)
-                    .stroke(color.opacity(0.3), lineWidth: 1)
+                    .stroke(color.opacity(JohoDimensions.opacityMedium), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
@@ -1330,7 +1330,7 @@ struct SettingsCategoryCustomizationSheet: View {
                     } label: {
                         Text("Cancel")
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(colors.primary.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                     }
                     .buttonStyle(.plain)
 
@@ -1363,7 +1363,7 @@ struct SettingsCategoryCustomizationSheet: View {
                 }
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.vertical, JohoDimensions.spacingMD)
-                .background(categoryColor.opacity(0.3))
+                .background(categoryColor.opacity(JohoDimensions.opacityMedium))
 
                 // Divider
                 Rectangle()
@@ -1390,7 +1390,7 @@ struct SettingsCategoryCustomizationSheet: View {
                                 .overlay(Circle().stroke(colors.border, lineWidth: 1))
                             Text("MASTER ICON")
                                 .font(JohoFont.pillLabel)
-                                .foregroundStyle(colors.primary.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         }
 
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 6), spacing: 8) {
@@ -1409,7 +1409,7 @@ struct SettingsCategoryCustomizationSheet: View {
                                 .overlay(Circle().stroke(colors.border, lineWidth: 1))
                             Text("COLOR")
                                 .font(JohoFont.pillLabel)
-                                .foregroundStyle(colors.primary.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         }
 
                         Button {
@@ -1432,7 +1432,7 @@ struct SettingsCategoryCustomizationSheet: View {
 
                                 Image(systemName: "chevron.right")
                                     .font(.system(size: 12, weight: .bold))
-                                    .foregroundStyle(colors.primary.opacity(0.4))
+                                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                             }
                             .padding(12)
                             .background(colors.inputBackground)
@@ -1458,7 +1458,7 @@ struct SettingsCategoryCustomizationSheet: View {
                             Text("Reset All to Defaults")
                                 .font(JohoFont.caption)
                         }
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
                         .background(colors.inputBackground)

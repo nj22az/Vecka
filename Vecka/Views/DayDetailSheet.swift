@@ -55,7 +55,7 @@ struct DayDetailSheet: View {
 
                 Text(day.date.formatted(.dateTime.weekday(.wide)).uppercased())
                     .font(JohoFont.label)
-                    .foregroundStyle(colors.primary.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
             }
             .frame(width: 80)
 
@@ -229,7 +229,7 @@ struct DayDetailSheet: View {
                     if isSystem {
                         Image(systemName: IconCatalog.lockFill)
                             .font(.system(size: 9, weight: .bold, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                     }
                 }
             }
@@ -252,7 +252,7 @@ struct DayDetailSheet: View {
                 if let subtitle = subtitle, !subtitle.isEmpty {
                     Text(subtitle)
                         .font(JohoFont.caption)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         .lineLimit(1)
                 }
             }
@@ -322,20 +322,20 @@ struct DayDetailSheet: View {
         VStack(spacing: JohoDimensions.spacingMD) {
             Image(systemName: IconCatalog.calendarBadgeCheckmark)
                 .font(.system(size: 32, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.primary.opacity(0.3))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
 
             Text("No special days")
                 .font(JohoFont.body)
-                .foregroundStyle(colors.primary.opacity(0.6))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
 
             Text("Long press on any day to see details")
                 .font(JohoFont.caption)
-                .foregroundStyle(colors.primary.opacity(0.4))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
         }
         .frame(maxWidth: .infinity)
         .padding(JohoDimensions.spacingXL)
         .background(colors.surface)
-        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: 1.5, borderColor: colors.border.opacity(0.3))
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: 1.5, borderColor: colors.border.opacity(JohoDimensions.opacityMedium))
     }
 }
 

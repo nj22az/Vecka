@@ -159,7 +159,7 @@ struct DayDashboardView: View {
                             .foregroundStyle(colors.secondary)
 
                         Text("•")
-                            .foregroundStyle(colors.secondary.opacity(0.5))
+                            .foregroundStyle(colors.secondary.opacity(JohoDimensions.opacityHeavy))
 
                         Text(Localization.weekDisplayText(Calendar.iso8601.component(.weekOfYear, from: date)))
                             .font(JohoFont.tag)
@@ -167,7 +167,7 @@ struct DayDashboardView: View {
 
                         if let secondary = secondaryDateText, !secondary.isEmpty {
                             Text("•")
-                                .foregroundStyle(colors.secondary.opacity(0.5))
+                                .foregroundStyle(colors.secondary.opacity(JohoDimensions.opacityHeavy))
                             Text(secondary)
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
                                 .foregroundStyle(colors.secondary)
@@ -305,7 +305,7 @@ struct DayDashboardView: View {
                 // Icon with subtle shadow for contrast on light backgrounds
                 Image(systemName: item.icon)
                     .font(.system(size: 18, weight: .black, design: .rounded))
-                    .foregroundStyle(colors.primary.opacity(0.15))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityLight))
                     .offset(x: 0.5, y: 0.5)
 
                 Image(systemName: item.icon)
@@ -314,7 +314,7 @@ struct DayDashboardView: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: 36)
-            .background(item.color.opacity(0.3))
+            .background(item.color.opacity(JohoDimensions.opacityMedium))
 
             // Divider
             Rectangle()
@@ -336,7 +336,7 @@ struct DayDashboardView: View {
                         .foregroundStyle(colors.primary)
                         .padding(.horizontal, 4)
                         .padding(.vertical, 1)
-                        .background(item.color.opacity(0.3))
+                        .background(item.color.opacity(JohoDimensions.opacityMedium))
                         .clipShape(Capsule())
                 }
             }
@@ -769,7 +769,7 @@ struct SingleMemoDetailSheet: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 120)
-                .background(memoColor.opacity(0.2))
+                .background(memoColor.opacity(JohoDimensions.opacityMild))
 
                 // Thick divider
                 Rectangle()
@@ -786,7 +786,7 @@ struct SingleMemoDetailSheet: View {
 
                 // Thin divider
                 Rectangle()
-                    .fill(colors.border.opacity(0.2))
+                    .fill(colors.border.opacity(JohoDimensions.opacityMild))
                     .frame(height: 1)
                     .padding(.horizontal, JohoDimensions.spacingMD)
                     .padding(.vertical, JohoDimensions.spacingSM)
@@ -794,7 +794,7 @@ struct SingleMemoDetailSheet: View {
                 // Memo text (情報デザイン: Full content)
                 Text(memo.text)
                     .font(JohoFont.bodySmall)
-                    .foregroundStyle(colors.primary.opacity(0.8))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityDense))
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, JohoDimensions.spacingMD)
@@ -803,14 +803,14 @@ struct SingleMemoDetailSheet: View {
                 HStack {
                     Text(categoryLabel)
                         .font(JohoFont.labelBold)
-                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                         .tracking(1)
 
                     Spacer()
 
                     Text(formattedTime)
                         .font(JohoFont.labelBold)
-                        .foregroundStyle(colors.primary.opacity(0.4))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
                 .padding(.top, JohoDimensions.spacingSM)
@@ -837,14 +837,14 @@ struct SingleMemoDetailSheet: View {
                     HStack {
                         Text("SHARE OPTIONS")
                             .font(JohoFont.labelBold)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                             .tracking(0.5)
 
                         Spacer()
 
                         Image(systemName: showShareOptions ? "chevron.up" : "chevron.down")
                             .font(.system(size: 10, weight: .bold))
-                            .foregroundStyle(colors.primary.opacity(0.4))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                     }
                     .padding(.horizontal, JohoDimensions.spacingMD)
                     .padding(.vertical, JohoDimensions.spacingSM)
@@ -860,7 +860,7 @@ struct SingleMemoDetailSheet: View {
                             HStack {
                                 Text("ICON")
                                     .font(JohoFont.labelBold)
-                                    .foregroundStyle(colors.primary.opacity(0.5))
+                                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                                 Spacer()
 
@@ -870,7 +870,7 @@ struct SingleMemoDetailSheet: View {
 
                                 Image(systemName: IconCatalog.chevronRight)
                                     .font(.system(size: 10, weight: .bold))
-                                    .foregroundStyle(colors.primary.opacity(0.3))
+                                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                             }
                             .padding(.horizontal, JohoDimensions.spacingMD)
                             .padding(.vertical, JohoDimensions.spacingSM)
@@ -881,7 +881,7 @@ struct SingleMemoDetailSheet: View {
                         HStack {
                             Text("NOTE")
                                 .font(JohoFont.labelBold)
-                                .foregroundStyle(colors.primary.opacity(0.5))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                             TextField("Add personal note...", text: $personalNote)
                                 .font(JohoFont.caption)
@@ -894,18 +894,18 @@ struct SingleMemoDetailSheet: View {
                         HStack {
                             Text("DATE")
                                 .font(JohoFont.labelBold)
-                                .foregroundStyle(colors.primary.opacity(0.5))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                             Spacer()
 
                             Text(fullDateStamp)
                                 .font(.system(size: 11, weight: .medium, design: .monospaced))
-                                .foregroundStyle(colors.primary.opacity(0.7))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                         }
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .padding(.vertical, JohoDimensions.spacingSM)
                     }
-                    .background(colors.surface.opacity(0.5))
+                    .background(colors.surface.opacity(JohoDimensions.opacityHeavy))
                 }
             }
             .background(colors.surface)
@@ -914,7 +914,7 @@ struct SingleMemoDetailSheet: View {
 
             Spacer()
         }
-        .background(memoColor.opacity(0.3))
+        .background(memoColor.opacity(JohoDimensions.opacityMedium))
         .presentationDetents([.medium, .large])
         .presentationCornerRadius(JohoDimensions.radiusLarge)
         .presentationDragIndicator(.hidden)
@@ -925,7 +925,7 @@ struct SingleMemoDetailSheet: View {
                     set: { customIcon = $0 }
                 ),
                 accentColor: memoColor,
-                lightBackground: memoColor.opacity(0.2),
+                lightBackground: memoColor.opacity(JohoDimensions.opacityMild),
                 onDone: {}
             )
         }
@@ -933,7 +933,7 @@ struct SingleMemoDetailSheet: View {
             JohoSFSymbolPickerSheet(
                 selectedSymbol: $permanentIconSelection,
                 accentColor: CategoryColorSettings.shared.color(for: .memo),
-                lightBackground: CategoryColorSettings.shared.color(for: .memo).opacity(0.2),
+                lightBackground: CategoryColorSettings.shared.color(for: .memo).opacity(JohoDimensions.opacityMild),
                 onDone: {
                     savePermanentMemoIcon(permanentIconSelection)
                 }
@@ -967,7 +967,7 @@ struct SingleMemoDetailSheet: View {
                             .overlay(Circle().stroke(colors.border, lineWidth: 1))
                         Text("ITEM ICON")
                             .font(JohoFont.pillLabel)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                     }
 
                     Spacer()
@@ -980,12 +980,12 @@ struct SingleMemoDetailSheet: View {
                         if memo.symbolName != nil {
                             Text("CUSTOM")
                                 .font(.system(size: 8, weight: .bold, design: .rounded))
-                                .foregroundStyle(colors.primary.opacity(0.4))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         }
 
                         Image(systemName: IconCatalog.chevronRight)
                             .font(.system(size: 10, weight: .bold))
-                            .foregroundStyle(colors.primary.opacity(0.3))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                     }
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -1172,7 +1172,7 @@ struct ShareableMemoCard: View {
                         .frame(maxHeight: .infinity)
                 }
                 .frame(height: 40)
-                .background(memoColor.opacity(0.5))
+                .background(memoColor.opacity(JohoDimensions.opacityHeavy))
 
                 // Divider
                 JohoDivider()
@@ -1181,7 +1181,7 @@ struct ShareableMemoCard: View {
                 HStack {
                     Text(fullDateStamp)
                         .font(.system(size: 11, weight: .bold, design: .monospaced))
-                        .foregroundStyle(colors.primary.opacity(0.7))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -1217,20 +1217,20 @@ struct ShareableMemoCard: View {
 
                         Text(memo.text)
                             .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                             .lineLimit(isShareable ? nil : 3)
                             .multilineTextAlignment(.leading)
 
                         // Personal note (if provided)
                         if let note = personalNote, !note.isEmpty {
                             Rectangle()
-                                .fill(colors.border.opacity(0.3))
+                                .fill(colors.border.opacity(JohoDimensions.opacityMedium))
                                 .frame(height: 1)
                                 .padding(.vertical, 4)
 
                             Text(note)
                                 .font(.system(size: 10, weight: .medium, design: .rounded))
-                                .foregroundStyle(colors.primary.opacity(0.5))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                                 .italic()
                                 .multilineTextAlignment(.leading)
                         }
@@ -1239,7 +1239,7 @@ struct ShareableMemoCard: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .frame(minHeight: 120)
-                .background(memoColor.opacity(0.15))
+                .background(memoColor.opacity(JohoDimensions.opacityLight))
 
                 // Divider
                 JohoDivider()
@@ -1248,14 +1248,14 @@ struct ShareableMemoCard: View {
                 HStack {
                     Text(categoryLabel)
                         .font(JohoFont.labelBold)
-                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                         .tracking(1)
 
                     Spacer()
 
                     Text("ONSEN PLANNER")
                         .font(.system(size: 9, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.3))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
                 .padding(.vertical, JohoDimensions.spacingSM)
@@ -1325,7 +1325,7 @@ struct SingleBirthdayDetailSheet: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 120)
-                .background(JohoColors.pink.opacity(0.2))
+                .background(JohoColors.pink.opacity(JohoDimensions.opacityMild))
 
                 // Thick divider
                 Rectangle()
@@ -1342,7 +1342,7 @@ struct SingleBirthdayDetailSheet: View {
 
                 // Thin divider
                 Rectangle()
-                    .fill(colors.border.opacity(0.2))
+                    .fill(colors.border.opacity(JohoDimensions.opacityMild))
                     .frame(height: 1)
                     .padding(.horizontal, JohoDimensions.spacingMD)
                     .padding(.vertical, JohoDimensions.spacingSM)
@@ -1358,7 +1358,7 @@ struct SingleBirthdayDetailSheet: View {
                 if let age = birthday.age, age > 0 {
                     Text("Turns \(age)")
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         .padding(.top, JohoDimensions.spacingSM)
                 }
 
@@ -1370,7 +1370,7 @@ struct SingleBirthdayDetailSheet: View {
 
             Spacer()
         }
-        .background(JohoColors.pink.opacity(0.3))
+        .background(JohoColors.pink.opacity(JohoDimensions.opacityMedium))
         .presentationDetents([.medium])
         .presentationCornerRadius(JohoDimensions.radiusLarge)
         .presentationDragIndicator(.hidden)

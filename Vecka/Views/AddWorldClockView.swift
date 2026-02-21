@@ -60,7 +60,7 @@ struct AddWorldClockView: View {
                     HStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: IconCatalog.search)
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundStyle(colors.primary.opacity(0.4))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
 
                         TextField("Type city or country...", text: $searchText)
                             .font(JohoFont.body)
@@ -73,7 +73,7 @@ struct AddWorldClockView: View {
                             } label: {
                                 Image(systemName: IconCatalog.xmarkCircleFill)
                                     .font(.system(size: 16))
-                                    .foregroundStyle(colors.primary.opacity(0.3))
+                                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                             }
                         }
                     }
@@ -86,7 +86,7 @@ struct AddWorldClockView: View {
                     if searchText.isEmpty {
                         Text("Type any city name to search 300+ locations worldwide")
                             .font(JohoFont.caption)
-                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, JohoDimensions.spacingLG)
                     }
@@ -98,13 +98,13 @@ struct AddWorldClockView: View {
                             VStack(spacing: JohoDimensions.spacingMD) {
                                 Image(systemName: IconCatalog.globe)
                                     .font(.system(size: 32, weight: .light))
-                                    .foregroundStyle(colors.primary.opacity(0.3))
+                                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                                 Text("No cities found")
                                     .font(JohoFont.headline)
-                                    .foregroundStyle(colors.primary.opacity(0.5))
+                                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                                 Text("Try a different spelling")
                                     .font(JohoFont.caption)
-                                    .foregroundStyle(colors.primary.opacity(0.4))
+                                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                             }
                             .padding(JohoDimensions.spacingXL)
                         } else {
@@ -133,7 +133,7 @@ struct AddWorldClockView: View {
 
                                             Text(city.country)
                                                 .font(JohoFont.caption)
-                                                .foregroundStyle(colors.primary.opacity(0.6))
+                                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                                         }
 
                                         Spacer()
@@ -154,7 +154,7 @@ struct AddWorldClockView: View {
 
                                 if index < searchResults.count - 1 {
                                     Rectangle()
-                                        .fill(colors.border.opacity(0.1))
+                                        .fill(colors.border.opacity(JohoDimensions.opacitySubtle))
                                         .frame(height: 1)
                                         .padding(.horizontal, JohoDimensions.spacingMD)
                                 }

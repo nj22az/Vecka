@@ -193,7 +193,7 @@ struct JohoMascot: View {
             ForEach(steamPuffs) { puff in
                 let baseImage = Image(systemName: IconCatalog.cloudFill)
                     .font(.system(size: size * 0.18, weight: .medium))
-                    .foregroundStyle(JohoColors.cyan.opacity(0.6))
+                    .foregroundStyle(JohoColors.cyan.opacity(JohoDimensions.opacityStrong))
 
                 Group {
                     if shouldAnimate {
@@ -209,7 +209,7 @@ struct JohoMascot: View {
 
             // Container squircle (情報デザイン: surface + border)
             Squircle(cornerRadius: cornerRadius)
-                .fill(isOnsenMode ? JohoColors.cyan.opacity(0.3) : colors.surface)
+                .fill(isOnsenMode ? JohoColors.cyan.opacity(JohoDimensions.opacityMedium) : colors.surface)
                 .overlay(
                     Squircle(cornerRadius: cornerRadius)
                         .stroke(colors.border, lineWidth: borderWidth)
@@ -289,7 +289,7 @@ struct JohoMascot: View {
             // Water surface with ripple effect
             // 情報デザイン: Solid color, no gradients
             Ellipse()
-                .fill(JohoColors.cyan.opacity(0.4))
+                .fill(JohoColors.cyan.opacity(JohoDimensions.opacityModerate))
                 .frame(width: size * 0.7, height: size * 0.25)
                 .overlay(
                     Ellipse()
@@ -303,15 +303,15 @@ struct JohoMascot: View {
             HStack(spacing: size * 0.08) {
                 let leftSteam = Image(systemName: IconCatalog.humidityFill)
                     .font(.system(size: size * 0.14, weight: .medium))
-                    .foregroundStyle(JohoColors.cyan.opacity(0.7))
+                    .foregroundStyle(JohoColors.cyan.opacity(JohoDimensions.opacityBold))
 
                 let middleSteam = Image(systemName: IconCatalog.humidityFill)
                     .font(.system(size: size * 0.18, weight: .medium))
-                    .foregroundStyle(JohoColors.cyan.opacity(0.8))
+                    .foregroundStyle(JohoColors.cyan.opacity(JohoDimensions.opacityDense))
 
                 let rightSteam = Image(systemName: IconCatalog.humidityFill)
                     .font(.system(size: size * 0.14, weight: .medium))
-                    .foregroundStyle(JohoColors.cyan.opacity(0.7))
+                    .foregroundStyle(JohoColors.cyan.opacity(JohoDimensions.opacityBold))
 
                 if shouldAnimate {
                     leftSteam.symbolEffect(.variableColor.iterative.reversing, options: .repeating.speed(0.3))
@@ -376,7 +376,7 @@ struct JohoMascot: View {
                 if let symbol = displayedMood.accentSymbol {
                     let baseImage = Image(systemName: symbol)
                         .font(.system(size: size * 0.12, weight: .bold))
-                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                     Group {
                         if shouldAnimate {
@@ -449,7 +449,7 @@ struct JohoMascot: View {
 
     private var blushView: some View {
         Circle()
-            .fill(Color(hex: "FECDD3").opacity(0.6))  // Soft pink
+            .fill(Color(hex: "FECDD3").opacity(JohoDimensions.opacityStrong))  // Soft pink
             .frame(width: blushSize, height: blushSize)
     }
 
@@ -880,7 +880,7 @@ typealias KaomojiMascot = JohoMascot
                 .font(JohoFont.title)
                 .foregroundStyle(JohoColors.cyan)
                 .frame(width: 40, height: 40)
-                .background(JohoColors.cyan.opacity(0.2))
+                .background(JohoColors.cyan.opacity(JohoDimensions.opacityMild))
                 .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
 
             Text("ONSEN")

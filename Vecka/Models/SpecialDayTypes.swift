@@ -139,11 +139,11 @@ enum SpecialDayType: String, CaseIterable {
     var lightBackground: Color {
         switch self {
         case .holiday: return Color(hex: "FDE8E8")    // Light red
-        case .observance: return JohoColors.tripBlue.opacity(0.2) // Light blue
-        case .birthday: return JohoColors.pink.opacity(0.3)  // Light pink (CELEBRATION)
-        case .memo, .note, .event: return JohoColors.yellow.opacity(0.3)  // Light yellow (NOW)
-        case .trip: return JohoColors.cyan.opacity(0.3)  // Light cyan (SCHEDULED)
-        case .expense: return JohoColors.green.opacity(0.3)  // Light green (MONEY)
+        case .observance: return JohoColors.tripBlue.opacity(JohoDimensions.opacityMild) // Light blue
+        case .birthday: return JohoColors.pink.opacity(JohoDimensions.opacityMedium)  // Light pink (CELEBRATION)
+        case .memo, .note, .event: return JohoColors.yellow.opacity(JohoDimensions.opacityMedium)  // Light yellow (NOW)
+        case .trip: return JohoColors.cyan.opacity(JohoDimensions.opacityMedium)  // Light cyan (SCHEDULED)
+        case .expense: return JohoColors.green.opacity(JohoDimensions.opacityMedium)  // Light green (MONEY)
         }
     }
 

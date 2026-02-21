@@ -37,8 +37,8 @@ struct EventTaskRow: View {
             // Task text
             Text(task.text)
                 .font(JohoFont.body)
-                .foregroundStyle(task.isCompleted ? colors.primary.opacity(0.4) : colors.primary)
-                .strikethrough(task.isCompleted, color: colors.primary.opacity(0.4))
+                .foregroundStyle(task.isCompleted ? colors.primary.opacity(JohoDimensions.opacityModerate) : colors.primary)
+                .strikethrough(task.isCompleted, color: colors.primary.opacity(JohoDimensions.opacityModerate))
                 .lineLimit(2)
 
             Spacer(minLength: 0)
@@ -86,8 +86,8 @@ struct EventTaskEditorRow: View {
             // Editable text field
             TextField("Task description", text: $task.text, axis: .vertical)
                 .font(JohoFont.body)
-                .foregroundStyle(task.isCompleted ? colors.primary.opacity(0.4) : colors.primary)
-                .strikethrough(task.isCompleted, color: colors.primary.opacity(0.4))
+                .foregroundStyle(task.isCompleted ? colors.primary.opacity(JohoDimensions.opacityModerate) : colors.primary)
+                .strikethrough(task.isCompleted, color: colors.primary.opacity(JohoDimensions.opacityModerate))
                 .focused($isFocused)
                 .submitLabel(.done)
 
@@ -98,7 +98,7 @@ struct EventTaskEditorRow: View {
                 Button(action: onDelete) {
                     Image(systemName: IconCatalog.xmarkCircleFill)
                         .font(.system(size: 18, weight: .medium))
-                        .foregroundStyle(colors.primary.opacity(0.3))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                 }
                 .buttonStyle(.plain)
             }
@@ -149,7 +149,7 @@ struct EventTasksSection: View {
                     // Divider between tasks (not after last)
                     if index < tasks.count - 1 {
                         Rectangle()
-                            .fill(colors.border.opacity(0.2))
+                            .fill(colors.border.opacity(JohoDimensions.opacityMild))
                             .frame(height: 1)
                             .padding(.horizontal, JohoDimensions.spacingMD)
                     }
@@ -195,12 +195,12 @@ struct EventTasksSection: View {
 
                 Text("\(total - remaining)/\(total)")
                     .font(.system(size: 12, weight: .bold, design: .monospaced))
-                    .foregroundStyle(remaining == 0 ? JohoColors.cyan : colors.primary.opacity(0.6))
+                    .foregroundStyle(remaining == 0 ? JohoColors.cyan : colors.primary.opacity(JohoDimensions.opacityStrong))
                     .frame(width: 48)
             }
         }
         .frame(height: 32)
-        .background(JohoColors.cyan.opacity(0.3))
+        .background(JohoColors.cyan.opacity(JohoDimensions.opacityMedium))
     }
 
     private var addTaskButton: some View {
@@ -255,15 +255,15 @@ struct TaskProgressIndicator: View {
             HStack(spacing: 4) {
                 Image(systemName: isAllComplete ? IconCatalog.checkmarkCircleFill : "circle.dotted")
                     .font(JohoFont.caption)
-                    .foregroundStyle(isAllComplete ? JohoColors.cyan : colors.primary.opacity(0.5))
+                    .foregroundStyle(isAllComplete ? JohoColors.cyan : colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                 Text("\(completedCount)/\(totalCount)")
                     .font(.system(size: 10, weight: .bold, design: .monospaced))
-                    .foregroundStyle(isAllComplete ? JohoColors.cyan : colors.primary.opacity(0.5))
+                    .foregroundStyle(isAllComplete ? JohoColors.cyan : colors.primary.opacity(JohoDimensions.opacityHeavy))
             }
             .padding(.horizontal, 6)
             .padding(.vertical, 2)
-            .background(isAllComplete ? JohoColors.cyan.opacity(0.15) : colors.primary.opacity(0.05))
+            .background(isAllComplete ? JohoColors.cyan.opacity(JohoDimensions.opacityLight) : colors.primary.opacity(JohoDimensions.opacityFaint))
             .clipShape(Capsule())
         }
     }

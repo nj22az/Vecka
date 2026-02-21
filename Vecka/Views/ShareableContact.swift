@@ -209,7 +209,7 @@ struct ShareableContactCard: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .frame(minHeight: 140)
-            .background(accentColor.opacity(0.15))
+            .background(accentColor.opacity(JohoDimensions.opacityLight))
 
             // Divider before QR section
             ShareableCardDivider()
@@ -242,7 +242,7 @@ struct ShareableContactCard: View {
                         .overlay {
                             Image(systemName: IconCatalog.qrcode)
                                 .font(.system(size: 32))
-                                .foregroundStyle(colors.primary.opacity(0.3))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                         }
                 }
 
@@ -250,7 +250,7 @@ struct ShareableContactCard: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("SCAN TO SAVE")
                         .font(JohoFont.pillLabel)
-                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                         .tracking(0.5)
 
                     Text("Point your camera at this QR code to add contact")
@@ -345,7 +345,7 @@ struct ContactShareIconButton: View {
             .frame(width: 340, height: ShareableContactSnapshot.calculateSize(for: previewContact).height)
     }
     .padding()
-    .background(Color.gray.opacity(0.2))
+    .background(Color.gray.opacity(JohoDimensions.opacityMild))
 }
 
 #Preview("Minimal Contact") {
@@ -358,5 +358,5 @@ struct ContactShareIconButton: View {
     ShareableContactCard(contact: minimalContact)
         .frame(width: 340, height: ShareableContactSnapshot.calculateSize(for: minimalContact).height)
         .padding()
-        .background(Color.gray.opacity(0.2))
+        .background(Color.gray.opacity(JohoDimensions.opacityMild))
 }

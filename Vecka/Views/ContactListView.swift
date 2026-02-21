@@ -240,7 +240,7 @@ struct ContactListView: View {
                         }
                         .buttonStyle(.plain)
                         .disabled(contacts.isEmpty)
-                        .opacity(contacts.isEmpty ? 0.3 : 1.0)
+                        .opacity(contacts.isEmpty ? JohoDimensions.opacityMedium : 1.0)
 
                         // Thin separator (情報デザイン: solid black, reduced height)
                         Rectangle()
@@ -275,7 +275,7 @@ struct ContactListView: View {
                 // Total count only (no orb - the number speaks for itself)
                 Text("\(contacts.count) contacts")
                     .font(JohoFont.bodySmall)
-                    .foregroundStyle(colors.primary.opacity(0.7))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
 
                 // Phone count with icon
                 if contactsWithPhone > 0 {
@@ -285,7 +285,7 @@ struct ContactListView: View {
                             .foregroundStyle(JohoColors.cyan)
                         Text("\(contactsWithPhone)")
                             .font(JohoFont.labelSmall)
-                            .foregroundStyle(colors.primary.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                     }
                 }
 
@@ -297,7 +297,7 @@ struct ContactListView: View {
                             .foregroundStyle(SpecialDayType.birthday.accentColor)
                         Text("\(contactsWithBirthday)")
                             .font(JohoFont.labelSmall)
-                            .foregroundStyle(colors.primary.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                     }
                 }
 
@@ -333,7 +333,7 @@ struct ContactListView: View {
 
                 Text("Import from your address book or add contacts manually")
                     .font(JohoFont.bodySmall)
-                    .foregroundStyle(colors.primary.opacity(0.7))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                     .multilineTextAlignment(.center)
             }
 
@@ -475,7 +475,7 @@ struct ContactListView: View {
                     Spacer()
                     Image(systemName: isGroupsExpanded ? "chevron.up" : IconCatalog.chevronDown)
                         .font(JohoFont.labelBold)
-                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                 }
                 .foregroundStyle(colors.primary)
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -540,7 +540,7 @@ struct ContactListView: View {
                         if count > 0 {
                             Text("\(count)")
                                 .font(.system(size: 9, weight: .medium, design: .rounded))
-                                .foregroundStyle(selectedGroup == group ? colors.primaryInverted.opacity(0.7) : colors.primary.opacity(0.5))
+                                .foregroundStyle(selectedGroup == group ? colors.primaryInverted.opacity(JohoDimensions.opacityBold) : colors.primary.opacity(JohoDimensions.opacityHeavy))
                         }
                     }
                     .foregroundStyle(selectedGroup == group ? colors.primaryInverted : colors.primary)
@@ -626,7 +626,7 @@ struct ContactListView: View {
                 if let org = contact.organizationName, org.isNotEmpty {
                     Text(org)
                         .font(JohoFont.caption)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         .lineLimit(1)
                 }
             }
@@ -1002,7 +1002,7 @@ struct ContactImportView: View {
 
                 Text(subtitle)
                     .font(JohoFont.labelSmall)
-                    .foregroundStyle(colors.primary.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
 

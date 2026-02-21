@@ -111,7 +111,7 @@ struct ContactDetailView: View {
 
                 Spacer()
             }
-            .background(accentColor.opacity(0.3))
+            .background(accentColor.opacity(JohoDimensions.opacityMedium))
             .presentationDetents([.medium, .large])
             .presentationCornerRadius(JohoDimensions.radiusLarge)
             .presentationDragIndicator(.hidden)
@@ -278,25 +278,25 @@ struct ContactDetailView: View {
                             .padding(.horizontal, JohoDimensions.spacingMD)
                             .padding(.vertical, JohoDimensions.spacingSM)
                             .background(colors.surface)
-                            .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: JohoColors.red.opacity(0.4))
+                            .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: JohoColors.red.opacity(JohoDimensions.opacityModerate))
 
                         TextField("Last Name", text: $editLastName)
                             .font(JohoFont.body)
-                            .foregroundStyle(JohoColors.red.opacity(0.7))
+                            .foregroundStyle(JohoColors.red.opacity(JohoDimensions.opacityBold))
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, JohoDimensions.spacingMD)
                             .padding(.vertical, JohoDimensions.spacingSM)
                             .background(colors.surface)
-                            .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: JohoColors.red.opacity(0.4))
+                            .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: JohoColors.red.opacity(JohoDimensions.opacityModerate))
 
                         TextField("Company", text: $editCompany)
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(JohoColors.red.opacity(0.6))
+                            .foregroundStyle(JohoColors.red.opacity(JohoDimensions.opacityStrong))
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, JohoDimensions.spacingMD)
                             .padding(.vertical, JohoDimensions.spacingSM)
                             .background(colors.surface)
-                            .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: JohoColors.red.opacity(0.4))
+                            .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: JohoColors.red.opacity(JohoDimensions.opacityModerate))
                     }
                 } else {
                     // View mode: Display name
@@ -309,7 +309,7 @@ struct ContactDetailView: View {
                     if let org = contact.organizationName, !org.isEmpty {
                         Text(org)
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                     }
 
                     // Contact info hints row
@@ -347,7 +347,7 @@ struct ContactDetailView: View {
 
             // Separator line
             Rectangle()
-                .fill(isEditMode ? JohoColors.red.opacity(0.3) : colors.border)
+                .fill(isEditMode ? JohoColors.red.opacity(JohoDimensions.opacityMedium) : colors.border)
                 .frame(height: 1.5)
 
             // 情報デザイン: LINE-style action buttons row (circular icons + labels)
@@ -408,7 +408,7 @@ struct ContactDetailView: View {
             .padding(.horizontal, JohoDimensions.spacingSM)
         }
         .background(colors.surface)
-        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick, borderColor: isEditMode ? JohoColors.red.opacity(0.4) : nil)
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick, borderColor: isEditMode ? JohoColors.red.opacity(JohoDimensions.opacityModerate) : nil)
     }
 
     /// 情報デザイン: LINE-style action button (circular icon + label below)
@@ -464,7 +464,7 @@ struct ContactDetailView: View {
                 VStack(spacing: 0) {
                     ForEach(Array(contact.phoneNumbers.enumerated()), id: \.element.id) { index, phone in
                         if index > 0 {
-                            Rectangle().fill(colors.border.opacity(0.3)).frame(height: 1)
+                            Rectangle().fill(colors.border.opacity(JohoDimensions.opacityMedium)).frame(height: 1)
                         }
                         johoInfoRow(
                             label: phone.label.uppercased(),
@@ -501,7 +501,7 @@ struct ContactDetailView: View {
                 VStack(spacing: 0) {
                     ForEach(Array(contact.emailAddresses.enumerated()), id: \.element.id) { index, email in
                         if index > 0 {
-                            Rectangle().fill(colors.border.opacity(0.3)).frame(height: 1)
+                            Rectangle().fill(colors.border.opacity(JohoDimensions.opacityMedium)).frame(height: 1)
                         }
                         johoInfoRow(
                             label: email.label.uppercased(),
@@ -556,13 +556,13 @@ struct ContactDetailView: View {
                 VStack(spacing: 0) {
                     ForEach(Array(contact.postalAddresses.enumerated()), id: \.element.id) { index, address in
                         if index > 0 {
-                            Rectangle().fill(colors.border.opacity(0.3)).frame(height: 1)
+                            Rectangle().fill(colors.border.opacity(JohoDimensions.opacityMedium)).frame(height: 1)
                         }
                         HStack(alignment: .top, spacing: JohoDimensions.spacingMD) {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(address.label.uppercased())
                                     .font(JohoFont.labelBold)
-                                    .foregroundStyle(colors.primary.opacity(0.6))
+                                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
 
                                 Text(address.formattedAddress)
                                     .font(JohoFont.body)
@@ -701,7 +701,7 @@ struct ContactDetailView: View {
                             if let age = calculateAge(from: birthday) {
                                 Text("\(age) years old")
                                     .font(JohoFont.bodySmall)
-                                    .foregroundStyle(colors.primary.opacity(0.6))
+                                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                             }
                         }
                     }
@@ -753,7 +753,7 @@ struct ContactDetailView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(JohoDimensions.spacingMD)
                     .background(colors.surface)
-                    .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: JohoColors.red.opacity(0.4))
+                    .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: JohoColors.red.opacity(JohoDimensions.opacityModerate))
             }
         } else {
             johoDetailSection(title: "NOTES", icon: IconCatalog.memo, iconColor: JohoColors.yellow) {
@@ -877,7 +877,7 @@ struct ContactDetailView: View {
         }
         .padding(JohoDimensions.spacingMD)
         .background(colors.surface)
-        .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: iconColor.opacity(0.4))
+        .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: iconColor.opacity(JohoDimensions.opacityModerate))
     }
 
     // MARK: - Edit Section Label (flat, no card)
@@ -919,7 +919,7 @@ struct ContactDetailView: View {
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
-            .background(iconColor.opacity(0.15))
+            .background(iconColor.opacity(JohoDimensions.opacityLight))
 
             // Divider — 情報デザイン: Border between compartments
             Rectangle()
@@ -942,7 +942,7 @@ struct ContactDetailView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(label)
                     .font(JohoFont.labelBold)
-                    .foregroundStyle(colors.primary.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
 
                 Text(value)
                     .font(JohoFont.body)
@@ -1028,7 +1028,7 @@ struct ContactDetailView: View {
         } label: {
             Image(systemName: isEditMode ? "lock.open.fill" : IconCatalog.lockFill)
                 .font(JohoFont.headline)
-                .foregroundStyle(isEditMode ? colors.surface : colors.primary.opacity(0.6))
+                .foregroundStyle(isEditMode ? colors.surface : colors.primary.opacity(JohoDimensions.opacityStrong))
                 .johoTouchTarget()
                 .background(isEditMode ? JohoColors.red : colors.surface)
                 .clipShape(Circle())
@@ -1351,7 +1351,7 @@ struct JohoContactEditorSheet: View {
                     } label: {
                         Text(JohoSymbols.maru)  // ○
                             .font(.system(size: 26, weight: .bold, design: .rounded))
-                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(0.6))
+                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(JohoDimensions.opacityStrong))
                             .johoTouchTarget()
                             .background(canSave ? accentColor : colors.surface)
                             .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
@@ -1388,10 +1388,10 @@ struct JohoContactEditorSheet: View {
                                             VStack(spacing: 4) {
                                                 Image(systemName: IconCatalog.camera)
                                                     .font(.system(size: 28, weight: .medium, design: .rounded))
-                                                    .foregroundStyle(colors.primary.opacity(0.6))
+                                                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                                                 Text("Add Photo")
                                                     .font(.system(size: 11, weight: .medium, design: .rounded))
-                                                    .foregroundStyle(colors.primary.opacity(0.6))
+                                                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                                             }
                                         )
                                         .overlay(Circle().stroke(colors.border, lineWidth: 1))
@@ -1429,7 +1429,7 @@ struct JohoContactEditorSheet: View {
 
                         TextField("Last Name", text: $lastName)
                             .font(.system(size: 18, weight: .medium, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                             .multilineTextAlignment(.center)
                     }
 
@@ -1504,7 +1504,7 @@ struct JohoContactEditorSheet: View {
                             HStack(spacing: JohoDimensions.spacingSM) {
                                 Image(systemName: IconCatalog.birthdayCake)
                                     .font(JohoFont.body)
-                                    .foregroundStyle(birthdayKnown ? SpecialDayType.birthday.accentColor : colors.primary.opacity(0.6))
+                                    .foregroundStyle(birthdayKnown ? SpecialDayType.birthday.accentColor : colors.primary.opacity(JohoDimensions.opacityStrong))
                                     .frame(width: 24)
 
                                 // Three-state toggle: Has birthday / No birthday yet / N/A
@@ -1516,7 +1516,7 @@ struct JohoContactEditorSheet: View {
                                     } label: {
                                         Text("HAS")
                                             .font(JohoFont.tag)
-                                            .foregroundStyle(hasBirthday && birthdayKnown ? colors.primaryInverted : colors.primary.opacity(0.6))
+                                            .foregroundStyle(hasBirthday && birthdayKnown ? colors.primaryInverted : colors.primary.opacity(JohoDimensions.opacityStrong))
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
                                             .background(hasBirthday && birthdayKnown ? SpecialDayType.birthday.accentColor : colors.inputBackground)
@@ -1531,7 +1531,7 @@ struct JohoContactEditorSheet: View {
                                     } label: {
                                         Text("NONE")
                                             .font(JohoFont.tag)
-                                            .foregroundStyle(!hasBirthday && birthdayKnown ? colors.primaryInverted : colors.primary.opacity(0.6))
+                                            .foregroundStyle(!hasBirthday && birthdayKnown ? colors.primaryInverted : colors.primary.opacity(JohoDimensions.opacityStrong))
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
                                             .background(!hasBirthday && birthdayKnown ? colors.primary : colors.inputBackground)
@@ -1546,7 +1546,7 @@ struct JohoContactEditorSheet: View {
                                     } label: {
                                         Text("N/A")
                                             .font(JohoFont.tag)
-                                            .foregroundStyle(!birthdayKnown ? colors.primaryInverted : colors.primary.opacity(0.6))
+                                            .foregroundStyle(!birthdayKnown ? colors.primaryInverted : colors.primary.opacity(JohoDimensions.opacityStrong))
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
                                             .background(!birthdayKnown ? JohoColors.red : colors.inputBackground)
@@ -1621,7 +1621,7 @@ struct JohoContactEditorSheet: View {
                             if !birthdayKnown {
                                 Text("N/A = Birthday unknown. Won't appear in Star page.")
                                     .font(.system(size: 11, weight: .medium, design: .rounded))
-                                    .foregroundStyle(colors.primary.opacity(0.6))
+                                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                                     .padding(.leading, 32)
                                     .padding(.horizontal, JohoDimensions.spacingMD)
                             }
@@ -1660,17 +1660,17 @@ struct JohoContactEditorSheet: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("DECORATION")
                         .font(JohoFont.labelBold)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                     Text("Tap to change icon")
                         .font(JohoFont.caption)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                 }
 
                 Spacer()
 
                 Image(systemName: IconCatalog.chevronRight)
                     .font(JohoFont.label)
-                    .foregroundStyle(colors.primary.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
             }
             .padding(JohoDimensions.spacingMD)
             .background(colors.surface)
@@ -1694,7 +1694,7 @@ struct JohoContactEditorSheet: View {
         HStack(spacing: JohoDimensions.spacingSM) {
             Image(systemName: icon)
                 .font(JohoFont.body)
-                .foregroundStyle(colors.primary.opacity(0.6))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                 .frame(width: 24)
 
             TextField(placeholder, text: text)
@@ -1904,7 +1904,7 @@ private struct ContactSymbolPicker: View {
                         // Category header
                         Text(category.name)
                             .font(JohoFont.tag)
-                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                             .padding(.horizontal, JohoDimensions.spacingLG)
 
                         // Symbol grid

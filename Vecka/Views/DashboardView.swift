@@ -108,7 +108,7 @@ struct DashboardView: View {
                         .foregroundStyle(colors.primary)
                     Text("CARDS")
                         .font(JohoFont.labelSmall)
-                        .foregroundStyle(colors.primary.opacity(0.7))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                 }
                 .frame(width: 80)
             }
@@ -151,7 +151,7 @@ struct DashboardView: View {
             if notesCount == 0 && expensesCount == 0 && tripsCount == 0 && specialDaysCount == 0 {
                 Text("Your data at a glance")
                     .font(JohoFont.bodySmall)
-                    .foregroundStyle(colors.primary.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
             }
         }
     }
@@ -277,7 +277,7 @@ struct DashboardView: View {
 
                     Text(monthYear)
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(colors.primary.opacity(0.7))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                 }
 
                 Spacer()
@@ -299,7 +299,7 @@ struct DashboardView: View {
 
                 Text("\(daysLeft) days left")
                     .font(JohoFont.caption)
-                    .foregroundStyle(colors.primary.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
             }
             .frame(maxWidth: .infinity)
         }
@@ -331,7 +331,7 @@ struct DashboardView: View {
                     GeometryReader { geo in
                         ZStack(alignment: .leading) {
                             Squircle(cornerRadius: JohoDimensions.radiusXS)
-                                .fill(colors.primary.opacity(0.1))
+                                .fill(colors.primary.opacity(JohoDimensions.opacitySubtle))
                                 .frame(height: 10)
 
                             Squircle(cornerRadius: JohoDimensions.radiusXS)
@@ -348,7 +348,7 @@ struct DashboardView: View {
 
                     Text("\(data.totalDays - data.daysPassed) days left")
                         .font(JohoFont.caption)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                 }
                 .frame(maxWidth: .infinity)
             } else {
@@ -372,7 +372,7 @@ struct DashboardView: View {
 
                     Text("days until")
                         .font(JohoFont.labelSmall)
-                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                     // Event name
                     Text(item.name)
@@ -390,7 +390,7 @@ struct DashboardView: View {
                             .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderThin))
                         Text(item.typeLabel)
                             .font(JohoFont.labelSmall)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -398,11 +398,11 @@ struct DashboardView: View {
                 VStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: IconCatalog.observance)
                         .font(.system(size: 24, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.3))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
 
                     Text("No upcoming events")
                         .font(JohoFont.caption)
-                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -418,7 +418,7 @@ struct DashboardView: View {
             if upcomingHolidays.isEmpty {
                 Text("No upcoming holidays")
                     .font(JohoFont.caption)
-                    .foregroundStyle(colors.primary.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                     .frame(maxWidth: .infinity)
             } else {
                 VStack(spacing: JohoDimensions.spacingSM) {
@@ -435,7 +435,7 @@ struct DashboardView: View {
 
                             Text(daysUntilText(holiday.date))
                                 .font(JohoFont.labelSmall)
-                                .foregroundStyle(colors.primary.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         }
                     }
                 }
@@ -452,7 +452,7 @@ struct DashboardView: View {
             if recentNotes.isEmpty {
                 Text("No notes yet")
                     .font(JohoFont.caption)
-                    .foregroundStyle(colors.primary.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                     .frame(maxWidth: .infinity)
             } else {
                 VStack(spacing: JohoDimensions.spacingSM) {
@@ -469,7 +469,7 @@ struct DashboardView: View {
 
                             Text(note.date.formatted(.dateTime.month(.abbreviated).day()))
                                 .font(JohoFont.labelSmall)
-                                .foregroundStyle(colors.primary.opacity(0.5))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                         }
                     }
                 }
@@ -491,11 +491,11 @@ struct DashboardView: View {
 
                 Text("this month")
                     .font(JohoFont.caption)
-                    .foregroundStyle(colors.primary.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
 
                 Text("\(thisMonth.count) transaction\(thisMonth.count == 1 ? "" : "s")")
                     .font(JohoFont.labelSmall)
-                    .foregroundStyle(colors.primary.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
             }
             .frame(maxWidth: .infinity)
         }
@@ -520,7 +520,7 @@ struct DashboardView: View {
 
                         Text(trip.place ?? "")
                             .font(JohoFont.caption)
-                            .foregroundStyle(colors.primary.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                     }
 
                     Spacer()
@@ -533,7 +533,7 @@ struct DashboardView: View {
 
                         Text("days")
                             .font(JohoFont.labelSmall)
-                            .foregroundStyle(colors.primaryInverted.opacity(0.8))
+                            .foregroundStyle(colors.primaryInverted.opacity(JohoDimensions.opacityDense))
                     }
                     .frame(width: 56, height: 56)
                     .background(colors.primary)

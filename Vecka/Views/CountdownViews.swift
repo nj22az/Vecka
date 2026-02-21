@@ -62,10 +62,10 @@ struct CountdownCard: View {
     
     private var iconBackgroundColor: Color {
         if isSelected {
-            return JohoColors.cyan.opacity(0.2)
+            return JohoColors.cyan.opacity(JohoDimensions.opacityMild)
         }
 
-        return colors.primary.opacity(0.5).opacity(0.1)
+        return colors.primary.opacity(JohoDimensions.opacityHeavy).opacity(JohoDimensions.opacitySubtle)
     }
     
     private var iconForegroundColor: Color {
@@ -73,9 +73,9 @@ struct CountdownCard: View {
             return JohoColors.cyan
         }
 
-        return colors.primary.opacity(0.7)
+        return colors.primary.opacity(JohoDimensions.opacityBold)
     }
-    
+
     // MARK: - Text Content
     
     private var countdownTitle: some View {
@@ -89,7 +89,7 @@ struct CountdownCard: View {
     private var countdownSubtitle: some View {
         Text(subtitleText)
             .font(JohoFont.labelSmall)
-            .foregroundStyle(colors.primary.opacity(0.7))
+            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
             .lineLimit(1)
             .textCase(.uppercase)
             .tracking(0.5)
@@ -132,7 +132,7 @@ struct CountdownCard: View {
         .padding(.vertical, 4)
         .background(
             Capsule()
-                .fill(JohoColors.cyan.opacity(0.2))
+                .fill(JohoColors.cyan.opacity(JohoDimensions.opacityMild))
         )
     }
     
@@ -150,18 +150,18 @@ struct CountdownCard: View {
 
     private var borderColor: Color {
         if isSelected {
-            return JohoColors.cyan.opacity(0.6)
+            return JohoColors.cyan.opacity(JohoDimensions.opacityStrong)
         }
 
-        return colors.border.opacity(0.2)
+        return colors.border.opacity(JohoDimensions.opacityMild)
     }
     
     private var shadowColor: Color {
         if isSelected {
-            return JohoColors.cyan.opacity(0.3)
+            return JohoColors.cyan.opacity(JohoDimensions.opacityMedium)
         }
-        
-        return colors.primary.opacity(0.1)
+
+        return colors.primary.opacity(JohoDimensions.opacitySubtle)
     }
     
     // MARK: - Helper Properties
@@ -351,7 +351,7 @@ struct CountdownPickerSheet: View {
         let icon = (type == .custom ? (custom?.iconName ?? type.icon) : type.icon)
         let title = (type == .custom ? (custom?.name ?? "Custom") : type.displayName)
         HStack {
-            Image(systemName: icon).foregroundStyle(colors.primary.opacity(0.7))
+            Image(systemName: icon).foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
             Text(title)
                 .foregroundStyle(colors.primary)
                 .lineLimit(1)
@@ -387,7 +387,7 @@ struct CountdownPickerSheet: View {
         let icon = (type == .custom ? (custom?.iconName ?? type.icon) : type.icon)
         let title = (type == .custom ? (custom?.name ?? "Custom") : type.displayName)
         HStack {
-            Image(systemName: icon).foregroundStyle(colors.primary.opacity(0.7))
+            Image(systemName: icon).foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
             Text(title).foregroundStyle(colors.primary)
             Spacer()
             if isSelectedRow { Image(systemName: IconCatalog.checkmark).foregroundStyle(JohoColors.cyan) }
@@ -445,7 +445,7 @@ struct CountdownPickerSheet: View {
     @ViewBuilder
     private func favoriteRow(_ fav: SavedCountdown) -> some View {
         HStack {
-            Image(systemName: fav.icon).foregroundStyle(colors.primary.opacity(0.7))
+            Image(systemName: fav.icon).foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
             Text(fav.displayName)
                 .foregroundStyle(colors.primary)
                 .lineLimit(1)
@@ -483,7 +483,7 @@ struct CountdownPickerSheet: View {
             }
         }()
         return HStack {
-            Image(systemName: current.icon).foregroundStyle(colors.primary.opacity(0.7))
+            Image(systemName: current.icon).foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
             Text(current.displayName)
                 .foregroundStyle(colors.primary)
                 .lineLimit(1)
@@ -582,7 +582,7 @@ struct CustomCountdownDialog: View {
                                 .foregroundStyle(colors.primaryInverted)
                             Text("Set date & details")
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(colors.primaryInverted.opacity(0.6))
+                                .foregroundStyle(colors.primaryInverted.opacity(JohoDimensions.opacityStrong))
                         }
 
                         Spacer()
@@ -605,9 +605,9 @@ struct CustomCountdownDialog: View {
                     } label: {
                         Text("Save")
                             .font(JohoFont.bodySmallBold)
-                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primaryInverted.opacity(0.4))
+                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primaryInverted.opacity(JohoDimensions.opacityModerate))
                             .frame(width: 56, height: 32)
-                            .background(canSave ? eventAccentColor : colors.primaryInverted.opacity(0.2))
+                            .background(canSave ? eventAccentColor : colors.primaryInverted.opacity(JohoDimensions.opacityMild))
                             .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5, borderColor: colors.primaryInverted)
                     }
                     .disabled(!canSave)
@@ -615,7 +615,7 @@ struct CustomCountdownDialog: View {
                     .frame(maxHeight: .infinity)
                 }
                 .frame(height: 56)
-                .background(eventAccentColor.opacity(0.7))  // 情報デザイン: Darker header like Month Page sections
+                .background(eventAccentColor.opacity(JohoDimensions.opacityBold))  // 情報デザイン: Darker header like Month Page sections
 
                 // Thick divider after header
                 Rectangle()
@@ -771,7 +771,7 @@ struct CustomCountdownDialog: View {
                         } label: {
                             ZStack(alignment: isAnnual ? .trailing : .leading) {
                                 Capsule()
-                                    .fill(isAnnual ? eventAccentColor : colors.primary.opacity(0.2))
+                                    .fill(isAnnual ? eventAccentColor : colors.primary.opacity(JohoDimensions.opacityMild))
                                     .frame(width: 50, height: 28)
                                     .overlay(
                                         Capsule()
@@ -822,14 +822,14 @@ struct CustomCountdownDialog: View {
                         // CENTER: Hint text
                         Text("Tap to change icon")
                             .font(JohoFont.caption)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                             .padding(.leading, JohoDimensions.spacingMD)
 
                         Spacer()
 
                         Image(systemName: IconCatalog.chevronRight)
                             .font(.system(size: 12, weight: .semibold))
-                            .foregroundStyle(colors.primary.opacity(0.4))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                             .padding(.trailing, JohoDimensions.spacingMD)
                     }
                     .frame(height: 48)
@@ -1091,7 +1091,7 @@ struct IconPickerGrid: View {
                             .fill(selectedIcon == name ? JohoColors.cyan.opacity(0.22) : colors.primary.opacity(0.08))
                         Image(systemName: name)
                             .font(.system(size: 18, weight: .semibold))
-                            .foregroundStyle(selectedIcon == name ? JohoColors.cyan : colors.primary.opacity(0.7))
+                            .foregroundStyle(selectedIcon == name ? JohoColors.cyan : colors.primary.opacity(JohoDimensions.opacityBold))
                     }
                 }
                 .buttonStyle(.plain)

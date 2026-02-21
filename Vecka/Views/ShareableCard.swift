@@ -162,7 +162,7 @@ struct ShareableCardHeader: View {
                 .frame(maxHeight: .infinity)
         }
         .frame(height: 40)
-        .background(accentColor.opacity(0.5))
+        .background(accentColor.opacity(JohoDimensions.opacityHeavy))
     }
 }
 
@@ -181,14 +181,14 @@ struct ShareableCardFooter: View {
         HStack {
             Text(leftLabel)
                 .font(JohoFont.labelBold)
-                .foregroundStyle(colors.primary.opacity(0.5))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                 .tracking(1)
             
             Spacer()
             
             Text(rightLabel)
                 .font(JohoFont.labelBold)
-                .foregroundStyle(colors.primary.opacity(0.4))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                 .tracking(0.5)
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
@@ -258,7 +258,7 @@ struct JohoShareCircleButton: View {
             .padding(JohoDimensions.spacingMD)
             .frame(maxWidth: .infinity)
             .frame(height: 140)
-            .background(JohoColors.pink.opacity(0.15))
+            .background(JohoColors.pink.opacity(JohoDimensions.opacityLight))
             
             // Divider before footer
             ShareableCardDivider()

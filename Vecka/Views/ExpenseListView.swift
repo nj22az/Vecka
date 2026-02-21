@@ -204,14 +204,14 @@ struct ExpenseListView: View {
                     HStack(spacing: JohoDimensions.spacingXS) {
                         Text(baseCurrency)
                             .font(JohoFont.body)
-                            .foregroundStyle(colors.primary.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
 
                         Text("•")
-                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                         Text("\(filteredExpenses.count) transactions")
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(colors.primary.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -246,7 +246,7 @@ struct ExpenseListView: View {
                 Spacer()
                 Text("\(currencyBreakdown.count) currencies")
                     .font(JohoFont.labelSmall)
-                    .foregroundStyle(colors.primary.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.top, JohoDimensions.spacingSM)
@@ -259,7 +259,7 @@ struct ExpenseListView: View {
 
                     if index < currencyBreakdown.count - 1 {
                         Rectangle()
-                            .fill(colors.primary.opacity(0.1))
+                            .fill(colors.primary.opacity(JohoDimensions.opacitySubtle))
                             .frame(height: 1)
                             .padding(.horizontal, JohoDimensions.spacingMD)
                     }
@@ -296,7 +296,7 @@ struct ExpenseListView: View {
                 // Transaction count
                 Text("\(item.count) transaction\(item.count == 1 ? "" : "s")")
                     .font(JohoFont.labelSmall)
-                    .foregroundStyle(colors.primary.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
             }
 
             Spacer()
@@ -306,14 +306,14 @@ struct ExpenseListView: View {
                 VStack(alignment: .trailing, spacing: 2) {
                     Text("→ \(formatCurrency(item.convertedTotal, code: baseCurrency))")
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(colors.primary.opacity(0.7))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
 
                     // Show approximate rate
                     if item.total > 0 {
                         let rate = item.convertedTotal / item.total
                         Text("≈ \(String(format: "%.2f", rate)) \(baseCurrency)")
                             .font(.system(size: 9, weight: .medium, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.4))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                     }
                 }
             }
@@ -622,7 +622,7 @@ struct FilterChip: View {
                 if isSelected {
                     Image(systemName: IconCatalog.xmarkCircle)
                         .font(JohoFont.labelSmall)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                 }
             }
             .padding(.horizontal, 12)
@@ -679,7 +679,7 @@ struct SimplifiedFilterSheet: View {
                                     .background(colors.surface)
                                     .johoBordered(
                                         borderWidth: selectedDateRange == range ? JohoDimensions.borderMedium : JohoDimensions.borderThin,
-                                        borderColor: selectedDateRange == range ? colors.primary : colors.primary.opacity(0.3)
+                                        borderColor: selectedDateRange == range ? colors.primary : colors.primary.opacity(JohoDimensions.opacityMedium)
                                     )
                                 }
                                 .buttonStyle(.plain)

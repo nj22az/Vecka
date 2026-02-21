@@ -118,7 +118,7 @@ struct SwipeNavigationContainer<Content: View>: View {
                             .font(JohoFont.headline)
                         Text("Swipe left/right")
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(colors.surface)
@@ -131,7 +131,7 @@ struct SwipeNavigationContainer<Content: View>: View {
                             selection = item
                         } label: {
                             Image(systemName: item.icon)
-                                .foregroundStyle(selection == item ? item.accentColor : colors.primary.opacity(0.6))
+                                .foregroundStyle(selection == item ? item.accentColor : colors.primary.opacity(JohoDimensions.opacityStrong))
                         }
                         .frame(maxWidth: .infinity)
                     }

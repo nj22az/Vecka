@@ -727,7 +727,7 @@ struct JohoContactAvatarRow: View {
                 if let subtitle = subtitle {
                     Text(subtitle)
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                 }
             }
 
@@ -746,7 +746,7 @@ struct JohoContactAvatarRow: View {
             // Chevron
             Image(systemName: IconCatalog.chevronRight)
                 .font(.system(size: 14, weight: .bold))
-                .foregroundStyle(colors.primary.opacity(0.5))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
         }
         .padding(JohoDimensions.spacingMD)
         .background(colors.surface)

@@ -724,7 +724,7 @@ struct SpecialDaysListView: View {
             if totalCount == 0 {
                 Text("No entries yet")
                     .font(JohoFont.bodySmall)
-                    .foregroundStyle(colors.primary.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
             }
 
             Spacer()
@@ -751,7 +751,7 @@ struct SpecialDaysListView: View {
             if totalCount == 0 {
                 Text("No entries yet")
                     .font(JohoFont.bodySmall)
-                    .foregroundStyle(colors.primary.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
             }
 
             Spacer()
@@ -900,11 +900,11 @@ struct SpecialDaysListView: View {
 
                 Text("\(count)")
                     .font(JohoFont.label)
-                    .foregroundStyle(hasItems ? colors.primary : colors.primary.opacity(0.4))
+                    .foregroundStyle(hasItems ? colors.primary : colors.primary.opacity(JohoDimensions.opacityModerate))
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(isSelected ? color.opacity(0.3) : Color.clear)
+            .background(isSelected ? color.opacity(JohoDimensions.opacityMedium) : Color.clear)
             .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
@@ -949,7 +949,7 @@ struct SpecialDaysListView: View {
             HStack(spacing: 4) {
                 // Colored filled dot (category color) - dimmed when inactive
                 Circle()
-                    .fill(isActive ? CategoryColorSettings.shared.color(for: category) : colors.primary.opacity(0.2))
+                    .fill(isActive ? CategoryColorSettings.shared.color(for: category) : colors.primary.opacity(JohoDimensions.opacityMild))
                     .frame(width: 8, height: 8)
                     .overlay(
                         Circle()
@@ -968,7 +968,7 @@ struct SpecialDaysListView: View {
                 Text(String(count))
                     .font(.system(size: 11, weight: .bold, design: .rounded))
                     .monospacedDigit()
-                    .foregroundStyle(isActive ? colors.primary : colors.primary.opacity(0.4))
+                    .foregroundStyle(isActive ? colors.primary : colors.primary.opacity(JohoDimensions.opacityModerate))
             }
             .fixedSize(horizontal: true, vertical: false)
             .padding(.horizontal, 5)
@@ -1008,7 +1008,7 @@ struct SpecialDaysListView: View {
 
                 Text("\(count) in " + String(selectedYear))
                     .font(.system(size: 11, weight: .semibold, design: .rounded))
-                    .foregroundStyle(colors.primary.opacity(0.7))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
             }
         }
         .padding(JohoDimensions.spacingMD)
@@ -1036,7 +1036,7 @@ struct SpecialDaysListView: View {
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(type.lightBackground.opacity(0.5))
+            .background(type.lightBackground.opacity(JohoDimensions.opacityHeavy))
             .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
         }
         .buttonStyle(.plain)
@@ -1531,7 +1531,7 @@ struct CollapsibleSpecialDayCard: View {
             if isExpanded {
                 // Thin divider
                 Rectangle()
-                    .fill(colors.border.opacity(0.15))
+                    .fill(colors.border.opacity(JohoDimensions.opacityLight))
                     .frame(height: 1)
 
                 expandedContent
@@ -1723,7 +1723,7 @@ struct CollapsibleSpecialDayCard: View {
                     .frame(maxHeight: .infinity)
             }
             .frame(height: 32)
-            .background(zone.background(for: colorMode).opacity(0.5))  // Colored header
+            .background(zone.background(for: colorMode).opacity(JohoDimensions.opacityHeavy))  // Colored header
 
             // Horizontal divider between header and items
             Rectangle()
@@ -1738,7 +1738,7 @@ struct CollapsibleSpecialDayCard: View {
                     // Divider between items (not after last)
                     if index < items.count - 1 {
                         Rectangle()
-                            .fill(colors.border.opacity(0.3))
+                            .fill(colors.border.opacity(JohoDimensions.opacityMedium))
                             .frame(height: 1)
                             .padding(.horizontal, 6)
                     }
@@ -1783,7 +1783,7 @@ struct CollapsibleSpecialDayCard: View {
                     .frame(maxHeight: .infinity)
             }
             .frame(height: 32)
-            .background(zone.background(for: colorMode).opacity(0.5))  // Colored header
+            .background(zone.background(for: colorMode).opacity(JohoDimensions.opacityHeavy))  // Colored header
 
             // Horizontal divider between header and items
             Rectangle()
@@ -1798,7 +1798,7 @@ struct CollapsibleSpecialDayCard: View {
                     // Divider between items (not after last)
                     if index < items.count - 1 {
                         Rectangle()
-                            .fill(colors.border.opacity(0.3))
+                            .fill(colors.border.opacity(JohoDimensions.opacityMedium))
                             .frame(height: 1)
                             .padding(.horizontal, 6)
                     }
@@ -1855,12 +1855,12 @@ struct CollapsibleSpecialDayCard: View {
         HStack(spacing: 4) {
             Text(visibleRegions.joined(separator: " "))
                 .font(.system(size: 11, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.primary.opacity(0.6))
+                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
 
             if overflowCount > 0 {
                 Text("+\(overflowCount)")
                     .font(.system(size: 10, weight: .semibold, design: .rounded))
-                    .foregroundStyle(colors.primary.opacity(0.4))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
             }
         }
         .padding(.trailing, JohoDimensions.spacingMD)
@@ -1902,7 +1902,7 @@ struct CollapsibleSpecialDayCard: View {
                                 Text("\(age)")
                                     .font(.system(size: 11, weight: .semibold, design: .rounded))
                             }
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         }
                     }
                     .padding(.leading, JohoDimensions.spacingMD)
@@ -1921,7 +1921,7 @@ struct CollapsibleSpecialDayCard: View {
                     let regions = item.mergedRegions.isEmpty ? [item.region] : item.mergedRegions
                     Text(regions.joined(separator: " "))
                         .font(.system(size: 11, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         .padding(.trailing, JohoDimensions.spacingMD)
                         .padding(.top, 4)
                 }
@@ -1961,7 +1961,7 @@ struct CollapsibleSpecialDayCard: View {
                         if !additionalLines.isEmpty {
                             Text(additionalLines)
                                 .font(JohoFont.caption)
-                                .foregroundStyle(colors.primary.opacity(0.8))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityDense))
                                 .lineLimit(2)
                         }
                     }
@@ -1971,10 +1971,10 @@ struct CollapsibleSpecialDayCard: View {
                     // Date badge
                     Text(formatDate(item.date))
                         .font(JohoFont.labelBold)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         .padding(.horizontal, 6)
                         .padding(.vertical, 3)
-                        .background(colors.border.opacity(0.05))
+                        .background(colors.border.opacity(JohoDimensions.opacityFaint))
                         .clipShape(Capsule())
 
                     // Edit button (for user entries) - 情報デザイン: 44pt touch target
@@ -2072,7 +2072,7 @@ extension SpecialDaysListView {
 
         // Get icon
         let icon = row.symbolName ?? row.type.categoryAwareIcon
-        let headerBgColor: Color = CategoryColorSettings.shared.color(for: row.type.displayCategory).opacity(0.15)
+        let headerBgColor: Color = CategoryColorSettings.shared.color(for: row.type.displayCategory).opacity(JohoDimensions.opacityLight)
         let iconColor: Color = CategoryColorSettings.shared.color(for: row.type.displayCategory)
 
         Button {
@@ -2113,7 +2113,7 @@ extension SpecialDaysListView {
                     Text(monthName)
                         .font(.system(size: 8, weight: .bold, design: .monospaced))
                         .tracking(2)
-                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                         .padding(.trailing, 10)
                 }
                 .frame(maxWidth: .infinity)
@@ -2122,7 +2122,7 @@ extension SpecialDaysListView {
 
                 // Thin divider (情報デザイン: 1px distinct border)
                 Rectangle()
-                    .fill(colors.border.opacity(0.3))
+                    .fill(colors.border.opacity(JohoDimensions.opacityMedium))
                     .frame(height: 1)
 
                 // BODY: Event row (white background)
@@ -2152,27 +2152,27 @@ extension SpecialDaysListView {
                     // Metadata row (monospace for technical data) - intelligent tense
                     // 情報デザイン: Age 0 = birth year, show contextual "born on this day" message
                     if row.type == .birthday, let age = row.turningAge {
-                        Rectangle().fill(colors.border.opacity(0.1)).frame(height: 1)
+                        Rectangle().fill(colors.border.opacity(JohoDimensions.opacitySubtle)).frame(height: 1)
                         Text(birthdayExpandedDisplayText(age: age, date: row.date, daysUntil: row.daysUntil))
                             .font(.system(size: 9, weight: .medium, design: .monospaced))
-                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                             .padding(.vertical, 6)
                     } else if row.isMemo {
-                        Rectangle().fill(colors.border.opacity(0.1)).frame(height: 1)
+                        Rectangle().fill(colors.border.opacity(JohoDimensions.opacitySubtle)).frame(height: 1)
                         let daysText = row.daysUntil == 0 ? "TODAY" :
                                        row.daysUntil == 1 ? "IN 1 DAY" :
                                        "IN \(row.daysUntil) DAYS"
                         Text(daysText)
                             .font(.system(size: 9, weight: .medium, design: .monospaced))
-                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                             .padding(.vertical, 6)
                     }
                 }
                 .frame(maxWidth: .infinity)
             }
             .background(colors.surface)
-            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1, borderColor: colors.border.opacity(0.2))  // Thin technical border
-            .shadow(color: colors.border.opacity(0.05), radius: 2, x: 0, y: 1)
+            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1, borderColor: colors.border.opacity(JohoDimensions.opacityMild))  // Thin technical border
+            .shadow(color: colors.border.opacity(JohoDimensions.opacityFaint), radius: 2, x: 0, y: 1)
         }
         .buttonStyle(.plain)
     }
@@ -2197,7 +2197,7 @@ extension SpecialDaysListView {
         let primaryItem = dayCard.items.first
         let primaryType = primaryItem?.type ?? .holiday
         let icon = primaryItem?.symbolName ?? primaryType.categoryAwareIcon
-        let headerBgColor: Color = primaryType.accentColor.opacity(0.15)
+        let headerBgColor: Color = primaryType.accentColor.opacity(JohoDimensions.opacityLight)
         let iconColor: Color = primaryType.accentColor
 
         VStack(spacing: 0) {
@@ -2219,7 +2219,7 @@ extension SpecialDaysListView {
                 Text(monthName)
                     .font(.system(size: 8, weight: .bold, design: .monospaced))
                     .tracking(2)
-                    .foregroundStyle(colors.primary.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                     .padding(.trailing, 10)
             }
             .frame(maxWidth: .infinity)
@@ -2228,7 +2228,7 @@ extension SpecialDaysListView {
 
             // Thin divider
             Rectangle()
-                .fill(colors.border.opacity(0.3))
+                .fill(colors.border.opacity(JohoDimensions.opacityMedium))
                 .frame(height: 1)
 
             // BODY: List of events with hairline dividers
@@ -2264,8 +2264,8 @@ extension SpecialDaysListView {
             }
         }
         .background(colors.surface)
-        .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1, borderColor: colors.border.opacity(0.2))
-        .shadow(color: colors.border.opacity(0.05), radius: 2, x: 0, y: 1)
+        .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1, borderColor: colors.border.opacity(JohoDimensions.opacityMild))
+        .shadow(color: colors.border.opacity(JohoDimensions.opacityFaint), radius: 2, x: 0, y: 1)
     }
 
     // MARK: - Type Indicator Dot (情報デザイン: Black outline shapes)

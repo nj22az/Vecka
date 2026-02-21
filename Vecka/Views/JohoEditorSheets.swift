@@ -48,14 +48,14 @@ struct JohoUndoToast: View {
             } label: {
                 Image(systemName: IconCatalog.xmark)
                     .font(JohoFont.bodySmallBold)
-                    .foregroundStyle(colors.primaryInverted.opacity(0.6))
+                    .foregroundStyle(colors.primaryInverted.opacity(JohoDimensions.opacityStrong))
             }
         }
         .padding(.horizontal, JohoDimensions.spacingLG)
         .padding(.vertical, JohoDimensions.spacingMD)
         .background(colors.surfaceInverted)
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
-        .shadow(color: .black.opacity(0.2), radius: 8, y: 4)
+        .shadow(color: .black.opacity(JohoDimensions.opacityMild), radius: 8, y: 4)
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
 }
@@ -354,7 +354,7 @@ struct JohoSpecialDayEditorSheet: View {
                                 .foregroundStyle(colors.primary)
                             Text(headerSubtitle)
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(colors.primary.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         }
                         Spacer()
                     }
@@ -370,7 +370,7 @@ struct JohoSpecialDayEditorSheet: View {
                     } label: {
                         Text("Save")
                             .font(JohoFont.bodySmallBold)
-                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(0.4))
+                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(JohoDimensions.opacityModerate))
                             .frame(width: 56, height: 32)
                             .background(canSave ? type.accentColor : colors.surface)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
@@ -380,7 +380,7 @@ struct JohoSpecialDayEditorSheet: View {
                     .frame(width: 72).frame(maxHeight: .infinity)
                 }
                 .frame(height: 56)
-                .background(type.accentColor.opacity(0.7))
+                .background(type.accentColor.opacity(JohoDimensions.opacityBold))
 
                 JohoDivider(weight: 1.5)
 
@@ -475,14 +475,14 @@ struct JohoSpecialDayEditorSheet: View {
 
                         Text("Tap to change icon")
                             .font(JohoFont.caption)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                             .padding(.leading, JohoDimensions.spacingMD)
 
                         Spacer()
 
                         Image(systemName: IconCatalog.chevronRight)
                             .font(.system(size: 12, weight: .semibold, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.4))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                             .padding(.trailing, JohoDimensions.spacingMD)
                     }
                     .frame(height: 48)
@@ -702,7 +702,7 @@ struct MonthCustomizationSheet: View {
                 } label: {
                     Text("Cancel")
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                 }
                 .buttonStyle(.plain)
 
@@ -749,7 +749,7 @@ struct MonthCustomizationSheet: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("ICON")
                             .font(JohoFont.labelBold)
-                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 6), spacing: 8) {
                             ForEach(iconOptions, id: \.self) { icon in
@@ -762,7 +762,7 @@ struct MonthCustomizationSheet: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("ICON COLOR")
                             .font(JohoFont.labelBold)
-                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                         HStack(spacing: 8) {
                             ForEach(iconColorOptions, id: \.hex) { option in
@@ -778,7 +778,7 @@ struct MonthCustomizationSheet: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("MESSAGE")
                             .font(JohoFont.labelBold)
-                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                         TextField("e.g., Birthday month...", text: $messageText)
                             .font(JohoFont.bodySmall)
@@ -800,7 +800,7 @@ struct MonthCustomizationSheet: View {
                             Text("Reset to default")
                                 .font(JohoFont.caption)
                         }
-                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                     }
                     .buttonStyle(.plain)
                 }
@@ -901,7 +901,7 @@ struct JohoBentoOptionRow: View {
 
                 Text(option.meta)
                     .font(.system(size: 11, weight: .medium, design: .rounded))
-                    .foregroundStyle(colors.primary.opacity(0.5))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
             }
 
             Spacer()

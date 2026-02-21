@@ -194,11 +194,11 @@ struct MemoTripRow: View {
                     HStack(spacing: JohoDimensions.spacingXS) {
                         Image(systemName: IconCatalog.tripDeparture)
                             .font(JohoFont.bodySmallBold)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
 
                         Text(destination)
                             .font(JohoFont.body)
-                            .foregroundStyle(colors.primary.opacity(0.8))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityDense))
                     }
                 }
 
@@ -207,15 +207,15 @@ struct MemoTripRow: View {
                     HStack(spacing: JohoDimensions.spacingXS) {
                         Text(memo.date.formatted(.dateTime.month(.abbreviated).day()))
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
 
                         Text("→")
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
 
                         Text(endDate.formatted(.dateTime.month(.abbreviated).day()))
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                     }
                 }
 
@@ -290,7 +290,7 @@ struct MemoTripDetailView: View {
                                 HStack {
                                     Text("Start")
                                         .font(JohoFont.bodySmall)
-                                        .foregroundStyle(colors.primary.opacity(0.7))
+                                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                                     Spacer()
                                     Text(memo.date.formatted(.dateTime.month(.abbreviated).day().year()))
                                         .font(JohoFont.monoMedium)
@@ -300,7 +300,7 @@ struct MemoTripDetailView: View {
                                 HStack {
                                     Text("End")
                                         .font(JohoFont.bodySmall)
-                                        .foregroundStyle(colors.primary.opacity(0.7))
+                                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                                     Spacer()
                                     Text(endDate.formatted(.dateTime.month(.abbreviated).day().year()))
                                         .font(JohoFont.monoMedium)
@@ -444,7 +444,7 @@ struct JohoTripEditorSheet: View {
                                 .foregroundStyle(colors.primary)
                             Text("Set destination & dates")
                                 .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(colors.primary.opacity(0.6))
+                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         }
 
                         Spacer()
@@ -465,7 +465,7 @@ struct JohoTripEditorSheet: View {
                     } label: {
                         Text("Save")
                             .font(JohoFont.bodySmallBold)
-                            .foregroundStyle(canSave ? colors.surface : colors.primary.opacity(0.4))
+                            .foregroundStyle(canSave ? colors.surface : colors.primary.opacity(JohoDimensions.opacityModerate))
                             .frame(width: 56, height: 32)
                             .background(canSave ? tripAccentColor : colors.surface)
                             .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
@@ -475,7 +475,7 @@ struct JohoTripEditorSheet: View {
                     .frame(maxHeight: .infinity)
                 }
                 .frame(height: 56)
-                .background(tripAccentColor.opacity(0.7))  // 情報デザイン: Darker header like Month Page sections
+                .background(tripAccentColor.opacity(JohoDimensions.opacityBold))  // 情報デザイン: Darker header like Month Page sections
 
                 // Thick divider after header
                 Rectangle()

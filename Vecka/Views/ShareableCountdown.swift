@@ -69,7 +69,7 @@ struct ShareableCountdownCard: View {
 
     // 情報デザイン: Event color (purple/cyan)
     private var accentColor: Color { JohoColors.cyan }
-    private var lightBackground: Color { JohoColors.cyan.opacity(0.15) }
+    private var lightBackground: Color { JohoColors.cyan.opacity(JohoDimensions.opacityLight) }
 
     private var completedTasks: Int {
         tasks.filter { $0.isCompleted && !$0.text.isEmpty }.count
@@ -110,7 +110,7 @@ struct ShareableCountdownCard: View {
 
                         Text(daysRemaining == 1 ? "DAY" : "DAYS")
                             .font(JohoFont.bodySmallBold)
-                            .foregroundStyle(colors.primary.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                     }
                 }
                 .frame(width: 120)
@@ -133,7 +133,7 @@ struct ShareableCountdownCard: View {
                     // Target date
                     Text(targetDate.formatted(.dateTime.month(.wide).day().year()))
                         .font(JohoFont.caption)
-                        .foregroundStyle(colors.primary.opacity(0.6))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
 
                     // Annual indicator
                     if isAnnual {
@@ -143,7 +143,7 @@ struct ShareableCountdownCard: View {
                             Text("ANNUAL")
                                 .font(JohoFont.labelBold)
                         }
-                        .foregroundStyle(colors.primary.opacity(0.5))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                     }
 
                     // Task progress (if has tasks)
@@ -151,11 +151,11 @@ struct ShareableCountdownCard: View {
                         HStack(spacing: 6) {
                             Image(systemName: completedTasks == totalTasks ? IconCatalog.checkmarkCircleFill : "circle.dotted")
                                 .font(.system(size: 12, weight: .bold))
-                                .foregroundStyle(completedTasks == totalTasks ? accentColor : colors.primary.opacity(0.5))
+                                .foregroundStyle(completedTasks == totalTasks ? accentColor : colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                             Text("\(completedTasks)/\(totalTasks) TASKS")
                                 .font(.system(size: 10, weight: .bold, design: .monospaced))
-                                .foregroundStyle(completedTasks == totalTasks ? accentColor : colors.primary.opacity(0.5))
+                                .foregroundStyle(completedTasks == totalTasks ? accentColor : colors.primary.opacity(JohoDimensions.opacityHeavy))
                         }
                         .padding(.top, 4)
                     }
@@ -175,14 +175,14 @@ struct ShareableCountdownCard: View {
             HStack {
                 Text(countdownMessage)
                     .font(.system(size: 11, weight: .medium, design: .rounded))
-                    .foregroundStyle(colors.primary.opacity(0.7))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
 
                 Spacer()
 
                 // 情報デザイン: Japanese design mark
                 Text("情報")
                     .font(.system(size: 10, weight: .bold))
-                    .foregroundStyle(colors.primary.opacity(0.4))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
@@ -240,7 +240,7 @@ struct CountdownShareButton: View {
                 .font(JohoFont.bodySmallBold)
                 .foregroundStyle(JohoColors.cyan)
                 .frame(width: 32, height: 32)
-                .background(JohoColors.cyan.opacity(0.15))
+                .background(JohoColors.cyan.opacity(JohoDimensions.opacityLight))
                 .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1, borderColor: JohoColors.black)
         }
     }

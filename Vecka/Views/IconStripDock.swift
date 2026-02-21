@@ -28,7 +28,7 @@ struct IconStripDock: View {
         VStack(spacing: 0) {
             // Top border
             Rectangle()
-                .fill(JohoColors.white.opacity(0.2))
+                .fill(JohoColors.white.opacity(JohoDimensions.opacityMild))
                 .frame(height: 1)
 
             HStack(spacing: 0) {
@@ -62,7 +62,7 @@ struct IconStripDock: View {
                 // Icon (情報デザイン: Selected is larger)
                 Image(systemName: item.icon)
                     .font(.system(size: iconSize, weight: isSelected ? .bold : .medium, design: .rounded))
-                    .foregroundStyle(isSelected ? item.accentColor : JohoColors.white.opacity(0.6))
+                    .foregroundStyle(isSelected ? item.accentColor : JohoColors.white.opacity(JohoDimensions.opacityStrong))
                     .animation(.easeInOut(duration: 0.15), value: isSelected)
 
                 Spacer()

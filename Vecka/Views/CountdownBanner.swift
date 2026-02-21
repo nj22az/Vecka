@@ -49,13 +49,13 @@ struct CountdownBanner: View {
 
                         Text("•")
                             .font(.caption)
-                            .foregroundStyle(colors.primary.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
 
                         // Days
                         let days = daysRemaining(to: event.date)
                         Text("\(abs(days)) \(days == 1 ? Localization.daySingular : Localization.dayPlural)")
                             .font(.subheadline.weight(.medium))
-                            .foregroundStyle(colors.primary.opacity(0.7))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
                             .textCase(.uppercase)
                             .lineLimit(1)
 
