@@ -1135,22 +1135,22 @@ struct SampleAvatarView: View {
         switch pattern {
         case .diagonal:
             DiagonalStripes(spacing: 12)
-                .stroke(Color.white, lineWidth: 3)
+                .stroke(JohoColors.white, lineWidth: 3)
         case .circles:
             ConcentricCircles(count: 4)
-                .stroke(Color.white, lineWidth: 2)
+                .stroke(JohoColors.white, lineWidth: 2)
         case .waves:
             WavePattern(amplitude: 10, frequency: 3)
-                .stroke(Color.white, lineWidth: 2)
+                .stroke(JohoColors.white, lineWidth: 2)
         case .dots:
             DotPattern(dotSize: 6, spacing: 16)
-                .fill(Color.white)
+                .fill(JohoColors.white)
         case .stripes:
             HorizontalStripes(spacing: 14)
-                .stroke(Color.white, lineWidth: 3)
+                .stroke(JohoColors.white, lineWidth: 3)
         case .geometric:
             GeometricPattern()
-                .stroke(Color.white, lineWidth: 2)
+                .stroke(JohoColors.white, lineWidth: 2)
         }
     }
 }

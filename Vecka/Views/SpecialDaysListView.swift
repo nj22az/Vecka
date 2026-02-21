@@ -1590,7 +1590,7 @@ struct CollapsibleSpecialDayCard: View {
             Text("\(dayCard.day)")
                 .font(JohoFont.headline)
         }
-        .foregroundStyle(isToday ? Color.black : colors.primary)
+        .foregroundStyle(isToday ? JohoColors.black : colors.primary)
         .padding(.horizontal, JohoDimensions.spacingSM)
         .padding(.vertical, JohoDimensions.spacingXS)
         .background(isToday ? JohoColors.todayOrange : colors.surface)
@@ -1987,7 +1987,7 @@ struct CollapsibleSpecialDayCard: View {
                                 Text("EDIT")
                             }
                             .font(.system(size: 10, weight: .bold, design: .rounded))
-                            .foregroundStyle(Color.black)
+                            .foregroundStyle(colors.primary)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
                             .background(JohoColors.cyan)

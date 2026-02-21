@@ -2983,9 +2983,7 @@ struct JohoCalendarPicker: View {
     }
 
     private var monthYearString: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM yyyy"
-        return formatter.string(from: displayedMonth).uppercased()
+        DateFormatterCache.monthYear.string(from: displayedMonth).uppercased()
     }
 
     // MARK: - Calendar Grid

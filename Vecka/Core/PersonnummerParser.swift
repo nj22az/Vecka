@@ -54,11 +54,7 @@ struct BirthdayInfo {
 
     /// Localized birthday description in Swedish
     var localizedDescription: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "sv_SE")
-        dateFormatter.dateFormat = "d MMMM yyyy"
-
-        let birthdayString = dateFormatter.string(from: nextBirthday)
+        let birthdayString = DateFormatterCache.swedishDayMonthYear.string(from: nextBirthday)
 
         if daysUntilBirthday == 0 {
             return "\(name) fyller \(ageAtNextBirthday) år idag! 🎉"

@@ -393,9 +393,7 @@ extension Contact {
 
         // Birthday
         if let birthday = birthday {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "yyyy-MM-dd"
-            vcard += "BDAY:\(formatter.string(from: birthday))\n"
+            vcard += "BDAY:\(DateFormatterCache.isoDate.string(from: birthday))\n"
         }
 
         // URLs
@@ -461,9 +459,7 @@ extension Contact {
                 let label = extractLabel(from: key) ?? "other"
                 contact.emailAddresses.append(ContactEmailAddress(label: label, value: value))
             } else if key.hasPrefix("BDAY") {
-                let formatter = DateFormatter()
-                formatter.dateFormat = "yyyy-MM-dd"
-                contact.birthday = formatter.date(from: value)
+                contact.birthday = DateFormatterCache.isoDate.date(from: value)
             } else if key.hasPrefix("NOTE") {
                 contact.note = value.replacingOccurrences(of: "\\n", with: "\n")
             }

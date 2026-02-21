@@ -241,7 +241,7 @@ struct CountdownShareButton: View {
                 .foregroundStyle(JohoColors.cyan)
                 .frame(width: 32, height: 32)
                 .background(JohoColors.cyan.opacity(0.15))
-                .johoBordered(cornerRadius: 8, borderWidth: 1, borderColor: Color.black)
+                .johoBordered(cornerRadius: 8, borderWidth: 1, borderColor: JohoColors.black)
         }
     }
 }

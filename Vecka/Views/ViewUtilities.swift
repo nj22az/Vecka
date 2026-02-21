@@ -122,6 +122,13 @@ enum DateFormatterCache {
         formatter.locale = Locale.current
         return formatter
     }()
+
+    static let swedishDayMonthYear: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d MMMM yyyy"
+        formatter.locale = Locale(identifier: "sv_SE")
+        return formatter
+    }()
 }
 
 // MARK: - Calendar Extension (ISO 8601)

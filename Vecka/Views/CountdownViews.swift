@@ -161,7 +161,7 @@ struct CountdownCard: View {
             return JohoColors.cyan.opacity(0.3)
         }
         
-        return Color.black.opacity(0.1)
+        return colors.primary.opacity(0.1)
     }
     
     // MARK: - Helper Properties

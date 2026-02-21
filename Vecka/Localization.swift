@@ -196,10 +196,7 @@ struct Localization {
     }
     
     static func formatFullDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale.current
-        formatter.dateStyle = .full
-        return formatter.string(from: date)
+        DateFormatterCache.fullDate.string(from: date)
     }
     
     static func formatShortDate(_ date: Date) -> String {

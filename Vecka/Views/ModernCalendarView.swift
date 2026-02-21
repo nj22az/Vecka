@@ -860,11 +860,11 @@ struct ModernCalendarView: View {
                             Text("TODAY")
                                 .font(JohoFont.labelSmall)
                         }
-                        .foregroundStyle(Color.black)
+                        .foregroundStyle(colors.primary)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                         .background(JohoColors.yellow)
-                        .johoBordered(cornerRadius: 6, borderWidth: 1.5, borderColor: Color.black)
+                        .johoBordered(cornerRadius: 6, borderWidth: 1.5, borderColor: colors.primary)
                     }
                     .buttonStyle(.plain)
                     .padding(.horizontal, JohoDimensions.spacingSM)
