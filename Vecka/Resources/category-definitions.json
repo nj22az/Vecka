@@ -1,0 +1,92 @@
+[
+  {
+    "id": "holiday",
+    "displayCategory": "holiday",
+    "title": "Bank Holidays",
+    "code": "HOL",
+    "defaultIcon": "star.fill",
+    "accentColorHex": "E53E3E",
+    "lightBackgroundHex": "FDE8E8",
+    "isBankHoliday": true
+  },
+  {
+    "id": "observance",
+    "displayCategory": "observance",
+    "title": "Observances",
+    "code": "OBS",
+    "defaultIcon": "sparkles",
+    "accentColorHex": "3182CE",
+    "lightBackgroundHex": null,
+    "isBankHoliday": false
+  },
+  {
+    "id": "birthday",
+    "displayCategory": "memo",
+    "title": "Birthdays",
+    "code": "BDY",
+    "defaultIcon": "birthday.cake.fill",
+    "accentColorHex": "FECDD3",
+    "lightBackgroundHex": null,
+    "isBankHoliday": false
+  },
+  {
+    "id": "memo",
+    "displayCategory": "memo",
+    "title": "Memos",
+    "code": "MEM",
+    "defaultIcon": "note.text",
+    "accentColorHex": "FFE566",
+    "lightBackgroundHex": null,
+    "isBankHoliday": false
+  },
+  {
+    "id": "trip",
+    "displayCategory": "memo",
+    "title": "Trips",
+    "code": "TRP",
+    "defaultIcon": "airplane",
+    "accentColorHex": "A5F3FC",
+    "lightBackgroundHex": null,
+    "isBankHoliday": false
+  },
+  {
+    "id": "expense",
+    "displayCategory": "memo",
+    "title": "Expenses",
+    "code": "EXP",
+    "defaultIcon": null,
+    "accentColorHex": "4ADE80",
+    "lightBackgroundHex": null,
+    "isBankHoliday": false
+  },
+  {
+    "id": "note",
+    "displayCategory": "memo",
+    "title": "Notes",
+    "code": "NOT",
+    "defaultIcon": "note.text",
+    "accentColorHex": "FFE566",
+    "lightBackgroundHex": null,
+    "isBankHoliday": false
+  },
+  {
+    "id": "event",
+    "displayCategory": "memo",
+    "title": "Events",
+    "code": "EVT",
+    "defaultIcon": "calendar.badge.clock",
+    "accentColorHex": "FFE566",
+    "lightBackgroundHex": null,
+    "isBankHoliday": false
+  },
+  {
+    "id": "countdown",
+    "displayCategory": "memo",
+    "title": "Countdowns",
+    "code": "CDN",
+    "defaultIcon": "calendar.badge.clock",
+    "accentColorHex": "FFE566",
+    "lightBackgroundHex": null,
+    "isBankHoliday": false
+  }
+]
