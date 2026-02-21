@@ -222,7 +222,7 @@ private struct WorldClockCellContent: View {
 
                 Text(offsetText)
                     .font(.system(size: 9, weight: .medium, design: .rounded))
-                    .foregroundStyle(colors.primary.opacity(0.6))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
             }
         }
         .frame(maxWidth: .infinity)

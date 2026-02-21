@@ -72,7 +72,7 @@ struct ContactPickerSheet: View {
 
                         Text(searchText.isEmpty ? "No other contacts available" : "No contacts match '\(searchText)'")
                             .font(JohoFont.bodySmall)
-                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                         Spacer()
                     }
@@ -127,7 +127,7 @@ struct ContactPickerSheet: View {
                     }
                 }
                 .johoTouchTarget()
-                .background(accentColor.opacity(0.2))
+                .background(accentColor.opacity(JohoDimensions.opacityMild))
                 .clipShape(Circle())
                 .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
 
@@ -142,12 +142,12 @@ struct ContactPickerSheet: View {
                     if let phone = contact.phoneNumbers.first?.value {
                         Text(phone)
                             .font(.system(size: 12, weight: .medium, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                             .lineLimit(1)
                     } else if let email = contact.emailAddresses.first?.value {
                         Text(email)
                             .font(.system(size: 12, weight: .medium, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(0.5))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                             .lineLimit(1)
                     }
                 }
@@ -157,7 +157,7 @@ struct ContactPickerSheet: View {
                 // Chevron
                 Image(systemName: IconCatalog.chevronRight)
                     .font(JohoFont.label)
-                    .foregroundStyle(colors.primary.opacity(0.3))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
             }
             .padding(.vertical, JohoDimensions.spacingSM)
         }

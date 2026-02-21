@@ -135,7 +135,7 @@ struct SpecialDayDetailSheet: View {
                             .overlay(Circle().stroke(colors.border, lineWidth: 1))
                         Text("ITEM ICON")
                             .font(JohoFont.pillLabel)
-                            .foregroundStyle(colors.primary.opacity(0.6))
+                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                     }
 
                     Spacer()
