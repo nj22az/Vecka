@@ -620,7 +620,7 @@ struct FilterChip: View {
                     .foregroundStyle(colors.primary)
 
                 if isSelected {
-                    Image(systemName: "xmark.circle")
+                    Image(systemName: IconCatalog.xmarkCircle)
                         .font(JohoFont.labelSmall)
                         .foregroundStyle(colors.primary.opacity(0.6))
                 }
@@ -670,7 +670,7 @@ struct SimplifiedFilterSheet: View {
                                             .foregroundStyle(colors.primary)
                                         Spacer()
                                         if selectedDateRange == range {
-                                            Image(systemName: "checkmark.circle.fill")
+                                            Image(systemName: IconCatalog.checkmarkCircleFill)
                                                 .font(JohoFont.body)
                                                 .foregroundStyle(colors.primary)
                                         }

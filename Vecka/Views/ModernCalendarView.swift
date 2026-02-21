@@ -683,7 +683,7 @@ struct ModernCalendarView: View {
                         .tracking(1)
                         .foregroundStyle(colors.primary)
 
-                    Image(systemName: isLegendExpanded ? "chevron.down" : "chevron.right")
+                    Image(systemName: isLegendExpanded ? IconCatalog.chevronDown : IconCatalog.chevronRight)
                         .font(.system(size: 11, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.secondary)
 
@@ -770,7 +770,7 @@ struct ModernCalendarView: View {
                         .foregroundStyle(colors.primaryInverted)
                 }
 
-                Image(systemName: "chevron.down")
+                Image(systemName: IconCatalog.chevronDown)
                     .font(JohoFont.labelSmall)
                     .foregroundStyle(colors.primaryInverted.opacity(0.7))
             }
@@ -817,7 +817,7 @@ struct ModernCalendarView: View {
                 } label: {
                     HStack(spacing: JohoDimensions.spacingSM) {
                         // 情報デザイン: Purple calendar icon (app identity)
-                        Image(systemName: "calendar")
+                        Image(systemName: IconCatalog.calendar)
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(PageHeaderColor.calendar.accent)
                             .frame(width: 40, height: 40)
@@ -835,7 +835,7 @@ struct ModernCalendarView: View {
                                 .monospacedDigit()
                         }
 
-                        Image(systemName: "chevron.down")
+                        Image(systemName: IconCatalog.chevronDown)
                             .font(.system(size: 10, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.secondary)
                     }
@@ -903,7 +903,7 @@ struct ModernCalendarView: View {
                     showMemoSheet = true
                     HapticManager.impact(.light)
                 } label: {
-                    Image(systemName: "plus")
+                    Image(systemName: IconCatalog.plus)
                         .font(.system(size: 12, weight: .bold, design: .rounded))
                         .foregroundStyle(.white)
                         .frame(width: 28, height: 28)
@@ -924,7 +924,7 @@ struct ModernCalendarView: View {
     private var calendarMonthPicker: some View {
         HStack(spacing: 4) {
             Button { navigateToPreviousMonth() } label: {
-                Image(systemName: "chevron.left")
+                Image(systemName: IconCatalog.chevronLeft)
                     .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .frame(width: 24, height: 44)
@@ -951,7 +951,7 @@ struct ModernCalendarView: View {
             .buttonStyle(.plain)
 
             Button { navigateToNextMonth() } label: {
-                Image(systemName: "chevron.right")
+                Image(systemName: IconCatalog.chevronRight)
                     .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .frame(width: 24, height: 44)

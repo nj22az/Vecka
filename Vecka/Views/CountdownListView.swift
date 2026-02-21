@@ -234,7 +234,7 @@ struct CountdownListView: View {
                 HStack(spacing: 0) {
                     Spacer()
                     VStack(spacing: JohoDimensions.spacingSM) {
-                        Image(systemName: "calendar.badge.plus")
+                        Image(systemName: IconCatalog.calendarBadgePlus)
                             .font(.system(size: 24, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary.opacity(0.4))
 
@@ -300,7 +300,7 @@ struct CountdownListView: View {
                         Spacer()
                         Button(action: onAdd) {
                             HStack(spacing: JohoDimensions.spacingXS) {
-                                Image(systemName: "plus")
+                                Image(systemName: IconCatalog.plus)
                                     .font(.system(size: 12, weight: .bold, design: .rounded))
                                 Text("Add")
                                     .font(JohoFont.label)

@@ -46,7 +46,7 @@ struct ContactPickerSheet: View {
             VStack(spacing: 0) {
                 // Search bar (情報デザイン: simple black border)
                 HStack(spacing: JohoDimensions.spacingSM) {
-                    Image(systemName: "magnifyingglass")
+                    Image(systemName: IconCatalog.search)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary.opacity(0.5))
 
@@ -155,7 +155,7 @@ struct ContactPickerSheet: View {
                 Spacer()
 
                 // Chevron
-                Image(systemName: "chevron.right")
+                Image(systemName: IconCatalog.chevronRight)
                     .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary.opacity(0.3))
             }

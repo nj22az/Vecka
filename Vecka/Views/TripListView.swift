@@ -103,7 +103,7 @@ struct TripListView: View {
                     JohoEmptyState(
                         title: "No Trips",
                         message: "Tap + to add your first trip",
-                        icon: "airplane.departure",
+                        icon: IconCatalog.tripDeparture,
                         zone: .trips
                     )
                     .frame(maxWidth: .infinity)
@@ -192,7 +192,7 @@ struct MemoTripRow: View {
                 // Destination
                 if let destination = memo.place {
                     HStack(spacing: JohoDimensions.spacingXS) {
-                        Image(systemName: "airplane.departure")
+                        Image(systemName: IconCatalog.tripDeparture)
                             .font(.system(size: 14, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary.opacity(0.6))
 
@@ -416,7 +416,7 @@ struct JohoTripEditorSheet: View {
                 HStack(spacing: 0) {
                     // LEFT: Back button (44pt)
                     Button { dismiss() } label: {
-                        Image(systemName: "chevron.left")
+                        Image(systemName: IconCatalog.chevronLeft)
                             .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary)
                             .johoTouchTarget()
@@ -431,7 +431,7 @@ struct JohoTripEditorSheet: View {
                     // CENTER: Icon + Title/Subtitle
                     HStack(spacing: JohoDimensions.spacingSM) {
                         // Type icon in colored box
-                        Image(systemName: "airplane.departure")
+                        Image(systemName: IconCatalog.tripDeparture)
                             .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundStyle(tripAccentColor)
                             .frame(width: 36, height: 36)
@@ -487,7 +487,7 @@ struct JohoTripEditorSheet: View {
                 // ═══════════════════════════════════════════════════════════════
                 HStack(spacing: 0) {
                     // LEFT: Location icon (40pt)
-                    Image(systemName: "location.fill")
+                    Image(systemName: IconCatalog.locationFill)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(tripAccentColor)
                         .frame(width: 40)
@@ -552,7 +552,7 @@ struct JohoTripEditorSheet: View {
                 // ═══════════════════════════════════════════════════════════════
                 HStack(spacing: 0) {
                     // LEFT: Calendar icon (40pt)
-                    Image(systemName: "calendar")
+                    Image(systemName: IconCatalog.calendar)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary)
                         .frame(width: 40)
@@ -628,7 +628,7 @@ struct JohoTripEditorSheet: View {
                 // ═══════════════════════════════════════════════════════════════
                 HStack(spacing: 0) {
                     // LEFT: Calendar icon (40pt)
-                    Image(systemName: "calendar")
+                    Image(systemName: IconCatalog.calendar)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary)
                         .frame(width: 40)

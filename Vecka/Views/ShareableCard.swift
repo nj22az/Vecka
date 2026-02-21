@@ -225,7 +225,7 @@ struct JohoShareCircleButton: View {
             Circle()
                 .fill(colors.surface)
                 .frame(width: 28, height: 28)
-            Image(systemName: "square.and.arrow.up")
+            Image(systemName: IconCatalog.share)
                 .font(.system(size: 11, weight: .black, design: .rounded))
                 .foregroundStyle(colors.primary)
         }

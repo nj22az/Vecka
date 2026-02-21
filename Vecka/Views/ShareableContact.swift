@@ -157,7 +157,7 @@ struct ShareableContactCard: View {
                     // Organization
                     if let org = contact.organizationName, !org.isEmpty {
                         HStack(spacing: 6) {
-                            Image(systemName: "building.2.fill")
+                            Image(systemName: IconCatalog.building)
                                 .font(.system(size: 11, weight: .bold))
                                 .foregroundStyle(JohoColors.cyan)
                             Text(org)
@@ -170,7 +170,7 @@ struct ShareableContactCard: View {
                     // Phone numbers
                     ForEach(contact.phoneNumbers.prefix(2), id: \.id) { phone in
                         HStack(spacing: 6) {
-                            Image(systemName: "phone.fill")
+                            Image(systemName: IconCatalog.phone)
                                 .font(.system(size: 11, weight: .bold))
                                 .foregroundStyle(JohoColors.green)
                             Text(phone.value)
@@ -183,7 +183,7 @@ struct ShareableContactCard: View {
                     // Email addresses
                     ForEach(contact.emailAddresses.prefix(2), id: \.id) { email in
                         HStack(spacing: 6) {
-                            Image(systemName: "envelope.fill")
+                            Image(systemName: IconCatalog.envelope)
                                 .font(.system(size: 11, weight: .bold))
                                 .foregroundStyle(JohoColors.yellow)
                             Text(email.value)
@@ -240,7 +240,7 @@ struct ShareableContactCard: View {
                                 .stroke(colors.border, lineWidth: 1)
                         )
                         .overlay {
-                            Image(systemName: "qrcode")
+                            Image(systemName: IconCatalog.qrcode)
                                 .font(.system(size: 32))
                                 .foregroundStyle(colors.primary.opacity(0.3))
                         }

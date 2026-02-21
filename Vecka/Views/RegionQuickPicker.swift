@@ -71,7 +71,7 @@ struct RegionQuickPicker: View {
         } label: {
             HStack(spacing: JohoDimensions.spacingSM) {
                 // Globe icon
-                Image(systemName: "globe")
+                Image(systemName: IconCatalog.globe)
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary.opacity(0.7))
 
@@ -142,7 +142,7 @@ struct RegionQuickPicker: View {
                         HapticManager.impact(.light)
                     } label: {
                         HStack(spacing: 3) {
-                            Image(systemName: "xmark.circle")
+                            Image(systemName: IconCatalog.xmarkCircle)
                                 .font(.system(size: 10, weight: .semibold))
                             Text("Clear")
                                 .font(.system(size: 11, weight: .semibold, design: .rounded))

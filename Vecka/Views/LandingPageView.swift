@@ -296,7 +296,7 @@ struct LandingPageView: View {
         VStack(spacing: 0) {
             // Header row
             HStack {
-                Image(systemName: "globe")
+                Image(systemName: IconCatalog.globe)
                     .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
 
@@ -961,7 +961,7 @@ struct LandingPageView: View {
             let items = recentItems
             if items.isEmpty {
                 VStack(spacing: JohoDimensions.spacingSM) {
-                    Image(systemName: "checkmark.circle")
+                    Image(systemName: IconCatalog.checkmarkCircle)
                         .font(.system(size: 24, weight: .medium))
                         .foregroundStyle(colors.secondary.opacity(0.4))
 

@@ -67,7 +67,7 @@ struct CountdownBanner: View {
                         Spacer(minLength: 0)
 
                         // Chevron to indicate menu
-                        Image(systemName: "chevron.up.chevron.down")
+                        Image(systemName: IconCatalog.chevronUpDown)
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                     }

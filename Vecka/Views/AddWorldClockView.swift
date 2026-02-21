@@ -58,7 +58,7 @@ struct AddWorldClockView: View {
 
                     // Search bar
                     HStack(spacing: JohoDimensions.spacingSM) {
-                        Image(systemName: "magnifyingglass")
+                        Image(systemName: IconCatalog.search)
                             .font(.system(size: 14, weight: .medium))
                             .foregroundStyle(colors.primary.opacity(0.4))
 
@@ -71,7 +71,7 @@ struct AddWorldClockView: View {
                             Button {
                                 searchText = ""
                             } label: {
-                                Image(systemName: "xmark.circle.fill")
+                                Image(systemName: IconCatalog.xmarkCircleFill)
                                     .font(.system(size: 16))
                                     .foregroundStyle(colors.primary.opacity(0.3))
                             }
@@ -96,7 +96,7 @@ struct AddWorldClockView: View {
                         if searchResults.isEmpty {
                             // No results
                             VStack(spacing: JohoDimensions.spacingMD) {
-                                Image(systemName: "globe")
+                                Image(systemName: IconCatalog.globe)
                                     .font(.system(size: 32, weight: .light))
                                     .foregroundStyle(colors.primary.opacity(0.3))
                                 Text("No cities found")
@@ -143,7 +143,7 @@ struct AddWorldClockView: View {
                                             .font(.system(size: 14, weight: .bold, design: .rounded))
                                             .foregroundStyle(colors.secondary)
 
-                                        Image(systemName: "plus.circle")
+                                        Image(systemName: IconCatalog.plusCircle)
                                             .font(.system(size: 18, weight: .medium))
                                             .foregroundStyle(regionColor(for: city.worldRegion))
                                     }
@@ -185,7 +185,7 @@ struct AddWorldClockView: View {
 
     private func currentTime(for timezoneId: String) -> String {
         guard let tz = TimeZone(identifier: timezoneId) else { return "--:--" }
-        var formatter = DateFormatterCache.time24h
+        let formatter = DateFormatterCache.time24h
         formatter.timeZone = tz
         return formatter.string(from: Date())
     }

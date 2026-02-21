@@ -181,7 +181,7 @@ struct JohoMascot: View {
         ZStack {
             // Floating hearts (情報デザイン: Happy reaction)
             ForEach(floatingHearts) { heart in
-                Image(systemName: "heart.fill")
+                Image(systemName: IconCatalog.heartFill)
                     .font(.system(size: size * 0.12, weight: .bold))
                     .foregroundStyle(JohoColors.pink)
                     .offset(x: heart.xOffset, y: heart.yOffset)
@@ -191,7 +191,7 @@ struct JohoMascot: View {
 
             // Steam puffs (情報デザイン: Onsen atmosphere)
             ForEach(steamPuffs) { puff in
-                let baseImage = Image(systemName: "cloud.fill")
+                let baseImage = Image(systemName: IconCatalog.cloudFill)
                     .font(.system(size: size * 0.18, weight: .medium))
                     .foregroundStyle(JohoColors.cyan.opacity(0.6))
 
@@ -227,7 +227,7 @@ struct JohoMascot: View {
 
             // Floating sparkle (情報デザイン: Playful SF Symbol animation)
             if sparkleVisible {
-                let baseImage = Image(systemName: "sparkle")
+                let baseImage = Image(systemName: IconCatalog.sparkle)
                     .font(.system(size: size * 0.15, weight: .medium))
                     .foregroundStyle(JohoColors.cyan)
 
@@ -301,15 +301,15 @@ struct JohoMascot: View {
 
             // Steam rising from water (SF Symbol)
             HStack(spacing: size * 0.08) {
-                let leftSteam = Image(systemName: "humidity.fill")
+                let leftSteam = Image(systemName: IconCatalog.humidityFill)
                     .font(.system(size: size * 0.14, weight: .medium))
                     .foregroundStyle(JohoColors.cyan.opacity(0.7))
 
-                let middleSteam = Image(systemName: "humidity.fill")
+                let middleSteam = Image(systemName: IconCatalog.humidityFill)
                     .font(.system(size: size * 0.18, weight: .medium))
                     .foregroundStyle(JohoColors.cyan.opacity(0.8))
 
-                let rightSteam = Image(systemName: "humidity.fill")
+                let rightSteam = Image(systemName: IconCatalog.humidityFill)
                     .font(.system(size: size * 0.14, weight: .medium))
                     .foregroundStyle(JohoColors.cyan.opacity(0.7))
 
@@ -422,7 +422,7 @@ struct JohoMascot: View {
 
         case .star:
             // ★ Star eyes
-            Image(systemName: "star.fill")
+            Image(systemName: IconCatalog.star)
                 .font(.system(size: eyeSize * 1.1, weight: .bold))
                 .foregroundStyle(colors.primary)
                 .scaleEffect(y: isBlinking ? 0.1 : 1.0)

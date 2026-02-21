@@ -88,7 +88,7 @@ struct DayDetailSheet: View {
             Button {
                 dismiss()
             } label: {
-                Image(systemName: "xmark")
+                Image(systemName: IconCatalog.xmark)
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .frame(width: 32, height: 32)
@@ -227,7 +227,7 @@ struct DayDetailSheet: View {
                         .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
 
                     if isSystem {
-                        Image(systemName: "lock.fill")
+                        Image(systemName: IconCatalog.lockFill)
                             .font(.system(size: 9, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary.opacity(0.7))
                     }
@@ -320,7 +320,7 @@ struct DayDetailSheet: View {
 
     private var emptyState: some View {
         VStack(spacing: JohoDimensions.spacingMD) {
-            Image(systemName: "calendar.badge.checkmark")
+            Image(systemName: IconCatalog.calendarBadgeCheckmark)
                 .font(.system(size: 32, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary.opacity(0.3))
 

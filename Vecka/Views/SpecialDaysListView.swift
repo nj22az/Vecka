@@ -602,7 +602,7 @@ struct SpecialDaysListView: View {
                             HapticManager.selection()
                         } label: {
                             // 情報デザイン: Minimum 44pt touch target
-                            Image(systemName: "chevron.left")
+                            Image(systemName: IconCatalog.chevronLeft)
                                 .font(.system(size: 14, weight: .bold, design: .rounded))
                                 .foregroundStyle(colors.primary)
                                 .johoTouchTarget()
@@ -812,7 +812,7 @@ struct SpecialDaysListView: View {
             HapticManager.impact(.light)
         } label: {
             // 情報デザイン: System UI accent plus button (matches date picker)
-            Image(systemName: "plus")
+            Image(systemName: IconCatalog.plus)
                 .font(.system(size: 12, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
                 .frame(width: 28, height: 28)
@@ -1897,7 +1897,7 @@ struct CollapsibleSpecialDayCard: View {
                         if let age = item.turningAge {
                             // 情報デザイン: Icon + number (no words needed)
                             HStack(spacing: 4) {
-                                Image(systemName: "birthday.cake")
+                                Image(systemName: IconCatalog.birthdayCake)
                                     .font(.system(size: 10, weight: .medium))
                                 Text("\(age)")
                                     .font(.system(size: 11, weight: .semibold, design: .rounded))
@@ -1983,7 +1983,7 @@ struct CollapsibleSpecialDayCard: View {
                             openEditor(item)
                         } label: {
                             HStack(spacing: 4) {
-                                Image(systemName: "pencil")
+                                Image(systemName: IconCatalog.pencil)
                                 Text("EDIT")
                             }
                             .font(.system(size: 10, weight: .bold, design: .rounded))

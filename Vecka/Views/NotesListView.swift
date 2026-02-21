@@ -289,7 +289,7 @@ private struct NotesDayRow: View {
             }
 
             // Chevron
-            Image(systemName: "chevron.right")
+            Image(systemName: IconCatalog.chevronRight)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
         }
@@ -353,7 +353,7 @@ private struct MemoPinnedNoteRow: View {
             JohoPill(text: badgeText, style: .colored(SectionZone.notes.background), size: .small)
 
             // Chevron
-            Image(systemName: "chevron.right")
+            Image(systemName: IconCatalog.chevronRight)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
         }

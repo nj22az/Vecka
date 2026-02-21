@@ -78,7 +78,7 @@ struct DeveloperSettingsView: View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
                 HStack(spacing: JohoDimensions.spacingSM) {
-                    Image(systemName: "hammer.fill")
+                    Image(systemName: IconCatalog.hammer)
                         .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.cyan)
                         .frame(width: 40, height: 40)
@@ -122,7 +122,7 @@ struct DeveloperSettingsView: View {
                     generateAllDummyData()
                 } label: {
                     HStack(spacing: JohoDimensions.spacingMD) {
-                        Image(systemName: "wand.and.stars")
+                        Image(systemName: IconCatalog.wandAndStars)
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.cyan)
                             .johoTouchTarget()
@@ -145,7 +145,7 @@ struct DeveloperSettingsView: View {
                             ProgressView()
                                 .scaleEffect(0.8)
                         } else {
-                            Image(systemName: "chevron.right")
+                            Image(systemName: IconCatalog.chevronRight)
                                 .font(.system(size: 12, weight: .bold, design: .rounded))
                                 .foregroundStyle(colors.secondary)
                         }
@@ -308,7 +308,7 @@ struct DeveloperSettingsView: View {
                     assignSampleAvatarsToContacts()
                 } label: {
                     HStack(spacing: JohoDimensions.spacingMD) {
-                        Image(systemName: "photo.fill.on.rectangle.fill")
+                        Image(systemName: IconCatalog.photoStack)
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.purple)
                             .johoTouchTarget()
@@ -327,7 +327,7 @@ struct DeveloperSettingsView: View {
 
                         Spacer()
 
-                        Image(systemName: "chevron.right")
+                        Image(systemName: IconCatalog.chevronRight)
                             .font(.system(size: 12, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.secondary)
                     }
@@ -529,7 +529,7 @@ struct DeveloperSettingsView: View {
                 showingResetConfirmation = true
             } label: {
                 HStack(spacing: JohoDimensions.spacingMD) {
-                    Image(systemName: "trash.fill")
+                    Image(systemName: IconCatalog.trashFill)
                         .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.red)
                         .johoTouchTarget()
@@ -552,7 +552,7 @@ struct DeveloperSettingsView: View {
 
                     Spacer()
 
-                    Image(systemName: "exclamationmark.triangle.fill")
+                    Image(systemName: IconCatalog.warning)
                         .font(.system(size: 16, weight: .bold, design: .rounded))
                         .foregroundStyle(JohoColors.red)
                 }

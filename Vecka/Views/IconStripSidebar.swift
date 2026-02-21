@@ -273,7 +273,7 @@ private struct SidebarLegendView: View {
         ("BDY", "BIRTHDAY", IconCatalog.birthday, JohoColors.purple),  // PEOPLE
         ("NTE", "NOTE", IconCatalog.memo, JohoColors.yellow),     // NOW
         ("TRP", "TRIP", IconCatalog.trip, JohoColors.cyan),        // SCHEDULED
-        ("EXP", "EXPENSE", "dollarsign.circle.fill", JohoColors.green)  // MONEY
+        ("EXP", "EXPENSE", IconCatalog.expense, JohoColors.green)  // MONEY
     ]
 
     var body: some View {
@@ -292,7 +292,7 @@ private struct SidebarLegendView: View {
                 Spacer()
 
                 Button { dismiss() } label: {
-                    Image(systemName: "xmark")
+                    Image(systemName: IconCatalog.xmark)
                         .font(.system(size: 10, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary)
                         .frame(width: 24, height: 24)

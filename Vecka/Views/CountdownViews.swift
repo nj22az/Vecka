@@ -121,7 +121,7 @@ struct CountdownCard: View {
     
     private var selectedIndicator: some View {
         HStack(spacing: 4) {
-            Image(systemName: "checkmark.circle.fill")
+            Image(systemName: IconCatalog.checkmarkCircleFill)
                 .font(.system(size: 10, weight: .bold, design: .rounded))
             Text(NSLocalizedString("picker.selected", comment: "Selected").uppercased())
                 .font(JohoFont.labelSmall)
@@ -390,7 +390,7 @@ struct CountdownPickerSheet: View {
             Image(systemName: icon).foregroundStyle(colors.primary.opacity(0.7))
             Text(title).foregroundStyle(colors.primary)
             Spacer()
-            if isSelectedRow { Image(systemName: "checkmark").foregroundStyle(JohoColors.cyan) }
+            if isSelectedRow { Image(systemName: IconCatalog.checkmark).foregroundStyle(JohoColors.cyan) }
         }
         .contentShape(Rectangle())
         .onTapGesture {
@@ -451,7 +451,7 @@ struct CountdownPickerSheet: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
             Spacer()
-            if (fav.type == selectedCountdown) { Image(systemName: "checkmark.circle.fill").foregroundStyle(JohoColors.cyan) }
+            if (fav.type == selectedCountdown) { Image(systemName: IconCatalog.checkmarkCircleFill).foregroundStyle(JohoColors.cyan) }
         }
         .contentShape(Rectangle())
         .onTapGesture {
@@ -489,7 +489,7 @@ struct CountdownPickerSheet: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
             Spacer()
-            Image(systemName: "checkmark.circle.fill").foregroundStyle(JohoColors.cyan)
+            Image(systemName: IconCatalog.checkmarkCircleFill).foregroundStyle(JohoColors.cyan)
         }
     }
 }
@@ -554,7 +554,7 @@ struct CustomCountdownDialog: View {
                 HStack(spacing: 0) {
                     // LEFT: Back button (44pt)
                     Button { dismiss() } label: {
-                        Image(systemName: "chevron.left")
+                        Image(systemName: IconCatalog.chevronLeft)
                             .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(colors.primaryInverted)
                             .johoTouchTarget()
@@ -660,7 +660,7 @@ struct CustomCountdownDialog: View {
                 // ═══════════════════════════════════════════════════════════════
                 HStack(spacing: 0) {
                     // LEFT: Calendar icon (40pt)
-                    Image(systemName: "calendar")
+                    Image(systemName: IconCatalog.calendar)
                         .font(.system(size: 14, weight: .bold))
                         .foregroundStyle(colors.primary)
                         .frame(width: 40)
@@ -742,7 +742,7 @@ struct CustomCountdownDialog: View {
                 // ═══════════════════════════════════════════════════════════════
                 HStack(spacing: 0) {
                     // LEFT: Repeat icon (40pt)
-                    Image(systemName: "repeat")
+                    Image(systemName: IconCatalog.repeatIcon)
                         .font(.system(size: 14, weight: .bold))
                         .foregroundStyle(colors.primary)
                         .frame(width: 40)
@@ -827,7 +827,7 @@ struct CustomCountdownDialog: View {
 
                         Spacer()
 
-                        Image(systemName: "chevron.right")
+                        Image(systemName: IconCatalog.chevronRight)
                             .font(.system(size: 12, weight: .semibold))
                             .foregroundStyle(colors.primary.opacity(0.4))
                             .padding(.trailing, JohoDimensions.spacingMD)

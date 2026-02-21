@@ -96,7 +96,7 @@ struct JohoExpenseEditorSheet: View {
                 HStack(spacing: 0) {
                     // LEFT: Back button (44pt)
                     Button { dismiss() } label: {
-                        Image(systemName: "chevron.left")
+                        Image(systemName: IconCatalog.chevronLeft)
                             .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary)
                             .johoTouchTarget()
@@ -254,7 +254,7 @@ struct JohoExpenseEditorSheet: View {
                 // ═══════════════════════════════════════════════════════════════
                 HStack(spacing: 0) {
                     // LEFT: Calendar icon (40pt)
-                    Image(systemName: "calendar")
+                    Image(systemName: IconCatalog.calendar)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary)
                         .frame(width: 40)
@@ -386,7 +386,7 @@ struct JohoExpenseEditorSheet: View {
 
                         Spacer()
 
-                        Image(systemName: "chevron.right")
+                        Image(systemName: IconCatalog.chevronRight)
                             .font(.system(size: 12, weight: .semibold, design: .rounded))
                             .foregroundStyle(colors.primary.opacity(0.4))
                             .padding(.trailing, JohoDimensions.spacingMD)

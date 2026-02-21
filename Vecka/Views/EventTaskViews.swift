@@ -28,7 +28,7 @@ struct EventTaskRow: View {
                 }
                 HapticManager.impact(.light)
             } label: {
-                Image(systemName: task.isCompleted ? "checkmark.square.fill" : "square")
+                Image(systemName: task.isCompleted ? IconCatalog.checkmarkCircleFill : "square")
                     .font(.system(size: 20, weight: .medium, design: .rounded))
                     .foregroundStyle(task.isCompleted ? JohoColors.cyan : colors.primary)
             }
@@ -77,7 +77,7 @@ struct EventTaskEditorRow: View {
                 }
                 HapticManager.impact(.light)
             } label: {
-                Image(systemName: task.isCompleted ? "checkmark.square.fill" : "square")
+                Image(systemName: task.isCompleted ? IconCatalog.checkmarkCircleFill : "square")
                     .font(.system(size: 20, weight: .medium, design: .rounded))
                     .foregroundStyle(task.isCompleted ? JohoColors.cyan : colors.primary)
             }
@@ -96,7 +96,7 @@ struct EventTaskEditorRow: View {
             // Delete button (only shown when not empty)
             if !task.text.isEmpty, let onDelete = onDelete {
                 Button(action: onDelete) {
-                    Image(systemName: "xmark.circle.fill")
+                    Image(systemName: IconCatalog.xmarkCircleFill)
                         .font(.system(size: 18, weight: .medium))
                         .foregroundStyle(colors.primary.opacity(0.3))
                 }
@@ -212,7 +212,7 @@ struct EventTasksSection: View {
             HapticManager.impact(.light)
         } label: {
             HStack(spacing: JohoDimensions.spacingSM) {
-                Image(systemName: "plus.circle.fill")
+                Image(systemName: IconCatalog.plusCircleFill)
                     .font(.system(size: 18, weight: .medium, design: .rounded))
                     .foregroundStyle(JohoColors.cyan)
 
@@ -253,7 +253,7 @@ struct TaskProgressIndicator: View {
     var body: some View {
         if totalCount > 0 {
             HStack(spacing: 4) {
-                Image(systemName: isAllComplete ? "checkmark.circle.fill" : "circle.dotted")
+                Image(systemName: isAllComplete ? IconCatalog.checkmarkCircleFill : "circle.dotted")
                     .font(.system(size: 12, weight: .medium, design: .rounded))
                     .foregroundStyle(isAllComplete ? JohoColors.cyan : colors.primary.opacity(0.5))
 

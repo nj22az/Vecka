@@ -184,7 +184,7 @@ struct DayDashboardView: View {
                     showSummarySheet = true
                     HapticManager.selection()
                 } label: {
-                    Image(systemName: "square.and.arrow.up")
+                    Image(systemName: IconCatalog.share)
                         .font(.system(size: 16, weight: .bold))
                         .foregroundStyle(colors.primary)
                         .frame(width: 44, height: 44)
@@ -392,7 +392,7 @@ struct DayDashboardView: View {
 
     private var emptyStateContent: some View {
         VStack(spacing: JohoDimensions.spacingSM) {
-            Image(systemName: "checkmark.circle")
+            Image(systemName: IconCatalog.checkmarkCircle)
                 .font(.system(size: 24, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.secondary)
 
@@ -436,7 +436,7 @@ struct DayDashboardView: View {
             // Add button
             if let onAddEntry {
                 Button(action: onAddEntry) {
-                    Image(systemName: "plus")
+                    Image(systemName: IconCatalog.plus)
                         .font(.system(size: 18, weight: .bold))
                         .foregroundStyle(colors.primary)
                         .frame(width: 44, height: 44)
@@ -748,7 +748,7 @@ struct SingleMemoDetailSheet: View {
                         Circle()
                             .fill(colors.surface)
                             .frame(width: 28, height: 28)
-                        Image(systemName: "xmark")
+                        Image(systemName: IconCatalog.xmark)
                             .font(.system(size: 11, weight: .black, design: .rounded))
                             .foregroundStyle(colors.primary)
                     }
@@ -868,7 +868,7 @@ struct SingleMemoDetailSheet: View {
                                     .font(.system(size: 16, weight: .bold))
                                     .foregroundStyle(memoColor)
 
-                                Image(systemName: "chevron.right")
+                                Image(systemName: IconCatalog.chevronRight)
                                     .font(.system(size: 10, weight: .bold))
                                     .foregroundStyle(colors.primary.opacity(0.3))
                             }
@@ -983,7 +983,7 @@ struct SingleMemoDetailSheet: View {
                                 .foregroundStyle(colors.primary.opacity(0.4))
                         }
 
-                        Image(systemName: "chevron.right")
+                        Image(systemName: IconCatalog.chevronRight)
                             .font(.system(size: 10, weight: .bold))
                             .foregroundStyle(colors.primary.opacity(0.3))
                     }
@@ -1031,7 +1031,7 @@ struct SingleMemoShareButton: View {
                 Circle()
                     .fill(colors.surface)
                     .frame(width: 28, height: 28)
-                Image(systemName: "square.and.arrow.up")
+                Image(systemName: IconCatalog.share)
                     .font(.system(size: 11, weight: .black, design: .rounded))
                     .foregroundStyle(colors.primary)
             }
@@ -1304,7 +1304,7 @@ struct SingleBirthdayDetailSheet: View {
                         Circle()
                             .fill(colors.surface)
                             .frame(width: 28, height: 28)
-                        Image(systemName: "xmark")
+                        Image(systemName: IconCatalog.xmark)
                             .font(.system(size: 11, weight: .black, design: .rounded))
                             .foregroundStyle(colors.primary)
                     }

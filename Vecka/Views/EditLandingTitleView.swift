@@ -72,7 +72,7 @@ struct EditLandingTitleView: View {
                                 HapticManager.selection()
                             } label: {
                                 HStack {
-                                    Image(systemName: "arrow.counterclockwise")
+                                    Image(systemName: IconCatalog.arrowCounterclockwise)
                                         .font(.system(size: 12, weight: .bold))
                                     Text("Reset to Default (ONSEN)")
                                         .font(JohoFont.bodySmall)

@@ -155,7 +155,7 @@ struct HolidayDatabaseExplorer: View {
                             }
                             HapticManager.selection()
                         } label: {
-                            Image(systemName: "chevron.left")
+                            Image(systemName: IconCatalog.chevronLeft)
                                 .font(.system(size: 14, weight: .bold, design: .rounded))
                                 .foregroundStyle(colors.primary)
                                 .frame(width: 32, height: 32)
@@ -175,7 +175,7 @@ struct HolidayDatabaseExplorer: View {
                             .background(region.lightBackground(colors: colors))
                             .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
                     } else {
-                        Image(systemName: "globe")
+                        Image(systemName: IconCatalog.globe)
                             .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.pink)
                             .frame(width: 40, height: 40)
@@ -216,7 +216,7 @@ struct HolidayDatabaseExplorer: View {
                         showingChangelog = true
                         HapticManager.selection()
                     } label: {
-                        Image(systemName: "clock.arrow.circlepath")
+                        Image(systemName: IconCatalog.clockHistory)
                             .font(.system(size: 16, weight: .medium, design: .rounded))
                             .foregroundStyle(colors.primary)
                     }
@@ -257,7 +257,7 @@ struct HolidayDatabaseExplorer: View {
                     // Active indicator
                     if isActiveRegion(regionID) {
                         HStack(spacing: 4) {
-                            Image(systemName: "checkmark.circle.fill")
+                            Image(systemName: IconCatalog.checkmarkCircleFill)
                                 .font(.system(size: 10, weight: .semibold, design: .rounded))
                                 .foregroundStyle(JohoColors.green)
                             Text("ACTIVE")
@@ -326,7 +326,7 @@ struct HolidayDatabaseExplorer: View {
                         VStack {
                             HStack {
                                 Spacer()
-                                Image(systemName: "checkmark.circle.fill")
+                                Image(systemName: IconCatalog.checkmarkCircleFill)
                                     .font(.system(size: 12, weight: .semibold, design: .rounded))
                                     .foregroundStyle(JohoColors.green)
                             }
@@ -584,7 +584,7 @@ struct HolidayDatabaseExplorer: View {
                 }
 
                 // Chevron
-                Image(systemName: "chevron.right")
+                Image(systemName: IconCatalog.chevronRight)
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
                     .foregroundStyle(colors.primary.opacity(0.3))
             }
@@ -642,7 +642,7 @@ struct HolidayDatabaseExplorer: View {
             HapticManager.notification(.success)
         } label: {
             HStack(spacing: JohoDimensions.spacingSM) {
-                Image(systemName: "arrow.down.circle")
+                Image(systemName: IconCatalog.arrowDownCircle)
                     .font(.system(size: 16, weight: .medium, design: .rounded))
                 Text("Load Defaults")
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
@@ -661,7 +661,7 @@ struct HolidayDatabaseExplorer: View {
             applyRegion(regionID)
         } label: {
             HStack(spacing: JohoDimensions.spacingSM) {
-                Image(systemName: "checkmark.circle.fill")
+                Image(systemName: IconCatalog.checkmarkCircleFill)
                     .font(.system(size: 16, weight: .medium, design: .rounded))
                 Text("Apply to Calendar")
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
@@ -892,7 +892,7 @@ struct HolidayRuleEditorSheet: View {
             showingResetConfirmation = true
         } label: {
             HStack {
-                Image(systemName: "arrow.counterclockwise")
+                Image(systemName: IconCatalog.arrowCounterclockwise)
                 Text("Reset to Default")
             }
             .font(.system(size: 14, weight: .semibold, design: .rounded))
@@ -907,7 +907,7 @@ struct HolidayRuleEditorSheet: View {
             showingDeleteConfirmation = true
         } label: {
             HStack {
-                Image(systemName: "trash")
+                Image(systemName: IconCatalog.trash)
                 Text("Delete Rule")
             }
             .font(.system(size: 14, weight: .semibold, design: .rounded))

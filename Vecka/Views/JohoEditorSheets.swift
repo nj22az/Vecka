@@ -46,7 +46,7 @@ struct JohoUndoToast: View {
             Button {
                 onDismiss()
             } label: {
-                Image(systemName: "xmark")
+                Image(systemName: IconCatalog.xmark)
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primaryInverted.opacity(0.6))
             }
@@ -160,7 +160,7 @@ struct JohoIconPickerSheet: View {
                                     )
                                     .overlay {
                                         if isSelected {
-                                            Image(systemName: "checkmark")
+                                            Image(systemName: IconCatalog.checkmark)
                                                 .font(.system(size: 16, weight: .bold))
                                                 .foregroundStyle(option.hex == "1A1A1A" ? colors.surface : colors.primary)
                                         }
@@ -331,7 +331,7 @@ struct JohoSpecialDayEditorSheet: View {
                 // Header row
                 HStack(spacing: 0) {
                     Button { dismiss() } label: {
-                        Image(systemName: "chevron.left")
+                        Image(systemName: IconCatalog.chevronLeft)
                             .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary)
                             .johoTouchTarget()
@@ -405,7 +405,7 @@ struct JohoSpecialDayEditorSheet: View {
 
                 // Date row
                 HStack(spacing: 0) {
-                    Image(systemName: "calendar")
+                    Image(systemName: IconCatalog.calendar)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary)
                         .frame(width: 40).frame(maxHeight: .infinity)
@@ -480,7 +480,7 @@ struct JohoSpecialDayEditorSheet: View {
 
                         Spacer()
 
-                        Image(systemName: "chevron.right")
+                        Image(systemName: IconCatalog.chevronRight)
                             .font(.system(size: 12, weight: .semibold, design: .rounded))
                             .foregroundStyle(colors.primary.opacity(0.4))
                             .padding(.trailing, JohoDimensions.spacingMD)
@@ -520,7 +520,7 @@ struct JohoSpecialDayEditorSheet: View {
 
     private var regionPickerRow: some View {
         HStack(spacing: 0) {
-            Image(systemName: "globe")
+            Image(systemName: IconCatalog.globe)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 40).frame(maxHeight: .infinity)
@@ -795,7 +795,7 @@ struct MonthCustomizationSheet: View {
                         onReset()
                     } label: {
                         HStack(spacing: 4) {
-                            Image(systemName: "arrow.counterclockwise")
+                            Image(systemName: IconCatalog.arrowCounterclockwise)
                                 .font(.system(size: 12, weight: .medium))
                             Text("Reset to default")
                                 .font(.system(size: 12, weight: .medium, design: .rounded))
@@ -857,7 +857,7 @@ struct MonthCustomizationSheet: View {
                 )
                 .overlay {
                     if isSelected {
-                        Image(systemName: "checkmark")
+                        Image(systemName: IconCatalog.checkmark)
                             .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(option.name == "Black" ? colors.surface : colors.primary)
                     }
@@ -908,7 +908,7 @@ struct JohoBentoOptionRow: View {
 
             Rectangle().fill(colors.border).frame(width: 1.5).frame(height: 48).padding(.trailing, JohoDimensions.spacingSM)
 
-            Image(systemName: "chevron.right")
+            Image(systemName: IconCatalog.chevronRight)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 44, height: 48)

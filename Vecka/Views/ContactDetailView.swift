@@ -251,7 +251,7 @@ struct ContactDetailView: View {
                                     Spacer()
                                     HStack {
                                         Spacer()
-                                        Image(systemName: "camera.fill")
+                                        Image(systemName: IconCatalog.camera)
                                             .font(.system(size: 14, weight: .bold, design: .rounded))
                                             .foregroundStyle(colors.primaryInverted)
                                             .frame(width: 28, height: 28)
@@ -316,7 +316,7 @@ struct ContactDetailView: View {
                     HStack(spacing: JohoDimensions.spacingLG) {
                         if let phone = contact.phoneNumbers.first {
                             HStack(spacing: 4) {
-                                Image(systemName: "phone.fill")
+                                Image(systemName: IconCatalog.phone)
                                     .font(.system(size: 10, weight: .bold, design: .rounded))
                                     .foregroundStyle(colors.primary)
                                 Text(phone.value)
@@ -327,7 +327,7 @@ struct ContactDetailView: View {
 
                         if let email = contact.emailAddresses.first {
                             HStack(spacing: 4) {
-                                Image(systemName: "envelope.fill")
+                                Image(systemName: IconCatalog.envelope)
                                     .font(.system(size: 10, weight: .bold, design: .rounded))
                                     .foregroundStyle(colors.primary)
                                 Text(email.value)
@@ -574,7 +574,7 @@ struct ContactDetailView: View {
                             Button {
                                 openInMaps(address.formattedAddress)
                             } label: {
-                                Image(systemName: "map.fill")
+                                Image(systemName: IconCatalog.mapFill)
                                     .font(.system(size: 18, weight: .bold, design: .rounded))
                                     .foregroundStyle(JohoColors.cyan)
                                     .frame(width: 44, height: 44)
@@ -837,7 +837,7 @@ struct ContactDetailView: View {
             showingQRCard = true
         } label: {
             HStack(spacing: JohoDimensions.spacingSM) {
-                Image(systemName: "square.and.arrow.up")
+                Image(systemName: IconCatalog.share)
                     .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(accentColor)
 
@@ -1008,7 +1008,7 @@ struct ContactDetailView: View {
             }
         } label: {
             // 44pt minimum touch target
-            Image(systemName: isEditMode ? "xmark" : "xmark")
+            Image(systemName: isEditMode ? IconCatalog.xmark : IconCatalog.xmark)
                 .font(.system(size: 18, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .johoTouchTarget()
@@ -1026,7 +1026,7 @@ struct ContactDetailView: View {
             }
             HapticManager.selection()
         } label: {
-            Image(systemName: isEditMode ? "lock.open.fill" : "lock.fill")
+            Image(systemName: isEditMode ? "lock.open.fill" : IconCatalog.lockFill)
                 .font(.system(size: 18, weight: .bold, design: .rounded))
                 .foregroundStyle(isEditMode ? colors.surface : colors.primary.opacity(0.6))
                 .johoTouchTarget()
@@ -1386,7 +1386,7 @@ struct JohoContactEditorSheet: View {
                                         .frame(width: 120, height: 120)
                                         .overlay(
                                             VStack(spacing: 4) {
-                                                Image(systemName: "camera.fill")
+                                                Image(systemName: IconCatalog.camera)
                                                     .font(.system(size: 28, weight: .medium, design: .rounded))
                                                     .foregroundStyle(colors.primary.opacity(0.6))
                                                 Text("Add Photo")
@@ -1502,7 +1502,7 @@ struct JohoContactEditorSheet: View {
                         VStack(spacing: JohoDimensions.spacingSM) {
                             // Birthday toggle row
                             HStack(spacing: JohoDimensions.spacingSM) {
-                                Image(systemName: "birthday.cake")
+                                Image(systemName: IconCatalog.birthdayCake)
                                     .font(.system(size: 16, weight: .medium, design: .rounded))
                                     .foregroundStyle(birthdayKnown ? SpecialDayType.birthday.accentColor : colors.primary.opacity(0.6))
                                     .frame(width: 24)
@@ -1668,7 +1668,7 @@ struct JohoContactEditorSheet: View {
 
                 Spacer()
 
-                Image(systemName: "chevron.right")
+                Image(systemName: IconCatalog.chevronRight)
                     .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary.opacity(0.6))
             }

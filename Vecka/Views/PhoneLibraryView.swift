@@ -131,7 +131,7 @@ struct PhoneLibraryView: View {
     private var libraryHeader: some View {
         HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
             // Icon zone (gold/yellow for Library - matches sidebar accent)
-            Image(systemName: "books.vertical.fill")
+            Image(systemName: IconCatalog.booksVertical)
                 .font(.system(size: 24, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .johoTouchTarget(52)

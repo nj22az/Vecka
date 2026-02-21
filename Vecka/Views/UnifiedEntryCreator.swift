@@ -309,7 +309,7 @@ struct UnifiedEntryCreator: View {
             Button {
                 dismiss()
             } label: {
-                Image(systemName: "xmark")
+                Image(systemName: IconCatalog.xmark)
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .frame(width: 32, height: 32)
@@ -385,7 +385,7 @@ struct UnifiedEntryCreator: View {
 
     private var textRow: some View {
         HStack(spacing: 0) {
-            Image(systemName: "pencil")
+            Image(systemName: IconCatalog.pencil)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 48).frame(maxHeight: .infinity)
@@ -410,7 +410,7 @@ struct UnifiedEntryCreator: View {
             HapticManager.impact(.light)
         } label: {
             HStack(spacing: 0) {
-                Image(systemName: "calendar")
+                Image(systemName: IconCatalog.calendar)
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .frame(width: 48)
@@ -425,7 +425,7 @@ struct UnifiedEntryCreator: View {
 
                 Spacer()
 
-                Image(systemName: "chevron.right")
+                Image(systemName: IconCatalog.chevronRight)
                     .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.secondary)
                     .padding(.trailing, JohoDimensions.spacingMD)
@@ -465,7 +465,7 @@ struct UnifiedEntryCreator: View {
 
     private var regionRow: some View {
         HStack(spacing: 0) {
-            Image(systemName: "globe")
+            Image(systemName: IconCatalog.globe)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 48).frame(maxHeight: .infinity)
@@ -511,7 +511,7 @@ struct UnifiedEntryCreator: View {
 
                     Spacer()
 
-                    Image(systemName: "chevron.up.chevron.down")
+                    Image(systemName: IconCatalog.chevronUpDown)
                         .font(.system(size: 10, weight: .bold))
                         .foregroundStyle(colors.secondary)
                 }
@@ -526,7 +526,7 @@ struct UnifiedEntryCreator: View {
 
     private var memoOptionsRow: some View {
         HStack(spacing: 0) {
-            Image(systemName: "plus.circle")
+            Image(systemName: IconCatalog.plusCircle)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
@@ -538,7 +538,7 @@ struct UnifiedEntryCreator: View {
                     withAnimation(.easeInOut(duration: 0.2)) { showAmount.toggle() }
                 }
 
-                iconChip(icon: "mappin", isActive: showPlace) {
+                iconChip(icon: IconCatalog.mappin, isActive: showPlace) {
                     withAnimation(.easeInOut(duration: 0.2)) { showPlace.toggle() }
                 }
 
@@ -546,7 +546,7 @@ struct UnifiedEntryCreator: View {
                     withAnimation(.easeInOut(duration: 0.2)) { showContact.toggle() }
                 }
 
-                iconChip(icon: "photo", isActive: showPhoto) {
+                iconChip(icon: IconCatalog.photo, isActive: showPhoto) {
                     withAnimation(.easeInOut(duration: 0.2)) { showPhoto.toggle() }
                 }
             }
@@ -642,7 +642,7 @@ struct UnifiedEntryCreator: View {
 
     private var placeRow: some View {
         HStack(spacing: 0) {
-            Image(systemName: "mappin")
+            Image(systemName: IconCatalog.mappin)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
@@ -674,7 +674,7 @@ struct UnifiedEntryCreator: View {
             } label: {
                 HStack {
                     if linkedContactID != nil {
-                        Image(systemName: "checkmark.circle.fill")
+                        Image(systemName: IconCatalog.checkmarkCircleFill)
                             .foregroundStyle(accentColor)
                         Text(linkedContactName.isEmpty ? "Linked" : linkedContactName)
                             .font(.system(size: 14, weight: .medium, design: .rounded))
@@ -693,13 +693,13 @@ struct UnifiedEntryCreator: View {
                             linkedContactName = ""
                             HapticManager.selection()
                         } label: {
-                            Image(systemName: "xmark.circle.fill")
+                            Image(systemName: IconCatalog.xmarkCircleFill)
                                 .foregroundStyle(colors.secondary)
                         }
                         .buttonStyle(.plain)
                     }
 
-                    Image(systemName: "chevron.right")
+                    Image(systemName: IconCatalog.chevronRight)
                         .font(.system(size: 12, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.secondary)
                 }
@@ -714,7 +714,7 @@ struct UnifiedEntryCreator: View {
 
     private var photoRow: some View {
         HStack(spacing: 0) {
-            Image(systemName: "photo")
+            Image(systemName: IconCatalog.photo)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
@@ -738,7 +738,7 @@ struct UnifiedEntryCreator: View {
                         selectedPhotoItem = nil
                         HapticManager.selection()
                     } label: {
-                        Image(systemName: "xmark.circle.fill")
+                        Image(systemName: IconCatalog.xmarkCircleFill)
                             .font(.system(size: 20))
                             .foregroundStyle(colors.secondary)
                     }
@@ -747,7 +747,7 @@ struct UnifiedEntryCreator: View {
                     // Photo picker button
                     PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
                         HStack(spacing: 6) {
-                            Image(systemName: "plus")
+                            Image(systemName: IconCatalog.plus)
                                 .font(.system(size: 12, weight: .bold))
                             Text("Add Photo")
                                 .font(.system(size: 14, weight: .medium, design: .rounded))
@@ -785,7 +785,7 @@ struct UnifiedEntryCreator: View {
             save()
         } label: {
             HStack {
-                Image(systemName: "checkmark")
+                Image(systemName: IconCatalog.checkmark)
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                 Text("SAVE")
                     .font(.system(size: 14, weight: .heavy, design: .rounded))

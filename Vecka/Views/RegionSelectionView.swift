@@ -179,7 +179,7 @@ struct RegionSelectionView: View {
                         _ = selectedRegions.removeRegionIfPossible(code, minimumCount: 0)
                         HapticManager.selection()
                     } label: {
-                        Image(systemName: "xmark.circle.fill")
+                        Image(systemName: IconCatalog.xmarkCircleFill)
                             .font(.system(size: 12))
                     }
                 }
@@ -213,7 +213,7 @@ struct RegionSelectionView: View {
                         HapticManager.impact(.light)
                     } label: {
                         HStack(spacing: 4) {
-                            Image(systemName: "xmark.circle")
+                            Image(systemName: IconCatalog.xmarkCircle)
                             Text("Clear All")
                         }
                         .font(.system(size: 14, weight: .semibold, design: .rounded))

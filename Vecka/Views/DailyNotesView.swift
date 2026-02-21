@@ -65,7 +65,7 @@ struct DailyNotesView: View {
                         Button {
                             dismiss()
                         } label: {
-                            Image(systemName: "xmark")
+                            Image(systemName: IconCatalog.xmark)
                                 .font(.system(size: 14, weight: .bold))
                                 .foregroundStyle(colors.surface)
                                 .frame(width: 32, height: 32)
@@ -114,7 +114,7 @@ struct DailyNotesView: View {
                         }
                     } label: {
                         HStack(spacing: JohoDimensions.spacingSM) {
-                            Image(systemName: "plus")
+                            Image(systemName: IconCatalog.plus)
                                 .font(.system(size: 16, weight: .bold))
                             Text("Add Note")
                                 .font(JohoFont.button)
@@ -476,7 +476,7 @@ struct JohoNoteEditorSheet: View {
                 HStack(spacing: 0) {
                     // LEFT: Back button (44pt)
                     Button { dismiss() } label: {
-                        Image(systemName: "chevron.left")
+                        Image(systemName: IconCatalog.chevronLeft)
                             .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(colors.primaryInverted)
                             .johoTouchTarget()
@@ -575,7 +575,7 @@ struct JohoNoteEditorSheet: View {
                 // ═══════════════════════════════════════════════════════════════
                 HStack(spacing: 0) {
                     // LEFT: Calendar icon (40pt)
-                    Image(systemName: "calendar")
+                    Image(systemName: IconCatalog.calendar)
                         .font(.system(size: 14, weight: .bold))
                         .foregroundStyle(colors.primary)
                         .frame(width: 40)
@@ -675,7 +675,7 @@ struct JohoNoteEditorSheet: View {
 
                         Spacer()
 
-                        Image(systemName: "chevron.right")
+                        Image(systemName: IconCatalog.chevronRight)
                             .font(.system(size: 12, weight: .semibold))
                             .foregroundStyle(colors.primary.opacity(0.4))
                             .padding(.trailing, JohoDimensions.spacingMD)

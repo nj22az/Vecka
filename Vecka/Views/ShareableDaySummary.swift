@@ -213,7 +213,7 @@ struct ShareableDaySummaryCard: View {
                 } else {
                     // Empty state
                     VStack(spacing: JohoDimensions.spacingSM) {
-                        Image(systemName: "checkmark.circle")
+                        Image(systemName: IconCatalog.checkmarkCircle)
                             .font(.system(size: 32, weight: .bold))
                             .foregroundStyle(colors.secondary.opacity(0.5))
 
@@ -280,7 +280,7 @@ struct DaySummarySheetView: View {
                         Circle()
                             .fill(colors.surface)
                             .frame(width: 28, height: 28)
-                        Image(systemName: "xmark")
+                        Image(systemName: IconCatalog.xmark)
                             .font(.system(size: 11, weight: .black, design: .rounded))
                             .foregroundStyle(colors.primary)
                     }
@@ -400,7 +400,7 @@ struct DaySummarySheetView: View {
                 } else {
                     // Empty state
                     VStack(spacing: JohoDimensions.spacingSM) {
-                        Image(systemName: "checkmark.circle")
+                        Image(systemName: IconCatalog.checkmarkCircle)
                             .font(.system(size: 32, weight: .bold))
                             .foregroundStyle(colors.secondary.opacity(0.5))
 
@@ -465,7 +465,7 @@ struct DaySummaryShareButton: View {
             item: snapshot,
             preview: SharePreview(
                 "Day Summary - \(data.monthName) \(data.dayNumber)",
-                image: Image(systemName: "calendar")
+                image: Image(systemName: IconCatalog.calendar)
             )
         ) {
             JohoShareCircleButton()

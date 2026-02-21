@@ -138,7 +138,7 @@ struct ShareableCountdownCard: View {
                     // Annual indicator
                     if isAnnual {
                         HStack(spacing: 4) {
-                            Image(systemName: "repeat")
+                            Image(systemName: IconCatalog.repeatIcon)
                                 .font(.system(size: 10, weight: .bold))
                             Text("ANNUAL")
                                 .font(.system(size: 10, weight: .bold, design: .rounded))
@@ -149,7 +149,7 @@ struct ShareableCountdownCard: View {
                     // Task progress (if has tasks)
                     if totalTasks > 0 {
                         HStack(spacing: 6) {
-                            Image(systemName: completedTasks == totalTasks ? "checkmark.circle.fill" : "circle.dotted")
+                            Image(systemName: completedTasks == totalTasks ? IconCatalog.checkmarkCircleFill : "circle.dotted")
                                 .font(.system(size: 12, weight: .bold))
                                 .foregroundStyle(completedTasks == totalTasks ? accentColor : colors.primary.opacity(0.5))
 
@@ -236,7 +236,7 @@ struct CountdownShareButton: View {
                 image: Image(systemName: countdown.iconName ?? IconCatalog.event)
             )
         ) {
-            Image(systemName: "square.and.arrow.up")
+            Image(systemName: IconCatalog.share)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoColors.cyan)
                 .frame(width: 32, height: 32)

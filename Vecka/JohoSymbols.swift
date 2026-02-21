@@ -16,25 +16,113 @@ enum IconCatalog {
     static let person = "person.fill"
     static let people = "person.2.fill"
     static let contacts = "person.2"
+    static let peopleGroup = "person.3.fill"
+    static let personBadgeKey = "person.badge.key"
 
     // MARK: - Calendar & Time
     static let calendar = "calendar"
+    static let calendarBadgePlus = "calendar.badge.plus"
+    static let calendarBadgeCheckmark = "calendar.badge.checkmark"
     static let event = "calendar.badge.clock"
     static let clock = "clock.fill"
+    static let clockHistory = "clock.arrow.circlepath"
     static let timer = "timer"
-
-    // MARK: - Settings & System
-    static let settings = "gearshape"
+    static let repeatIcon = "repeat"
 
     // MARK: - Navigation
     static let home = "house.fill"
     static let star = "star.fill"
+    static let chevronRight = "chevron.right"
+    static let chevronLeft = "chevron.left"
+    static let chevronDown = "chevron.down"
+    static let chevronUpDown = "chevron.up.chevron.down"
+    static let arrowBack = "arrow.uturn.backward"
+    static let arrowCounterclockwise = "arrow.counterclockwise"
+    static let arrowClockwise = "arrow.clockwise"
+    static let arrowDownCircle = "arrow.down.circle"
+
+    // MARK: - Actions
+    static let plus = "plus"
+    static let plusCircle = "plus.circle"
+    static let plusCircleFill = "plus.circle.fill"
+    static let xmark = "xmark"
+    static let xmarkCircle = "xmark.circle"
+    static let xmarkCircleFill = "xmark.circle.fill"
+    static let checkmark = "checkmark"
+    static let checkmarkCircle = "checkmark.circle"
+    static let checkmarkCircleFill = "checkmark.circle.fill"
+    static let pencil = "pencil"
+    static let trash = "trash"
+    static let trashFill = "trash.fill"
+
+    // MARK: - Sharing & Import
+    static let share = "square.and.arrow.up"
+    static let download = "square.and.arrow.down"
+
+    // MARK: - Search
+    static let search = "magnifyingglass"
+
+    // MARK: - Communication
+    static let phone = "phone.fill"
+    static let envelope = "envelope.fill"
+    static let mapFill = "map.fill"
+
+    // MARK: - Location
+    static let mappin = "mappin"
+    static let locationFill = "location.fill"
+    static let globe = "globe"
+
+    // MARK: - Media
+    static let photo = "photo"
+    static let photoStack = "photo.fill.on.rectangle.fill"
+    static let camera = "camera.fill"
+
+    // MARK: - Documents & Lists
+    static let bookClosed = "text.book.closed.fill"
+    static let booksVertical = "books.vertical.fill"
+    static let listBullet = "list.bullet"
+    static let checklist = "checklist"
+
+    // MARK: - Alerts & Status
+    static let warning = "exclamationmark.triangle.fill"
+    static let lockFill = "lock.fill"
+    static let chartBar = "chart.bar.xaxis"
+    static let tray = "tray"
+    static let folder = "folder.fill"
+    static let flagFill = "flag.fill"
+
+    // MARK: - Gifts & Social
+    static let gift = "gift.fill"
+
+    // MARK: - Buildings & Places
+    static let building = "building.2.fill"
+    static let storefront = "storefront.fill"
+    static let qrcode = "qrcode"
+
+    // MARK: - Grids & Layout
+    static let gridAll = "circle.grid.2x2.fill"
+    static let characterJa = "character.ja"
+
+    // MARK: - Developer & Tools
+    static let hammer = "hammer.fill"
+    static let wandAndStars = "wand.and.stars"
+
+    // MARK: - Decorative (KaomojiMascot)
+    static let heartFill = "heart.fill"
+    static let cloudFill = "cloud.fill"
+    static let sparkle = "sparkle"
+    static let humidityFill = "humidity.fill"
+
+    // MARK: - Settings & System
+    static let settings = "gearshape"
 
     // MARK: - Type Defaults
     static let birthday = "birthday.cake.fill"
+    static let birthdayCake = "birthday.cake"
     static let holiday = "star.fill"
     static let observance = "sparkles"
     static let trip = "airplane"
+    static let tripDeparture = "airplane.departure"
     static let countdown = "calendar.badge.clock"
 
     // MARK: - Display Category Outlines (shape = meaning)
@@ -656,7 +744,7 @@ struct JohoContactAvatarRow: View {
             }
 
             // Chevron
-            Image(systemName: "chevron.right")
+            Image(systemName: IconCatalog.chevronRight)
                 .font(.system(size: 14, weight: .bold))
                 .foregroundStyle(colors.primary.opacity(0.5))
         }

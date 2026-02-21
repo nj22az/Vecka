@@ -208,7 +208,7 @@ struct MemoEditorView: View {
             Button {
                 dismiss()
             } label: {
-                Image(systemName: "xmark")
+                Image(systemName: IconCatalog.xmark)
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .frame(width: 32, height: 32)
@@ -237,7 +237,7 @@ struct MemoEditorView: View {
     private var optionChipsRow: some View {
         HStack(spacing: 0) {
             // Icon column
-            Image(systemName: "plus.circle")
+            Image(systemName: IconCatalog.plusCircle)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
@@ -294,7 +294,7 @@ struct MemoEditorView: View {
 
     private var textRow: some View {
         HStack(spacing: 0) {
-            Image(systemName: "pencil")
+            Image(systemName: IconCatalog.pencil)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 48).frame(maxHeight: .infinity)
@@ -360,7 +360,7 @@ struct MemoEditorView: View {
 
     private var dateRow: some View {
         HStack(spacing: 0) {
-            Image(systemName: "calendar")
+            Image(systemName: IconCatalog.calendar)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
@@ -379,7 +379,7 @@ struct MemoEditorView: View {
 
                     Spacer()
 
-                    Image(systemName: "chevron.right")
+                    Image(systemName: IconCatalog.chevronRight)
                         .font(.system(size: 12, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.secondary)
                 }
@@ -419,7 +419,7 @@ struct MemoEditorView: View {
 
                     Spacer()
 
-                    Image(systemName: "chevron.right")
+                    Image(systemName: IconCatalog.chevronRight)
                         .font(.system(size: 12, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.secondary)
                 }
@@ -459,7 +459,7 @@ struct MemoEditorView: View {
 
                     Spacer()
 
-                    Image(systemName: "chevron.right")
+                    Image(systemName: IconCatalog.chevronRight)
                         .font(.system(size: 12, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.secondary)
                 }
@@ -513,7 +513,7 @@ struct MemoEditorView: View {
 
     private var placeRow: some View {
         HStack(spacing: 0) {
-            Image(systemName: "mappin")
+            Image(systemName: IconCatalog.mappin)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
@@ -545,7 +545,7 @@ struct MemoEditorView: View {
             } label: {
                 HStack {
                     if linkedContactID != nil {
-                        Image(systemName: "checkmark.circle.fill")
+                        Image(systemName: IconCatalog.checkmarkCircleFill)
                             .foregroundStyle(accentColor)
                         Text(linkedContactName.isEmpty ? "Linked" : linkedContactName)
                             .font(.system(size: 14, weight: .medium, design: .rounded))
@@ -564,13 +564,13 @@ struct MemoEditorView: View {
                             linkedContactName = ""
                             HapticManager.selection()
                         } label: {
-                            Image(systemName: "xmark.circle.fill")
+                            Image(systemName: IconCatalog.xmarkCircleFill)
                                 .foregroundStyle(colors.secondary)
                         }
                         .buttonStyle(.plain)
                     }
 
-                    Image(systemName: "chevron.right")
+                    Image(systemName: IconCatalog.chevronRight)
                         .font(.system(size: 12, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.secondary)
                 }
@@ -588,7 +588,7 @@ struct MemoEditorView: View {
             saveMemo()
         } label: {
             HStack {
-                Image(systemName: "checkmark")
+                Image(systemName: IconCatalog.checkmark)
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                 Text("SAVE")
                     .font(.system(size: 14, weight: .heavy, design: .rounded))
@@ -613,7 +613,7 @@ struct MemoEditorView: View {
             HapticManager.impact(.medium)
         } label: {
             HStack {
-                Image(systemName: "trash")
+                Image(systemName: IconCatalog.trash)
                 Text("Delete")
             }
             .font(.system(size: 14, weight: .bold, design: .rounded))
@@ -762,7 +762,7 @@ struct MemoContactPicker: View {
                 Button {
                     dismiss()
                 } label: {
-                    Image(systemName: "xmark")
+                    Image(systemName: IconCatalog.xmark)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary)
                         .frame(width: 32, height: 32)
@@ -846,7 +846,7 @@ struct MemoContactPicker: View {
                 Spacer()
 
                 if selectedContactID == contact.id {
-                    Image(systemName: "checkmark.circle.fill")
+                    Image(systemName: IconCatalog.checkmarkCircleFill)
                         .foregroundStyle(accentColor)
                         .font(.system(size: 20))
                 }
@@ -889,7 +889,7 @@ struct JohoTimePicker: View {
                 Button {
                     dismiss()
                 } label: {
-                    Image(systemName: "xmark")
+                    Image(systemName: IconCatalog.xmark)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary)
                         .frame(width: 32, height: 32)
@@ -910,7 +910,7 @@ struct JohoTimePicker: View {
                     updateTime()
                     dismiss()
                 } label: {
-                    Image(systemName: "checkmark")
+                    Image(systemName: IconCatalog.checkmark)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(.white)
                         .frame(width: 32, height: 32)

@@ -151,7 +151,7 @@ struct SpecialDayDetailSheet: View {
                                 .foregroundStyle(colors.primary.opacity(0.4))
                         }
 
-                        Image(systemName: "chevron.right")
+                        Image(systemName: IconCatalog.chevronRight)
                             .font(.system(size: 10, weight: .bold))
                             .foregroundStyle(colors.primary.opacity(0.3))
                     }
@@ -227,7 +227,7 @@ struct SpecialDayDetailSheet: View {
             Button {
                 dismiss()
             } label: {
-                Image(systemName: "xmark")
+                Image(systemName: IconCatalog.xmark)
                     .font(.system(size: 14, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primaryInverted)
                     .frame(width: 32, height: 32)
@@ -350,7 +350,7 @@ struct SpecialDayDetailSheet: View {
 
                     Spacer()
 
-                    Image(systemName: showShareOptions ? "chevron.up" : "chevron.down")
+                    Image(systemName: showShareOptions ? "chevron.up" : IconCatalog.chevronDown)
                         .font(.system(size: 10, weight: .bold))
                         .foregroundStyle(colors.primary.opacity(0.4))
                 }
@@ -381,7 +381,7 @@ struct SpecialDayDetailSheet: View {
                                 .font(.system(size: 16, weight: .bold))
                                 .foregroundStyle(item.type.accentColor)
 
-                            Image(systemName: "chevron.right")
+                            Image(systemName: IconCatalog.chevronRight)
                                 .font(.system(size: 10, weight: .bold))
                                 .foregroundStyle(colors.primary.opacity(0.3))
                         }
@@ -499,7 +499,7 @@ struct SpecialDayShareButton: View {
                 Circle()
                     .fill(colors.surface)
                     .frame(width: 32, height: 32)
-                Image(systemName: "square.and.arrow.up")
+                Image(systemName: IconCatalog.share)
                     .font(.system(size: 12, weight: .black, design: .rounded))
                     .foregroundStyle(colors.primary)
             }

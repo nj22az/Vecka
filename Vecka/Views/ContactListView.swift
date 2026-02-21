@@ -194,7 +194,7 @@ struct ContactListView: View {
                                 deleteSelectedContacts()
                             } label: {
                                 HStack(spacing: 4) {
-                                    Image(systemName: "trash.fill")
+                                    Image(systemName: IconCatalog.trashFill)
                                         .font(.system(size: 14, weight: .bold, design: .rounded))
                                     Text("\(selectedForDeletion.count)")
                                         .font(.system(size: 12, weight: .bold, design: .rounded))
@@ -232,7 +232,7 @@ struct ContactListView: View {
                                 isEditMode = true
                             }
                         } label: {
-                            Image(systemName: "pencil")
+                            Image(systemName: IconCatalog.pencil)
                                 .font(.system(size: 16, weight: .bold, design: .rounded))
                                 .foregroundStyle(PageHeaderColor.contacts.accent)
                                 .johoTouchTarget()
@@ -252,7 +252,7 @@ struct ContactListView: View {
                         Button {
                             showingImportSheet = true
                         } label: {
-                            Image(systemName: "square.and.arrow.down")
+                            Image(systemName: IconCatalog.download)
                                 .font(.system(size: 16, weight: .bold, design: .rounded))
                                 .foregroundStyle(PageHeaderColor.contacts.accent)
                                 .johoTouchTarget()
@@ -280,7 +280,7 @@ struct ContactListView: View {
                 // Phone count with icon
                 if contactsWithPhone > 0 {
                     HStack(spacing: 4) {
-                        Image(systemName: "phone.fill")
+                        Image(systemName: IconCatalog.phone)
                             .font(.system(size: 11, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoColors.cyan)
                         Text("\(contactsWithPhone)")
@@ -292,7 +292,7 @@ struct ContactListView: View {
                 // Birthday count with icon
                 if contactsWithBirthday > 0 {
                     HStack(spacing: 4) {
-                        Image(systemName: "gift.fill")
+                        Image(systemName: IconCatalog.gift)
                             .font(.system(size: 11, weight: .bold, design: .rounded))
                             .foregroundStyle(SpecialDayType.birthday.accentColor)
                         Text("\(contactsWithBirthday)")
@@ -343,7 +343,7 @@ struct ContactListView: View {
             } label: {
                 HStack(spacing: 0) {
                     // LEFT COMPARTMENT: Icon zone
-                    Image(systemName: "square.and.arrow.down")
+                    Image(systemName: IconCatalog.download)
                         .font(.system(size: 18, weight: .bold, design: .rounded))
                         .foregroundStyle(accentColor)
                         .frame(width: 56, height: 56)
@@ -363,7 +363,7 @@ struct ContactListView: View {
                     Spacer()
 
                     // Chevron
-                    Image(systemName: "chevron.right")
+                    Image(systemName: IconCatalog.chevronRight)
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary)
                         .padding(.trailing, JohoDimensions.spacingMD)
@@ -462,7 +462,7 @@ struct ContactListView: View {
                 HapticManager.selection()
             } label: {
                 HStack(spacing: 6) {
-                    Image(systemName: "folder.fill")
+                    Image(systemName: IconCatalog.folder)
                         .font(.system(size: 11, weight: .bold, design: .rounded))
                     Text("GROUPS")
                         .font(.system(size: 11, weight: .black, design: .rounded))
@@ -473,7 +473,7 @@ struct ContactListView: View {
                             .foregroundStyle(group.swiftUIColor)
                     }
                     Spacer()
-                    Image(systemName: isGroupsExpanded ? "chevron.up" : "chevron.down")
+                    Image(systemName: isGroupsExpanded ? "chevron.up" : IconCatalog.chevronDown)
                         .font(.system(size: 10, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary.opacity(0.5))
                 }
@@ -511,7 +511,7 @@ struct ContactListView: View {
                 HapticManager.selection()
             } label: {
                 HStack(spacing: 4) {
-                    Image(systemName: "person.3.fill")
+                    Image(systemName: IconCatalog.peopleGroup)
                         .font(.system(size: 10, weight: .bold, design: .rounded))
                     Text("All")
                         .font(.system(size: 11, weight: .bold, design: .rounded))
@@ -603,7 +603,7 @@ struct ContactListView: View {
                             .stroke(colors.border, lineWidth: isSelected ? 2 : 1)
                             .frame(width: 28, height: 28)
                         if isSelected {
-                            Image(systemName: "checkmark")
+                            Image(systemName: IconCatalog.checkmark)
                                 .font(.system(size: 12, weight: .bold, design: .rounded))
                                 .foregroundStyle(colors.primaryInverted)
                         }
@@ -803,7 +803,7 @@ struct ContactImportView: View {
                         // Title with icon indicator
                         HStack(spacing: JohoDimensions.spacingSM) {
                             // Icon zone
-                            Image(systemName: "square.and.arrow.down")
+                            Image(systemName: IconCatalog.download)
                                 .font(.system(size: 20, weight: .bold, design: .rounded))
                                 .foregroundStyle(accentColor)
                                 .frame(width: 40, height: 40)
@@ -866,7 +866,7 @@ struct ContactImportView: View {
                             VStack(spacing: JohoDimensions.spacingMD) {
                                 HStack(spacing: JohoDimensions.spacingSM) {
                                     // Warning icon
-                                    Image(systemName: "exclamationmark.triangle.fill")
+                                    Image(systemName: IconCatalog.warning)
                                         .font(.system(size: 16, weight: .bold, design: .rounded))
                                         .foregroundStyle(JohoColors.red)
                                         .frame(width: 32, height: 32)
@@ -889,7 +889,7 @@ struct ContactImportView: View {
                                 } label: {
                                     HStack(spacing: 0) {
                                         // Icon zone
-                                        Image(systemName: "person.badge.key")
+                                        Image(systemName: IconCatalog.personBadgeKey)
                                             .font(.system(size: 16, weight: .bold, design: .rounded))
                                             .foregroundStyle(JohoColors.red)
                                             .johoTouchTarget()
@@ -909,7 +909,7 @@ struct ContactImportView: View {
                                         Spacer()
 
                                         // Chevron
-                                        Image(systemName: "chevron.right")
+                                        Image(systemName: IconCatalog.chevronRight)
                                             .font(.system(size: 14, weight: .bold, design: .rounded))
                                             .foregroundStyle(colors.primary)
                                             .padding(.trailing, JohoDimensions.spacingMD)
@@ -931,7 +931,7 @@ struct ContactImportView: View {
                                 .frame(height: 1.5)
 
                             HStack(spacing: JohoDimensions.spacingSM) {
-                                Image(systemName: message.contains("Success") ? "checkmark.circle.fill" : "info.circle.fill")
+                                Image(systemName: message.contains("Success") ? IconCatalog.checkmarkCircleFill : "info.circle.fill")
                                     .font(.system(size: 16, weight: .bold, design: .rounded))
                                     .foregroundStyle(message.contains("Success") ? JohoColors.green : accentColor)
 
@@ -1009,7 +1009,7 @@ struct ContactImportView: View {
             Spacer()
 
             // Chevron
-            Image(systemName: "chevron.right")
+            Image(systemName: IconCatalog.chevronRight)
                 .font(.system(size: 14, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .padding(.trailing, JohoDimensions.spacingMD)
@@ -1179,7 +1179,7 @@ struct JohoAddContactSheet: View {
                         Circle()
                             .fill(colors.surface)
                             .frame(width: 24, height: 24)
-                        Image(systemName: "xmark")
+                        Image(systemName: IconCatalog.xmark)
                             .font(.system(size: 10, weight: .black, design: .rounded))
                             .foregroundStyle(colors.primary)
                     }
@@ -1251,7 +1251,7 @@ struct JohoAddContactSheet: View {
             Spacer()
 
             // Arrow - bold BLACK
-            Image(systemName: "chevron.right")
+            Image(systemName: IconCatalog.chevronRight)
                 .font(.system(size: 12, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
         }

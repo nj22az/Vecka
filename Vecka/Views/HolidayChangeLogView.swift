@@ -63,7 +63,7 @@ struct HolidayChangeLogView: View {
                             showingLoadDefaultsConfirmation = true
                         } label: {
                             HStack(spacing: 4) {
-                                Image(systemName: "arrow.down.circle")
+                                Image(systemName: IconCatalog.arrowDownCircle)
                                 Text("Load Defaults")
                             }
                             .font(.system(size: 14, weight: .medium, design: .rounded))
@@ -139,7 +139,7 @@ struct HolidayChangeLogView: View {
         VStack(spacing: JohoDimensions.spacingMD) {
             Spacer()
 
-            Image(systemName: "clock.arrow.circlepath")
+            Image(systemName: IconCatalog.clockHistory)
                 .font(.system(size: 48, weight: .light, design: .rounded))
                 .foregroundStyle(colors.primary.opacity(0.3))
 
@@ -244,7 +244,7 @@ struct ChangeLogEntryRow: View {
             Spacer()
 
             // Chevron
-            Image(systemName: "chevron.right")
+            Image(systemName: IconCatalog.chevronRight)
                 .font(.system(size: 12, weight: .semibold, design: .rounded))
                 .foregroundStyle(colors.primary.opacity(0.3))
         }
