@@ -134,7 +134,7 @@ struct SpecialDayDetailSheet: View {
                             .frame(width: 8, height: 8)
                             .overlay(Circle().stroke(colors.border, lineWidth: 1))
                         Text("ITEM ICON")
-                            .font(.system(size: 10, weight: .black, design: .rounded))
+                            .font(JohoFont.pillLabel)
                             .foregroundStyle(colors.primary.opacity(0.6))
                     }
 
@@ -205,7 +205,7 @@ struct SpecialDayDetailSheet: View {
         HStack(spacing: JohoDimensions.spacingMD) {
             // Type code pill
             Text(item.type.code)
-                .font(.system(size: 12, weight: .black, design: .rounded))
+                .font(JohoFont.label)
                 .foregroundStyle(colors.primaryInverted)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
@@ -228,7 +228,7 @@ struct SpecialDayDetailSheet: View {
                 dismiss()
             } label: {
                 Image(systemName: IconCatalog.xmark)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primaryInverted)
                     .frame(width: 32, height: 32)
                     .background(colors.primary.opacity(0.3))
@@ -274,7 +274,7 @@ struct SpecialDayDetailSheet: View {
             if item.hasCountryPill {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     Text("REGION")
-                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .font(JohoFont.pillLabel)
                         .foregroundStyle(colors.primary.opacity(0.5))
                         .frame(width: 60, alignment: .leading)
 
@@ -308,7 +308,7 @@ struct SpecialDayDetailSheet: View {
             if let notes = item.notes, !notes.isEmpty, notes != item.title {
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
                     Text("NOTES")
-                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .font(JohoFont.pillLabel)
                         .foregroundStyle(colors.primary.opacity(0.5))
 
                     Text(notes)
@@ -344,7 +344,7 @@ struct SpecialDayDetailSheet: View {
             } label: {
                 HStack {
                     Text("SHARE OPTIONS")
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primary.opacity(0.6))
                         .tracking(0.5)
 
@@ -372,7 +372,7 @@ struct SpecialDayDetailSheet: View {
                     } label: {
                         HStack {
                             Text("ICON")
-                                .font(.system(size: 10, weight: .bold, design: .rounded))
+                                .font(JohoFont.labelBold)
                                 .foregroundStyle(colors.primary.opacity(0.5))
 
                             Spacer()
@@ -398,11 +398,11 @@ struct SpecialDayDetailSheet: View {
                     // Personal note field
                     HStack {
                         Text("NOTE")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .font(JohoFont.labelBold)
                             .foregroundStyle(colors.primary.opacity(0.5))
 
                         TextField("Add personal note...", text: $personalNote)
-                            .font(.system(size: 12, weight: .medium, design: .rounded))
+                            .font(JohoFont.caption)
                             .foregroundStyle(colors.primary)
                     }
                     .padding(.horizontal, JohoDimensions.spacingMD)
@@ -415,7 +415,7 @@ struct SpecialDayDetailSheet: View {
                     // Date stamp preview
                     HStack {
                         Text("DATE")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .font(JohoFont.labelBold)
                             .foregroundStyle(colors.primary.opacity(0.5))
 
                         Spacer()
@@ -437,7 +437,7 @@ struct SpecialDayDetailSheet: View {
     private func detailRow(label: String, value: String) -> some View {
         HStack(spacing: JohoDimensions.spacingSM) {
             Text(label)
-                .font(.system(size: 10, weight: .black, design: .rounded))
+                .font(JohoFont.pillLabel)
                 .foregroundStyle(colors.primary.opacity(0.5))
                 .frame(width: 60, alignment: .leading)
 
@@ -500,7 +500,7 @@ struct SpecialDayShareButton: View {
                     .fill(colors.surface)
                     .frame(width: 32, height: 32)
                 Image(systemName: IconCatalog.share)
-                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .font(JohoFont.label)
                     .foregroundStyle(colors.primary)
             }
         }
@@ -590,10 +590,10 @@ struct ShareableSpecialDayCard: View {
                 HStack(spacing: 0) {
                     HStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: IconCatalog.event)
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(colors.primary)
                         Text("ONSEN PLANNER")
-                            .font(.system(size: 12, weight: .black, design: .rounded))
+                            .font(JohoFont.label)
                             .foregroundStyle(colors.primary)
                     }
                     .padding(.leading, JohoDimensions.spacingMD)
@@ -608,7 +608,7 @@ struct ShareableSpecialDayCard: View {
 
                     // Icon (customizable)
                     Image(systemName: displayIcon)
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .font(JohoFont.headline)
                         .foregroundStyle(item.type.accentColor)
                         .frame(width: 48)
                         .frame(maxHeight: .infinity)
@@ -654,7 +654,7 @@ struct ShareableSpecialDayCard: View {
                     // RIGHT: Text content
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                         Text(formattedDate)
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .font(JohoFont.headlineSmall)
                             .foregroundStyle(colors.primary)
 
                         Text(item.title)
@@ -702,7 +702,7 @@ struct ShareableSpecialDayCard: View {
                 HStack {
                     HStack(spacing: 4) {
                         Text(item.type.code)
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .font(JohoFont.labelBold)
                             .foregroundStyle(colors.primary.opacity(0.5))
                             .tracking(1)
 
@@ -710,7 +710,7 @@ struct ShareableSpecialDayCard: View {
                             Text("·")
                                 .foregroundStyle(colors.primary.opacity(0.3))
                             Text(item.region.uppercased())
-                                .font(.system(size: 10, weight: .bold, design: .rounded))
+                                .font(JohoFont.labelBold)
                                 .foregroundStyle(colors.primary.opacity(0.4))
                         }
                     }

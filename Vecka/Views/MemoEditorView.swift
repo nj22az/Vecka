@@ -209,7 +209,7 @@ struct MemoEditorView: View {
                 dismiss()
             } label: {
                 Image(systemName: IconCatalog.xmark)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
                     .frame(width: 32, height: 32)
                     .background(colors.surface)
@@ -220,7 +220,7 @@ struct MemoEditorView: View {
             Spacer()
 
             Text(isEditing ? "EDIT MEMO" : "NEW MEMO")
-                .font(.system(size: 16, weight: .heavy, design: .rounded))
+                .font(JohoFont.headlineSmall)
                 .foregroundStyle(colors.primary)
 
             Spacer()
@@ -238,7 +238,7 @@ struct MemoEditorView: View {
         HStack(spacing: 0) {
             // Icon column
             Image(systemName: IconCatalog.plusCircle)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
 
@@ -279,7 +279,7 @@ struct MemoEditorView: View {
                 Image(systemName: icon)
                     .font(.system(size: 10, weight: .bold))
                 Text(label)
-                    .font(.system(size: 10, weight: .heavy, design: .rounded))
+                    .font(JohoFont.labelSmall)
             }
             .foregroundStyle(isActive ? .white : colors.primary)
             .padding(.horizontal, 10)
@@ -295,14 +295,14 @@ struct MemoEditorView: View {
     private var textRow: some View {
         HStack(spacing: 0) {
             Image(systemName: IconCatalog.pencil)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48).frame(maxHeight: .infinity)
 
             Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
             TextField("Write something...", text: $text, axis: .vertical)
-                .font(.system(size: 14, weight: .medium, design: .rounded))
+                .font(JohoFont.bodySmall)
                 .foregroundStyle(colors.primary)
                 .lineLimit(1...4)
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -316,7 +316,7 @@ struct MemoEditorView: View {
     private var dateTypeRow: some View {
         HStack(spacing: 0) {
             Image(systemName: IconCatalog.event)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
 
@@ -345,7 +345,7 @@ struct MemoEditorView: View {
                 Image(systemName: type.icon)
                     .font(.system(size: 10, weight: .bold))
                 Text(type.rawValue)
-                    .font(.system(size: 10, weight: .heavy, design: .rounded))
+                    .font(JohoFont.labelSmall)
             }
             .foregroundStyle(dateType == type ? .white : colors.primary)
             .padding(.horizontal, 10)
@@ -361,7 +361,7 @@ struct MemoEditorView: View {
     private var dateRow: some View {
         HStack(spacing: 0) {
             Image(systemName: IconCatalog.calendar)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
 
@@ -373,14 +373,14 @@ struct MemoEditorView: View {
             } label: {
                 HStack {
                     Text(formattedDate)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary)
                         .monospacedDigit()
 
                     Spacer()
 
                     Image(systemName: IconCatalog.chevronRight)
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .font(JohoFont.label)
                         .foregroundStyle(colors.secondary)
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -401,7 +401,7 @@ struct MemoEditorView: View {
     private var timeRow: some View {
         HStack(spacing: 0) {
             Image(systemName: "clock")
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
 
@@ -413,14 +413,14 @@ struct MemoEditorView: View {
             } label: {
                 HStack {
                     Text(formattedTime)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary)
                         .monospacedDigit()
 
                     Spacer()
 
                     Image(systemName: IconCatalog.chevronRight)
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .font(JohoFont.label)
                         .foregroundStyle(colors.secondary)
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -441,7 +441,7 @@ struct MemoEditorView: View {
     private var endDateRow: some View {
         HStack(spacing: 0) {
             Image(systemName: IconCatalog.event)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
 
@@ -453,14 +453,14 @@ struct MemoEditorView: View {
             } label: {
                 HStack {
                     Text(formattedEndDate)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary)
                         .monospacedDigit()
 
                     Spacer()
 
                     Image(systemName: IconCatalog.chevronRight)
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .font(JohoFont.label)
                         .foregroundStyle(colors.secondary)
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -481,7 +481,7 @@ struct MemoEditorView: View {
     private var amountRow: some View {
         HStack(spacing: 0) {
             Image(systemName: "yensign.circle")
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
 
@@ -489,12 +489,12 @@ struct MemoEditorView: View {
 
             HStack(spacing: 12) {
                 TextField("0", text: $amount)
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .font(JohoFont.headlineSmall)
                     .keyboardType(.decimalPad)
                     .foregroundStyle(colors.primary)
 
                 TextField("SEK", text: $currency)
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .font(JohoFont.label)
                     .foregroundStyle(colors.primary)
                     .textInputAutocapitalization(.characters)
                     .frame(width: 44)
@@ -514,14 +514,14 @@ struct MemoEditorView: View {
     private var placeRow: some View {
         HStack(spacing: 0) {
             Image(systemName: IconCatalog.mappin)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
 
             Rectangle().fill(colors.border).frame(width: 1.5).frame(height: 48)
 
             TextField("Where...", text: $place)
-                .font(.system(size: 14, weight: .medium, design: .rounded))
+                .font(JohoFont.bodySmall)
                 .foregroundStyle(colors.primary)
                 .padding(.horizontal, JohoDimensions.spacingMD)
         }
@@ -533,7 +533,7 @@ struct MemoEditorView: View {
     private var contactRow: some View {
         HStack(spacing: 0) {
             Image(systemName: IconCatalog.person)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
 
@@ -548,11 +548,11 @@ struct MemoEditorView: View {
                         Image(systemName: IconCatalog.checkmarkCircleFill)
                             .foregroundStyle(accentColor)
                         Text(linkedContactName.isEmpty ? "Linked" : linkedContactName)
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .font(JohoFont.bodySmall)
                             .foregroundStyle(colors.primary)
                     } else {
                         Text("Select contact...")
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .font(JohoFont.bodySmall)
                             .foregroundStyle(colors.secondary)
                     }
 
@@ -571,7 +571,7 @@ struct MemoEditorView: View {
                     }
 
                     Image(systemName: IconCatalog.chevronRight)
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .font(JohoFont.label)
                         .foregroundStyle(colors.secondary)
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -589,7 +589,7 @@ struct MemoEditorView: View {
         } label: {
             HStack {
                 Image(systemName: IconCatalog.checkmark)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                 Text("SAVE")
                     .font(.system(size: 14, weight: .heavy, design: .rounded))
             }
@@ -616,7 +616,7 @@ struct MemoEditorView: View {
                 Image(systemName: IconCatalog.trash)
                 Text("Delete")
             }
-            .font(.system(size: 14, weight: .bold, design: .rounded))
+            .font(JohoFont.bodySmallBold)
             .foregroundStyle(JohoColors.red)
             .frame(maxWidth: .infinity)
             .frame(height: 44)
@@ -763,7 +763,7 @@ struct MemoContactPicker: View {
                     dismiss()
                 } label: {
                     Image(systemName: IconCatalog.xmark)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary)
                         .frame(width: 32, height: 32)
                         .background(colors.surface)
@@ -774,7 +774,7 @@ struct MemoContactPicker: View {
                 Spacer()
 
                 Text("LINK CONTACT")
-                    .font(.system(size: 16, weight: .heavy, design: .rounded))
+                    .font(JohoFont.headlineSmall)
                     .foregroundStyle(colors.primary)
 
                 Spacer()
@@ -792,7 +792,7 @@ struct MemoContactPicker: View {
                 LazyVStack(spacing: 0) {
                     if contacts.isEmpty {
                         Text("No contacts available")
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .font(JohoFont.bodySmall)
                             .foregroundStyle(colors.secondary)
                             .padding(32)
                     } else {
@@ -827,13 +827,13 @@ struct MemoContactPicker: View {
                         .overlay(Circle().stroke(selectedContactID == contact.id ? accentColor : colors.border, lineWidth: 1.5))
 
                     Text(contact.initials)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(selectedContactID == contact.id ? accentColor : colors.primary)
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(contact.displayName)
-                        .font(.system(size: 15, weight: .medium, design: .rounded))
+                        .font(JohoFont.subheadline)
                         .foregroundStyle(colors.primary)
 
                     if contact.birthday != nil {
@@ -890,7 +890,7 @@ struct JohoTimePicker: View {
                     dismiss()
                 } label: {
                     Image(systemName: IconCatalog.xmark)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary)
                         .frame(width: 32, height: 32)
                         .background(colors.surface)
@@ -901,7 +901,7 @@ struct JohoTimePicker: View {
                 Spacer()
 
                 Text("SELECT TIME")
-                    .font(.system(size: 16, weight: .heavy, design: .rounded))
+                    .font(JohoFont.headlineSmall)
                     .foregroundStyle(colors.primary)
 
                 Spacer()
@@ -911,7 +911,7 @@ struct JohoTimePicker: View {
                     dismiss()
                 } label: {
                     Image(systemName: IconCatalog.checkmark)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(.white)
                         .frame(width: 32, height: 32)
                         .background(accentColor)
@@ -930,7 +930,7 @@ struct JohoTimePicker: View {
                 // Hours
                 VStack(spacing: 4) {
                     Text("HOUR")
-                        .font(.system(size: 10, weight: .heavy, design: .rounded))
+                        .font(JohoFont.labelSmall)
                         .foregroundStyle(colors.secondary)
 
                     Picker("Hour", selection: $hours) {
@@ -945,14 +945,14 @@ struct JohoTimePicker: View {
                 }
 
                 Text(":")
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(JohoFont.displaySmall)
                     .foregroundStyle(colors.primary)
                     .padding(.top, 20)
 
                 // Minutes
                 VStack(spacing: 4) {
                     Text("MINUTE")
-                        .font(.system(size: 10, weight: .heavy, design: .rounded))
+                        .font(JohoFont.labelSmall)
                         .foregroundStyle(colors.secondary)
 
                     Picker("Minute", selection: $minutes) {

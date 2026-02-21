@@ -208,7 +208,7 @@ struct LandingPageView: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone with Landing accent color (Warm Amber)
                     Image(systemName: IconCatalog.home)
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .font(JohoFont.title)
                         .foregroundStyle(PageHeaderColor.landing.accent)
                         .frame(width: 40, height: 40)
                         .background(PageHeaderColor.landing.lightBackground)
@@ -297,11 +297,11 @@ struct LandingPageView: View {
             // Header row
             HStack {
                 Image(systemName: IconCatalog.globe)
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .font(JohoFont.label)
                     .foregroundStyle(colors.primary)
 
                 Text("WORLD")
-                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .font(JohoFont.headerTag)
                     .tracking(1.5)
                     .foregroundStyle(colors.primary)
 
@@ -346,7 +346,7 @@ struct LandingPageView: View {
         return VStack(spacing: 4) {
             // Country code pill (情報デザイン: Region-colored like MonthTheme)
             Text(clock.countryCode)
-                .font(.system(size: 10, weight: .black, design: .rounded))
+                .font(JohoFont.pillLabel)
                 .foregroundStyle(colors.primaryInverted)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 3)
@@ -434,7 +434,7 @@ struct LandingPageView: View {
             HStack {
                 ZStack {
                     Image(systemName: "text.book.closed.fill")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(JohoColors.cyan)
                 }
                 .frame(width: 24, height: 24)
@@ -442,7 +442,7 @@ struct LandingPageView: View {
                 .johoBordered(cornerRadius: 6, borderWidth: 1)
 
                 Text("RANDOM FACTS")
-                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .font(JohoFont.headerTag)
                     .tracking(1.5)
                     .foregroundStyle(colors.primary)
 
@@ -454,7 +454,7 @@ struct LandingPageView: View {
                     loadRandomFacts()
                 } label: {
                     Image(systemName: "arrow.clockwise")
-                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .font(JohoFont.tag)
                         .foregroundStyle(colors.secondary)
                 }
                 .buttonStyle(.plain)
@@ -549,7 +549,7 @@ struct LandingPageView: View {
             // TOP: Icon zone (情報デザイン: Strong color like Star page month icons)
             VStack {
                 Image(systemName: fact.icon ?? IconCatalog.holiday)
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(JohoFont.displaySmall)
                     .foregroundStyle(fact.color.readableForeground)
             }
             .frame(maxWidth: .infinity)
@@ -563,7 +563,7 @@ struct LandingPageView: View {
 
             // BOTTOM: Text zone
             Text(fact.text)
-                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .font(JohoFont.labelBold)
                 .foregroundStyle(colors.primary)
                 .multilineTextAlignment(.center)
                 .lineLimit(3)
@@ -831,7 +831,7 @@ struct LandingPageView: View {
                     .overlay(Circle().stroke(colors.border, lineWidth: 1))
 
                 Text(mode.title)
-                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .font(JohoFont.headerTag)
                     .tracking(1.5)
                     .foregroundStyle(colors.primary)
 
@@ -998,7 +998,7 @@ struct LandingPageView: View {
 
             // Icon
             Image(systemName: item.icon)
-                .font(.system(size: 12, weight: .medium, design: .rounded))
+                .font(JohoFont.label)
                 .foregroundStyle(item.color.readableForeground)
                 .frame(width: 16)
 
@@ -1011,7 +1011,7 @@ struct LandingPageView: View {
 
                 if let subtitle = item.subtitle {
                     Text(subtitle)
-                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .font(JohoFont.caption)
                         .foregroundStyle(colors.secondary)
                 }
             }
@@ -1289,7 +1289,7 @@ struct RandomFactDetailSheet: View {
 
                 // Text zone with headline
                 Text(fact.text)
-                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .font(JohoFont.headline)
                     .foregroundStyle(colors.primary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, JohoDimensions.spacingMD)
@@ -1304,7 +1304,7 @@ struct RandomFactDetailSheet: View {
 
                 // Explanation text (情報デザイン: Full context for understanding)
                 Text(fact.explanation)
-                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .font(JohoFont.bodySmall)
                     .foregroundStyle(colors.primary.opacity(0.8))
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)

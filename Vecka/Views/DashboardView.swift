@@ -81,7 +81,7 @@ struct DashboardView: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone with Tools accent color (Teal)
                     Image(systemName: "chart.bar.xaxis")
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .font(JohoFont.title)
                         .foregroundStyle(PageHeaderColor.tools.accent)
                         .frame(width: 40, height: 40)
                         .background(PageHeaderColor.tools.lightBackground)
@@ -103,7 +103,7 @@ struct DashboardView: View {
                 // RIGHT COMPARTMENT: Card count
                 HStack(spacing: 4) {
                     Text("7")
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .font(JohoFont.headlineSmall)
                         .monospacedDigit()
                         .foregroundStyle(colors.primary)
                     Text("CARDS")
@@ -688,14 +688,14 @@ private struct DataCard<Content: View>: View {
             HStack(spacing: JohoDimensions.spacingSM) {
                 // Icon zone - uses SectionZone background for proper semantic color
                 Image(systemName: icon)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(zone.textColor(for: colorMode))
                     .frame(width: 28, height: 28)
                     .background(zone.background(for: colorMode))
                     .johoBordered(cornerRadius: 6, borderWidth: 1)
 
                 Text(title)
-                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .font(JohoFont.headerTag)
                     .tracking(1)
                     .foregroundStyle(colors.primary)
 

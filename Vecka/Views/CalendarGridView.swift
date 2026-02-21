@@ -168,7 +168,7 @@ extension CalendarGridView {
         HStack(spacing: 0) {
             // LEFT COMPARTMENT: Week column header
             Text("W")
-                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .font(JohoFont.tag)
                 .foregroundStyle(colors.secondary)
                 .frame(width: weekColumnWidth, height: headerHeight)
 
@@ -189,7 +189,7 @@ extension CalendarGridView {
                 }()
 
                 Text(weekdaySymbol(for: index).uppercased())
-                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .font(JohoFont.tag)
                     .foregroundStyle(dayColor)
                     .frame(maxWidth: .infinity)
                     .frame(height: headerHeight)
@@ -245,7 +245,7 @@ extension CalendarGridView {
                     }
 
                     Text("\(week.weekNumber)")
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .font(JohoFont.headlineSmall)
                         .foregroundStyle(isCurrentWeek ? colors.primaryInverted : colors.primary)
                         .monospacedDigit()
                 }
@@ -285,7 +285,7 @@ extension CalendarGridView {
                     }
 
                     Text("\(day.dayNumber)")
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .font(JohoFont.headlineSmall)
                         .foregroundStyle(dayTextColor(for: day, isSelected: isSelected, dataCheck: dataCheck))
                         .monospacedDigit()
                 }

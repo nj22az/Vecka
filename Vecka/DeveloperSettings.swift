@@ -52,7 +52,7 @@ struct DeveloperSettingsView: View {
                     Button("Done") {
                         dismiss()
                     }
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
                 }
             }
@@ -79,7 +79,7 @@ struct DeveloperSettingsView: View {
             HStack(spacing: 0) {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: IconCatalog.hammer)
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .font(JohoFont.title)
                         .foregroundStyle(JohoColors.cyan)
                         .frame(width: 40, height: 40)
                         .background(JohoColors.cyan.opacity(0.2))
@@ -99,7 +99,7 @@ struct DeveloperSettingsView: View {
 
                 HStack(spacing: 4) {
                     Text("DEBUG")
-                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .font(JohoFont.pillLabel)
                         .foregroundStyle(JohoColors.red)
                 }
                 .frame(width: 80)
@@ -123,7 +123,7 @@ struct DeveloperSettingsView: View {
                 } label: {
                     HStack(spacing: JohoDimensions.spacingMD) {
                         Image(systemName: IconCatalog.wandAndStars)
-                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .font(JohoFont.title)
                             .foregroundStyle(JohoColors.cyan)
                             .johoTouchTarget()
                             .background(JohoColors.cyan.opacity(0.2))
@@ -146,7 +146,7 @@ struct DeveloperSettingsView: View {
                                 .scaleEffect(0.8)
                         } else {
                             Image(systemName: IconCatalog.chevronRight)
-                                .font(.system(size: 12, weight: .bold, design: .rounded))
+                                .font(JohoFont.label)
                                 .foregroundStyle(colors.secondary)
                         }
                     }
@@ -309,7 +309,7 @@ struct DeveloperSettingsView: View {
                 } label: {
                     HStack(spacing: JohoDimensions.spacingMD) {
                         Image(systemName: IconCatalog.photoStack)
-                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .font(JohoFont.title)
                             .foregroundStyle(JohoColors.purple)
                             .johoTouchTarget()
                             .background(JohoColors.purple.opacity(0.2))
@@ -328,7 +328,7 @@ struct DeveloperSettingsView: View {
                         Spacer()
 
                         Image(systemName: IconCatalog.chevronRight)
-                            .font(.system(size: 12, weight: .bold, design: .rounded))
+                            .font(JohoFont.label)
                             .foregroundStyle(colors.secondary)
                     }
                     .padding(JohoDimensions.spacingMD)
@@ -372,11 +372,11 @@ struct DeveloperSettingsView: View {
         } label: {
             VStack(spacing: 6) {
                 Image(systemName: icon)
-                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                    .font(JohoFont.title)
                     .foregroundStyle(color)
 
                 Text(label)
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .font(JohoFont.labelBold)
                     .foregroundStyle(colors.primary)
             }
             .frame(maxWidth: .infinity)
@@ -400,7 +400,7 @@ struct DeveloperSettingsView: View {
                 .overlay(Circle().stroke(colors.border, lineWidth: 1))
 
             Text(label)
-                .font(.system(size: 10, weight: .black, design: .rounded))
+                .font(JohoFont.pillLabel)
                 .tracking(0.5)
                 .foregroundStyle(colors.primary)
 
@@ -442,7 +442,7 @@ struct DeveloperSettingsView: View {
             Spacer()
 
             Text(value)
-                .font(.system(size: 14, weight: .medium, design: .monospaced))
+                .font(JohoFont.monoSmall)
                 .foregroundStyle(colors.primary)
         }
         .padding(.horizontal, JohoDimensions.spacingMD)
@@ -497,7 +497,7 @@ struct DeveloperSettingsView: View {
     private func statChip(count: Int, icon: String, color: Color) -> some View {
         HStack(spacing: 4) {
             Image(systemName: icon)
-                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .font(JohoFont.labelBold)
                 .foregroundStyle(color)
 
             Text("\(count)")
@@ -530,7 +530,7 @@ struct DeveloperSettingsView: View {
             } label: {
                 HStack(spacing: JohoDimensions.spacingMD) {
                     Image(systemName: IconCatalog.trashFill)
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .font(JohoFont.title)
                         .foregroundStyle(JohoColors.red)
                         .johoTouchTarget()
                         .background(JohoColors.red.opacity(0.2))
@@ -553,7 +553,7 @@ struct DeveloperSettingsView: View {
                     Spacer()
 
                     Image(systemName: IconCatalog.warning)
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .font(JohoFont.headlineSmall)
                         .foregroundStyle(JohoColors.red)
                 }
                 .padding(JohoDimensions.spacingMD)

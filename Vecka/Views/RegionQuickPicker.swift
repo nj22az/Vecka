@@ -72,7 +72,7 @@ struct RegionQuickPicker: View {
             HStack(spacing: JohoDimensions.spacingSM) {
                 // Globe icon
                 Image(systemName: IconCatalog.globe)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary.opacity(0.7))
 
                 // Selected region pills (up to 3 shown, only valid codes)
@@ -111,7 +111,7 @@ struct RegionQuickPicker: View {
 
                 // Expand/collapse indicator
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .font(JohoFont.labelBold)
                     .foregroundStyle(colors.primary.opacity(0.5))
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
@@ -129,7 +129,7 @@ struct RegionQuickPicker: View {
             // Header
             HStack(spacing: 8) {
                 Text("HOLIDAY REGIONS")
-                    .font(.system(size: 10, weight: .black, design: .rounded))
+                    .font(JohoFont.pillLabel)
                     .tracking(0.5)
                     .foregroundStyle(colors.primary)
 
@@ -168,7 +168,7 @@ struct RegionQuickPicker: View {
                     HapticManager.selection()
                 } label: {
                     Text("Done")
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .font(JohoFont.label)
                         .foregroundStyle(colors.primaryInverted)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)

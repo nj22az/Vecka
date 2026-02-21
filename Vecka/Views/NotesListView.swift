@@ -290,7 +290,7 @@ private struct NotesDayRow: View {
 
             // Chevron
             Image(systemName: IconCatalog.chevronRight)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
         }
         .padding(JohoDimensions.spacingMD)
@@ -354,7 +354,7 @@ private struct MemoPinnedNoteRow: View {
 
             // Chevron
             Image(systemName: IconCatalog.chevronRight)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
         }
         .padding(JohoDimensions.spacingMD)

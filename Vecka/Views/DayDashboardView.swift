@@ -148,21 +148,21 @@ struct DayDashboardView: View {
                             .foregroundStyle(isToday ? JohoColors.todayOrange : colors.primary)
 
                         Text(weekdayName)
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(colors.secondary)
                     }
 
                     // Month + week + secondary text
                     HStack(spacing: 6) {
                         Text(monthName.uppercased())
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .font(JohoFont.tag)
                             .foregroundStyle(colors.secondary)
 
                         Text("•")
                             .foregroundStyle(colors.secondary.opacity(0.5))
 
                         Text(Localization.weekDisplayText(Calendar.iso8601.component(.weekOfYear, from: date)))
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .font(JohoFont.tag)
                             .foregroundStyle(colors.secondary)
 
                         if let secondary = secondaryDateText, !secondary.isEmpty {
@@ -411,7 +411,7 @@ struct DayDashboardView: View {
             VStack(alignment: .leading, spacing: 2) {
                 // Date badge
                 Text(headerBadge)
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .font(JohoFont.labelBold)
                     .foregroundStyle(colors.surfaceInverted)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
@@ -420,13 +420,13 @@ struct DayDashboardView: View {
 
                 // Main date
                 Text(formattedDate)
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(JohoFont.displaySmall)
                     .foregroundStyle(colors.primary)
 
                 // Subtitle (week + secondary)
                 if let subtitle = subtitleText, !subtitle.isEmpty {
                     Text(subtitle)
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .font(JohoFont.caption)
                         .foregroundStyle(colors.secondary)
                 }
             }
@@ -506,7 +506,7 @@ struct DayDashboardView: View {
                     .frame(width: 8, height: 8)
 
                 Text(title)
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .font(JohoFont.labelBold)
                     .tracking(0.5)
                     .foregroundStyle(colors.secondary)
             }
@@ -584,7 +584,7 @@ struct DayDashboardView: View {
                 // Amount
                 if let amount = memo.amount {
                     Text(String(format: "%.0f %@", amount, memo.currency ?? baseCurrency))
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .font(JohoFont.label)
                         .foregroundStyle(JohoColors.green)
                 }
             }
@@ -749,7 +749,7 @@ struct SingleMemoDetailSheet: View {
                             .fill(colors.surface)
                             .frame(width: 28, height: 28)
                         Image(systemName: IconCatalog.xmark)
-                            .font(.system(size: 11, weight: .black, design: .rounded))
+                            .font(JohoFont.headerTag)
                             .foregroundStyle(colors.primary)
                     }
                 }
@@ -778,7 +778,7 @@ struct SingleMemoDetailSheet: View {
 
                 // Title (date)
                 Text(formattedDate)
-                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .font(JohoFont.headline)
                     .foregroundStyle(colors.primary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, JohoDimensions.spacingMD)
@@ -793,7 +793,7 @@ struct SingleMemoDetailSheet: View {
 
                 // Memo text (情報デザイン: Full content)
                 Text(memo.text)
-                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                    .font(JohoFont.bodySmall)
                     .foregroundStyle(colors.primary.opacity(0.8))
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
@@ -802,14 +802,14 @@ struct SingleMemoDetailSheet: View {
                 // Footer: category + time
                 HStack {
                     Text(categoryLabel)
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primary.opacity(0.5))
                         .tracking(1)
 
                     Spacer()
 
                     Text(formattedTime)
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primary.opacity(0.4))
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -836,7 +836,7 @@ struct SingleMemoDetailSheet: View {
                 } label: {
                     HStack {
                         Text("SHARE OPTIONS")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .font(JohoFont.labelBold)
                             .foregroundStyle(colors.primary.opacity(0.6))
                             .tracking(0.5)
 
@@ -859,7 +859,7 @@ struct SingleMemoDetailSheet: View {
                         } label: {
                             HStack {
                                 Text("ICON")
-                                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                                    .font(JohoFont.labelBold)
                                     .foregroundStyle(colors.primary.opacity(0.5))
 
                                 Spacer()
@@ -880,11 +880,11 @@ struct SingleMemoDetailSheet: View {
                         // Personal note field
                         HStack {
                             Text("NOTE")
-                                .font(.system(size: 10, weight: .bold, design: .rounded))
+                                .font(JohoFont.labelBold)
                                 .foregroundStyle(colors.primary.opacity(0.5))
 
                             TextField("Add personal note...", text: $personalNote)
-                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .font(JohoFont.caption)
                                 .foregroundStyle(colors.primary)
                         }
                         .padding(.horizontal, JohoDimensions.spacingMD)
@@ -893,7 +893,7 @@ struct SingleMemoDetailSheet: View {
                         // Date stamp preview
                         HStack {
                             Text("DATE")
-                                .font(.system(size: 10, weight: .bold, design: .rounded))
+                                .font(JohoFont.labelBold)
                                 .foregroundStyle(colors.primary.opacity(0.5))
 
                             Spacer()
@@ -966,7 +966,7 @@ struct SingleMemoDetailSheet: View {
                             .frame(width: 8, height: 8)
                             .overlay(Circle().stroke(colors.border, lineWidth: 1))
                         Text("ITEM ICON")
-                            .font(.system(size: 10, weight: .black, design: .rounded))
+                            .font(JohoFont.pillLabel)
                             .foregroundStyle(colors.primary.opacity(0.6))
                     }
 
@@ -1032,7 +1032,7 @@ struct SingleMemoShareButton: View {
                     .fill(colors.surface)
                     .frame(width: 28, height: 28)
                 Image(systemName: IconCatalog.share)
-                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .font(JohoFont.headerTag)
                     .foregroundStyle(colors.primary)
             }
         }
@@ -1148,7 +1148,7 @@ struct ShareableMemoCard: View {
                 HStack(spacing: 0) {
                     HStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: IconCatalog.event)
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(colors.primary)
                         Text("ONSEN PLANNER")
                             .font(.system(size: 12, weight: .black, design: .rounded))
@@ -1166,7 +1166,7 @@ struct ShareableMemoCard: View {
 
                     // Icon (customizable)
                     Image(systemName: displayIcon)
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .font(JohoFont.headline)
                         .foregroundStyle(memoColor)
                         .frame(width: 48)
                         .frame(maxHeight: .infinity)
@@ -1212,7 +1212,7 @@ struct ShareableMemoCard: View {
                     // RIGHT: Text content
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                         Text(titleText)
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .font(JohoFont.headlineSmall)
                             .foregroundStyle(colors.primary)
 
                         Text(memo.text)
@@ -1247,7 +1247,7 @@ struct ShareableMemoCard: View {
                 // FOOTER
                 HStack {
                     Text(categoryLabel)
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primary.opacity(0.5))
                         .tracking(1)
 
@@ -1305,7 +1305,7 @@ struct SingleBirthdayDetailSheet: View {
                             .fill(colors.surface)
                             .frame(width: 28, height: 28)
                         Image(systemName: IconCatalog.xmark)
-                            .font(.system(size: 11, weight: .black, design: .rounded))
+                            .font(JohoFont.headerTag)
                             .foregroundStyle(colors.primary)
                     }
                 }
@@ -1334,7 +1334,7 @@ struct SingleBirthdayDetailSheet: View {
 
                 // Title (date)
                 Text(formattedDate)
-                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .font(JohoFont.headline)
                     .foregroundStyle(colors.primary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, JohoDimensions.spacingMD)
@@ -1349,7 +1349,7 @@ struct SingleBirthdayDetailSheet: View {
 
                 // Birthday name
                 Text(birthday.name)
-                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                    .font(JohoFont.title)
                     .foregroundStyle(colors.primary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, JohoDimensions.spacingMD)
@@ -1357,7 +1357,7 @@ struct SingleBirthdayDetailSheet: View {
                 // Age if known
                 if let age = birthday.age, age > 0 {
                     Text("Turns \(age)")
-                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .font(JohoFont.bodySmall)
                         .foregroundStyle(colors.primary.opacity(0.6))
                         .padding(.top, JohoDimensions.spacingSM)
                 }

@@ -877,7 +877,7 @@ typealias KaomojiMascot = JohoMascot
         // Simulated header left side
         HStack(spacing: 8) {
             Image(systemName: IconCatalog.home)
-                .font(.system(size: 20, weight: .bold, design: .rounded))
+                .font(JohoFont.title)
                 .foregroundStyle(JohoColors.cyan)
                 .frame(width: 40, height: 40)
                 .background(JohoColors.cyan.opacity(0.2))

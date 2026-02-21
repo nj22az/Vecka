@@ -173,7 +173,7 @@ struct RegionSelectionView: View {
             ForEach(sortedSelectedRegions, id: \.self) { code in
                 HStack(spacing: 4) {
                     Text(code)
-                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .font(JohoFont.tag)
 
                     Button {
                         _ = selectedRegions.removeRegionIfPossible(code, minimumCount: 0)
@@ -237,7 +237,7 @@ struct RegionSelectionView: View {
                     HapticManager.impact(.light)
                 } label: {
                     Text("Done")
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .font(JohoFont.headlineSmall)
                         .foregroundStyle(colors.primaryInverted)
                         .padding(.horizontal, 32)
                         .padding(.vertical, JohoDimensions.spacingMD)
@@ -285,7 +285,7 @@ struct RegionSelectionView: View {
 
                     // Continent name
                     Text(continent.rawValue.uppercased())
-                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .font(JohoFont.pillLabel)
                         .tracking(0.5)
                         .foregroundStyle(colors.primary)
 
@@ -339,10 +339,10 @@ struct RegionSelectionView: View {
         } label: {
             HStack(spacing: 4) {
                 Text(region.code)
-                    .font(.system(size: 10, weight: .black, design: .rounded))
+                    .font(JohoFont.pillLabel)
 
                 Text(region.displayName)
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .font(JohoFont.caption)
             }
             .foregroundStyle(isSelected ? colors.primaryInverted : colors.primary)
             .padding(.horizontal, 10)

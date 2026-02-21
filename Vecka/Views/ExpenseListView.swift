@@ -276,7 +276,7 @@ struct ExpenseListView: View {
         HStack(spacing: JohoDimensions.spacingSM) {
             // Currency badge (情報デザイン: Green expense zone)
             Text(item.currency)
-                .font(.system(size: 10, weight: .black, design: .rounded))
+                .font(JohoFont.pillLabel)
                 .foregroundStyle(colors.primary)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)

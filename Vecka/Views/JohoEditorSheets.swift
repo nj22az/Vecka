@@ -47,7 +47,7 @@ struct JohoUndoToast: View {
                 onDismiss()
             } label: {
                 Image(systemName: IconCatalog.xmark)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primaryInverted.opacity(0.6))
             }
         }
@@ -332,7 +332,7 @@ struct JohoSpecialDayEditorSheet: View {
                 HStack(spacing: 0) {
                     Button { dismiss() } label: {
                         Image(systemName: IconCatalog.chevronLeft)
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .font(JohoFont.headlineSmall)
                             .foregroundStyle(colors.primary)
                             .johoTouchTarget()
                     }
@@ -341,7 +341,7 @@ struct JohoSpecialDayEditorSheet: View {
 
                     HStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: type.defaultIcon)
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .font(JohoFont.headlineSmall)
                             .foregroundStyle(type.accentColor)
                             .frame(width: 36, height: 36)
                             .background(type.lightBackground)
@@ -369,7 +369,7 @@ struct JohoSpecialDayEditorSheet: View {
                         dismiss()
                     } label: {
                         Text("Save")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(0.4))
                             .frame(width: 56, height: 32)
                             .background(canSave ? type.accentColor : colors.surface)
@@ -406,7 +406,7 @@ struct JohoSpecialDayEditorSheet: View {
                 // Date row
                 HStack(spacing: 0) {
                     Image(systemName: IconCatalog.calendar)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary)
                         .frame(width: 40).frame(maxHeight: .infinity)
 
@@ -418,7 +418,7 @@ struct JohoSpecialDayEditorSheet: View {
                         }
                     } label: {
                         Text(String(selectedYear))
-                            .font(.system(size: 14, weight: .bold, design: .monospaced))
+                            .font(JohoFont.monoSmall)
                             .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity).frame(maxHeight: .infinity)
                     }
@@ -431,7 +431,7 @@ struct JohoSpecialDayEditorSheet: View {
                         }
                     } label: {
                         Text(monthName(selectedMonth))
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity).frame(maxHeight: .infinity)
                     }
@@ -444,7 +444,7 @@ struct JohoSpecialDayEditorSheet: View {
                         }
                     } label: {
                         Text("\(selectedDay)")
-                            .font(.system(size: 14, weight: .bold, design: .monospaced))
+                            .font(JohoFont.monoSmall)
                             .foregroundStyle(colors.primary)
                             .frame(width: 44).frame(maxHeight: .infinity)
                     }
@@ -521,7 +521,7 @@ struct JohoSpecialDayEditorSheet: View {
     private var regionPickerRow: some View {
         HStack(spacing: 0) {
             Image(systemName: IconCatalog.globe)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 40).frame(maxHeight: .infinity)
 
@@ -547,7 +547,7 @@ struct JohoSpecialDayEditorSheet: View {
             HapticManager.selection()
         } label: {
             Text(label)
-                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .font(JohoFont.label)
                 .foregroundStyle(selectedRegion == code ? colors.primaryInverted : colors.primary)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
@@ -701,7 +701,7 @@ struct MonthCustomizationSheet: View {
                     onCancel()
                 } label: {
                     Text("Cancel")
-                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .font(JohoFont.bodySmall)
                         .foregroundStyle(colors.primary.opacity(0.6))
                 }
                 .buttonStyle(.plain)
@@ -725,7 +725,7 @@ struct MonthCustomizationSheet: View {
                     ))
                 } label: {
                     Text("Save")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.surface)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
@@ -748,7 +748,7 @@ struct MonthCustomizationSheet: View {
                     // Icon picker
                     VStack(alignment: .leading, spacing: 8) {
                         Text("ICON")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .font(JohoFont.labelBold)
                             .foregroundStyle(colors.primary.opacity(0.5))
 
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 6), spacing: 8) {
@@ -761,7 +761,7 @@ struct MonthCustomizationSheet: View {
                     // Icon color picker
                     VStack(alignment: .leading, spacing: 8) {
                         Text("ICON COLOR")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .font(JohoFont.labelBold)
                             .foregroundStyle(colors.primary.opacity(0.5))
 
                         HStack(spacing: 8) {
@@ -777,11 +777,11 @@ struct MonthCustomizationSheet: View {
                     // Message field (情報デザイン: personal note)
                     VStack(alignment: .leading, spacing: 8) {
                         Text("MESSAGE")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .font(JohoFont.labelBold)
                             .foregroundStyle(colors.primary.opacity(0.5))
 
                         TextField("e.g., Birthday month...", text: $messageText)
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .font(JohoFont.bodySmall)
                             .foregroundStyle(colors.primary)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 10)
@@ -798,7 +798,7 @@ struct MonthCustomizationSheet: View {
                             Image(systemName: IconCatalog.arrowCounterclockwise)
                                 .font(.system(size: 12, weight: .medium))
                             Text("Reset to default")
-                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .font(JohoFont.caption)
                         }
                         .foregroundStyle(colors.primary.opacity(0.5))
                     }
@@ -909,7 +909,7 @@ struct JohoBentoOptionRow: View {
             Rectangle().fill(colors.border).frame(width: 1.5).frame(height: 48).padding(.trailing, JohoDimensions.spacingSM)
 
             Image(systemName: IconCatalog.chevronRight)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 44, height: 48)
                 .padding(.trailing, JohoDimensions.spacingXS)

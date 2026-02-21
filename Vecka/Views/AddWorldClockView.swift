@@ -117,7 +117,7 @@ struct AddWorldClockView: View {
                                     HStack(spacing: JohoDimensions.spacingMD) {
                                         // City code pill
                                         Text(city.code)
-                                            .font(.system(size: 11, weight: .black, design: .rounded))
+                                            .font(JohoFont.headerTag)
                                             .foregroundStyle(colors.primaryInverted)
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
@@ -140,7 +140,7 @@ struct AddWorldClockView: View {
 
                                         // Current time preview
                                         Text(currentTime(for: city.timezone))
-                                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                                            .font(JohoFont.bodySmallBold)
                                             .foregroundStyle(colors.secondary)
 
                                         Image(systemName: IconCatalog.plusCircle)

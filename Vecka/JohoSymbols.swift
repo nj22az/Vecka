@@ -587,7 +587,7 @@ struct JohoPhotoPicker: View {
             Image(systemName: icon)
                 .font(.system(size: 16, weight: .bold))
             Text(label)
-                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .font(JohoFont.labelBold)
         }
         .foregroundStyle(foregroundColor)
         .padding(.horizontal, JohoDimensions.spacingMD)

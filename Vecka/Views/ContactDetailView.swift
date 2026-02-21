@@ -252,7 +252,7 @@ struct ContactDetailView: View {
                                     HStack {
                                         Spacer()
                                         Image(systemName: IconCatalog.camera)
-                                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                                            .font(JohoFont.bodySmallBold)
                                             .foregroundStyle(colors.primaryInverted)
                                             .frame(width: 28, height: 28)
                                             .background(accentColor)
@@ -281,7 +281,7 @@ struct ContactDetailView: View {
                             .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: JohoColors.red.opacity(0.4))
 
                         TextField("Last Name", text: $editLastName)
-                            .font(.system(size: 16, weight: .medium, design: .rounded))
+                            .font(JohoFont.body)
                             .foregroundStyle(JohoColors.red.opacity(0.7))
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, JohoDimensions.spacingMD)
@@ -290,7 +290,7 @@ struct ContactDetailView: View {
                             .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: JohoColors.red.opacity(0.4))
 
                         TextField("Company", text: $editCompany)
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .font(JohoFont.bodySmall)
                             .foregroundStyle(JohoColors.red.opacity(0.6))
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, JohoDimensions.spacingMD)
@@ -308,7 +308,7 @@ struct ContactDetailView: View {
                     // Organization subtitle (if any)
                     if let org = contact.organizationName, !org.isEmpty {
                         Text(org)
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .font(JohoFont.bodySmall)
                             .foregroundStyle(colors.primary.opacity(0.6))
                     }
 
@@ -317,7 +317,7 @@ struct ContactDetailView: View {
                         if let phone = contact.phoneNumbers.first {
                             HStack(spacing: 4) {
                                 Image(systemName: IconCatalog.phone)
-                                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                                    .font(JohoFont.labelBold)
                                     .foregroundStyle(colors.primary)
                                 Text(phone.value)
                                     .font(.system(size: 11, weight: .semibold, design: .rounded))
@@ -328,7 +328,7 @@ struct ContactDetailView: View {
                         if let email = contact.emailAddresses.first {
                             HStack(spacing: 4) {
                                 Image(systemName: IconCatalog.envelope)
-                                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                                    .font(JohoFont.labelBold)
                                     .foregroundStyle(colors.primary)
                                 Text(email.value)
                                     .font(.system(size: 11, weight: .semibold, design: .rounded))
@@ -418,7 +418,7 @@ struct ContactDetailView: View {
             VStack(spacing: 6) {
                 // Circular icon (情報デザイン: 44pt minimum touch target)
                 Image(systemName: icon)
-                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .font(JohoFont.headline)
                     .foregroundStyle(color)
                     .frame(width: 48, height: 48)
                     .background(colors.surface)
@@ -561,7 +561,7 @@ struct ContactDetailView: View {
                         HStack(alignment: .top, spacing: JohoDimensions.spacingMD) {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(address.label.uppercased())
-                                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                                    .font(JohoFont.labelBold)
                                     .foregroundStyle(colors.primary.opacity(0.6))
 
                                 Text(address.formattedAddress)
@@ -575,7 +575,7 @@ struct ContactDetailView: View {
                                 openInMaps(address.formattedAddress)
                             } label: {
                                 Image(systemName: IconCatalog.mapFill)
-                                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                                    .font(JohoFont.headline)
                                     .foregroundStyle(JohoColors.cyan)
                                     .frame(width: 44, height: 44)
                             }
@@ -709,7 +709,7 @@ struct ContactDetailView: View {
                     Spacer()
 
                     Image(systemName: IconCatalog.birthday)
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .font(JohoFont.displaySmall)
                         .foregroundStyle(SpecialDayType.birthday.accentColor)
                 }
             }
@@ -791,7 +791,7 @@ struct ContactDetailView: View {
                                     .foregroundStyle(isSelected ? colors.surface : JohoColors.red)
 
                                 Text(group.localizedName)
-                                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                                    .font(JohoFont.label)
                                     .foregroundStyle(isSelected ? colors.surface : JohoColors.red)
                                     .lineLimit(1)
                             }
@@ -814,11 +814,11 @@ struct ContactDetailView: View {
                 let groupColor = contact.group.swiftUIColor
                 HStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: contact.group.icon)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primaryInverted)
 
                     Text(contact.group.localizedName)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primaryInverted)
                 }
                 .padding(.horizontal, 16)
@@ -838,11 +838,11 @@ struct ContactDetailView: View {
         } label: {
             HStack(spacing: JohoDimensions.spacingSM) {
                 Image(systemName: IconCatalog.share)
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .font(JohoFont.headlineSmall)
                     .foregroundStyle(accentColor)
 
                 Text("Share Contact")
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
 
                 Spacer()
@@ -866,7 +866,7 @@ struct ContactDetailView: View {
     ) -> some View {
         HStack(spacing: JohoDimensions.spacingMD) {
             Image(systemName: icon)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(iconColor)
                 .frame(width: 24)
 
@@ -904,14 +904,14 @@ struct ContactDetailView: View {
             // Header banner — 情報デザイン: Colored banner with icon zone
             HStack(spacing: JohoDimensions.spacingSM) {
                 Image(systemName: icon)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(iconColor)
                     .frame(width: 28, height: 28)
                     .background(iconColor.opacity(0.35))
                     .johoBordered(cornerRadius: 6, borderWidth: 1)
 
                 Text(title)
-                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .font(JohoFont.headerTag)
                     .tracking(1)
                     .foregroundStyle(colors.primary)
 
@@ -941,7 +941,7 @@ struct ContactDetailView: View {
         HStack(spacing: JohoDimensions.spacingMD) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(label)
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .font(JohoFont.labelBold)
                     .foregroundStyle(colors.primary.opacity(0.6))
 
                 Text(value)
@@ -955,7 +955,7 @@ struct ContactDetailView: View {
                 ForEach(Array(actions.enumerated()), id: \.offset) { _, action in
                     Button(action: action.2) {
                         Image(systemName: action.0)
-                            .font(.system(size: 18, weight: .bold, design: .rounded))
+                            .font(JohoFont.headline)
                             .foregroundStyle(action.1)
                             .frame(width: 44, height: 44)
                     }
@@ -1009,7 +1009,7 @@ struct ContactDetailView: View {
         } label: {
             // 44pt minimum touch target
             Image(systemName: isEditMode ? IconCatalog.xmark : IconCatalog.xmark)
-                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .font(JohoFont.headline)
                 .foregroundStyle(colors.primary)
                 .johoTouchTarget()
                 .background(colors.surface)
@@ -1027,7 +1027,7 @@ struct ContactDetailView: View {
             HapticManager.selection()
         } label: {
             Image(systemName: isEditMode ? "lock.open.fill" : IconCatalog.lockFill)
-                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .font(JohoFont.headline)
                 .foregroundStyle(isEditMode ? colors.surface : colors.primary.opacity(0.6))
                 .johoTouchTarget()
                 .background(isEditMode ? JohoColors.red : colors.surface)
@@ -1046,7 +1046,7 @@ struct ContactDetailView: View {
             HapticManager.notification(.success)
         } label: {
             Text("Save")
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primaryInverted)
                 .padding(.horizontal, JohoDimensions.spacingMD)
                 .padding(.vertical, JohoDimensions.spacingSM)
@@ -1335,7 +1335,7 @@ struct JohoContactEditorSheet: View {
                     // × Cancel
                     Button { dismiss() } label: {
                         Text(JohoSymbols.batsu)  // ×
-                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .font(JohoFont.title)
                             .foregroundStyle(colors.primary)
                             .johoTouchTarget()
                             .background(colors.surface)
@@ -1423,7 +1423,7 @@ struct JohoContactEditorSheet: View {
                     // Name fields - clean and centered
                     VStack(spacing: JohoDimensions.spacingSM) {
                         TextField("First Name", text: $firstName)
-                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                            .font(JohoFont.displaySmall)
                             .foregroundStyle(colors.primary)
                             .multilineTextAlignment(.center)
 
@@ -1503,7 +1503,7 @@ struct JohoContactEditorSheet: View {
                             // Birthday toggle row
                             HStack(spacing: JohoDimensions.spacingSM) {
                                 Image(systemName: IconCatalog.birthdayCake)
-                                    .font(.system(size: 16, weight: .medium, design: .rounded))
+                                    .font(JohoFont.body)
                                     .foregroundStyle(birthdayKnown ? SpecialDayType.birthday.accentColor : colors.primary.opacity(0.6))
                                     .frame(width: 24)
 
@@ -1515,7 +1515,7 @@ struct JohoContactEditorSheet: View {
                                         birthdayKnown = true
                                     } label: {
                                         Text("HAS")
-                                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                                            .font(JohoFont.tag)
                                             .foregroundStyle(hasBirthday && birthdayKnown ? colors.primaryInverted : colors.primary.opacity(0.6))
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
@@ -1530,7 +1530,7 @@ struct JohoContactEditorSheet: View {
                                         birthdayKnown = true
                                     } label: {
                                         Text("NONE")
-                                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                                            .font(JohoFont.tag)
                                             .foregroundStyle(!hasBirthday && birthdayKnown ? colors.primaryInverted : colors.primary.opacity(0.6))
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
@@ -1545,7 +1545,7 @@ struct JohoContactEditorSheet: View {
                                         birthdayKnown = false
                                     } label: {
                                         Text("N/A")
-                                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                                            .font(JohoFont.tag)
                                             .foregroundStyle(!birthdayKnown ? colors.primaryInverted : colors.primary.opacity(0.6))
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
@@ -1651,7 +1651,7 @@ struct JohoContactEditorSheet: View {
             HStack(spacing: JohoDimensions.spacingSM) {
                 // Current symbol preview (matches header icon zone pattern)
                 Image(systemName: selectedSymbol)
-                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .font(JohoFont.headline)
                     .foregroundStyle(accentColor)
                     .frame(width: 36, height: 36)
                     .background(lightBackground)
@@ -1659,17 +1659,17 @@ struct JohoContactEditorSheet: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("DECORATION")
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primary.opacity(0.6))
                     Text("Tap to change icon")
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .font(JohoFont.caption)
                         .foregroundStyle(colors.primary.opacity(0.6))
                 }
 
                 Spacer()
 
                 Image(systemName: IconCatalog.chevronRight)
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .font(JohoFont.label)
                     .foregroundStyle(colors.primary.opacity(0.6))
             }
             .padding(JohoDimensions.spacingMD)
@@ -1693,7 +1693,7 @@ struct JohoContactEditorSheet: View {
     private func elegantTextField(icon: String, placeholder: String, text: Binding<String>) -> some View {
         HStack(spacing: JohoDimensions.spacingSM) {
             Image(systemName: icon)
-                .font(.system(size: 16, weight: .medium, design: .rounded))
+                .font(JohoFont.body)
                 .foregroundStyle(colors.primary.opacity(0.6))
                 .frame(width: 24)
 
@@ -1903,7 +1903,7 @@ private struct ContactSymbolPicker: View {
                     VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                         // Category header
                         Text(category.name)
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .font(JohoFont.tag)
                             .foregroundStyle(colors.primary.opacity(0.5))
                             .padding(.horizontal, JohoDimensions.spacingLG)
 

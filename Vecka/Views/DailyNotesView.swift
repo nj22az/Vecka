@@ -524,7 +524,7 @@ struct JohoNoteEditorSheet: View {
                         dismiss()
                     } label: {
                         Text("Save")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(canSave ? colors.primaryInverted : colors.primaryInverted.opacity(0.4))
                             .frame(width: 56, height: 32)
                             .background(canSave ? noteAccentColor : colors.primaryInverted.opacity(0.2))
@@ -594,7 +594,7 @@ struct JohoNoteEditorSheet: View {
                         }
                     } label: {
                         Text(String(selectedYear))
-                            .font(.system(size: 14, weight: .bold, design: .monospaced))
+                            .font(JohoFont.monoSmall)
                             .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
@@ -613,7 +613,7 @@ struct JohoNoteEditorSheet: View {
                         }
                     } label: {
                         Text(monthName(selectedMonth))
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
@@ -632,7 +632,7 @@ struct JohoNoteEditorSheet: View {
                         }
                     } label: {
                         Text("\(selectedDay)")
-                            .font(.system(size: 14, weight: .bold, design: .monospaced))
+                            .font(JohoFont.monoSmall)
                             .foregroundStyle(colors.primary)
                             .frame(width: 44)
                             .frame(maxHeight: .infinity)

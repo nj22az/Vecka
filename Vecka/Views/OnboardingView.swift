@@ -81,7 +81,7 @@ struct OnboardingView: View {
                     }
                 } label: {
                     Text(currentPage < pages.count - 1 ? "Continue" : "Get Started")
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .font(JohoFont.headlineSmall)
                         .foregroundStyle(colors.primaryInverted)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, JohoDimensions.spacingMD)
@@ -96,7 +96,7 @@ struct OnboardingView: View {
                         completeOnboarding()
                     } label: {
                         Text("Skip")
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .font(JohoFont.bodySmall)
                             .foregroundStyle(colors.primary.opacity(0.6))
                     }
                     .padding(.top, JohoDimensions.spacingXS)
@@ -151,20 +151,20 @@ struct OnboardingPageView: View {
 
             // Title
             Text(page.title)
-                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .font(JohoFont.displaySmall)
                 .foregroundStyle(colors.primary)
                 .multilineTextAlignment(.center)
                 .padding(.top, JohoDimensions.spacingSM)
 
             // Subtitle
             Text(page.subtitle)
-                .font(.system(size: 16, weight: .medium, design: .rounded))
+                .font(JohoFont.body)
                 .foregroundStyle(colors.primary.opacity(0.7))
                 .multilineTextAlignment(.center)
 
             // Description (情報デザイン: Info box with border)
             Text(page.description)
-                .font(.system(size: 14, weight: .medium, design: .rounded))
+                .font(JohoFont.bodySmall)
                 .foregroundStyle(colors.primary.opacity(0.8))
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)

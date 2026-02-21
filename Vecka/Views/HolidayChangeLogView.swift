@@ -53,7 +53,7 @@ struct HolidayChangeLogView: View {
                     Button("Done") {
                         dismiss()
                     }
-                    .font(.system(size: 16, weight: .medium, design: .rounded))
+                    .font(JohoFont.body)
                 }
 
                 // Load Defaults button (only for loadable regions)
@@ -66,7 +66,7 @@ struct HolidayChangeLogView: View {
                                 Image(systemName: IconCatalog.arrowDownCircle)
                                 Text("Load Defaults")
                             }
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .font(JohoFont.bodySmall)
                         }
                     }
                 }
@@ -216,7 +216,7 @@ struct ChangeLogEntryRow: View {
                         .foregroundStyle(colors.primary.opacity(0.4))
 
                     Text(entry.region)
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .font(JohoFont.caption)
                         .foregroundStyle(colors.primary.opacity(0.6))
                 }
 
@@ -297,7 +297,7 @@ struct ChangeLogDetailSheet: View {
                     Button("Done") {
                         dismiss()
                     }
-                    .font(.system(size: 16, weight: .medium, design: .rounded))
+                    .font(JohoFont.body)
                 }
             }
         }
@@ -318,7 +318,7 @@ struct ChangeLogDetailSheet: View {
                         .foregroundStyle(colors.primary)
 
                     Text(entry.action.rawValue)
-                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .font(JohoFont.bodySmall)
                         .foregroundStyle(actionColor)
                 }
 
@@ -362,7 +362,7 @@ struct ChangeLogDetailSheet: View {
     private var jsonDiffSection: some View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
             Text("CHANGE DETAILS")
-                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .font(JohoFont.tag)
                 .foregroundStyle(colors.primary.opacity(0.5))
 
             if let before = entry.beforeJSON {
@@ -411,7 +411,7 @@ struct ChangeLogDetailSheet: View {
     private func notesSection(_ notes: String) -> some View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
             Text("NOTES")
-                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .font(JohoFont.tag)
                 .foregroundStyle(colors.primary.opacity(0.5))
 
             Text(notes)
@@ -429,7 +429,7 @@ struct ChangeLogDetailSheet: View {
     private var metadataSection: some View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
             Text("METADATA")
-                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .font(JohoFont.tag)
                 .foregroundStyle(colors.primary.opacity(0.5))
 
             VStack(spacing: 0) {

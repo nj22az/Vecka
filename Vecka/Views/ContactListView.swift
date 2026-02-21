@@ -166,7 +166,7 @@ struct ContactListView: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone with Contacts accent color (Warm Brown)
                     Image(systemName: IconCatalog.people)
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .font(JohoFont.title)
                         .foregroundStyle(PageHeaderColor.contacts.accent)
                         .frame(width: 40, height: 40)
                         .background(PageHeaderColor.contacts.lightBackground)
@@ -195,9 +195,9 @@ struct ContactListView: View {
                             } label: {
                                 HStack(spacing: 4) {
                                     Image(systemName: IconCatalog.trashFill)
-                                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                                        .font(JohoFont.bodySmallBold)
                                     Text("\(selectedForDeletion.count)")
-                                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                                        .font(JohoFont.label)
                                 }
                                 .foregroundStyle(colors.primaryInverted)
                                 .frame(height: 32)
@@ -217,7 +217,7 @@ struct ContactListView: View {
                             }
                         } label: {
                             Text("Done")
-                                .font(.system(size: 14, weight: .bold, design: .rounded))
+                                .font(JohoFont.bodySmallBold)
                                 .foregroundStyle(colors.primaryInverted)
                                 .frame(height: 32)
                                 .padding(.horizontal, 12)
@@ -233,7 +233,7 @@ struct ContactListView: View {
                             }
                         } label: {
                             Image(systemName: IconCatalog.pencil)
-                                .font(.system(size: 16, weight: .bold, design: .rounded))
+                                .font(JohoFont.headlineSmall)
                                 .foregroundStyle(PageHeaderColor.contacts.accent)
                                 .johoTouchTarget()
                                 .contentShape(Rectangle())
@@ -253,7 +253,7 @@ struct ContactListView: View {
                             showingImportSheet = true
                         } label: {
                             Image(systemName: IconCatalog.download)
-                                .font(.system(size: 16, weight: .bold, design: .rounded))
+                                .font(JohoFont.headlineSmall)
                                 .foregroundStyle(PageHeaderColor.contacts.accent)
                                 .johoTouchTarget()
                                 .contentShape(Rectangle())
@@ -281,7 +281,7 @@ struct ContactListView: View {
                 if contactsWithPhone > 0 {
                     HStack(spacing: 4) {
                         Image(systemName: IconCatalog.phone)
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .font(JohoFont.tag)
                             .foregroundStyle(JohoColors.cyan)
                         Text("\(contactsWithPhone)")
                             .font(JohoFont.labelSmall)
@@ -293,7 +293,7 @@ struct ContactListView: View {
                 if contactsWithBirthday > 0 {
                     HStack(spacing: 4) {
                         Image(systemName: IconCatalog.gift)
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .font(JohoFont.tag)
                             .foregroundStyle(SpecialDayType.birthday.accentColor)
                         Text("\(contactsWithBirthday)")
                             .font(JohoFont.labelSmall)
@@ -344,7 +344,7 @@ struct ContactListView: View {
                 HStack(spacing: 0) {
                     // LEFT COMPARTMENT: Icon zone
                     Image(systemName: IconCatalog.download)
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .font(JohoFont.headline)
                         .foregroundStyle(accentColor)
                         .frame(width: 56, height: 56)
                         .background(PageHeaderColor.contacts.lightBackground)
@@ -364,7 +364,7 @@ struct ContactListView: View {
 
                     // Chevron
                     Image(systemName: IconCatalog.chevronRight)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary)
                         .padding(.trailing, JohoDimensions.spacingMD)
                 }
@@ -463,18 +463,18 @@ struct ContactListView: View {
             } label: {
                 HStack(spacing: 6) {
                     Image(systemName: IconCatalog.folder)
-                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .font(JohoFont.tag)
                     Text("GROUPS")
-                        .font(.system(size: 11, weight: .black, design: .rounded))
+                        .font(JohoFont.headerTag)
                         .tracking(0.5)
                     if let group = selectedGroup {
                         Text("• \(group.localizedName)")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .font(JohoFont.labelBold)
                             .foregroundStyle(group.swiftUIColor)
                     }
                     Spacer()
                     Image(systemName: isGroupsExpanded ? "chevron.up" : IconCatalog.chevronDown)
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primary.opacity(0.5))
                 }
                 .foregroundStyle(colors.primary)
@@ -512,9 +512,9 @@ struct ContactListView: View {
             } label: {
                 HStack(spacing: 4) {
                     Image(systemName: IconCatalog.peopleGroup)
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .font(JohoFont.labelBold)
                     Text("All")
-                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .font(JohoFont.tag)
                 }
                 .foregroundStyle(selectedGroup == nil ? colors.primaryInverted : colors.primary)
                 .frame(maxWidth: .infinity)
@@ -534,9 +534,9 @@ struct ContactListView: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: group.icon)
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .font(JohoFont.labelBold)
                         Text(group.localizedName)
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .font(JohoFont.tag)
                         if count > 0 {
                             Text("\(count)")
                                 .font(.system(size: 9, weight: .medium, design: .rounded))
@@ -604,7 +604,7 @@ struct ContactListView: View {
                             .frame(width: 28, height: 28)
                         if isSelected {
                             Image(systemName: IconCatalog.checkmark)
-                                .font(.system(size: 12, weight: .bold, design: .rounded))
+                                .font(JohoFont.label)
                                 .foregroundStyle(colors.primaryInverted)
                         }
                     }
@@ -618,14 +618,14 @@ struct ContactListView: View {
             // NAME COMPARTMENT (flexible)
             VStack(alignment: .leading, spacing: 2) {
                 Text(contact.displayName)
-                    .font(.system(size: 16, weight: .medium, design: .rounded))
+                    .font(JohoFont.body)
                     .foregroundStyle(colors.primary)
                     .lineLimit(1)
 
                 // Alias/Organization as subtitle
                 if let org = contact.organizationName, org.isNotEmpty {
                     Text(org)
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .font(JohoFont.caption)
                         .foregroundStyle(colors.primary.opacity(0.6))
                         .lineLimit(1)
                 }
@@ -804,7 +804,7 @@ struct ContactImportView: View {
                         HStack(spacing: JohoDimensions.spacingSM) {
                             // Icon zone
                             Image(systemName: IconCatalog.download)
-                                .font(.system(size: 20, weight: .bold, design: .rounded))
+                                .font(JohoFont.title)
                                 .foregroundStyle(accentColor)
                                 .frame(width: 40, height: 40)
                                 .background(PageHeaderColor.contacts.lightBackground)
@@ -867,7 +867,7 @@ struct ContactImportView: View {
                                 HStack(spacing: JohoDimensions.spacingSM) {
                                     // Warning icon
                                     Image(systemName: IconCatalog.warning)
-                                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                                        .font(JohoFont.headlineSmall)
                                         .foregroundStyle(JohoColors.red)
                                         .frame(width: 32, height: 32)
                                         .background(JohoColors.redLight)
@@ -890,7 +890,7 @@ struct ContactImportView: View {
                                     HStack(spacing: 0) {
                                         // Icon zone
                                         Image(systemName: IconCatalog.personBadgeKey)
-                                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                                            .font(JohoFont.headlineSmall)
                                             .foregroundStyle(JohoColors.red)
                                             .johoTouchTarget()
                                             .background(JohoColors.redLight)
@@ -910,7 +910,7 @@ struct ContactImportView: View {
 
                                         // Chevron
                                         Image(systemName: IconCatalog.chevronRight)
-                                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                                            .font(JohoFont.bodySmallBold)
                                             .foregroundStyle(colors.primary)
                                             .padding(.trailing, JohoDimensions.spacingMD)
                                     }
@@ -932,7 +932,7 @@ struct ContactImportView: View {
 
                             HStack(spacing: JohoDimensions.spacingSM) {
                                 Image(systemName: message.contains("Success") ? IconCatalog.checkmarkCircleFill : "info.circle.fill")
-                                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                                    .font(JohoFont.headlineSmall)
                                     .foregroundStyle(message.contains("Success") ? JohoColors.green : accentColor)
 
                                 Text(message)
@@ -981,7 +981,7 @@ struct ContactImportView: View {
         HStack(spacing: 0) {
             // Icon zone (with left padding for breathing room)
             Image(systemName: icon)
-                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .font(JohoFont.headlineSmall)
                 .foregroundStyle(accentColor)
                 .johoTouchTarget()
                 .background(PageHeaderColor.contacts.lightBackground)
@@ -1010,7 +1010,7 @@ struct ContactImportView: View {
 
             // Chevron
             Image(systemName: IconCatalog.chevronRight)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .padding(.trailing, JohoDimensions.spacingMD)
         }
@@ -1180,7 +1180,7 @@ struct JohoAddContactSheet: View {
                             .fill(colors.surface)
                             .frame(width: 24, height: 24)
                         Image(systemName: IconCatalog.xmark)
-                            .font(.system(size: 10, weight: .black, design: .rounded))
+                            .font(JohoFont.pillLabel)
                             .foregroundStyle(colors.primary)
                     }
                 }
@@ -1229,13 +1229,13 @@ struct JohoAddContactSheet: View {
                     .overlay(Circle().stroke(colors.border, lineWidth: JohoDimensions.borderMedium))
 
                 Image(systemName: icon)
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .font(JohoFont.headlineSmall)
                     .foregroundStyle(colors.primaryInverted)
             }
 
             // Code badge - BLACK border around colored pill
             Text(code)
-                .font(.system(size: 10, weight: .black, design: .rounded))
+                .font(JohoFont.pillLabel)
                 .tracking(0.5)
                 .foregroundStyle(colors.primaryInverted)
                 .padding(.horizontal, 8)
@@ -1245,14 +1245,14 @@ struct JohoAddContactSheet: View {
 
             // Label - bold rounded for 情報デザイン
             Text(label)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
 
             Spacer()
 
             // Arrow - bold BLACK
             Image(systemName: IconCatalog.chevronRight)
-                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .font(JohoFont.label)
                 .foregroundStyle(colors.primary)
         }
         .padding(.horizontal, JohoDimensions.spacingMD)

@@ -469,17 +469,28 @@ enum JohoFont {
     static let displayMedium = Font.system(size: 32, weight: .bold, design: .rounded)
     static let displaySmall = Font.system(size: 24, weight: .bold, design: .rounded)
 
+    // Titles
+    static let title = Font.system(size: 20, weight: .bold, design: .rounded)
+
     // Headlines
     static let headline = Font.system(size: 18, weight: .bold, design: .rounded)
+    static let headlineSmall = Font.system(size: 16, weight: .bold, design: .rounded)
     static let subheadline = Font.system(size: 15, weight: .semibold, design: .rounded)
 
     // Body
     static let body = Font.system(size: 16, weight: .medium, design: .rounded)
     static let bodySmall = Font.system(size: 14, weight: .medium, design: .rounded)
+    static let bodySmallBold = Font.system(size: 14, weight: .bold, design: .rounded)
+
+    // Tags & Badges
+    static let tag = Font.system(size: 11, weight: .bold, design: .rounded)
+    static let headerTag = Font.system(size: 11, weight: .black, design: .rounded)
+    static let pillLabel = Font.system(size: 10, weight: .black, design: .rounded)
 
     // Labels (for pills)
     static let label = Font.system(size: 12, weight: .bold, design: .rounded)
     static let labelSmall = Font.system(size: 10, weight: .heavy, design: .rounded)
+    static let labelBold = Font.system(size: 10, weight: .bold, design: .rounded)
 
     // Button
     static let button = Font.system(size: 15, weight: .semibold, design: .rounded)

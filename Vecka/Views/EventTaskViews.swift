@@ -171,7 +171,7 @@ struct EventTasksSection: View {
             // LEFT: Title
             HStack(spacing: JohoDimensions.spacingSM) {
                 Image(systemName: "checklist")
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
 
                 Text("TASKS")
@@ -254,7 +254,7 @@ struct TaskProgressIndicator: View {
         if totalCount > 0 {
             HStack(spacing: 4) {
                 Image(systemName: isAllComplete ? IconCatalog.checkmarkCircleFill : "circle.dotted")
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .font(JohoFont.caption)
                     .foregroundStyle(isAllComplete ? JohoColors.cyan : colors.primary.opacity(0.5))
 
                 Text("\(completedCount)/\(totalCount)")

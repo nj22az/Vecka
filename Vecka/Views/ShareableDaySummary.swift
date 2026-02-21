@@ -107,7 +107,7 @@ struct ShareableDaySummaryCard: View {
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text(data.weekdayName)
-                                .font(.system(size: 14, weight: .bold, design: .rounded))
+                                .font(JohoFont.bodySmallBold)
                                 .foregroundStyle(colors.primary)
 
                             Text("\(data.monthName.uppercased()) \(data.yearString)")
@@ -218,7 +218,7 @@ struct ShareableDaySummaryCard: View {
                             .foregroundStyle(colors.secondary.opacity(0.5))
 
                         Text("No events scheduled")
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .font(JohoFont.bodySmall)
                             .foregroundStyle(colors.secondary)
                     }
                     .frame(maxWidth: .infinity)
@@ -281,7 +281,7 @@ struct DaySummarySheetView: View {
                             .fill(colors.surface)
                             .frame(width: 28, height: 28)
                         Image(systemName: IconCatalog.xmark)
-                            .font(.system(size: 11, weight: .black, design: .rounded))
+                            .font(JohoFont.headerTag)
                             .foregroundStyle(colors.primary)
                     }
                 }
@@ -304,13 +304,13 @@ struct DaySummarySheetView: View {
 
                     // Weekday + Month/Year
                     Text("\(data.weekdayName) · \(data.monthName.uppercased()) \(data.yearString)")
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .font(JohoFont.label)
                         .foregroundStyle(colors.primary)
 
                     // Week number badge
                     HStack(spacing: 6) {
                         Text("W\(data.weekNumber)")
-                            .font(.system(size: 11, weight: .black, design: .rounded))
+                            .font(JohoFont.headerTag)
                             .foregroundStyle(colors.secondary)
 
                         if data.isToday {
@@ -405,7 +405,7 @@ struct DaySummarySheetView: View {
                             .foregroundStyle(colors.secondary.opacity(0.5))
 
                         Text("No events scheduled")
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .font(JohoFont.bodySmall)
                             .foregroundStyle(colors.secondary)
                     }
                     .frame(maxWidth: .infinity)
@@ -518,7 +518,7 @@ private struct DaySummaryRow: View {
             // Badge
             if let badge = badge {
                 Text(badge)
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .font(JohoFont.labelBold)
                     .foregroundStyle(badgeColor)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -582,7 +582,7 @@ private struct DayMemoRow: View {
             // Amount for expenses
             if let amount = memo.amount {
                 Text(String(format: "%.0f %@", amount, memo.currency ?? baseCurrency))
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .font(JohoFont.label)
                     .foregroundStyle(JohoColors.green)
             }
         }

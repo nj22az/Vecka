@@ -122,7 +122,7 @@ struct CountdownCard: View {
     private var selectedIndicator: some View {
         HStack(spacing: 4) {
             Image(systemName: IconCatalog.checkmarkCircleFill)
-                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .font(JohoFont.labelBold)
             Text(NSLocalizedString("picker.selected", comment: "Selected").uppercased())
                 .font(JohoFont.labelSmall)
                 .tracking(0.5)
@@ -604,7 +604,7 @@ struct CustomCountdownDialog: View {
                         dismiss()
                     } label: {
                         Text("Save")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(canSave ? colors.primaryInverted : colors.primaryInverted.opacity(0.4))
                             .frame(width: 56, height: 32)
                             .background(canSave ? eventAccentColor : colors.primaryInverted.opacity(0.2))
@@ -681,7 +681,7 @@ struct CustomCountdownDialog: View {
                         }
                     } label: {
                         Text(String(selectedYear))
-                            .font(.system(size: 14, weight: .bold, design: .monospaced))
+                            .font(JohoFont.monoSmall)
                             .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
@@ -702,7 +702,7 @@ struct CustomCountdownDialog: View {
                         }
                     } label: {
                         Text(monthName(selectedMonth))
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
@@ -723,7 +723,7 @@ struct CustomCountdownDialog: View {
                         }
                     } label: {
                         Text("\(selectedDay)")
-                            .font(.system(size: 14, weight: .bold, design: .monospaced))
+                            .font(JohoFont.monoSmall)
                             .foregroundStyle(colors.primary)
                             .frame(width: 44)
                             .frame(maxHeight: .infinity)

@@ -40,15 +40,15 @@ struct SimplePDFExportView: View {
                         )
 
                     Text(exportContext.title)
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .font(JohoFont.headline)
                         .foregroundStyle(colors.primary)
 
                     Text(exportContext.subtitle)
-                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .font(JohoFont.bodySmall)
                         .foregroundStyle(colors.primary.opacity(0.6))
 
                     Text(exportContext.pageCountDescription)
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .font(JohoFont.caption)
                         .foregroundStyle(colors.primary.opacity(0.4))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)

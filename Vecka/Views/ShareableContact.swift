@@ -150,7 +150,7 @@ struct ShareableContactCard: View {
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                     // Name (always prominent)
                     Text(contact.displayName)
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .font(JohoFont.headlineSmall)
                         .foregroundStyle(colors.primary)
                         .lineLimit(2)
 
@@ -161,7 +161,7 @@ struct ShareableContactCard: View {
                                 .font(.system(size: 11, weight: .bold))
                                 .foregroundStyle(JohoColors.cyan)
                             Text(org)
-                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .font(JohoFont.caption)
                                 .foregroundStyle(colors.primary)
                                 .lineLimit(1)
                         }
@@ -174,7 +174,7 @@ struct ShareableContactCard: View {
                                 .font(.system(size: 11, weight: .bold))
                                 .foregroundStyle(JohoColors.green)
                             Text(phone.value)
-                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .font(JohoFont.caption)
                                 .foregroundStyle(colors.primary)
                                 .lineLimit(1)
                         }
@@ -187,7 +187,7 @@ struct ShareableContactCard: View {
                                 .font(.system(size: 11, weight: .bold))
                                 .foregroundStyle(JohoColors.yellow)
                             Text(email.value)
-                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .font(JohoFont.caption)
                                 .foregroundStyle(colors.primary)
                                 .lineLimit(1)
                         }
@@ -200,7 +200,7 @@ struct ShareableContactCard: View {
                                 .font(.system(size: 11, weight: .bold))
                                 .foregroundStyle(JohoColors.pink)
                             Text(birthday.formatted(.dateTime.year().month(.abbreviated).day()))
-                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .font(JohoFont.caption)
                                 .foregroundStyle(colors.primary)
                         }
                     }
@@ -249,7 +249,7 @@ struct ShareableContactCard: View {
                 // Instructions
                 VStack(alignment: .leading, spacing: 4) {
                     Text("SCAN TO SAVE")
-                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .font(JohoFont.pillLabel)
                         .foregroundStyle(colors.primary.opacity(0.5))
                         .tracking(0.5)
 

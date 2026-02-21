@@ -319,7 +319,7 @@ struct SettingsView: View {
                         HapticManager.selection()
                     } label: {
                         Text("Reset")
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .font(JohoFont.tag)
                             .foregroundStyle(JohoColors.red)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 5)
@@ -474,7 +474,7 @@ struct SettingsView: View {
 
                             // Current icon
                             Image(systemName: currentIcon)
-                                .font(.system(size: 16, weight: .bold, design: .rounded))
+                                .font(JohoFont.headlineSmall)
                                 .foregroundStyle(colors.primary)
 
                             // Chevron
@@ -558,7 +558,7 @@ struct SettingsView: View {
                         HStack(spacing: JohoDimensions.spacingMD) {
                             // Seasonal icon in squircle
                             Image(systemName: displayIcon)
-                                .font(.system(size: 16, weight: .bold, design: .rounded))
+                                .font(JohoFont.headlineSmall)
                                 .foregroundStyle(theme.accentColor)
                                 .frame(width: 32, height: 32)
                                 .background(theme.lightBackground)
@@ -751,7 +751,7 @@ struct SettingsView: View {
                         isEditingTitle = true
                     } label: {
                         Text("Edit")
-                            .font(.system(size: 12, weight: .bold, design: .rounded))
+                            .font(JohoFont.label)
                             .foregroundStyle(colors.primaryInverted)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
@@ -1329,7 +1329,7 @@ struct SettingsCategoryCustomizationSheet: View {
                         onDone()
                     } label: {
                         Text("Cancel")
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .font(JohoFont.bodySmall)
                             .foregroundStyle(colors.primary.opacity(0.7))
                     }
                     .buttonStyle(.plain)
@@ -1348,7 +1348,7 @@ struct SettingsCategoryCustomizationSheet: View {
                         onDone()
                     } label: {
                         Text("Save")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(colors.primary)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 8)
@@ -1389,7 +1389,7 @@ struct SettingsCategoryCustomizationSheet: View {
                                 .frame(width: 8, height: 8)
                                 .overlay(Circle().stroke(colors.border, lineWidth: 1))
                             Text("MASTER ICON")
-                                .font(.system(size: 10, weight: .black, design: .rounded))
+                                .font(JohoFont.pillLabel)
                                 .foregroundStyle(colors.primary.opacity(0.6))
                         }
 
@@ -1408,7 +1408,7 @@ struct SettingsCategoryCustomizationSheet: View {
                                 .frame(width: 8, height: 8)
                                 .overlay(Circle().stroke(colors.border, lineWidth: 1))
                             Text("COLOR")
-                                .font(.system(size: 10, weight: .black, design: .rounded))
+                                .font(JohoFont.pillLabel)
                                 .foregroundStyle(colors.primary.opacity(0.6))
                         }
 
@@ -1425,7 +1425,7 @@ struct SettingsCategoryCustomizationSheet: View {
                                     )
 
                                 Text("Change Color")
-                                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                                    .font(JohoFont.bodySmall)
                                     .foregroundStyle(colors.primary)
 
                                 Spacer()
@@ -1454,9 +1454,9 @@ struct SettingsCategoryCustomizationSheet: View {
                     } label: {
                         HStack(spacing: 6) {
                             Image(systemName: "arrow.counterclockwise")
-                                .font(.system(size: 12, weight: .bold, design: .rounded))
+                                .font(JohoFont.label)
                             Text("Reset All to Defaults")
-                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .font(JohoFont.caption)
                         }
                         .foregroundStyle(colors.primary.opacity(0.6))
                         .frame(maxWidth: .infinity)
@@ -1513,7 +1513,7 @@ struct SettingsCategoryCustomizationSheet: View {
             // BOTTOM: Category name
             VStack(spacing: 2) {
                 Text(category.localizedLabel.uppercased())
-                    .font(.system(size: 10, weight: .black, design: .rounded))
+                    .font(JohoFont.pillLabel)
                     .foregroundStyle(colors.primary)
             }
             .frame(maxWidth: .infinity)

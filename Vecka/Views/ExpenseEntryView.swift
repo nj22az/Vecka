@@ -97,7 +97,7 @@ struct JohoExpenseEditorSheet: View {
                     // LEFT: Back button (44pt)
                     Button { dismiss() } label: {
                         Image(systemName: IconCatalog.chevronLeft)
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .font(JohoFont.headlineSmall)
                             .foregroundStyle(colors.primary)
                             .johoTouchTarget()
                     }
@@ -112,7 +112,7 @@ struct JohoExpenseEditorSheet: View {
                     HStack(spacing: JohoDimensions.spacingSM) {
                         // Type icon in colored box
                         Image(systemName: "dollarsign.circle.fill")
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .font(JohoFont.headlineSmall)
                             .foregroundStyle(expenseAccentColor)
                             .frame(width: 36, height: 36)
                             .background(expenseLightBackground)
@@ -144,7 +144,7 @@ struct JohoExpenseEditorSheet: View {
                         dismiss()
                     } label: {
                         Text("Save")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(0.4))
                             .frame(width: 56, height: 32)
                             .background(canSave ? expenseAccentColor : colors.surface)
@@ -201,7 +201,7 @@ struct JohoExpenseEditorSheet: View {
                 HStack(spacing: 0) {
                     // LEFT: Dollar sign icon (40pt)
                     Image(systemName: "dollarsign")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
@@ -255,7 +255,7 @@ struct JohoExpenseEditorSheet: View {
                 HStack(spacing: 0) {
                     // LEFT: Calendar icon (40pt)
                     Image(systemName: IconCatalog.calendar)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
@@ -292,7 +292,7 @@ struct JohoExpenseEditorSheet: View {
                         }
                     } label: {
                         Text(monthName(selectedMonth))
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
@@ -331,7 +331,7 @@ struct JohoExpenseEditorSheet: View {
                 HStack(spacing: 0) {
                     // LEFT: Store icon (40pt)
                     Image(systemName: "storefront.fill")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary.opacity(0.6))
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
@@ -367,7 +367,7 @@ struct JohoExpenseEditorSheet: View {
                     HStack(spacing: 0) {
                         // LEFT: Current icon (40pt)
                         Image(systemName: selectedSymbol)
-                            .font(.system(size: 18, weight: .bold, design: .rounded))
+                            .font(JohoFont.headline)
                             .foregroundStyle(expenseAccentColor)
                             .frame(width: 40)
                             .frame(maxHeight: .infinity)

@@ -89,7 +89,7 @@ struct DayDetailSheet: View {
                 dismiss()
             } label: {
                 Image(systemName: IconCatalog.xmark)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
                     .frame(width: 32, height: 32)
                     .background(colors.surface)
@@ -269,7 +269,7 @@ struct DayDetailSheet: View {
 
             // RIGHT: Decoration icon with colored background
             Image(systemName: icon)
-                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .font(JohoFont.headlineSmall)
                 .foregroundStyle(colors.primaryInverted)
                 .frame(width: 28, height: 28)
                 .background(color)

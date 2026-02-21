@@ -603,7 +603,7 @@ struct SpecialDaysListView: View {
                         } label: {
                             // 情報デザイン: Minimum 44pt touch target
                             Image(systemName: IconCatalog.chevronLeft)
-                                .font(.system(size: 14, weight: .bold, design: .rounded))
+                                .font(JohoFont.bodySmallBold)
                                 .foregroundStyle(colors.primary)
                                 .johoTouchTarget()
                                 .background(colors.inputBackground)
@@ -813,7 +813,7 @@ struct SpecialDaysListView: View {
         } label: {
             // 情報デザイン: System UI accent plus button (matches date picker)
             Image(systemName: IconCatalog.plus)
-                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .font(JohoFont.label)
                 .foregroundStyle(.white)
                 .frame(width: 28, height: 28)
                 .background(systemAccentColor)
@@ -899,7 +899,7 @@ struct SpecialDaysListView: View {
                     .overlay(Circle().stroke(colors.border, lineWidth: 1))
 
                 Text("\(count)")
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .font(JohoFont.label)
                     .foregroundStyle(hasItems ? colors.primary : colors.primary.opacity(0.4))
             }
             .padding(.horizontal, 8)
@@ -990,7 +990,7 @@ struct SpecialDaysListView: View {
     private func categoryPopover(category: DisplayCategory, count: Int) -> some View {
         HStack(spacing: JohoDimensions.spacingSM) {
             Image(systemName: category.categoryAwareIcon)
-                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .font(JohoFont.headline)
                 .foregroundStyle(colors.primary)
                 .frame(width: 32, height: 32)
                 .background(colors.inputBackground)
@@ -1002,7 +1002,7 @@ struct SpecialDaysListView: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(category.localizedLabel.uppercased())
-                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .font(JohoFont.tag)
                     .tracking(0.5)
                     .foregroundStyle(colors.primary)
 
@@ -1026,11 +1026,11 @@ struct SpecialDaysListView: View {
         } label: {
             HStack(spacing: 4) {
                 Image(systemName: type.defaultIcon)
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .font(JohoFont.headlineSmall)
                     .foregroundStyle(type.accentColor)
 
                 Text(String(count))
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                     .monospacedDigit()
                     .foregroundStyle(colors.primary)
             }
@@ -1054,7 +1054,7 @@ struct SpecialDaysListView: View {
     private func statPopover(type: SpecialDayType, count: Int) -> some View {
         HStack(spacing: JohoDimensions.spacingSM) {
             Image(systemName: type.defaultIcon)
-                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .font(JohoFont.headline)
                 .foregroundStyle(type.accentColor)
                 .frame(width: 32, height: 32)
                 .background(type.lightBackground)
@@ -1066,7 +1066,7 @@ struct SpecialDaysListView: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(type.title.uppercased())
-                    .font(.system(size: 11, weight: .black, design: .rounded))
+                    .font(JohoFont.tag)
                     .tracking(0.5)
                     .foregroundStyle(colors.primary)
 
@@ -1164,7 +1164,7 @@ struct SpecialDaysListView: View {
             // Fixed height ensures banner dividers align across all cards
             VStack {
                 Image(systemName: displayIcon)
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(JohoFont.displaySmall)
                     .foregroundStyle(displayIconColor)
             }
             .frame(maxWidth: .infinity)
@@ -1184,7 +1184,7 @@ struct SpecialDaysListView: View {
                 // Centered text
                 VStack(spacing: 2) {
                     Text(theme.name.uppercased())
-                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .font(JohoFont.pillLabel)
                         .foregroundStyle(colors.primary)
                         .multilineTextAlignment(.center)
 
@@ -1335,7 +1335,7 @@ struct SpecialDaysListView: View {
             // Fixed height ensures banner dividers align across all cards
             VStack {
                 Image(systemName: displayIcon)
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(JohoFont.displaySmall)
                     .foregroundStyle(colors.primary)
             }
             .frame(maxWidth: .infinity)
@@ -1354,7 +1354,7 @@ struct SpecialDaysListView: View {
 
                 VStack(spacing: 2) {
                     Text(category.localizedLabel.uppercased())
-                        .font(.system(size: 10, weight: .black, design: .rounded))
+                        .font(JohoFont.pillLabel)
                         .foregroundStyle(colors.primary)
                         .multilineTextAlignment(.center)
 
@@ -1570,7 +1570,7 @@ struct CollapsibleSpecialDayCard: View {
 
                     // Expand/collapse chevron
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary)
                         .frame(width: 24, height: 24)
                 }
@@ -1613,7 +1613,7 @@ struct CollapsibleSpecialDayCard: View {
                         .frame(width: 8, height: 8)
                         .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
                     Text("\(holidays.count)")
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primary)
                 }
             }
@@ -1626,7 +1626,7 @@ struct CollapsibleSpecialDayCard: View {
                         .frame(width: 8, height: 8)
                         .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
                     Text("\(observances.count)")
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primary)
                 }
             }
@@ -1639,7 +1639,7 @@ struct CollapsibleSpecialDayCard: View {
                         .frame(width: 8, height: 8)
                         .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
                     Text("\(birthdays.count + memosForDay.count)")
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primary)
                 }
             }
@@ -1717,7 +1717,7 @@ struct CollapsibleSpecialDayCard: View {
 
                 // RIGHT: Icon compartment
                 Image(systemName: icon)
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .font(JohoFont.headlineSmall)
                     .foregroundStyle(colors.primary)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
@@ -1777,7 +1777,7 @@ struct CollapsibleSpecialDayCard: View {
 
                 // RIGHT: Icon compartment
                 Image(systemName: icon)
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .font(JohoFont.headlineSmall)
                     .foregroundStyle(colors.primary)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
@@ -1960,7 +1960,7 @@ struct CollapsibleSpecialDayCard: View {
                         let additionalLines = notes.components(separatedBy: .newlines).dropFirst().joined(separator: "\n")
                         if !additionalLines.isEmpty {
                             Text(additionalLines)
-                                .font(.system(size: 12, weight: .medium, design: .rounded))
+                                .font(JohoFont.caption)
                                 .foregroundStyle(colors.primary.opacity(0.8))
                                 .lineLimit(2)
                         }
@@ -1970,7 +1970,7 @@ struct CollapsibleSpecialDayCard: View {
 
                     // Date badge
                     Text(formatDate(item.date))
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primary.opacity(0.6))
                         .padding(.horizontal, 6)
                         .padding(.vertical, 3)
@@ -1986,7 +1986,7 @@ struct CollapsibleSpecialDayCard: View {
                                 Image(systemName: IconCatalog.pencil)
                                 Text("EDIT")
                             }
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .font(JohoFont.labelBold)
                             .foregroundStyle(colors.primary)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
@@ -2034,7 +2034,7 @@ struct CollapsibleSpecialDayCard: View {
     @ViewBuilder
     private func typeIndicatorDot(for type: SpecialDayType) -> some View {
         Image(systemName: type.displayCategory.categoryAwareIcon)
-            .font(.system(size: 10, weight: .bold, design: .rounded))
+            .font(JohoFont.labelBold)
             .foregroundStyle(colors.primary)
     }
 
@@ -2098,7 +2098,7 @@ extension SpecialDaysListView {
                     // LEFT: Icon + Date grouped
                     HStack(spacing: 6) {
                         Image(systemName: icon)
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(iconColor)
 
                         Text("\(day)")
@@ -2205,7 +2205,7 @@ extension SpecialDaysListView {
             HStack(spacing: 0) {
                 HStack(spacing: 6) {
                     Image(systemName: icon)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(iconColor)
 
                     Text("\(dayCard.day)")
@@ -2275,7 +2275,7 @@ extension SpecialDaysListView {
     private func typeIndicatorDot(for type: SpecialDayType) -> some View {
         let category = type.displayCategory
         Image(systemName: category.categoryAwareIcon)
-            .font(.system(size: 10, weight: .bold, design: .rounded))
+            .font(JohoFont.labelBold)
             .foregroundStyle(colors.primary)
     }
 }

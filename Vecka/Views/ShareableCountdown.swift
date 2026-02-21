@@ -109,7 +109,7 @@ struct ShareableCountdownCard: View {
                             .foregroundStyle(colors.primary)
 
                         Text(daysRemaining == 1 ? "DAY" : "DAYS")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(colors.primary.opacity(0.7))
                     }
                 }
@@ -126,13 +126,13 @@ struct ShareableCountdownCard: View {
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                     // Event name
                     Text(name)
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .font(JohoFont.title)
                         .foregroundStyle(colors.primary)
                         .lineLimit(2)
 
                     // Target date
                     Text(targetDate.formatted(.dateTime.month(.wide).day().year()))
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .font(JohoFont.caption)
                         .foregroundStyle(colors.primary.opacity(0.6))
 
                     // Annual indicator
@@ -141,7 +141,7 @@ struct ShareableCountdownCard: View {
                             Image(systemName: IconCatalog.repeatIcon)
                                 .font(.system(size: 10, weight: .bold))
                             Text("ANNUAL")
-                                .font(.system(size: 10, weight: .bold, design: .rounded))
+                                .font(JohoFont.labelBold)
                         }
                         .foregroundStyle(colors.primary.opacity(0.5))
                     }
@@ -237,7 +237,7 @@ struct CountdownShareButton: View {
             )
         ) {
             Image(systemName: IconCatalog.share)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(JohoColors.cyan)
                 .frame(width: 32, height: 32)
                 .background(JohoColors.cyan.opacity(0.15))

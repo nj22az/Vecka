@@ -195,7 +195,7 @@ private struct WorldClockCellContent: View {
         VStack(spacing: 6) {
             // City code badge
             Text(cityCode)
-                .font(.system(size: 10, weight: .black, design: .rounded))
+                .font(JohoFont.pillLabel)
                 .foregroundStyle(.white)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 3)
@@ -211,7 +211,7 @@ private struct WorldClockCellContent: View {
 
             // Digital time (small, below clock)
             Text(formattedTime)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
 
             // Offset indicator

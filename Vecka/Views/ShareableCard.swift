@@ -137,11 +137,11 @@ struct ShareableCardHeader: View {
             // LEFT: App branding
             HStack(spacing: JohoDimensions.spacingSM) {
                 Image(systemName: IconCatalog.event)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
-                
+
                 Text("ONSEN PLANNER")
-                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .font(JohoFont.label)
                     .foregroundStyle(colors.primary)
             }
             .padding(.leading, JohoDimensions.spacingMD)
@@ -156,7 +156,7 @@ struct ShareableCardHeader: View {
             
             // RIGHT: Icon
             Image(systemName: icon)
-                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .font(JohoFont.headline)
                 .foregroundStyle(iconColor)
                 .frame(width: 48)
                 .frame(maxHeight: .infinity)
@@ -180,14 +180,14 @@ struct ShareableCardFooter: View {
     var body: some View {
         HStack {
             Text(leftLabel)
-                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .font(JohoFont.labelBold)
                 .foregroundStyle(colors.primary.opacity(0.5))
                 .tracking(1)
             
             Spacer()
             
             Text(rightLabel)
-                .font(.system(size: 10, weight: .bold, design: .rounded))
+                .font(JohoFont.labelBold)
                 .foregroundStyle(colors.primary.opacity(0.4))
                 .tracking(0.5)
         }
@@ -226,7 +226,7 @@ struct JohoShareCircleButton: View {
                 .fill(colors.surface)
                 .frame(width: 28, height: 28)
             Image(systemName: IconCatalog.share)
-                .font(.system(size: 11, weight: .black, design: .rounded))
+                .font(JohoFont.headerTag)
                 .foregroundStyle(colors.primary)
         }
     }
@@ -250,9 +250,9 @@ struct JohoShareCircleButton: View {
             // Custom content
             VStack(spacing: JohoDimensions.spacingSM) {
                 Text("Example Content")
-                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .font(JohoFont.headline)
                 Text("This shows the shareable card shell pattern")
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
+                    .font(JohoFont.caption)
                     .foregroundStyle(.secondary)
             }
             .padding(JohoDimensions.spacingMD)

@@ -161,7 +161,7 @@ struct IconStripSidebar: View {
 
     private var appIconHeader: some View {
         Image(systemName: IconCatalog.event)
-            .font(.system(size: 24, weight: .bold, design: .rounded))
+            .font(JohoFont.displaySmall)
             .foregroundStyle(JohoColors.cyan)
             .frame(width: 40, height: 40)
     }
@@ -293,7 +293,7 @@ private struct SidebarLegendView: View {
 
                 Button { dismiss() } label: {
                     Image(systemName: IconCatalog.xmark)
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primary)
                         .frame(width: 24, height: 24)
                         .background(colors.primary.opacity(0.1))
@@ -320,7 +320,7 @@ private struct SidebarLegendView: View {
 
                         // Icon
                         Image(systemName: item.icon)
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .font(JohoFont.bodySmall)
                             .foregroundStyle(item.color)
                             .frame(width: 20)
 
@@ -336,7 +336,7 @@ private struct SidebarLegendView: View {
 
                         // Label
                         Text(item.label)
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
+                            .font(JohoFont.tag)
                             .foregroundStyle(colors.primary)
 
                         Spacer()

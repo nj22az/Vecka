@@ -45,7 +45,7 @@ struct MonthPickerSheet: View {
             HStack {
                 Button(action: { dismiss() }) {
                     Text(cancelLabel)
-                        .font(.system(size: 16, weight: .medium, design: .rounded))
+                        .font(JohoFont.body)
                         .foregroundStyle(colors.primary)
                 }
 
@@ -56,7 +56,7 @@ struct MonthPickerSheet: View {
                     dismiss()
                 }) {
                     Text(doneLabel)
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .font(JohoFont.headlineSmall)
                         .foregroundStyle(colors.primary)
                 }
             }
@@ -74,7 +74,7 @@ struct MonthPickerSheet: View {
                 VStack(spacing: 0) {
                     // Section header integrated into border
                     Text("MONTH")
-                        .font(.system(size: 10, weight: .heavy, design: .rounded))
+                        .font(JohoFont.labelSmall)
                         .foregroundStyle(colors.primaryInverted)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 4)
@@ -94,7 +94,7 @@ struct MonthPickerSheet: View {
                 VStack(spacing: 0) {
                     // Section header integrated into border
                     Text("YEAR")
-                        .font(.system(size: 10, weight: .heavy, design: .rounded))
+                        .font(JohoFont.labelSmall)
                         .foregroundStyle(colors.primaryInverted)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 4)

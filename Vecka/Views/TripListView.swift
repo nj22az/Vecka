@@ -193,7 +193,7 @@ struct MemoTripRow: View {
                 if let destination = memo.place {
                     HStack(spacing: JohoDimensions.spacingXS) {
                         Image(systemName: IconCatalog.tripDeparture)
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(colors.primary.opacity(0.6))
 
                         Text(destination)
@@ -417,7 +417,7 @@ struct JohoTripEditorSheet: View {
                     // LEFT: Back button (44pt)
                     Button { dismiss() } label: {
                         Image(systemName: IconCatalog.chevronLeft)
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .font(JohoFont.headlineSmall)
                             .foregroundStyle(colors.primary)
                             .johoTouchTarget()
                     }
@@ -432,7 +432,7 @@ struct JohoTripEditorSheet: View {
                     HStack(spacing: JohoDimensions.spacingSM) {
                         // Type icon in colored box
                         Image(systemName: IconCatalog.tripDeparture)
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .font(JohoFont.headlineSmall)
                             .foregroundStyle(tripAccentColor)
                             .frame(width: 36, height: 36)
                             .background(tripLightBackground)
@@ -464,7 +464,7 @@ struct JohoTripEditorSheet: View {
                         dismiss()
                     } label: {
                         Text("Save")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(canSave ? colors.surface : colors.primary.opacity(0.4))
                             .frame(width: 56, height: 32)
                             .background(canSave ? tripAccentColor : colors.surface)
@@ -488,7 +488,7 @@ struct JohoTripEditorSheet: View {
                 HStack(spacing: 0) {
                     // LEFT: Location icon (40pt)
                     Image(systemName: IconCatalog.locationFill)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(tripAccentColor)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
@@ -553,7 +553,7 @@ struct JohoTripEditorSheet: View {
                 HStack(spacing: 0) {
                     // LEFT: Calendar icon (40pt)
                     Image(systemName: IconCatalog.calendar)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
@@ -590,7 +590,7 @@ struct JohoTripEditorSheet: View {
                         }
                     } label: {
                         Text(monthName(startMonth))
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
@@ -629,7 +629,7 @@ struct JohoTripEditorSheet: View {
                 HStack(spacing: 0) {
                     // LEFT: Calendar icon (40pt)
                     Image(systemName: IconCatalog.calendar)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
@@ -666,7 +666,7 @@ struct JohoTripEditorSheet: View {
                         }
                     } label: {
                         Text(monthName(endMonth))
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(colors.primary)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
@@ -705,7 +705,7 @@ struct JohoTripEditorSheet: View {
                 HStack(spacing: 0) {
                     // LEFT: Notes icon (40pt)
                     Image(systemName: IconCatalog.memo)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(tripAccentColor)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)

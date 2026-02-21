@@ -227,7 +227,7 @@ struct ModernCalendarView: View {
                 )
 
             Text("\(count)")
-                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .font(JohoFont.tag)
                 .foregroundStyle(count > 0 ? colors.primary : colors.secondary)
                 .monospacedDigit()
         }
@@ -672,7 +672,7 @@ struct ModernCalendarView: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone - list bullet in cyan squircle
                     Image(systemName: "list.bullet")
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .font(JohoFont.label)
                         .foregroundStyle(colors.primary)
                         .frame(width: 24, height: 24)
                         .background(JohoColors.cyan.opacity(0.3))
@@ -684,7 +684,7 @@ struct ModernCalendarView: View {
                         .foregroundStyle(colors.primary)
 
                     Image(systemName: isLegendExpanded ? IconCatalog.chevronDown : IconCatalog.chevronRight)
-                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .font(JohoFont.tag)
                         .foregroundStyle(colors.secondary)
 
                     Spacer()
@@ -692,7 +692,7 @@ struct ModernCalendarView: View {
                     // Count badge showing number of indicator types
                     if !presentIndicators.isEmpty {
                         Text("\(presentIndicators.count)")
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .font(JohoFont.labelBold)
                             .foregroundStyle(colors.secondary)
                     }
                 }
@@ -818,7 +818,7 @@ struct ModernCalendarView: View {
                     HStack(spacing: JohoDimensions.spacingSM) {
                         // 情報デザイン: Purple calendar icon (app identity)
                         Image(systemName: IconCatalog.calendar)
-                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .font(JohoFont.title)
                             .foregroundStyle(PageHeaderColor.calendar.accent)
                             .frame(width: 40, height: 40)
                             .background(PageHeaderColor.calendar.lightBackground)
@@ -836,7 +836,7 @@ struct ModernCalendarView: View {
                         }
 
                         Image(systemName: IconCatalog.chevronDown)
-                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                            .font(JohoFont.labelBold)
                             .foregroundStyle(colors.secondary)
                     }
                     .padding(.horizontal, JohoDimensions.spacingMD)
@@ -856,7 +856,7 @@ struct ModernCalendarView: View {
                     Button(action: jumpToToday) {
                         HStack(spacing: 4) {
                             Image(systemName: "arrow.uturn.backward")
-                                .font(.system(size: 12, weight: .bold, design: .rounded))
+                                .font(JohoFont.label)
                             Text("TODAY")
                                 .font(JohoFont.labelSmall)
                         }
@@ -904,7 +904,7 @@ struct ModernCalendarView: View {
                     HapticManager.impact(.light)
                 } label: {
                     Image(systemName: IconCatalog.plus)
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .font(JohoFont.label)
                         .foregroundStyle(.white)
                         .frame(width: 28, height: 28)
                         .background(systemAccentColor)
@@ -925,7 +925,7 @@ struct ModernCalendarView: View {
         HStack(spacing: 4) {
             Button { navigateToPreviousMonth() } label: {
                 Image(systemName: IconCatalog.chevronLeft)
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .font(JohoFont.label)
                     .foregroundStyle(colors.primary)
                     .frame(width: 24, height: 44)
                     .contentShape(Rectangle())
@@ -952,7 +952,7 @@ struct ModernCalendarView: View {
 
             Button { navigateToNextMonth() } label: {
                 Image(systemName: IconCatalog.chevronRight)
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .font(JohoFont.label)
                     .foregroundStyle(colors.primary)
                     .frame(width: 24, height: 44)
                     .contentShape(Rectangle())

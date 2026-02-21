@@ -310,7 +310,7 @@ struct UnifiedEntryCreator: View {
                 dismiss()
             } label: {
                 Image(systemName: IconCatalog.xmark)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
                     .frame(width: 32, height: 32)
                     .background(colors.surface)
@@ -338,7 +338,7 @@ struct UnifiedEntryCreator: View {
     private var typeRow: some View {
         HStack(spacing: 0) {
             Image(systemName: typeIcon)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48).frame(maxHeight: .infinity)
 
@@ -368,7 +368,7 @@ struct UnifiedEntryCreator: View {
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: icon)
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .font(JohoFont.label)
                 Text(type.label)
                     .font(.system(size: 12, weight: .heavy, design: .rounded))
             }
@@ -386,14 +386,14 @@ struct UnifiedEntryCreator: View {
     private var textRow: some View {
         HStack(spacing: 0) {
             Image(systemName: IconCatalog.pencil)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48).frame(maxHeight: .infinity)
 
             Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
             TextField(isMemoMode ? "Write something..." : "Name (e.g., Earth Day)", text: $text, axis: .vertical)
-                .font(.system(size: 14, weight: .medium, design: .rounded))
+                .font(JohoFont.bodySmall)
                 .foregroundStyle(colors.primary)
                 .lineLimit(1...4)
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -411,14 +411,14 @@ struct UnifiedEntryCreator: View {
         } label: {
             HStack(spacing: 0) {
                 Image(systemName: IconCatalog.calendar)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
                     .frame(width: 48)
 
                 Rectangle().fill(colors.border).frame(width: 1.5).frame(height: 48)
 
                 Text(formattedDate)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
                     .monospacedDigit()
                     .padding(.horizontal, JohoDimensions.spacingMD)
@@ -426,7 +426,7 @@ struct UnifiedEntryCreator: View {
                 Spacer()
 
                 Image(systemName: IconCatalog.chevronRight)
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .font(JohoFont.label)
                     .foregroundStyle(colors.secondary)
                     .padding(.trailing, JohoDimensions.spacingMD)
             }
@@ -446,14 +446,14 @@ struct UnifiedEntryCreator: View {
     private var aboutRow: some View {
         HStack(spacing: 0) {
             Image(systemName: IconCatalog.memo)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48).frame(maxHeight: .infinity)
 
             Rectangle().fill(colors.border).frame(width: 1.5).frame(maxHeight: .infinity)
 
             TextField("About / Purpose (optional)", text: $about)
-                .font(.system(size: 14, weight: .medium, design: .rounded))
+                .font(JohoFont.bodySmall)
                 .foregroundStyle(colors.primary)
                 .padding(.horizontal, JohoDimensions.spacingMD)
                 .frame(maxHeight: .infinity)
@@ -466,7 +466,7 @@ struct UnifiedEntryCreator: View {
     private var regionRow: some View {
         HStack(spacing: 0) {
             Image(systemName: IconCatalog.globe)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48).frame(maxHeight: .infinity)
 
@@ -507,7 +507,7 @@ struct UnifiedEntryCreator: View {
                     Image(systemName: selectedRegion == "PERSONAL" ? IconCatalog.person : "flag.fill")
                         .font(.system(size: 12, weight: .bold))
                     Text(selectedRegion == "PERSONAL" ? "Personal" : selectedRegion)
-                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .font(JohoFont.bodySmall)
 
                     Spacer()
 
@@ -527,7 +527,7 @@ struct UnifiedEntryCreator: View {
     private var memoOptionsRow: some View {
         HStack(spacing: 0) {
             Image(systemName: IconCatalog.plusCircle)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
 
@@ -566,7 +566,7 @@ struct UnifiedEntryCreator: View {
                 Image(systemName: icon)
                     .font(.system(size: 10, weight: .bold))
                 Text(label)
-                    .font(.system(size: 10, weight: .heavy, design: .rounded))
+                    .font(JohoFont.labelSmall)
             }
             .foregroundStyle(isActive ? .white : colors.primary)
             .padding(.horizontal, 10)
@@ -609,7 +609,7 @@ struct UnifiedEntryCreator: View {
                 }
             } label: {
                 Image(systemName: selectedCurrency.icon)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
                     .frame(width: 48, height: 48)
                     .contentShape(Rectangle())
@@ -619,13 +619,13 @@ struct UnifiedEntryCreator: View {
 
             HStack(spacing: 12) {
                 TextField("0", text: $amount)
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .font(JohoFont.headlineSmall)
                     .keyboardType(.decimalPad)
                     .foregroundStyle(colors.primary)
 
                 // Currency code badge (read-only, shows selected)
                 Text(selectedCurrency.code)
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .font(JohoFont.label)
                     .foregroundStyle(colors.primary)
                     .frame(width: 44)
                     .padding(.horizontal, 6)
@@ -643,14 +643,14 @@ struct UnifiedEntryCreator: View {
     private var placeRow: some View {
         HStack(spacing: 0) {
             Image(systemName: IconCatalog.mappin)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
 
             Rectangle().fill(colors.border).frame(width: 1.5).frame(height: 48)
 
             TextField("Where...", text: $place)
-                .font(.system(size: 14, weight: .medium, design: .rounded))
+                .font(JohoFont.bodySmall)
                 .foregroundStyle(colors.primary)
                 .padding(.horizontal, JohoDimensions.spacingMD)
         }
@@ -662,7 +662,7 @@ struct UnifiedEntryCreator: View {
     private var contactRow: some View {
         HStack(spacing: 0) {
             Image(systemName: IconCatalog.person)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
 
@@ -677,11 +677,11 @@ struct UnifiedEntryCreator: View {
                         Image(systemName: IconCatalog.checkmarkCircleFill)
                             .foregroundStyle(accentColor)
                         Text(linkedContactName.isEmpty ? "Linked" : linkedContactName)
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .font(JohoFont.bodySmall)
                             .foregroundStyle(colors.primary)
                     } else {
                         Text("Select contact...")
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .font(JohoFont.bodySmall)
                             .foregroundStyle(colors.secondary)
                     }
 
@@ -700,7 +700,7 @@ struct UnifiedEntryCreator: View {
                     }
 
                     Image(systemName: IconCatalog.chevronRight)
-                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                        .font(JohoFont.label)
                         .foregroundStyle(colors.secondary)
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -715,7 +715,7 @@ struct UnifiedEntryCreator: View {
     private var photoRow: some View {
         HStack(spacing: 0) {
             Image(systemName: IconCatalog.photo)
-                .font(.system(size: 14, weight: .bold, design: .rounded))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
 
@@ -750,7 +750,7 @@ struct UnifiedEntryCreator: View {
                             Image(systemName: IconCatalog.plus)
                                 .font(.system(size: 12, weight: .bold))
                             Text("Add Photo")
-                                .font(.system(size: 14, weight: .medium, design: .rounded))
+                                .font(JohoFont.bodySmall)
                         }
                         .foregroundStyle(colors.primary)
                         .padding(.horizontal, 12)
@@ -786,7 +786,7 @@ struct UnifiedEntryCreator: View {
         } label: {
             HStack {
                 Image(systemName: IconCatalog.checkmark)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                 Text("SAVE")
                     .font(.system(size: 14, weight: .heavy, design: .rounded))
             }

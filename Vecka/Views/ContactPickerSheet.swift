@@ -47,11 +47,11 @@ struct ContactPickerSheet: View {
                 // Search bar (情報デザイン: simple black border)
                 HStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: IconCatalog.search)
-                        .font(.system(size: 14, weight: .bold, design: .rounded))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary.opacity(0.5))
 
                     TextField("Search contacts...", text: $searchText)
-                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .font(JohoFont.bodySmall)
                         .foregroundStyle(colors.primary)
                 }
                 .padding(JohoDimensions.spacingMD)
@@ -71,7 +71,7 @@ struct ContactPickerSheet: View {
                             .foregroundStyle(colors.primary.opacity(0.3))
 
                         Text(searchText.isEmpty ? "No other contacts available" : "No contacts match '\(searchText)'")
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .font(JohoFont.bodySmall)
                             .foregroundStyle(colors.primary.opacity(0.5))
 
                         Spacer()
@@ -122,7 +122,7 @@ struct ContactPickerSheet: View {
                             .scaledToFill()
                     } else {
                         Text(contact.initials)
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(colors.primary)
                     }
                 }
@@ -156,7 +156,7 @@ struct ContactPickerSheet: View {
 
                 // Chevron
                 Image(systemName: IconCatalog.chevronRight)
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .font(JohoFont.label)
                     .foregroundStyle(colors.primary.opacity(0.3))
             }
             .padding(.vertical, JohoDimensions.spacingSM)

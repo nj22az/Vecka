@@ -80,7 +80,7 @@ struct ShareableFactCard: View {
                 // RIGHT: Fact text
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                     Text(fact.text)
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .font(JohoFont.headlineSmall)
                         .foregroundStyle(colors.primary)
                         .lineLimit(isShareable ? nil : 4)
                         .multilineTextAlignment(.leading)

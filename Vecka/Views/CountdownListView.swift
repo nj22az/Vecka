@@ -70,7 +70,7 @@ struct CountdownListView: View {
         HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
             // Icon zone (52×52pt) - matches Star Page month detail pattern
             Image(systemName: IconCatalog.event)
-                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .font(JohoFont.displaySmall)
                 .foregroundStyle(colors.primary)
                 .johoTouchTarget(52)
                 .background(JohoColors.purple.opacity(0.3))
@@ -146,7 +146,7 @@ struct CountdownListView: View {
 
                 // RIGHT: Event icon compartment (uses actual event icon)
                 Image(systemName: event.icon)
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .font(JohoFont.headlineSmall)
                     .foregroundStyle(colors.primary)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
@@ -235,7 +235,7 @@ struct CountdownListView: View {
                     Spacer()
                     VStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: IconCatalog.calendarBadgePlus)
-                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                            .font(JohoFont.displaySmall)
                             .foregroundStyle(colors.primary.opacity(0.4))
 
                         Text("No Events")
@@ -301,7 +301,7 @@ struct CountdownListView: View {
                         Button(action: onAdd) {
                             HStack(spacing: JohoDimensions.spacingXS) {
                                 Image(systemName: IconCatalog.plus)
-                                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                                    .font(JohoFont.label)
                                 Text("Add")
                                     .font(JohoFont.label)
                             }
@@ -324,7 +324,7 @@ struct CountdownListView: View {
 
                 // RIGHT: Icon compartment
                 Image(systemName: icon)
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .font(JohoFont.headlineSmall)
                     .foregroundStyle(colors.primary)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
@@ -433,7 +433,7 @@ struct CountdownListView: View {
             // 情報デザイン: Decoration icon ALWAYS shown (user decision)
             HStack(spacing: 4) {
                 Image(systemName: icon ?? IconCatalog.event)
-                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(JohoColors.cyan)
                     .frame(width: 24, height: 24)
                     .background(JohoColors.cyan.opacity(0.15))
