@@ -139,7 +139,7 @@ struct ShareableCountdownCard: View {
                     if isAnnual {
                         HStack(spacing: 4) {
                             Image(systemName: IconCatalog.repeatIcon)
-                                .font(.system(size: 10, weight: .bold))
+                                .font(JohoFont.labelBold)
                             Text("ANNUAL")
                                 .font(JohoFont.labelBold)
                         }
@@ -150,7 +150,7 @@ struct ShareableCountdownCard: View {
                     if totalTasks > 0 {
                         HStack(spacing: 6) {
                             Image(systemName: completedTasks == totalTasks ? IconCatalog.checkmarkCircleFill : "circle.dotted")
-                                .font(.system(size: 12, weight: .bold))
+                                .font(JohoFont.label)
                                 .foregroundStyle(completedTasks == totalTasks ? accentColor : colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                             Text("\(completedTasks)/\(totalTasks) TASKS")
@@ -181,7 +181,7 @@ struct ShareableCountdownCard: View {
 
                 // 情報デザイン: Japanese design mark
                 Text("情報")
-                    .font(.system(size: 10, weight: .bold))
+                    .font(JohoFont.labelBold)
                     .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
             }
             .padding(.horizontal, JohoDimensions.spacingMD)

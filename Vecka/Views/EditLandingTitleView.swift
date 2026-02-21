@@ -73,7 +73,7 @@ struct EditLandingTitleView: View {
                             } label: {
                                 HStack {
                                     Image(systemName: IconCatalog.arrowCounterclockwise)
-                                        .font(.system(size: 12, weight: .bold))
+                                        .font(JohoFont.label)
                                     Text("Reset to Default (ONSEN)")
                                         .font(JohoFont.bodySmall)
                                 }
@@ -118,7 +118,7 @@ struct EditLandingTitleView: View {
                         onCancel()
                     } label: {
                         Text("×")
-                            .font(.system(size: 24, weight: .bold))
+                            .font(JohoFont.displaySmall)
                             .foregroundStyle(JohoColors.red)
                     }
                 }
@@ -129,7 +129,7 @@ struct EditLandingTitleView: View {
                         onSave(title.trimmed)
                     } label: {
                         Text("○")
-                            .font(.system(size: 24, weight: .bold))
+                            .font(JohoFont.displaySmall)
                             .foregroundStyle(Color(hex: "38A169"))
                     }
                 }

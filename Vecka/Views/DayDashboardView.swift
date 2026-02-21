@@ -185,7 +185,7 @@ struct DayDashboardView: View {
                     HapticManager.selection()
                 } label: {
                     Image(systemName: IconCatalog.share)
-                        .font(.system(size: 16, weight: .bold))
+                        .font(JohoFont.headlineSmall)
                         .foregroundStyle(colors.primary)
                         .frame(width: 44, height: 44)
                 }
@@ -421,7 +421,7 @@ struct DayDashboardView: View {
             if let onAddEntry {
                 Button(action: onAddEntry) {
                     Image(systemName: IconCatalog.plus)
-                        .font(.system(size: 18, weight: .bold))
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary)
                         .frame(width: 44, height: 44)
                         .background(colors.surface)
@@ -610,7 +610,7 @@ struct DayDashboardView: View {
             HStack(spacing: JohoDimensions.spacingSM) {
                 // Priority symbol
                 Text(memo.priority.symbol)
-                    .font(.system(size: 12))
+                    .font(.system(size: 12, design: .rounded))
 
                 // Color indicator
                 Circle()
@@ -815,7 +815,7 @@ struct SingleMemoDetailSheet: View {
                         Spacer()
 
                         Image(systemName: showShareOptions ? "chevron.up" : "chevron.down")
-                            .font(.system(size: 10, weight: .bold))
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                     }
                     .padding(.horizontal, JohoDimensions.spacingMD)
@@ -837,11 +837,11 @@ struct SingleMemoDetailSheet: View {
                                 Spacer()
 
                                 Image(systemName: displayIcon)
-                                    .font(.system(size: 16, weight: .bold))
+                                    .font(JohoFont.headlineSmall)
                                     .foregroundStyle(memoColor)
 
                                 Image(systemName: IconCatalog.chevronRight)
-                                    .font(.system(size: 10, weight: .bold))
+                                    .font(.system(size: 10, weight: .bold, design: .rounded))
                                     .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                             }
                             .padding(.horizontal, JohoDimensions.spacingMD)
@@ -946,7 +946,7 @@ struct SingleMemoDetailSheet: View {
 
                     HStack(spacing: 8) {
                         Image(systemName: memo.symbolName ?? memoIcon)
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundStyle(CategoryColorSettings.shared.color(for: .memo))
 
                         if memo.symbolName != nil {
@@ -956,7 +956,7 @@ struct SingleMemoDetailSheet: View {
                         }
 
                         Image(systemName: IconCatalog.chevronRight)
-                            .font(.system(size: 10, weight: .bold))
+                            .font(.system(size: 10, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                     }
                 }

@@ -214,7 +214,7 @@ struct ShareableDaySummaryCard: View {
                     // Empty state
                     VStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: IconCatalog.checkmarkCircle)
-                            .font(.system(size: 32, weight: .bold))
+                            .font(JohoFont.displayMedium)
                             .foregroundStyle(colors.secondary.opacity(JohoDimensions.opacityHeavy))
 
                         Text("No events scheduled")
@@ -401,7 +401,7 @@ struct DaySummarySheetView: View {
                     // Empty state
                     VStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: IconCatalog.checkmarkCircle)
-                            .font(.system(size: 32, weight: .bold))
+                            .font(JohoFont.displayMedium)
                             .foregroundStyle(colors.secondary.opacity(JohoDimensions.opacityHeavy))
 
                         Text("No events scheduled")
@@ -493,7 +493,7 @@ private struct DaySummaryRow: View {
         HStack(spacing: JohoDimensions.spacingSM) {
             // Icon
             Image(systemName: icon)
-                .font(.system(size: 16, weight: .bold))
+                .font(JohoFont.headlineSmall)
                 .foregroundStyle(iconColor)
                 .frame(width: 32, height: 32)
                 .background(iconColor.opacity(JohoDimensions.opacityLight))
@@ -557,7 +557,7 @@ private struct DayMemoRow: View {
         return HStack(spacing: JohoDimensions.spacingSM) {
             // Icon
             Image(systemName: icon)
-                .font(.system(size: 16, weight: .bold))
+                .font(JohoFont.headlineSmall)
                 .foregroundStyle(iconColor)
                 .frame(width: 32, height: 32)
                 .background(iconColor.opacity(JohoDimensions.opacityLight))

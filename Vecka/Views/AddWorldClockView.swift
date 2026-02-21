@@ -59,7 +59,7 @@ struct AddWorldClockView: View {
                     // Search bar
                     HStack(spacing: JohoDimensions.spacingSM) {
                         Image(systemName: IconCatalog.search)
-                            .font(.system(size: 14, weight: .medium))
+                            .font(JohoFont.bodySmall)
                             .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
 
                         TextField("Type city or country...", text: $searchText)
@@ -72,7 +72,7 @@ struct AddWorldClockView: View {
                                 searchText = ""
                             } label: {
                                 Image(systemName: IconCatalog.xmarkCircleFill)
-                                    .font(.system(size: 16))
+                                    .font(.system(size: 16, design: .rounded))
                                     .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                             }
                         }
@@ -97,7 +97,7 @@ struct AddWorldClockView: View {
                             // No results
                             VStack(spacing: JohoDimensions.spacingMD) {
                                 Image(systemName: IconCatalog.globe)
-                                    .font(.system(size: 32, weight: .light))
+                                    .font(.system(size: 32, weight: .light, design: .rounded))
                                     .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                                 Text("No cities found")
                                     .font(JohoFont.headline)
@@ -144,7 +144,7 @@ struct AddWorldClockView: View {
                                             .foregroundStyle(colors.secondary)
 
                                         Image(systemName: IconCatalog.plusCircle)
-                                            .font(.system(size: 18, weight: .medium))
+                                            .font(.system(size: 18, weight: .medium, design: .rounded))
                                             .foregroundStyle(regionColor(for: city.worldRegion))
                                     }
                                     .padding(JohoDimensions.spacingMD)
@@ -175,7 +175,7 @@ struct AddWorldClockView: View {
                         dismiss()
                     } label: {
                         Text("×")
-                            .font(.system(size: 24, weight: .bold))
+                            .font(JohoFont.displaySmall)
                             .foregroundStyle(JohoColors.red)
                     }
                 }

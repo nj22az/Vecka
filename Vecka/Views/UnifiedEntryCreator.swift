@@ -505,14 +505,14 @@ struct UnifiedEntryCreator: View {
             } label: {
                 HStack {
                     Image(systemName: selectedRegion == "PERSONAL" ? IconCatalog.person : "flag.fill")
-                        .font(.system(size: 12, weight: .bold))
+                        .font(JohoFont.label)
                     Text(selectedRegion == "PERSONAL" ? "Personal" : selectedRegion)
                         .font(JohoFont.bodySmall)
 
                     Spacer()
 
                     Image(systemName: IconCatalog.chevronUpDown)
-                        .font(.system(size: 10, weight: .bold))
+                        .font(JohoFont.labelBold)
                         .foregroundStyle(colors.secondary)
                 }
                 .foregroundStyle(colors.primary)
@@ -564,7 +564,7 @@ struct UnifiedEntryCreator: View {
         } label: {
             HStack(spacing: 4) {
                 Image(systemName: icon)
-                    .font(.system(size: 10, weight: .bold))
+                    .font(JohoFont.labelBold)
                 Text(label)
                     .font(JohoFont.labelSmall)
             }
@@ -584,7 +584,7 @@ struct UnifiedEntryCreator: View {
             HapticManager.selection()
         } label: {
             Image(systemName: icon)
-                .font(.system(size: 14, weight: .bold))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(isActive ? .white : colors.primary)
                 .frame(width: 36, height: 36)
                 .background(isActive ? accentColor : colors.surface)
@@ -739,7 +739,7 @@ struct UnifiedEntryCreator: View {
                         HapticManager.selection()
                     } label: {
                         Image(systemName: IconCatalog.xmarkCircleFill)
-                            .font(.system(size: 20))
+                            .font(.system(size: 20, design: .rounded))
                             .foregroundStyle(colors.secondary)
                     }
                     .buttonStyle(.plain)
@@ -748,7 +748,7 @@ struct UnifiedEntryCreator: View {
                     PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
                         HStack(spacing: 6) {
                             Image(systemName: IconCatalog.plus)
-                                .font(.system(size: 12, weight: .bold))
+                                .font(JohoFont.label)
                             Text("Add Photo")
                                 .font(JohoFont.bodySmall)
                         }

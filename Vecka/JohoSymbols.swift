@@ -463,7 +463,7 @@ struct JohoPhotoContainer: View {
 
                 if let badge = stickerBadge {
                     Image(systemName: badge.icon)
-                        .font(.system(size: size * 0.15, weight: .bold))
+                        .font(.system(size: size * 0.15, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primaryInverted)
                         .padding(4)
                         .background(badge.color)
@@ -585,7 +585,7 @@ struct JohoPhotoPicker: View {
 
         return VStack(spacing: 4) {
             Image(systemName: icon)
-                .font(.system(size: 16, weight: .bold))
+                .font(JohoFont.headlineSmall)
             Text(label)
                 .font(JohoFont.labelBold)
         }
@@ -646,7 +646,7 @@ struct JohoSymbolPickerSheet: View {
                         dismiss()
                     } label: {
                         Text(JohoSymbols.batsu)  // × Cancel
-                            .font(.system(size: 18, weight: .bold))
+                            .font(JohoFont.headline)
                     }
                 }
             }
@@ -659,7 +659,7 @@ struct JohoSymbolPickerSheet: View {
             onSelect()
         } label: {
             Text(symbol)
-                .font(.system(size: 28))
+                .font(.system(size: 28, design: .rounded))
                 .frame(width: 56, height: 56)
                 .background(selectedSymbol == symbol ? JohoColors.yellow : colors.surface)
                 .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: selectedSymbol == symbol ? 2.5 : 1.5)
@@ -736,7 +736,7 @@ struct JohoContactAvatarRow: View {
             // Status indicator (if present)
             if let status = status {
                 Text(status.symbol)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.system(size: 20, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .padding(JohoDimensions.spacingSM)
                     .background(status.color)
@@ -745,7 +745,7 @@ struct JohoContactAvatarRow: View {
 
             // Chevron
             Image(systemName: IconCatalog.chevronRight)
-                .font(.system(size: 14, weight: .bold))
+                .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
         }
         .padding(JohoDimensions.spacingMD)
@@ -787,7 +787,7 @@ struct JohoCategoryFilterBar: View {
         } label: {
             HStack(spacing: 6) {
                 Image(systemName: sfSymbol)
-                    .font(.system(size: 12, weight: .bold))
+                    .font(JohoFont.label)
                 Text(label)
                     .font(JohoFont.labelSmall)
             }

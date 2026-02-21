@@ -66,7 +66,7 @@ struct DailyNotesView: View {
                             dismiss()
                         } label: {
                             Image(systemName: IconCatalog.xmark)
-                                .font(.system(size: 14, weight: .bold))
+                                .font(JohoFont.bodySmallBold)
                                 .foregroundStyle(colors.surface)
                                 .frame(width: 32, height: 32)
                                 .background(colors.surface.opacity(JohoDimensions.opacityMild))
@@ -86,7 +86,7 @@ struct DailyNotesView: View {
                                 ForEach(holidays, id: \.id) { holiday in
                                     HStack(spacing: JohoDimensions.spacingSM) {
                                         Image(systemName: holiday.symbolName ?? "flag.fill")
-                                            .font(.system(size: 14, weight: .bold))
+                                            .font(JohoFont.bodySmallBold)
                                             .foregroundStyle(holiday.isBankHoliday ? JohoColors.pink : JohoColors.cyan)
 
                                         Text(holiday.displayTitle)
@@ -115,7 +115,7 @@ struct DailyNotesView: View {
                     } label: {
                         HStack(spacing: JohoDimensions.spacingSM) {
                             Image(systemName: IconCatalog.plus)
-                                .font(.system(size: 16, weight: .bold))
+                                .font(JohoFont.headlineSmall)
                             Text("Add Note")
                                 .font(JohoFont.button)
                         }
@@ -166,7 +166,7 @@ struct DailyNotesView: View {
                     JohoCard(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderMedium) {
                         VStack(spacing: JohoDimensions.spacingMD) {
                             Image(systemName: IconCatalog.memo)
-                                .font(.system(size: 32, weight: .medium))
+                                .font(.system(size: 32, weight: .medium, design: .rounded))
                                 .foregroundStyle(JohoColors.yellow)
                             Text("No Notes")
                                 .font(JohoFont.headline)
@@ -258,7 +258,7 @@ private struct JohoNoteCard: View {
             // Priority symbol if high or low
             if let symbol = prioritySymbol {
                 Text(symbol)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
             }
 
@@ -355,7 +355,7 @@ private struct JohoNoteEditor: View {
                         .overlay(Circle().stroke(colors.border, lineWidth: 2))
 
                     Image(systemName: IconCatalog.memo)
-                        .font(.system(size: 24, weight: .bold))
+                        .font(JohoFont.displaySmall)
                         .foregroundStyle(accentColor)
                 }
 
@@ -477,7 +477,7 @@ struct JohoNoteEditorSheet: View {
                     // LEFT: Back button (44pt)
                     Button { dismiss() } label: {
                         Image(systemName: IconCatalog.chevronLeft)
-                            .font(.system(size: 16, weight: .bold))
+                            .font(JohoFont.headlineSmall)
                             .foregroundStyle(colors.primaryInverted)
                             .johoTouchTarget()
                     }
@@ -492,7 +492,7 @@ struct JohoNoteEditorSheet: View {
                     HStack(spacing: JohoDimensions.spacingSM) {
                         // Type icon in colored box
                         Image(systemName: IconCatalog.memo)
-                            .font(.system(size: 16, weight: .bold))
+                            .font(JohoFont.headlineSmall)
                             .foregroundStyle(noteAccentColor)
                             .frame(width: 36, height: 36)
                             .background(noteLightBackground)
@@ -576,7 +576,7 @@ struct JohoNoteEditorSheet: View {
                 HStack(spacing: 0) {
                     // LEFT: Calendar icon (40pt)
                     Image(systemName: IconCatalog.calendar)
-                        .font(.system(size: 14, weight: .bold))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
@@ -656,7 +656,7 @@ struct JohoNoteEditorSheet: View {
                     HStack(spacing: 0) {
                         // LEFT: Current icon (40pt)
                         Image(systemName: selectedSymbol)
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundStyle(noteAccentColor)
                             .frame(width: 40)
                             .frame(maxHeight: .infinity)
@@ -676,7 +676,7 @@ struct JohoNoteEditorSheet: View {
                         Spacer()
 
                         Image(systemName: IconCatalog.chevronRight)
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 12, weight: .semibold, design: .rounded))
                             .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                             .padding(.trailing, JohoDimensions.spacingMD)
                     }

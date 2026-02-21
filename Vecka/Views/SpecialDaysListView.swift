@@ -1898,7 +1898,7 @@ struct CollapsibleSpecialDayCard: View {
                             // 情報デザイン: Icon + number (no words needed)
                             HStack(spacing: 4) {
                                 Image(systemName: IconCatalog.birthdayCake)
-                                    .font(.system(size: 10, weight: .medium))
+                                    .font(.system(size: 10, weight: .medium, design: .rounded))
                                 Text("\(age)")
                                     .font(.system(size: 11, weight: .semibold, design: .rounded))
                             }

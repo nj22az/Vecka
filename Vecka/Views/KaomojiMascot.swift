@@ -182,7 +182,7 @@ struct JohoMascot: View {
             // Floating hearts (情報デザイン: Happy reaction)
             ForEach(floatingHearts) { heart in
                 Image(systemName: IconCatalog.heartFill)
-                    .font(.system(size: size * 0.12, weight: .bold))
+                    .font(.system(size: size * 0.12, weight: .bold, design: .rounded))
                     .foregroundStyle(JohoColors.pink)
                     .offset(x: heart.xOffset, y: heart.yOffset)
                     .opacity(heart.opacity)
@@ -192,7 +192,7 @@ struct JohoMascot: View {
             // Steam puffs (情報デザイン: Onsen atmosphere)
             ForEach(steamPuffs) { puff in
                 let baseImage = Image(systemName: IconCatalog.cloudFill)
-                    .font(.system(size: size * 0.18, weight: .medium))
+                    .font(.system(size: size * 0.18, weight: .medium, design: .rounded))
                     .foregroundStyle(JohoColors.cyan.opacity(JohoDimensions.opacityStrong))
 
                 Group {
@@ -228,7 +228,7 @@ struct JohoMascot: View {
             // Floating sparkle (情報デザイン: Playful SF Symbol animation)
             if sparkleVisible {
                 let baseImage = Image(systemName: IconCatalog.sparkle)
-                    .font(.system(size: size * 0.15, weight: .medium))
+                    .font(.system(size: size * 0.15, weight: .medium, design: .rounded))
                     .foregroundStyle(JohoColors.cyan)
 
                 Group {
@@ -302,15 +302,15 @@ struct JohoMascot: View {
             // Steam rising from water (SF Symbol)
             HStack(spacing: size * 0.08) {
                 let leftSteam = Image(systemName: IconCatalog.humidityFill)
-                    .font(.system(size: size * 0.14, weight: .medium))
+                    .font(.system(size: size * 0.14, weight: .medium, design: .rounded))
                     .foregroundStyle(JohoColors.cyan.opacity(JohoDimensions.opacityBold))
 
                 let middleSteam = Image(systemName: IconCatalog.humidityFill)
-                    .font(.system(size: size * 0.18, weight: .medium))
+                    .font(.system(size: size * 0.18, weight: .medium, design: .rounded))
                     .foregroundStyle(JohoColors.cyan.opacity(JohoDimensions.opacityDense))
 
                 let rightSteam = Image(systemName: IconCatalog.humidityFill)
-                    .font(.system(size: size * 0.14, weight: .medium))
+                    .font(.system(size: size * 0.14, weight: .medium, design: .rounded))
                     .foregroundStyle(JohoColors.cyan.opacity(JohoDimensions.opacityBold))
 
                 if shouldAnimate {
@@ -327,7 +327,7 @@ struct JohoMascot: View {
 
             // ♨️ Onsen symbol (情報デザイン: Semantic indicator)
             Text("♨️")
-                .font(.system(size: size * 0.2))
+                .font(.system(size: size * 0.2, design: .rounded))
                 .offset(y: size * 0.32)
         }
     }
@@ -375,7 +375,7 @@ struct JohoMascot: View {
                 // Accent symbol (mood-dependent sparkle/zzz) - with SF Symbol effects
                 if let symbol = displayedMood.accentSymbol {
                     let baseImage = Image(systemName: symbol)
-                        .font(.system(size: size * 0.12, weight: .bold))
+                        .font(.system(size: size * 0.12, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
                     Group {
@@ -423,7 +423,7 @@ struct JohoMascot: View {
         case .star:
             // ★ Star eyes
             Image(systemName: IconCatalog.star)
-                .font(.system(size: eyeSize * 1.1, weight: .bold))
+                .font(.system(size: eyeSize * 1.1, weight: .bold, design: .rounded))
                 .foregroundStyle(colors.primary)
                 .scaleEffect(y: isBlinking ? 0.1 : 1.0)
                 .animation(.easeInOut(duration: 0.08), value: isBlinking)

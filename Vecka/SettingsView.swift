@@ -152,7 +152,7 @@ struct SettingsView: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone with Settings accent color (Slate Blue)
                     Image(systemName: IconCatalog.settings)
-                        .font(.system(size: 20, weight: .bold))
+                        .font(JohoFont.title)
                         .foregroundStyle(PageHeaderColor.settings.accent)
                         .frame(width: 40, height: 40)
                         .background(PageHeaderColor.settings.lightBackground)
@@ -198,7 +198,7 @@ struct SettingsView: View {
                 // Database health indicator (情報デザイン: Honest status)
                 HStack(spacing: 4) {
                     Text(databaseHealthIndicator)
-                        .font(.system(size: 12, weight: .bold))
+                        .font(JohoFont.label)
                         .foregroundStyle(databaseHealthColor)
 
                     Text("\(totalEntries)")
@@ -239,7 +239,7 @@ struct SettingsView: View {
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "sun.min")
-                            .font(.system(size: 11, weight: .bold))
+                            .font(.system(size: 11, weight: .bold, design: .rounded))
                         Text("LIGHT")
                             .font(.system(size: 12, weight: .black, design: .rounded))
                     }
@@ -262,7 +262,7 @@ struct SettingsView: View {
                 } label: {
                     HStack(spacing: 6) {
                         Image(systemName: "moon")
-                            .font(.system(size: 12, weight: .bold))
+                            .font(JohoFont.label)
                         Text("DARK")
                             .font(.system(size: 12, weight: .black, design: .rounded))
                     }
@@ -287,7 +287,7 @@ struct SettingsView: View {
             // Current colors preview row
             HStack(spacing: JohoDimensions.spacingMD) {
                 Image(systemName: "paintpalette.fill")
-                    .font(.system(size: 20, weight: .bold))
+                    .font(JohoFont.title)
                     .foregroundStyle(colors.primary)
                     .johoTouchTarget()
                     .background(colors.inputBackground)
@@ -372,7 +372,7 @@ struct SettingsView: View {
                     .overlay(alignment: .bottomTrailing) {
                         if isActive {
                             Image(systemName: "checkmark.circle.fill")
-                                .font(.system(size: 16, weight: .bold))
+                                .font(JohoFont.headlineSmall)
                                 .foregroundStyle(colors.primary)
                                 .background(colors.surface)
                                 .clipShape(Circle())
@@ -479,7 +479,7 @@ struct SettingsView: View {
 
                             // Chevron
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 12, weight: .bold))
+                                .font(JohoFont.label)
                                 .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         }
                         .padding(.horizontal, JohoDimensions.spacingMD)
@@ -584,7 +584,7 @@ struct SettingsView: View {
 
                             // Chevron
                             Image(systemName: "chevron.right")
-                                .font(.system(size: 12, weight: .bold))
+                                .font(JohoFont.label)
                                 .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         }
                         .padding(.horizontal, JohoDimensions.spacingMD)
@@ -655,7 +655,7 @@ struct SettingsView: View {
                 HStack(spacing: JohoDimensions.spacingMD) {
                     // Moon icon (EXCEPTION: Keep JohoColors.black on bright Vietnamese flag background)
                     Image(systemName: showLunarCalendar ? "moon.stars.fill" : "moon")
-                        .font(.system(size: 20, weight: .bold))
+                        .font(JohoFont.title)
                         .foregroundStyle(showLunarCalendar ? Color(hex: "FFCD00") : colors.primary)
                         .johoTouchTarget()
                         .background(showLunarCalendar ? Color(hex: "DA251D") : colors.inputBackground)
@@ -687,7 +687,7 @@ struct SettingsView: View {
                         .overlay(
                             showLunarCalendar ?
                             Image(systemName: "checkmark")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(JohoFont.bodySmallBold)
                                 .foregroundStyle(.white)
                             : nil
                         )
@@ -723,7 +723,7 @@ struct SettingsView: View {
                 HStack(spacing: JohoDimensions.spacingMD) {
                     // Icon zone
                     Image(systemName: "textformat.abc")
-                        .font(.system(size: 20, weight: .bold))
+                        .font(JohoFont.title)
                         .foregroundStyle(PageHeaderColor.landing.accent)
                         .johoTouchTarget()
                         .background(PageHeaderColor.landing.lightBackground)
@@ -834,7 +834,7 @@ struct SettingsView: View {
                 // Total count badge
                 HStack(spacing: 4) {
                     Text(databaseHealthIndicator)
-                        .font(.system(size: 10, weight: .bold))
+                        .font(JohoFont.labelBold)
                         .foregroundStyle(databaseHealthColor)
                     Text("\(totalEntries)")
                         .font(.system(size: 11, weight: .black, design: .rounded))
@@ -897,7 +897,7 @@ struct SettingsView: View {
                 // System holidays (read-only)
                 HStack(spacing: 4) {
                     Image(systemName: "lock.fill")
-                        .font(.system(size: 8, weight: .bold))
+                        .font(.system(size: 8, weight: .bold, design: .rounded))
                     Text("\(systemHolidayCount) SYS")
                         .font(.system(size: 9, weight: .bold, design: .rounded))
                 }
@@ -921,7 +921,7 @@ struct SettingsView: View {
         VStack(spacing: 4) {
             // Large colored icon (like Star page month icons)
             Image(systemName: icon)
-                .font(.system(size: 28, weight: .bold))
+                .font(.system(size: 28, weight: .bold, design: .rounded))
                 .foregroundStyle(color)
 
             // Label (like month name)
@@ -943,7 +943,7 @@ struct SettingsView: View {
             } else {
                 // Empty state - subtle dash
                 Text("—")
-                    .font(.system(size: 10, weight: .medium))
+                    .font(.system(size: 10, weight: .medium, design: .rounded))
                     .foregroundStyle(colors.secondary.opacity(JohoDimensions.opacityHeavy))
             }
         }
@@ -1431,7 +1431,7 @@ struct SettingsCategoryCustomizationSheet: View {
                                 Spacer()
 
                                 Image(systemName: "chevron.right")
-                                    .font(.system(size: 12, weight: .bold))
+                                    .font(JohoFont.label)
                                     .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                             }
                             .padding(12)

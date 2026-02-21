@@ -55,7 +55,7 @@ struct CountdownCard: View {
                 .frame(width: 50, height: 50)
             
             Image(systemName: iconName)
-                .font(.system(size: 24, weight: .medium))
+                .font(.system(size: 24, weight: .medium, design: .rounded))
                 .foregroundStyle(iconForegroundColor)
         }
     }
@@ -555,7 +555,7 @@ struct CustomCountdownDialog: View {
                     // LEFT: Back button (44pt)
                     Button { dismiss() } label: {
                         Image(systemName: IconCatalog.chevronLeft)
-                            .font(.system(size: 16, weight: .bold))
+                            .font(JohoFont.headlineSmall)
                             .foregroundStyle(colors.primaryInverted)
                             .johoTouchTarget()
                     }
@@ -570,7 +570,7 @@ struct CustomCountdownDialog: View {
                     HStack(spacing: JohoDimensions.spacingSM) {
                         // Type icon in colored box
                         Image(systemName: IconCatalog.event)
-                            .font(.system(size: 16, weight: .bold))
+                            .font(JohoFont.headlineSmall)
                             .foregroundStyle(eventAccentColor)
                             .frame(width: 36, height: 36)
                             .background(eventLightBackground)
@@ -661,7 +661,7 @@ struct CustomCountdownDialog: View {
                 HStack(spacing: 0) {
                     // LEFT: Calendar icon (40pt)
                     Image(systemName: IconCatalog.calendar)
-                        .font(.system(size: 14, weight: .bold))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
@@ -743,7 +743,7 @@ struct CustomCountdownDialog: View {
                 HStack(spacing: 0) {
                     // LEFT: Repeat icon (40pt)
                     Image(systemName: IconCatalog.repeatIcon)
-                        .font(.system(size: 14, weight: .bold))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary)
                         .frame(width: 40)
                         .frame(maxHeight: .infinity)
@@ -808,7 +808,7 @@ struct CustomCountdownDialog: View {
                     HStack(spacing: 0) {
                         // LEFT: Current icon (40pt)
                         Image(systemName: iconName)
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundStyle(eventAccentColor)
                             .frame(width: 40)
                             .frame(maxHeight: .infinity)
@@ -828,7 +828,7 @@ struct CustomCountdownDialog: View {
                         Spacer()
 
                         Image(systemName: IconCatalog.chevronRight)
-                            .font(.system(size: 12, weight: .semibold))
+                            .font(.system(size: 12, weight: .semibold, design: .rounded))
                             .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                             .padding(.trailing, JohoDimensions.spacingMD)
                     }
@@ -952,7 +952,7 @@ private struct JohoIconPickerGrid: View {
                             )
 
                         Image(systemName: name)
-                            .font(.system(size: 20, weight: .bold))
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
                             .foregroundStyle(selectedIcon == name ? colors.primaryInverted : colors.primary)
                     }
                 }
@@ -1033,7 +1033,7 @@ private struct JohoIconPicker: View {
                                     dismiss()
                                 } label: {
                                     Image(systemName: symbol)
-                                        .font(.system(size: 20, weight: .bold))
+                                        .font(.system(size: 20, weight: .bold, design: .rounded))
                                         // 情報デザイン: Accent color on light bg (NOT inverted)
                                         .foregroundStyle(selectedSymbol == symbol ? SpecialDayType.event.accentColor : colors.primary)
                                         .johoTouchTarget(52)
@@ -1090,7 +1090,7 @@ struct IconPickerGrid: View {
                         Circle()
                             .fill(selectedIcon == name ? JohoColors.cyan.opacity(0.22) : colors.primary.opacity(0.08))
                         Image(systemName: name)
-                            .font(.system(size: 18, weight: .semibold))
+                            .font(.system(size: 18, weight: .semibold, design: .rounded))
                             .foregroundStyle(selectedIcon == name ? JohoColors.cyan : colors.primary.opacity(JohoDimensions.opacityBold))
                     }
                 }

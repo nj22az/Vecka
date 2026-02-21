@@ -277,7 +277,7 @@ struct MemoEditorView: View {
         } label: {
             HStack(spacing: 4) {
                 Image(systemName: icon)
-                    .font(.system(size: 10, weight: .bold))
+                    .font(JohoFont.labelBold)
                 Text(label)
                     .font(JohoFont.labelSmall)
             }
@@ -343,7 +343,7 @@ struct MemoEditorView: View {
         } label: {
             HStack(spacing: 4) {
                 Image(systemName: type.icon)
-                    .font(.system(size: 10, weight: .bold))
+                    .font(JohoFont.labelBold)
                 Text(type.rawValue)
                     .font(JohoFont.labelSmall)
             }
@@ -848,7 +848,7 @@ struct MemoContactPicker: View {
                 if selectedContactID == contact.id {
                     Image(systemName: IconCatalog.checkmarkCircleFill)
                         .foregroundStyle(accentColor)
-                        .font(.system(size: 20))
+                        .font(.system(size: 20, design: .rounded))
                 }
             }
             .padding(.horizontal, 12)

@@ -158,7 +158,7 @@ struct ShareableContactCard: View {
                     if let org = contact.organizationName, !org.isEmpty {
                         HStack(spacing: 6) {
                             Image(systemName: IconCatalog.building)
-                                .font(.system(size: 11, weight: .bold))
+                                .font(JohoFont.tag)
                                 .foregroundStyle(JohoColors.cyan)
                             Text(org)
                                 .font(JohoFont.caption)
@@ -171,7 +171,7 @@ struct ShareableContactCard: View {
                     ForEach(contact.phoneNumbers.prefix(2), id: \.id) { phone in
                         HStack(spacing: 6) {
                             Image(systemName: IconCatalog.phone)
-                                .font(.system(size: 11, weight: .bold))
+                                .font(JohoFont.tag)
                                 .foregroundStyle(JohoColors.green)
                             Text(phone.value)
                                 .font(JohoFont.caption)
@@ -184,7 +184,7 @@ struct ShareableContactCard: View {
                     ForEach(contact.emailAddresses.prefix(2), id: \.id) { email in
                         HStack(spacing: 6) {
                             Image(systemName: IconCatalog.envelope)
-                                .font(.system(size: 11, weight: .bold))
+                                .font(JohoFont.tag)
                                 .foregroundStyle(JohoColors.yellow)
                             Text(email.value)
                                 .font(JohoFont.caption)
@@ -197,7 +197,7 @@ struct ShareableContactCard: View {
                     if let birthday = contact.birthday, contact.birthdayKnown {
                         HStack(spacing: 6) {
                             Image(systemName: IconCatalog.birthday)
-                                .font(.system(size: 11, weight: .bold))
+                                .font(JohoFont.tag)
                                 .foregroundStyle(JohoColors.pink)
                             Text(birthday.formatted(.dateTime.year().month(.abbreviated).day()))
                                 .font(JohoFont.caption)
@@ -241,7 +241,7 @@ struct ShareableContactCard: View {
                         )
                         .overlay {
                             Image(systemName: IconCatalog.qrcode)
-                                .font(.system(size: 32))
+                                .font(.system(size: 32, design: .rounded))
                                 .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                         }
                 }

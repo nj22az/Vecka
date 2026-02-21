@@ -97,7 +97,7 @@ struct EventTaskEditorRow: View {
             if !task.text.isEmpty, let onDelete = onDelete {
                 Button(action: onDelete) {
                     Image(systemName: IconCatalog.xmarkCircleFill)
-                        .font(.system(size: 18, weight: .medium))
+                        .font(.system(size: 18, weight: .medium, design: .rounded))
                         .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                 }
                 .buttonStyle(.plain)

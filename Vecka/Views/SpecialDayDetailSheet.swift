@@ -142,7 +142,7 @@ struct SpecialDayDetailSheet: View {
 
                     HStack(spacing: 8) {
                         Image(systemName: item.symbolName ?? item.type.categoryAwareIcon)
-                            .font(.system(size: 18, weight: .bold))
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundStyle(CategoryColorSettings.shared.color(for: item.type.displayCategory))
 
                         if item.symbolName != nil {
@@ -152,7 +152,7 @@ struct SpecialDayDetailSheet: View {
                         }
 
                         Image(systemName: IconCatalog.chevronRight)
-                            .font(.system(size: 10, weight: .bold))
+                            .font(JohoFont.labelBold)
                             .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                     }
                 }
@@ -351,7 +351,7 @@ struct SpecialDayDetailSheet: View {
                     Spacer()
 
                     Image(systemName: showShareOptions ? "chevron.up" : IconCatalog.chevronDown)
-                        .font(.system(size: 10, weight: .bold))
+                        .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -378,11 +378,11 @@ struct SpecialDayDetailSheet: View {
                             Spacer()
 
                             Image(systemName: displayIcon)
-                                .font(.system(size: 16, weight: .bold))
+                                .font(JohoFont.headlineSmall)
                                 .foregroundStyle(item.type.accentColor)
 
                             Image(systemName: IconCatalog.chevronRight)
-                                .font(.system(size: 10, weight: .bold))
+                                .font(JohoFont.labelBold)
                                 .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                         }
                         .padding(.horizontal, JohoDimensions.spacingMD)

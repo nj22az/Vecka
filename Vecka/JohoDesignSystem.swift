@@ -927,7 +927,7 @@ struct JohoFormSection<Content: View>: View {
 
                 if let icon {
                     Image(systemName: icon)
-                        .font(.system(size: 14, weight: .bold))
+                        .font(JohoFont.bodySmallBold)
                         .foregroundStyle(accentColor ?? colors.primary)
                 }
 
@@ -1158,7 +1158,7 @@ struct JohoListRow: View {
             // Chevron
             if showChevron {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
             }
         }
@@ -1256,7 +1256,7 @@ struct JohoEditorHeader: View {
             // Cancel button (44×44pt) - × (batsu) = Cancel in Japanese UI
             Button(action: onBack) {
                 Text(JohoSymbols.batsu)  // ×
-                    .font(.system(size: 22, weight: .bold))
+                    .font(.system(size: 22, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .johoTouchTarget()
                     .background(colors.surface)
@@ -1265,7 +1265,7 @@ struct JohoEditorHeader: View {
 
             // Icon zone (52×52pt) - matches January 2026 pattern
             Image(systemName: icon)
-                .font(.system(size: 24, weight: .bold))
+                .font(JohoFont.displaySmall)
                 .foregroundStyle(accentColor)
                 .frame(width: 52, height: 52)
                 .background(lightBackground)
@@ -1287,7 +1287,7 @@ struct JohoEditorHeader: View {
             // Confirm button (44×44pt) - ○ (maru) = Confirm in Japanese UI
             Button(action: onSave) {
                 Text(JohoSymbols.maru)  // ○
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(JohoDimensions.opacityModerate))
                     .johoTouchTarget()
                     .background(canSave ? accentColor : colors.surface)
@@ -1475,7 +1475,7 @@ struct JohoSticker: View {
             ZStack {
                 color
                 Image(systemName: systemName)
-                    .font(.system(size: size * 0.4, weight: .bold))
+                    .font(.system(size: size * 0.4, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primaryInverted)
             }
         case .empty:
@@ -1488,7 +1488,7 @@ struct JohoSticker: View {
         ZStack {
             color
             Image(systemName: IconCatalog.person)
-                .font(.system(size: size * 0.4))
+                .font(.system(size: size * 0.4, design: .rounded))
                 .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
         }
     }
@@ -1496,7 +1496,7 @@ struct JohoSticker: View {
     @ViewBuilder
     private func badgeView(_ badge: Badge) -> some View {
         Image(systemName: badge.icon)
-            .font(.system(size: badgeSize * 0.5, weight: .bold))
+            .font(.system(size: badgeSize * 0.5, weight: .bold, design: .rounded))
             .foregroundStyle(badge.color)
             .frame(width: badgeSize, height: badgeSize)
             .background(colors.surface)
@@ -1600,7 +1600,7 @@ struct JohoSearchField: View {
                     text = ""
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 14, weight: .medium))
+                        .font(JohoFont.bodySmall)
                         .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                 }
                 .buttonStyle(.plain)
@@ -2241,7 +2241,7 @@ struct JohoMonthSelector: View {
                         .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
 
                     Image(systemName: "chevron.down")
-                        .font(.system(size: 10, weight: .bold))
+                        .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -2510,7 +2510,7 @@ struct HotelClockWidget: View {
 
                 // Day/Night icon
                 Image(systemName: clock.isDaytime ? "sun.max.fill" : "moon.fill")
-                    .font(.system(size: 10))
+                    .font(.system(size: 10, design: .rounded))
                     .foregroundStyle(
                         clock.isDaytime
                             ? JohoColors.yellow
@@ -2877,7 +2877,7 @@ struct JohoCalendarPicker: View {
                 HapticManager.selection()
             } label: {
                 Image(systemName: "chevron.left")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
                     .frame(width: 44, height: 44)
             }
@@ -2897,7 +2897,7 @@ struct JohoCalendarPicker: View {
                 HapticManager.selection()
             } label: {
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
                     .frame(width: 44, height: 44)
             }
@@ -3297,7 +3297,7 @@ struct JohoSFSymbolPickerSheet: View {
             // Search bar
             HStack(spacing: JohoDimensions.spacingSM) {
                 Image(systemName: "magnifyingglass")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.secondary)
 
                 TextField("Search symbols...", text: $searchText)
@@ -3311,7 +3311,7 @@ struct JohoSFSymbolPickerSheet: View {
                         searchText = ""
                     } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 16, weight: .bold))
+                            .font(JohoFont.headlineSmall)
                             .foregroundStyle(colors.secondary)
                     }
                     .buttonStyle(.plain)
@@ -3360,7 +3360,7 @@ struct JohoSFSymbolPickerSheet: View {
                 if displaySymbols.isEmpty {
                     VStack(spacing: JohoDimensions.spacingMD) {
                         Image(systemName: "magnifyingglass")
-                            .font(.system(size: 32, weight: .bold))
+                            .font(JohoFont.displayMedium)
                             .foregroundStyle(colors.secondary)
                         Text("No symbols found")
                             .font(JohoFont.body)
@@ -3994,14 +3994,14 @@ struct JohoColorPickerSheet: View {
                         // Slider
                         HStack(spacing: JohoDimensions.spacingSM) {
                             Image(systemName: "moon.fill")
-                                .font(.system(size: 12, weight: .bold))
+                                .font(JohoFont.label)
                                 .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
 
                             Slider(value: $brightnessAdjustment, in: -0.3...0.3, step: 0.05)
                                 .tint(Color(hex: adjustedColorHex))
 
                             Image(systemName: "sun.max.fill")
-                                .font(.system(size: 14, weight: .bold))
+                                .font(JohoFont.bodySmallBold)
                                 .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         }
 

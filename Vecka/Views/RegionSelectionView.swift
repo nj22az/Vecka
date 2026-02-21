@@ -180,7 +180,7 @@ struct RegionSelectionView: View {
                         HapticManager.selection()
                     } label: {
                         Image(systemName: IconCatalog.xmarkCircleFill)
-                            .font(.system(size: 12))
+                            .font(.system(size: 12, design: .rounded))
                     }
                 }
                 .foregroundStyle(colors.primaryInverted)
@@ -271,13 +271,13 @@ struct RegionSelectionView: View {
                 HStack(spacing: 8) {
                     // Chevron
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
-                        .font(.system(size: 9, weight: .bold))
+                        .font(.system(size: 9, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         .frame(width: 12)
 
                     // Continent icon
                     Image(systemName: continent.symbol)
-                        .font(.system(size: 10, weight: .bold))
+                        .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primaryInverted)
                         .frame(width: 20, height: 20)
                         .background(colors.primary)

@@ -161,7 +161,7 @@ struct JohoIconPickerSheet: View {
                                     .overlay {
                                         if isSelected {
                                             Image(systemName: IconCatalog.checkmark)
-                                                .font(.system(size: 16, weight: .bold))
+                                                .font(JohoFont.headlineSmall)
                                                 .foregroundStyle(option.hex == "1A1A1A" ? colors.surface : colors.primary)
                                         }
                                     }
@@ -796,7 +796,7 @@ struct MonthCustomizationSheet: View {
                     } label: {
                         HStack(spacing: 4) {
                             Image(systemName: IconCatalog.arrowCounterclockwise)
-                                .font(.system(size: 12, weight: .medium))
+                                .font(JohoFont.caption)
                             Text("Reset to default")
                                 .font(JohoFont.caption)
                         }
@@ -828,7 +828,7 @@ struct MonthCustomizationSheet: View {
             selectedIcon = (selectedIcon == icon) ? nil : icon
         } label: {
             Image(systemName: icon)
-                .font(.system(size: 18, weight: .medium))
+                .font(.system(size: 18, weight: .medium, design: .rounded))
                 .foregroundStyle(isSelected || isDefault ? colors.surface : colors.primary)
                 .frame(width: 44, height: 44)
                 .background(isSelected || isDefault ? colors.primary : colors.inputBackground)
@@ -858,7 +858,7 @@ struct MonthCustomizationSheet: View {
                 .overlay {
                     if isSelected {
                         Image(systemName: IconCatalog.checkmark)
-                            .font(.system(size: 16, weight: .bold))
+                            .font(JohoFont.headlineSmall)
                             .foregroundStyle(option.name == "Black" ? colors.surface : colors.primary)
                     }
                 }

@@ -378,7 +378,7 @@ struct LandingPageView: View {
             // Day/Night + offset (情報デザイン: Sun=yellow, Moon=purple)
             HStack(spacing: 3) {
                 Image(systemName: clock.isDaytime ? "sun.max.fill" : "moon.fill")
-                    .font(.system(size: 8))
+                    .font(.system(size: 8, design: .rounded))
                     .foregroundStyle(clock.isDaytime ? Color(hex: "F39C12") : Color(hex: "6C5CE7"))
 
                 Text(clock.offsetFromLocal)
@@ -962,7 +962,7 @@ struct LandingPageView: View {
             if items.isEmpty {
                 VStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: IconCatalog.checkmarkCircle)
-                        .font(.system(size: 24, weight: .medium))
+                        .font(.system(size: 24, weight: .medium, design: .rounded))
                         .foregroundStyle(colors.secondary.opacity(JohoDimensions.opacityModerate))
 
                     Text("All caught up!")

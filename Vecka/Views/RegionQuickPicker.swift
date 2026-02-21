@@ -143,7 +143,7 @@ struct RegionQuickPicker: View {
                     } label: {
                         HStack(spacing: 3) {
                             Image(systemName: IconCatalog.xmarkCircle)
-                                .font(.system(size: 10, weight: .semibold))
+                                .font(.system(size: 10, weight: .semibold, design: .rounded))
                             Text("Clear")
                                 .font(.system(size: 11, weight: .semibold, design: .rounded))
                         }
@@ -228,13 +228,13 @@ struct RegionQuickPicker: View {
                 HStack(spacing: 6) {
                     // Chevron
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
-                        .font(.system(size: 8, weight: .bold))
+                        .font(.system(size: 8, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         .frame(width: 10)
 
                     // Continent icon
                     Image(systemName: continent.symbol)
-                        .font(.system(size: 9, weight: .bold))
+                        .font(.system(size: 9, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primaryInverted)
                         .frame(width: 16, height: 16)
                         .background(colors.primary)
