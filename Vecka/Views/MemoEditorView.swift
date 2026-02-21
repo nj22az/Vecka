@@ -400,7 +400,7 @@ struct MemoEditorView: View {
 
     private var timeRow: some View {
         HStack(spacing: 0) {
-            Image(systemName: "clock")
+            Image(systemName: IconCatalog.clockOutline)
                 .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)
@@ -480,7 +480,7 @@ struct MemoEditorView: View {
 
     private var amountRow: some View {
         HStack(spacing: 0) {
-            Image(systemName: "yensign.circle")
+            Image(systemName: IconCatalog.yensignCircle)
                 .font(JohoFont.bodySmallBold)
                 .foregroundStyle(colors.primary)
                 .frame(width: 48)

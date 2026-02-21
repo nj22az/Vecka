@@ -1157,7 +1157,7 @@ struct JohoListRow: View {
 
             // Chevron
             if showChevron {
-                Image(systemName: "chevron.right")
+                Image(systemName: IconCatalog.chevronRight)
                     .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
             }
@@ -1328,7 +1328,7 @@ struct JohoSheetHeader<ShareButton: View>: View {
                     Circle()
                         .fill(colors.surface)
                         .frame(width: 28, height: 28)
-                    Image(systemName: "xmark")
+                    Image(systemName: IconCatalog.xmark)
                         .font(.system(size: 11, weight: .black, design: .rounded))
                         .foregroundStyle(colors.primary)
                 }
@@ -1587,7 +1587,7 @@ struct JohoSearchField: View {
 
     var body: some View {
         HStack(spacing: JohoDimensions.spacingSM) {
-            Image(systemName: "magnifyingglass")
+            Image(systemName: IconCatalog.search)
                 .font(.system(size: 14, weight: .medium, design: .rounded))
                 .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
 
@@ -1599,7 +1599,7 @@ struct JohoSearchField: View {
                 Button {
                     text = ""
                 } label: {
-                    Image(systemName: "xmark.circle.fill")
+                    Image(systemName: IconCatalog.xmarkCircleFill)
                         .font(JohoFont.bodySmall)
                         .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                 }
@@ -2219,7 +2219,7 @@ struct JohoMonthSelector: View {
         HStack(spacing: JohoDimensions.spacingSM) {
             // Previous month button (情報デザイン: Minimum 44pt touch target)
             Button(action: { onPrevious?() }) {
-                Image(systemName: "chevron.left")
+                Image(systemName: IconCatalog.chevronLeft)
                     .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .johoTouchTarget()
@@ -2240,7 +2240,7 @@ struct JohoMonthSelector: View {
                         .font(JohoFont.bodySmall)
                         .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
 
-                    Image(systemName: "chevron.down")
+                    Image(systemName: IconCatalog.chevronDown)
                         .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                 }
@@ -2253,7 +2253,7 @@ struct JohoMonthSelector: View {
 
             // Next month button (情報デザイン: Minimum 44pt touch target)
             Button(action: { onNext?() }) {
-                Image(systemName: "chevron.right")
+                Image(systemName: IconCatalog.chevronRight)
                     .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .johoTouchTarget()
@@ -2546,7 +2546,7 @@ struct JohoYearPicker: View {
                     HapticManager.selection()
                 }
             } label: {
-                Image(systemName: "chevron.left")
+                Image(systemName: IconCatalog.chevronLeft)
                     .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundStyle(year > minYear ? colors.primary : colors.primary.opacity(JohoDimensions.opacityMedium))
                     .frame(width: 24, height: 44)
@@ -2580,7 +2580,7 @@ struct JohoYearPicker: View {
                     HapticManager.selection()
                 }
             } label: {
-                Image(systemName: "chevron.right")
+                Image(systemName: IconCatalog.chevronRight)
                     .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundStyle(year < maxYear ? colors.primary : colors.primary.opacity(JohoDimensions.opacityMedium))
                     .frame(width: 24, height: 44)
@@ -2876,7 +2876,7 @@ struct JohoCalendarPicker: View {
                 }
                 HapticManager.selection()
             } label: {
-                Image(systemName: "chevron.left")
+                Image(systemName: IconCatalog.chevronLeft)
                     .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
                     .frame(width: 44, height: 44)
@@ -2896,7 +2896,7 @@ struct JohoCalendarPicker: View {
                 }
                 HapticManager.selection()
             } label: {
-                Image(systemName: "chevron.right")
+                Image(systemName: IconCatalog.chevronRight)
                     .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
                     .frame(width: 44, height: 44)
@@ -3296,7 +3296,7 @@ struct JohoSFSymbolPickerSheet: View {
 
             // Search bar
             HStack(spacing: JohoDimensions.spacingSM) {
-                Image(systemName: "magnifyingglass")
+                Image(systemName: IconCatalog.search)
                     .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.secondary)
 
@@ -3310,7 +3310,7 @@ struct JohoSFSymbolPickerSheet: View {
                     Button {
                         searchText = ""
                     } label: {
-                        Image(systemName: "xmark.circle.fill")
+                        Image(systemName: IconCatalog.xmarkCircleFill)
                             .font(JohoFont.headlineSmall)
                             .foregroundStyle(colors.secondary)
                     }
@@ -3359,7 +3359,7 @@ struct JohoSFSymbolPickerSheet: View {
             ScrollView {
                 if displaySymbols.isEmpty {
                     VStack(spacing: JohoDimensions.spacingMD) {
-                        Image(systemName: "magnifyingglass")
+                        Image(systemName: IconCatalog.search)
                             .font(JohoFont.displayMedium)
                             .foregroundStyle(colors.secondary)
                         Text("No symbols found")
@@ -3993,14 +3993,14 @@ struct JohoColorPickerSheet: View {
 
                         // Slider
                         HStack(spacing: JohoDimensions.spacingSM) {
-                            Image(systemName: "moon.fill")
+                            Image(systemName: IconCatalog.moonFill)
                                 .font(JohoFont.label)
                                 .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
 
                             Slider(value: $brightnessAdjustment, in: -0.3...0.3, step: 0.05)
                                 .tint(Color(hex: adjustedColorHex))
 
-                            Image(systemName: "sun.max.fill")
+                            Image(systemName: IconCatalog.sunFill)
                                 .font(JohoFont.bodySmallBold)
                                 .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         }
@@ -4027,7 +4027,7 @@ struct JohoColorPickerSheet: View {
                         HapticManager.selection()
                     } label: {
                         HStack(spacing: 6) {
-                            Image(systemName: "arrow.counterclockwise")
+                            Image(systemName: IconCatalog.arrowCounterclockwise)
                                 .font(.system(size: 12, weight: .bold, design: .rounded))
                             Text("Reset to Default")
                                 .font(.system(size: 12, weight: .medium, design: .rounded))
@@ -4077,7 +4077,7 @@ struct JohoColorPickerSheet: View {
                         .frame(width: 52, height: 52)
 
                     if isSelected {
-                        Image(systemName: "checkmark")
+                        Image(systemName: IconCatalog.checkmark)
                             .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary)
                     }
@@ -4213,7 +4213,7 @@ struct JohoMonthYearPicker: View {
                 }
                 HapticManager.selection()
             } label: {
-                Image(systemName: "chevron.left")
+                Image(systemName: IconCatalog.chevronLeft)
                     .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .frame(width: 44, height: 44)
@@ -4237,7 +4237,7 @@ struct JohoMonthYearPicker: View {
                 }
                 HapticManager.selection()
             } label: {
-                Image(systemName: "chevron.right")
+                Image(systemName: IconCatalog.chevronRight)
                     .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundStyle(colors.primary)
                     .frame(width: 44, height: 44)
@@ -4435,7 +4435,7 @@ extension View {
 
             HStack(spacing: JohoDimensions.spacingSM) {
                 VStack {
-                    Image(systemName: "calendar")
+                    Image(systemName: IconCatalog.calendar)
                     Text("CYAN")
                         .font(JohoFont.labelSmall)
                 }
@@ -4443,7 +4443,7 @@ extension View {
                 .johoAccentedBento(color: JohoColors.cyan)
 
                 VStack {
-                    Image(systemName: "star.fill")
+                    Image(systemName: IconCatalog.star)
                     Text("PINK")
                         .font(JohoFont.labelSmall)
                 }
@@ -4451,7 +4451,7 @@ extension View {
                 .johoAccentedBento(color: JohoColors.pink)
 
                 VStack {
-                    Image(systemName: "dollarsign")
+                    Image(systemName: IconCatalog.dollarsign)
                     Text("GREEN")
                         .font(JohoFont.labelSmall)
                 }
@@ -4469,7 +4469,7 @@ extension View {
                 HStack {
                     Text("Normal Cell")
                     Spacer()
-                    Image(systemName: "chevron.right")
+                    Image(systemName: IconCatalog.chevronRight)
                 }
                 .padding(JohoDimensions.spacingMD)
                 .johoInteractiveCell()
@@ -4477,7 +4477,7 @@ extension View {
                 HStack {
                     Text("Selected Cell")
                     Spacer()
-                    Image(systemName: "checkmark")
+                    Image(systemName: IconCatalog.checkmark)
                 }
                 .padding(JohoDimensions.spacingMD)
                 .foregroundStyle(JohoColors.white)
@@ -4486,7 +4486,7 @@ extension View {
                 HStack {
                     Text("Highlighted Cell")
                     Spacer()
-                    Image(systemName: "hand.tap")
+                    Image(systemName: IconCatalog.handTap)
                 }
                 .padding(JohoDimensions.spacingMD)
                 .johoInteractiveCell(isHighlighted: true)
@@ -4499,10 +4499,10 @@ extension View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             HStack(spacing: JohoDimensions.spacingMD) {
-                Image(systemName: "airplane")
+                Image(systemName: IconCatalog.trip)
                     .johoIconBadge(color: JohoColors.cyan, size: 40)
 
-                Image(systemName: "gift.fill")
+                Image(systemName: IconCatalog.gift)
                     .johoIconBadge(color: JohoColors.pink, size: 40)
 
                 Image(systemName: IconCatalog.memo)

@@ -170,7 +170,7 @@ struct EventTasksSection: View {
         HStack(spacing: 0) {
             // LEFT: Title
             HStack(spacing: JohoDimensions.spacingSM) {
-                Image(systemName: "checklist")
+                Image(systemName: IconCatalog.checklist)
                     .font(JohoFont.bodySmallBold)
                     .foregroundStyle(colors.primary)
 

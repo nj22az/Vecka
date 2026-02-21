@@ -600,7 +600,7 @@ struct HolidayDatabaseExplorer: View {
 
     private func emptyDatabaseState(for regionID: String) -> some View {
         VStack(spacing: JohoDimensions.spacingMD) {
-            Image(systemName: "tray")
+            Image(systemName: IconCatalog.tray)
                 .font(.system(size: 48, weight: .light, design: .rounded))
                 .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMild))
 

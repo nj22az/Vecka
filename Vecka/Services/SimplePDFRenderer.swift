@@ -673,7 +673,7 @@ struct PDFWeekSummaryPage: View {
             if !weekExpenses.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Image(systemName: "dollarsign.circle.fill")
+                        Image(systemName: IconCatalog.expense)
                             .foregroundStyle(Color(hex: "38A169"))
                         Text("EXPENSES")
                             .font(.system(size: 14, weight: .black, design: .rounded))
@@ -723,7 +723,7 @@ struct PDFWeekSummaryPage: View {
             if !activeTrips.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
-                        Image(systemName: "airplane")
+                        Image(systemName: IconCatalog.trip)
                             .foregroundStyle(Color(hex: "F97316"))
                         Text("ACTIVE TRIPS")
                             .font(.system(size: 14, weight: .black, design: .rounded))
@@ -749,7 +749,7 @@ struct PDFWeekSummaryPage: View {
             if !weekHolidays.isEmpty {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack {
-                        Image(systemName: "star.fill")
+                        Image(systemName: IconCatalog.holiday)
                             .foregroundStyle(Color(hex: "E53935"))
                         Text("HOLIDAYS")
                             .font(.system(size: 14, weight: .black, design: .rounded))
@@ -765,7 +765,7 @@ struct PDFWeekSummaryPage: View {
                             ForEach(item.holidays, id: \.id) { holiday in
                                 HStack(spacing: 4) {
                                     if holiday.isBankHoliday {
-                                        Image(systemName: "flag.fill")
+                                        Image(systemName: IconCatalog.flagFill)
                                             .font(.system(size: 8, weight: .medium, design: .rounded))
                                             .foregroundStyle(.red)
                                     }

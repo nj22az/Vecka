@@ -80,7 +80,7 @@ struct DashboardView: View {
                 // LEFT COMPARTMENT: Icon + Title
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone with Tools accent color (Teal)
-                    Image(systemName: "chart.bar.xaxis")
+                    Image(systemName: IconCatalog.chartBar)
                         .font(JohoFont.title)
                         .foregroundStyle(PageHeaderColor.tools.accent)
                         .frame(width: 40, height: 40)

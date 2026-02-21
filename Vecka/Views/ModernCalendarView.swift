@@ -671,7 +671,7 @@ struct ModernCalendarView: View {
             } label: {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     // Icon zone - list bullet in cyan squircle
-                    Image(systemName: "list.bullet")
+                    Image(systemName: IconCatalog.listBullet)
                         .font(JohoFont.label)
                         .foregroundStyle(colors.primary)
                         .frame(width: 24, height: 24)
@@ -855,7 +855,7 @@ struct ModernCalendarView: View {
                 if !isViewingToday {
                     Button(action: jumpToToday) {
                         HStack(spacing: 4) {
-                            Image(systemName: "arrow.uturn.backward")
+                            Image(systemName: IconCatalog.arrowBack)
                                 .font(JohoFont.label)
                             Text("TODAY")
                                 .font(JohoFont.labelSmall)

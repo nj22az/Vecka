@@ -111,7 +111,7 @@ struct JohoExpenseEditorSheet: View {
                     // CENTER: Icon + Title/Subtitle
                     HStack(spacing: JohoDimensions.spacingSM) {
                         // Type icon in colored box
-                        Image(systemName: "dollarsign.circle.fill")
+                        Image(systemName: IconCatalog.expense)
                             .font(JohoFont.headlineSmall)
                             .foregroundStyle(expenseAccentColor)
                             .frame(width: 36, height: 36)
@@ -200,7 +200,7 @@ struct JohoExpenseEditorSheet: View {
                 // ═══════════════════════════════════════════════════════════════
                 HStack(spacing: 0) {
                     // LEFT: Dollar sign icon (40pt)
-                    Image(systemName: "dollarsign")
+                    Image(systemName: IconCatalog.dollarsign)
                         .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary)
                         .frame(width: 40)
@@ -330,7 +330,7 @@ struct JohoExpenseEditorSheet: View {
                 // ═══════════════════════════════════════════════════════════════
                 HStack(spacing: 0) {
                     // LEFT: Store icon (40pt)
-                    Image(systemName: "storefront.fill")
+                    Image(systemName: IconCatalog.storefront)
                         .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
                         .frame(width: 40)

@@ -433,7 +433,7 @@ struct LandingPageView: View {
             // Header with display icon (情報デザイン: Black contour icon)
             HStack {
                 ZStack {
-                    Image(systemName: "text.book.closed.fill")
+                    Image(systemName: IconCatalog.bookClosed)
                         .font(JohoFont.bodySmallBold)
                         .foregroundStyle(JohoColors.cyan)
                 }
@@ -453,7 +453,7 @@ struct LandingPageView: View {
                     HapticManager.impact(.light)
                     loadRandomFacts()
                 } label: {
-                    Image(systemName: "arrow.clockwise")
+                    Image(systemName: IconCatalog.arrowClockwise)
                         .font(JohoFont.tag)
                         .foregroundStyle(colors.secondary)
                 }

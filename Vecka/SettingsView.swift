@@ -238,7 +238,7 @@ struct SettingsView: View {
                     HapticManager.selection()
                 } label: {
                     HStack(spacing: 6) {
-                        Image(systemName: "sun.min")
+                        Image(systemName: IconCatalog.sunMin)
                             .font(.system(size: 11, weight: .bold, design: .rounded))
                         Text("LIGHT")
                             .font(.system(size: 12, weight: .black, design: .rounded))
@@ -261,7 +261,7 @@ struct SettingsView: View {
                     HapticManager.selection()
                 } label: {
                     HStack(spacing: 6) {
-                        Image(systemName: "moon")
+                        Image(systemName: IconCatalog.moon)
                             .font(JohoFont.label)
                         Text("DARK")
                             .font(.system(size: 12, weight: .black, design: .rounded))
@@ -286,7 +286,7 @@ struct SettingsView: View {
 
             // Current colors preview row
             HStack(spacing: JohoDimensions.spacingMD) {
-                Image(systemName: "paintpalette.fill")
+                Image(systemName: IconCatalog.paintpalette)
                     .font(JohoFont.title)
                     .foregroundStyle(colors.primary)
                     .johoTouchTarget()
@@ -371,7 +371,7 @@ struct SettingsView: View {
                     )
                     .overlay(alignment: .bottomTrailing) {
                         if isActive {
-                            Image(systemName: "checkmark.circle.fill")
+                            Image(systemName: IconCatalog.checkmarkCircleFill)
                                 .font(JohoFont.headlineSmall)
                                 .foregroundStyle(colors.primary)
                                 .background(colors.surface)
@@ -478,7 +478,7 @@ struct SettingsView: View {
                                 .foregroundStyle(colors.primary)
 
                             // Chevron
-                            Image(systemName: "chevron.right")
+                            Image(systemName: IconCatalog.chevronRight)
                                 .font(JohoFont.label)
                                 .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         }
@@ -583,7 +583,7 @@ struct SettingsView: View {
                             Spacer()
 
                             // Chevron
-                            Image(systemName: "chevron.right")
+                            Image(systemName: IconCatalog.chevronRight)
                                 .font(JohoFont.label)
                                 .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         }
@@ -686,7 +686,7 @@ struct SettingsView: View {
                         )
                         .overlay(
                             showLunarCalendar ?
-                            Image(systemName: "checkmark")
+                            Image(systemName: IconCatalog.checkmark)
                                 .font(JohoFont.bodySmallBold)
                                 .foregroundStyle(.white)
                             : nil
@@ -722,7 +722,7 @@ struct SettingsView: View {
             VStack(spacing: JohoDimensions.spacingSM) {
                 HStack(spacing: JohoDimensions.spacingMD) {
                     // Icon zone
-                    Image(systemName: "textformat.abc")
+                    Image(systemName: IconCatalog.textFormat)
                         .font(JohoFont.title)
                         .foregroundStyle(PageHeaderColor.landing.accent)
                         .johoTouchTarget()
@@ -896,7 +896,7 @@ struct SettingsView: View {
 
                 // System holidays (read-only)
                 HStack(spacing: 4) {
-                    Image(systemName: "lock.fill")
+                    Image(systemName: IconCatalog.lockFill)
                         .font(.system(size: 8, weight: .bold, design: .rounded))
                     Text("\(systemHolidayCount) SYS")
                         .font(.system(size: 9, weight: .bold, design: .rounded))
@@ -1430,7 +1430,7 @@ struct SettingsCategoryCustomizationSheet: View {
 
                                 Spacer()
 
-                                Image(systemName: "chevron.right")
+                                Image(systemName: IconCatalog.chevronRight)
                                     .font(JohoFont.label)
                                     .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                             }
@@ -1453,7 +1453,7 @@ struct SettingsCategoryCustomizationSheet: View {
                         onDone()
                     } label: {
                         HStack(spacing: 6) {
-                            Image(systemName: "arrow.counterclockwise")
+                            Image(systemName: IconCatalog.arrowCounterclockwise)
                                 .font(JohoFont.label)
                             Text("Reset All to Defaults")
                                 .font(JohoFont.caption)

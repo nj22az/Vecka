@@ -25,6 +25,7 @@ enum IconCatalog {
     static let calendarBadgeCheckmark = "calendar.badge.checkmark"
     static let event = "calendar.badge.clock"
     static let clock = "clock.fill"
+    static let clockOutline = "clock"
     static let clockHistory = "clock.arrow.circlepath"
     static let timer = "timer"
     static let repeatIcon = "repeat"
@@ -90,6 +91,8 @@ enum IconCatalog {
     static let tray = "tray"
     static let folder = "folder.fill"
     static let flagFill = "flag.fill"
+    static let dollarsign = "dollarsign"
+    static let handTap = "hand.tap"
 
     // MARK: - Gifts & Social
     static let gift = "gift.fill"
@@ -112,9 +115,17 @@ enum IconCatalog {
     static let cloudFill = "cloud.fill"
     static let sparkle = "sparkle"
     static let humidityFill = "humidity.fill"
+    static let moonFill = "moon.fill"
+    static let sunFill = "sun.max.fill"
+
+    // MARK: - Decorative / Appearance
+    static let sunMin = "sun.min"
+    static let moon = "moon"
+    static let paintpalette = "paintpalette.fill"
 
     // MARK: - Settings & System
     static let settings = "gearshape"
+    static let textFormat = "textformat.abc"
 
     // MARK: - Type Defaults
     static let birthday = "birthday.cake.fill"
@@ -130,6 +141,7 @@ enum IconCatalog {
     static let observanceOutline = "diamond"
 
     // MARK: - Money — locale-aware
+    static let yensignCircle = "yensign.circle"
     static var expense: String {
         currencyIcon(for: Locale.current)
     }
