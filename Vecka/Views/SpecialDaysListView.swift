@@ -905,9 +905,9 @@ struct SpecialDaysListView: View {
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .background(isSelected ? color.opacity(0.3) : Color.clear)
-            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
                     .stroke(isSelected ? colors.border : Color.clear, lineWidth: 1)
             )
         }
@@ -994,9 +994,9 @@ struct SpecialDaysListView: View {
                 .foregroundStyle(colors.primary)
                 .frame(width: 32, height: 32)
                 .background(colors.inputBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
                         .stroke(colors.border, lineWidth: 1.5)
                 )
 
@@ -1037,7 +1037,7 @@ struct SpecialDaysListView: View {
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .background(type.lightBackground.opacity(0.5))
-            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
         }
         .buttonStyle(.plain)
         .popover(isPresented: Binding(
@@ -1058,9 +1058,9 @@ struct SpecialDaysListView: View {
                 .foregroundStyle(type.accentColor)
                 .frame(width: 32, height: 32)
                 .background(type.lightBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
                         .stroke(type.accentColor, lineWidth: 1.5)
                 )
 

@@ -439,7 +439,7 @@ struct LandingPageView: View {
                 }
                 .frame(width: 24, height: 24)
                 .background(JohoColors.cyan.opacity(0.15))
-                .johoBordered(cornerRadius: 6, borderWidth: 1)
+                .johoBordered(cornerRadius: JohoDimensions.radiusChip, borderWidth: 1)
 
                 Text("RANDOM FACTS")
                     .font(JohoFont.headerTag)
@@ -633,9 +633,9 @@ struct LandingPageView: View {
             .frame(width: 36)
             .padding(.vertical, 4)
             .background(item.isToday ? JohoColors.yellow.opacity(0.15) : colors.surface)
-            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusChip, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                RoundedRectangle(cornerRadius: JohoDimensions.radiusChip, style: .continuous)
                     .stroke(item.isToday ? JohoColors.yellow : colors.border.opacity(0.3), lineWidth: 1)
             )
 

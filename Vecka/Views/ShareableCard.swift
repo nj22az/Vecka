@@ -80,8 +80,8 @@ struct ShareableCardShell<Content: View>: View {
     @Environment(\.johoColorMode) private var colorMode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
     
-    private let cornerRadius: CGFloat = 16
-    
+    private let cornerRadius: CGFloat = JohoDimensions.radiusLarge
+
     private var cardShape: RoundedRectangle {
         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
     }

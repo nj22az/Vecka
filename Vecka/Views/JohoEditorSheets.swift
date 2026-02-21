@@ -153,9 +153,9 @@ struct JohoIconPickerSheet: View {
                                         }
                                     }
                                     .frame(width: 44, height: 44)
-                                    .clipShape(Squircle(cornerRadius: 10))
+                                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusCard))
                                     .overlay(
-                                        Squircle(cornerRadius: 10)
+                                        Squircle(cornerRadius: JohoDimensions.radiusCard)
                                             .stroke(colors.border, lineWidth: isSelected ? 2.5 : 1)
                                     )
                                     .overlay {
@@ -345,8 +345,8 @@ struct JohoSpecialDayEditorSheet: View {
                             .foregroundStyle(type.accentColor)
                             .frame(width: 36, height: 36)
                             .background(type.lightBackground)
-                            .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: 1.5))
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text(headerTitle)
@@ -373,8 +373,8 @@ struct JohoSpecialDayEditorSheet: View {
                             .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(0.4))
                             .frame(width: 56, height: 32)
                             .background(canSave ? type.accentColor : colors.surface)
-                            .clipShape(Squircle(cornerRadius: 8))
-                            .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                            .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: 1.5))
                     }
                     .disabled(!canSave)
                     .frame(width: 72).frame(maxHeight: .infinity)
@@ -552,8 +552,8 @@ struct JohoSpecialDayEditorSheet: View {
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
                 .background(selectedRegion == code ? type.accentColor : colors.surface)
-                .clipShape(Squircle(cornerRadius: 8))
-                .overlay(Squircle(cornerRadius: 8).stroke(colors.border, lineWidth: 1.5))
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
+                .overlay(Squircle(cornerRadius: JohoDimensions.radiusSmall).stroke(colors.border, lineWidth: 1.5))
         }
     }
 
@@ -832,9 +832,9 @@ struct MonthCustomizationSheet: View {
                 .foregroundStyle(isSelected || isDefault ? colors.surface : colors.primary)
                 .frame(width: 44, height: 44)
                 .background(isSelected || isDefault ? colors.primary : colors.inputBackground)
-                .clipShape(Squircle(cornerRadius: 10))
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusCard))
                 .overlay(
-                    Squircle(cornerRadius: 10)
+                    Squircle(cornerRadius: JohoDimensions.radiusCard)
                         .stroke(colors.border, lineWidth: isSelected ? 2 : 1)
                 )
         }
@@ -850,9 +850,9 @@ struct MonthCustomizationSheet: View {
         } label: {
             option.color
                 .frame(width: 44, height: 44)
-                .clipShape(Squircle(cornerRadius: 10))
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusCard))
                 .overlay(
-                    Squircle(cornerRadius: 10)
+                    Squircle(cornerRadius: JohoDimensions.radiusCard)
                         .stroke(colors.border, lineWidth: isSelected ? 2.5 : 1)
                 )
                 .overlay {
@@ -875,10 +875,10 @@ struct JohoBentoOptionRow: View {
     var body: some View {
         HStack(spacing: 0) {
             ZStack {
-                RoundedRectangle(cornerRadius: 10, style: .continuous).fill(option.color).frame(width: 48, height: 48)
+                RoundedRectangle(cornerRadius: JohoDimensions.radiusCard, style: .continuous).fill(option.color).frame(width: 48, height: 48)
                 Image(systemName: option.icon).font(.system(size: 22, weight: .bold, design: .rounded)).foregroundStyle(colors.primaryInverted)
             }
-            .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).stroke(colors.border, lineWidth: 2))
+            .overlay(RoundedRectangle(cornerRadius: JohoDimensions.radiusCard, style: .continuous).stroke(colors.border, lineWidth: 2))
             .padding(.leading, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
 
@@ -891,8 +891,8 @@ struct JohoBentoOptionRow: View {
                         .foregroundStyle(colors.primaryInverted)
                         .padding(.horizontal, 8).padding(.vertical, 3)
                         .background(option.color)
-                        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
-                        .overlay(RoundedRectangle(cornerRadius: 4, style: .continuous).stroke(colors.border, lineWidth: 1.5))
+                        .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusXS, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: JohoDimensions.radiusXS, style: .continuous).stroke(colors.border, lineWidth: 1.5))
 
                     Text(option.label)
                         .font(.system(size: 16, weight: .black, design: .rounded))

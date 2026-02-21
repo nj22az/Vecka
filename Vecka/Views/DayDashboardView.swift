@@ -416,7 +416,7 @@ struct DayDashboardView: View {
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
                     .background(colors.primary)
-                    .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusXS, style: .continuous))
 
                 // Main date
                 Text(formattedDate)
@@ -441,9 +441,9 @@ struct DayDashboardView: View {
                         .foregroundStyle(colors.primary)
                         .frame(width: 44, height: 44)
                         .background(colors.surface)
-                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous))
                         .overlay(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous)
                                 .stroke(colors.border, lineWidth: 2)
                         )
                 }

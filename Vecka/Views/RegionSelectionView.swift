@@ -281,7 +281,7 @@ struct RegionSelectionView: View {
                         .foregroundStyle(colors.primaryInverted)
                         .frame(width: 20, height: 20)
                         .background(colors.primary)
-                        .clipShape(Squircle(cornerRadius: 4))
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusXS))
 
                     // Continent name
                     Text(continent.rawValue.uppercased())
@@ -348,9 +348,9 @@ struct RegionSelectionView: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
             .background(isSelected ? selectedColor : colors.surface)
-            .clipShape(Squircle(cornerRadius: 8))
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
             .overlay(
-                Squircle(cornerRadius: 8)
+                Squircle(cornerRadius: JohoDimensions.radiusSmall)
                     .stroke(colors.border, lineWidth: isSelected ? JohoDimensions.borderMedium : JohoDimensions.borderThin)
             )
         }

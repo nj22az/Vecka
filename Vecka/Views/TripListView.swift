@@ -436,7 +436,7 @@ struct JohoTripEditorSheet: View {
                             .foregroundStyle(tripAccentColor)
                             .frame(width: 36, height: 36)
                             .background(tripLightBackground)
-                            .johoBordered(cornerRadius: 8, borderWidth: 1.5)
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text("NEW TRIP")
@@ -468,7 +468,7 @@ struct JohoTripEditorSheet: View {
                             .foregroundStyle(canSave ? colors.surface : colors.primary.opacity(0.4))
                             .frame(width: 56, height: 32)
                             .background(canSave ? tripAccentColor : colors.surface)
-                            .johoBordered(cornerRadius: 8, borderWidth: 1.5)
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
                     }
                     .disabled(!canSave)
                     .frame(width: 72)

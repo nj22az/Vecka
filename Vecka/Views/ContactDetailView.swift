@@ -908,7 +908,7 @@ struct ContactDetailView: View {
                     .foregroundStyle(iconColor)
                     .frame(width: 28, height: 28)
                     .background(iconColor.opacity(0.35))
-                    .johoBordered(cornerRadius: 6, borderWidth: 1)
+                    .johoBordered(cornerRadius: JohoDimensions.radiusChip, borderWidth: 1)
 
                 Text(title)
                     .font(JohoFont.headerTag)

@@ -299,9 +299,9 @@ struct RegionQuickPicker: View {
             .padding(.horizontal, 8)
             .padding(.vertical, 6)
             .background(isSelected ? selectedColor : colors.surface)
-            .clipShape(Squircle(cornerRadius: 6))
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusChip))
             .overlay(
-                Squircle(cornerRadius: 6)
+                Squircle(cornerRadius: JohoDimensions.radiusChip)
                     .stroke(colors.border, lineWidth: isSelected ? 1.5 : 1)
             )
         }

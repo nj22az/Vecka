@@ -81,7 +81,7 @@ struct ShareableDaySummaryCard: View {
     @Environment(\.johoColorMode) private var colorMode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
-    private let cornerRadius: CGFloat = 16
+    private let cornerRadius: CGFloat = JohoDimensions.radiusLarge
 
     private var cardShape: RoundedRectangle {
         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
@@ -497,7 +497,7 @@ private struct DaySummaryRow: View {
                 .foregroundStyle(iconColor)
                 .frame(width: 32, height: 32)
                 .background(iconColor.opacity(0.15))
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
 
             // Title + subtitle
             VStack(alignment: .leading, spacing: 1) {
@@ -561,7 +561,7 @@ private struct DayMemoRow: View {
                 .foregroundStyle(iconColor)
                 .frame(width: 32, height: 32)
                 .background(iconColor.opacity(0.15))
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
 
             // Content
             VStack(alignment: .leading, spacing: 1) {

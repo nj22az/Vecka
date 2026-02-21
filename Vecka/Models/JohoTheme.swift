@@ -248,23 +248,38 @@ extension CategoryColorSettings {
         setColorHex(theme.observanceColorHex, for: .observance)
         setColorHex(theme.memoColorHex, for: .memo)
 
-        // Update foreground colors (auto-derive if not specified)
-        setForegroundHex(theme.holidayForegroundHex ?? Self.autoDerivedForeground(theme.holidayColorHex), for: .holiday)
-        setForegroundHex(theme.observanceForegroundHex ?? Self.autoDerivedForeground(theme.observanceColorHex), for: .observance)
-        setForegroundHex(theme.memoForegroundHex ?? Self.autoDerivedForeground(theme.memoColorHex), for: .memo)
+        // Update foreground colors (direct UserDefaults write + in-memory update)
+        let holFg = theme.holidayForegroundHex ?? Self.autoDerivedForeground(theme.holidayColorHex)
+        let obsFg = theme.observanceForegroundHex ?? Self.autoDerivedForeground(theme.observanceColorHex)
+        let memFg = theme.memoForegroundHex ?? Self.autoDerivedForeground(theme.memoColorHex)
+        holidayForegroundHex = holFg
+        observanceForegroundHex = obsFg
+        memoForegroundHex = memFg
+        UserDefaults.standard.set(holFg, forKey: "categoryForeground_holiday")
+        UserDefaults.standard.set(obsFg, forKey: "categoryForeground_observance")
+        UserDefaults.standard.set(memFg, forKey: "categoryForeground_memo")
 
-        // Update dark mode background colors (fall back to light bg)
-        setDarkColorHex(theme.holidayDarkColorHex ?? theme.holidayColorHex, for: .holiday)
-        setDarkColorHex(theme.observanceDarkColorHex ?? theme.observanceColorHex, for: .observance)
-        setDarkColorHex(theme.memoDarkColorHex ?? theme.memoColorHex, for: .memo)
+        // Update dark mode background colors
+        let holDk = theme.holidayDarkColorHex ?? theme.holidayColorHex
+        let obsDk = theme.observanceDarkColorHex ?? theme.observanceColorHex
+        let memDk = theme.memoDarkColorHex ?? theme.memoColorHex
+        holidayDarkColorHex = holDk
+        observanceDarkColorHex = obsDk
+        memoDarkColorHex = memDk
+        UserDefaults.standard.set(holDk, forKey: "categoryDarkColor_holiday")
+        UserDefaults.standard.set(obsDk, forKey: "categoryDarkColor_observance")
+        UserDefaults.standard.set(memDk, forKey: "categoryDarkColor_memo")
 
-        // Update dark mode foreground colors (auto-derive if not specified)
-        let darkHolBg = theme.holidayDarkColorHex ?? theme.holidayColorHex
-        let darkObsBg = theme.observanceDarkColorHex ?? theme.observanceColorHex
-        let darkMemBg = theme.memoDarkColorHex ?? theme.memoColorHex
-        setDarkForegroundHex(theme.holidayDarkForegroundHex ?? Self.autoDerivedLightForeground(darkHolBg), for: .holiday)
-        setDarkForegroundHex(theme.observanceDarkForegroundHex ?? Self.autoDerivedLightForeground(darkObsBg), for: .observance)
-        setDarkForegroundHex(theme.memoDarkForegroundHex ?? Self.autoDerivedLightForeground(darkMemBg), for: .memo)
+        // Update dark mode foreground colors
+        let holDkFg = theme.holidayDarkForegroundHex ?? Self.autoDerivedLightForeground(holDk)
+        let obsDkFg = theme.observanceDarkForegroundHex ?? Self.autoDerivedLightForeground(obsDk)
+        let memDkFg = theme.memoDarkForegroundHex ?? Self.autoDerivedLightForeground(memDk)
+        holidayDarkForegroundHex = holDkFg
+        observanceDarkForegroundHex = obsDkFg
+        memoDarkForegroundHex = memDkFg
+        UserDefaults.standard.set(holDkFg, forKey: "categoryDarkForeground_holiday")
+        UserDefaults.standard.set(obsDkFg, forKey: "categoryDarkForeground_observance")
+        UserDefaults.standard.set(memDkFg, forKey: "categoryDarkForeground_memo")
 
         // Update category icons (set if specified, reset to default if nil)
         if let icon = theme.holidayIcon {

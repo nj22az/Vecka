@@ -275,11 +275,11 @@ extension CalendarGridView {
                 ZStack {
                     // Today = orange pill, Selected = inverted pill
                     if day.isToday {
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
                             .fill(JohoColors.todayOrange)
                             .frame(width: 32, height: 28)
                     } else if isSelected {
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
                             .fill(colors.surfaceInverted)
                             .frame(width: 32, height: 28)
                     }

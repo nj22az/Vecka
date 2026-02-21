@@ -33,9 +33,9 @@ struct SimplePDFExportView: View {
                         .foregroundStyle(colors.primary)
                         .frame(width: 80, height: 80)
                         .background(JohoColors.cyan.opacity(0.2))
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous))
                         .overlay(
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous)
                                 .stroke(colors.border, lineWidth: 1.5)
                         )
 

@@ -143,7 +143,7 @@ struct MemoEditorView: View {
                     }
                 }
                 .background(colors.surface)
-                .johoBordered(cornerRadius: 16, borderWidth: 2)
+                .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: 2)
                 .padding(.horizontal, JohoDimensions.spacingLG)
                 .padding(.top, JohoDimensions.spacingMD)
             }
@@ -285,7 +285,7 @@ struct MemoEditorView: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
             .background(isActive ? accentColor : colors.surface)
-            .johoBordered(cornerRadius: 8, borderWidth: 1.5)
+            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
         }
         .buttonStyle(.plain)
     }
@@ -351,7 +351,7 @@ struct MemoEditorView: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
             .background(dateType == type ? accentColor : colors.surface)
-            .johoBordered(cornerRadius: 8, borderWidth: 1.5)
+            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
         }
         .buttonStyle(.plain)
     }
@@ -502,7 +502,7 @@ struct MemoEditorView: View {
                     .padding(.horizontal, 6)
                     .padding(.vertical, 6)
                     .background(colors.inputBackground)
-                    .johoBordered(cornerRadius: 6, borderWidth: 1.5)
+                    .johoBordered(cornerRadius: JohoDimensions.radiusChip, borderWidth: 1.5)
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
         }
@@ -597,7 +597,7 @@ struct MemoEditorView: View {
             .frame(maxWidth: .infinity)
             .frame(height: 48)
             .background(canSave ? accentColor : colors.inputBackground)
-            .johoBordered(cornerRadius: 12, borderWidth: 2)
+            .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 2)
         }
         .buttonStyle(.plain)
         .disabled(!canSave)

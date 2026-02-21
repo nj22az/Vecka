@@ -140,9 +140,9 @@ struct MonthPickerSheet: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 10)
                 .background(month == m ? colors.primary : Color.clear)
-                .clipShape(Squircle(cornerRadius: 8))
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                 .overlay(
-                    Squircle(cornerRadius: 8)
+                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
                         .stroke(colors.border, lineWidth: month == m ? 0 : 1)
                 )
         }
@@ -158,9 +158,9 @@ struct MonthPickerSheet: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)
                 .background(year == y ? colors.primary : Color.clear)
-                .clipShape(Squircle(cornerRadius: 6))
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusChip))
                 .overlay(
-                    Squircle(cornerRadius: 6)
+                    Squircle(cornerRadius: JohoDimensions.radiusChip)
                         .stroke(colors.border, lineWidth: year == y ? 0 : 1)
                 )
         }

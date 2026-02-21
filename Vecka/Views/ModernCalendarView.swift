@@ -864,7 +864,7 @@ struct ModernCalendarView: View {
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                         .background(JohoColors.yellow)
-                        .johoBordered(cornerRadius: 6, borderWidth: 1.5, borderColor: colors.primary)
+                        .johoBordered(cornerRadius: JohoDimensions.radiusChip, borderWidth: 1.5, borderColor: colors.primary)
                     }
                     .buttonStyle(.plain)
                     .padding(.horizontal, JohoDimensions.spacingSM)

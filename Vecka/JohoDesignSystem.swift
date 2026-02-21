@@ -508,10 +508,14 @@ enum JohoFont {
 
 enum JohoDimensions {
     // Corner radii (squircle style)
+    static let radiusXS: CGFloat = 4
+    static let radiusChip: CGFloat = 6
     static let radiusSmall: CGFloat = 8
+    static let radiusCard: CGFloat = 10
     static let radiusMedium: CGFloat = 12
     static let radiusLarge: CGFloat = 16
     static let radiusXL: CGFloat = 20
+    static let radiusXXL: CGFloat = 24
 
     // CRITICAL: Thick outlines like Japanese packaging (CLAUDE.md spec)
     static let borderThin: CGFloat = 1.0      // Day cells - per CLAUDE.md spec
@@ -913,7 +917,7 @@ struct JohoFormSection<Content: View>: View {
                     .padding(.horizontal, 10)
                     .padding(.vertical, 6)
                     .background(colors.primary)
-                    .clipShape(Squircle(cornerRadius: 4))
+                    .clipShape(Squircle(cornerRadius: JohoDimensions.radiusXS))
 
                 if let icon {
                     Image(systemName: icon)
@@ -2897,9 +2901,9 @@ struct JohoCalendarPicker: View {
                 .padding(JohoDimensions.spacingSM)
         }
         .background(colors.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
+            RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous)
                 .stroke(colors.border, lineWidth: 3)
         )
     }
@@ -2918,9 +2922,9 @@ struct JohoCalendarPicker: View {
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
                     .background(colors.surface)
-                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
                             .stroke(colors.border, lineWidth: 1.5)
                     )
             }
@@ -2943,9 +2947,9 @@ struct JohoCalendarPicker: View {
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
                     .background(accentColor)
-                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
                             .stroke(colors.border, lineWidth: 1.5)
                     )
             }
@@ -3011,7 +3015,7 @@ struct JohoCalendarPicker: View {
                     .foregroundStyle(colors.primaryInverted)
                     .frame(width: 28, height: 28)
                     .background(colors.surfaceInverted)
-                    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusChip, style: .continuous))
 
                 // Day headers
                 ForEach(0..<7, id: \.self) { index in
@@ -3022,9 +3026,9 @@ struct JohoCalendarPicker: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: 28)
                         .background(isWeekend ? accentColor.opacity(0.2) : colors.surface)
-                        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusChip, style: .continuous))
                         .overlay(
-                            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            RoundedRectangle(cornerRadius: JohoDimensions.radiusChip, style: .continuous)
                                 .stroke(colors.border, lineWidth: 1)
                         )
                 }
@@ -3059,7 +3063,7 @@ struct JohoCalendarPicker: View {
                 .foregroundStyle(colors.primaryInverted)
                 .frame(width: 28, height: 40)
                 .background(colors.surfaceInverted)
-                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusChip, style: .continuous))
         }
         .buttonStyle(.plain)
     }
@@ -3081,9 +3085,9 @@ struct JohoCalendarPicker: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 40)
                 .background(dayBackground(isToday: isToday, isSelected: isSelected))
-                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusChip, style: .continuous))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    RoundedRectangle(cornerRadius: JohoDimensions.radiusChip, style: .continuous)
                         .stroke(
                             dayBorderColor(isToday: isToday, isSelected: isSelected),
                             lineWidth: (isToday || isSelected) ? 2 : 1
@@ -3750,27 +3754,45 @@ final class CategoryColorSettings {
     /// Set foreground hex for a specific display category
     func setForegroundHex(_ hex: String, for category: DisplayCategory) {
         switch category {
-        case .holiday: holidayForegroundHex = hex
-        case .observance: observanceForegroundHex = hex
-        case .memo: memoForegroundHex = hex
+        case .holiday:
+            holidayForegroundHex = hex
+            UserDefaults.standard.set(hex, forKey: "categoryForeground_holiday")
+        case .observance:
+            observanceForegroundHex = hex
+            UserDefaults.standard.set(hex, forKey: "categoryForeground_observance")
+        case .memo:
+            memoForegroundHex = hex
+            UserDefaults.standard.set(hex, forKey: "categoryForeground_memo")
         }
     }
 
     /// Set dark mode background hex for a specific display category
     func setDarkColorHex(_ hex: String, for category: DisplayCategory) {
         switch category {
-        case .holiday: holidayDarkColorHex = hex
-        case .observance: observanceDarkColorHex = hex
-        case .memo: memoDarkColorHex = hex
+        case .holiday:
+            holidayDarkColorHex = hex
+            UserDefaults.standard.set(hex, forKey: "categoryDarkColor_holiday")
+        case .observance:
+            observanceDarkColorHex = hex
+            UserDefaults.standard.set(hex, forKey: "categoryDarkColor_observance")
+        case .memo:
+            memoDarkColorHex = hex
+            UserDefaults.standard.set(hex, forKey: "categoryDarkColor_memo")
         }
     }
 
     /// Set dark mode foreground hex for a specific display category
     func setDarkForegroundHex(_ hex: String, for category: DisplayCategory) {
         switch category {
-        case .holiday: holidayDarkForegroundHex = hex
-        case .observance: observanceDarkForegroundHex = hex
-        case .memo: memoDarkForegroundHex = hex
+        case .holiday:
+            holidayDarkForegroundHex = hex
+            UserDefaults.standard.set(hex, forKey: "categoryDarkForeground_holiday")
+        case .observance:
+            observanceDarkForegroundHex = hex
+            UserDefaults.standard.set(hex, forKey: "categoryDarkForeground_observance")
+        case .memo:
+            memoDarkForegroundHex = hex
+            UserDefaults.standard.set(hex, forKey: "categoryDarkForeground_memo")
         }
     }
 
@@ -4055,9 +4077,9 @@ struct JohoColorPickerSheet: View {
                                     .frame(height: 24)
                             }
                         }
-                        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusChip, style: .continuous))
                         .overlay(
-                            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                            RoundedRectangle(cornerRadius: JohoDimensions.radiusChip, style: .continuous)
                                 .stroke(colors.border, lineWidth: 1.5)
                         )
 
@@ -4106,9 +4128,9 @@ struct JohoColorPickerSheet: View {
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
                         .background(colors.inputBackground)
-                        .clipShape(Squircle(cornerRadius: 10))
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusCard))
                         .overlay(
-                            Squircle(cornerRadius: 10)
+                            Squircle(cornerRadius: JohoDimensions.radiusCard)
                                 .stroke(colors.border, lineWidth: 1.5)
                         )
                     }
@@ -4212,9 +4234,9 @@ struct JohoMonthYearPicker: View {
             monthGrid
         }
         .background(colors.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
+            RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous)
                 .stroke(colors.border, lineWidth: 2)
         )
         .shadow(color: .black.opacity(0.2), radius: 20, y: 10)
@@ -4234,9 +4256,9 @@ struct JohoMonthYearPicker: View {
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
                     .background(colors.surface)
-                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
                             .stroke(colors.border, lineWidth: 1.5)
                     )
             }
@@ -4260,9 +4282,9 @@ struct JohoMonthYearPicker: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(accentColor)
-                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
                             .stroke(colors.border, lineWidth: 1.5)
                     )
             }

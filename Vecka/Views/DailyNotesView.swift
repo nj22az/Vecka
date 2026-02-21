@@ -496,7 +496,7 @@ struct JohoNoteEditorSheet: View {
                             .foregroundStyle(noteAccentColor)
                             .frame(width: 36, height: 36)
                             .background(noteLightBackground)
-                            .johoBordered(cornerRadius: 8, borderWidth: 1.5, borderColor: colors.primaryInverted)
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5, borderColor: colors.primaryInverted)
 
                         VStack(alignment: .leading, spacing: 2) {
                             Text("NEW NOTE")
@@ -528,7 +528,7 @@ struct JohoNoteEditorSheet: View {
                             .foregroundStyle(canSave ? colors.primaryInverted : colors.primaryInverted.opacity(0.4))
                             .frame(width: 56, height: 32)
                             .background(canSave ? noteAccentColor : colors.primaryInverted.opacity(0.2))
-                            .johoBordered(cornerRadius: 8, borderWidth: 1.5, borderColor: colors.primaryInverted)
+                            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5, borderColor: colors.primaryInverted)
                     }
                     .disabled(!canSave)
                     .frame(width: 72)

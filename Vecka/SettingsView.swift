@@ -562,9 +562,9 @@ struct SettingsView: View {
                                 .foregroundStyle(theme.accentColor)
                                 .frame(width: 32, height: 32)
                                 .background(theme.lightBackground)
-                                .clipShape(Squircle(cornerRadius: 8))
+                                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                                 .overlay(
-                                    Squircle(cornerRadius: 8)
+                                    Squircle(cornerRadius: JohoDimensions.radiusSmall)
                                         .strokeBorder(colors.border, lineWidth: 1.5)
                                 )
 
@@ -1353,9 +1353,9 @@ struct SettingsCategoryCustomizationSheet: View {
                             .padding(.horizontal, 16)
                             .padding(.vertical, 8)
                             .background(categoryColor)
-                            .clipShape(Squircle(cornerRadius: 8))
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
                             .overlay(
-                                Squircle(cornerRadius: 8)
+                                Squircle(cornerRadius: JohoDimensions.radiusSmall)
                                     .stroke(colors.border, lineWidth: 1.5)
                             )
                     }
@@ -1416,11 +1416,11 @@ struct SettingsCategoryCustomizationSheet: View {
                             showColorPicker = true
                         } label: {
                             HStack {
-                                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                RoundedRectangle(cornerRadius: JohoDimensions.radiusChip, style: .continuous)
                                     .fill(categoryColor)
                                     .frame(width: 32, height: 32)
                                     .overlay(
-                                        RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                        RoundedRectangle(cornerRadius: JohoDimensions.radiusChip, style: .continuous)
                                             .stroke(colors.border, lineWidth: 1.5)
                                     )
 
@@ -1436,9 +1436,9 @@ struct SettingsCategoryCustomizationSheet: View {
                             }
                             .padding(12)
                             .background(colors.inputBackground)
-                            .clipShape(Squircle(cornerRadius: 10))
+                            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusCard))
                             .overlay(
-                                Squircle(cornerRadius: 10)
+                                Squircle(cornerRadius: JohoDimensions.radiusCard)
                                     .stroke(colors.border, lineWidth: 1.5)
                             )
                         }
@@ -1462,9 +1462,9 @@ struct SettingsCategoryCustomizationSheet: View {
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
                         .background(colors.inputBackground)
-                        .clipShape(Squircle(cornerRadius: 10))
+                        .clipShape(Squircle(cornerRadius: JohoDimensions.radiusCard))
                         .overlay(
-                            Squircle(cornerRadius: 10)
+                            Squircle(cornerRadius: JohoDimensions.radiusCard)
                                 .stroke(colors.border, lineWidth: 1.5)
                         )
                     }
@@ -1548,9 +1548,9 @@ struct SettingsCategoryCustomizationSheet: View {
                 .foregroundStyle(colors.primary)
                 .frame(width: 44, height: 44)
                 .background((isSelected || isDefault) ? categoryColor : colors.inputBackground)
-                .clipShape(Squircle(cornerRadius: 10))
+                .clipShape(Squircle(cornerRadius: JohoDimensions.radiusCard))
                 .overlay(
-                    Squircle(cornerRadius: 10)
+                    Squircle(cornerRadius: JohoDimensions.radiusCard)
                         .stroke(colors.border, lineWidth: (isSelected || isDefault) ? 2.5 : 1)
                 )
         }

@@ -86,7 +86,7 @@ struct OnboardingView: View {
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, JohoDimensions.spacingMD)
                         .background(colors.primary)
-                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous))
                 }
                 .padding(.horizontal, JohoDimensions.spacingLG)
 
@@ -136,11 +136,11 @@ struct OnboardingPageView: View {
 
             // Icon (情報デザイン: Bordered icon zone)
             ZStack {
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                RoundedRectangle(cornerRadius: JohoDimensions.radiusXXL, style: .continuous)
                     .fill(page.iconColor.opacity(0.2))
                     .frame(width: 120, height: 120)
 
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                RoundedRectangle(cornerRadius: JohoDimensions.radiusXXL, style: .continuous)
                     .stroke(colors.border, lineWidth: 2)
                     .frame(width: 120, height: 120)
 
@@ -170,9 +170,9 @@ struct OnboardingPageView: View {
                 .lineSpacing(4)
                 .padding(JohoDimensions.spacingMD)
                 .background(colors.primary.opacity(0.03))
-                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous)
                         .stroke(colors.primary.opacity(0.1), lineWidth: 1)
                 )
                 .padding(.horizontal, JohoDimensions.spacingLG)

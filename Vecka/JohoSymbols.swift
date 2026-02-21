@@ -467,7 +467,7 @@ struct JohoPhotoContainer: View {
                         .foregroundStyle(colors.primaryInverted)
                         .padding(4)
                         .background(badge.color)
-                        .johoBordered(cornerRadius: 4, borderWidth: 1)
+                        .johoBordered(cornerRadius: JohoDimensions.radiusXS, borderWidth: 1)
                         .offset(x: 4, y: 4)
                 }
             }

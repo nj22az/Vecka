@@ -225,18 +225,18 @@ struct ShareableContactCard: View {
                         .resizable()
                         .frame(width: 90, height: 90)
                         .background(colors.surface)
-                        .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusXS, style: .continuous))
                         .overlay(
-                            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                            RoundedRectangle(cornerRadius: JohoDimensions.radiusXS, style: .continuous)
                                 .stroke(colors.border, lineWidth: 1)
                         )
                 } else {
                     // Fallback if QR generation fails
-                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    RoundedRectangle(cornerRadius: JohoDimensions.radiusXS, style: .continuous)
                         .fill(colors.surface)
                         .frame(width: 90, height: 90)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                            RoundedRectangle(cornerRadius: JohoDimensions.radiusXS, style: .continuous)
                                 .stroke(colors.border, lineWidth: 1)
                         )
                         .overlay {

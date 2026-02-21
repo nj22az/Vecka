@@ -203,7 +203,7 @@ struct ContactListView: View {
                                 .frame(height: 32)
                                 .padding(.horizontal, 12)
                                 .background(JohoColors.red)
-                                .johoBordered(cornerRadius: 8, borderWidth: 1.5)
+                                .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
                             }
                             .buttonStyle(.plain)
                             .padding(.trailing, 8)
@@ -222,7 +222,7 @@ struct ContactListView: View {
                                 .frame(height: 32)
                                 .padding(.horizontal, 12)
                                 .background(PageHeaderColor.contacts.accent)
-                                .johoBordered(cornerRadius: 8, borderWidth: 1.5)
+                                .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
                         }
                         .buttonStyle(.plain)
                     } else {
@@ -520,7 +520,7 @@ struct ContactListView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)
                 .background(selectedGroup == nil ? accentColor : colors.inputBackground)
-                .johoBordered(cornerRadius: 8, borderWidth: selectedGroup == nil ? 2 : 1)
+                .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: selectedGroup == nil ? 2 : 1)
             }
 
             // Group buttons
@@ -547,7 +547,7 @@ struct ContactListView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
                     .background(selectedGroup == group ? group.swiftUIColor : colors.inputBackground)
-                    .johoBordered(cornerRadius: 8, borderWidth: selectedGroup == group ? 2 : 1)
+                    .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: selectedGroup == group ? 2 : 1)
                 }
             }
         }
@@ -565,7 +565,7 @@ struct ContactListView: View {
                 .foregroundStyle(colors.primaryInverted)
                 .frame(width: 24, height: 24)
                 .background(colors.primary)
-                .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusXS, style: .continuous))
 
             // 情報デザイン: Solid black divider line, reduced height
             Rectangle()
@@ -1241,7 +1241,7 @@ struct JohoAddContactSheet: View {
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(color)
-                .johoBordered(cornerRadius: 4, borderWidth: 1.5)
+                .johoBordered(cornerRadius: JohoDimensions.radiusXS, borderWidth: 1.5)
 
             // Label - bold rounded for 情報デザイン
             Text(label)

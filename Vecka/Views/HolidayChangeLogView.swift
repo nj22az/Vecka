@@ -118,9 +118,9 @@ struct HolidayChangeLogView: View {
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
                             .background(isSelected ? colors.primary : colors.surface)
-                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                            .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
                             .overlay(
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
                                     .stroke(colors.border, lineWidth: 1.5)
                             )
                     }

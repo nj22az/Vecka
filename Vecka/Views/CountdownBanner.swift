@@ -74,11 +74,11 @@ struct CountdownBanner: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 10)
                     .background(
-                        Squircle(cornerRadius: 12)
+                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
                             .fill(colors.surface)
                     )
                     .overlay(
-                        Squircle(cornerRadius: 12)
+                        Squircle(cornerRadius: JohoDimensions.radiusMedium)
                             .stroke(colors.border, lineWidth: JohoDimensions.borderMedium)
                     )
                 }

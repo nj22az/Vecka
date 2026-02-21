@@ -881,7 +881,7 @@ typealias KaomojiMascot = JohoMascot
                 .foregroundStyle(JohoColors.cyan)
                 .frame(width: 40, height: 40)
                 .background(JohoColors.cyan.opacity(0.2))
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
 
             Text("ONSEN")
                 .font(.system(size: 16, weight: .black, design: .rounded))
@@ -901,9 +901,9 @@ typealias KaomojiMascot = JohoMascot
     }
     .frame(height: 56)
     .background(Color.white)
-    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+    .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous))
     .overlay(
-        RoundedRectangle(cornerRadius: 12, style: .continuous)
+        RoundedRectangle(cornerRadius: JohoDimensions.radiusMedium, style: .continuous)
             .stroke(Color.black, lineWidth: 2)
     )
     .padding()

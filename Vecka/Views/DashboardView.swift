@@ -330,16 +330,16 @@ struct DashboardView: View {
                     // Progress bar - 情報デザイン: Squircle with black border
                     GeometryReader { geo in
                         ZStack(alignment: .leading) {
-                            Squircle(cornerRadius: 4)
+                            Squircle(cornerRadius: JohoDimensions.radiusXS)
                                 .fill(colors.primary.opacity(0.1))
                                 .frame(height: 10)
 
-                            Squircle(cornerRadius: 4)
+                            Squircle(cornerRadius: JohoDimensions.radiusXS)
                                 .fill(JohoColors.green)
                                 .frame(width: geo.size.width * data.progress, height: 10)
                         }
                         .overlay(
-                            Squircle(cornerRadius: 4)
+                            Squircle(cornerRadius: JohoDimensions.radiusXS)
                                 .stroke(colors.border, lineWidth: 1)
                                 .frame(height: 10)
                         )
@@ -692,7 +692,7 @@ private struct DataCard<Content: View>: View {
                     .foregroundStyle(zone.textColor(for: colorMode))
                     .frame(width: 28, height: 28)
                     .background(zone.background(for: colorMode))
-                    .johoBordered(cornerRadius: 6, borderWidth: 1)
+                    .johoBordered(cornerRadius: JohoDimensions.radiusChip, borderWidth: 1)
 
                 Text(title)
                     .font(JohoFont.headerTag)

@@ -437,7 +437,7 @@ struct CountdownListView: View {
                     .foregroundStyle(JohoColors.cyan)
                     .frame(width: 24, height: 24)
                     .background(JohoColors.cyan.opacity(0.15))
-                    .johoBordered(cornerRadius: 6, borderWidth: 1)
+                    .johoBordered(cornerRadius: JohoDimensions.radiusChip, borderWidth: 1)
             }
             .frame(width: 48, alignment: .center)
             .frame(maxHeight: .infinity)

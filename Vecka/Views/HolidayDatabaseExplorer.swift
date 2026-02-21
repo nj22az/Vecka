@@ -231,7 +231,7 @@ struct HolidayDatabaseExplorer: View {
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
                             .background(colors.primary)
-                            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                            .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusChip, style: .continuous))
                     }
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
@@ -849,9 +849,9 @@ struct HolidayRuleEditorSheet: View {
                         .foregroundStyle(isEnabled ? JohoColors.green : JohoColors.red)
                         .frame(width: 32, height: 32)
                         .background(isEnabled ? JohoColors.green.opacity(0.15) : JohoColors.red.opacity(0.15))
-                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
                         .overlay(
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
                                 .stroke(isEnabled ? JohoColors.green : JohoColors.red, lineWidth: 1.5)
                         )
                 }
@@ -945,9 +945,9 @@ struct HolidayRuleEditorSheet: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)
                 .background(isSelected ? colors.primary : colors.surface)
-                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusChip, style: .continuous))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    RoundedRectangle(cornerRadius: JohoDimensions.radiusChip, style: .continuous)
                         .stroke(colors.border, lineWidth: 1)
                 )
         }

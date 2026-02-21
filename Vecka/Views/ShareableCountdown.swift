@@ -190,9 +190,9 @@ struct ShareableCountdownCard: View {
             .background(colors.surface)
         }
         .background(colors.surface)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
+            RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous)
                 .stroke(colors.border, lineWidth: 3)
         )
     }
@@ -241,7 +241,7 @@ struct CountdownShareButton: View {
                 .foregroundStyle(JohoColors.cyan)
                 .frame(width: 32, height: 32)
                 .background(JohoColors.cyan.opacity(0.15))
-                .johoBordered(cornerRadius: 8, borderWidth: 1, borderColor: JohoColors.black)
+                .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1, borderColor: JohoColors.black)
         }
     }
 }
