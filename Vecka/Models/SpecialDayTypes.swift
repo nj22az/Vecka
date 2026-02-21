@@ -89,27 +89,14 @@ enum SpecialDayType: String, CaseIterable {
     case note       // → Now Memo (yellow)
     case event      // → Now Memo (yellow)
 
+    // MARK: - CategoryEngine-driven properties
+
     var title: String {
-        switch self {
-        case .holiday: return NSLocalizedString("library.bank_holidays", value: "Bank Holidays", comment: "Bank Holidays")
-        case .observance: return NSLocalizedString("library.observances", value: "Observances", comment: "Observances")
-        case .birthday: return NSLocalizedString("library.birthdays", value: "Birthdays", comment: "Birthdays")
-        case .memo, .note, .event: return NSLocalizedString("library.memos", value: "Memos", comment: "Memos")
-        case .trip: return NSLocalizedString("library.trips", value: "Trips", comment: "Trips")
-        case .expense: return NSLocalizedString("library.expenses", value: "Expenses", comment: "Expenses")
-        }
+        CategoryEngine.definition(for: rawValue)?.title ?? "Memos"
     }
 
     var defaultIcon: String {
-        switch self {
-        case .holiday: return IconCatalog.holiday
-        case .observance: return IconCatalog.observance
-        case .birthday: return IconCatalog.birthday
-        case .memo, .note: return IconCatalog.memo
-        case .trip: return IconCatalog.trip
-        case .expense: return IconCatalog.expense
-        case .event: return IconCatalog.event
-        }
+        CategoryEngine.definition(for: rawValue)?.resolvedIcon ?? IconCatalog.memo
     }
 
     /// Theme-aware icon: category setting (for HOL/OBS) > type default
@@ -123,55 +110,28 @@ enum SpecialDayType: String, CaseIterable {
         }
     }
 
-    /// 情報デザイン: Different accent colors for visual interest
     var accentColor: Color {
-        switch self {
-        case .holiday: return Color(hex: "E53E3E")    // Red - "day off!"
-        case .observance: return JohoColors.tripBlue    // Blue - cultural observances
-        case .birthday: return JohoColors.pink        // Pink - birthdays (CELEBRATION)
-        case .memo, .note, .event: return JohoColors.yellow  // Yellow - memos (NOW)
-        case .trip: return JohoColors.cyan            // Cyan - trips (SCHEDULED)
-        case .expense: return JohoColors.green        // Green - money (MONEY)
-        }
+        CategoryEngine.definition(for: rawValue)?.accentColor ?? JohoColors.yellow
     }
 
-    /// 情報デザイン: Light background tints for icon zones
     var lightBackground: Color {
-        switch self {
-        case .holiday: return Color(hex: "FDE8E8")    // Light red
-        case .observance: return JohoColors.tripBlue.opacity(JohoDimensions.opacityMild) // Light blue
-        case .birthday: return JohoColors.pink.opacity(JohoDimensions.opacityMedium)  // Light pink (CELEBRATION)
-        case .memo, .note, .event: return JohoColors.yellow.opacity(JohoDimensions.opacityMedium)  // Light yellow (NOW)
-        case .trip: return JohoColors.cyan.opacity(JohoDimensions.opacityMedium)  // Light cyan (SCHEDULED)
-        case .expense: return JohoColors.green.opacity(JohoDimensions.opacityMedium)  // Light green (MONEY)
-        }
+        CategoryEngine.definition(for: rawValue)?.lightBackground
+            ?? accentColor.opacity(JohoDimensions.opacityMedium)
     }
 
     var isBankHoliday: Bool {
-        self == .holiday
+        CategoryEngine.definition(for: rawValue)?.isBankHoliday ?? (self == .holiday)
     }
 
-    /// 情報デザイン: Maps to 3-category display system
     var displayCategory: DisplayCategory {
-        switch self {
-        case .holiday: return .holiday
-        case .observance: return .observance
-        case .birthday, .memo, .note, .event, .trip, .expense: return .memo
+        if let dc = CategoryEngine.definition(for: rawValue)?.displayCategory {
+            return DisplayCategory(rawValue: dc) ?? .memo
         }
+        return .memo
     }
 
-    /// 情報デザイン: 3-letter type codes
     var code: String {
-        switch self {
-        case .holiday: return "HOL"
-        case .observance: return "OBS"
-        case .birthday: return "BDY"
-        case .memo: return "MEM"
-        case .trip: return "TRP"
-        case .expense: return "EXP"
-        case .note: return "NOT"
-        case .event: return "EVT"
-        }
+        CategoryEngine.definition(for: rawValue)?.code ?? "MEM"
     }
 }
 
