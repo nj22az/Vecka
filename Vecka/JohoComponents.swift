@@ -646,12 +646,7 @@ struct JohoEditorHeader: View {
             }
 
             // Icon zone (52×52pt) - matches January 2026 pattern
-            Image(systemName: icon)
-                .font(JohoFont.displaySmall)
-                .foregroundStyle(accentColor)
-                .frame(width: 52, height: 52)
-                .background(lightBackground)
-                .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderMedium, borderColor: colors.border)
+            JohoSticker(content: .icon(icon), color: accentColor, size: 52)
 
             // Title area
             VStack(alignment: .leading, spacing: 2) {
@@ -765,12 +760,12 @@ struct JohoIconBadge: View {
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
-        Image(systemName: icon)
-            .font(.system(size: size * 0.5, weight: .bold, design: .rounded))
-            .foregroundStyle(zone.textColor(for: colorMode))
-            .frame(width: size, height: size)
-            .background(zone.background(for: colorMode))
-            .johoBordered(cornerRadius: size * 0.25, borderWidth: JohoDimensions.borderThin, borderColor: colors.border)
+        JohoSticker(
+            content: .icon(icon),
+            color: zone.background(for: colorMode),
+            size: size,
+            borderWidth: JohoDimensions.borderThin
+        )
     }
 }
 
@@ -802,7 +797,7 @@ struct JohoSticker: View {
 
     let content: Content
     let color: Color
-    var shape: StickerShape = .circle
+    var shape: StickerShape = .squircle
     var badge: Badge? = nil
     var size: CGFloat = 56
     var borderWidth: CGFloat? = nil
@@ -811,7 +806,9 @@ struct JohoSticker: View {
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     private var resolvedBorderWidth: CGFloat {
-        borderWidth ?? (size >= 80 ? JohoDimensions.borderThick : JohoDimensions.borderMedium)
+        borderWidth ?? (size >= 80 ? JohoDimensions.borderThick :
+                        size < 32 ? JohoDimensions.borderThin :
+                        JohoDimensions.borderMedium)
     }
 
     private var cornerRadius: CGFloat {
@@ -891,6 +888,28 @@ struct JohoSticker: View {
         shape == .circle
             ? AnyInsettableShape(Circle())
             : AnyInsettableShape(Squircle(cornerRadius: cornerRadius))
+    }
+
+    // MARK: - Size Presets
+
+    /// 24pt — bento card headers, compact inline icons
+    static func mini(icon: String, color: Color, shape: StickerShape = .squircle) -> JohoSticker {
+        JohoSticker(content: .icon(icon), color: color, shape: shape, size: 24)
+    }
+
+    /// 32pt — compact list rows, tile icons
+    static func small(icon: String, color: Color, shape: StickerShape = .squircle) -> JohoSticker {
+        JohoSticker(content: .icon(icon), color: color, shape: shape, size: 32)
+    }
+
+    /// 48pt — prominent card icons, fact tiles, shareable card headers
+    static func regular(icon: String, color: Color, shape: StickerShape = .squircle) -> JohoSticker {
+        JohoSticker(content: .icon(icon), color: color, shape: shape, size: 48)
+    }
+
+    /// 80pt — hero displays, empty states
+    static func large(icon: String, color: Color, shape: StickerShape = .squircle) -> JohoSticker {
+        JohoSticker(content: .icon(icon), color: color, shape: shape, size: 80)
     }
 }
 
@@ -1308,12 +1327,7 @@ struct JohoEmptyState: View {
 
     var body: some View {
         VStack(spacing: JohoDimensions.spacingMD) {
-            Image(systemName: icon)
-                .font(.system(size: 48, weight: .bold, design: .rounded))
-                .foregroundStyle(zone.textColor(for: colorMode))
-                .frame(width: 80, height: 80)
-                .background(zone.background(for: colorMode))
-                .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderMedium, borderColor: colors.border)
+            JohoSticker.large(icon: icon, color: zone.background(for: colorMode))
 
             Text(title)
                 .font(JohoFont.headline)

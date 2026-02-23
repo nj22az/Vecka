@@ -49,31 +49,12 @@ struct CountdownCard: View {
     // MARK: - Icon
     
     private var countdownIcon: some View {
-        ZStack {
-            Circle()
-                .fill(iconBackgroundColor)
-                .frame(width: 50, height: 50)
-            
-            Image(systemName: iconName)
-                .font(.system(size: 24, weight: .medium, design: .rounded))
-                .foregroundStyle(iconForegroundColor)
-        }
-    }
-    
-    private var iconBackgroundColor: Color {
-        if isSelected {
-            return JohoColors.cyan.opacity(JohoDimensions.opacityMild)
-        }
-
-        return colors.primary.opacity(JohoDimensions.opacityHeavy).opacity(JohoDimensions.opacitySubtle)
-    }
-    
-    private var iconForegroundColor: Color {
-        if isSelected {
-            return JohoColors.cyan
-        }
-
-        return colors.primary.opacity(JohoDimensions.opacityBold)
+        JohoSticker(
+            content: .icon(iconName),
+            color: isSelected ? JohoColors.cyan : colors.primary.opacity(0.3),
+            shape: .circle,
+            size: 48
+        )
     }
 
     // MARK: - Text Content

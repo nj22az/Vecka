@@ -68,13 +68,8 @@ struct CountdownListView: View {
 
     private var headerSection: some View {
         HStack(alignment: .center, spacing: JohoDimensions.spacingMD) {
-            // Icon zone (52×52pt) - matches Star Page month detail pattern
-            Image(systemName: IconCatalog.event)
-                .font(JohoFont.displaySmall)
-                .foregroundStyle(colors.primary)
-                .johoTouchTarget(52)
-                .background(JohoColors.purple.opacity(JohoDimensions.opacityMedium))
-                .johoBordered()
+            // Icon zone (52×52pt) - sticker-first rendering
+            JohoSticker(content: .icon(IconCatalog.event), color: JohoColors.purple, size: 52)
 
             // Title area
             VStack(alignment: .leading, spacing: 2) {
@@ -144,10 +139,8 @@ struct CountdownListView: View {
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
-                // RIGHT: Event icon compartment (uses actual event icon)
-                Image(systemName: event.icon)
-                    .font(JohoFont.headlineSmall)
-                    .foregroundStyle(colors.primary)
+                // RIGHT: Event icon compartment (sticker-first)
+                JohoSticker.mini(icon: event.icon, color: JohoColors.purple)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
             }
@@ -322,10 +315,8 @@ struct CountdownListView: View {
                     .frame(width: 1.5)
                     .frame(maxHeight: .infinity)
 
-                // RIGHT: Icon compartment
-                Image(systemName: icon)
-                    .font(JohoFont.headlineSmall)
-                    .foregroundStyle(colors.primary)
+                // RIGHT: Icon compartment sticker
+                JohoSticker.mini(icon: icon, color: JohoColors.purple)
                     .frame(width: 40)
                     .frame(maxHeight: .infinity)
             }
@@ -429,18 +420,11 @@ struct CountdownListView: View {
                     .frame(maxHeight: .infinity)
             }
 
-            // RIGHT COMPARTMENT: Decoration icon (fixed 48pt, centered)
+            // RIGHT COMPARTMENT: Decoration icon sticker
             // 情報デザイン: Decoration icon ALWAYS shown (user decision)
-            HStack(spacing: 4) {
-                Image(systemName: icon ?? IconCatalog.event)
-                    .font(JohoFont.bodySmallBold)
-                    .foregroundStyle(JohoColors.cyan)
-                    .frame(width: 24, height: 24)
-                    .background(JohoColors.cyan.opacity(JohoDimensions.opacityLight))
-                    .johoBordered(cornerRadius: JohoDimensions.radiusChip, borderWidth: 1)
-            }
-            .frame(width: 48, alignment: .center)
-            .frame(maxHeight: .infinity)
+            JohoSticker.mini(icon: icon ?? IconCatalog.event, color: JohoColors.cyan)
+                .frame(width: 48, alignment: .center)
+                .frame(maxHeight: .infinity)
         }
         .frame(minHeight: tasks.isEmpty ? 36 : 48)  // 情報デザイン: Taller when showing task progress
         .contentShape(Rectangle())

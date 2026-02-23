@@ -708,9 +708,7 @@ struct ContactDetailView: View {
 
                     Spacer()
 
-                    Image(systemName: IconCatalog.birthday)
-                        .font(JohoFont.displaySmall)
-                        .foregroundStyle(SpecialDayType.birthday.accentColor)
+                    JohoSticker.regular(icon: IconCatalog.birthday, color: SpecialDayType.birthday.accentColor)
                 }
             }
         }
@@ -901,14 +899,9 @@ struct ContactDetailView: View {
         @ViewBuilder content: () -> Content
     ) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Header banner — 情報デザイン: Colored banner with icon zone
+            // Header banner — 情報デザイン: Sticker-first icon zone
             HStack(spacing: JohoDimensions.spacingSM) {
-                Image(systemName: icon)
-                    .font(JohoFont.bodySmallBold)
-                    .foregroundStyle(iconColor)
-                    .frame(width: 28, height: 28)
-                    .background(iconColor.opacity(0.35))
-                    .johoBordered(cornerRadius: JohoDimensions.radiusChip, borderWidth: 1)
+                JohoSticker(content: .icon(icon), color: iconColor, size: 28)
 
                 Text(title)
                     .font(JohoFont.headerTag)

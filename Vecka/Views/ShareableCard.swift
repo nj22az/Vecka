@@ -154,10 +154,8 @@ struct ShareableCardHeader: View {
                 .frame(width: 1.5)
                 .frame(maxHeight: .infinity)
             
-            // RIGHT: Icon
-            Image(systemName: icon)
-                .font(JohoFont.headline)
-                .foregroundStyle(iconColor)
+            // RIGHT: Icon sticker
+            JohoSticker.small(icon: icon, color: iconColor)
                 .frame(width: 48)
                 .frame(maxHeight: .infinity)
         }
