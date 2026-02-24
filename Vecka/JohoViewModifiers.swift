@@ -183,33 +183,6 @@ struct JohoPillModifier: ViewModifier {
     }
 }
 
-// MARK: - Extended Page Header (Dynamic Island integration)
-
-/// Page header modifier that extends behind the Dynamic Island.
-/// Uses `.ignoresSafeArea(.container, edges: .top)` on background/overlay only,
-/// so content stays in the safe area while the card visually extends upward.
-struct JohoExtendedPageHeaderModifier: ViewModifier {
-    let cornerRadius: CGFloat
-    let borderWidth: CGFloat
-
-    @Environment(\.johoColorMode) private var colorMode
-    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
-
-    func body(content: Content) -> some View {
-        content
-            .background {
-                Squircle(cornerRadius: cornerRadius)
-                    .fill(colors.surface)
-                    .ignoresSafeArea(.container, edges: .top)
-            }
-            .overlay {
-                Squircle(cornerRadius: cornerRadius)
-                    .strokeBorder(colors.border, lineWidth: borderWidth)
-                    .ignoresSafeArea(.container, edges: .top)
-            }
-    }
-}
-
 // MARK: - View Extensions
 
 /// Environment-aware border modifier — resolves border color from JohoScheme automatically
@@ -341,18 +314,6 @@ extension View {
             backgroundColor: backgroundColor,
             foregroundColor: foregroundColor,
             borderColor: borderColor
-        ))
-    }
-
-    /// 情報デザイン: Page header that extends behind Dynamic Island
-    /// Replaces `.background(colors.surface)` + `.johoBordered()` on page headers
-    func johoExtendedPageHeader(
-        cornerRadius: CGFloat = JohoDimensions.radiusLarge,
-        borderWidth: CGFloat = JohoDimensions.borderThick
-    ) -> some View {
-        modifier(JohoExtendedPageHeaderModifier(
-            cornerRadius: cornerRadius,
-            borderWidth: borderWidth
         ))
     }
 

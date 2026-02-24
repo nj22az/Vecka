@@ -51,6 +51,7 @@ struct SettingsView: View {
                 // 情報デザイン: Bento-style page header (Golden Standard Pattern)
                 settingsPageHeader
                     .padding(.horizontal, JohoDimensions.spacingLG)
+                    .padding(.top, JohoDimensions.spacingSM)
 
                 // Theme Section (情報デザイン: Unified theming)
                 themeSection
@@ -205,7 +206,8 @@ struct SettingsView: View {
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
         }
-        .johoExtendedPageHeader()
+        .background(colors.surface)
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
     }
 
     private var selectedColorMode: JohoColorMode {
