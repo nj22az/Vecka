@@ -95,7 +95,6 @@ struct ContactListView: View {
                 // 情報デザイン Header (like Special Days page)
                 contactsHeader
                     .padding(.horizontal, JohoDimensions.spacingLG)
-                    .padding(.top, JohoDimensions.spacingSM)
 
                 // MAIN CONTENT CONTAINER (情報デザイン: All content in white container)
                 VStack(spacing: 0) {
@@ -301,8 +300,7 @@ struct ContactListView: View {
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
         }
-        .background(colors.surface)
-        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
+        .johoExtendedPageHeader()
     }
 
     // MARK: - Empty State (情報デザイン: Black text in white container)

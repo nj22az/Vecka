@@ -120,7 +120,6 @@ struct LandingPageView: View {
                     pageHeader
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.horizontal, JohoDimensions.spacingLG)
-                        .padding(.top, JohoDimensions.spacingSM)
                         .padding(.bottom, JohoDimensions.spacingMD)
 
                     ScrollView {
@@ -142,7 +141,6 @@ struct LandingPageView: View {
                     pageHeader
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.horizontal, JohoDimensions.spacingSM)
-                        .padding(.top, JohoDimensions.spacingSM)
                         .padding(.bottom, JohoDimensions.spacingMD)
 
                     ScrollView {
@@ -276,8 +274,7 @@ struct LandingPageView: View {
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
         }
-        .background(colors.surface)
-        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
+        .johoExtendedPageHeader()
     }
 
     /// Mascot mood - happy default, with occasional ♨️ onsen transformation

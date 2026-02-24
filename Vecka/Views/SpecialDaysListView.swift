@@ -678,10 +678,8 @@ struct SpecialDaysListView: View {
                 .padding(.vertical, JohoDimensions.spacingSM)
             }
         }
-        .background(colors.surface)
-        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 2)
+        .johoExtendedPageHeader(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 2)
         .padding(.horizontal, JohoDimensions.spacingLG)
-        .padding(.top, JohoDimensions.spacingSM)
     }
 
     // MARK: - Bento Stats Row (情報デザイン: 3-category outline icons)

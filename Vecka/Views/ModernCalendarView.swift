@@ -911,8 +911,7 @@ struct ModernCalendarView: View {
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
         }
-        .background(colors.surface)
-        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
+        .johoExtendedPageHeader()
     }
 
     /// Month picker for Calendar header (< January 2026 >)
