@@ -506,7 +506,8 @@ struct LandingPageView: View {
                 icon: iconFor(category: quirkyFact.factCategory),
                 color: colorFor(category: quirkyFact.factCategory),
                 explanation: quirkyFact.explanation.isEmpty ? quirkyFact.text : quirkyFact.explanation,
-                source: quirkyFact.region
+                source: quirkyFact.region,
+                category: quirkyFact.category
             )
             selectedRandomFact = fact
         }
@@ -1248,10 +1249,18 @@ struct RandomFactDetailSheet: View {
     var body: some View {
         VStack(spacing: 0) {
             JohoSheetHeader(
-                title: "FACT",
+                title: fact.displaySource.uppercased(),
                 shareButton: FactShareButton(fact: fact),
                 onClose: { dismiss() }
             )
+
+            // Category pill
+            HStack {
+                JohoPill(text: fact.displayCategory.uppercased(), style: .colored(fact.color), size: .small)
+                Spacer()
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.top, JohoDimensions.spacingSM)
 
             // Main content card
             VStack(spacing: 0) {

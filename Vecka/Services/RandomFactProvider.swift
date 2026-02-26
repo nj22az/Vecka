@@ -19,6 +19,7 @@ struct RandomFact: Identifiable, Equatable {
     let color: Color
     let explanation: String  // Detailed explanation for tap-to-expand
     let source: String?  // Country or source name (e.g., "Sweden", "Vietnam", "Calendar")
+    let category: String?  // "tradition", "food", "invention", "nature", "history", "quirky", "calendar"
 
     static func == (lhs: RandomFact, rhs: RandomFact) -> Bool {
         lhs.id == rhs.id
@@ -30,9 +31,9 @@ struct RandomFact: Identifiable, Equatable {
         switch source {
         case "SE": return "Sweden"
         case "VN": return "Vietnam"
-        case "US": return "United States"
-        case "UK": return "United Kingdom"
-        case "GB": return "United Kingdom"
+        case "US": return "USA"
+        case "UK": return "Britain"
+        case "GB": return "Britain"
         case "NO": return "Norway"
         case "DK": return "Denmark"
         case "FI": return "Finland"
@@ -40,6 +41,21 @@ struct RandomFact: Identifiable, Equatable {
         case "XX": return "Fun Fact"
         case "Calendar": return "Calendar"
         default: return source
+        }
+    }
+
+    /// Human-readable category name for display
+    var displayCategory: String {
+        guard let category = category else { return "Fact" }
+        switch category {
+        case "tradition": return "Tradition"
+        case "food": return "Food"
+        case "invention": return "Invention"
+        case "nature": return "Nature"
+        case "history": return "History"
+        case "quirky": return "Fun Fact"
+        case "calendar": return "Calendar"
+        default: return category.capitalized
         }
     }
 }
@@ -124,7 +140,8 @@ final class RandomFactProvider: ObservableObject {
             icon: "calendar",
             color: JohoColors.cyan,
             explanation: "ISO 8601 week numbers are the international standard for numbering weeks. This app helps you track weeks the Swedish way.",
-            source: "Calendar"
+            source: "Calendar",
+            category: "calendar"
         )
 
         guard !pool.isEmpty else { return fallbackFact }
@@ -140,7 +157,8 @@ final class RandomFactProvider: ObservableObject {
             icon: iconFor(category: fact.factCategory),
             color: colorFor(category: fact.factCategory),
             explanation: fact.explanation.isEmpty ? fact.text : fact.explanation,
-            source: fact.region
+            source: fact.region,
+            category: fact.category
         )
     }
 
@@ -170,7 +188,8 @@ final class RandomFactProvider: ObservableObject {
             icon: "sparkles",
             color: JohoColors.yellow,
             explanation: egg.explanation.isEmpty ? egg.text : egg.explanation,
-            source: "XX"
+            source: "XX",
+            category: "quirky"
         )
     }
 
@@ -204,7 +223,8 @@ final class RandomFactProvider: ObservableObject {
             icon: picked.icon,
             color: picked.color,
             explanation: picked.explanation,
-            source: "Calendar"
+            source: "Calendar",
+            category: "calendar"
         )
     }
 

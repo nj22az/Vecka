@@ -51,8 +51,8 @@ struct ShareableFactCard: View {
             headerIcon: fact.icon ?? "lightbulb.fill",
             headerIconColor: fact.color,
             headerAccentColor: fact.color,
-            footerLeftLabel: "RANDOM FACTS",
-            footerRightLabel: fact.displaySource.uppercased()
+            footerLeftLabel: fact.displaySource.uppercased(),
+            footerRightLabel: fact.displayCategory.uppercased()
         ) {
             // Divider after header
             ShareableCardDivider()
@@ -146,7 +146,8 @@ struct FactShareButton: View {
                     icon: "fork.knife",
                     color: JohoColors.yellow,
                     explanation: "Swedes drink more coffee per capita than almost any other nation - about 4 cups daily. Swedish coffee is notably stronger than most European varieties, reflecting the deep cultural tradition of fika.",
-                    source: "SE"
+                    source: "SE",
+                    category: "food"
                 )
             )
             .frame(width: 340, height: 220)
@@ -159,7 +160,8 @@ struct FactShareButton: View {
                     icon: "fork.knife",
                     color: JohoColors.yellow,
                     explanation: "Swedes drink more coffee per capita than almost any other nation - about 4 cups daily. Swedish coffee is notably stronger than most European varieties, reflecting the deep cultural tradition of fika.",
-                    source: "SE"
+                    source: "SE",
+                    category: "food"
                 ),
                 isShareable: true
             )
