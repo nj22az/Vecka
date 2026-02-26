@@ -658,6 +658,7 @@ struct SpecialDaysListView: View {
                 }
             }
             .frame(height: 56)
+            .background(PageHeaderColor.specialDays.lightBackground)
 
             // HORIZONTAL DIVIDER
             Rectangle()
@@ -1150,11 +1151,12 @@ struct SpecialDaysListView: View {
         let message = customMessage(for: month)
 
         VStack(spacing: 0) {
-            // TOP: Icon zone (情報デザイン: Sticker-first rendering)
-            // Fixed height ensures banner dividers align across all cards
-            JohoSticker.small(icon: displayIcon, color: displayIconColor)
+            // TOP: Month name on seasonal color
+            Text(theme.name.uppercased())
+                .font(JohoFont.pillLabel)
+                .foregroundStyle(colors.primary)
                 .frame(maxWidth: .infinity)
-                .frame(height: 64)
+                .frame(height: 48)
                 .background(displayColor)
 
             // Divider (情報デザイン: Black wall between compartments)
@@ -1162,33 +1164,24 @@ struct SpecialDaysListView: View {
                 .fill(colors.border)
                 .frame(height: 1.5)
 
-            // BOTTOM: Centered text with stacked dots in corner
-            // Fixed height ensures all card bottoms align
-            HStack(spacing: 0) {
-                Spacer(minLength: 16)
+            // BOTTOM: Sticker + message + category dots
+            HStack(spacing: JohoDimensions.spacingSM) {
+                JohoSticker.small(icon: displayIcon, color: displayIconColor)
 
-                // Centered text
-                VStack(spacing: 2) {
-                    Text(theme.name.uppercased())
-                        .font(JohoFont.pillLabel)
-                        .foregroundStyle(colors.primary)
-                        .multilineTextAlignment(.center)
-
-                    // Custom message (always rendered, invisible when empty for height consistency)
-                    Text(message ?? " ")
+                if let message {
+                    Text(message)
                         .font(.system(size: 9, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(message != nil ? 0.6 : 0))
+                        .foregroundStyle(colors.primary.opacity(0.6))
                         .lineLimit(1)
-                        .multilineTextAlignment(.center)
                 }
 
-                Spacer(minLength: 16)
+                Spacer(minLength: 0)
             }
+            .padding(.horizontal, JohoDimensions.spacingSM)
             .frame(maxWidth: .infinity)
-            .frame(height: 48)  // Fixed height for aligned bottoms
+            .frame(height: 56)
             .background(colors.surface)
             .overlay(alignment: .bottomTrailing) {
-                // 情報デザイン: Vertical dot stack with black borders (holidays → observances → memos)
                 if hasItems {
                     VStack(spacing: 3) {
                         if counts.holidays > 0 {
