@@ -235,6 +235,7 @@ struct LandingPageView: View {
                 .padding(JohoDimensions.spacingSM)
             }
             .frame(minHeight: 56)
+            .background(PageHeaderColor.landing.lightBackground)
 
             // HORIZONTAL DIVIDER
             Rectangle()

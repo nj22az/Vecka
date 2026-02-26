@@ -259,6 +259,7 @@ struct ContactListView: View {
                 .padding(.horizontal, JohoDimensions.spacingXS)
             }
             .frame(minHeight: 56)
+            .background(PageHeaderColor.contacts.lightBackground)
 
             // HORIZONTAL DIVIDER
             Rectangle()

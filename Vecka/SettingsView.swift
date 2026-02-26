@@ -178,6 +178,7 @@ struct SettingsView: View {
                 .padding(.horizontal, JohoDimensions.spacingMD)
             }
             .frame(minHeight: 56)
+            .background(PageHeaderColor.settings.lightBackground)
 
             // HORIZONTAL DIVIDER (情報デザイン: Golden Standard Pattern)
             Rectangle()

@@ -866,6 +866,7 @@ struct ModernCalendarView: View {
                 }
             }
             .frame(minHeight: 56)
+            .background(PageHeaderColor.calendar.lightBackground)
 
             // HORIZONTAL DIVIDER
             Rectangle()
