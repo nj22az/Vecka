@@ -539,20 +539,14 @@ struct LandingPageView: View {
         }
     }
 
-    /// Month card style fact tile (情報デザイン: Star page style - strong colors)
+    /// Fact tile using shared JohoTileCard
     private func randomFactTile(_ fact: RandomFact) -> some View {
-        VStack(spacing: 0) {
-            // TOP: Icon zone (情報デザイン: Sticker-first rendering)
-            JohoSticker.small(icon: fact.icon ?? IconCatalog.holiday, color: fact.color)
-                .frame(maxWidth: .infinity)
-                .frame(height: 48)
-
-            // Divider
-            Rectangle()
-                .fill(colors.border)
-                .frame(height: 1.5)
-
-            // BOTTOM: Text zone
+        JohoTileCard(
+            label: fact.displaySource,
+            icon: fact.icon ?? IconCatalog.holiday,
+            iconColor: fact.color,
+            bannerColor: fact.color.opacity(JohoDimensions.opacityLight)
+        ) {
             Text(fact.text)
                 .font(JohoFont.labelBold)
                 .foregroundStyle(colors.primary)
@@ -563,8 +557,6 @@ struct LandingPageView: View {
                 .padding(.vertical, 8)
                 .frame(maxWidth: .infinity, minHeight: 52)
         }
-        .background(colors.surface)
-        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 1.5)
     }
 
     // MARK: - Row Helpers

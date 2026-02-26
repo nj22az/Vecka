@@ -1150,24 +1150,14 @@ struct SpecialDaysListView: View {
         let displayColor: Color = theme.lightBackground
         let message = customMessage(for: month)
 
-        VStack(spacing: 0) {
-            // TOP: Month name on seasonal color
-            Text(theme.name.uppercased())
-                .font(JohoFont.pillLabel)
-                .foregroundStyle(colors.primary)
-                .frame(maxWidth: .infinity)
-                .frame(height: 48)
-                .background(displayColor)
-
-            // Divider (情報デザイン: Black wall between compartments)
-            Rectangle()
-                .fill(colors.border)
-                .frame(height: 1.5)
-
-            // BOTTOM: Sticker + message + category dots
-            HStack(spacing: JohoDimensions.spacingSM) {
-                JohoSticker.small(icon: displayIcon, color: displayIconColor)
-
+        JohoTileCard(
+            label: theme.name,
+            icon: displayIcon,
+            iconColor: displayIconColor,
+            bannerColor: displayColor
+        ) {
+            // Custom message + category dots
+            HStack(spacing: 0) {
                 if let message {
                     Text(message)
                         .font(.system(size: 9, weight: .medium, design: .rounded))
@@ -1179,8 +1169,7 @@ struct SpecialDaysListView: View {
             }
             .padding(.horizontal, JohoDimensions.spacingSM)
             .frame(maxWidth: .infinity)
-            .frame(height: 56)
-            .background(colors.surface)
+            .frame(height: 40)
             .overlay(alignment: .bottomTrailing) {
                 if hasItems {
                     VStack(spacing: 3) {
@@ -1208,8 +1197,6 @@ struct SpecialDaysListView: View {
                 }
             }
         }
-        .background(colors.surface)
-        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 1.5)
         .contentShape(Rectangle())
         .onTapGesture {
             withAnimation(.easeInOut(duration: 0.2)) {

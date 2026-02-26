@@ -975,6 +975,47 @@ struct JohoIconButton: View {
     }
 }
 
+// MARK: - Tile Card (情報デザイン: Colored banner + content, used by month cards and fact tiles)
+
+struct JohoTileCard<Content: View>: View {
+    let label: String
+    let icon: String
+    let iconColor: Color
+    let bannerColor: Color
+    @ViewBuilder let content: Content
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Banner: label left + circle sticker right
+            HStack {
+                Text(label.uppercased())
+                    .font(JohoFont.pillLabel)
+                    .foregroundStyle(colors.primary)
+                    .lineLimit(1)
+
+                Spacer()
+
+                JohoSticker(content: .icon(icon), color: iconColor, shape: .circle, size: 24)
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)
+            .background(bannerColor)
+
+            Rectangle()
+                .fill(colors.border)
+                .frame(height: 1.5)
+
+            content
+        }
+        .background(colors.surface)
+        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 1.5)
+    }
+}
+
 // MARK: - Search Field (情報デザイン styled search input)
 
 /// 情報デザイン: Unified search field with squircle styling
