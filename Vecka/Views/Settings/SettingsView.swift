@@ -9,10 +9,59 @@
 import SwiftUI
 import SwiftData
 import WidgetKit
+import EventKit
 
 /// Wrapper to make month number (Int) identifiable for sheet binding
 private struct IdentifiableMonth: Identifiable {
     let id: Int
+}
+
+// MARK: - Calendar Permission Manager (情報デザイン: Minimal EventKit bridge)
+
+@MainActor
+@Observable
+final class CalendarPermissionManager {
+    private(set) var authorizationStatus: EKAuthorizationStatus
+
+    init() {
+        self.authorizationStatus = EKEventStore.authorizationStatus(for: .event)
+    }
+
+    func requestAccess() async {
+        let store = EKEventStore()
+        do {
+            let granted = try await store.requestFullAccessToEvents()
+            authorizationStatus = granted ? .fullAccess : .denied
+        } catch {
+            authorizationStatus = EKEventStore.authorizationStatus(for: .event)
+        }
+    }
+
+    func refreshStatus() {
+        authorizationStatus = EKEventStore.authorizationStatus(for: .event)
+    }
+
+    var statusLabel: String {
+        switch authorizationStatus {
+        case .fullAccess: return "GRANTED"
+        case .denied, .restricted: return "DENIED"
+        case .notDetermined: return "NOT SET"
+        case .writeOnly: return "WRITE ONLY"
+        @unknown default: return "UNKNOWN"
+        }
+    }
+
+    var isGranted: Bool {
+        authorizationStatus == .fullAccess
+    }
+
+    var isDenied: Bool {
+        authorizationStatus == .denied || authorizationStatus == .restricted
+    }
+
+    var isNotDetermined: Bool {
+        authorizationStatus == .notDetermined
+    }
 }
 
 struct SettingsView: View {
@@ -31,6 +80,9 @@ struct SettingsView: View {
     @Query private var contacts: [Contact]
     @State private var isEditingTitle = false
     @State private var editingTitle = ""
+
+    // Calendar permission state
+    @State private var calendarPermission = CalendarPermissionManager()
 
     // Developer tools state
     @State private var showingResetConfirmation = false
@@ -69,6 +121,9 @@ struct SettingsView: View {
 
                 // Personalization Section (情報デザイン: User customization)
                 personalizationSection
+
+                // Calendar Permission Section (情報デザイン: EventKit access for widgets)
+                calendarPermissionSection
 
                 // About Section
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
@@ -801,6 +856,100 @@ struct SettingsView: View {
                     isEditingTitle = false
                 }
             )
+        }
+    }
+
+    // MARK: - Calendar Permission Section (情報デザイン: EventKit Access)
+
+    private var calendarPermissionSection: some View {
+        VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
+            // Section label
+            JohoPill(text: "CALENDAR", style: .whiteOnBlack, size: .small)
+
+            // Permission row
+            HStack(spacing: JohoDimensions.spacingMD) {
+                // Icon zone
+                JohoSticker(
+                    content: .icon(IconCatalog.calendar),
+                    color: calendarPermission.isGranted ? JohoColors.cyan : JohoColors.yellow,
+                    size: 40
+                )
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Calendar Access")
+                        .font(JohoFont.headline)
+                        .foregroundStyle(colors.primary)
+
+                    Text(calendarPermission.statusLabel)
+                        .font(JohoFont.label)
+                        .foregroundStyle(calendarPermission.isGranted ? JohoColors.greenDark : colors.secondary)
+                }
+
+                Spacer()
+
+                // Action button based on state
+                if calendarPermission.isNotDetermined {
+                    Button {
+                        Task { await calendarPermission.requestAccess() }
+                    } label: {
+                        Text("Enable")
+                            .font(JohoFont.label)
+                            .foregroundStyle(colors.primaryInverted)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(colors.primary)
+                            .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                } else if calendarPermission.isDenied {
+                    Button {
+                        if let url = URL(string: UIApplication.openSettingsURLString) {
+                            UIApplication.shared.open(url)
+                        }
+                    } label: {
+                        Text("Settings")
+                            .font(JohoFont.label)
+                            .foregroundStyle(colors.primaryInverted)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(JohoColors.red)
+                            .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                } else {
+                    // Granted — show checkmark
+                    Image(systemName: IconCatalog.checkmarkCircleFill)
+                        .font(JohoFont.title)
+                        .foregroundStyle(JohoColors.green)
+                }
+            }
+            .padding(JohoDimensions.spacingMD)
+            .background(colors.surface)
+            .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
+            .overlay(
+                Squircle(cornerRadius: JohoDimensions.radiusMedium)
+                    .strokeBorder(colors.border, lineWidth: JohoDimensions.borderMedium)
+            )
+
+            // Footer text
+            if calendarPermission.isNotDetermined {
+                Text("Enable calendar access so widgets can show your upcoming events.")
+                    .font(JohoFont.caption)
+                    .foregroundStyle(colors.secondary)
+                    .padding(.horizontal, JohoDimensions.spacingSM)
+            } else if calendarPermission.isDenied {
+                Text("Calendar access was denied. Open Settings to grant permission.")
+                    .font(JohoFont.caption)
+                    .foregroundStyle(colors.secondary)
+                    .padding(.horizontal, JohoDimensions.spacingSM)
+            }
+        }
+        .padding(JohoDimensions.spacingLG)
+        .background(colors.surface)
+        .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
+        .padding(.horizontal, JohoDimensions.spacingLG)
+        .onAppear {
+            calendarPermission.refreshStatus()
         }
     }
 

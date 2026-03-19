@@ -174,10 +174,7 @@ struct ExpenseExportInfo: Identifiable {
     }
 
     var formattedAmount: String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = currency
-        return formatter.string(from: amount as NSDecimalNumber) ?? "\(amount) \(currency)"
+        CurrencyFormatter.formatted(amount, currencyCode: currency)
     }
 }
 

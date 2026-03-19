@@ -195,43 +195,50 @@ struct MonthTheme {
         )
     }
 
+    /// Localized month name from month number (1-12)
+    private static func localizedMonthName(_ month: Int) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale.current
+        return formatter.standaloneMonthSymbols[month - 1]
+    }
+
     /// Fallback themes if JSON fails to load (Japanese seasonal colors - 季節の色 with HIGH CONTRAST)
     private static let defaultThemes: [MonthTheme] = [
         // 1月: 松色 Matsu-iro (Pine Green) - New Year pines, resilience
-        MonthTheme(month: 1, name: "January", icon: "tree.fill",
+        MonthTheme(month: 1, name: localizedMonthName(1), icon: "tree.fill",
                    accentColor: Color(hex: "1D4A3A"), lightBackground: Color(hex: "A8D5C2")),
         // 2月: 紅梅色 Kōbai-iro (Red Plum) - Ume blossoms, vitality
-        MonthTheme(month: 2, name: "February", icon: "camera.macro",
+        MonthTheme(month: 2, name: localizedMonthName(2), icon: "camera.macro",
                    accentColor: Color(hex: "B8363B"), lightBackground: Color(hex: "F2B8BA")),
         // 3月: 桃色 Momo-iro (Peach Pink) - Hina-matsuri, warm coral-pink
-        MonthTheme(month: 3, name: "March", icon: "leaf",
+        MonthTheme(month: 3, name: localizedMonthName(3), icon: "leaf",
                    accentColor: Color(hex: "D4587A"), lightBackground: Color(hex: "F8C4D4")),
         // 4月: 桜色 Sakura-iro (Cherry Blossom) - Hanami, pale whisper pink
-        MonthTheme(month: 4, name: "April", icon: "camera.macro",
+        MonthTheme(month: 4, name: localizedMonthName(4), icon: "camera.macro",
                    accentColor: Color(hex: "E8A0A0"), lightBackground: Color(hex: "FFE4E4")),
         // 5月: 若葉色 Wakaba-iro (Young Leaf) - Fresh growth, vitality
-        MonthTheme(month: 5, name: "May", icon: "leaf.fill",
+        MonthTheme(month: 5, name: localizedMonthName(5), icon: "leaf.fill",
                    accentColor: Color(hex: "4A8C2A"), lightBackground: Color(hex: "B8E89C")),
         // 6月: 紫陽花色 Ajisai-iro (Hydrangea Blue) - Tsuyu rainy season
-        MonthTheme(month: 6, name: "June", icon: "cloud.rain.fill",
+        MonthTheme(month: 6, name: localizedMonthName(6), icon: "cloud.rain.fill",
                    accentColor: Color(hex: "4A7CB8"), lightBackground: Color(hex: "B4D4F4")),
         // 7月: 藍色 Ai-iro (Deep Indigo) - Summer festivals, ocean depth
-        MonthTheme(month: 7, name: "July", icon: "water.waves",
+        MonthTheme(month: 7, name: localizedMonthName(7), icon: "water.waves",
                    accentColor: Color(hex: "1E3A5F"), lightBackground: Color(hex: "8AAED4")),
         // 8月: 金色 Kin-iro (Gold) - Summer sun, obon lanterns
-        MonthTheme(month: 8, name: "August", icon: "sun.max.fill",
+        MonthTheme(month: 8, name: localizedMonthName(8), icon: "sun.max.fill",
                    accentColor: Color(hex: "C88C10"), lightBackground: Color(hex: "F4D88C")),
         // 9月: 柿色 Kaki-iro (Persimmon) - Harvest moon, tsukimi
-        MonthTheme(month: 9, name: "September", icon: "moon.fill",
+        MonthTheme(month: 9, name: localizedMonthName(9), icon: "moon.fill",
                    accentColor: Color(hex: "D47830"), lightBackground: Color(hex: "F4C89C")),
         // 10月: 紅葉色 Momiji-iro (Maple Red) - Koyo autumn leaves
-        MonthTheme(month: 10, name: "October", icon: "leaf.fill",
+        MonthTheme(month: 10, name: localizedMonthName(10), icon: "leaf.fill",
                    accentColor: Color(hex: "9C1C1C"), lightBackground: Color(hex: "E8A0A0")),
         // 11月: 落葉色 Ochiba-iro (Fallen Leaf) - Chrysanthemum, melancholy
-        MonthTheme(month: 11, name: "November", icon: "wind",
+        MonthTheme(month: 11, name: localizedMonthName(11), icon: "wind",
                    accentColor: Color(hex: "8C5C34"), lightBackground: Color(hex: "D4B89C")),
         // 12月: 銀鼠 Gin-nezu (Steel Blue-Gray) - Snow, winter purity
-        MonthTheme(month: 12, name: "December", icon: "snowflake",
+        MonthTheme(month: 12, name: localizedMonthName(12), icon: "snowflake",
                    accentColor: Color(hex: "5C6C7C"), lightBackground: Color(hex: "C4D0DC"))
     ]
 }

@@ -9,6 +9,8 @@
 import SwiftUI
 import SwiftData
 
+#if DEBUG
+
 // MARK: - Developer Settings View
 
 struct DeveloperSettingsView: View {
@@ -80,7 +82,7 @@ struct DeveloperSettingsView: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: IconCatalog.hammer)
                         .font(JohoFont.title)
-                        .foregroundStyle(JohoColors.cyan)
+                        .foregroundStyle(JohoColors.cyanForeground(for: colorMode))
                         .frame(width: 40, height: 40)
                         .background(JohoColors.cyan.opacity(JohoDimensions.opacityMild))
                         .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
@@ -124,7 +126,7 @@ struct DeveloperSettingsView: View {
                     HStack(spacing: JohoDimensions.spacingMD) {
                         Image(systemName: IconCatalog.wandAndStars)
                             .font(JohoFont.title)
-                            .foregroundStyle(JohoColors.cyan)
+                            .foregroundStyle(JohoColors.cyanForeground(for: colorMode))
                             .johoTouchTarget()
                             .background(JohoColors.cyan.opacity(JohoDimensions.opacityMild))
                             .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1)
@@ -310,7 +312,7 @@ struct DeveloperSettingsView: View {
                     HStack(spacing: JohoDimensions.spacingMD) {
                         Image(systemName: IconCatalog.photoStack)
                             .font(JohoFont.title)
-                            .foregroundStyle(JohoColors.purple)
+                            .foregroundStyle(JohoColors.purpleForeground(for: colorMode))
                             .johoTouchTarget()
                             .background(JohoColors.purple.opacity(JohoDimensions.opacityMild))
                             .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1)
@@ -1322,3 +1324,5 @@ struct GeometricPattern: Shape {
     }
     .padding()
 }
+
+#endif

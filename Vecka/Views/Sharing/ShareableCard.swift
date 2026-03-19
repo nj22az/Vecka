@@ -40,35 +40,49 @@ enum CardSnapshotRenderer {
     }
 }
 
-// MARK: - Shareable Card Content Protocol
+// MARK: - Shareable Card Frame
 
-/// Protocol for views that provide content for shareable cards
-/// Shareable cards follow a consistent structure:
-/// - Header: App branding + icon
-/// - Content: Customizable middle section
-/// - Footer: Branding labels
-protocol ShareableCardContent: View {
-    /// Icon displayed in header right compartment
-    var headerIcon: String { get }
-    
-    /// Color for header icon and accents
-    var headerIconColor: Color { get }
-    
-    /// Background color for header bar
-    var headerAccentColor: Color { get }
-    
-    /// Left footer label (e.g. "DAY SUMMARY", "CONTACT CARD")
-    var footerLeftLabel: String { get }
-    
-    /// Right footer label (e.g. "ONSEN PLANNER", "情報")
-    var footerRightLabel: String { get }
+/// The lowest-level card wrapper for all shareable cards.
+/// Provides the consistent 3-layer ZStack: background fill, clipped content, border stroke.
+/// Cards with custom headers/footers use this directly.
+/// Cards with standard headers/footers use `ShareableCardShell` (which wraps this).
+struct ShareableCardFrame<Content: View>: View {
+    @ViewBuilder let content: () -> Content
+
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
+    private let cornerRadius: CGFloat = JohoDimensions.radiusLarge
+
+    private var cardShape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+    }
+
+    var body: some View {
+        // 情報デザイン: 3-layer ZStack pattern
+        ZStack {
+            // Layer 1: Solid background (fills squircle corners)
+            cardShape
+                .fill(colors.surface)
+
+            // Layer 2: Content compartments (clipped to squircle)
+            VStack(spacing: 0) {
+                content()
+            }
+            .clipShape(cardShape)
+
+            // Layer 3: Border (strokeBorder keeps it inside the shape)
+            cardShape
+                .strokeBorder(colors.border, lineWidth: 3)
+        }
+    }
 }
 
 // MARK: - Shareable Card Shell
 
-/// The outer shell for all shareable cards
-/// Provides consistent 3-layer structure: background, content, border
-/// Content is injected via ViewBuilder closure
+/// Convenience wrapper for cards that use the standard header + footer pattern.
+/// Wraps `ShareableCardFrame` and injects `ShareableCardHeader` / `ShareableCardFooter`.
+/// Content is injected via ViewBuilder closure between header and footer.
 struct ShareableCardShell<Content: View>: View {
     let headerIcon: String
     let headerIconColor: Color
@@ -76,46 +90,24 @@ struct ShareableCardShell<Content: View>: View {
     let footerLeftLabel: String
     let footerRightLabel: String
     @ViewBuilder let content: () -> Content
-    
-    @Environment(\.johoColorMode) private var colorMode
-    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
-    
-    private let cornerRadius: CGFloat = JohoDimensions.radiusLarge
 
-    private var cardShape: RoundedRectangle {
-        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-    }
-    
     var body: some View {
-        // 情報デザイン: 3-layer ZStack pattern
-        ZStack {
-            // Layer 1: Solid background (fills squircle corners)
-            cardShape
-                .fill(colors.surface)
-            
-            // Layer 2: Content compartments
-            VStack(spacing: 0) {
-                // Header bar
-                ShareableCardHeader(
-                    icon: headerIcon,
-                    iconColor: headerIconColor,
-                    accentColor: headerAccentColor
-                )
-                
-                // Content (injected)
-                content()
-                
-                // Footer bar
-                ShareableCardFooter(
-                    leftLabel: footerLeftLabel,
-                    rightLabel: footerRightLabel
-                )
-            }
-            .clipShape(cardShape)
-            
-            // Layer 3: Border (strokeBorder keeps it inside the shape)
-            cardShape
-                .strokeBorder(colors.border, lineWidth: 3)
+        ShareableCardFrame {
+            // Header bar
+            ShareableCardHeader(
+                icon: headerIcon,
+                iconColor: headerIconColor,
+                accentColor: headerAccentColor
+            )
+
+            // Content (injected)
+            content()
+
+            // Footer bar
+            ShareableCardFooter(
+                leftLabel: footerLeftLabel,
+                rightLabel: footerRightLabel
+            )
         }
     }
 }
@@ -234,7 +226,7 @@ struct JohoShareCircleButton: View {
 
 #Preview("Shareable Card Components") {
     VStack(spacing: 20) {
-        // Full card shell example
+        // Full card shell example (standard header + footer)
         ShareableCardShell(
             headerIcon: IconCatalog.holiday,
             headerIconColor: JohoColors.pink,
@@ -244,12 +236,12 @@ struct JohoShareCircleButton: View {
         ) {
             // Divider after header
             ShareableCardDivider()
-            
+
             // Custom content
             VStack(spacing: JohoDimensions.spacingSM) {
-                Text("Example Content")
+                Text("Shell Example")
                     .font(JohoFont.headline)
-                Text("This shows the shareable card shell pattern")
+                Text("Standard header + footer via ShareableCardShell")
                     .font(JohoFont.caption)
                     .foregroundStyle(.secondary)
             }
@@ -257,12 +249,33 @@ struct JohoShareCircleButton: View {
             .frame(maxWidth: .infinity)
             .frame(height: 140)
             .background(JohoColors.pink.opacity(JohoDimensions.opacityLight))
-            
+
             // Divider before footer
             ShareableCardDivider()
         }
         .frame(width: 340)
-        
+
+        // Frame-only example (custom header/footer)
+        ShareableCardFrame {
+            Text("CUSTOM HEADER")
+                .font(JohoFont.labelBold)
+                .frame(maxWidth: .infinity)
+                .padding(JohoDimensions.spacingSM)
+                .background(JohoColors.cyan.opacity(JohoDimensions.opacityLight))
+
+            ShareableCardDivider()
+
+            Text("Frame-only: bring your own header/footer")
+                .font(JohoFont.caption)
+                .padding(JohoDimensions.spacingMD)
+                .frame(maxWidth: .infinity)
+
+            ShareableCardDivider()
+
+            ShareableCardFooter(leftLabel: "FRAME DEMO", rightLabel: "ONSEN PLANNER")
+        }
+        .frame(width: 340)
+
         // Share button example
         JohoShareCircleButton()
     }

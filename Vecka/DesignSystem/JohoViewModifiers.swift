@@ -11,11 +11,14 @@ import SwiftUI
 // MARK: - 情報デザイン ViewModifier Implementations
 // Pattern from Swift Playgrounds "Laying Out Views" ThemeViews.swift
 
-/// Background modifier — always true black (AMOLED optimized)
+/// Background modifier — adapts to color mode (AMOLED black in dark, white in light)
 struct JohoBackgroundModifier: ViewModifier {
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     func body(content: Content) -> some View {
         content
-            .background(Color(hex: "000000"))
+            .background(colors.canvas)
             .scrollContentBackground(.hidden)
     }
 }
@@ -183,6 +186,59 @@ struct JohoPillModifier: ViewModifier {
     }
 }
 
+/// Text/icon contour modifier — draws a contrasting stroke behind content for readability on any background
+struct JohoContouredModifier: ViewModifier {
+    let strokeColor: Color
+    let strokeWidth: CGFloat
+
+    func body(content: Content) -> some View {
+        content
+            // 8-direction contour: cardinal + diagonal offsets for a complete outline
+            // Cardinal (N, S, E, W)
+            .background(
+                content
+                    .foregroundStyle(strokeColor)
+                    .offset(x: 0, y: strokeWidth)
+            )
+            .background(
+                content
+                    .foregroundStyle(strokeColor)
+                    .offset(x: 0, y: -strokeWidth)
+            )
+            .background(
+                content
+                    .foregroundStyle(strokeColor)
+                    .offset(x: strokeWidth, y: 0)
+            )
+            .background(
+                content
+                    .foregroundStyle(strokeColor)
+                    .offset(x: -strokeWidth, y: 0)
+            )
+            // Diagonal (NE, NW, SE, SW)
+            .background(
+                content
+                    .foregroundStyle(strokeColor)
+                    .offset(x: strokeWidth, y: strokeWidth)
+            )
+            .background(
+                content
+                    .foregroundStyle(strokeColor)
+                    .offset(x: -strokeWidth, y: strokeWidth)
+            )
+            .background(
+                content
+                    .foregroundStyle(strokeColor)
+                    .offset(x: strokeWidth, y: -strokeWidth)
+            )
+            .background(
+                content
+                    .foregroundStyle(strokeColor)
+                    .offset(x: -strokeWidth, y: -strokeWidth)
+            )
+    }
+}
+
 // MARK: - View Extensions
 
 /// Environment-aware border modifier — resolves border color from JohoScheme automatically
@@ -320,6 +376,13 @@ extension View {
     /// 情報デザイン: Minimum 44×44pt touch target (Apple HIG requirement)
     func johoTouchTarget(_ size: CGFloat = 44) -> some View {
         frame(width: size, height: size)
+    }
+
+    /// 情報デザイン: Text with contrasting stroke for readability on any background.
+    /// Draws a dark outline behind light text (or light outline behind dark text).
+    /// Use on text/icons that sit on variable or unknown-luminance backgrounds.
+    func johoContoured(stroke: Color = Color(hex: "000000"), width: CGFloat = 0.8) -> some View {
+        modifier(JohoContouredModifier(strokeColor: stroke, strokeWidth: width))
     }
 
     /// Apply dark Joho background (respects user's AMOLED preference and color mode)

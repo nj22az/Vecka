@@ -16,14 +16,17 @@ struct VeckaApp: App {
     @AppStorage("johoColorMode") private var johoColorMode = "light"
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var showOnboarding = false
+    @Environment(\.scenePhase) private var scenePhase
 
     /// Computed color mode for the environment
     private var colorMode: JohoColorMode {
         JohoColorMode(rawValue: johoColorMode) ?? .light
     }
 
-    /// CloudKit-enabled ModelContainer for iCloud sync across devices
-    /// Requires: iCloud capability + CloudKit container in Xcode project settings
+    /// Non-nil when the model container failed to initialize (should never happen)
+    private static var containerError: String?
+
+    /// Local-only ModelContainer with graceful fallback chain
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             // Holiday system
@@ -46,6 +49,14 @@ struct VeckaApp: App {
             CalendarFact.self,
             // Unified Memo model (notes, expenses, trips, countdowns)
             Memo.self,
+            // Configuration system (database-driven architecture)
+            AppConfiguration.self,
+            ValidationRule.self,
+            AlgorithmParameter.self,
+            UITheme.self,
+            TypographyScale.self,
+            SpacingScale.self,
+            IconCatalogItem.self,
         ])
 
         // CloudKit sync disabled: SwiftData models need inverse relationships,
@@ -54,15 +65,21 @@ struct VeckaApp: App {
         let modelConfiguration = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: false,
+            groupContainer: .none,  // Use app's own container, not shared app group
             cloudKitDatabase: .none  // Disabled until models are CloudKit-compatible
         )
 
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
         } catch {
-            // Fallback to local-only if CloudKit fails (e.g., no iCloud account)
+            // Fallback to local-only if primary fails (e.g., schema migration issue)
             Log.e("Primary ModelContainer failed: \(error). Falling back to local storage.")
-            let localConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+            let localConfig = ModelConfiguration(
+                schema: schema,
+                isStoredInMemoryOnly: false,
+                groupContainer: .none,
+                cloudKitDatabase: .none
+            )
             do {
                 return try ModelContainer(for: schema, configurations: [localConfig])
             } catch {
@@ -74,8 +91,12 @@ struct VeckaApp: App {
                 do {
                     return try ModelContainer(for: schema, configurations: [memoryConfig])
                 } catch {
-                    // This should never happen - in-memory stores don't have migration issues
-                    fatalError("Could not create ModelContainer even in-memory: \(error)")
+                    // Even in-memory failed — store error for UI display
+                    Log.e("All ModelContainer attempts failed: \(error)")
+                    VeckaApp.containerError = error.localizedDescription
+                    // Return a minimal in-memory container with empty schema as last resort
+                    // swiftlint:disable:next force_try
+                    return try! ModelContainer(for: Schema([]), configurations: [ModelConfiguration(isStoredInMemoryOnly: true)])
                 }
             }
         }
@@ -84,7 +105,9 @@ struct VeckaApp: App {
     var body: some Scene {
         WindowGroup {
             Group {
-                if AppEnvironment.isUITesting {
+                if let error = VeckaApp.containerError {
+                    DataErrorView(errorMessage: error)
+                } else if AppEnvironment.isUITesting {
                     UITestRootView()
                 } else {
                     ContentView()
@@ -114,6 +137,11 @@ struct VeckaApp: App {
             }
         }
         .modelContainer(sharedModelContainer)
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .background {
+                try? sharedModelContainer.mainContext.save()
+            }
+        }
     }
     
     
@@ -250,7 +278,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         return Self.orientationLock
     }
     
-    /// Configures UIKit appearance with opaque backgrounds (情報デザイン: no glass/blur)
+    /// Configures UIKit appearance with opaque backgrounds (joho: no glass/blur)
     private func configureGlassAppearance() {
         // Tab Bar: Opaque background (情報デザイン forbids blur/glass)
         let tabBarAppearance = UITabBarAppearance()
@@ -264,5 +292,30 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         UINavigationBar.appearance().standardAppearance = navBarAppearance
         UINavigationBar.appearance().scrollEdgeAppearance = navBarAppearance
         UINavigationBar.appearance().compactAppearance = navBarAppearance
+    }
+}
+
+// MARK: - Data Error Fallback View
+
+/// Shown when all ModelContainer initialization attempts fail
+private struct DataErrorView: View {
+    let errorMessage: String
+
+    var body: some View {
+        VStack(spacing: 24) {
+            Image(systemName: IconCatalog.warning)
+                .font(.system(size: 48, weight: .bold, design: .rounded))
+                .foregroundStyle(JohoColors.red)
+
+            Text("Unable to Load Data")
+                .font(.system(.title2, design: .rounded, weight: .bold))
+
+            Text("The app's data storage could not be initialized. Try restarting the app. If the problem persists, reinstalling may help.")
+                .font(.system(.body, design: .rounded))
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 32)
+        }
+        .padding()
     }
 }

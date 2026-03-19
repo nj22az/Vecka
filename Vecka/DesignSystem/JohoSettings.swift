@@ -150,7 +150,7 @@ struct JohoSFSymbolPickerSheet: View {
                 } label: {
                     Text("Done")
                         .font(JohoFont.body.bold())
-                        .foregroundStyle(colors.primaryInverted)
+                        .foregroundStyle(accentColor.contrastingForeground)
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .padding(.vertical, JohoDimensions.spacingSM)
                         .background(accentColor)
@@ -275,7 +275,7 @@ struct JohoSFSymbolPickerSheet: View {
         Button(action: action) {
             Text(text)
                 .font(.system(size: 10, weight: .bold, design: .rounded))
-                .foregroundStyle(isSelected ? colors.primaryInverted : colors.primary)
+                .foregroundStyle(isSelected ? accentColor.contrastingForeground : colors.primary)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 5)
                 .background(isSelected ? accentColor : colors.surface)
@@ -757,7 +757,7 @@ struct JohoColorPickerSheet: View {
                 } label: {
                     Text("Done")
                         .font(JohoFont.body.bold())
-                        .foregroundStyle(colors.primaryInverted)
+                        .foregroundStyle(Color(hex: adjustedColorHex).contrastingForeground)
                         .padding(.horizontal, JohoDimensions.spacingMD)
                         .padding(.vertical, JohoDimensions.spacingSM)
                         .background(Color(hex: adjustedColorHex))
@@ -1057,7 +1057,7 @@ struct JohoMonthYearPicker: View {
             } label: {
                 Text("DONE")
                     .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primaryInverted)
+                    .foregroundStyle(accentColor.contrastingForeground)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
                     .background(accentColor)
@@ -1141,7 +1141,7 @@ struct JohoMonthYearPicker: View {
         } label: {
             Text(months[month - 1])
                 .font(.system(size: 14, weight: isSelected ? .heavy : .bold, design: .rounded))
-                .foregroundStyle(isSelected ? colors.primaryInverted : colors.primary)
+                .foregroundStyle(isSelected ? accentColor.contrastingForeground : colors.primary)
                 .frame(maxWidth: .infinity)
                 .frame(height: 48)
                 .background(

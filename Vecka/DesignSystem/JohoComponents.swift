@@ -116,8 +116,8 @@ struct JohoPill: View {
         case .whiteOnBlack: return colors.primaryInverted
         case .colored(let color): return color  // 情報デザイン: Colored text on surface
         case .coloredInverted(let color):
-            // 情報デザイン: Black text on light backgrounds (yellow), white on dark
-            return color == JohoColors.yellow ? JohoColors.black : JohoColors.white
+            // 情報デザイン: Luminance-aware text on colored backgrounds
+            return color.contrastingForeground
         case .muted: return colors.primary.opacity(JohoDimensions.opacityStrong)  // Muted text for past dates
         }
     }
@@ -665,7 +665,7 @@ struct JohoEditorHeader: View {
             Button(action: onSave) {
                 Text(JohoSymbols.maru)  // ○
                     .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(JohoDimensions.opacityModerate))
+                    .foregroundStyle(canSave ? accentColor.contrastingForeground : colors.primary.opacity(JohoDimensions.opacityModerate))
                     .johoTouchTarget()
                     .background(canSave ? accentColor : colors.surface)
                     .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: JohoDimensions.borderMedium, borderColor: colors.border)
@@ -848,14 +848,14 @@ struct JohoSticker: View {
                 color
                 Text(text.prefix(2).uppercased())
                     .font(.system(size: size * 0.35, weight: .black, design: .rounded))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(color.relativeLuminance > 0.5 ? Color(hex: "000000") : Color(hex: "FFFFFF"))
             }
         case .icon(let systemName):
             ZStack {
                 color
                 Image(systemName: systemName)
                     .font(.system(size: size * 0.4, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primaryInverted)
+                    .foregroundStyle(color.contrastingForeground)
             }
         case .empty:
             fallbackContent
@@ -992,7 +992,7 @@ struct JohoTileCard<Content: View>: View {
             // Banner: label left + circle sticker right
             HStack {
                 Text(label.uppercased())
-                    .font(JohoFont.pillLabel)
+                    .font(JohoFont.bannerLabel)
                     .foregroundStyle(colors.primary)
                     .lineLimit(1)
 
@@ -1175,6 +1175,15 @@ struct CountryColorScheme {
     let borderColor: Color
     let code: String  // 3-letter country code
 
+    /// Resolved border color that's visible in both light and dark modes
+    func resolvedBorderColor(for mode: JohoColorMode) -> Color {
+        // If border is pure black, use scheme-aware border instead
+        if borderColor.toHex() == "000000" {
+            return JohoScheme.colors(for: mode).border
+        }
+        return borderColor
+    }
+
     /// Get color scheme for a region code
     static func scheme(for region: String) -> CountryColorScheme? {
         switch region.uppercased() {
@@ -1299,6 +1308,7 @@ struct CountryColorScheme {
 /// 情報デザイン country indicator pill with text (replaces emoji flags)
 struct CountryPill: View {
     let region: String
+    @Environment(\.johoColorMode) private var colorMode
 
     var body: some View {
         if let scheme = CountryColorScheme.scheme(for: region) {
@@ -1309,7 +1319,7 @@ struct CountryPill: View {
                 .padding(.vertical, 3)
                 .background(scheme.backgroundColor)
                 .clipShape(Capsule())
-                .overlay(Capsule().stroke(scheme.borderColor, lineWidth: 1.5))
+                .overlay(Capsule().stroke(scheme.resolvedBorderColor(for: colorMode), lineWidth: 1.5))
         }
     }
 }

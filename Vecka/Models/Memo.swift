@@ -244,8 +244,7 @@ final class Memo {
     /// Formatted amount with currency
     var formattedAmount: String {
         guard let amount = amount else { return "" }
-        let currencyCode = currency ?? "SEK"
-        return String(format: "%.0f %@", amount, currencyCode)
+        return CurrencyFormatter.plain(amount, currencyCode: currency ?? "SEK")
     }
 
     // ═══════════════════════════════════════════════════════════════════
@@ -513,17 +512,21 @@ extension Memo {
         let dayStart = calendar.startOfDay(for: date)
         guard let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) else { return [] }
 
+        // Fetch all memos with a scheduledAt, then filter in-memory to avoid
+        // force-unwrapping optionals inside #Predicate (can crash on some iOS versions)
         let descriptor = FetchDescriptor<Memo>(
             predicate: #Predicate<Memo> { memo in
-                memo.scheduledAt != nil &&
-                memo.scheduledAt! >= dayStart &&
-                memo.scheduledAt! < dayEnd
+                memo.scheduledAt != nil
             },
             sortBy: [SortDescriptor(\.scheduledAt)]
         )
 
         do {
-            return try context.fetch(descriptor)
+            let all = try context.fetch(descriptor)
+            return all.filter { memo in
+                guard let scheduled = memo.scheduledAt else { return false }
+                return scheduled >= dayStart && scheduled < dayEnd
+            }
         } catch {
             Log.w("Memo.scheduled fetch failed: \(error.localizedDescription)")
             return []

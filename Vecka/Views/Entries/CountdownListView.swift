@@ -145,7 +145,7 @@ struct CountdownListView: View {
                     .frame(maxHeight: .infinity)
             }
             .frame(height: 32)
-            .background(JohoColors.purple.opacity(JohoDimensions.opacityBold))  // Light purple header (情報デザイン bento)
+            .background(SectionZone.contacts.background(for: colorMode).opacity(JohoDimensions.opacityBold))
 
             // Horizontal divider
             Rectangle()
@@ -208,7 +208,7 @@ struct CountdownListView: View {
             }
             .frame(height: 72)
         }
-        .background(JohoColors.purple)  // Light purple (情報デザイン bento - matches HOLIDAYS style)
+        .background(SectionZone.contacts.background(for: colorMode))
         .johoBordered()
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
@@ -298,7 +298,7 @@ struct CountdownListView: View {
                                 Text("Add")
                                     .font(JohoFont.label)
                             }
-                            .foregroundStyle(JohoColors.cyan)
+                            .foregroundStyle(JohoColors.cyanForeground(for: colorMode))
                         }
                     }
                 }
@@ -321,7 +321,7 @@ struct CountdownListView: View {
                     .frame(maxHeight: .infinity)
             }
             .frame(height: 32)
-            .background(JohoColors.purple.opacity(JohoDimensions.opacityBold))  // Light purple header (情報デザイン bento)
+            .background(SectionZone.contacts.background(for: colorMode).opacity(JohoDimensions.opacityBold))
 
             // Horizontal divider between header and items
             Rectangle()
@@ -334,7 +334,7 @@ struct CountdownListView: View {
             }
             .padding(.vertical, 4)
         }
-        .background(JohoColors.purple)  // Light purple (情報デザイン bento - like HOLIDAYS uses redLight)
+        .background(SectionZone.contacts.background(for: colorMode))
         .clipShape(Squircle(cornerRadius: JohoDimensions.radiusMedium))
         .overlay(
             Squircle(cornerRadius: JohoDimensions.radiusMedium)

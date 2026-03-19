@@ -162,7 +162,7 @@ struct IconStripSidebar: View {
     private var appIconHeader: some View {
         Image(systemName: IconCatalog.event)
             .font(JohoFont.displaySmall)
-            .foregroundStyle(JohoColors.cyan)
+            .foregroundStyle(JohoColors.cyanForeground(for: colorMode))
             .frame(width: 40, height: 40)
     }
 }

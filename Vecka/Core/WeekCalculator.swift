@@ -15,7 +15,7 @@ final class WeekCalculator {
     static let shared = WeekCalculator()
 
     // MARK: - Properties
-    private var calendar: Calendar
+    fileprivate var calendar: Calendar
     // Thread-safe cache using lock
     private let cacheLock = NSLock()
     private var _cache: [String: WeekInfo] = [:]
@@ -296,7 +296,6 @@ extension WeekInfo {
 
     /// Check if a date is in this week
     func contains(_ date: Date) -> Bool {
-        let calendar = Calendar.iso8601
-        return calendar.isDate(date, equalTo: startDate, toGranularity: .weekOfYear)
+        return WeekCalculator.shared.calendar.isDate(date, equalTo: startDate, toGranularity: .weekOfYear)
     }
 }

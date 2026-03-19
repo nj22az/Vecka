@@ -305,10 +305,7 @@ struct DayDetailSheet: View {
 
     /// Formats a Double amount as currency
     private func formatCurrency(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.locale = Locale.current
-        return formatter.string(from: NSNumber(value: amount)) ?? String(format: "%.2f", amount)
+        CurrencyFormatter.formattedLocale(amount)
     }
 
     // MARK: - Empty State

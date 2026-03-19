@@ -81,163 +81,145 @@ struct ShareableDaySummaryCard: View {
     @Environment(\.johoColorMode) private var colorMode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
-    private let cornerRadius: CGFloat = JohoDimensions.radiusLarge
-
-    private var cardShape: RoundedRectangle {
-        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-    }
-
     var body: some View {
-        ZStack {
-            // Layer 1: Solid background
-            cardShape
-                .fill(colors.surface)
+        ShareableCardFrame {
+            // ═══════════════════════════════════════════════════════════════
+            // HEADER: Date display
+            // ═══════════════════════════════════════════════════════════════
+            HStack(spacing: 0) {
+                // LEFT: Day number + weekday
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Text("\(data.dayNumber)")
+                        .font(.system(size: 42, weight: .black, design: .rounded))
+                        .foregroundStyle(data.isToday ? JohoColors.todayOrange : colors.primary)
 
-            // Layer 2: Content
-            VStack(spacing: 0) {
-                // ═══════════════════════════════════════════════════════════════
-                // HEADER: Date display
-                // ═══════════════════════════════════════════════════════════════
-                HStack(spacing: 0) {
-                    // LEFT: Day number + weekday
-                    HStack(alignment: .firstTextBaseline, spacing: 8) {
-                        Text("\(data.dayNumber)")
-                            .font(.system(size: 42, weight: .black, design: .rounded))
-                            .foregroundStyle(data.isToday ? JohoColors.todayOrange : colors.primary)
-
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(data.weekdayName)
-                                .font(JohoFont.bodySmallBold)
-                                .foregroundStyle(colors.primary)
-
-                            Text("\(data.monthName.uppercased()) \(data.yearString)")
-                                .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(colors.secondary)
-                        }
-                    }
-                    .padding(.horizontal, JohoDimensions.spacingMD)
-
-                    Spacer()
-
-                    // WALL
-                    Rectangle()
-                        .fill(colors.border)
-                        .frame(width: 1.5)
-
-                    // RIGHT: Week number
-                    VStack(spacing: 2) {
-                        Text("W\(data.weekNumber)")
-                            .font(.system(size: 18, weight: .black, design: .rounded))
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(data.weekdayName)
+                            .font(JohoFont.bodySmallBold)
                             .foregroundStyle(colors.primary)
 
-                        if data.isToday {
-                            Text("TODAY")
-                                .font(.system(size: 9, weight: .bold, design: .rounded))
-                                .foregroundStyle(JohoColors.todayOrange)
-                        }
-                    }
-                    .frame(width: 60)
-                }
-                .frame(height: 72)
-                .background(data.isToday ? JohoColors.todayOrange.opacity(JohoDimensions.opacitySubtle) : colors.inputBackground)
-
-                // Divider
-                ShareableCardDivider()
-
-                // ═══════════════════════════════════════════════════════════════
-                // CONTENT: Items list
-                // ═══════════════════════════════════════════════════════════════
-                if data.hasContent {
-                    VStack(spacing: 0) {
-                        // Holidays
-                        ForEach(data.holidays.prefix(isShareable ? 10 : 3)) { holiday in
-                            DaySummaryRow(
-                                icon: holiday.isBankHoliday ? IconCatalog.holiday : IconCatalog.calendar,
-                                iconColor: holiday.isBankHoliday ? CategoryColorSettings.shared.color(for: .holiday) : CategoryColorSettings.shared.color(for: .observance),
-                                title: holiday.name,
-                                badge: holiday.isBankHoliday ? "HOLIDAY" : "OBSERVANCE",
-                                badgeColor: holiday.isBankHoliday ? CategoryColorSettings.shared.color(for: .holiday) : CategoryColorSettings.shared.color(for: .observance),
-                                subtitle: holiday.regionCode?.uppercased(),
-                                lineLimit: isShareable ? nil : 1,
-                                horizontalPadding: JohoDimensions.spacingMD
-                            )
-
-                            if holiday.id != data.holidays.prefix(isShareable ? 10 : 3).last?.id ||
-                               !data.birthdays.isEmpty || !data.memos.isEmpty {
-                                Rectangle()
-                                    .fill(colors.border.opacity(JohoDimensions.opacityMedium))
-                                    .frame(height: 1)
-                                    .padding(.horizontal, JohoDimensions.spacingMD)
-                            }
-                        }
-
-                        // Birthdays
-                        ForEach(data.birthdays.prefix(isShareable ? 6 : 3)) { birthday in
-                            DaySummaryRow(
-                                icon: "gift.fill",
-                                iconColor: JohoColors.purple,
-                                title: birthday.name,
-                                badge: birthday.age != nil ? "\(birthday.age!)" : "BIRTHDAY",
-                                badgeColor: JohoColors.purple,
-                                subtitle: nil,
-                                lineLimit: isShareable ? nil : 1,
-                                horizontalPadding: JohoDimensions.spacingMD
-                            )
-
-                            if birthday.id != data.birthdays.prefix(isShareable ? 6 : 3).last?.id ||
-                               !data.memos.isEmpty {
-                                Rectangle()
-                                    .fill(colors.border.opacity(JohoDimensions.opacityMedium))
-                                    .frame(height: 1)
-                                    .padding(.horizontal, JohoDimensions.spacingMD)
-                            }
-                        }
-
-                        // Memos
-                        ForEach(data.memos.prefix(isShareable ? 8 : 4)) { memo in
-                            DayMemoRow(
-                                memo: memo,
-                                lineLimit: isShareable ? nil : 1,
-                                horizontalPadding: JohoDimensions.spacingMD
-                            )
-
-                            if memo.id != data.memos.prefix(isShareable ? 8 : 4).last?.id {
-                                Rectangle()
-                                    .fill(colors.border.opacity(JohoDimensions.opacityMedium))
-                                    .frame(height: 1)
-                                    .padding(.horizontal, JohoDimensions.spacingMD)
-                            }
-                        }
-                    }
-                    .padding(.vertical, JohoDimensions.spacingSM)
-                } else {
-                    // Empty state
-                    VStack(spacing: JohoDimensions.spacingSM) {
-                        Image(systemName: IconCatalog.checkmarkCircle)
-                            .font(JohoFont.displayMedium)
-                            .foregroundStyle(colors.secondary.opacity(JohoDimensions.opacityHeavy))
-
-                        Text("No events scheduled")
-                            .font(JohoFont.bodySmall)
+                        Text("\(data.monthName.uppercased()) \(data.yearString)")
+                            .font(.system(size: 11, weight: .medium, design: .rounded))
                             .foregroundStyle(colors.secondary)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, JohoDimensions.spacingLG)
                 }
+                .padding(.horizontal, JohoDimensions.spacingMD)
 
-                // Divider
-                ShareableCardDivider()
+                Spacer()
 
-                // ═══════════════════════════════════════════════════════════════
-                // FOOTER: Branding
-                // ═══════════════════════════════════════════════════════════════
-                ShareableCardFooter(leftLabel: "DAY SUMMARY", rightLabel: "ONSEN PLANNER")
+                // WALL
+                Rectangle()
+                    .fill(colors.border)
+                    .frame(width: 1.5)
+
+                // RIGHT: Week number
+                VStack(spacing: 2) {
+                    Text("W\(data.weekNumber)")
+                        .font(.system(size: 18, weight: .black, design: .rounded))
+                        .foregroundStyle(colors.primary)
+
+                    if data.isToday {
+                        Text("TODAY")
+                            .font(.system(size: 9, weight: .bold, design: .rounded))
+                            .foregroundStyle(JohoColors.todayOrange)
+                    }
+                }
+                .frame(width: 60)
             }
-            .clipShape(cardShape)
+            .frame(height: 72)
+            .background(data.isToday ? JohoColors.todayOrange.opacity(JohoDimensions.opacitySubtle) : colors.inputBackground)
 
-            // Layer 3: Border
-            cardShape
-                .strokeBorder(colors.border, lineWidth: 3)
+            // Divider
+            ShareableCardDivider()
+
+            // ═══════════════════════════════════════════════════════════════
+            // CONTENT: Items list
+            // ═══════════════════════════════════════════════════════════════
+            if data.hasContent {
+                VStack(spacing: 0) {
+                    // Holidays
+                    ForEach(data.holidays.prefix(isShareable ? 10 : 3)) { holiday in
+                        DaySummaryRow(
+                            icon: holiday.isBankHoliday ? IconCatalog.holiday : IconCatalog.calendar,
+                            iconColor: holiday.isBankHoliday ? CategoryColorSettings.shared.color(for: .holiday) : CategoryColorSettings.shared.color(for: .observance),
+                            title: holiday.name,
+                            badge: holiday.isBankHoliday ? "HOLIDAY" : "OBSERVANCE",
+                            badgeColor: holiday.isBankHoliday ? CategoryColorSettings.shared.color(for: .holiday) : CategoryColorSettings.shared.color(for: .observance),
+                            subtitle: holiday.regionCode?.uppercased(),
+                            lineLimit: isShareable ? nil : 1,
+                            horizontalPadding: JohoDimensions.spacingMD
+                        )
+
+                        if holiday.id != data.holidays.prefix(isShareable ? 10 : 3).last?.id ||
+                           !data.birthdays.isEmpty || !data.memos.isEmpty {
+                            Rectangle()
+                                .fill(colors.border.opacity(JohoDimensions.opacityMedium))
+                                .frame(height: 1)
+                                .padding(.horizontal, JohoDimensions.spacingMD)
+                        }
+                    }
+
+                    // Birthdays
+                    ForEach(data.birthdays.prefix(isShareable ? 6 : 3)) { birthday in
+                        DaySummaryRow(
+                            icon: "gift.fill",
+                            iconColor: JohoColors.purple,
+                            title: birthday.name,
+                            badge: birthday.age.map { "\($0)" } ?? "BIRTHDAY",
+                            badgeColor: JohoColors.purple,
+                            subtitle: nil,
+                            lineLimit: isShareable ? nil : 1,
+                            horizontalPadding: JohoDimensions.spacingMD
+                        )
+
+                        if birthday.id != data.birthdays.prefix(isShareable ? 6 : 3).last?.id ||
+                           !data.memos.isEmpty {
+                            Rectangle()
+                                .fill(colors.border.opacity(JohoDimensions.opacityMedium))
+                                .frame(height: 1)
+                                .padding(.horizontal, JohoDimensions.spacingMD)
+                        }
+                    }
+
+                    // Memos
+                    ForEach(data.memos.prefix(isShareable ? 8 : 4)) { memo in
+                        DayMemoRow(
+                            memo: memo,
+                            lineLimit: isShareable ? nil : 1,
+                            horizontalPadding: JohoDimensions.spacingMD
+                        )
+
+                        if memo.id != data.memos.prefix(isShareable ? 8 : 4).last?.id {
+                            Rectangle()
+                                .fill(colors.border.opacity(JohoDimensions.opacityMedium))
+                                .frame(height: 1)
+                                .padding(.horizontal, JohoDimensions.spacingMD)
+                        }
+                    }
+                }
+                .padding(.vertical, JohoDimensions.spacingSM)
+            } else {
+                // Empty state
+                VStack(spacing: JohoDimensions.spacingSM) {
+                    Image(systemName: IconCatalog.checkmarkCircle)
+                        .font(JohoFont.displayMedium)
+                        .foregroundStyle(colors.secondary.opacity(JohoDimensions.opacityHeavy))
+
+                    Text("No events scheduled")
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(colors.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, JohoDimensions.spacingLG)
+            }
+
+            // Divider
+            ShareableCardDivider()
+
+            // ═══════════════════════════════════════════════════════════════
+            // FOOTER: Branding
+            // ═══════════════════════════════════════════════════════════════
+            ShareableCardFooter(leftLabel: "DAY SUMMARY", rightLabel: "ONSEN PLANNER")
         }
     }
 }
@@ -364,7 +346,7 @@ struct DaySummarySheetView: View {
                                 icon: "gift.fill",
                                 iconColor: JohoColors.purple,
                                 title: birthday.name,
-                                badge: birthday.age != nil ? "\(birthday.age!)" : "BIRTHDAY",
+                                badge: birthday.age.map { "\($0)" } ?? "BIRTHDAY",
                                 badgeColor: JohoColors.purple,
                                 subtitle: nil,
                                 lineLimit: 1,
@@ -581,9 +563,9 @@ private struct DayMemoRow: View {
 
             // Amount for expenses
             if let amount = memo.amount {
-                Text(String(format: "%.0f %@", amount, memo.currency ?? baseCurrency))
+                Text(CurrencyFormatter.plain(amount, currencyCode: memo.currency ?? baseCurrency))
                     .font(JohoFont.label)
-                    .foregroundStyle(JohoColors.green)
+                    .foregroundStyle(JohoColors.greenForeground(for: colorMode))
             }
         }
         .padding(.horizontal, horizontalPadding)

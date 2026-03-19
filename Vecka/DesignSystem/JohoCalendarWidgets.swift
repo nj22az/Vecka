@@ -563,7 +563,7 @@ struct JohoCalendarPicker: View {
             } label: {
                 Text("DONE")
                     .font(.system(size: 11, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primaryInverted)
+                    .foregroundStyle(accentColor.contrastingForeground)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
                     .background(accentColor)

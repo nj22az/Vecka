@@ -145,7 +145,7 @@ struct JohoExpenseEditorSheet: View {
                     } label: {
                         Text("Save")
                             .font(JohoFont.bodySmallBold)
-                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(JohoDimensions.opacityModerate))
+                            .foregroundStyle(canSave ? expenseAccentColor.contrastingForeground : colors.primary.opacity(JohoDimensions.opacityModerate))
                             .frame(width: 56, height: 32)
                             .background(canSave ? expenseAccentColor : colors.surface)
                             .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)

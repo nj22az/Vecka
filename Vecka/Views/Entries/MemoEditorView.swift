@@ -912,7 +912,7 @@ struct JohoTimePicker: View {
                 } label: {
                     Image(systemName: IconCatalog.checkmark)
                         .font(JohoFont.bodySmallBold)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(accentColor.contrastingForeground)
                         .frame(width: 32, height: 32)
                         .background(accentColor)
                         .clipShape(Circle())
