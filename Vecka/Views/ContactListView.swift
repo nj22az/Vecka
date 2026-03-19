@@ -22,7 +22,6 @@ struct ContactListView: View {
     @State private var searchText = ""
     @State private var showingAddContact = false
     @State private var showingImportSheet = false
-    @State private var showingContactPicker = false
     @State private var selectedContact: Contact?
     @State private var editingContact: Contact?
     @State private var isEditMode = false  // 情報デザイン: Edit mode for contact management
@@ -145,7 +144,7 @@ struct ContactListView: View {
         .onAppear {
             refreshContactCache()  // 情報デザイン: Initialize cache on appear
         }
-        .onChange(of: contacts.count) { _, _ in
+        .onChange(of: contacts) { _, _ in
             refreshContactCache()  // 情報デザイン: Rebuild cache when contacts change
         }
         .onChange(of: searchText) { _, _ in
@@ -278,7 +277,7 @@ struct ContactListView: View {
                     HStack(spacing: 4) {
                         Image(systemName: IconCatalog.phone)
                             .font(JohoFont.tag)
-                            .foregroundStyle(JohoColors.cyan)
+                            .foregroundStyle(JohoColors.cyanForeground(for: colorMode))
                         Text("\(contactsWithPhone)")
                             .font(JohoFont.labelSmall)
                             .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
@@ -536,10 +535,10 @@ struct ContactListView: View {
                         if count > 0 {
                             Text("\(count)")
                                 .font(.system(size: 9, weight: .medium, design: .rounded))
-                                .foregroundStyle(selectedGroup == group ? colors.primaryInverted.opacity(JohoDimensions.opacityBold) : colors.primary.opacity(JohoDimensions.opacityHeavy))
+                                .foregroundStyle(selectedGroup == group ? group.swiftUIColor.contrastingForeground.opacity(JohoDimensions.opacityBold) : colors.primary.opacity(JohoDimensions.opacityHeavy))
                         }
                     }
-                    .foregroundStyle(selectedGroup == group ? colors.primaryInverted : colors.primary)
+                    .foregroundStyle(selectedGroup == group ? group.swiftUIColor.contrastingForeground : colors.primary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
                     .background(selectedGroup == group ? group.swiftUIColor : colors.inputBackground)
@@ -751,6 +750,7 @@ struct ContactImportView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(\.johoColorMode) private var colorMode
+    @Environment(\.scenePhase) private var scenePhase
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     // Use @State to track authorization - refreshes view when changed
@@ -966,6 +966,11 @@ struct ContactImportView: View {
             .sheet(isPresented: $showingIOSContactPicker) {
                 IOSContactPickerView { selectedContacts in
                     importSelectedContacts(selectedContacts)
+                }
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                if newPhase == .active {
+                    authorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
                 }
             }
         }
@@ -1226,14 +1231,14 @@ struct JohoAddContactSheet: View {
 
                 Image(systemName: icon)
                     .font(JohoFont.headlineSmall)
-                    .foregroundStyle(colors.primaryInverted)
+                    .foregroundStyle(color.contrastingForeground)
             }
 
             // Code badge - BLACK border around colored pill
             Text(code)
                 .font(JohoFont.pillLabel)
                 .tracking(0.5)
-                .foregroundStyle(colors.primaryInverted)
+                .foregroundStyle(color.contrastingForeground)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(color)

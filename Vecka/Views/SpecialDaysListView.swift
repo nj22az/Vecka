@@ -120,9 +120,6 @@ struct SpecialDaysListView: View {
     // 情報デザイン: Special day detail sheet
     @State private var selectedDetailItem: SpecialDayRow?
 
-    // 情報デザイン: Region quick picker expansion
-    @State private var isRegionPickerExpanded = false
-
     // 情報デザイン: Category filter toggles (tap stat icons to filter)
     @State private var activeFilters: Set<DisplayCategory> = [.holiday, .observance, .memo]
 
@@ -805,7 +802,7 @@ struct SpecialDaysListView: View {
             // 情報デザイン: System UI accent plus button (matches date picker)
             Image(systemName: IconCatalog.plus)
                 .font(JohoFont.label)
-                .foregroundStyle(.white)
+                .foregroundStyle(systemAccentColor.contrastingForeground)
                 .frame(width: 28, height: 28)
                 .background(systemAccentColor)
                 .clipShape(Circle())
@@ -913,9 +910,6 @@ struct SpecialDaysListView: View {
             .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
-    /// 情報デザイン: Active popover tracking for categories
-    @State private var activePopoverCategory: DisplayCategory?
-
     /// 情報デザイン: Compact category indicator (subtitle-style)
     /// Colored dot + count - TAP TO TOGGLE FILTER
     /// When active: Shows full label (e.g., "● Holidays 36")
@@ -1018,7 +1012,7 @@ struct SpecialDaysListView: View {
             HStack(spacing: 4) {
                 Image(systemName: type.defaultIcon)
                     .font(JohoFont.headlineSmall)
-                    .foregroundStyle(type.accentColor)
+                    .foregroundStyle(CategoryColorSettings.shared.foregroundColor(for: type.displayCategory, mode: colorMode))
 
                 Text(String(count))
                     .font(JohoFont.bodySmallBold)
@@ -1027,7 +1021,7 @@ struct SpecialDaysListView: View {
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(type.lightBackground.opacity(JohoDimensions.opacityHeavy))
+            .background(CategoryColorSettings.shared.color(for: type.displayCategory, mode: colorMode).opacity(JohoDimensions.opacityHeavy))
             .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
         }
         .buttonStyle(.plain)
@@ -1046,13 +1040,13 @@ struct SpecialDaysListView: View {
         HStack(spacing: JohoDimensions.spacingSM) {
             Image(systemName: type.defaultIcon)
                 .font(JohoFont.headline)
-                .foregroundStyle(type.accentColor)
+                .foregroundStyle(CategoryColorSettings.shared.foregroundColor(for: type.displayCategory, mode: colorMode))
                 .frame(width: 32, height: 32)
-                .background(type.lightBackground)
+                .background(CategoryColorSettings.shared.color(for: type.displayCategory, mode: colorMode))
                 .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
                 .overlay(
                     RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
-                        .stroke(type.accentColor, lineWidth: 1.5)
+                        .stroke(colors.border, lineWidth: 1.5)
                 )
 
             VStack(alignment: .leading, spacing: 2) {
@@ -1063,7 +1057,7 @@ struct SpecialDaysListView: View {
 
                 Text("\(count) in " + String(selectedYear))
                     .font(.system(size: 13, weight: .semibold, design: .rounded))
-                    .foregroundStyle(type.accentColor)
+                    .foregroundStyle(CategoryColorSettings.shared.foregroundColor(for: type.displayCategory, mode: colorMode))
             }
         }
         .padding(JohoDimensions.spacingMD)
@@ -1945,7 +1939,7 @@ struct CollapsibleSpecialDayCard: View {
                                 Text("EDIT")
                             }
                             .font(JohoFont.labelBold)
-                            .foregroundStyle(colors.primary)
+                            .foregroundStyle(JohoColors.cyan.contrastingForeground)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
                             .background(JohoColors.cyan)

@@ -24,8 +24,6 @@ struct ExpenseListView: View {
 
     // Base Currency
     @AppStorage("baseCurrency") private var baseCurrency = "SEK"
-    @State private var isRecalculating = false
-
     // Filtering (simplified - Memo doesn't have categories)
     @State private var selectedFilter: ExpenseFilter = .all
     @State private var selectedDateRange: DateRange = .thisMonth
@@ -322,11 +320,7 @@ struct ExpenseListView: View {
     }
 
     private func formatCurrency(_ amount: Double, code: String) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = code
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "\(code) \(Int(amount))"
+        CurrencyFormatter.formatted(amount, currencyCode: code)
     }
 
     private var formattedTotal: String {

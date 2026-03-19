@@ -32,7 +32,6 @@ struct ModernCalendarView: View {
     @State private var selectedDay: CalendarDay?
     @State private var selectedYear: Int = Calendar.iso8601.component(.year, from: Date())
     @State private var displayMonth: Int = Calendar.iso8601.component(.month, from: Date())
-    @State private var isNavigatingMonth = false  // Prevents onChange race conditions
     @State private var isLegendExpanded = false   // 情報デザイン: Expandable legend row
 
     // Managers

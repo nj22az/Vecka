@@ -241,35 +241,6 @@ struct ViewUtilities {
         Calendar.iso8601.component(.weekday, from: date)
     }
     
-    // MARK: - String Formatting
-    
-    static func selectedDateShort(_ date: Date) -> String {
-        DateFormatterCache.dayNumber.string(from: date)
-    }
-    
-    static func currentDateShort(_ date: Date = Date()) -> String {
-        DateFormatterCache.dayNumber.string(from: date)
-    }
-    
-    static func todayDateNumber(_ date: Date = Date()) -> String {
-        DateFormatterCache.dayNumber.string(from: date)
-    }
-    
-    static func todayButtonText(isToday: Bool) -> String {
-        isToday ? "CURRENT" : "GO TO"
-    }
-    
-    // MARK: - Color Utilities
-    
-    /// Safe color calculation - simplified to use daily colors
-    static func safeColorForDay(_ date: Date) -> Color {
-        return JohoColors.cyan
-    }
-    
-    /// Dynamic color selection for today/selected states
-    static func dynamicStateColor(isToday: Bool) -> Color {
-        return isToday ? JohoColors.cyan : JohoColors.green
-    }
 }
 
 // MARK: - Animation Constants
