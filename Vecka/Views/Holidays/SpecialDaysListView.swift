@@ -17,36 +17,18 @@
 //  which reads from @AppStorage("categoryCustomizations").
 //  NEVER hardcode icons - always use DisplayCategory.categoryAwareIcon
 //
+//  Sub-components (all in Views/Holidays/):
+//  - SpecialDaysGridView      — 4×3 month tile grid
+//  - SpecialDaysMonthDetail   — Single-month category cards + day list
+//  - SpecialDayCard           — CollapsibleSpecialDayCard per-day bento
+//  - SpecialDayEditor         — EditingSpecialDay / DeletedSpecialDay structs
 //
 
 import SwiftUI
 import SwiftData
 import WidgetKit
 
-// MARK: - Local Helper Types (fileprivate to SpecialDaysListView)
-
-fileprivate struct EditingSpecialDay: Identifiable {
-    let id: String
-    let ruleID: String
-    let name: String
-    let date: Date
-    let type: SpecialDayType
-    let symbolName: String?
-    let iconColor: String?
-    let notes: String?
-    let region: String
-}
-
-fileprivate struct DeletedSpecialDay {
-    let ruleID: String
-    let name: String
-    let date: Date
-    let type: SpecialDayType
-    let symbol: String
-    let iconColor: String?
-    let notes: String?
-    let region: String
-}
+// MARK: - Shared Types
 
 /// 情報デザイン: Custom icon, color, and message for a month card
 struct MonthCustomization: Codable, Equatable {
@@ -111,9 +93,6 @@ struct SpecialDaysListView: View {
     // Item expansion state (情報デザイン: tap to show details)
     @State private var expandedItemID: String?
 
-    // 情報デザイン: Tappable stat indicators show type name
-    // Removed: selectedStatType (now using popovers)
-
     // 情報デザイン: Holiday Database Explorer
     @State private var showingDatabaseExplorer = false
 
@@ -134,7 +113,8 @@ struct SpecialDaysListView: View {
         return Array((current - 20)...(current + 20))
     }
 
-    // 情報デザイン: Month customization storage helpers
+    // MARK: - Month Customization Helpers
+
     private var monthCustomizations: [Int: MonthCustomization] {
         get {
             guard !monthCustomizationsData.isEmpty,
@@ -269,7 +249,7 @@ struct SpecialDaysListView: View {
     private var birthdayCount: Int { rows(for: .birthday).count }
     private var memoCount: Int { rows(for: .memo).count }
 
-    // MARK: - Unique Date Counting (情報デザイン: Show unique dates, not duplicate regional variants)
+    // MARK: - Unique Date Counting
 
     /// Count unique dates for a category (Dec 24 = 1 holiday, not 5 regional variants)
     private func uniqueDateCount(for category: DisplayCategory) -> Int {
@@ -301,14 +281,10 @@ struct SpecialDaysListView: View {
         return uniqueDates.count
     }
 
-    /// Unique holiday date count
     private var uniqueHolidayCount: Int { uniqueDateCount(for: .holiday) }
-    /// Unique observance date count
     private var uniqueObservanceCount: Int { uniqueDateCount(for: .observance) }
-    /// Unique memo date count (includes birthdays)
     private var uniqueMemoCount: Int { uniqueDateCount(for: .memo) }
 
-    /// 情報デザイン: Compact subtitle that fits iPhone screens
     private var compactSubtitle: String {
         var parts: [String] = []
         if holidayCount > 0 { parts.append("\(holidayCount) holidays") }
@@ -316,11 +292,7 @@ struct SpecialDaysListView: View {
         if birthdayCount > 0 { parts.append("\(birthdayCount) birthdays") }
         if memoCount > 0 { parts.append("\(memoCount) memos") }
 
-        if parts.isEmpty {
-            return "No entries yet"
-        }
-
-        // Join with bullets for better iPhone readability
+        if parts.isEmpty { return "No entries yet" }
         return parts.joined(separator: " • ")
     }
 
@@ -334,8 +306,7 @@ struct SpecialDaysListView: View {
         return (allHolidays.count, allObservances.count, allBirthdays.count, allMemos.count)
     }
 
-    /// 情報デザイン: Get UNIQUE date counts for a specific month by category
-    /// Shows unique dates, not duplicate regional variants (Dec 24 = 1 holiday, not 5)
+    /// Get UNIQUE date counts for a specific month by category
     private func monthUniqueCounts(for month: Int) -> (holidays: Int, observances: Int, memos: Int) {
         let calendar = Calendar.current
 
@@ -367,7 +338,6 @@ struct SpecialDaysListView: View {
         let calendar = Calendar.current
         var monthRows: [SpecialDayRow] = []
 
-        // 情報デザイン: Only include categories that are active in the filter
         if activeFilters.contains(.holiday) {
             monthRows += rows(for: .holiday).filter { calendar.component(.month, from: $0.date) == month }
         }
@@ -408,6 +378,34 @@ struct SpecialDaysListView: View {
         }
     }
 
+    private func filteredDayCardsForMonth(_ month: Int, category: DisplayCategory) -> [DayCardData] {
+        let allCards = dayCardsForMonth(month)
+
+        return allCards.compactMap { card -> DayCardData? in
+            let filteredItems = card.items.filter { item in
+                switch category {
+                case .holiday:
+                    return item.type == .holiday
+                case .observance:
+                    return item.type == .observance
+                case .memo:
+                    return item.type == .memo || item.type == .birthday
+                }
+            }
+
+            guard !filteredItems.isEmpty else {
+                return nil
+            }
+
+            return DayCardData(
+                id: card.id,
+                date: card.date,
+                day: card.day,
+                items: filteredItems
+            )
+        }
+    }
+
     // MARK: - Body
 
     var body: some View {
@@ -437,9 +435,29 @@ struct SpecialDaysListView: View {
                 if !showHolidays {
                     disabledState
                 } else if let month = selectedMonth {
-                    monthDetailView(for: month)
+                    SpecialDaysMonthDetail(
+                        month: month,
+                        dayCardsForMonth: { dayCardsForMonth(month) },
+                        filteredDayCards: { category in filteredDayCardsForMonth(month, category: category) },
+                        monthUniqueCounts: { monthUniqueCounts(for: month) },
+                        categoryCustomizationsVersion: categoryCustomizationsVersion,
+                        isEditable: isEditable,
+                        deleteRow: deleteRow,
+                        openEditor: openEditor,
+                        showDetail: { item in selectedDetailItem = item },
+                        selectedCategory: $selectedCategory,
+                        expandedItemID: $expandedItemID
+                    )
                 } else {
-                    monthGrid
+                    SpecialDaysGridView(
+                        monthCounts: { monthCounts(for: $0) },
+                        customIcon: { customIcon(for: $0) },
+                        customIconColor: { customIconColor(for: $0) },
+                        customMessage: { customMessage(for: $0) },
+                        onSelectMonth: { month in
+                            selectedMonth = month
+                        }
+                    )
                 }
                 Spacer(minLength: JohoDimensions.spacingXL)
             }
@@ -471,7 +489,7 @@ struct SpecialDaysListView: View {
         }
     }
 
-    // MARK: - Sheet Views (broken out to reduce body complexity)
+    // MARK: - Sheet Views
 
     private var newSpecialDaySheet: some View {
         JohoSpecialDayEditorSheet(
@@ -514,9 +532,7 @@ struct SpecialDaysListView: View {
             .presentationCornerRadius(20)
     }
 
-    // 情報デザイン: Holiday/observance creator sheet (triggered from subtitle plus buttons)
     private var holidayCreatorSheet: some View {
-        // Use newSpecialDayType which is set by addCategoryButton
         let type: SpecialDayType = newSpecialDayType
         return JohoSpecialDayEditorSheet(
             mode: .create,
@@ -529,7 +545,6 @@ struct SpecialDaysListView: View {
         .presentationCornerRadius(20)
     }
 
-    /// 情報デザイン: Create a custom holiday/observance linked to a region
     private func createCustomHoliday(type: SpecialDayType, name: String, date: Date, symbol: String, notes: String?, region: String) {
         let calendar = Calendar.current
         let month = calendar.component(.month, from: date)
@@ -573,7 +588,7 @@ struct SpecialDaysListView: View {
         }
     }
 
-    // MARK: - Header with Year Picker (情報デザイン: Bento Compartments)
+    // MARK: - Header with Year Picker
 
     private var headerWithYearPicker: some View {
         let theme: MonthTheme? = selectedMonth.map { MonthTheme.theme(for: $0) }
@@ -587,9 +602,6 @@ struct SpecialDaysListView: View {
                     if selectedMonth != nil {
                         Button {
                             withAnimation(.easeInOut(duration: 0.2)) {
-                                // 情報デザイン: Two-level navigation
-                                // If in category view, go back to category cards
-                                // If in category cards, go back to month grid
                                 if selectedCategory != nil {
                                     selectedCategory = nil
                                 } else {
@@ -598,7 +610,6 @@ struct SpecialDaysListView: View {
                             }
                             HapticManager.selection()
                         } label: {
-                            // 情報デザイン: Minimum 44pt touch target
                             Image(systemName: IconCatalog.chevronLeft)
                                 .font(JohoFont.bodySmallBold)
                                 .foregroundStyle(colors.primary)
@@ -609,8 +620,7 @@ struct SpecialDaysListView: View {
                         }
                     }
 
-                    // Icon zone - star for main view, month icon for detail
-                    // 情報デザイン: 44pt touch target for consistency
+                    // Icon zone
                     if let month = selectedMonth, let theme = theme {
                         let headerIcon = customIcon(for: month) ?? theme.icon
                         let headerIconColor: Color = customIconColor(for: month).map { Color(hex: $0) } ?? theme.accentColor
@@ -644,7 +654,6 @@ struct SpecialDaysListView: View {
                 if selectedMonth == nil {
                     JohoYearPicker(year: $selectedYear)
                 } else {
-                    // Show year when in month detail (read-only)
                     Text(String(selectedYear))
                         .font(JohoFont.headline)
                         .monospacedDigit()
@@ -662,8 +671,7 @@ struct SpecialDaysListView: View {
                 .fill(colors.border)
                 .frame(height: 1.5)
 
-            // STATS ROW (full width)
-            // 情報デザイン: Show colored dots + add buttons when inside a month
+            // STATS ROW
             if let month = selectedMonth {
                 monthSubtitleRow(for: month)
                     .padding(.horizontal, JohoDimensions.spacingMD)
@@ -682,10 +690,8 @@ struct SpecialDaysListView: View {
         .padding(.top, JohoDimensions.spacingSM)
     }
 
-    // MARK: - Bento Stats Row (情報デザイン: 3-category outline icons)
+    // MARK: - Bento Stats Row
 
-    /// 情報デザイン: Calculate UNIQUE date counts by DisplayCategory
-    /// Shows unique dates, not duplicate regional variants (Dec 24 = 1 holiday, not 5)
     private var displayCategoryCounts: (holidays: Int, observances: Int, memos: Int) {
         return (uniqueHolidayCount, uniqueObservanceCount, uniqueMemoCount)
     }
@@ -695,9 +701,6 @@ struct SpecialDaysListView: View {
         let totalCount = counts.holidays + counts.observances + counts.memos
 
         return HStack(spacing: JohoDimensions.spacingMD) {
-            // 情報デザイン: 3-category outline icons with counts
-            // [○ 19]  [◇ 18]  [📄 5]
-            //  祝日    記念日    メモ
             if counts.holidays > 0 {
                 categoryIndicator(category: .holiday, count: counts.holidays)
             }
@@ -708,7 +711,6 @@ struct SpecialDaysListView: View {
                 categoryIndicator(category: .memo, count: counts.memos)
             }
 
-            // Show empty state only when no entries exist
             if totalCount == 0 {
                 Text("No entries yet")
                     .font(JohoFont.bodySmall)
@@ -719,8 +721,6 @@ struct SpecialDaysListView: View {
         }
     }
 
-    /// 情報デザイン: Month-specific stats row with filter pills
-    /// Same behavior as main bentoStatsRow but with month-scoped counts
     private func monthBentoStatsRow(for month: Int) -> some View {
         let counts = monthUniqueCounts(for: month)
         let totalCount = counts.holidays + counts.observances + counts.memos
@@ -746,31 +746,23 @@ struct SpecialDaysListView: View {
         }
     }
 
-    // MARK: - Month Subtitle Row (情報デザイン: Colored dots + Add buttons)
+    // MARK: - Month Subtitle Row
 
-    /// 情報デザイン: Subtitle row when viewing a month
-    /// Shows colored category dots and plus buttons to add new items
     private func monthSubtitleRow(for month: Int) -> some View {
         let counts = monthUniqueCounts(for: month)
 
         return HStack(spacing: JohoDimensions.spacingMD) {
-            // Category filter dots (tap to filter)
             HStack(spacing: JohoDimensions.spacingSM) {
-                // Holidays dot
                 monthCategoryDot(
                     category: .holiday,
                     count: counts.holidays,
                     color: CategoryColorSettings.shared.color(for: .holiday)
                 )
-
-                // Observances dot
                 monthCategoryDot(
                     category: .observance,
                     count: counts.observances,
                     color: CategoryColorSettings.shared.color(for: .observance)
                 )
-
-                // Memos dot
                 monthCategoryDot(
                     category: .memo,
                     count: counts.memos,
@@ -780,26 +772,21 @@ struct SpecialDaysListView: View {
 
             Spacer()
 
-            // 情報デザイン: Unified add button (tap to choose Holiday or Observance)
             unifiedAddButton
         }
     }
 
-    /// 情報デザイン: State for unified add button sheet
     @State private var showingCustomHolidayCreator = false
 
-    /// System UI accent for buttons (database-driven via settings)
     private var systemAccentColor: Color {
         (SystemUIAccent(rawValue: systemUIAccent) ?? .indigo).color
     }
 
-    /// 情報デザイン: Unified add button - uses system UI accent color
     private var unifiedAddButton: some View {
         Button {
             showingCustomHolidayCreator = true
             HapticManager.impact(.light)
         } label: {
-            // 情報デザイン: System UI accent plus button (matches date picker)
             Image(systemName: IconCatalog.plus)
                 .font(JohoFont.label)
                 .foregroundStyle(systemAccentColor.contrastingForeground)
@@ -810,7 +797,6 @@ struct SpecialDaysListView: View {
         }
         .buttonStyle(.plain)
         .sheet(isPresented: $showingCustomHolidayCreator) {
-            // 情報デザイン: Unified entry creator for full context (Holiday/Observance/Memo)
             UnifiedEntryCreator(
                 config: .fullContext(
                     date: selectedMonthDate,
@@ -828,7 +814,6 @@ struct SpecialDaysListView: View {
         }
     }
 
-    /// 情報デザイン: Create a custom holiday/observance from user input
     private func createCustomHoliday(type: SpecialDayType, name: String, about: String?, region: String, year: Int, month: Int, day: Int) {
         let rule = HolidayRule(
             name: name,
@@ -847,12 +832,10 @@ struct SpecialDaysListView: View {
         modelContext.insert(rule)
         try? modelContext.save()
 
-        // Refresh cache
         holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: selectedYear)
         HapticManager.notification(.success)
     }
 
-    /// 情報デザイン: Create a memo from unified entry creator
     private func createMemo(text: String, date: Date, amount: Double?, currency: String?, place: String?, contactID: UUID?, photoData: Data?) {
         let memo = Memo(text: text, date: date)
         memo.amount = amount
@@ -865,7 +848,6 @@ struct SpecialDaysListView: View {
         HapticManager.notification(.success)
     }
 
-    /// 情報デザイン: Category dot with count (tap to filter)
     private func monthCategoryDot(category: DisplayCategory, count: Int, color: Color) -> some View {
         let isSelected = selectedCategory == category
         let hasItems = count > 0
@@ -873,7 +855,7 @@ struct SpecialDaysListView: View {
         return Button {
             withAnimation(.easeInOut(duration: 0.2)) {
                 if selectedCategory == category {
-                    selectedCategory = nil  // Deselect to show category cards
+                    selectedCategory = nil
                 } else {
                     selectedCategory = category
                 }
@@ -910,19 +892,13 @@ struct SpecialDaysListView: View {
             .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
-    /// 情報デザイン: Compact category indicator (subtitle-style)
-    /// Colored dot + count - TAP TO TOGGLE FILTER
-    /// When active: Shows full label (e.g., "● Holidays 36")
-    /// When inactive: Shows only dot + count (e.g., "○ 36")
     private func categoryIndicator(category: DisplayCategory, count: Int) -> some View {
         let isActive = activeFilters.contains(category)
 
         return Button {
             withAnimation(.easeInOut(duration: 0.2)) {
                 HapticManager.selection()
-                // Toggle filter state
                 if activeFilters.contains(category) {
-                    // Don't allow disabling the last active filter
                     if activeFilters.count > 1 {
                         activeFilters.remove(category)
                     }
@@ -932,7 +908,6 @@ struct SpecialDaysListView: View {
             }
         } label: {
             HStack(spacing: 4) {
-                // Colored filled dot (category color) - dimmed when inactive
                 Circle()
                     .fill(isActive ? CategoryColorSettings.shared.color(for: category) : colors.primary.opacity(JohoDimensions.opacityMild))
                     .frame(width: 8, height: 8)
@@ -941,7 +916,6 @@ struct SpecialDaysListView: View {
                             .stroke(colors.border, lineWidth: 0.5)
                     )
 
-                // 情報デザイン: Show full label only when active (tap reveals meaning)
                 if isActive {
                     Text(category.localizedLabel)
                         .font(.system(size: 10, weight: .semibold, design: .rounded))
@@ -949,7 +923,6 @@ struct SpecialDaysListView: View {
                         .lineLimit(1)
                 }
 
-                // Count numeral - dimmed when inactive
                 Text(String(count))
                     .font(.system(size: 11, weight: .bold, design: .rounded))
                     .monospacedDigit()
@@ -970,1267 +943,6 @@ struct SpecialDaysListView: View {
         .accessibilityHint(isActive ? "Tap to hide \(category.localizedLabel)" : "Tap to show \(category.localizedLabel)")
     }
 
-    /// 情報デザイン: Compact popover showing category details
-    /// Icons are database-driven via DisplayCategory.categoryAwareIcon
-    private func categoryPopover(category: DisplayCategory, count: Int) -> some View {
-        HStack(spacing: JohoDimensions.spacingSM) {
-            Image(systemName: category.categoryAwareIcon)
-                .font(JohoFont.headline)
-                .foregroundStyle(colors.primary)
-                .frame(width: 32, height: 32)
-                .background(colors.inputBackground)
-                .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
-                .overlay(
-                    RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
-                        .stroke(colors.border, lineWidth: 1.5)
-                )
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(category.localizedLabel.uppercased())
-                    .font(JohoFont.tag)
-                    .tracking(0.5)
-                    .foregroundStyle(colors.primary)
-
-                Text("\(count) in " + String(selectedYear))
-                    .font(.system(size: 11, weight: .semibold, design: .rounded))
-                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
-            }
-        }
-        .padding(JohoDimensions.spacingMD)
-        .background(colors.surface)
-        .presentationCompactAdaptation(.popover)
-    }
-
-    /// 情報デザイン: Icon-only stat indicator with popover details (legacy)
-    @State private var activePopoverType: SpecialDayType?
-
-    private func statIndicator(type: SpecialDayType, count: Int) -> some View {
-        Button {
-            HapticManager.selection()
-            activePopoverType = type
-        } label: {
-            HStack(spacing: 4) {
-                Image(systemName: type.defaultIcon)
-                    .font(JohoFont.headlineSmall)
-                    .foregroundStyle(CategoryColorSettings.shared.foregroundColor(for: type.displayCategory, mode: colorMode))
-
-                Text(String(count))
-                    .font(JohoFont.bodySmallBold)
-                    .monospacedDigit()
-                    .foregroundStyle(colors.primary)
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(CategoryColorSettings.shared.color(for: type.displayCategory, mode: colorMode).opacity(JohoDimensions.opacityHeavy))
-            .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
-        }
-        .buttonStyle(.plain)
-        .popover(isPresented: Binding(
-            get: { activePopoverType == type },
-            set: { if !$0 { activePopoverType = nil } }
-        )) {
-            statPopover(type: type, count: count)
-        }
-        .accessibilityLabel("\(type.title): \(count)")
-        .accessibilityHint("Tap for details")
-    }
-
-    /// 情報デザイン: Compact popover showing type details
-    private func statPopover(type: SpecialDayType, count: Int) -> some View {
-        HStack(spacing: JohoDimensions.spacingSM) {
-            Image(systemName: type.defaultIcon)
-                .font(JohoFont.headline)
-                .foregroundStyle(CategoryColorSettings.shared.foregroundColor(for: type.displayCategory, mode: colorMode))
-                .frame(width: 32, height: 32)
-                .background(CategoryColorSettings.shared.color(for: type.displayCategory, mode: colorMode))
-                .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))
-                .overlay(
-                    RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous)
-                        .stroke(colors.border, lineWidth: 1.5)
-                )
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(type.title.uppercased())
-                    .font(JohoFont.tag)
-                    .tracking(0.5)
-                    .foregroundStyle(colors.primary)
-
-                Text("\(count) in " + String(selectedYear))
-                    .font(.system(size: 13, weight: .semibold, design: .rounded))
-                    .foregroundStyle(CategoryColorSettings.shared.foregroundColor(for: type.displayCategory, mode: colorMode))
-            }
-        }
-        .padding(JohoDimensions.spacingMD)
-        .background(colors.surface)
-        .presentationCompactAdaptation(.popover)
-    }
-
-    /// 情報デザイン: Category-colored dots for month cards
-    /// Each dot represents a category present in this month:
-    /// - Red = holidays, Blue = observances, Green = memos
-    private func monthCategoryDots(holidays: Int, observances: Int, memos: Int) -> some View {
-        HStack(spacing: 3) {
-            if holidays > 0 {
-                Circle()
-                    .fill(CategoryColorSettings.shared.color(for: .holiday))
-                    .frame(width: 6, height: 6)
-                    .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
-            }
-            if observances > 0 {
-                Circle()
-                    .fill(CategoryColorSettings.shared.color(for: .observance))
-                    .frame(width: 6, height: 6)
-                    .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
-            }
-            if memos > 0 {
-                Circle()
-                    .fill(CategoryColorSettings.shared.color(for: .memo))
-                    .frame(width: 6, height: 6)
-                    .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
-            }
-        }
-    }
-
-    /// 情報デザイン: Clean colored dot for month cards (legacy - maintains symmetry)
-    private func monthCardDot(type: SpecialDayType, count: Int) -> some View {
-        Circle()
-            .fill(type.accentColor)
-            .frame(width: 8, height: 8)
-            .overlay(
-                Circle()
-                    .stroke(colors.border, lineWidth: 0.5)
-            )
-            .accessibilityLabel("\(count) \(type.title)")
-    }
-
-    // MARK: - Month Grid (情報デザイン: 12 Month Flipcards in 3-Column Bento)
-
-    private var monthGrid: some View {
-        // 情報デザイン: Use Grid (not LazyVGrid) for automatic row height synchronization
-        Grid(horizontalSpacing: JohoDimensions.spacingSM, verticalSpacing: JohoDimensions.spacingSM) {
-            ForEach(0..<4, id: \.self) { row in
-                GridRow {
-                    ForEach(1...3, id: \.self) { col in
-                        let month = row * 3 + col
-                        monthFlipcard(for: month)
-                    }
-                }
-            }
-        }
-        .padding(.horizontal, JohoDimensions.spacingLG)
-    }
-
-    // MARK: - Month Flipcard (情報デザイン: Compartmentalized Bento Style)
-
-    @ViewBuilder
-    private func monthFlipcard(for month: Int) -> some View {
-        let theme = MonthTheme.theme(for: month)
-        let counts = monthCounts(for: month)
-        let totalCount = counts.holidays + counts.observances + counts.birthdays + counts.memos
-        let hasItems = totalCount > 0
-
-        // 情報デザイン: Allow custom icon and icon color (background color locked to seasonal theme)
-        let displayIcon = customIcon(for: month) ?? theme.icon
-        let customIconColorHex = customIconColor(for: month)
-        // 情報デザイン: Custom icon color takes priority, then always theme accent (季節の色 defines identity)
-        let displayIconColor: Color = {
-            if let hex = customIconColorHex {
-                return Color(hex: hex)
-            } else {
-                return theme.accentColor
-            }
-        }()
-        // 情報デザイン: Banner color is LOCKED to seasonal theme (users cannot change it)
-        let displayColor: Color = theme.lightBackground
-        let message = customMessage(for: month)
-
-        JohoTileCard(
-            label: theme.name,
-            icon: displayIcon,
-            iconColor: displayIconColor,
-            bannerColor: displayColor
-        ) {
-            // Custom message + category dots
-            HStack(spacing: 0) {
-                if let message {
-                    Text(message)
-                        .font(.system(size: 9, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(0.6))
-                        .lineLimit(1)
-                }
-
-                Spacer(minLength: 0)
-            }
-            .padding(.horizontal, JohoDimensions.spacingSM)
-            .frame(maxWidth: .infinity)
-            .frame(height: 40)
-            .overlay(alignment: .bottomTrailing) {
-                if hasItems {
-                    VStack(spacing: 3) {
-                        if counts.holidays > 0 {
-                            Circle()
-                                .fill(CategoryColorSettings.shared.color(for: .holiday))
-                                .frame(width: 7, height: 7)
-                                .overlay(Circle().stroke(colors.border, lineWidth: 1))
-                        }
-                        if counts.observances > 0 {
-                            Circle()
-                                .fill(CategoryColorSettings.shared.color(for: .observance))
-                                .frame(width: 7, height: 7)
-                                .overlay(Circle().stroke(colors.border, lineWidth: 1))
-                        }
-                        if (counts.birthdays + counts.memos) > 0 {
-                            Circle()
-                                .fill(CategoryColorSettings.shared.color(for: .memo))
-                                .frame(width: 7, height: 7)
-                                .overlay(Circle().stroke(colors.border, lineWidth: 1))
-                        }
-                    }
-                    .padding(.trailing, 6)
-                    .padding(.bottom, 6)
-                }
-            }
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                selectedMonth = month
-            }
-            HapticManager.selection()
-        }
-    }
-
-    // MARK: - Month Detail View (情報デザイン: Category Cards → Filtered List)
-
-    @State private var expandedDays: Set<String> = []
-
-    @ViewBuilder
-    private func monthDetailView(for month: Int) -> some View {
-        VStack(spacing: JohoDimensions.spacingMD) {
-            if selectedCategory == nil {
-                // 情報デザイン: Show category cards grid (mirrors month grid structure)
-                categoryCardsGrid(for: month)
-            } else if let category = selectedCategory {
-                // Show filtered day cards for selected category
-                let dayCards = filteredDayCardsForMonth(month, category: category)
-
-                if dayCards.isEmpty {
-                    // 情報デザイン: Use customized icon if set, otherwise default
-                    let displayIcon = category.categoryAwareIcon
-                    JohoEmptyState(
-                        title: "No \(category.localizedLabel)",
-                        message: "Tap + to add",
-                        icon: displayIcon,
-                        zone: category.sectionZone
-                    )
-                    .padding(.top, JohoDimensions.spacingSM)
-                } else {
-                    // Collapsible timeline (情報デザイン: clean, expandable day cards)
-                    VStack(spacing: JohoDimensions.spacingSM) {
-                        ForEach(dayCards) { dayCard in
-                            CollapsibleSpecialDayCard(
-                                dayCard: dayCard,
-                                isExpanded: expandedDays.contains(dayCard.id),
-                                onToggle: { toggleExpand(dayCard) },
-                                isEditable: isEditable,
-                                deleteRow: deleteRow,
-                                openEditor: openEditor,
-                                showDetail: { item in selectedDetailItem = item },
-                                expandedItemID: $expandedItemID
-                            )
-                        }
-                    }
-                    .padding(.horizontal, JohoDimensions.spacingLG)
-                }
-            }
-        }
-        .onAppear { initializeExpandedDays(for: dayCardsForMonth(month)) }
-        .onChange(of: selectedMonth) { _, _ in
-            expandedDays.removeAll()
-            selectedCategory = nil
-            initializeExpandedDays(for: dayCardsForMonth(month))
-        }
-        .onChange(of: selectedCategory) { _, _ in
-            expandedDays.removeAll()
-            if let month = selectedMonth {
-                let dayCards: [DayCardData]
-                if let category = selectedCategory {
-                    dayCards = filteredDayCardsForMonth(month, category: category)
-                } else {
-                    dayCards = dayCardsForMonth(month)
-                }
-                initializeExpandedDays(for: dayCards)
-            }
-        }
-    }
-
-    // MARK: - Category Cards Grid (情報デザイン: Bento cards mirroring month grid)
-
-    @ViewBuilder
-    private func categoryCardsGrid(for month: Int) -> some View {
-        let counts = monthUniqueCounts(for: month)
-
-        // 情報デザイン: Grid (not LazyVGrid) ensures synchronized row heights
-        Grid(horizontalSpacing: JohoDimensions.spacingSM, verticalSpacing: JohoDimensions.spacingSM) {
-            GridRow {
-                categoryCard(category: .holiday, count: counts.holidays)
-                categoryCard(category: .observance, count: counts.observances)
-                categoryCard(category: .memo, count: counts.memos)
-            }
-        }
-        .id(categoryCustomizationsVersion)  // 情報デザイン: Force refresh when customizations change
-        .padding(.horizontal, JohoDimensions.spacingLG)
-    }
-
-    // MARK: - Category Card (情報デザイン: Bento card mirroring month flipcard)
-
-    @ViewBuilder
-    private func categoryCard(category: DisplayCategory, count: Int) -> some View {
-        // 情報デザイン: Custom icon allowed, color from CategoryColorSettings
-        let displayIcon = category.categoryAwareIcon
-        let categoryColor = CategoryColorSettings.shared.color(for: category)
-
-        VStack(spacing: 0) {
-            // TOP: Icon zone (情報デザイン: Sticker-first rendering)
-            // Fixed height ensures banner dividers align across all cards
-            JohoSticker.small(icon: displayIcon, color: categoryColor)
-                .frame(maxWidth: .infinity)
-                .frame(height: 64)
-                .background(categoryColor)
-
-            // Divider (情報デザイン: Black wall between compartments)
-            Rectangle()
-                .fill(colors.border)
-                .frame(height: 1.5)
-
-            // BOTTOM: Category name + count (情報デザイン: Like message on month cards)
-            // minHeight ensures all cards end at same line
-            HStack(spacing: 0) {
-                Spacer(minLength: 16)
-
-                VStack(spacing: 2) {
-                    Text(category.localizedLabel.uppercased())
-                        .font(JohoFont.pillLabel)
-                        .foregroundStyle(colors.primary)
-                        .multilineTextAlignment(.center)
-
-                    // Count always rendered for consistent height (invisible when 0)
-                    Text(count > 0 ? "\(count)" : " ")
-                        .font(.system(size: 9, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(count > 0 ? 0.6 : 0))
-                }
-
-                Spacer(minLength: 16)
-            }
-            .frame(maxWidth: .infinity, minHeight: 48)
-            .background(colors.surface)
-        }
-        .background(colors.surface)
-        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 1.5)
-        .contentShape(Rectangle())
-        // 情報デザイン: NO opacity change - colors define identity regardless of content
-        // Category customization moved to Settings → CATEGORIES section
-        .onTapGesture {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                selectedCategory = category
-            }
-            HapticManager.selection()
-        }
-    }
-
-    // MARK: - Filtered Day Cards (情報デザイン: Filter by category)
-
-    private func filteredDayCardsForMonth(_ month: Int, category: DisplayCategory) -> [DayCardData] {
-        let allCards = dayCardsForMonth(month)
-
-        return allCards.compactMap { card -> DayCardData? in
-            let filteredItems = card.items.filter { item in
-                switch category {
-                case .holiday:
-                    return item.type == .holiday
-                case .observance:
-                    return item.type == .observance
-                case .memo:
-                    return item.type == .memo || item.type == .birthday
-                }
-            }
-
-            guard !filteredItems.isEmpty else {
-                return nil
-            }
-
-            return DayCardData(
-                id: card.id,
-                date: card.date,
-                day: card.day,
-                items: filteredItems
-            )
-        }
-    }
-
-    private func toggleExpand(_ dayCard: DayCardData) {
-        if expandedDays.contains(dayCard.id) {
-            expandedDays.remove(dayCard.id)
-        } else {
-            expandedDays.insert(dayCard.id)
-        }
-    }
-
-    private func initializeExpandedDays(for dayCards: [DayCardData]) {
-        let calendar = Calendar.iso8601
-        let today = calendar.startOfDay(for: Date())
-
-        for card in dayCards {
-            let cardDay = calendar.startOfDay(for: card.date)
-            // Only auto-expand TODAY (情報デザイン: minimal default expansion)
-            if cardDay == today {
-                expandedDays.insert(card.id)
-            }
-        }
-    }
-
-    // MARK: - Collapsible Special Day Card (情報デザイン: Timeline Ticket)
-    //
-    // Similar to WeekDetailPanel's CollapsibleDayCard but for special days:
-    // ┌─────────────────────────────────────────────────────────────┐
-    // │ [THU 1]  January 1, 2026              [TODAY] [chevron]    │ ← Header
-    // ├─────────────────────────────────────────────────────────────┤
-    // │ ┌─ HOLIDAYS ─────────────────────────────────────────────┐ │
-    // │ │ ● New Year's Day                              [SWE]    │ │
-    // │ │ ● Tết Dương lịch                               [VN]    │ │
-    // │ └────────────────────────────────────────────────────────┘ │
-    // │ ┌─ EVENTS ───────────────────────────────────────────────┐ │
-    // │ │ ◆ Nyårsdagen                                  00:00    │ │
-    // │ └────────────────────────────────────────────────────────┘ │
-    // └─────────────────────────────────────────────────────────────┘
-}
-
-// MARK: - Collapsible Special Day Card
-
-struct CollapsibleSpecialDayCard: View {
-    let dayCard: DayCardData
-    let isExpanded: Bool
-    let onToggle: () -> Void
-
-    // Closures for data management (passed from parent)
-    let isEditable: (SpecialDayRow) -> Bool
-    let deleteRow: (SpecialDayRow) -> Void
-    let openEditor: (SpecialDayRow) -> Void
-    let showDetail: (SpecialDayRow) -> Void
-
-    // Item expansion state (情報デザイン: tap row to show details)
-    @Binding var expandedItemID: String?
-
-    // Locale for displaying localized holiday names (情報デザイン: show user's locale name)
-    @Environment(\.locale) private var locale
-    @Environment(\.johoColorMode) private var colorMode
-    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
-
-    private let calendar = Calendar.iso8601
-
-    // Group items by type
-    private var holidays: [SpecialDayRow] {
-        dayCard.items.filter { $0.type == .holiday }
-    }
-
-    /// Consolidated holidays: Groups same-name holidays into single rows with multiple country pills
-    private var consolidatedHolidays: [ConsolidatedHoliday] {
-        let holidays = dayCard.items.filter { $0.type == .holiday }
-        guard !holidays.isEmpty else { return [] }
-
-        // 情報デザイン: Group by DATE, not by title
-        // Same date + same type = same semantic holiday (regardless of localized name)
-        // All items in dayCard are already for the same date, so consolidate ALL holidays
-        // into one row with multiple country pills
-        if let consolidated = ConsolidatedHoliday.from(holidays: holidays) {
-            return [consolidated]
-        }
-        return []
-    }
-    private var observances: [SpecialDayRow] {
-        dayCard.items.filter { $0.type == .observance }
-    }
-    private var birthdays: [SpecialDayRow] {
-        dayCard.items.filter { $0.type == .birthday }
-    }
-    private var memosForDay: [SpecialDayRow] {
-        dayCard.items.filter { $0.type == .memo }
-    }
-
-    private var isToday: Bool {
-        calendar.isDateInToday(dayCard.date)
-    }
-
-    /// Days from today (negative = past, positive = future)
-    private var daysFromToday: Int {
-        let today = calendar.startOfDay(for: Date())
-        let target = calendar.startOfDay(for: dayCard.date)
-        return calendar.dateComponents([.day], from: today, to: target).day ?? 0
-    }
-
-    /// Date status pill for the day header (情報デザイン: Only TODAY highlighted)
-    @ViewBuilder
-    private var dateStatusPill: some View {
-        if daysFromToday == 0 {
-            // TODAY - Orange inverted pill (consistent with calendar)
-            JohoPill(text: "TODAY", style: .coloredInverted(JohoColors.todayOrange), size: .small)
-        }
-        // Past/future dates: no pill needed (date is already visible)
-    }
-
-    var body: some View {
-        VStack(spacing: 0) {
-            // Header row (always visible)
-            headerRow
-
-            // Expanded content
-            if isExpanded {
-                // Thin divider
-                Rectangle()
-                    .fill(colors.border.opacity(JohoDimensions.opacityLight))
-                    .frame(height: 1)
-
-                expandedContent
-                    .padding(.top, JohoDimensions.spacingSM)
-                    .padding(.bottom, JohoDimensions.spacingMD)
-            }
-        }
-        .background(colors.surface)
-        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: isToday ? JohoDimensions.borderThick : JohoDimensions.borderMedium)
-    }
-
-    // MARK: - Header Row
-
-    private var headerRow: some View {
-        Button(action: onToggle) {
-            HStack(spacing: JohoDimensions.spacingSM) {
-                // Day badge: [THU 1]
-                dayBadge
-
-                // Full date: January 1, 2026
-                Text(fullDateText)
-                    .font(JohoFont.body)
-                    .foregroundStyle(colors.primary)
-
-                Spacer()
-
-                // Status indicators
-                HStack(spacing: JohoDimensions.spacingXS) {
-                    // Date status pill (情報デザイン: TODAY, YESTERDAY, or X DAYS AGO)
-                    dateStatusPill
-
-                    // Content indicator dots (when collapsed)
-                    if !isExpanded {
-                        contentIndicatorDots
-                    }
-
-                    // Expand/collapse chevron
-                    Image(systemName: isExpanded ? IconCatalog.chevronDown : IconCatalog.chevronRight)
-                        .font(JohoFont.bodySmallBold)
-                        .foregroundStyle(colors.primary)
-                        .frame(width: 24, height: 24)
-                }
-            }
-            .padding(.horizontal, JohoDimensions.spacingMD)
-            .padding(.vertical, JohoDimensions.spacingSM)
-        }
-        .buttonStyle(.plain)
-    }
-
-    // MARK: - Day Badge
-
-    private var dayBadge: some View {
-        HStack(spacing: 4) {
-            Text(weekdayShort)
-                .font(JohoFont.labelSmall)
-            Text("\(dayCard.day)")
-                .font(JohoFont.headline)
-        }
-        .foregroundStyle(isToday ? JohoColors.black : colors.primary)
-        .padding(.horizontal, JohoDimensions.spacingSM)
-        .padding(.vertical, JohoDimensions.spacingXS)
-        .background(isToday ? JohoColors.todayOrange : colors.surface)
-        .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: JohoDimensions.borderThin)
-    }
-
-    // MARK: - Content Indicator Icons (情報デザイン: Black outline shapes)
-
-    private var contentIndicatorDots: some View {
-        HStack(spacing: 6) {
-            // 情報デザイン: 3-category indicator system
-            // Colored dots are FIXED (red, blue, green) - colors encode category meaning
-            // Icons are separate and customizable via database
-
-            // Holidays - Red dot
-            if holidays.isNotEmpty {
-                HStack(spacing: 2) {
-                    Circle()
-                        .fill(CategoryColorSettings.shared.color(for: .holiday))
-                        .frame(width: 8, height: 8)
-                        .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
-                    Text("\(holidays.count)")
-                        .font(JohoFont.labelBold)
-                        .foregroundStyle(colors.primary)
-                }
-            }
-
-            // Observances - Blue dot
-            if observances.isNotEmpty {
-                HStack(spacing: 2) {
-                    Circle()
-                        .fill(CategoryColorSettings.shared.color(for: .observance))
-                        .frame(width: 8, height: 8)
-                        .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
-                    Text("\(observances.count)")
-                        .font(JohoFont.labelBold)
-                        .foregroundStyle(colors.primary)
-                }
-            }
-
-            // Memos + Birthdays - Green dot
-            if birthdays.isNotEmpty || memosForDay.isNotEmpty {
-                HStack(spacing: 2) {
-                    Circle()
-                        .fill(CategoryColorSettings.shared.color(for: .memo))
-                        .frame(width: 8, height: 8)
-                        .overlay(Circle().stroke(colors.border, lineWidth: 0.5))
-                    Text("\(birthdays.count + memosForDay.count)")
-                        .font(JohoFont.labelBold)
-                        .foregroundStyle(colors.primary)
-                }
-            }
-        }
-    }
-
-    // MARK: - Expanded Content
-
-    /// Combined birthdays + memos for 情報デザイン 3-category system
-    private var combinedMemos: [SpecialDayRow] {
-        // Birthdays + memos combined under メモ category (GREEN)
-        (birthdays + memosForDay).sorted { $0.date < $1.date }
-    }
-
-    @ViewBuilder
-    private var expandedContent: some View {
-        VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-            // 情報デザイン: 3-category system
-            // RED = Holidays, BLUE = Observances
-            // GREEN = Memos (includes birthdays)
-
-            // Icons resolve via DisplayCategory.categoryAwareIcon
-
-            // Holidays (PINK zone)
-            if consolidatedHolidays.isNotEmpty {
-                consolidatedHolidaySection(
-                    title: DisplayCategory.holiday.localizedLabel,
-                    items: consolidatedHolidays,
-                    zone: .holidays,
-                    icon: DisplayCategory.holiday.categoryAwareIcon
-                )
-            }
-
-            // Observances (CYAN zone)
-            if observances.isNotEmpty {
-                specialDaySection(
-                    title: DisplayCategory.observance.localizedLabel,
-                    items: observances,
-                    zone: .observances,
-                    icon: DisplayCategory.observance.categoryAwareIcon
-                )
-            }
-
-            // Memos (GREEN zone - includes birthdays)
-            if combinedMemos.isNotEmpty {
-                specialDaySection(
-                    title: DisplayCategory.memo.localizedLabel,
-                    items: combinedMemos,
-                    zone: .memos,
-                    icon: DisplayCategory.memo.categoryAwareIcon
-                )
-            }
-        }
-        .padding(.horizontal, JohoDimensions.spacingMD)
-    }
-
-    // MARK: - Section Box (情報デザイン: Bento with compartmentalized header)
-
-    @ViewBuilder
-    private func specialDaySection(title: String, items: [SpecialDayRow], zone: SectionZone, icon: String) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Section header (情報デザイン: Bento with icon in RIGHT compartment)
-            HStack(spacing: 0) {
-                // LEFT: Title pill
-                JohoPill(text: title.uppercased(), style: .whiteOnBlack, size: .small)
-                    .padding(.leading, JohoDimensions.spacingMD)
-
-                Spacer()
-
-                // WALL (vertical divider)
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(width: 1.5)
-                    .frame(maxHeight: .infinity)
-
-                // RIGHT: Icon compartment sticker
-                JohoSticker.mini(icon: icon, color: zone.background(for: colorMode))
-                    .frame(width: 40)
-                    .frame(maxHeight: .infinity)
-            }
-            .frame(height: 32)
-            .background(zone.background(for: colorMode).opacity(JohoDimensions.opacityHeavy))  // Colored header
-
-            // Horizontal divider between header and items
-            Rectangle()
-                .fill(colors.border)
-                .frame(height: 1.5)
-
-            // Items on WHITE background (情報デザイン: white content backgrounds)
-            VStack(spacing: 0) {
-                ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-                    specialDayItemRow(item, zone: zone)
-
-                    // Divider between items (not after last)
-                    if index < items.count - 1 {
-                        Rectangle()
-                            .fill(colors.border.opacity(JohoDimensions.opacityMedium))
-                            .frame(height: 1)
-                            .padding(.horizontal, 6)
-                    }
-                }
-            }
-            .padding(.vertical, 4)
-            .background(colors.surface)  // WHITE body instead of colored
-        }
-        .johoBordered()
-    }
-
-    // MARK: - Consolidated Holiday Section (情報デザイン: Same-name holidays merged)
-    //
-    // Consolidates same-name holidays from different countries into ONE row
-    // ┌─────┬───────────────────────────────────────┬─────────────────────────────┐
-    // │ ●   ┃ New Year's Day                        ┃ [SWE][❄️] [USA][🎆]         │
-    // └─────┴───────────────────────────────────────┴─────────────────────────────┘
-    //  LEFT │           CENTER                      │      RIGHT (multi-country)
-
-    @ViewBuilder
-    private func consolidatedHolidaySection(title: String, items: [ConsolidatedHoliday], zone: SectionZone, icon: String) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Section header (情報デザイン: Bento with icon in RIGHT compartment)
-            HStack(spacing: 0) {
-                // LEFT: Title pill
-                JohoPill(text: title.uppercased(), style: .whiteOnBlack, size: .small)
-                    .padding(.leading, JohoDimensions.spacingMD)
-
-                Spacer()
-
-                // WALL (vertical divider)
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(width: 1.5)
-                    .frame(maxHeight: .infinity)
-
-                // RIGHT: Icon compartment sticker
-                JohoSticker.mini(icon: icon, color: zone.background(for: colorMode))
-                    .frame(width: 40)
-                    .frame(maxHeight: .infinity)
-            }
-            .frame(height: 32)
-            .background(zone.background(for: colorMode).opacity(JohoDimensions.opacityHeavy))  // Colored header
-
-            // Horizontal divider between header and items
-            Rectangle()
-                .fill(colors.border)
-                .frame(height: 1.5)
-
-            // Items on WHITE background (情報デザイン: white content backgrounds)
-            VStack(spacing: 0) {
-                ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-                    consolidatedHolidayRow(item, zone: zone)
-
-                    // Divider between items (not after last)
-                    if index < items.count - 1 {
-                        Rectangle()
-                            .fill(colors.border.opacity(JohoDimensions.opacityMedium))
-                            .frame(height: 1)
-                            .padding(.horizontal, 6)
-                    }
-                }
-            }
-            .padding(.vertical, 4)
-            .background(colors.surface)  // WHITE body instead of colored
-        }
-        .johoBordered()
-    }
-
-    // MARK: - Consolidated Holiday Row (情報デザイン: Multiple countries, one name)
-    //
-    // Each country keeps its own icon (user decision: Show ALL icons)
-    // ┌─────┬───────────────────────────────────────┬─────────────────────────────┐
-    // │ ●   ┃ New Year's Day                        ┃ [SWE][❄️] [USA][🎆]         │
-    // └─────┴───────────────────────────────────────┴─────────────────────────────┘
-
-    @ViewBuilder
-    private func consolidatedHolidayRow(_ item: ConsolidatedHoliday, zone: SectionZone) -> some View {
-        HStack(spacing: JohoDimensions.spacingSM) {
-            // Holiday name (情報デザイン: icon already in header, no need to repeat)
-            Text(item.displayName(for: locale))
-                .padding(.leading, JohoDimensions.spacingMD)
-                .font(JohoFont.body)
-                .foregroundStyle(colors.primary)
-                .lineLimit(1)
-
-            Spacer(minLength: 8)
-
-            // Region codes as plain text (情報デザイン: Clean, minimal)
-            regionCodesText(regions: item.regions)
-        }
-        .frame(minHeight: 44)
-        .contentShape(Rectangle())
-        // 情報デザイン: Tap shows detail sheet for first item in consolidated group
-        .onTapGesture {
-            if let firstItem = item.sourceRows.first {
-                showDetail(firstItem)
-                HapticManager.selection()
-            }
-        }
-    }
-
-    // MARK: - Region Codes Text (情報デザイン: Clean plain text codes)
-
-    /// Shows region codes as plain text ("NO SE FI") with optional overflow indicator
-    @ViewBuilder
-    private func regionCodesText(regions: [String]) -> some View {
-        let maxVisible = 4
-        let visibleRegions = Array(regions.prefix(maxVisible))
-        let overflowCount = regions.count - maxVisible
-
-        HStack(spacing: 4) {
-            Text(visibleRegions.joined(separator: " "))
-                .font(.system(size: 11, weight: .bold, design: .rounded))
-                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
-
-            if overflowCount > 0 {
-                Text("+\(overflowCount)")
-                    .font(.system(size: 10, weight: .semibold, design: .rounded))
-                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
-            }
-        }
-        .padding(.trailing, JohoDimensions.spacingMD)
-    }
-
-    // MARK: - Item Row (情報デザイン Bento: Compartmentalized with walls)
-    //
-    // 情報デザイン BENTO LAYOUT - Compartments with vertical dividers (walls)
-    // ┌─────┬─────────────────────────────────┬─────────────────┐
-    // │ ●🔒 ┃ New Year's Day                  ┃ [SWE] [HOL]     │
-    // └─────┴─────────────────────────────────┴─────────────────┘
-    //  LEFT │           CENTER                │      RIGHT
-    //  32pt │          flexible               │      84pt
-    //
-    // Tap → Expand details
-    // Swipe LEFT → Delete (red)
-    // Swipe RIGHT → Edit (cyan)
-
-    @ViewBuilder
-    private func specialDayItemRow(_ item: SpecialDayRow, zone: SectionZone) -> some View {
-        let canEdit = isEditable(item)
-        let isExpanded = expandedItemID == item.id
-
-        VStack(spacing: 0) {
-            // MAIN ROW (情報デザイン: vertical growth, no truncation)
-            HStack(alignment: .top, spacing: JohoDimensions.spacingSM) {
-                // Content area - grows vertically as needed
-                if item.type == .birthday {
-                    // Birthday: two-line layout (name + 🎂 age)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(item.title)
-                            .font(JohoFont.body)
-                            .foregroundStyle(colors.primary)
-                        if let age = item.turningAge {
-                            // 情報デザイン: Icon + number (no words needed)
-                            HStack(spacing: 4) {
-                                Image(systemName: IconCatalog.birthdayCake)
-                                    .font(.system(size: 10, weight: .medium, design: .rounded))
-                                Text("\(age)")
-                                    .font(.system(size: 11, weight: .semibold, design: .rounded))
-                            }
-                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
-                        }
-                    }
-                    .padding(.leading, JohoDimensions.spacingMD)
-                } else {
-                    // Regular memo/observance: single text, wraps vertically
-                    Text(item.title)
-                        .font(JohoFont.body)
-                        .padding(.leading, JohoDimensions.spacingMD)
-                        .foregroundStyle(colors.primary)
-                }
-
-                Spacer(minLength: 8)
-
-                // Region codes as plain text (情報デザイン: Clean, minimal)
-                if item.hasCountryPill {
-                    let regions = item.mergedRegions.isEmpty ? [item.region] : item.mergedRegions
-                    Text(regions.joined(separator: " "))
-                        .font(.system(size: 11, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
-                        .padding(.trailing, JohoDimensions.spacingMD)
-                        .padding(.top, 4)
-                }
-            }
-            .padding(.vertical, 8)
-            .frame(minHeight: 44)
-            // 情報デザイン: Tap shows detail sheet, long-press expands inline
-            .contentShape(Rectangle())
-            .onTapGesture {
-                showDetail(item)
-                HapticManager.selection()
-            }
-            .onLongPressGesture(minimumDuration: 0.3) {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    expandedItemID = isExpanded ? nil : item.id
-                }
-                HapticManager.impact(.light)
-            }
-
-            // EXPANDED DETAILS (情報デザイン: tap to reveal)
-            if isExpanded {
-                // Horizontal divider
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(height: 1.5)
-
-                // Details area - separate from tap gesture
-                HStack(spacing: 8) {
-                    // 情報デザイン: Only show notes if they ADD information beyond title
-                    // For .note type, notes = full content, title = first line
-                    // Don't show if notes == title (single-line note)
-                    if let notes = item.notes,
-                       !notes.isEmpty,
-                       notes != item.title {
-                        // Show additional content (lines beyond first)
-                        let additionalLines = notes.components(separatedBy: .newlines).dropFirst().joined(separator: "\n")
-                        if !additionalLines.isEmpty {
-                            Text(additionalLines)
-                                .font(JohoFont.caption)
-                                .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityDense))
-                                .lineLimit(2)
-                        }
-                    }
-
-                    Spacer()
-
-                    // Date badge
-                    Text(formatDate(item.date))
-                        .font(JohoFont.labelBold)
-                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 3)
-                        .background(colors.border.opacity(JohoDimensions.opacityFaint))
-                        .clipShape(Capsule())
-
-                    // Edit button (for user entries) - 情報デザイン: 44pt touch target
-                    if canEdit {
-                        Button {
-                            openEditor(item)
-                        } label: {
-                            HStack(spacing: 4) {
-                                Image(systemName: IconCatalog.pencil)
-                                Text("EDIT")
-                            }
-                            .font(JohoFont.labelBold)
-                            .foregroundStyle(JohoColors.cyan.contrastingForeground)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(JohoColors.cyan)
-                            .clipShape(Capsule())
-                            .overlay(Capsule().stroke(colors.border, lineWidth: 1.5))
-                        }
-                        .buttonStyle(.borderless)
-                    }
-                }
-                .padding(.horizontal, 10)
-                .padding(.vertical, 6)
-            }
-        }
-        // 情報デザイン: Context menu for Edit/Delete (long-press)
-        // Clean UI - no swipe clutter, just long-press for actions
-        .contextMenu {
-            if canEdit {
-                Button {
-                    openEditor(item)
-                } label: {
-                    Label("Edit", systemImage: "pencil")
-                }
-
-                Button(role: .destructive) {
-                    deleteRow(item)
-                } label: {
-                    Label("Delete", systemImage: "trash")
-                }
-            } else {
-                // System entry - show info only
-                Text("System entry (read-only)")
-            }
-        }
-    }
-
-    private func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "d MMM yyyy"
-        return formatter.string(from: date)
-    }
-
-    // MARK: - Type Indicator Dot (情報デザイン: Black outline shapes)
-
-    @ViewBuilder
-    private func typeIndicatorDot(for type: SpecialDayType) -> some View {
-        Image(systemName: type.displayCategory.categoryAwareIcon)
-            .font(JohoFont.labelBold)
-            .foregroundStyle(colors.primary)
-    }
-
-    // MARK: - Formatters
-
-    private var weekdayShort: String {
-        DateFormatterCache.weekdayShort.string(from: dayCard.date).uppercased()
-    }
-
-    private var fullDateText: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM d, yyyy"
-        return formatter.string(from: dayCard.date)
-    }
-}
-
-// MARK: - SpecialDaysListView Extension (remaining methods)
-
-extension SpecialDaysListView {
-
-    // MARK: - Special Day Flipcard (情報デザイン: Ticket/Docket Structure)
-    //
-    // "Information Design" ticket aesthetic:
-    // ┌─────────────────────────────────┐
-    // │ ❄️ 6    │              JANUARY │  ← Colored header: Icon+Date LEFT, Month RIGHT
-    // ├─────────────────────────────────┤  ← Thin black divider
-    // │ ● Epiphany                [SWE] │  ← White body with hairline dividers
-    // └─────────────────────────────────┘
-
-    @ViewBuilder
-    private func specialDayFlipcard(for row: SpecialDayRow) -> some View {
-        let calendar = Calendar.current
-        let day = calendar.component(.day, from: row.date)
-        let monthName = calendar.monthSymbols[calendar.component(.month, from: row.date) - 1].uppercased()
-
-        // Get icon
-        let icon = row.symbolName ?? row.type.categoryAwareIcon
-        let headerBgColor: Color = CategoryColorSettings.shared.color(for: row.type.displayCategory).opacity(JohoDimensions.opacityLight)
-        let iconColor: Color = CategoryColorSettings.shared.color(for: row.type.displayCategory)
-
-        Button {
-            // Only holidays/observances use the special day editor
-            if row.type == .holiday || row.type == .observance {
-                editingSpecialDay = EditingSpecialDay(
-                    id: row.id,
-                    ruleID: row.ruleID,
-                    name: row.title,
-                    date: row.date,
-                    type: row.type,
-                    symbolName: row.symbolName,
-                    iconColor: row.iconColor,
-                    notes: row.notes,
-                    region: row.region
-                )
-            }
-        } label: {
-            VStack(spacing: 0) {
-                // HEADER (情報デザイン: Docket style)
-                // LEFT: Icon + Date | RIGHT: Month (monospace, uppercase)
-                HStack(spacing: 0) {
-                    // LEFT: Icon + Date grouped
-                    HStack(spacing: 6) {
-                        JohoSticker.mini(icon: icon, color: iconColor)
-
-                        Text("\(day)")
-                            .font(.system(size: 20, weight: .black, design: .rounded))
-                            .foregroundStyle(colors.primary)
-                    }
-                    .padding(.leading, 10)
-
-                    Spacer()
-
-                    // RIGHT: Month (monospace, technical look)
-                    Text(monthName)
-                        .font(.system(size: 8, weight: .bold, design: .monospaced))
-                        .tracking(2)
-                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
-                        .padding(.trailing, 10)
-                }
-                .frame(maxWidth: .infinity)
-                .frame(height: 36)
-                .background(headerBgColor)
-
-                // Thin divider (情報デザイン: 1px distinct border)
-                Rectangle()
-                    .fill(colors.border.opacity(JohoDimensions.opacityMedium))
-                    .frame(height: 1)
-
-                // BODY: Event row (white background)
-                VStack(spacing: 0) {
-                    // Main event row
-                    HStack(spacing: 6) {
-                        // Type indicator dot
-                        typeIndicatorDot(for: row.type)
-
-                        // Event name (sans-serif for human data)
-                        Text(row.title)
-                            .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundStyle(colors.primary)
-                            .lineLimit(2)
-                            .minimumScaleFactor(0.8)
-
-                        Spacer(minLength: 4)
-
-                        // Country badge
-                        if row.hasCountryPill {
-                            CountryPill(region: row.region)
-                        }
-                    }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 8)
-
-                    // Metadata row (monospace for technical data) - intelligent tense
-                    // 情報デザイン: Age 0 = birth year, show contextual "born on this day" message
-                    if row.type == .birthday, let age = row.turningAge {
-                        Rectangle().fill(colors.border.opacity(JohoDimensions.opacitySubtle)).frame(height: 1)
-                        Text(birthdayExpandedDisplayText(age: age, date: row.date, daysUntil: row.daysUntil))
-                            .font(.system(size: 9, weight: .medium, design: .monospaced))
-                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
-                            .padding(.vertical, 6)
-                    } else if row.isMemo {
-                        Rectangle().fill(colors.border.opacity(JohoDimensions.opacitySubtle)).frame(height: 1)
-                        let daysText = row.daysUntil == 0 ? "TODAY" :
-                                       row.daysUntil == 1 ? "IN 1 DAY" :
-                                       "IN \(row.daysUntil) DAYS"
-                        Text(daysText)
-                            .font(.system(size: 9, weight: .medium, design: .monospaced))
-                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
-                            .padding(.vertical, 6)
-                    }
-                }
-                .frame(maxWidth: .infinity)
-            }
-            .background(colors.surface)
-            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1, borderColor: colors.border.opacity(JohoDimensions.opacityMild))  // Thin technical border
-            .shadow(color: colors.border.opacity(JohoDimensions.opacityFaint), radius: 2, x: 0, y: 1)
-        }
-        .buttonStyle(.plain)
-    }
-
-    // MARK: - Expanded Day Card (情報デザイン: Multi-event Ticket)
-    //
-    // Same ticket structure, multiple events with hairline dividers:
-    // ┌─────────────────────────────────┐
-    // │ ❄️ 1    │              JANUARY │
-    // ├─────────────────────────────────┤
-    // │ ● New Year's Day         [SWE] │
-    // │─────────────────────────────────│  ← Hairline divider
-    // │ ● Tết Dương lịch          [VN] │
-    // └─────────────────────────────────┘
-
-    @ViewBuilder
-    private func expandedDayCard(for dayCard: DayCardData) -> some View {
-        let calendar = Calendar.current
-        let monthName = calendar.monthSymbols[calendar.component(.month, from: dayCard.date) - 1].uppercased()
-
-        // Use first item for header styling
-        let primaryItem = dayCard.items.first
-        let primaryType = primaryItem?.type ?? .holiday
-        let icon = primaryItem?.symbolName ?? primaryType.categoryAwareIcon
-        let headerBgColor: Color = primaryType.accentColor.opacity(JohoDimensions.opacityLight)
-        let iconColor: Color = primaryType.accentColor
-
-        VStack(spacing: 0) {
-            // HEADER: Icon + Date LEFT, Month RIGHT
-            HStack(spacing: 0) {
-                HStack(spacing: 6) {
-                    JohoSticker.mini(icon: icon, color: iconColor)
-
-                    Text("\(dayCard.day)")
-                        .font(.system(size: 20, weight: .black, design: .rounded))
-                        .foregroundStyle(colors.primary)
-                }
-                .padding(.leading, 10)
-
-                Spacer()
-
-                Text(monthName)
-                    .font(.system(size: 8, weight: .bold, design: .monospaced))
-                    .tracking(2)
-                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
-                    .padding(.trailing, 10)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 36)
-            .background(headerBgColor)
-
-            // Thin divider
-            Rectangle()
-                .fill(colors.border.opacity(JohoDimensions.opacityMedium))
-                .frame(height: 1)
-
-            // BODY: List of events with hairline dividers
-            VStack(spacing: 0) {
-                ForEach(Array(dayCard.items.enumerated()), id: \.element.id) { index, item in
-                    // Hairline divider between items (not before first)
-                    if index > 0 {
-                        Rectangle()
-                            .fill(colors.border.opacity(0.08))
-                            .frame(height: 1)
-                            .padding(.horizontal, 10)
-                    }
-
-                    // Event row
-                    HStack(spacing: 6) {
-                        typeIndicatorDot(for: item.type)
-
-                        Text(item.title)
-                            .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundStyle(colors.primary)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
-
-                        Spacer(minLength: 4)
-
-                        if item.hasCountryPill {
-                            CountryPill(region: item.region)
-                        }
-                    }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 8)
-                }
-            }
-        }
-        .background(colors.surface)
-        .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1, borderColor: colors.border.opacity(JohoDimensions.opacityMild))
-        .shadow(color: colors.border.opacity(JohoDimensions.opacityFaint), radius: 2, x: 0, y: 1)
-    }
-
-    // MARK: - Type Indicator Dot (情報デザイン: Black outline shapes)
-    // Icons are database-driven via DisplayCategory.categoryAwareIcon
-
-    @ViewBuilder
-    private func typeIndicatorDot(for type: SpecialDayType) -> some View {
-        let category = type.displayCategory
-        Image(systemName: category.categoryAwareIcon)
-            .font(JohoFont.labelBold)
-            .foregroundStyle(colors.primary)
-    }
-}
-
-// MARK: - SpecialDaysListView Disabled State Extension
-
-extension SpecialDaysListView {
     // MARK: - Disabled State
 
     private var disabledState: some View {
@@ -2243,11 +955,13 @@ extension SpecialDaysListView {
         .padding(.horizontal, JohoDimensions.spacingLG)
         .padding(.top, JohoDimensions.spacingSM)
     }
+}
 
-    // MARK: - Data Operations
+// MARK: - SpecialDaysListView Data Operations
+
+extension SpecialDaysListView {
 
     private func createSpecialDay(type: SpecialDayType, name: String, date: Date, symbol: String, iconColor: String?, notes: String?, region: String) {
-        // Memos are stored as Memo
         if type == .memo {
             let memo = Memo(text: name, date: date)
             modelContext.insert(memo)
@@ -2261,7 +975,6 @@ extension SpecialDaysListView {
             return
         }
 
-        // Holidays and observances are stored as HolidayRule
         let calendar = Calendar.current
         let month = calendar.component(.month, from: date)
         let day = calendar.component(.day, from: date)
@@ -2292,9 +1005,6 @@ extension SpecialDaysListView {
     }
 
     private func updateSpecialDay(ruleID: String, type: SpecialDayType, name: String, date: Date, symbol: String, iconColor: String?, notes: String?, region: String) {
-        // Note: Memos are updated via MemoEditorView, not this function
-
-        // Holidays and observances are stored as HolidayRule
         do {
             let descriptor = FetchDescriptor<HolidayRule>(predicate: #Predicate<HolidayRule> { $0.id == ruleID })
             if let rule = try modelContext.fetch(descriptor).first {
@@ -2321,24 +1031,20 @@ extension SpecialDaysListView {
 
     // MARK: - Editability Check
 
-    /// Determines if a SpecialDayRow can be edited/deleted
-    /// System holidays (isCustom=false) are read-only
     private func isEditable(_ row: SpecialDayRow) -> Bool {
         switch row.type {
         case .holiday, .observance:
-            return row.isCustom  // Only user-created holidays/observances
+            return row.isCustom
         case .birthday, .memo, .note, .event, .trip, .expense:
-            return true  // Always editable
+            return true
         }
     }
 
     // MARK: - Edit Handler
 
-    /// Opens the appropriate editor sheet based on entry type
     private func openEditor(_ row: SpecialDayRow) {
         switch row.type {
         case .holiday, .observance:
-            // Use existing editingSpecialDay mechanism
             editingSpecialDay = EditingSpecialDay(
                 id: row.id,
                 ruleID: row.ruleID,
@@ -2352,14 +1058,12 @@ extension SpecialDaysListView {
             )
 
         case .birthday:
-            // Fetch Contact by UUID
             if let uuid = UUID(uuidString: row.ruleID) {
                 let descriptor = FetchDescriptor<Contact>(predicate: #Predicate<Contact> { $0.id == uuid })
                 editingContact = try? modelContext.fetch(descriptor).first
             }
 
         case .memo, .note, .event, .trip, .expense:
-            // Fetch Memo by UUID
             if let uuid = UUID(uuidString: row.ruleID) {
                 let descriptor = FetchDescriptor<Memo>(predicate: #Predicate<Memo> { $0.id == uuid })
                 editingMemo = try? modelContext.fetch(descriptor).first
@@ -2369,15 +1073,12 @@ extension SpecialDaysListView {
 
     // MARK: - Delete Handler
 
-    /// Deletes a row based on its type
     private func deleteRow(_ row: SpecialDayRow) {
         switch row.type {
         case .holiday, .observance:
-            // Use existing deleteWithUndo for these types
             deleteWithUndo(row: row)
 
         case .birthday:
-            // Delete the contact
             if let uuid = UUID(uuidString: row.ruleID) {
                 let descriptor = FetchDescriptor<Contact>(predicate: #Predicate<Contact> { $0.id == uuid })
                 if let contact = try? modelContext.fetch(descriptor).first {
@@ -2388,7 +1089,6 @@ extension SpecialDaysListView {
             }
 
         case .memo, .note, .event, .trip, .expense:
-            // Delete the memo
             if let uuid = UUID(uuidString: row.ruleID) {
                 let descriptor = FetchDescriptor<Memo>(predicate: #Predicate<Memo> { $0.id == uuid })
                 if let memo = try? modelContext.fetch(descriptor).first {
@@ -2414,7 +1114,6 @@ extension SpecialDaysListView {
 
         let ruleId = row.ruleID
 
-        // Holidays and observances are stored as HolidayRule
         do {
             let descriptor = FetchDescriptor<HolidayRule>(predicate: #Predicate<HolidayRule> { $0.id == ruleId })
             if let rule = try modelContext.fetch(descriptor).first {
