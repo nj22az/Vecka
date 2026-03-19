@@ -141,7 +141,7 @@ actor SimplePDFExportService {
     @MainActor
     static func exportMonth(month: Int, year: Int, modelContext: ModelContext) async throws -> URL {
         // Get all days in the month
-        let allDays = PDFMonthAuditReport.getAllMonthDates(month: month, year: year)
+        let allDays = PDFMonthAuditReport.monthDates(month: month, year: year)
 
         // Paginate: ~15 days per page for readability
         let daysPerPage = 15
@@ -858,11 +858,7 @@ struct PDFWeekSummaryPage: View {
     }
 
     private func formatAmount(_ amount: Double, currency: String) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = currency
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "\(currency) \(Int(amount))"
+        CurrencyFormatter.formatted(amount, currencyCode: currency)
     }
 }
 
@@ -1087,11 +1083,7 @@ struct PDFExpenseReportPage: View {
     }
 
     private func formatAmount(_ amount: Double, currency: String) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = currency
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "\(currency) \(Int(amount))"
+        CurrencyFormatter.formatted(amount, currencyCode: currency)
     }
 }
 
@@ -1167,7 +1159,10 @@ struct PDFWeekCompactPage: View {
         VStack(alignment: .leading, spacing: 8) {
             // Day headers
             HStack(spacing: 0) {
-                ForEach(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], id: \.self) { day in
+                // ISO 8601: Mon–Sun. shortWeekdaySymbols starts at Sunday, so rotate.
+                let symbols = Calendar.iso8601.shortWeekdaySymbols
+                let mondayFirst = Array(symbols[1...]) + [symbols[0]]
+                ForEach(mondayFirst, id: \.self) { day in
                     Text(day)
                         .font(.system(size: 10, weight: .semibold, design: .rounded))
                         .foregroundStyle(JohoColors.black.opacity(0.6))
@@ -1192,7 +1187,7 @@ struct PDFWeekCompactPage: View {
     }
 
     private func miniDayCell(for date: Date) -> some View {
-        let dayData = getDayData(for: date)
+        let dayData = compileDayData(for: date)
         let isToday = calendar.isDateInToday(date)
 
         return VStack(spacing: 4) {
@@ -1229,7 +1224,7 @@ struct PDFWeekCompactPage: View {
     }
 
     private func compactDayRow(for date: Date) -> some View {
-        let dayData = getDayData(for: date)
+        let dayData = compileDayData(for: date)
 
         return VStack(alignment: .leading, spacing: 6) {
             // Day header
@@ -1389,28 +1384,28 @@ struct PDFWeekCompactPage: View {
         var isEmpty: Bool { holidays.isEmpty && birthdays.isEmpty && events.isEmpty && notes.isEmpty && expenseCount == 0 }
     }
 
-    private func getDayData(for date: Date) -> DayData {
-        var data = DayData()
+    private func compileDayData(for date: Date) -> DayData {
+        var dayData = DayData()
 
         // Holidays from cache
         if let holidays = HolidayManager.cache[Calendar.current.startOfDay(for: date)] {
-            data.holidays = holidays.map { $0.displayTitle }
+            dayData.holidays = holidays.map { $0.displayTitle }
         }
 
         // Notes (Memo)
         let dayNotes = notes.filter { calendar.isDate($0.date, inSameDayAs: date) }
-        data.notes = dayNotes.map { $0.text }
-        data.noteCount = dayNotes.count
+        dayData.notes = dayNotes.map { $0.text }
+        dayData.noteCount = dayNotes.count
 
         // Expenses (Memo)
         let dayExpenses = expenses.filter { calendar.isDate($0.date, inSameDayAs: date) }
-        data.expenseCount = dayExpenses.count
-        data.expenseTotal = dayExpenses.reduce(0) { $0 + ($1.amount ?? 0) }
+        dayData.expenseCount = dayExpenses.count
+        dayData.expenseTotal = dayExpenses.reduce(0) { $0 + ($1.amount ?? 0) }
 
         // Birthdays
         let month = calendar.component(.month, from: date)
         let day = calendar.component(.day, from: date)
-        data.birthdays = contacts.compactMap { contact in
+        dayData.birthdays = contacts.compactMap { contact in
             guard let birthday = contact.birthday,
                   calendar.component(.month, from: birthday) == month,
                   calendar.component(.day, from: birthday) == day else { return nil }
@@ -1418,17 +1413,13 @@ struct PDFWeekCompactPage: View {
         }
 
         // Events (Memo countdowns)
-        data.events = events.filter { calendar.isDate($0.date, inSameDayAs: date) }.map { $0.text }
+        dayData.events = events.filter { calendar.isDate($0.date, inSameDayAs: date) }.map { $0.text }
 
-        return data
+        return dayData
     }
 
     private func formatExpense(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = "SEK"
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "\(Int(amount)) kr"
+        CurrencyFormatter.formatted(amount, currencyCode: "SEK")
     }
 }
 
@@ -1533,7 +1524,10 @@ struct PDFMonthCompactPage: View {
                     .foregroundStyle(JohoColors.black.opacity(0.6))
                     .frame(width: 30)
 
-                ForEach(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], id: \.self) { day in
+                // ISO 8601: Mon–Sun. shortWeekdaySymbols starts at Sunday, so rotate.
+                let symbols = Calendar.iso8601.shortWeekdaySymbols
+                let mondayFirst = Array(symbols[1...]) + [symbols[0]]
+                ForEach(mondayFirst, id: \.self) { day in
                     Text(day)
                         .font(.system(size: 10, weight: .semibold, design: .rounded))
                         .foregroundStyle(JohoColors.black.opacity(0.6))
@@ -1576,7 +1570,7 @@ struct PDFMonthCompactPage: View {
     }
 
     private func calendarDayCell(for date: Date) -> some View {
-        let dayData = getDayData(for: date)
+        let dayData = compileDayData(for: date)
         let isInMonth = calendar.component(.month, from: date) == month
         let isToday = calendar.isDateInToday(date)
         let day = calendar.component(.day, from: date)
@@ -1758,22 +1752,22 @@ struct PDFMonthCompactPage: View {
         var hasEvents = false
     }
 
-    private func getDayData(for date: Date) -> DayData {
-        var data = DayData()
+    private func compileDayData(for date: Date) -> DayData {
+        var dayData = DayData()
 
         // Holidays
         if let holidays = HolidayManager.cache[Calendar.current.startOfDay(for: date)], !holidays.isEmpty {
-            data.hasHoliday = true
+            dayData.hasHoliday = true
         }
 
         // Notes (Memo)
-        data.hasNotes = notes.contains { calendar.isDate($0.date, inSameDayAs: date) }
+        dayData.hasNotes = notes.contains { calendar.isDate($0.date, inSameDayAs: date) }
 
         // Expenses (Memo)
-        data.hasExpenses = expenses.contains { calendar.isDate($0.date, inSameDayAs: date) }
+        dayData.hasExpenses = expenses.contains { calendar.isDate($0.date, inSameDayAs: date) }
 
         // Events (Memo countdowns)
-        data.hasEvents = events.contains { calendar.isDate($0.date, inSameDayAs: date) }
+        dayData.hasEvents = events.contains { calendar.isDate($0.date, inSameDayAs: date) }
 
         // Birthdays
         let month = calendar.component(.month, from: date)
@@ -1782,18 +1776,14 @@ struct PDFMonthCompactPage: View {
             guard let birthday = contact.birthday else { return false }
             return calendar.component(.month, from: birthday) == month && calendar.component(.day, from: birthday) == day
         }) {
-            data.hasEvents = true
+            dayData.hasEvents = true
         }
 
-        return data
+        return dayData
     }
 
     private func formatExpense(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = "SEK"
-        formatter.maximumFractionDigits = 0
-        return formatter.string(from: NSNumber(value: amount)) ?? "\(Int(amount)) kr"
+        CurrencyFormatter.formatted(amount, currencyCode: "SEK")
     }
 }
 
@@ -2112,11 +2102,7 @@ struct PDFWeekAuditReport: View {
     }
 
     private func formatCurrency(_ amount: Double, currency: String) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = currency
-        formatter.maximumFractionDigits = 2
-        return formatter.string(from: NSNumber(value: amount)) ?? "\(amount) \(currency)"
+        CurrencyFormatter.formatted(amount, currencyCode: currency, fractionDigits: 2)
     }
 
     private func countHolidaysAndEvents() -> Int {
@@ -2367,7 +2353,7 @@ struct PDFMonthAuditReport: View {
     // MARK: - Month Totals
 
     private var monthTotalsRow: some View {
-        let allMonthDates = Self.getAllMonthDates(month: month, year: year)
+        let allMonthDates = Self.monthDates(month: month, year: year)
         let monthNotes = notes.filter { note in allMonthDates.contains { calendar.isDate($0, inSameDayAs: note.date) } }
         let monthExpenses = expenses.filter { expense in allMonthDates.contains { calendar.isDate($0, inSameDayAs: expense.date) } }
         let totalExpenses = monthExpenses.reduce(0) { $0 + ($1.amount ?? 0) }
@@ -2435,14 +2421,10 @@ struct PDFMonthAuditReport: View {
     }
 
     private func formatCurrency(_ amount: Double, currency: String) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = currency
-        formatter.maximumFractionDigits = 2
-        return formatter.string(from: NSNumber(value: amount)) ?? "\(amount) \(currency)"
+        CurrencyFormatter.formatted(amount, currencyCode: currency, fractionDigits: 2)
     }
 
-    static func getAllMonthDates(month: Int, year: Int) -> [Date] {
+    static func monthDates(month: Int, year: Int) -> [Date] {
         let calendar = Calendar.iso8601
         var components = DateComponents(year: year, month: month, day: 1)
         guard let startOfMonth = calendar.date(from: components) else { return [] }

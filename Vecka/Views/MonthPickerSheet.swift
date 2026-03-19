@@ -22,7 +22,7 @@ struct MonthPickerSheet: View {
 
     private var years: [Int] {
         let current = Calendar.iso8601.component(.year, from: Date())
-        let range = ConfigurationManager.shared.getInt("year_picker_range", context: modelContext, default: 20)
+        let range = ConfigurationManager.shared.intValue("year_picker_range", context: modelContext, default: 20)
         return Array((current - range)...(current + range))
     }
 
@@ -125,7 +125,7 @@ struct MonthPickerSheet: View {
             }
             .padding(JohoDimensions.spacingSM)
         }
-        .background(JohoColors.yellow)
+        .background(SectionZone.notes.background(for: colorMode))
         // 情報デザイン: Content fills available space
         .presentationDetents([.medium])
         .presentationCornerRadius(JohoDimensions.radiusLarge)

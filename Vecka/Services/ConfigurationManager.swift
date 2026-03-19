@@ -17,7 +17,7 @@ class ConfigurationManager {
 
     // MARK: - Configuration Access
 
-    func getInt(_ key: String, context: ModelContext, default defaultValue: Int) -> Int {
+    func intValue(_ key: String, context: ModelContext, default defaultValue: Int) -> Int {
         let descriptor = FetchDescriptor<AppConfiguration>(
             predicate: #Predicate<AppConfiguration> { config in
                 config.key == key && config.isActive
@@ -36,7 +36,7 @@ class ConfigurationManager {
         return defaultValue
     }
 
-    func getDouble(_ key: String, context: ModelContext, default defaultValue: Double) -> Double {
+    func doubleValue(_ key: String, context: ModelContext, default defaultValue: Double) -> Double {
         let descriptor = FetchDescriptor<AppConfiguration>(
             predicate: #Predicate<AppConfiguration> { config in
                 config.key == key && config.isActive
@@ -55,7 +55,7 @@ class ConfigurationManager {
         return defaultValue
     }
 
-    func getString(_ key: String, context: ModelContext, default defaultValue: String) -> String {
+    func stringValue(_ key: String, context: ModelContext, default defaultValue: String) -> String {
         let descriptor = FetchDescriptor<AppConfiguration>(
             predicate: #Predicate<AppConfiguration> { config in
                 config.key == key && config.isActive
@@ -74,7 +74,7 @@ class ConfigurationManager {
         return defaultValue
     }
 
-    func getBool(_ key: String, context: ModelContext, default defaultValue: Bool) -> Bool {
+    func boolValue(_ key: String, context: ModelContext, default defaultValue: Bool) -> Bool {
         let descriptor = FetchDescriptor<AppConfiguration>(
             predicate: #Predicate<AppConfiguration> { config in
                 config.key == key && config.isActive
@@ -96,7 +96,7 @@ class ConfigurationManager {
     // MARK: - Icon Catalog Queries
 
     /// Get all icons for a specific category
-    func getIcons(category: String, context: ModelContext) -> [IconCatalogItem] {
+    func icons(category: String, context: ModelContext) -> [IconCatalogItem] {
         let descriptor = FetchDescriptor<IconCatalogItem>(
             predicate: #Predicate<IconCatalogItem> { icon in
                 icon.category == category && icon.isActive
@@ -113,7 +113,7 @@ class ConfigurationManager {
     }
 
     /// Get symbol name and label for a specific icon
-    func getIconSymbol(symbolName: String, category: String, context: ModelContext) -> (symbol: String, label: String)? {
+    func iconSymbol(symbolName: String, category: String, context: ModelContext) -> (symbol: String, label: String)? {
         let descriptor = FetchDescriptor<IconCatalogItem>(
             predicate: #Predicate<IconCatalogItem> { icon in
                 icon.symbolName == symbolName && icon.category == category && icon.isActive
@@ -132,7 +132,7 @@ class ConfigurationManager {
     }
 
     /// Get default icon for countdown type (database-driven with fallback)
-    func getCountdownIcon(for type: String, context: ModelContext) -> String {
+    func countdownIcon(for type: String, context: ModelContext) -> String {
         // Map countdown type to icon (database-driven)
         let iconMap: [String: String] = [
             "new_year": "sparkles",
@@ -149,7 +149,7 @@ class ConfigurationManager {
 
     // MARK: - Theme Management
 
-    func getActiveTheme(context: ModelContext) -> UITheme? {
+    func activeTheme(context: ModelContext) -> UITheme? {
         let descriptor = FetchDescriptor<UITheme>(
             predicate: #Predicate<UITheme> { theme in
                 theme.isActive
@@ -164,9 +164,9 @@ class ConfigurationManager {
         }
     }
 
-    func getWeekdayColor(for weekday: Int, context: ModelContext) -> Color {
-        guard let theme = getActiveTheme(context: context) else {
-            return getDefaultWeekdayColor(for: weekday)
+    func weekdayColor(for weekday: Int, context: ModelContext) -> Color {
+        guard let theme = activeTheme(context: context) else {
+            return defaultWeekdayColor(for: weekday)
         }
 
         let hexCode: String
@@ -184,7 +184,7 @@ class ConfigurationManager {
         return Color(hex: hexCode)
     }
 
-    private func getDefaultWeekdayColor(for weekday: Int) -> Color {
+    private func defaultWeekdayColor(for weekday: Int) -> Color {
         // Fallback to hardcoded defaults if no theme in database
         switch weekday {
         case 1: return Color(hex: "FFD700")  // Sunday - Sun
@@ -200,7 +200,7 @@ class ConfigurationManager {
 
     // MARK: - Typography Management
 
-    func getActiveTypography(context: ModelContext) -> TypographyScale? {
+    func activeTypography(context: ModelContext) -> TypographyScale? {
         let descriptor = FetchDescriptor<TypographyScale>(
             predicate: #Predicate<TypographyScale> { scale in
                 scale.isActive
@@ -215,8 +215,8 @@ class ConfigurationManager {
         }
     }
 
-    func getFontSize(_ key: String, context: ModelContext, default defaultValue: Double) -> Double {
-        guard let typography = getActiveTypography(context: context) else {
+    func fontSize(_ key: String, context: ModelContext, default defaultValue: Double) -> Double {
+        guard let typography = activeTypography(context: context) else {
             return defaultValue
         }
 
@@ -235,7 +235,7 @@ class ConfigurationManager {
 
     // MARK: - Spacing Management
 
-    func getActiveSpacing(context: ModelContext) -> SpacingScale? {
+    func activeSpacing(context: ModelContext) -> SpacingScale? {
         let descriptor = FetchDescriptor<SpacingScale>(
             predicate: #Predicate<SpacingScale> { scale in
                 scale.isActive
@@ -250,8 +250,8 @@ class ConfigurationManager {
         }
     }
 
-    func getSpacing(_ key: String, context: ModelContext, default defaultValue: Double) -> Double {
-        guard let spacing = getActiveSpacing(context: context) else {
+    func spacing(_ key: String, context: ModelContext, default defaultValue: Double) -> Double {
+        guard let spacing = activeSpacing(context: context) else {
             return defaultValue
         }
 
@@ -274,7 +274,7 @@ class ConfigurationManager {
 
     // MARK: - Icon Catalog (Legacy methods - for backward compatibility)
 
-    func getIcons(for category: String, context: ModelContext) -> [IconCatalogItem] {
+    func icons(for category: String, context: ModelContext) -> [IconCatalogItem] {
         let descriptor = FetchDescriptor<IconCatalogItem>(
             predicate: #Predicate<IconCatalogItem> { item in
                 item.category == category && item.isActive
@@ -354,7 +354,7 @@ class ConfigurationManager {
 
     // MARK: - Algorithm Parameters
 
-    func getAlgorithmParameters(for algorithm: String, context: ModelContext) -> [String: Double] {
+    func algorithmParameters(for algorithm: String, context: ModelContext) -> [String: Double] {
         let descriptor = FetchDescriptor<AlgorithmParameter>(
             predicate: #Predicate<AlgorithmParameter> { param in
                 param.algorithmName == algorithm
@@ -363,11 +363,11 @@ class ConfigurationManager {
 
         do {
             let params = try context.fetch(descriptor)
-            var result: [String: Double] = [:]
+            var parameterValues: [String: Double] = [:]
             for param in params {
-                result[param.parameterName] = param.parameterValue
+                parameterValues[param.parameterName] = param.parameterValue
             }
-            return result
+            return parameterValues
         } catch {
             Log.e("ConfigurationManager: Failed to fetch algorithm parameters for \(algorithm): \(error)")
             return [:]

@@ -99,7 +99,7 @@ struct LandingPageView: View {
 
     /// Today's items for summary
     private var todayItems: [TodayItem] {
-        getTodayItems()
+        buildTodayItems()
     }
 
     // MARK: - Body (情報デザイン: Content fills screen, no scrolling on iPad)
@@ -164,7 +164,7 @@ struct LandingPageView: View {
         .onAppear {
             // Initialize fact provider if needed
             if factProvider == nil {
-                factProvider = RandomFactProvider(context: modelContext, selectedRegions: ["NORDIC", "VN", "UK"])
+                factProvider = RandomFactProvider(context: modelContext, selectedRegions: holidayRegions.expandedRegions)
             }
             // 情報デザイン: Always refresh facts when landing page appears (tab switch, back navigation)
             loadRandomFacts()
@@ -179,6 +179,8 @@ struct LandingPageView: View {
         .onChange(of: holidayRegions) { _, newRegions in
             WorldClockStorage.syncFromRegions(newRegions)
             WidgetCenter.shared.reloadTimelines(ofKind: "VeckaWidget")
+            factProvider = RandomFactProvider(context: modelContext, selectedRegions: newRegions.expandedRegions)
+            loadRandomFacts()
         }
         .sheet(isPresented: $showTripsSheet) {
             NavigationStack {
@@ -343,7 +345,7 @@ struct LandingPageView: View {
             // Country code pill (情報デザイン: Region-colored like MonthTheme)
             Text(clock.countryCode)
                 .font(JohoFont.pillLabel)
-                .foregroundStyle(colors.primaryInverted)
+                .foregroundStyle(theme.accentColor.contrastingForeground)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 3)
                 .background(theme.accentColor)
@@ -431,7 +433,7 @@ struct LandingPageView: View {
                 ZStack {
                     Image(systemName: IconCatalog.bookClosed)
                         .font(JohoFont.bodySmallBold)
-                        .foregroundStyle(JohoColors.cyan)
+                        .foregroundStyle(JohoColors.cyanForeground(for: colorMode))
                 }
                 .frame(width: 24, height: 24)
                 .background(JohoColors.cyan.opacity(JohoDimensions.opacityLight))
@@ -640,12 +642,13 @@ struct LandingPageView: View {
                 if !item.regions.isEmpty {
                     HStack(spacing: 3) {
                         ForEach(item.regions, id: \.self) { code in
+                            let bgColor = CountryColorScheme.scheme(for: code)?.backgroundColor ?? colors.primary
                             Text(code)
                                 .font(.system(size: 7, weight: .black, design: .rounded))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(bgColor.contrastingForeground)
                                 .padding(.horizontal, 4)
                                 .padding(.vertical, 1)
-                                .background(CountryColorScheme.scheme(for: code)?.backgroundColor ?? colors.primary)
+                                .background(bgColor)
                                 .clipShape(Capsule())
                         }
                     }
@@ -1130,7 +1133,7 @@ struct LandingPageView: View {
 
     // MARK: - Get Today's Items
 
-    private func getTodayItems() -> [TodayItem] {
+    private func buildTodayItems() -> [TodayItem] {
         let calendar = Calendar.iso8601
         var items: [TodayItem] = []
 

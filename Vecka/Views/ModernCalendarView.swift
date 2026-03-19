@@ -51,13 +51,13 @@ struct ModernCalendarView: View {
     private var holidayManager = HolidayManager.shared
 
     private var memoColors: [Date: String] {
-        var dict: [Date: String] = [:]
+        var memoColorsByDate: [Date: String] = [:]
         let calendar = Calendar.current
         for memo in memos.sorted(by: { $0.date < $1.date }) {
             let day = calendar.startOfDay(for: memo.date)
-            dict[day] = memo.colorHex
+            memoColorsByDate[day] = memo.colorHex
         }
-        return dict
+        return memoColorsByDate
     }
 
     // MARK: - Legend Data (情報デザイン)
@@ -1043,14 +1043,14 @@ struct ModernCalendarView: View {
     // MARK: - Week Detail Helpers
 
     private func holidaysForWeek(_ week: CalendarWeek) -> [HolidayCacheItem] {
-        var result: [HolidayCacheItem] = []
+        var weekHolidays: [HolidayCacheItem] = []
         for day in week.days {
             let dayStart = Calendar.iso8601.startOfDay(for: day.date)
             if let holidays = holidayManager.holidayCache[dayStart] {
-                result.append(contentsOf: holidays)
+                weekHolidays.append(contentsOf: holidays)
             }
         }
-        return result
+        return weekHolidays
     }
 
     private func color(for colorName: String) -> Color {
@@ -1089,7 +1089,7 @@ struct ModernCalendarView: View {
         let dayOfMonth = calendar.component(.day, from: date)
         let currentYear = calendar.component(.year, from: date)
 
-        var result: [DayDashboardView.BirthdayInfo] = []
+        var yearBirthdays: [DayDashboardView.BirthdayInfo] = []
         for contact in contacts {
             guard let birthday = contact.birthday else { continue }
             let bMonth = calendar.component(.month, from: birthday)
@@ -1099,14 +1099,14 @@ struct ModernCalendarView: View {
                 let birthYear = calendar.component(.year, from: birthday)
                 // If birth year is reasonable (not 1604 placeholder), calculate age
                 let age: Int? = birthYear > 1900 ? currentYear - birthYear : nil
-                result.append(DayDashboardView.BirthdayInfo(
+                yearBirthdays.append(DayDashboardView.BirthdayInfo(
                     id: contact.id.uuidString,
                     name: contact.displayName,
                     age: age
                 ))
             }
         }
-        return result
+        return yearBirthdays
     }
 
     private struct LunarConfig: Equatable {

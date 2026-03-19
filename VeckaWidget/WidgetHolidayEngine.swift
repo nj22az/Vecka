@@ -161,7 +161,7 @@ struct WidgetHolidayEngine {
     // MARK: - Public API
 
     /// Get holidays for a specific date
-    func getHolidays(for date: Date) -> [WidgetHoliday] {
+    func holidays(for date: Date) -> [WidgetHoliday] {
         let year = calendar.component(.year, from: date)
         let targetDay = calendar.startOfDay(for: date)
 
@@ -188,7 +188,7 @@ struct WidgetHolidayEngine {
     }
 
     /// Get upcoming holidays in the next N days
-    func getUpcomingHolidays(from date: Date, days: Int = 30) -> [WidgetHoliday] {
+    func upcomingHolidays(from date: Date, days: Int = 30) -> [WidgetHoliday] {
         let year = calendar.component(.year, from: date)
         let nextYear = year + 1
         let startOfToday = calendar.startOfDay(for: date)
@@ -229,7 +229,7 @@ struct WidgetHolidayEngine {
 
     /// Check if a specific day has a holiday
     func hasHoliday(on date: Date) -> Bool {
-        !getHolidays(for: date).isEmpty
+        !holidays(for: date).isEmpty
     }
 
     // MARK: - Date Calculation (mirrors HolidayEngine)
@@ -268,25 +268,26 @@ struct WidgetHolidayEngine {
 
     /// Anonymous Gregorian Computus for Easter Sunday
     private func easterSunday(year: Int) -> Date {
-        let a = year % 19
-        let b = year / 100
-        let c = year % 100
-        let d = b / 4
-        let e = b % 4
-        let f = (b + 8) / 25
-        let g = (b - f + 1) / 3
-        let h = (19 * a + b - d - g + 15) % 30
-        let i = c / 4
-        let k = c % 4
-        let l = (32 + 2 * e + 2 * i - h - k) % 7
-        let m = (a + 11 * h + 22 * l) / 451
-        let month = (h + l - 7 * m + 114) / 31
-        let day = ((h + l - 7 * m + 114) % 31) + 1
+        // Anonymous Gregorian Computus algorithm for Easter date calculation
+        let goldenNumber = year % 19
+        let century = year / 100
+        let yearInCentury = year % 100
+        let centuryLeapCycles = century / 4
+        let centuryLeapRemainder = century % 4
+        let epactAdjustment = (century + 8) / 25
+        let lunarOrbitCorrection = (century - epactAdjustment + 1) / 3
+        let paschalFullMoon = (19 * goldenNumber + century - centuryLeapCycles - lunarOrbitCorrection + 15) % 30
+        let yearLeapCycles = yearInCentury / 4
+        let yearLeapRemainder = yearInCentury % 4
+        let sundayOffset = (32 + 2 * centuryLeapRemainder + 2 * yearLeapCycles - paschalFullMoon - yearLeapRemainder) % 7
+        let easterMonth = (goldenNumber + 11 * paschalFullMoon + 22 * sundayOffset) / 451
+        let month = (paschalFullMoon + sundayOffset - 7 * easterMonth + 114) / 31
+        let easterDay = ((paschalFullMoon + sundayOffset - 7 * easterMonth + 114) % 31) + 1
 
         var comps = DateComponents()
         comps.year = year
         comps.month = month
-        comps.day = day
+        comps.day = easterDay
         return calendar.date(from: comps) ?? Date()
     }
 

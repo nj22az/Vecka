@@ -173,8 +173,8 @@ struct VeckaWidgetProvider: TimelineProvider {
         let engine = WidgetHolidayEngine()
         let calendar = Self.calendar
 
-        let todaysHolidays = engine.getHolidays(for: date)
-        let upcomingHolidays = engine.getUpcomingHolidays(from: date, days: 30)
+        let todaysHolidays = engine.holidays(for: date)
+        let upcomingHolidays = engine.upcomingHolidays(from: date, days: 30)
 
         // Pre-compute holidays for the entire visible month (for large widget)
         // Get first day of month and compute all days in the month
@@ -188,7 +188,7 @@ struct VeckaWidgetProvider: TimelineProvider {
         for dayOffset in 0..<daysInMonth {
             guard let dayDate = calendar.date(byAdding: .day, value: dayOffset, to: firstOfMonth) else { continue }
             let dayStart = calendar.startOfDay(for: dayDate)
-            let holidays = engine.getHolidays(for: dayDate)
+            let holidays = engine.holidays(for: dayDate)
             if !holidays.isEmpty {
                 monthHolidays[dayStart] = holidays
             }
@@ -363,7 +363,7 @@ struct VeckaWidgetEntry: TimelineEntry {
             for dayOffset in 0..<daysInMonth {
                 guard let dayDate = calendar.date(byAdding: .day, value: dayOffset, to: firstOfMonth) else { continue }
                 let dayStart = calendar.startOfDay(for: dayDate)
-                let holidays = engine.getHolidays(for: dayDate)
+                let holidays = engine.holidays(for: dayDate)
                 if !holidays.isEmpty {
                     monthHolidays[dayStart] = holidays
                 }
@@ -375,8 +375,8 @@ struct VeckaWidgetEntry: TimelineEntry {
             todaysEvents: [],
             weekEvents: [:],
             upcomingEvent: nil,
-            todaysHolidays: engine.getHolidays(for: today),
-            upcomingHolidays: engine.getUpcomingHolidays(from: today, days: 30),
+            todaysHolidays: engine.holidays(for: today),
+            upcomingHolidays: engine.upcomingHolidays(from: today, days: 30),
             monthHolidays: monthHolidays,
             todaysBirthdays: [],
             weekBirthdays: [:],

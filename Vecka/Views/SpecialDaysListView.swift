@@ -365,22 +365,22 @@ struct SpecialDaysListView: View {
     /// Get rows for a specific month, filtered by active category filters
     private func rowsForMonth(_ month: Int) -> [SpecialDayRow] {
         let calendar = Calendar.current
-        var result: [SpecialDayRow] = []
+        var monthRows: [SpecialDayRow] = []
 
         // 情報デザイン: Only include categories that are active in the filter
         if activeFilters.contains(.holiday) {
-            result += rows(for: .holiday).filter { calendar.component(.month, from: $0.date) == month }
+            monthRows += rows(for: .holiday).filter { calendar.component(.month, from: $0.date) == month }
         }
         if activeFilters.contains(.observance) {
-            result += rows(for: .observance).filter { calendar.component(.month, from: $0.date) == month }
+            monthRows += rows(for: .observance).filter { calendar.component(.month, from: $0.date) == month }
         }
         if activeFilters.contains(.memo) {
             // Memo category includes birthdays + memos
-            result += rows(for: .birthday).filter { calendar.component(.month, from: $0.date) == month }
-            result += rows(for: .memo).filter { calendar.component(.month, from: $0.date) == month }
+            monthRows += rows(for: .birthday).filter { calendar.component(.month, from: $0.date) == month }
+            monthRows += rows(for: .memo).filter { calendar.component(.month, from: $0.date) == month }
         }
 
-        return result.sorted { $0.date < $1.date }
+        return monthRows.sorted { $0.date < $1.date }
     }
 
     /// Group rows by date into DayCardData (情報デザイン: same-day holidays combine)

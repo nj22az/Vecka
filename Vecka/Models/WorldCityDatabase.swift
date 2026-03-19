@@ -206,17 +206,17 @@ struct WorldCityDatabase {
     /// Derive up to 3 unique-timezone world clocks from selected holiday regions
     static func clockCities(for regions: HolidayRegionSelection) -> [WorldCity] {
         var seenTimezones = Set<String>()
-        var result: [WorldCity] = []
+        var filteredCities: [WorldCity] = []
 
         for code in regions.expandedRegions {
-            guard result.count < 3 else { break }
+            guard filteredCities.count < 3 else { break }
             guard let city = capitalCity(forCountryCode: code) else { continue }
             // De-duplicate by timezone (Nordic countries share Europe/Stockholm etc.)
             guard !seenTimezones.contains(city.timezone) else { continue }
             seenTimezones.insert(city.timezone)
-            result.append(city)
+            filteredCities.append(city)
         }
 
-        return result
+        return filteredCities
     }
 }

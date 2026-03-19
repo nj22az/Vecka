@@ -84,7 +84,7 @@ enum CategoryColorStorage {
     static func save() {
         guard let defaults = sharedDefaults else { return }
         let settings = CategoryColorSettings.shared
-        var data: [String: String] = [
+        var categoryColorMap: [String: String] = [
             "holiday": settings.holidayColorHex,
             "observance": settings.observanceColorHex,
             "memo": settings.memoColorHex,
@@ -92,25 +92,25 @@ enum CategoryColorStorage {
 
         // Sync structural theme overrides for widget
         if let theme = JohoThemeCache.activeTheme() {
-            if let hex = theme.lightBorderHex { data["border_light"] = hex }
-            if let hex = theme.lightSurfaceHex { data["surface_light"] = hex }
-            if let hex = theme.lightCanvasHex { data["canvas_light"] = hex }
-            if let hex = theme.darkBorderHex { data["border_dark"] = hex }
-            if let hex = theme.darkSurfaceHex { data["surface_dark"] = hex }
-            if let hex = theme.darkCanvasHex { data["canvas_dark"] = hex }
+            if let hex = theme.lightBorderHex { categoryColorMap["border_light"] = hex }
+            if let hex = theme.lightSurfaceHex { categoryColorMap["surface_light"] = hex }
+            if let hex = theme.lightCanvasHex { categoryColorMap["canvas_light"] = hex }
+            if let hex = theme.darkBorderHex { categoryColorMap["border_dark"] = hex }
+            if let hex = theme.darkSurfaceHex { categoryColorMap["surface_dark"] = hex }
+            if let hex = theme.darkCanvasHex { categoryColorMap["canvas_dark"] = hex }
 
             // Derive text colors from surface luminance for widget readability
             if let lightSurface = theme.lightSurfaceHex {
                 let lum = Color(hex: lightSurface).relativeLuminance
-                data["primary_light"] = lum <= 0.5 ? "F0F0F0" : "000000"
+                categoryColorMap["primary_light"] = lum <= 0.5 ? "F0F0F0" : "000000"
             }
             if let darkSurface = theme.darkSurfaceHex {
                 let lum = Color(hex: darkSurface).relativeLuminance
-                data["primary_dark"] = lum <= 0.5 ? "F0F0F0" : "000000"
+                categoryColorMap["primary_dark"] = lum <= 0.5 ? "F0F0F0" : "000000"
             }
         }
 
-        guard let encoded = try? JSONEncoder().encode(data) else { return }
+        guard let encoded = try? JSONEncoder().encode(categoryColorMap) else { return }
         defaults.set(encoded, forKey: categoryColorsKey)
     }
 

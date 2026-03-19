@@ -239,7 +239,7 @@ class HolidayManager {
             // Empty region is treated as "All Regions" (user-defined or global rules).
             let rules = allRules.filter { $0.isEnabled && ($0.region.isEmpty || regions.contains($0.region)) }
 
-            let span = ConfigurationManager.shared.getInt("holiday_cache_span", context: context, default: 2)
+            let span = ConfigurationManager.shared.intValue("holiday_cache_span", context: context, default: 2)
             let currentYear = Calendar.current.component(.year, from: Date())
             var yearsToCache = Set((currentYear - span)...(currentYear + span))
             if let effectiveFocusYear {
@@ -289,19 +289,19 @@ class HolidayManager {
     /// E.g., Valentine's Day from SE + VN becomes one item with mergedRegions: ["SE", "VN"].
     /// Bank holiday status, notes, icons merge by taking the most significant value.
     private static func deduplicateByTitle(_ items: [HolidayCacheItem]) -> [HolidayCacheItem] {
-        var seen: [String: Int] = [:]  // displayTitle → index in result
-        var result: [HolidayCacheItem] = []
+        var seen: [String: Int] = [:]  // displayTitle → index in deduplicatedItems
+        var deduplicatedItems: [HolidayCacheItem] = []
 
         for item in items {
             let title = item.displayTitle
-            if let idx = seen[title] {
+            if let existingIndex = seen[title] {
                 // Merge this region into existing item
-                let existing = result[idx]
+                let existing = deduplicatedItems[existingIndex]
                 var regions = existing.mergedRegions
                 if !regions.contains(item.region) {
                     regions.append(item.region)
                 }
-                result[idx] = HolidayCacheItem(
+                deduplicatedItems[existingIndex] = HolidayCacheItem(
                     id: existing.id,
                     region: existing.region,
                     name: existing.name,
@@ -315,14 +315,14 @@ class HolidayManager {
                     mergedRegions: regions
                 )
             } else {
-                seen[title] = result.count
+                seen[title] = deduplicatedItems.count
                 var merged = item
                 merged.mergedRegions = [item.region]
-                result.append(merged)
+                deduplicatedItems.append(merged)
             }
         }
 
-        return result
+        return deduplicatedItems
     }
 
     private func sortHolidays(lhs: HolidayCacheItem, rhs: HolidayCacheItem) -> Bool {

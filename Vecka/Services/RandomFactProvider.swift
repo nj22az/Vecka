@@ -80,15 +80,15 @@ final class RandomFactProvider: ObservableObject {
 
     /// Expands unified regions (like NORDIC) to their component countries
     private static func expandRegions(_ regions: [String]) -> [String] {
-        var result: [String] = []
+        var expandedRegions: [String] = []
         for region in regions {
             if region == "NORDIC" {
-                result.append(contentsOf: HolidayRegionSelection.nordicCountries)
+                expandedRegions.append(contentsOf: HolidayRegionSelection.nordicCountries)
             } else {
-                result.append(region)
+                expandedRegions.append(region)
             }
         }
-        return result
+        return expandedRegions
     }
 
     // MARK: - Public API
@@ -100,6 +100,11 @@ final class RandomFactProvider: ObservableObject {
             return egg
         }
 
+        // No regions selected → calendar facts only
+        guard !selectedRegions.isEmpty else {
+            return randomCalendarFact() ?? calendarFallback()
+        }
+
         // 情報デザイン: 20% chance for calendar fact, 80% database facts for variety
         // This ensures interesting region facts dominate while still showing relevant date info
         if Double.random(in: 0...1) < 0.2,
@@ -109,6 +114,22 @@ final class RandomFactProvider: ObservableObject {
 
         // Primarily show database facts for maximum variety
         return randomRegionFact()
+    }
+
+    /// Fallback calendar fact when no calendar facts match today or no regions selected
+    private func calendarFallback() -> RandomFact {
+        let weekNumber = Calendar.iso8601.component(.weekOfYear, from: today)
+        let totalWeeks = 52
+        let progress = Int(Double(weekNumber) / Double(totalWeeks) * 100)
+        return RandomFact(
+            id: "calendar-fallback-\(weekNumber)",
+            text: "\(progress)% through the year",
+            icon: IconCatalog.event,
+            color: JohoColors.cyan,
+            explanation: "We're in week \(weekNumber) of \(totalWeeks) — that's \(progress)% of the year completed.",
+            source: "Calendar",
+            category: "calendar"
+        )
     }
 
     func reset() {

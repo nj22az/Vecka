@@ -49,15 +49,15 @@ struct HolidayRegionSelection: RawRepresentable, Equatable, Hashable, Sendable {
     /// Expands unified regions (like NORDIC) to their component countries
     /// Use this when querying holidays or facts from the database
     var expandedRegions: [String] {
-        var result: [String] = []
+        var expandedRegions: [String] = []
         for region in regions {
             if region == Self.nordicCode {
-                result.append(contentsOf: Self.nordicCountries)
+                expandedRegions.append(contentsOf: Self.nordicCountries)
             } else {
-                result.append(region)
+                expandedRegions.append(region)
             }
         }
-        return result
+        return expandedRegions
     }
 
     /// Check if Nordic is selected

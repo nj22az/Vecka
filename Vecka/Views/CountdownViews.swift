@@ -108,7 +108,7 @@ struct CountdownCard: View {
                 .font(JohoFont.labelSmall)
                 .tracking(0.5)
         }
-        .foregroundStyle(JohoColors.cyan)
+        .foregroundStyle(JohoColors.cyanForeground(for: colorMode))
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
         .background(
@@ -310,7 +310,7 @@ struct CountdownPickerSheet: View {
     
     private func addFavorite(_ item: SavedCountdown) {
         if favorites.contains(item) { return }
-        let maxFavorites = ConfigurationManager.shared.getInt("max_favorites", context: modelContext, default: 4)
+        let maxFavorites = ConfigurationManager.shared.intValue("max_favorites", context: modelContext, default: 4)
         if favorites.count >= maxFavorites { favorites.removeFirst() }
         favorites.append(item)
         saveFavorites()
@@ -371,7 +371,7 @@ struct CountdownPickerSheet: View {
             Image(systemName: icon).foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
             Text(title).foregroundStyle(colors.primary)
             Spacer()
-            if isSelectedRow { Image(systemName: IconCatalog.checkmark).foregroundStyle(JohoColors.cyan) }
+            if isSelectedRow { Image(systemName: IconCatalog.checkmark).foregroundStyle(JohoColors.cyanForeground(for: colorMode)) }
         }
         .contentShape(Rectangle())
         .onTapGesture {
@@ -398,7 +398,7 @@ struct CountdownPickerSheet: View {
         if let idx = favorites.firstIndex(of: item) {
             favorites.remove(at: idx)
         } else {
-            let maxFavorites = ConfigurationManager.shared.getInt("max_favorites", context: modelContext, default: 4)
+            let maxFavorites = ConfigurationManager.shared.intValue("max_favorites", context: modelContext, default: 4)
             if favorites.count >= maxFavorites { favorites.removeFirst() }
             favorites.append(item)
         }
@@ -432,7 +432,7 @@ struct CountdownPickerSheet: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
             Spacer()
-            if (fav.type == selectedCountdown) { Image(systemName: IconCatalog.checkmarkCircleFill).foregroundStyle(JohoColors.cyan) }
+            if (fav.type == selectedCountdown) { Image(systemName: IconCatalog.checkmarkCircleFill).foregroundStyle(JohoColors.cyanForeground(for: colorMode)) }
         }
         .contentShape(Rectangle())
         .onTapGesture {
@@ -470,7 +470,7 @@ struct CountdownPickerSheet: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
             Spacer()
-            Image(systemName: IconCatalog.checkmarkCircleFill).foregroundStyle(JohoColors.cyan)
+            Image(systemName: IconCatalog.checkmarkCircleFill).foregroundStyle(JohoColors.cyanForeground(for: colorMode))
         }
     }
 }
@@ -586,7 +586,7 @@ struct CustomCountdownDialog: View {
                     } label: {
                         Text("Save")
                             .font(JohoFont.bodySmallBold)
-                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primaryInverted.opacity(JohoDimensions.opacityModerate))
+                            .foregroundStyle(canSave ? eventAccentColor.contrastingForeground : colors.primaryInverted.opacity(JohoDimensions.opacityModerate))
                             .frame(width: 56, height: 32)
                             .background(canSave ? eventAccentColor : colors.primaryInverted.opacity(JohoDimensions.opacityMild))
                             .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5, borderColor: colors.primaryInverted)

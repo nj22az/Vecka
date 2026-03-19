@@ -45,9 +45,9 @@ struct DashboardView: View {
 
     // Computed stats for stats row
     private var notesCount: Int { allNotes.count }
-    private var expensesCount: Int { getThisMonthExpenses().count }
+    private var expensesCount: Int { currentMonthExpenses().count }
     private var tripsCount: Int { activeTrips.count }
-    private var specialDaysCount: Int { getAllUpcomingSpecialDays().count }
+    private var specialDaysCount: Int { upcomingSpecialDays().count }
 
     var body: some View {
         GeometryReader { geometry in
@@ -407,7 +407,7 @@ struct DashboardView: View {
     // MARK: - Upcoming Holidays Card (情報デザイン: Pink = Special Days)
 
     private var upcomingHolidaysCard: some View {
-        let upcomingHolidays = getUpcomingHolidays(limit: 3)
+        let upcomingHolidays = upcomingHolidays(limit: 3)
 
         return DataCard(title: "HOLIDAYS", icon: IconCatalog.holiday, zone: .holidays) {
             if upcomingHolidays.isEmpty {
@@ -475,7 +475,7 @@ struct DashboardView: View {
     // MARK: - Expense Summary Card (情報デザイン: Green = Money/Expenses)
 
     private var expenseSummaryCard: some View {
-        let thisMonth = getThisMonthExpenses()
+        let thisMonth = currentMonthExpenses()
         let total = thisMonth.reduce(0) { $0 + ($1.amount ?? 0) }
 
         return DataCard(title: "EXPENSES", icon: "dollarsign.circle", zone: .expenses) {
@@ -548,7 +548,7 @@ struct DashboardView: View {
     }
 
     private func pickRandomSpotlight() {
-        let allSpecialDays = getAllUpcomingSpecialDays()
+        let allSpecialDays = upcomingSpecialDays()
         guard !allSpecialDays.isEmpty else {
             spotlightItem = nil
             return
@@ -558,7 +558,7 @@ struct DashboardView: View {
         spotlightItem = allSpecialDays.randomElement()
     }
 
-    private func getAllUpcomingSpecialDays() -> [SpotlightItem] {
+    private func upcomingSpecialDays() -> [SpotlightItem] {
         let today = Calendar.iso8601.startOfDay(for: Date())
         let calendar = Calendar.iso8601
         var items: [SpotlightItem] = []
@@ -626,7 +626,7 @@ struct DashboardView: View {
         return 7 - adjustedWeekday
     }
 
-    private func getUpcomingHolidays(limit: Int) -> [(name: String, date: Date)] {
+    private func upcomingHolidays(limit: Int) -> [(name: String, date: Date)] {
         let today = Calendar.iso8601.startOfDay(for: Date())
 
         var holidays: [(name: String, date: Date)] = []
@@ -642,7 +642,7 @@ struct DashboardView: View {
         return Array(holidays.sorted { $0.date < $1.date }.prefix(limit))
     }
 
-    private func getThisMonthExpenses() -> [Memo] {
+    private func currentMonthExpenses() -> [Memo] {
         let calendar = Calendar.iso8601
         let today = Date()
         guard let startOfMonth = calendar.date(from: calendar.dateComponents([.year, .month], from: today)) else {
@@ -660,10 +660,7 @@ struct DashboardView: View {
     }
 
     private func formatCurrency(_ amount: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = Locale.current.currency?.identifier ?? "USD"
-        return formatter.string(from: NSNumber(value: amount)) ?? "$0"
+        CurrencyFormatter.formattedLocale(amount)
     }
 }
 

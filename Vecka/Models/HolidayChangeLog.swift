@@ -292,16 +292,14 @@ final class HolidayChangeLogService {
 
     // MARK: - Query Methods
 
-    /// Get all changelog entries, newest first
-    func getAllEntries(context: ModelContext) -> [HolidayChangeLog] {
+    func allEntries(context: ModelContext) -> [HolidayChangeLog] {
         let descriptor = FetchDescriptor<HolidayChangeLog>(
             sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
         )
         return (try? context.fetch(descriptor)) ?? []
     }
 
-    /// Get entries for a specific region
-    func getEntries(for region: String, context: ModelContext) -> [HolidayChangeLog] {
+    func entries(for region: String, context: ModelContext) -> [HolidayChangeLog] {
         let descriptor = FetchDescriptor<HolidayChangeLog>(
             predicate: #Predicate { $0.region == region },
             sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
@@ -309,8 +307,7 @@ final class HolidayChangeLogService {
         return (try? context.fetch(descriptor)) ?? []
     }
 
-    /// Get entries for a specific rule
-    func getEntries(forRuleId ruleId: String, context: ModelContext) -> [HolidayChangeLog] {
+    func entries(forRuleId ruleId: String, context: ModelContext) -> [HolidayChangeLog] {
         let descriptor = FetchDescriptor<HolidayChangeLog>(
             predicate: #Predicate { $0.ruleId == ruleId },
             sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
@@ -318,8 +315,7 @@ final class HolidayChangeLogService {
         return (try? context.fetch(descriptor)) ?? []
     }
 
-    /// Get recent entries (last N)
-    func getRecentEntries(limit: Int, context: ModelContext) -> [HolidayChangeLog] {
+    func recentEntries(limit: Int, context: ModelContext) -> [HolidayChangeLog] {
         var descriptor = FetchDescriptor<HolidayChangeLog>(
             sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
         )
