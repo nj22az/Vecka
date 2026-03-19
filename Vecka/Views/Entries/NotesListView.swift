@@ -10,7 +10,9 @@ import SwiftUI
 import SwiftData
 
 struct NotesListView: View {
-    // Query all memos, filter to notes type in computed property
+    // All memos needed: notes have memoTypeRaw == nil OR "note" (nil is the historical default),
+    // and a predicate matching both states is fragile across SwiftData migrations.
+    // Filtering to notes happens via allMemos.notes in the computed property.
     @Query(sort: [SortDescriptor(\Memo.date, order: .reverse)])
     private var allMemos: [Memo]
     @Environment(\.modelContext) private var modelContext
@@ -215,12 +217,12 @@ struct NotesListView: View {
 
     private func unpin(_ note: Memo) {
         note.pinnedToDashboard = false
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
     }
 
     private func delete(_ note: Memo) {
         modelContext.delete(note)
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
     }
 
     private func deleteDay(_ day: Date) {
@@ -228,7 +230,7 @@ struct NotesListView: View {
         for note in toDelete {
             modelContext.delete(note)
         }
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
     }
 }
 

@@ -654,7 +654,7 @@ struct DeveloperSettingsView: View {
             modelContext.insert(contact)
         }
 
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         successMessage = "Generated 10 test contacts!"
         showingSuccessMessage = true
         HapticManager.notification(.success)
@@ -683,7 +683,7 @@ struct DeveloperSettingsView: View {
             modelContext.insert(memo)
         }
 
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         successMessage = "Generated 10 test memos!"
         showingSuccessMessage = true
         HapticManager.notification(.success)
@@ -717,7 +717,7 @@ struct DeveloperSettingsView: View {
             modelContext.insert(memo)
         }
 
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         successMessage = "Generated 10 test expenses!"
         showingSuccessMessage = true
         HapticManager.notification(.success)
@@ -753,7 +753,7 @@ struct DeveloperSettingsView: View {
             modelContext.insert(memo)
         }
 
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         successMessage = "Generated 5 test trips with dates!"
         showingSuccessMessage = true
         HapticManager.notification(.success)
@@ -786,7 +786,7 @@ struct DeveloperSettingsView: View {
             modelContext.insert(memo)
         }
 
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         successMessage = "Generated 5 countdown events!"
         showingSuccessMessage = true
         HapticManager.notification(.success)
@@ -829,7 +829,7 @@ struct DeveloperSettingsView: View {
             modelContext.insert(memo)
         }
 
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         successMessage = "Generated 5 scheduled meetings!"
         showingSuccessMessage = true
         HapticManager.notification(.success)
@@ -850,7 +850,7 @@ struct DeveloperSettingsView: View {
             modelContext.insert(memo)
         }
 
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         successMessage = "Generated 3 pinned memos!"
         showingSuccessMessage = true
         HapticManager.notification(.success)
@@ -882,7 +882,7 @@ struct DeveloperSettingsView: View {
             createdCount += 1
         }
 
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         successMessage = "Generated \(createdCount) birthday memos!"
         showingSuccessMessage = true
         HapticManager.notification(.success)
@@ -910,7 +910,7 @@ struct DeveloperSettingsView: View {
             modelContext.insert(memo)
         }
 
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         successMessage = "Generated 5 task memos!"
         showingSuccessMessage = true
         HapticManager.notification(.success)
@@ -939,7 +939,7 @@ struct DeveloperSettingsView: View {
             modelContext.insert(rule)
         }
 
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         successMessage = "Generated 3 custom holidays!"
         showingSuccessMessage = true
         HapticManager.notification(.success)
@@ -986,7 +986,7 @@ struct DeveloperSettingsView: View {
             }
         }
 
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         successMessage = "Assigned avatars to \(assignedCount) contacts!"
         showingSuccessMessage = true
         HapticManager.notification(.success)

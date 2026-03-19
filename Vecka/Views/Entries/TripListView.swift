@@ -11,6 +11,8 @@ import SwiftData
 struct TripListView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.johoColorMode) private var colorMode
+    // All memos needed: memoTypeRaw nil-handling makes a predicate for .trip unreliable.
+    // Filtering happens via allMemos.trips in the computed property.
     @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
 
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
@@ -151,7 +153,7 @@ struct TripListView: View {
 
     private func delete(_ trip: Memo) {
         modelContext.delete(trip)
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
     }
 }
 

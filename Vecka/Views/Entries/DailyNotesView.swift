@@ -20,18 +20,10 @@ struct DailyNotesView: View {
 
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
-    // Query all memos, filter to notes for this day
-    @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
-
-    // Filter to notes for this specific day
-    private var dayNotes: [Memo] {
-        let noteType = MemoType.note
-        let day = Calendar.iso8601.startOfDay(for: selectedDate)
-        let nextDay = Calendar.iso8601.date(byAdding: .day, value: 1, to: day) ?? day
-        return allMemos.filter { memo in
-            memo.type == noteType && memo.date >= day && memo.date < nextDay
-        }
-    }
+    // Query only notes for this specific day using a predicate.
+    // Predicate filters by date range (stored property) to avoid loading all memos.
+    // memoTypeRaw is the stored backing field for MemoType; nil defaults to .note.
+    @Query private var dayNotes: [Memo]
 
     @State private var isCreating = false
     @State private var didAppear = false
@@ -40,6 +32,19 @@ struct DailyNotesView: View {
         self.selectedDate = selectedDate
         self.isModal = isModal
         self.startCreating = startCreating
+
+        let day = Calendar.iso8601.startOfDay(for: selectedDate)
+        let nextDay = Calendar.iso8601.date(byAdding: .day, value: 1, to: day) ?? day
+        let noteTypeRaw = MemoType.note.rawValue
+        _dayNotes = Query(
+            filter: #Predicate<Memo> { memo in
+                memo.date >= day &&
+                memo.date < nextDay &&
+                (memo.memoTypeRaw == noteTypeRaw || memo.memoTypeRaw == nil)
+            },
+            sort: \Memo.date,
+            order: .reverse
+        )
     }
 
     var body: some View {

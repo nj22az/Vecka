@@ -46,18 +46,24 @@ struct ModernCalendarView: View {
     // Settings
     @AppStorage("systemUIAccent") private var systemUIAccent = "blue"
 
+    // All memos needed: calendar dots span any date across the full data set.
     @Query private var memos: [Memo]
-    @Query private var contacts: [Contact]  // For birthday indicators
+    // All contacts needed: birthday indicators appear on any calendar day.
+    @Query private var contacts: [Contact]
     private var holidayManager = HolidayManager.shared
 
-    private var memoColors: [Date: String] {
-        var memoColorsByDate: [Date: String] = [:]
+    // Cached color map rebuilt only when memos change, not on every render.
+    // Updated via .onChange(of: memos) in body modifiers.
+    @State private var memoColors: [Date: String] = [:]
+
+    private func buildMemoColors() -> [Date: String] {
+        var result: [Date: String] = [:]
         let calendar = Calendar.current
         for memo in memos.sorted(by: { $0.date < $1.date }) {
             let day = calendar.startOfDay(for: memo.date)
-            memoColorsByDate[day] = memo.colorHex
+            result[day] = memo.colorHex
         }
-        return memoColorsByDate
+        return result
     }
 
     // MARK: - Legend Data (情報デザイン)
@@ -410,6 +416,7 @@ struct ModernCalendarView: View {
                 updateSelectedWeekAndDay()
             }
             .onAppear {
+                memoColors = buildMemoColors()
                 AppInitializer.initialize(context: modelContext)
                 updateLunarConfig()
                 updateMonthFromDate()
@@ -422,6 +429,7 @@ struct ModernCalendarView: View {
                 updateMonthFromDate(from: newDate)
             }
             .onChange(of: memos) { _, _ in
+                memoColors = buildMemoColors()
                 updateMonthFromDate()
             }
             .onChange(of: contacts) { _, _ in
@@ -534,7 +542,7 @@ struct ModernCalendarView: View {
         memo.linkedContactID = contactID
         memo.photoData = photoData
         modelContext.insert(memo)
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         HapticManager.notification(.success)
     }
 
@@ -555,7 +563,7 @@ struct ModernCalendarView: View {
         rule.userModifiedAt = Date()
 
         modelContext.insert(rule)
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
 
         // Refresh cache
         holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: selectedYear)

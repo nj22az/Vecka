@@ -179,7 +179,7 @@ struct SpecialDayDetailSheet: View {
             })
             if let memos = try? modelContext.fetch(descriptor), let memo = memos.first {
                 memo.symbolName = iconName
-                try? modelContext.save()
+                do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
                 HapticManager.notification(.success)
             }
         } else {
@@ -191,7 +191,7 @@ struct SpecialDayDetailSheet: View {
             if let rules = try? modelContext.fetch(descriptor), let rule = rules.first {
                 rule.symbolName = iconName
                 rule.userModifiedAt = Date()
-                try? modelContext.save()
+                do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
                 // Refresh holiday cache
                 HolidayManager.shared.calculateAndCacheHolidays(context: modelContext, focusYear: Calendar.current.component(.year, from: item.date))
                 HapticManager.notification(.success)

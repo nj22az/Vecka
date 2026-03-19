@@ -1283,7 +1283,7 @@ struct SettingsView: View {
             modelContext.insert(memo)
         }
 
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         HapticManager.notification(.success)
     }
 
@@ -1309,7 +1309,7 @@ struct SettingsView: View {
             modelContext.insert(rule)
         }
 
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         HapticManager.notification(.success)
     }
 
@@ -1335,7 +1335,7 @@ struct SettingsView: View {
             modelContext.insert(rule)
         }
 
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         HapticManager.notification(.success)
     }
 
@@ -1372,7 +1372,7 @@ struct SettingsView: View {
             modelContext.insert(contact)
         }
 
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         HapticManager.notification(.success)
     }
 
@@ -1401,7 +1401,7 @@ struct SettingsView: View {
             modelContext.insert(memo)
         }
 
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         HapticManager.notification(.success)
     }
 

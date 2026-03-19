@@ -912,7 +912,7 @@ struct SingleMemoDetailSheet: View {
 
     private func savePermanentMemoIcon(_ iconName: String) {
         memo.symbolName = iconName == memoIcon ? nil : iconName
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         HapticManager.notification(.success)
     }
 

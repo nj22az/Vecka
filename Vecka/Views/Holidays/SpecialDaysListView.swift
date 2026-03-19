@@ -47,10 +47,12 @@ struct SpecialDaysListView: View {
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
     private var holidayManager = HolidayManager.shared
 
-    // Query contacts for birthdays
+    // All contacts needed: birthdays are projected into the selected year for any contact.
     @Query private var contacts: [Contact]
 
-    // Query memos (unified: notes, events, trips, expenses)
+    // All memos needed: the selected year can be changed at runtime; predicating on year
+    // would require re-creating the @Query dynamically, which SwiftData does not support
+    // for a plain @Query property. Filtering happens inside rebuildRowCache().
     @Query(sort: \Memo.date) private var memos: [Memo]
 
     @AppStorage("showHolidays") private var showHolidays = true
@@ -108,6 +110,13 @@ struct SpecialDaysListView: View {
     // 情報デザイン: FAB for creating custom holidays/observances
     @State private var showingHolidayCreator = false
 
+    // Cached row arrays rebuilt only when source data changes (memos, contacts, selectedYear,
+    // or holiday cache). Prevents rows(for:) from being called repeatedly on every render.
+    @State private var cachedHolidayRows: [SpecialDayRow] = []
+    @State private var cachedObservanceRows: [SpecialDayRow] = []
+    @State private var cachedBirthdayRows: [SpecialDayRow] = []
+    @State private var cachedMemoRows: [SpecialDayRow] = []
+
     private var years: [Int] {
         let current = Calendar.current.component(.year, from: Date())
         return Array((current - 20)...(current + 20))
@@ -148,100 +157,112 @@ struct SpecialDaysListView: View {
 
     // MARK: - Computed Data
 
+    // Returns rows from the cache. The cache is rebuilt via rebuildRowCache() whenever
+    // memos, contacts, selectedYear, or the holiday cache changes.
     private func rows(for type: SpecialDayType) -> [SpecialDayRow] {
+        switch type {
+        case .holiday:    return cachedHolidayRows
+        case .observance: return cachedObservanceRows
+        case .birthday:   return cachedBirthdayRows
+        case .memo:       return cachedMemoRows
+        default:          return []
+        }
+    }
+
+    // Rebuilds all four row caches from source data (memos, contacts, holidayCache).
+    // Called from .onAppear and .onChange triggers — never from body rendering paths.
+    private func rebuildRowCache() {
         let calendar = Calendar.current
+        let year = selectedYear
 
-        // Handle memo type (unified: notes, events, trips, expenses)
-        if type == .memo {
-            return memos
-                .filter { calendar.component(.year, from: $0.date) == selectedYear }
-                .map { memo in
-                    SpecialDayRow(
-                        id: "memo-\(memo.id.uuidString)",
-                        ruleID: memo.id.uuidString,
-                        region: "",
-                        date: memo.date,
-                        title: memo.preview,
-                        type: .memo,
-                        symbolName: memo.symbolName ?? (memo.hasMoney ? IconCatalog.expense : (memo.hasPlace ? "mappin.circle.fill" : IconCatalog.memo)),
-                        iconColor: memo.colorHex,
-                        notes: memo.text,
-                        isCustom: true,
-                        isMemo: true,
-                        originalBirthday: nil,
-                        turningAge: nil
-                    )
-                }
-                .sorted { $0.date < $1.date }
-        }
+        // Memos for the selected year
+        let newMemoRows = memos
+            .filter { calendar.component(.year, from: $0.date) == year }
+            .map { memo -> SpecialDayRow in
+                SpecialDayRow(
+                    id: "memo-\(memo.id.uuidString)",
+                    ruleID: memo.id.uuidString,
+                    region: "",
+                    date: memo.date,
+                    title: memo.preview,
+                    type: .memo,
+                    symbolName: memo.symbolName ?? (memo.hasMoney ? IconCatalog.expense : (memo.hasPlace ? "mappin.circle.fill" : IconCatalog.memo)),
+                    iconColor: memo.colorHex,
+                    notes: memo.text,
+                    isCustom: true,
+                    isMemo: true,
+                    originalBirthday: nil,
+                    turningAge: nil
+                )
+            }
+            .sorted { $0.date < $1.date }
 
-        // Handle birthday type from contacts
-        if type == .birthday {
-            return contacts
-                .compactMap { contact -> SpecialDayRow? in
-                    guard let birthday = contact.birthday else { return nil }
+        // Birthdays projected into the selected year
+        let newBirthdayRows = contacts
+            .compactMap { contact -> SpecialDayRow? in
+                guard let birthday = contact.birthday else { return nil }
+                let birthYear = calendar.component(.year, from: birthday)
+                let month = calendar.component(.month, from: birthday)
+                let day = calendar.component(.day, from: birthday)
+                guard let birthdayForSelectedYear = calendar.date(from: DateComponents(
+                    year: year, month: month, day: day
+                )) else { return nil }
+                let ageAtBirthday = year - birthYear
+                return SpecialDayRow(
+                    id: "birthday-\(contact.id.uuidString)",
+                    ruleID: contact.id.uuidString,
+                    region: "",
+                    date: birthdayForSelectedYear,
+                    title: contact.displayName,
+                    type: .birthday,
+                    symbolName: IconCatalog.birthday,
+                    iconColor: "D53F8C",  // Pink
+                    notes: nil,
+                    isCustom: false,
+                    isMemo: false,
+                    originalBirthday: birthday,
+                    turningAge: ageAtBirthday
+                )
+            }
+            .sorted { $0.date < $1.date }
 
-                    // Get birthday components
-                    let birthYear = calendar.component(.year, from: birthday)
-                    let month = calendar.component(.month, from: birthday)
-                    let day = calendar.component(.day, from: birthday)
-
-                    // Calculate birthday for the selected year
-                    // When viewing a specific year, ALWAYS show that year's birthday
-                    guard let birthdayForSelectedYear = calendar.date(from: DateComponents(
-                        year: selectedYear,
-                        month: month,
-                        day: day
-                    )) else { return nil }
-
-                    // Age they turned/will turn in the selected year
-                    let ageAtBirthday = selectedYear - birthYear
-
-                    return SpecialDayRow(
-                        id: "birthday-\(contact.id.uuidString)",
-                        ruleID: contact.id.uuidString,
-                        region: "",
-                        date: birthdayForSelectedYear,
-                        title: contact.displayName,
-                        type: .birthday,
-                        symbolName: IconCatalog.birthday,
-                        iconColor: "D53F8C",  // Pink
-                        notes: nil,
-                        isCustom: false,
-                        isMemo: false,
-                        originalBirthday: birthday,
-                        turningAge: ageAtBirthday
-                    )
-                }
-                .sorted { $0.date < $1.date }
-        }
-
-        // Handle holidays and observances
-        let isBankHoliday = type.isBankHoliday
-
-        return holidayManager.holidayCache
-            .filter { (date, _) in calendar.component(.year, from: date) == selectedYear }
+        // Holidays and observances from the manager cache
+        let holidayEntries = holidayManager.holidayCache
+            .filter { (date, _) in calendar.component(.year, from: date) == year }
             .sorted(by: { $0.key < $1.key })
-            .flatMap { (date, holidays) in
-                holidays.filter { $0.isBankHoliday == isBankHoliday }.map { holiday in
-                    SpecialDayRow(
-                        id: "\(date.timeIntervalSinceReferenceDate)-\(holiday.id)",
-                        ruleID: holiday.id,
-                        region: holiday.region,
-                        date: date,
-                        title: holiday.displayTitle,
-                        type: type,
-                        symbolName: holiday.symbolName,
-                        iconColor: holiday.iconColor,
-                        notes: holiday.notes,
-                        isCustom: holiday.isCustom,
-                        isMemo: false,
-                        originalBirthday: nil,
-                        turningAge: nil,
-                        mergedRegions: holiday.mergedRegions
-                    )
+
+        var newHolidayRows: [SpecialDayRow] = []
+        var newObservanceRows: [SpecialDayRow] = []
+        for (date, holidays) in holidayEntries {
+            for holiday in holidays {
+                let row = SpecialDayRow(
+                    id: "\(date.timeIntervalSinceReferenceDate)-\(holiday.id)",
+                    ruleID: holiday.id,
+                    region: holiday.region,
+                    date: date,
+                    title: holiday.displayTitle,
+                    type: holiday.isBankHoliday ? .holiday : .observance,
+                    symbolName: holiday.symbolName,
+                    iconColor: holiday.iconColor,
+                    notes: holiday.notes,
+                    isCustom: holiday.isCustom,
+                    isMemo: false,
+                    originalBirthday: nil,
+                    turningAge: nil,
+                    mergedRegions: holiday.mergedRegions
+                )
+                if holiday.isBankHoliday {
+                    newHolidayRows.append(row)
+                } else {
+                    newObservanceRows.append(row)
                 }
             }
+        }
+
+        cachedHolidayRows = newHolidayRows
+        cachedObservanceRows = newObservanceRows
+        cachedBirthdayRows = newBirthdayRows
+        cachedMemoRows = newMemoRows
     }
 
     private var holidayCount: Int { rows(for: .holiday).count }
@@ -467,17 +488,27 @@ struct SpecialDaysListView: View {
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {
             holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: selectedYear)
+            rebuildRowCache()
         }
         .onChange(of: selectedYear) { _, newYear in
             holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: newYear)
+            rebuildRowCache()
         }
         .onChange(of: holidayRegions) { _, newRegions in
             holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: selectedYear)
             WorldClockStorage.syncFromRegions(newRegions)
             WidgetCenter.shared.reloadTimelines(ofKind: "VeckaWidget")
+            rebuildRowCache()
         }
         .onChange(of: showHolidays) { _, _ in
             holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: selectedYear)
+            rebuildRowCache()
+        }
+        .onChange(of: memos) { _, _ in
+            rebuildRowCache()
+        }
+        .onChange(of: contacts) { _, _ in
+            rebuildRowCache()
         }
         .onChange(of: selectedMonth) { _, newMonth in
             isInMonthDetail = newMonth != nil
@@ -830,7 +861,7 @@ struct SpecialDaysListView: View {
         rule.userModifiedAt = Date()
 
         modelContext.insert(rule)
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
 
         holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: selectedYear)
         HapticManager.notification(.success)
@@ -844,7 +875,7 @@ struct SpecialDaysListView: View {
         memo.linkedContactID = contactID
         memo.photoData = photoData
         modelContext.insert(memo)
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         HapticManager.notification(.success)
     }
 
@@ -1083,7 +1114,7 @@ extension SpecialDaysListView {
                 let descriptor = FetchDescriptor<Contact>(predicate: #Predicate<Contact> { $0.id == uuid })
                 if let contact = try? modelContext.fetch(descriptor).first {
                     modelContext.delete(contact)
-                    try? modelContext.save()
+                    do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
                     HapticManager.notification(.success)
                 }
             }
@@ -1093,7 +1124,7 @@ extension SpecialDaysListView {
                 let descriptor = FetchDescriptor<Memo>(predicate: #Predicate<Memo> { $0.id == uuid })
                 if let memo = try? modelContext.fetch(descriptor).first {
                     modelContext.delete(memo)
-                    try? modelContext.save()
+                    do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
                     HapticManager.notification(.success)
                 }
             }

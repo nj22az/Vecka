@@ -672,7 +672,7 @@ struct ContactListView: View {
 
     private func deleteContact(_ contact: Contact) {
         modelContext.delete(contact)
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
     }
 
     private func deleteSelectedContacts() {
@@ -681,7 +681,7 @@ struct ContactListView: View {
         for contact in contactsToDelete {
             modelContext.delete(contact)
         }
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
 
         // Clear selection and exit edit mode
         selectedForDeletion.removeAll()

@@ -721,7 +721,7 @@ struct MemoEditorView: View {
             modelContext.insert(memo)
         }
 
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         HapticManager.notification(.success)
         dismiss()
     }
@@ -729,7 +729,7 @@ struct MemoEditorView: View {
     private func deleteMemo() {
         guard let memo = existingMemo else { return }
         modelContext.delete(memo)
-        try? modelContext.save()
+        do { try modelContext.save() } catch { Log.e("Failed to save: \(error)") }
         HapticManager.notification(.warning)
         dismiss()
     }
