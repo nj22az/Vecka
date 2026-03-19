@@ -224,11 +224,21 @@ struct DayDashboardView: View {
 
     private var contentCardGrid: some View {
         let items = buildCardItems()
+        let totalCount = holidays.count + birthdays.count + memos.count
+        let overflow = totalCount - items.count
         let columns = [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())]
 
-        return LazyVGrid(columns: columns, spacing: JohoDimensions.spacingSM) {
-            ForEach(items) { item in
-                summaryCardTile(item)
+        return VStack(spacing: JohoDimensions.spacingSM) {
+            LazyVGrid(columns: columns, spacing: JohoDimensions.spacingSM) {
+                ForEach(items) { item in
+                    summaryCardTile(item)
+                }
+            }
+
+            if overflow > 0 {
+                Text("+\(overflow) more")
+                    .font(JohoFont.bodySmall)
+                    .foregroundStyle(colors.secondary)
             }
         }
     }
@@ -305,15 +315,16 @@ struct DayDashboardView: View {
                 Text(item.title)
                     .font(JohoFont.bannerLabel)
                     .foregroundStyle(colors.primary)
-                    .lineLimit(1)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
 
-                Spacer()
+                Spacer(minLength: JohoDimensions.spacingSM)
 
                 JohoSticker(content: .icon(item.icon), color: item.color, shape: .circle, size: 24)
             }
             .padding(.horizontal, JohoDimensions.spacingSM)
-            .frame(maxWidth: .infinity)
-            .frame(height: 48)
+            .padding(.vertical, JohoDimensions.spacingXS)
+            .frame(maxWidth: .infinity, minHeight: 48)
             .background(item.color.opacity(JohoDimensions.opacityLight))
 
             // Divider

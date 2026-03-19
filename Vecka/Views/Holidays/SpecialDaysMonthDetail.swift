@@ -146,18 +146,18 @@ struct SpecialDaysMonthDetail: View {
                 .frame(height: 1.5)
 
             // Content — preview rows
-            VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
+            VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                 ForEach(previewItems, id: \.id) { item in
                     HStack(spacing: JohoDimensions.spacingSM) {
-                        Text(DateFormatterCache.weekRange.string(from: item.date))
-                            .font(JohoFont.bodySmall)
+                        Text("\(Calendar.iso8601.component(.day, from: item.date))")
+                            .font(JohoFont.labelBold)
                             .foregroundStyle(colors.secondary)
-                            .frame(width: 48, alignment: .leading)
+                            .frame(width: 24, alignment: .trailing)
 
                         Text(item.title)
                             .font(JohoFont.body)
                             .foregroundStyle(colors.primary)
-                            .lineLimit(1)
+                            .lineLimit(2)
                     }
                 }
 
@@ -165,6 +165,7 @@ struct SpecialDaysMonthDetail: View {
                     Text("+\(count - 3) more")
                         .font(JohoFont.bodySmall)
                         .foregroundStyle(colors.secondary)
+                        .padding(.leading, 32)
                 }
             }
             .padding(JohoDimensions.spacingMD)
