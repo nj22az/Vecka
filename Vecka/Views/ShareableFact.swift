@@ -47,60 +47,51 @@ struct ShareableFactCard: View {
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     var body: some View {
-        ShareableCardShell(
-            headerIcon: fact.icon ?? "lightbulb.fill",
-            headerIconColor: fact.color,
-            headerAccentColor: fact.color,
-            footerLeftLabel: fact.displaySource.uppercased(),
-            footerRightLabel: fact.displayCategory.uppercased()
-        ) {
-            // Divider after header
-            ShareableCardDivider()
+        ShareableCardFrame {
+            // Banner: country left + circle sticker right (matches grid tiles)
+            HStack {
+                Text(fact.displaySource.uppercased())
+                    .font(JohoFont.pillLabel)
+                    .foregroundStyle(colors.primary)
+                    .lineLimit(1)
 
-            // ═══════════════════════════════════════════════════════════════
-            // MAIN CONTENT: Large icon + fact text
-            // ═══════════════════════════════════════════════════════════════
-            HStack(alignment: .top, spacing: 0) {
-                // LEFT: Large icon
-                VStack {
-                    Spacer()
-                    Image(systemName: fact.icon ?? "lightbulb.fill")
-                        .font(.system(size: 48, weight: .bold, design: .rounded))
-                        .foregroundStyle(fact.color)
-                    Spacer()
-                }
-                .frame(width: 100)
-                .frame(minHeight: 140)
+                Spacer()
 
-                // WALL
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(width: 1.5)
-
-                // RIGHT: Fact text
-                VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                    Text(fact.text)
-                        .font(JohoFont.headlineSmall)
-                        .foregroundStyle(colors.primary)
-                        .lineLimit(isShareable ? nil : 4)
-                        .multilineTextAlignment(.leading)
-
-                    if !fact.explanation.isEmpty {
-                        Text(fact.explanation)
-                            .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
-                            .lineLimit(isShareable ? nil : 3)
-                            .multilineTextAlignment(.leading)
-                    }
-                }
-                .padding(JohoDimensions.spacingMD)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                JohoSticker(content: .icon(fact.icon ?? "lightbulb.fill"), color: fact.color, shape: .circle, size: 24)
             }
-            .frame(minHeight: 140)
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)
             .background(fact.color.opacity(JohoDimensions.opacityLight))
 
-            // Divider before footer
             ShareableCardDivider()
+
+            // Full-width fact text
+            VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
+                Text(fact.text)
+                    .font(JohoFont.headlineSmall)
+                    .foregroundStyle(colors.primary)
+                    .lineLimit(isShareable ? nil : 4)
+                    .multilineTextAlignment(.leading)
+
+                if !fact.explanation.isEmpty {
+                    Text(fact.explanation)
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
+                        .lineLimit(isShareable ? nil : 3)
+                        .multilineTextAlignment(.leading)
+                }
+            }
+            .padding(JohoDimensions.spacingMD)
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            ShareableCardDivider()
+
+            // Footer: category left, app branding right
+            ShareableCardFooter(
+                leftLabel: fact.displayCategory.uppercased(),
+                rightLabel: "ONSEN PLANNER"
+            )
         }
     }
 }
@@ -124,7 +115,7 @@ struct FactShareButton: View {
             item: snapshot,
             preview: SharePreview(
                 "Random Fact",
-                image: Image(systemName: fact.icon ?? "lightbulb.fill")
+                image: Image(systemName: fact.icon ?? IconCatalog.lightbulbFill)
             )
         ) {
             JohoShareCircleButton()

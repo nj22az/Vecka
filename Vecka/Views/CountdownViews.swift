@@ -228,7 +228,7 @@ struct CountdownPickerSheet: View {
                             eventRow(type: t, custom: nil)
                         }
                     } label: {
-                        Label(Localization.predefined, systemImage: "list.bullet")
+                        Label(Localization.predefined, systemImage: IconCatalog.listBullet)
                             .font(.body.weight(.semibold))
                     }
                 }
@@ -251,10 +251,10 @@ struct CountdownPickerSheet: View {
                             }
                         }
                         Button(action: { showingCustomDialog = true; HapticManager.selection() }) {
-                            Label(Localization.createCustom, systemImage: "plus.circle")
+                            Label(Localization.createCustom, systemImage: IconCatalog.plusCircle)
                         }
                     } label: {
-                        Label(Localization.customEvents, systemImage: "person.crop.square")
+                        Label(Localization.customEvents, systemImage: IconCatalog.personCropSquare)
                             .font(.body.weight(.semibold))
                     }
                 }
@@ -344,7 +344,7 @@ struct CountdownPickerSheet: View {
                 let announcement = wasFavorite ? Localization.unfavorite : Localization.favorite
                 UIAccessibility.post(notification: .announcement, argument: announcement)
             }) {
-                Image(systemName: favorites.contains(SavedCountdown(type: type, custom: custom)) ? IconCatalog.star : "star")
+                Image(systemName: favorites.contains(SavedCountdown(type: type, custom: custom)) ? IconCatalog.star : IconCatalog.starOutline)
             }
             .buttonStyle(.plain)
             .accessibilityLabel(favorites.contains(SavedCountdown(type: type, custom: custom)) ? Localization.unfavorite : Localization.favorite)

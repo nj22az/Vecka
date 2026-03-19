@@ -28,7 +28,6 @@ struct ShareableCountdownSnapshot: Transferable {
     /// Renders the countdown card view to PNG data
     @MainActor
     func renderToPNG() -> Data {
-        // Use shared CardSnapshotRenderer for countdown (fixed height)
         let view = ShareableCountdownCard(
             name: countdown.name,
             daysRemaining: daysRemaining,
@@ -37,17 +36,9 @@ struct ShareableCountdownSnapshot: Transferable {
             isAnnual: countdown.isAnnual,
             tasks: countdown.tasks
         )
-        .frame(width: size.width, height: size.height)
+        .frame(height: size.height)
 
-        let renderer = ImageRenderer(content: view)
-        renderer.scale = 3.0
-        renderer.isOpaque = false
-
-        guard let uiImage = renderer.uiImage else {
-            return Data()
-        }
-
-        return uiImage.pngData() ?? Data()
+        return CardSnapshotRenderer.renderToPNG(view, size: size)
     }
 }
 
@@ -80,7 +71,7 @@ struct ShareableCountdownCard: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
+        ShareableCardFrame {
             // ═══════════════════════════════════════════════════════════════
             // HEADER: App branding + icon
             // ═══════════════════════════════════════════════════════════════
@@ -149,7 +140,7 @@ struct ShareableCountdownCard: View {
                     // Task progress (if has tasks)
                     if totalTasks > 0 {
                         HStack(spacing: 6) {
-                            Image(systemName: completedTasks == totalTasks ? IconCatalog.checkmarkCircleFill : "circle.dotted")
+                            Image(systemName: completedTasks == totalTasks ? IconCatalog.checkmarkCircleFill : IconCatalog.circleDotted)
                                 .font(JohoFont.label)
                                 .foregroundStyle(completedTasks == totalTasks ? accentColor : colors.primary.opacity(JohoDimensions.opacityHeavy))
 
@@ -187,14 +178,7 @@ struct ShareableCountdownCard: View {
             .padding(.horizontal, JohoDimensions.spacingMD)
             .padding(.vertical, JohoDimensions.spacingSM)
             .frame(height: 32)
-            .background(colors.surface)
         }
-        .background(colors.surface)
-        .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous)
-                .stroke(colors.border, lineWidth: 3)
-        )
     }
 
     private var countdownMessage: String {
@@ -219,6 +203,7 @@ struct ShareableCountdownCard: View {
 struct CountdownShareButton: View {
     let countdown: CustomCountdown
     let daysRemaining: Int
+    @Environment(\.johoColorMode) private var colorMode
 
     private var snapshot: ShareableCountdownSnapshot {
         ShareableCountdownSnapshot(
@@ -238,10 +223,10 @@ struct CountdownShareButton: View {
         ) {
             Image(systemName: IconCatalog.share)
                 .font(JohoFont.bodySmallBold)
-                .foregroundStyle(JohoColors.cyan)
+                .foregroundStyle(JohoColors.cyanForeground(for: colorMode))
                 .frame(width: 32, height: 32)
                 .background(JohoColors.cyan.opacity(JohoDimensions.opacityLight))
-                .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1, borderColor: JohoColors.black)
+                .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1)
         }
     }
 }

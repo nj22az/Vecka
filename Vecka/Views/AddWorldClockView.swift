@@ -34,13 +34,13 @@ struct AddWorldClockView: View {
     /// Region color for city
     private func regionColor(for region: WorldRegion) -> Color {
         switch region {
-        case .europe: return Color(hex: "4A90D9")
-        case .asia: return Color(hex: "E17055")
-        case .northAmerica: return Color(hex: "00B894")
-        case .southAmerica: return Color(hex: "00CEC9")
-        case .africa: return Color(hex: "FDCB6E")
-        case .oceania: return Color(hex: "D35400")
-        case .middleEast: return Color(hex: "6C5CE7")
+        case .europe: return JohoColors.regionEurope
+        case .asia: return JohoColors.regionAsia
+        case .northAmerica: return JohoColors.regionAmerica
+        case .southAmerica: return JohoColors.regionPacific
+        case .africa: return JohoColors.regionAfrica
+        case .oceania: return JohoColors.regionAustralia
+        case .middleEast: return JohoColors.moonViolet
         }
     }
 
@@ -118,7 +118,7 @@ struct AddWorldClockView: View {
                                         // City code pill
                                         Text(city.code)
                                             .font(JohoFont.headerTag)
-                                            .foregroundStyle(colors.primaryInverted)
+                                            .foregroundStyle(regionColor(for: city.worldRegion).contrastingForeground)
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 6)
                                             .background(regionColor(for: city.worldRegion))

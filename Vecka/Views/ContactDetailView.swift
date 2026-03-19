@@ -576,7 +576,7 @@ struct ContactDetailView: View {
                             } label: {
                                 Image(systemName: IconCatalog.mapFill)
                                     .font(JohoFont.headline)
-                                    .foregroundStyle(JohoColors.cyan)
+                                    .foregroundStyle(JohoColors.cyanForeground(for: colorMode))
                                     .frame(width: 44, height: 44)
                             }
                             .buttonStyle(.plain)
@@ -813,11 +813,11 @@ struct ContactDetailView: View {
                 HStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: contact.group.icon)
                         .font(JohoFont.bodySmallBold)
-                        .foregroundStyle(colors.primaryInverted)
+                        .foregroundStyle(groupColor.contrastingForeground)
 
                     Text(contact.group.localizedName)
                         .font(JohoFont.bodySmallBold)
-                        .foregroundStyle(colors.primaryInverted)
+                        .foregroundStyle(groupColor.contrastingForeground)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
@@ -1019,7 +1019,7 @@ struct ContactDetailView: View {
             }
             HapticManager.selection()
         } label: {
-            Image(systemName: isEditMode ? "lock.open.fill" : IconCatalog.lockFill)
+            Image(systemName: isEditMode ? IconCatalog.lockOpenFill : IconCatalog.lockFill)
                 .font(JohoFont.headline)
                 .foregroundStyle(isEditMode ? colors.surface : colors.primary.opacity(JohoDimensions.opacityStrong))
                 .johoTouchTarget()
@@ -1344,7 +1344,7 @@ struct JohoContactEditorSheet: View {
                     } label: {
                         Text(JohoSymbols.maru)  // ○
                             .font(.system(size: 26, weight: .bold, design: .rounded))
-                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(JohoDimensions.opacityStrong))
+                            .foregroundStyle(canSave ? accentColor.contrastingForeground : colors.primary.opacity(JohoDimensions.opacityStrong))
                             .johoTouchTarget()
                             .background(canSave ? accentColor : colors.surface)
                             .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
@@ -1881,7 +1881,7 @@ private struct ContactSymbolPicker: View {
                     Button { dismiss() } label: {
                         Text("Done")
                             .font(JohoFont.body.bold())
-                            .foregroundStyle(colors.primaryInverted)
+                            .foregroundStyle(accentColor.contrastingForeground)
                             .padding(.horizontal, JohoDimensions.spacingMD)
                             .padding(.vertical, JohoDimensions.spacingSM)
                             .background(accentColor)

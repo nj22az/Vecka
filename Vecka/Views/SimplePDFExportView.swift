@@ -74,7 +74,7 @@ struct SimplePDFExportView: View {
                         ProgressView()
                             .tint(.white)
                     } else {
-                        Label("Export as PDF", systemImage: "square.and.arrow.up")
+                        Label("Export as PDF", systemImage: IconCatalog.share)
                     }
                 }
                 .buttonStyle(.borderedProminent)

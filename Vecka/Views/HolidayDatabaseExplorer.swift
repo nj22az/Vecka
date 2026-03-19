@@ -177,7 +177,7 @@ struct HolidayDatabaseExplorer: View {
                     } else {
                         Image(systemName: IconCatalog.globe)
                             .font(JohoFont.title)
-                            .foregroundStyle(JohoColors.pink)
+                            .foregroundStyle(JohoColors.pinkForeground(for: colorMode))
                             .frame(width: 40, height: 40)
                             .background(JohoColors.pink.opacity(JohoDimensions.opacityLight))
                             .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
@@ -259,10 +259,10 @@ struct HolidayDatabaseExplorer: View {
                         HStack(spacing: 4) {
                             Image(systemName: IconCatalog.checkmarkCircleFill)
                                 .font(.system(size: 10, weight: .semibold, design: .rounded))
-                                .foregroundStyle(JohoColors.green)
+                                .foregroundStyle(JohoColors.greenForeground(for: colorMode))
                             Text("ACTIVE")
                                 .font(JohoFont.labelBold)
-                                .foregroundStyle(JohoColors.green)
+                                .foregroundStyle(JohoColors.greenForeground(for: colorMode))
                         }
                     }
                 } else {
@@ -328,7 +328,7 @@ struct HolidayDatabaseExplorer: View {
                                 Spacer()
                                 Image(systemName: IconCatalog.checkmarkCircleFill)
                                     .font(.system(size: 12, weight: .semibold, design: .rounded))
-                                    .foregroundStyle(JohoColors.green)
+                                    .foregroundStyle(JohoColors.greenForeground(for: colorMode))
                             }
                             Spacer()
                         }
@@ -544,7 +544,7 @@ struct HolidayDatabaseExplorer: View {
                         .foregroundStyle(color)
                         .frame(width: 24)
                 } else {
-                    Image(systemName: rule.isBankHoliday ? "flag.fill" : "star")
+                    Image(systemName: rule.isBankHoliday ? IconCatalog.flagFill : IconCatalog.starOutline)
                         .font(JohoFont.body)
                         .foregroundStyle(color)
                         .frame(width: 24)
@@ -580,7 +580,7 @@ struct HolidayDatabaseExplorer: View {
                 if rule.isModifiedFromDefault {
                     Text("※")
                         .font(JohoFont.label)
-                        .foregroundStyle(JohoColors.cyan)
+                        .foregroundStyle(JohoColors.cyanForeground(for: colorMode))
                 }
 
                 // Chevron
@@ -832,7 +832,7 @@ struct HolidayRuleEditorSheet: View {
                 HapticManager.selection()
             } label: {
                 HStack {
-                    Image(systemName: isEnabled ? "eye" : "eye.slash")
+                    Image(systemName: isEnabled ? IconCatalog.eye : IconCatalog.eyeSlash)
                         .font(JohoFont.body)
                         .foregroundStyle(isEnabled ? colors.primary : colors.primary.opacity(JohoDimensions.opacityModerate))
                         .frame(width: 24)
@@ -896,7 +896,7 @@ struct HolidayRuleEditorSheet: View {
                 Text("Reset to Default")
             }
             .font(.system(size: 14, weight: .semibold, design: .rounded))
-            .foregroundStyle(JohoColors.cyan)
+            .foregroundStyle(JohoColors.cyanForeground(for: colorMode))
             .frame(maxWidth: .infinity)
             .padding(.vertical, JohoDimensions.spacingSM)
         }

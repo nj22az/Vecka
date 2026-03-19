@@ -300,33 +300,36 @@ struct DayDashboardView: View {
     @ViewBuilder
     private func summaryCardTile(_ item: CardItem) -> some View {
         let tileContent = VStack(spacing: 0) {
-            // TOP: Icon zone with sticker
-            JohoSticker.small(icon: item.icon, color: item.color)
-                .frame(maxWidth: .infinity)
-                .frame(height: 36)
+            // Banner: title left + circle sticker right (matches JohoTileCard/fact tiles)
+            HStack {
+                Text(item.title)
+                    .font(JohoFont.bannerLabel)
+                    .foregroundStyle(colors.primary)
+                    .lineLimit(1)
+
+                Spacer()
+
+                JohoSticker(content: .icon(item.icon), color: item.color, shape: .circle, size: 24)
+            }
+            .padding(.horizontal, JohoDimensions.spacingSM)
+            .frame(maxWidth: .infinity)
+            .frame(height: 48)
+            .background(item.color.opacity(JohoDimensions.opacityLight))
 
             // Divider
             Rectangle()
                 .fill(colors.border)
                 .frame(height: 1.5)
 
-            // BOTTOM: Text zone
+            // Content: badge or secondary info
             VStack(spacing: 1) {
-                Text(item.title)
-                    .font(.system(size: 9, weight: .bold, design: .rounded))
-                    .foregroundStyle(colors.primary)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.7)
-
                 if let badge = item.badge {
                     Text(badge)
-                        .font(.system(size: 8, weight: .black, design: .rounded))
+                        .font(.system(size: 9, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary)
-                        .padding(.horizontal, 4)
-                        .padding(.vertical, 1)
-                        .background(item.color.opacity(JohoDimensions.opacityMedium))
-                        .clipShape(Capsule())
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.7)
                 }
             }
             .padding(.horizontal, 3)
@@ -556,9 +559,9 @@ struct DayDashboardView: View {
 
                 // Amount
                 if let amount = memo.amount {
-                    Text(String(format: "%.0f %@", amount, memo.currency ?? baseCurrency))
+                    Text(CurrencyFormatter.plain(amount, currencyCode: memo.currency ?? baseCurrency))
                         .font(JohoFont.label)
-                        .foregroundStyle(JohoColors.green)
+                        .foregroundStyle(JohoColors.greenForeground(for: colorMode))
                 }
             }
             .padding(.vertical, 2)
@@ -803,7 +806,7 @@ struct SingleMemoDetailSheet: View {
 
                         Spacer()
 
-                        Image(systemName: showShareOptions ? "chevron.up" : "chevron.down")
+                        Image(systemName: showShareOptions ? IconCatalog.chevronUp : IconCatalog.chevronDown)
                             .font(.system(size: 10, weight: .bold, design: .rounded))
                             .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                     }
@@ -1266,7 +1269,7 @@ struct SingleBirthdayDetailSheet: View {
                 VStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: IconCatalog.birthday)
                         .font(.system(size: 64, weight: .bold, design: .rounded))
-                        .foregroundStyle(JohoColors.pink)
+                        .foregroundStyle(JohoColors.pinkForeground(for: colorMode))
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 120)

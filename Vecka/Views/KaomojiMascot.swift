@@ -183,7 +183,7 @@ struct JohoMascot: View {
             ForEach(floatingHearts) { heart in
                 Image(systemName: IconCatalog.heartFill)
                     .font(.system(size: size * 0.12, weight: .bold, design: .rounded))
-                    .foregroundStyle(JohoColors.pink)
+                    .foregroundStyle(JohoColors.pinkForeground(for: colorMode))
                     .offset(x: heart.xOffset, y: heart.yOffset)
                     .opacity(heart.opacity)
                     .rotationEffect(.degrees(heart.rotation))
@@ -229,7 +229,7 @@ struct JohoMascot: View {
             if sparkleVisible {
                 let baseImage = Image(systemName: IconCatalog.sparkle)
                     .font(.system(size: size * 0.15, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.cyan)
+                    .foregroundStyle(JohoColors.cyanForeground(for: .dark))
 
                 Group {
                     if shouldAnimate {
@@ -449,7 +449,7 @@ struct JohoMascot: View {
 
     private var blushView: some View {
         Circle()
-            .fill(Color(hex: "FECDD3").opacity(JohoDimensions.opacityStrong))  // Soft pink
+            .fill(JohoColors.pink.opacity(JohoDimensions.opacityStrong))
             .frame(width: blushSize, height: blushSize)
     }
 
@@ -878,7 +878,7 @@ typealias KaomojiMascot = JohoMascot
         HStack(spacing: 8) {
             Image(systemName: IconCatalog.home)
                 .font(JohoFont.title)
-                .foregroundStyle(JohoColors.cyan)
+                .foregroundStyle(JohoColors.cyanForeground(for: .dark))
                 .frame(width: 40, height: 40)
                 .background(JohoColors.cyan.opacity(JohoDimensions.opacityMild))
                 .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusSmall, style: .continuous))

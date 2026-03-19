@@ -84,9 +84,11 @@ enum SectionZone {
         }
     }
 
-    // All zones use BLACK text now (light backgrounds have good contrast)
+    /// Text color — delegates to trait collection for safety
+    /// Prefer `textColor(for:)` when color mode is available in environment
     var textColor: Color {
-        JohoColors.black
+        let isDark = UITraitCollection.current.userInterfaceStyle == .dark
+        return textColor(for: isDark ? .dark : .light)
     }
 
     /// Get text color for the specified color mode
@@ -123,6 +125,7 @@ enum JohoFont {
     static let tag = Font.system(size: 11, weight: .bold, design: .rounded)
     static let headerTag = Font.system(size: 11, weight: .black, design: .rounded)
     static let pillLabel = Font.system(size: 10, weight: .black, design: .rounded)
+    static let bannerLabel = Font.system(size: 14, weight: .bold, design: .rounded)
 
     // Labels (for pills)
     static let label = Font.system(size: 12, weight: .bold, design: .rounded)
@@ -207,6 +210,15 @@ enum JohoCardSize {
 
     // Item limits
     var maxItems: Int { self == .regular ? 5 : 10 }
+}
+
+// MARK: - Animation Durations
+
+enum JohoDurations {
+    static let animationBrief: Duration = .seconds(0.1)
+    static let animationMedium: Duration = .seconds(0.3)
+    static let toastDuration: Duration = .seconds(1.5)
+    static let notificationDuration: Duration = .seconds(4)
 }
 
 // MARK: - Squircle Shape

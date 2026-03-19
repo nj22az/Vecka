@@ -82,7 +82,7 @@ struct ExpenseListView: View {
                                 Button {
                                     showFilterSheet = true
                                 } label: {
-                                    Label("Filter Options", systemImage: "line.3.horizontal.decrease.circle")
+                                    Label("Filter Options", systemImage: IconCatalog.filterOptions)
                                 }
                             }
 
@@ -104,7 +104,7 @@ struct ExpenseListView: View {
                                     exportContext = .expenseReportMonth(month: month, year: year, baseCurrency: baseCurrency)
                                     showExportSheet = true
                                 } label: {
-                                    Label("This Month (PDF)", systemImage: "doc.text.fill")
+                                    Label("This Month (PDF)", systemImage: IconCatalog.docTextFill)
                                 }
                             }
 
@@ -113,19 +113,19 @@ struct ExpenseListView: View {
                                 Button {
                                     exportCSVThisWeek()
                                 } label: {
-                                    Label("This Week (CSV)", systemImage: "tablecells")
+                                    Label("This Week (CSV)", systemImage: IconCatalog.tablecells)
                                 }
 
                                 Button {
                                     exportCSVThisMonth()
                                 } label: {
-                                    Label("This Month (CSV)", systemImage: "tablecells.fill")
+                                    Label("This Month (CSV)", systemImage: IconCatalog.tablecellsFill)
                                 }
 
                                 Button {
                                     exportCSVFiltered()
                                 } label: {
-                                    Label("Current View (CSV)", systemImage: "square.and.arrow.up")
+                                    Label("Current View (CSV)", systemImage: IconCatalog.share)
                                 }
                             }
                         } label: {

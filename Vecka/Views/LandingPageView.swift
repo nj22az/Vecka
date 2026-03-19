@@ -375,9 +375,9 @@ struct LandingPageView: View {
 
             // Day/Night + offset (情報デザイン: Sun=yellow, Moon=purple)
             HStack(spacing: 3) {
-                Image(systemName: clock.isDaytime ? "sun.max.fill" : "moon.fill")
+                Image(systemName: clock.isDaytime ? IconCatalog.sunFill : IconCatalog.moonFill)
                     .font(.system(size: 8, design: .rounded))
-                    .foregroundStyle(clock.isDaytime ? Color(hex: "F39C12") : Color(hex: "6C5CE7"))
+                    .foregroundStyle(clock.isDaytime ? JohoColors.sunAmber : JohoColors.moonViolet)
 
                 Text(clock.offsetFromLocal)
                     .font(.system(size: 9, weight: .bold, design: .rounded))
@@ -398,29 +398,29 @@ struct LandingPageView: View {
         /// Regional color themes - warm/cool based on geography
         static let themes: [String: TimezoneTheme] = [
             // Asia/Pacific - Warm tones (coral, orange, red)
-            "Asia": TimezoneTheme(region: "Asia", accentColor: Color(hex: "E17055"), lightBackground: Color(hex: "FDECE8")),
-            "Pacific": TimezoneTheme(region: "Pacific", accentColor: Color(hex: "00CEC9"), lightBackground: Color(hex: "E8FFFE")),
-            "Australia": TimezoneTheme(region: "Australia", accentColor: Color(hex: "D35400"), lightBackground: Color(hex: "FDEEE5")),
+            "Asia": TimezoneTheme(region: "Asia", accentColor: JohoColors.regionAsia, lightBackground: JohoColors.regionAsiaLight),
+            "Pacific": TimezoneTheme(region: "Pacific", accentColor: JohoColors.regionPacific, lightBackground: JohoColors.regionPacificLight),
+            "Australia": TimezoneTheme(region: "Australia", accentColor: JohoColors.regionAustralia, lightBackground: JohoColors.regionAustraliaLight),
 
             // Europe - Cool tones (blue, purple)
-            "Europe": TimezoneTheme(region: "Europe", accentColor: Color(hex: "4A90D9"), lightBackground: Color(hex: "E8F4FD")),
-            "Atlantic": TimezoneTheme(region: "Atlantic", accentColor: Color(hex: "6C5CE7"), lightBackground: Color(hex: "EFECFD")),
+            "Europe": TimezoneTheme(region: "Europe", accentColor: JohoColors.regionEurope, lightBackground: JohoColors.regionEuropeLight),
+            "Atlantic": TimezoneTheme(region: "Atlantic", accentColor: JohoColors.moonViolet, lightBackground: JohoColors.regionAtlanticLight),
 
             // Americas - Green/teal tones
-            "America": TimezoneTheme(region: "America", accentColor: Color(hex: "00B894"), lightBackground: Color(hex: "E8FDF6")),
+            "America": TimezoneTheme(region: "America", accentColor: JohoColors.regionAmerica, lightBackground: JohoColors.regionAmericaLight),
 
             // Africa/Middle East - Warm gold
-            "Africa": TimezoneTheme(region: "Africa", accentColor: Color(hex: "FDCB6E"), lightBackground: Color(hex: "FFF9E8")),
+            "Africa": TimezoneTheme(region: "Africa", accentColor: JohoColors.regionAfrica, lightBackground: JohoColors.regionAfricaLight),
 
             // Default
-            "default": TimezoneTheme(region: "default", accentColor: Color(hex: "636E72"), lightBackground: Color(hex: "F0F2F3"))
+            "default": TimezoneTheme(region: "default", accentColor: JohoColors.regionDefault, lightBackground: JohoColors.regionDefaultLight)
         ]
 
         /// Get theme for timezone identifier (e.g., "Asia/Tokyo" → Asia theme)
         static func theme(for timezoneId: String) -> TimezoneTheme {
             // Extract region from timezone ID (e.g., "Asia/Tokyo" → "Asia")
             let region = timezoneId.split(separator: "/").first.map(String.init) ?? "default"
-            return themes[region] ?? TimezoneTheme(region: "default", accentColor: Color(hex: "636E72"), lightBackground: Color(hex: "F0F2F3"))
+            return themes[region] ?? TimezoneTheme(region: "default", accentColor: JohoColors.regionDefault, lightBackground: JohoColors.regionDefaultLight)
         }
     }
 

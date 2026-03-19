@@ -110,7 +110,7 @@ struct RegionQuickPicker: View {
                 Spacer()
 
                 // Expand/collapse indicator
-                Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                Image(systemName: isExpanded ? IconCatalog.chevronUp : IconCatalog.chevronDown)
                     .font(JohoFont.labelBold)
                     .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
             }
@@ -227,7 +227,7 @@ struct RegionQuickPicker: View {
             } label: {
                 HStack(spacing: 6) {
                     // Chevron
-                    Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                    Image(systemName: isExpanded ? IconCatalog.chevronDown : IconCatalog.chevronRight)
                         .font(.system(size: 8, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         .frame(width: 10)

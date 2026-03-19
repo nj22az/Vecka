@@ -132,7 +132,7 @@ struct ShareableContactCard: View {
                                 .frame(width: 72, height: 72)
                             Text(contact.initials.isEmpty ? "?" : contact.initials)
                                 .font(.system(size: 28, weight: .black, design: .rounded))
-                                .foregroundStyle(.white)
+                                .foregroundStyle(contact.group.swiftUIAvatarColor.contrastingForeground)
                         }
                         .overlay(Circle().stroke(colors.border, lineWidth: 1.5))
                     }
@@ -159,7 +159,7 @@ struct ShareableContactCard: View {
                         HStack(spacing: 6) {
                             Image(systemName: IconCatalog.building)
                                 .font(JohoFont.tag)
-                                .foregroundStyle(JohoColors.cyan)
+                                .foregroundStyle(JohoColors.cyanForeground(for: colorMode))
                             Text(org)
                                 .font(JohoFont.caption)
                                 .foregroundStyle(colors.primary)
@@ -172,7 +172,7 @@ struct ShareableContactCard: View {
                         HStack(spacing: 6) {
                             Image(systemName: IconCatalog.phone)
                                 .font(JohoFont.tag)
-                                .foregroundStyle(JohoColors.green)
+                                .foregroundStyle(JohoColors.greenForeground(for: colorMode))
                             Text(phone.value)
                                 .font(JohoFont.caption)
                                 .foregroundStyle(colors.primary)
@@ -185,7 +185,7 @@ struct ShareableContactCard: View {
                         HStack(spacing: 6) {
                             Image(systemName: IconCatalog.envelope)
                                 .font(JohoFont.tag)
-                                .foregroundStyle(JohoColors.yellow)
+                                .foregroundStyle(JohoColors.yellowForeground(for: colorMode))
                             Text(email.value)
                                 .font(JohoFont.caption)
                                 .foregroundStyle(colors.primary)
@@ -198,7 +198,7 @@ struct ShareableContactCard: View {
                         HStack(spacing: 6) {
                             Image(systemName: IconCatalog.birthday)
                                 .font(JohoFont.tag)
-                                .foregroundStyle(JohoColors.pink)
+                                .foregroundStyle(JohoColors.pinkForeground(for: colorMode))
                             Text(birthday.formatted(.dateTime.year().month(.abbreviated).day()))
                                 .font(JohoFont.caption)
                                 .foregroundStyle(colors.primary)
@@ -292,7 +292,7 @@ struct ContactShareButton: View {
                 image: Image(systemName: contact.group.icon)
             )
         ) {
-            Label("Share Contact", systemImage: "square.and.arrow.up")
+            Label("Share Contact", systemImage: IconCatalog.share)
         }
     }
 }

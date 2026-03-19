@@ -468,7 +468,7 @@ struct ContactListView: View {
                             .foregroundStyle(group.swiftUIColor)
                     }
                     Spacer()
-                    Image(systemName: isGroupsExpanded ? "chevron.up" : IconCatalog.chevronDown)
+                    Image(systemName: isGroupsExpanded ? IconCatalog.chevronUp : IconCatalog.chevronDown)
                         .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
                 }
@@ -927,7 +927,7 @@ struct ContactImportView: View {
                                 .frame(height: 1.5)
 
                             HStack(spacing: JohoDimensions.spacingSM) {
-                                Image(systemName: message.contains("Success") ? IconCatalog.checkmarkCircleFill : "info.circle.fill")
+                                Image(systemName: message.contains("Success") ? IconCatalog.checkmarkCircleFill : IconCatalog.infoCircleFill)
                                     .font(JohoFont.headlineSmall)
                                     .foregroundStyle(message.contains("Success") ? JohoColors.green : accentColor)
 
@@ -1053,7 +1053,7 @@ struct ContactImportView: View {
                     importMessage = "Successfully imported \(count) contacts"
                     isImporting = false
                     Task {
-                        try? await Task.sleep(for: .seconds(1.5))
+                        try? await Task.sleep(for: JohoDurations.toastDuration)
                         dismiss()
                     }
                 }
@@ -1077,7 +1077,7 @@ struct ContactImportView: View {
                     importMessage = "Successfully imported \(cnContacts.count) contacts"
                     isImporting = false
                     Task {
-                        try? await Task.sleep(for: .seconds(1.5))
+                        try? await Task.sleep(for: JohoDurations.toastDuration)
                         dismiss()
                     }
                 }

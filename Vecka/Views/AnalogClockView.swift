@@ -196,7 +196,7 @@ private struct WorldClockCellContent: View {
             // City code badge
             Text(cityCode)
                 .font(JohoFont.pillLabel)
-                .foregroundStyle(.white)
+                .foregroundStyle(accentColor.contrastingForeground)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 3)
                 .background(accentColor)
@@ -216,9 +216,9 @@ private struct WorldClockCellContent: View {
 
             // Offset indicator
             HStack(spacing: 2) {
-                Image(systemName: isDaytime ? "sun.min.fill" : "moon.fill")
+                Image(systemName: isDaytime ? IconCatalog.sunMinFill : IconCatalog.moonFill)
                     .font(.system(size: 8, weight: .bold, design: .rounded))
-                    .foregroundStyle(isDaytime ? Color(hex: "F39C12") : Color(hex: "6C5CE7"))
+                    .foregroundStyle(isDaytime ? JohoColors.sunAmber : JohoColors.moonViolet)
 
                 Text(offsetText)
                     .font(.system(size: 9, weight: .medium, design: .rounded))
@@ -266,15 +266,15 @@ private struct WorldClockCellContent: View {
         AnalogClockView(
             timezone: TimeZone(identifier: "Europe/Stockholm") ?? .current,
             size: 100,
-            accentColor: Color(hex: "4A90D9")
+            accentColor: JohoColors.regionEurope
         )
 
         WorldClockCell(
             cityCode: "STM",
             cityName: "Stora Mellösa",
             timezone: TimeZone(identifier: "Europe/Stockholm") ?? .current,
-            accentColor: Color(hex: "4A90D9"),
-            lightBackground: Color(hex: "E8F4FD"),
+            accentColor: JohoColors.regionEurope,
+            lightBackground: JohoColors.regionEuropeLight,
             isLocal: true
         )
         .frame(width: 120)

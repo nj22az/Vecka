@@ -270,7 +270,7 @@ struct RegionSelectionView: View {
             } label: {
                 HStack(spacing: 8) {
                     // Chevron
-                    Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                    Image(systemName: isExpanded ? IconCatalog.chevronDown : IconCatalog.chevronRight)
                         .font(.system(size: 9, weight: .bold, design: .rounded))
                         .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                         .frame(width: 12)

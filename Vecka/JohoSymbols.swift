@@ -18,6 +18,8 @@ enum IconCatalog {
     static let contacts = "person.2"
     static let peopleGroup = "person.3.fill"
     static let personBadgeKey = "person.badge.key"
+    static let personCropSquare = "person.crop.square"
+    static let personCropCircleBadgeQuestionmark = "person.crop.circle.badge.questionmark"
 
     // MARK: - Calendar & Time
     static let calendar = "calendar"
@@ -33,14 +35,17 @@ enum IconCatalog {
     // MARK: - Navigation
     static let home = "house.fill"
     static let star = "star.fill"
+    static let starOutline = "star"
     static let chevronRight = "chevron.right"
     static let chevronLeft = "chevron.left"
     static let chevronDown = "chevron.down"
+    static let chevronUp = "chevron.up"
     static let chevronUpDown = "chevron.up.chevron.down"
     static let arrowBack = "arrow.uturn.backward"
     static let arrowCounterclockwise = "arrow.counterclockwise"
     static let arrowClockwise = "arrow.clockwise"
     static let arrowDownCircle = "arrow.down.circle"
+    static let sidebarLeft = "sidebar.left"
 
     // MARK: - Actions
     static let plus = "plus"
@@ -55,6 +60,8 @@ enum IconCatalog {
     static let pencil = "pencil"
     static let trash = "trash"
     static let trashFill = "trash.fill"
+    static let square = "square"
+    static let circleDotted = "circle.dotted"
 
     // MARK: - Sharing & Import
     static let share = "square.and.arrow.up"
@@ -83,14 +90,23 @@ enum IconCatalog {
     static let booksVertical = "books.vertical.fill"
     static let listBullet = "list.bullet"
     static let checklist = "checklist"
+    static let docTextFill = "doc.text.fill"
+    static let tablecells = "tablecells"
+    static let tablecellsFill = "tablecells.fill"
+    static let filterOptions = "line.3.horizontal.decrease.circle"
 
     // MARK: - Alerts & Status
     static let warning = "exclamationmark.triangle.fill"
     static let lockFill = "lock.fill"
+    static let lockOpenFill = "lock.open.fill"
+    static let eye = "eye"
+    static let eyeSlash = "eye.slash"
+    static let infoCircleFill = "info.circle.fill"
     static let chartBar = "chart.bar.xaxis"
     static let tray = "tray"
     static let folder = "folder.fill"
     static let flagFill = "flag.fill"
+    static let tagFill = "tag.fill"
     static let dollarsign = "dollarsign"
     static let handTap = "hand.tap"
 
@@ -117,6 +133,8 @@ enum IconCatalog {
     static let humidityFill = "humidity.fill"
     static let moonFill = "moon.fill"
     static let sunFill = "sun.max.fill"
+    static let sunMinFill = "sun.min.fill"
+    static let lightbulbFill = "lightbulb.fill"
 
     // MARK: - Decorative / Appearance
     static let sunMin = "sun.min"
@@ -461,9 +479,9 @@ struct JohoPhotoContainer: View {
     var body: some View {
         // When we have an Image (not Data), we need custom rendering
         // since JohoSticker.Content.photo expects Data
-        if image != nil {
+        if let image {
             ZStack(alignment: .bottomTrailing) {
-                image!
+                image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: size, height: size)
@@ -476,7 +494,7 @@ struct JohoPhotoContainer: View {
                 if let badge = stickerBadge {
                     Image(systemName: badge.icon)
                         .font(.system(size: size * 0.15, weight: .bold, design: .rounded))
-                        .foregroundStyle(colors.primaryInverted)
+                        .foregroundStyle(badge.color.contrastingForeground)
                         .padding(4)
                         .background(badge.color)
                         .johoBordered(cornerRadius: JohoDimensions.radiusXS, borderWidth: 1)

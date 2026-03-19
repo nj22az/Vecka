@@ -1525,7 +1525,7 @@ struct CollapsibleSpecialDayCard: View {
                     }
 
                     // Expand/collapse chevron
-                    Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                    Image(systemName: isExpanded ? IconCatalog.chevronDown : IconCatalog.chevronRight)
                         .font(JohoFont.bodySmallBold)
                         .foregroundStyle(colors.primary)
                         .frame(width: 24, height: 24)
@@ -2428,7 +2428,7 @@ extension SpecialDaysListView {
                 }
 
                 Task {
-                    try? await Task.sleep(for: .seconds(4))
+                    try? await Task.sleep(for: JohoDurations.notificationDuration)
                     withAnimation {
                         showUndoToast = false
                     }

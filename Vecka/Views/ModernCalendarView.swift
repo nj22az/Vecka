@@ -317,7 +317,7 @@ struct ModernCalendarView: View {
         } else {
             ContentUnavailableView(
                 Localization.selectItem,
-                systemImage: "sidebar.left"
+                systemImage: IconCatalog.sidebarLeft
             )
             .johoBackground()
         }

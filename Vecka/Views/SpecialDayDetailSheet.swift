@@ -350,7 +350,7 @@ struct SpecialDayDetailSheet: View {
 
                     Spacer()
 
-                    Image(systemName: showShareOptions ? "chevron.up" : IconCatalog.chevronDown)
+                    Image(systemName: showShareOptions ? IconCatalog.chevronUp : IconCatalog.chevronDown)
                         .font(JohoFont.labelBold)
                         .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
                 }

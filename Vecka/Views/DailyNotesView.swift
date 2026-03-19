@@ -85,7 +85,7 @@ struct DailyNotesView: View {
                             VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
                                 ForEach(holidays, id: \.id) { holiday in
                                     HStack(spacing: JohoDimensions.spacingSM) {
-                                        Image(systemName: holiday.symbolName ?? "flag.fill")
+                                        Image(systemName: holiday.symbolName ?? IconCatalog.flagFill)
                                             .font(JohoFont.bodySmallBold)
                                             .foregroundStyle(holiday.isBankHoliday ? JohoColors.pink : JohoColors.cyan)
 
@@ -122,7 +122,7 @@ struct DailyNotesView: View {
                         .foregroundStyle(colors.primary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, JohoDimensions.spacingMD)
-                        .background(JohoColors.yellow)
+                        .background(SectionZone.notes.background(for: colorMode))
                         .johoBordered()
                     }
                     .padding(.horizontal, JohoDimensions.spacingLG)
@@ -167,7 +167,7 @@ struct DailyNotesView: View {
                         VStack(spacing: JohoDimensions.spacingMD) {
                             Image(systemName: IconCatalog.memo)
                                 .font(.system(size: 32, weight: .medium, design: .rounded))
-                                .foregroundStyle(JohoColors.yellow)
+                                .foregroundStyle(JohoColors.yellowForeground(for: colorMode))
                             Text("No Notes")
                                 .font(JohoFont.headline)
                                 .foregroundStyle(colors.primary)
@@ -525,7 +525,7 @@ struct JohoNoteEditorSheet: View {
                     } label: {
                         Text("Save")
                             .font(JohoFont.bodySmallBold)
-                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primaryInverted.opacity(JohoDimensions.opacityModerate))
+                            .foregroundStyle(canSave ? noteAccentColor.contrastingForeground : colors.primaryInverted.opacity(JohoDimensions.opacityModerate))
                             .frame(width: 56, height: 32)
                             .background(canSave ? noteAccentColor : colors.primaryInverted.opacity(JohoDimensions.opacityMild))
                             .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5, borderColor: colors.primaryInverted)

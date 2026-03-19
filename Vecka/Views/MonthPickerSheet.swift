@@ -112,7 +112,7 @@ struct MonthPickerSheet: View {
                         }
                         .onAppear {
                             Task {
-                                try? await Task.sleep(for: .seconds(0.1))
+                                try? await Task.sleep(for: JohoDurations.animationBrief)
                                 withAnimation {
                                     proxy.scrollTo(year, anchor: .center)
                                 }

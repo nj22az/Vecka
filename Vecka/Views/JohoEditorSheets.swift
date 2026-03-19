@@ -40,7 +40,7 @@ struct JohoUndoToast: View {
             } label: {
                 Text("Undo")
                     .font(JohoFont.body.bold())
-                    .foregroundStyle(JohoColors.cyan)
+                    .foregroundStyle(JohoColors.cyanForeground(for: colorMode))
             }
 
             Button {
@@ -86,10 +86,10 @@ struct JohoIconPickerSheet: View {
     private let iconColorOptions: [(name: String, hex: String, color: Color)] = [
         ("Default", "", Color.clear),  // Use category accent color
         ("Black", "1A1A1A", JohoColors.black),
-        ("Pink", "E11D48", Color(hex: "E11D48")),
-        ("Cyan", "0891B2", Color(hex: "0891B2")),
-        ("Green", "16A34A", Color(hex: "16A34A")),
-        ("Purple", "9333EA", Color(hex: "9333EA")),
+        ("Pink", "E11D48", JohoColors.iconPickerPink),
+        ("Cyan", "0891B2", JohoColors.iconPickerCyan),
+        ("Green", "16A34A", JohoColors.iconPickerGreen),
+        ("Purple", "9333EA", JohoColors.iconPickerPurple),
     ]
 
     /// 情報デザイン: Filter out excluded symbols (category defaults)
@@ -370,7 +370,7 @@ struct JohoSpecialDayEditorSheet: View {
                     } label: {
                         Text("Save")
                             .font(JohoFont.bodySmallBold)
-                            .foregroundStyle(canSave ? colors.primaryInverted : colors.primary.opacity(JohoDimensions.opacityModerate))
+                            .foregroundStyle(canSave ? type.accentColor.contrastingForeground : colors.primary.opacity(JohoDimensions.opacityModerate))
                             .frame(width: 56, height: 32)
                             .background(canSave ? type.accentColor : colors.surface)
                             .clipShape(Squircle(cornerRadius: JohoDimensions.radiusSmall))
@@ -548,7 +548,7 @@ struct JohoSpecialDayEditorSheet: View {
         } label: {
             Text(label)
                 .font(JohoFont.label)
-                .foregroundStyle(selectedRegion == code ? colors.primaryInverted : colors.primary)
+                .foregroundStyle(selectedRegion == code ? type.accentColor.contrastingForeground : colors.primary)
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
                 .background(selectedRegion == code ? type.accentColor : colors.surface)
@@ -686,11 +686,11 @@ struct MonthCustomizationSheet: View {
     // 情報デザイン: Icon colors (darker/more saturated for visibility)
     private let iconColorOptions: [(name: String, hex: String, color: Color)] = [
         ("Black", "1A1A1A", JohoColors.black),
-        ("Yellow", "D4A900", Color(hex: "D4A900")),
-        ("Cyan", "0891B2", Color(hex: "0891B2")),
-        ("Pink", "E11D48", Color(hex: "E11D48")),
-        ("Green", "16A34A", Color(hex: "16A34A")),
-        ("Purple", "9333EA", Color(hex: "9333EA"))
+        ("Yellow", "D4A900", JohoColors.iconPickerYellow),
+        ("Cyan", "0891B2", JohoColors.iconPickerCyan),
+        ("Pink", "E11D48", JohoColors.iconPickerPink),
+        ("Green", "16A34A", JohoColors.iconPickerGreen),
+        ("Purple", "9333EA", JohoColors.iconPickerPurple)
     ]
 
     var body: some View {
@@ -876,7 +876,7 @@ struct JohoBentoOptionRow: View {
         HStack(spacing: 0) {
             ZStack {
                 RoundedRectangle(cornerRadius: JohoDimensions.radiusCard, style: .continuous).fill(option.color).frame(width: 48, height: 48)
-                Image(systemName: option.icon).font(.system(size: 22, weight: .bold, design: .rounded)).foregroundStyle(colors.primaryInverted)
+                Image(systemName: option.icon).font(.system(size: 22, weight: .bold, design: .rounded)).foregroundStyle(option.color.contrastingForeground)
             }
             .overlay(RoundedRectangle(cornerRadius: JohoDimensions.radiusCard, style: .continuous).stroke(colors.border, lineWidth: 2))
             .padding(.leading, JohoDimensions.spacingMD)
@@ -888,7 +888,7 @@ struct JohoBentoOptionRow: View {
                 HStack(spacing: 8) {
                     Text(option.code)
                         .font(.system(size: 10, weight: .black, design: .monospaced))
-                        .foregroundStyle(colors.primaryInverted)
+                        .foregroundStyle(option.color.contrastingForeground)
                         .padding(.horizontal, 8).padding(.vertical, 3)
                         .background(option.color)
                         .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusXS, style: .continuous))

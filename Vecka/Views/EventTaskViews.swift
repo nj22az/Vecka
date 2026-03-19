@@ -28,7 +28,7 @@ struct EventTaskRow: View {
                 }
                 HapticManager.impact(.light)
             } label: {
-                Image(systemName: task.isCompleted ? IconCatalog.checkmarkCircleFill : "square")
+                Image(systemName: task.isCompleted ? IconCatalog.checkmarkCircleFill : IconCatalog.square)
                     .font(.system(size: 20, weight: .medium, design: .rounded))
                     .foregroundStyle(task.isCompleted ? JohoColors.cyan : colors.primary)
             }
@@ -77,7 +77,7 @@ struct EventTaskEditorRow: View {
                 }
                 HapticManager.impact(.light)
             } label: {
-                Image(systemName: task.isCompleted ? IconCatalog.checkmarkCircleFill : "square")
+                Image(systemName: task.isCompleted ? IconCatalog.checkmarkCircleFill : IconCatalog.square)
                     .font(.system(size: 20, weight: .medium, design: .rounded))
                     .foregroundStyle(task.isCompleted ? JohoColors.cyan : colors.primary)
             }
@@ -214,11 +214,11 @@ struct EventTasksSection: View {
             HStack(spacing: JohoDimensions.spacingSM) {
                 Image(systemName: IconCatalog.plusCircleFill)
                     .font(.system(size: 18, weight: .medium, design: .rounded))
-                    .foregroundStyle(JohoColors.cyan)
+                    .foregroundStyle(JohoColors.cyanForeground(for: colorMode))
 
                 Text("Add Task")
                     .font(JohoFont.bodySmall)
-                    .foregroundStyle(JohoColors.cyan)
+                    .foregroundStyle(JohoColors.cyanForeground(for: colorMode))
 
                 Spacer()
             }
@@ -253,7 +253,7 @@ struct TaskProgressIndicator: View {
     var body: some View {
         if totalCount > 0 {
             HStack(spacing: 4) {
-                Image(systemName: isAllComplete ? IconCatalog.checkmarkCircleFill : "circle.dotted")
+                Image(systemName: isAllComplete ? IconCatalog.checkmarkCircleFill : IconCatalog.circleDotted)
                     .font(JohoFont.caption)
                     .foregroundStyle(isAllComplete ? JohoColors.cyan : colors.primary.opacity(JohoDimensions.opacityHeavy))
 

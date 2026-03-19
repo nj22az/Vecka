@@ -73,6 +73,12 @@ extension Color {
         return Color(UIColor(hue: h, saturation: s, brightness: newB, alpha: a))
     }
 
+    /// Returns black or white — whichever has better contrast against this color.
+    /// Use on any background color to get a guaranteed-readable text color.
+    var contrastingForeground: Color {
+        relativeLuminance > 0.45 ? Color(hex: "000000") : Color(hex: "FFFFFF")
+    }
+
     /// Data-driven readable foreground: looks up curated foreground from CategoryColorSettings
     /// when this color matches a known category background, otherwise auto-derives.
     /// Mode-aware via UITraitCollection for correct light/dark contrast.
@@ -165,6 +171,67 @@ enum JohoColors {
     // Action colors (destructive/interactive)
     static let editAction = Color(hex: "3182CE")       // Blue for edit actions
     static let deleteAction = Color(hex: "E53E3E")     // Red for delete actions
+
+    // Day/Night indicator colors (world clock sun/moon icons)
+    static let sunAmber = Color(hex: "F39C12")         // Sun icon (daytime)
+    static let moonViolet = Color(hex: "6C5CE7")       // Moon icon (night)
+
+    // World Clock region accent colors
+    static let regionEurope = Color(hex: "4A90D9")
+    static let regionAsia = Color(hex: "E17055")
+    static let regionPacific = Color(hex: "00CEC9")
+    static let regionAustralia = Color(hex: "D35400")
+    static let regionAmerica = Color(hex: "00B894")
+    static let regionAfrica = Color(hex: "FDCB6E")
+    static let regionDefault = Color(hex: "636E72")
+
+    // World Clock region light backgrounds
+    static let regionEuropeLight = Color(hex: "E8F4FD")
+    static let regionAsiaLight = Color(hex: "FDECE8")
+    static let regionPacificLight = Color(hex: "E8FFFE")
+    static let regionAustraliaLight = Color(hex: "FDEEE5")
+    static let regionAmericaLight = Color(hex: "E8FDF6")
+    static let regionAfricaLight = Color(hex: "FFF9E8")
+    static let regionDefaultLight = Color(hex: "F0F2F3")
+    static let regionAtlanticLight = Color(hex: "EFECFD")
+
+    // Icon picker palette (saturated colors for visibility on pastel backgrounds)
+    static let iconPickerPink = Color(hex: "E11D48")
+    static let iconPickerCyan = cyanDark                // 0891B2 — reuses existing dark cyan
+    static let iconPickerGreen = Color(hex: "16A34A")
+    static let iconPickerPurple = Color(hex: "9333EA")
+    static let iconPickerYellow = Color(hex: "D4A900")
+
+    // ═══════════════════════════════════════════════════════════════════
+    // Mode-aware foreground colors for text/icons on canvas backgrounds
+    // Light mode: dark variants (readable on white)
+    // Dark mode: pastel variants (readable on dark surfaces)
+    // ═══════════════════════════════════════════════════════════════════
+
+    /// Mode-aware yellow foreground (dark gold on light, pastel on dark)
+    static func yellowForeground(for mode: JohoColorMode) -> Color {
+        mode == .dark ? yellow : yellowDark
+    }
+
+    /// Mode-aware cyan foreground (dark teal on light, pastel on dark)
+    static func cyanForeground(for mode: JohoColorMode) -> Color {
+        mode == .dark ? cyan : cyanDark
+    }
+
+    /// Mode-aware pink foreground (dark rose on light, pastel on dark)
+    static func pinkForeground(for mode: JohoColorMode) -> Color {
+        mode == .dark ? pink : pinkDark
+    }
+
+    /// Mode-aware green foreground (dark green on light, pastel on dark)
+    static func greenForeground(for mode: JohoColorMode) -> Color {
+        mode == .dark ? green : greenDark
+    }
+
+    /// Mode-aware purple foreground (dark violet on light, pastel on dark)
+    static func purpleForeground(for mode: JohoColorMode) -> Color {
+        mode == .dark ? purple : purpleDark
+    }
 }
 
 // MARK: - Page Header Colors (情報デザイン: Unique colors for page headers)
@@ -202,9 +269,11 @@ enum PageHeaderColor {
         }
     }
 
-    /// Text color on this header (always high contrast)
+    /// Text color on this header — delegates to dark mode for safety
+    /// Prefer `textColor(for:)` when color mode is available in environment
     var textColor: Color {
-        JohoColors.black
+        let isDark = UITraitCollection.current.userInterfaceStyle == .dark
+        return textColor(for: isDark ? .dark : .light)
     }
 
     /// Text color for the specified color mode
@@ -325,7 +394,7 @@ struct JohoScheme {
                 secondary: Color(hex: "000000").opacity(JohoDimensions.opacityStrong),
                 surface: Color(hex: "FFFFFF"),      // White containers
                 border: Color(hex: "000000"),       // Black borders
-                canvas: Color(hex: "FFFFFF"),       // White canvas (light mode)
+                canvas: Color(hex: "000000"),       // OLED black canvas (same as dark mode)
                 surfaceInverted: Color(hex: "000000"),
                 primaryInverted: Color(hex: "FFFFFF"),
                 inputBackground: Color(hex: "F5F5F5")  // Light gray for text fields
@@ -368,5 +437,63 @@ extension View {
     /// Apply a specific 情報デザイン color mode to this view and its children
     func johoColorMode(_ mode: JohoColorMode) -> some View {
         environment(\.johoColorMode, mode)
+    }
+}
+
+// MARK: - Currency Formatter (情報デザイン: Shared formatting utility)
+
+/// Unified currency formatting used across the app.
+/// Replaces duplicate `formatCurrency` / `formatAmount` / `formatExpense` functions.
+enum CurrencyFormatter {
+
+    // MARK: - Public API
+
+    /// Format with explicit currency code, no decimal places.
+    /// Example: "kr 1 234" / "$1,234" depending on locale + currency code.
+    static func formatted(_ amount: Double, currencyCode: String, fractionDigits: Int = 0) -> String {
+        let formatter = cachedFormatter(currencyCode: currencyCode, fractionDigits: fractionDigits)
+        return formatter.string(from: NSNumber(value: amount))
+            ?? "\(currencyCode) \(Int(amount))"
+    }
+
+    /// Format with explicit currency code using `Decimal` (for `ExpenseExportInfo`).
+    static func formatted(_ amount: Decimal, currencyCode: String) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = currencyCode
+        return formatter.string(from: amount as NSDecimalNumber)
+            ?? "\(amount) \(currencyCode)"
+    }
+
+    /// Format using the device locale's default currency (no explicit code).
+    /// Example: "$1,234.56" when locale is en_US.
+    static func formattedLocale(_ amount: Double) -> String {
+        let code = Locale.current.currency?.identifier ?? "USD"
+        let formatter = cachedFormatter(currencyCode: code, fractionDigits: 2)
+        return formatter.string(from: NSNumber(value: amount))
+            ?? "$0"
+    }
+
+    /// Compact plain-text format: "1234 SEK" (no locale symbols, no decimals).
+    /// Used in model descriptions and shareable text.
+    static func plain(_ amount: Double, currencyCode: String) -> String {
+        String(format: "%.0f %@", amount, currencyCode)
+    }
+
+    // MARK: - Private Caching
+
+    /// Thread-safe cache keyed by "currencyCode-fractionDigits".
+    private static let cache = NSCache<NSString, NumberFormatter>()
+
+    private static func cachedFormatter(currencyCode: String, fractionDigits: Int) -> NumberFormatter {
+        let key = "\(currencyCode)-\(fractionDigits)" as NSString
+        if let cached = cache.object(forKey: key) { return cached }
+
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = currencyCode
+        formatter.maximumFractionDigits = fractionDigits
+        cache.setObject(formatter, forKey: key)
+        return formatter
     }
 }

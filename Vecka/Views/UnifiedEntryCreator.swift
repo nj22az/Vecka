@@ -487,7 +487,7 @@ struct UnifiedEntryCreator: View {
                         selectedRegion = region
                         HapticManager.selection()
                     } label: {
-                        Label(region, systemImage: "flag.fill")
+                        Label(region, systemImage: IconCatalog.flagFill)
                     }
                 }
 
@@ -498,13 +498,13 @@ struct UnifiedEntryCreator: View {
                             selectedRegion = region
                             HapticManager.selection()
                         } label: {
-                            Label(region, systemImage: "tag.fill")
+                            Label(region, systemImage: IconCatalog.tagFill)
                         }
                     }
                 }
             } label: {
                 HStack {
-                    Image(systemName: selectedRegion == "PERSONAL" ? IconCatalog.person : "flag.fill")
+                    Image(systemName: selectedRegion == "PERSONAL" ? IconCatalog.person : IconCatalog.flagFill)
                         .font(JohoFont.label)
                     Text(selectedRegion == "PERSONAL" ? "Personal" : selectedRegion)
                         .font(JohoFont.bodySmall)

@@ -66,7 +66,7 @@ struct ContactPickerSheet: View {
                     VStack(spacing: JohoDimensions.spacingMD) {
                         Spacer()
 
-                        Image(systemName: searchText.isEmpty ? "person.crop.circle.badge.questionmark" : "magnifyingglass")
+                        Image(systemName: searchText.isEmpty ? IconCatalog.personCropCircleBadgeQuestionmark : IconCatalog.search)
                             .font(.system(size: 40, weight: .light, design: .rounded))
                             .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
 
