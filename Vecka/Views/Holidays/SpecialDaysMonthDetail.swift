@@ -149,10 +149,10 @@ struct SpecialDaysMonthDetail: View {
             VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
                 ForEach(previewItems, id: \.id) { item in
                     HStack(spacing: JohoDimensions.spacingSM) {
-                        Text(DateFormatterCache.monthDay.string(from: item.date))
+                        Text(DateFormatterCache.weekRange.string(from: item.date))
                             .font(JohoFont.bodySmall)
                             .foregroundStyle(colors.secondary)
-                            .frame(width: 56, alignment: .leading)
+                            .frame(width: 48, alignment: .leading)
 
                         Text(item.title)
                             .font(JohoFont.body)
