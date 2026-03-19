@@ -118,7 +118,7 @@ struct SpecialDaysMonthDetail: View {
     private func categoryBentoCard(category: DisplayCategory, count: Int) -> some View {
         let displayIcon = category.categoryAwareIcon
         let categoryColor = CategoryColorSettings.shared.color(for: category)
-        let previewItems = collectPreviewItems(for: category, limit: 3)
+        let previewItems = collectPreviewItems(for: category, limit: 2)
 
         VStack(alignment: .leading, spacing: 0) {
             // Header — sticker + label + count (tinted banner)
@@ -134,11 +134,11 @@ struct SpecialDaysMonthDetail: View {
 
                 Text("\(count)")
                     .font(JohoFont.labelBold)
-                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
             }
             .padding(.horizontal, JohoDimensions.spacingMD)
-            .padding(.vertical, JohoDimensions.spacingSM)
-            .background(categoryColor.opacity(JohoDimensions.opacityLight))
+            .padding(.vertical, JohoDimensions.spacingXS)
+            .background(categoryColor.opacity(JohoDimensions.opacityMedium))
 
             // Divider
             Rectangle()
@@ -161,14 +161,15 @@ struct SpecialDaysMonthDetail: View {
                     }
                 }
 
-                if count > 3 {
-                    Text("+\(count - 3) more")
+                if count > 2 {
+                    Text("+\(count - 2) more")
                         .font(JohoFont.bodySmall)
                         .foregroundStyle(colors.secondary)
                         .padding(.leading, 32)
                 }
             }
-            .padding(JohoDimensions.spacingMD)
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
         }
         .background(colors.surface)
         .johoBordered()

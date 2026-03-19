@@ -340,6 +340,7 @@ enum CategoryIconSettings {
     static func save(_ customizations: [String: CategoryCustomization]) {
         if let encoded = try? JSONEncoder().encode(customizations) {
             UserDefaults.standard.set(encoded, forKey: storageKey)
+            NotificationCenter.default.post(name: UserDefaults.didChangeNotification, object: nil)
         }
     }
 

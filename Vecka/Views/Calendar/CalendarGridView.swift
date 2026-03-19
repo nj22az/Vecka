@@ -128,7 +128,7 @@ extension CalendarGridView {
                         // Horizontal divider between weeks (not after last)
                         if index < month.weeks.count - 1 {
                             Rectangle()
-                                .fill(colors.border.opacity(JohoDimensions.opacityModerate))
+                                .fill(colors.border.opacity(JohoDimensions.opacityStrong))
                                 .frame(height: dividerWidth)
                                 .padding(.horizontal, -edgeExtension)
                         }
@@ -151,7 +151,7 @@ extension CalendarGridView {
                             .frame(maxWidth: .infinity)
                         if index < 6 {
                             Rectangle()
-                                .fill(colors.border.opacity(0.25))
+                                .fill(colors.border.opacity(0.4))
                                 .frame(width: dividerWidth)
                                 .padding(.vertical, -edgeExtension)
                         }
@@ -301,7 +301,7 @@ extension CalendarGridView {
             }
             .frame(maxWidth: .infinity)
             .frame(height: rowHeight)
-            .opacity(day.isInCurrentMonth ? 1.0 : 0.35)
+            .opacity(day.isInCurrentMonth ? 1.0 : 0.5)
         }
         .buttonStyle(.plain)
         .simultaneousGesture(
