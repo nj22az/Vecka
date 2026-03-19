@@ -91,78 +91,107 @@ struct SpecialDaysMonthDetail: View {
         }
     }
 
-    // MARK: - Category Cards Grid
+    // MARK: - Category Cards (Bento Style)
 
     @ViewBuilder
     private var categoryCardsGrid: some View {
         let counts = monthUniqueCounts()
 
-        // 情報デザイン: Grid (not LazyVGrid) ensures synchronized row heights
-        Grid(horizontalSpacing: JohoDimensions.spacingSM, verticalSpacing: JohoDimensions.spacingSM) {
-            GridRow {
-                categoryCard(category: .holiday, count: counts.holidays)
-                categoryCard(category: .observance, count: counts.observances)
-                categoryCard(category: .memo, count: counts.memos)
+        VStack(spacing: JohoDimensions.spacingSM) {
+            if counts.holidays > 0 {
+                categoryBentoCard(category: .holiday, count: counts.holidays)
+            }
+            if counts.observances > 0 {
+                categoryBentoCard(category: .observance, count: counts.observances)
+            }
+            if counts.memos > 0 {
+                categoryBentoCard(category: .memo, count: counts.memos)
             }
         }
-        .id(categoryCustomizationsVersion)  // 情報デザイン: Force refresh when customizations change
+        .id(categoryCustomizationsVersion)
         .padding(.horizontal, JohoDimensions.spacingLG)
     }
 
-    // MARK: - Category Card
+    // MARK: - Bento Category Card
 
     @ViewBuilder
-    private func categoryCard(category: DisplayCategory, count: Int) -> some View {
-        // 情報デザイン: Custom icon allowed, color from CategoryColorSettings
+    private func categoryBentoCard(category: DisplayCategory, count: Int) -> some View {
         let displayIcon = category.categoryAwareIcon
         let categoryColor = CategoryColorSettings.shared.color(for: category)
+        let previewItems = collectPreviewItems(for: category, limit: 3)
 
-        VStack(spacing: 0) {
-            // TOP: Icon zone (情報デザイン: Sticker-first rendering)
-            // Fixed height ensures banner dividers align across all cards
-            JohoSticker.small(icon: displayIcon, color: categoryColor)
-                .frame(maxWidth: .infinity)
-                .frame(height: 64)
-                .background(categoryColor)
+        VStack(alignment: .leading, spacing: 0) {
+            // Header — sticker + label + count (tinted banner)
+            HStack(spacing: JohoDimensions.spacingSM) {
+                JohoSticker(content: .icon(displayIcon), color: categoryColor, size: 28)
 
-            // Divider (情報デザイン: Black wall between compartments)
+                Text(category.localizedLabel.uppercased())
+                    .font(JohoFont.headerTag)
+                    .tracking(1)
+                    .foregroundStyle(colors.primary)
+
+                Spacer()
+
+                Text("\(count)")
+                    .font(JohoFont.labelBold)
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .background(categoryColor.opacity(JohoDimensions.opacityLight))
+
+            // Divider
             Rectangle()
                 .fill(colors.border)
                 .frame(height: 1.5)
 
-            // BOTTOM: Category name + count (情報デザイン: Like message on month cards)
-            // minHeight ensures all cards end at same line
-            HStack(spacing: 0) {
-                Spacer(minLength: 16)
+            // Content — preview rows
+            VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
+                ForEach(previewItems, id: \.id) { item in
+                    HStack(spacing: JohoDimensions.spacingSM) {
+                        Text(DateFormatterCache.monthDay.string(from: item.date))
+                            .font(JohoFont.bodySmall)
+                            .foregroundStyle(colors.secondary)
+                            .frame(width: 56, alignment: .leading)
 
-                VStack(spacing: 2) {
-                    Text(category.localizedLabel.uppercased())
-                        .font(JohoFont.pillLabel)
-                        .foregroundStyle(colors.primary)
-                        .multilineTextAlignment(.center)
-
-                    // Count always rendered for consistent height (invisible when 0)
-                    Text(count > 0 ? "\(count)" : " ")
-                        .font(.system(size: 9, weight: .medium, design: .rounded))
-                        .foregroundStyle(colors.primary.opacity(count > 0 ? 0.6 : 0))
+                        Text(item.title)
+                            .font(JohoFont.body)
+                            .foregroundStyle(colors.primary)
+                            .lineLimit(1)
+                    }
                 }
 
-                Spacer(minLength: 16)
+                if count > 3 {
+                    Text("+\(count - 3) more")
+                        .font(JohoFont.bodySmall)
+                        .foregroundStyle(colors.secondary)
+                }
             }
-            .frame(maxWidth: .infinity, minHeight: 48)
-            .background(colors.surface)
+            .padding(JohoDimensions.spacingMD)
         }
         .background(colors.surface)
-        .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 1.5)
+        .johoBordered()
         .contentShape(Rectangle())
-        // 情報デザイン: NO opacity change - colors define identity regardless of content
-        // Category customization moved to Settings → CATEGORIES section
         .onTapGesture {
             withAnimation(.easeInOut(duration: 0.2)) {
                 selectedCategory = category
             }
             HapticManager.selection()
         }
+    }
+
+    // MARK: - Preview Item Collection
+
+    private func collectPreviewItems(for category: DisplayCategory, limit: Int) -> [SpecialDayRow] {
+        let dayCards = filteredDayCards(category)
+        var items: [SpecialDayRow] = []
+        for dayCard in dayCards {
+            for item in dayCard.items {
+                items.append(item)
+                if items.count >= limit { return items }
+            }
+        }
+        return items
     }
 
     // MARK: - Expansion Helpers
