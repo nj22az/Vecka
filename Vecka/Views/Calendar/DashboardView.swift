@@ -18,8 +18,10 @@ struct DashboardView: View {
     @Environment(\.johoColorMode) private var colorMode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
-    // Unified Memo query - filter by type in computed properties
+    // All memos needed: stats page aggregates every memo type (notes, trips, expenses,
+    // countdowns) and computes totals across all dates. No single predicate covers all uses.
     @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
+    // All contacts needed: contact count and birthday displays use the full set.
     @Query private var contacts: [Contact]
 
     // Managers

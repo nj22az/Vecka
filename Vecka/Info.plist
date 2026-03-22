@@ -16,14 +16,8 @@
 	        <string>UIInterfaceOrientationLandscapeLeft</string>
 	        <string>UIInterfaceOrientationLandscapeRight</string>
 	    </array>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Onsen Planner uses your location to show weather forecasts alongside your calendar events, helping you plan your week better.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Onsen Planner can show weather forecasts for your calendar days to help you plan activities.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Onsen Planner needs access to your contacts to import and sync contact information for easy management within the app.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Onsen Planner uses the camera to scan QR codes for quickly importing contact information.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Onsen Planner uses photos for contact profile pictures, letting you personalize your contacts with custom images.</string>
 	<key>NSCalendarsFullAccessUsageDescription</key>

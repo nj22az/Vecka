@@ -16,7 +16,9 @@ struct ExpenseListView: View {
 
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
-    // Query all memos, filter to expenses in computed property
+    // All memos needed: memoTypeRaw can be nil (defaults to .note) and SwiftData predicates
+    // cannot express "nil OR matching value" reliably across all migration states.
+    // Filtering to expenses happens via allMemos.expenses in the computed property.
     @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
 
     // Filter to expense type only

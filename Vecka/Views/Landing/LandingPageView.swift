@@ -31,8 +31,10 @@ struct LandingPageView: View {
     // Personalized title (情報デザイン: User can customize their landing page)
     @AppStorage("customLandingTitle") private var customLandingTitle = ""
 
-    // Unified Memo query - filter by type in computed properties
+    // All memos needed: the dashboard aggregates counts, active trips, upcoming countdowns,
+    // and recent notes across all dates. No predicate can cover all these use cases.
     @Query(sort: \Memo.date, order: .reverse) private var allMemos: [Memo]
+    // All contacts needed: birthday countdown and contact count use the full set.
     @Query private var contacts: [Contact]
     @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
 
