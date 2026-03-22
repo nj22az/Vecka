@@ -25,7 +25,7 @@ struct TripListView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: JohoDimensions.spacingLG) {
+            VStack(alignment: .leading, spacing: JohoDimensions.spacingPage) {
                 // Page header with inline actions (情報デザイン)
                 HStack(alignment: .top) {
                     JohoPageHeader(
@@ -41,7 +41,7 @@ struct TripListView: View {
                         JohoActionButton(icon: "plus")
                     }
                 }
-                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.horizontal, JohoDimensions.spacingPage)
 
                 // Active trips section
                 if activeTrips.isNotEmpty {

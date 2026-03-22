@@ -121,12 +121,12 @@ struct LandingPageView: View {
                 VStack(spacing: 0) {
                     pageHeader
                         .fixedSize(horizontal: false, vertical: true)
-                        .padding(.horizontal, JohoDimensions.spacingLG)
-                        .padding(.top, JohoDimensions.spacingSM)
+                        .padding(.horizontal, JohoDimensions.spacingPage)
+                        .padding(.top, JohoDimensions.spacingLG)
                         .padding(.bottom, JohoDimensions.spacingMD)
 
                     ScrollView {
-                        VStack(spacing: JohoDimensions.spacingMD) {
+                        VStack(spacing: JohoDimensions.spacingPage) {
                             if displayClocks.isNotEmpty {
                                 worldClocksCard
                             }
@@ -134,7 +134,7 @@ struct LandingPageView: View {
                             agendaCard
                             randomFactsCard
                         }
-                        .padding(.horizontal, JohoDimensions.spacingLG)
+                        .padding(.horizontal, JohoDimensions.spacingPage)
                         .padding(.bottom, JohoDimensions.spacingXL)
                     }
                 }
@@ -143,12 +143,12 @@ struct LandingPageView: View {
                 VStack(spacing: 0) {
                     pageHeader
                         .fixedSize(horizontal: false, vertical: true)
-                        .padding(.horizontal, JohoDimensions.spacingSM)
-                        .padding(.top, JohoDimensions.spacingSM)
+                        .padding(.horizontal, JohoDimensions.spacingPage)
+                        .padding(.top, JohoDimensions.spacingLG)
                         .padding(.bottom, JohoDimensions.spacingMD)
 
                     ScrollView {
-                        VStack(spacing: JohoDimensions.spacingMD) {
+                        VStack(spacing: JohoDimensions.spacingPage) {
                             if displayClocks.isNotEmpty {
                                 worldClocksCard
                             }
@@ -156,7 +156,7 @@ struct LandingPageView: View {
                             agendaCard
                             randomFactsCard
                         }
-                        .padding(.horizontal, JohoDimensions.spacingSM)
+                        .padding(.horizontal, JohoDimensions.spacingPage)
                         .padding(.bottom, JohoDimensions.spacingXL)
                     }
                 }
@@ -544,13 +544,27 @@ struct LandingPageView: View {
         }
     }
 
+    /// Pastel banner color for fact tiles (matches star page month tile style)
+    private func bannerColorFor(fact: RandomFact) -> Color {
+        switch fact.category {
+        case "tradition": return JohoColors.purpleLight
+        case "food": return Color(hex: "FED7AA")
+        case "invention": return JohoColors.yellowLight
+        case "nature": return JohoColors.greenLight
+        case "history": return Color(hex: "D6BCAB")
+        case "quirky": return JohoColors.cyanLight
+        case "calendar": return JohoColors.cyanLight
+        default: return JohoColors.cyanLight
+        }
+    }
+
     /// Fact tile using shared JohoTileCard
     private func randomFactTile(_ fact: RandomFact) -> some View {
         JohoTileCard(
             label: fact.displaySource,
             icon: fact.icon ?? IconCatalog.holiday,
             iconColor: fact.color,
-            bannerColor: fact.color.opacity(JohoDimensions.opacityLight)
+            bannerColor: bannerColorFor(fact: fact)
         ) {
             Text(fact.text)
                 .font(JohoFont.labelBold)

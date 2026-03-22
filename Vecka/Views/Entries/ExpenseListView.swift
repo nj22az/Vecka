@@ -47,7 +47,7 @@ struct ExpenseListView: View {
         // Note: This view is embedded via NavigationLink or presented in sheet with NavigationStack
         // Do NOT add NavigationStack here to avoid nested navigation issues
         ScrollView {
-            VStack(spacing: JohoDimensions.spacingMD) {
+            VStack(spacing: JohoDimensions.spacingPage) {
                 // Page Header with inline actions (情報デザイン)
                 HStack(alignment: .top) {
                     JohoPageHeader(
@@ -135,8 +135,8 @@ struct ExpenseListView: View {
                         }
                     }
                 }
-                .padding(.horizontal, JohoDimensions.spacingLG)
-                .padding(.top, JohoDimensions.spacingSM)
+                .padding(.horizontal, JohoDimensions.spacingPage)
+                .padding(.top, JohoDimensions.spacingLG)
 
                 // Summary Card
                 summaryCard

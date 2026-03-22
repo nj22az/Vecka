@@ -24,7 +24,7 @@ struct CountdownListView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: JohoDimensions.spacingLG) {
+            VStack(spacing: JohoDimensions.spacingPage) {
                 // 情報デザイン: Page header in white container
                 headerSection
 
@@ -93,8 +93,8 @@ struct CountdownListView: View {
         .padding(JohoDimensions.spacingLG)
         .background(colors.surface)
         .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
-        .padding(.horizontal, JohoDimensions.spacingLG)
-        .padding(.top, JohoDimensions.spacingSM)
+        .padding(.horizontal, JohoDimensions.spacingPage)
+        .padding(.top, JohoDimensions.spacingLG)
     }
 
     // MARK: - Computed Properties

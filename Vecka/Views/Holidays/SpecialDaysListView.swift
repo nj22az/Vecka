@@ -445,7 +445,7 @@ struct SpecialDaysListView: View {
 
     private var mainContent: some View {
         ScrollView {
-            VStack(spacing: JohoDimensions.spacingLG) {
+            VStack(spacing: JohoDimensions.spacingPage) {
                 headerWithYearPicker
 
                 // 情報デザイン: Inline region picker (replaces globe navigation)
@@ -717,8 +717,8 @@ struct SpecialDaysListView: View {
         }
         .background(colors.surface)
         .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: 2)
-        .padding(.horizontal, JohoDimensions.spacingLG)
-        .padding(.top, JohoDimensions.spacingSM)
+        .padding(.horizontal, JohoDimensions.spacingPage)
+        .padding(.top, JohoDimensions.spacingLG)
     }
 
     // MARK: - Bento Stats Row
@@ -920,7 +920,7 @@ struct SpecialDaysListView: View {
 
     private var regionQuickPickerSection: some View {
         RegionQuickPicker(selectedRegions: $holidayRegions)
-            .padding(.horizontal, JohoDimensions.spacingLG)
+            .padding(.horizontal, JohoDimensions.spacingPage)
     }
 
     private func categoryIndicator(category: DisplayCategory, count: Int) -> some View {
@@ -983,8 +983,8 @@ struct SpecialDaysListView: View {
             icon: "calendar.badge.exclamationmark",
             zone: .holidays
         )
-        .padding(.horizontal, JohoDimensions.spacingLG)
-        .padding(.top, JohoDimensions.spacingSM)
+        .padding(.horizontal, JohoDimensions.spacingPage)
+        .padding(.top, JohoDimensions.spacingLG)
     }
 }
 

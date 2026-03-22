@@ -33,7 +33,7 @@ struct NotesListView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: JohoDimensions.spacingLG) {
+            VStack(spacing: JohoDimensions.spacingPage) {
                 // Page header with actions
                 HStack(alignment: .top) {
                     JohoPageHeader(
@@ -52,8 +52,8 @@ struct NotesListView: View {
                     }
                     .accessibilityLabel(Localization.addNote)
                 }
-                .padding(.horizontal, JohoDimensions.spacingLG)
-                .padding(.top, JohoDimensions.spacingSM)
+                .padding(.horizontal, JohoDimensions.spacingPage)
+                .padding(.top, JohoDimensions.spacingLG)
                 .safeAreaPadding(.top)
 
                 // Search field (unified component)

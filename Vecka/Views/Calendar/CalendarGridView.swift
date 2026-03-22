@@ -104,62 +104,103 @@ extension CalendarGridView {
     private var dividerWidth: CGFloat { 1.5 }  // Horizontal divider between rows
 
     var body: some View {
-        // 情報デザイン: TRUE BENTO with full-height column lines
-        // Use GeometryReader + ZStack overlay for continuous vertical lines
+        // 情報デザイン: Split bento — week column as its own squircle, day grid as separate squircle
+        let totalHeight = headerHeight + (rowHeight * CGFloat(month.weeks.count)) + (dividerWidth * CGFloat(month.weeks.count))
         let edgeExtension = JohoDimensions.spacingSM
 
-        return GeometryReader { geometry in
-            ZStack {
-                // CONTENT LAYER
-                VStack(spacing: 0) {
-                    // HEADER ROW
-                    bentoHeaderRow
+        return HStack(alignment: .top, spacing: JohoDimensions.spacingSM) {
+            // WEEK COLUMN — own squircle container
+            VStack(spacing: 0) {
+                // Header
+                Text("W")
+                    .font(JohoFont.tag)
+                    .foregroundStyle(colors.secondary)
+                    .frame(width: weekColumnWidth, height: headerHeight)
 
-                    // Horizontal divider after header
-                    Rectangle()
-                        .fill(colors.border)
-                        .frame(height: dividerWidth)
-                        .padding(.horizontal, -edgeExtension)
+                Rectangle()
+                    .fill(colors.border)
+                    .frame(height: dividerWidth)
 
-                    // WEEK ROWS
-                    ForEach(Array(month.weeks.enumerated()), id: \.element.id) { index, week in
-                        bentoWeekRow(week)
+                // Week number cells
+                ForEach(Array(month.weeks.enumerated()), id: \.element.id) { index, week in
+                    bentoCellWeekNumber(week)
 
-                        // Horizontal divider between weeks (not after last)
-                        if index < month.weeks.count - 1 {
-                            Rectangle()
-                                .fill(colors.border.opacity(JohoDimensions.opacityStrong))
-                                .frame(height: dividerWidth)
-                                .padding(.horizontal, -edgeExtension)
-                        }
+                    if index < month.weeks.count - 1 {
+                        Rectangle()
+                            .fill(colors.border.opacity(JohoDimensions.opacityStrong))
+                            .frame(height: dividerWidth)
                     }
                 }
+            }
+            .fixedSize(horizontal: true, vertical: false)
+            .background(colors.primary.opacity(JohoDimensions.opacityFaint))
+            .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderThin)
 
-                // VERTICAL LINES OVERLAY - continuous top to bottom
-                HStack(spacing: 0) {
-                    // Week column width + wall
-                    Color.clear
-                        .frame(width: weekColumnWidth)
-                    Rectangle()
-                        .fill(colors.border)
-                        .frame(width: wallWidth)
-                        .padding(.vertical, -edgeExtension)  // Extend to edges
+            // DAY GRID — own squircle container
+            GeometryReader { geometry in
+                ZStack {
+                    // CONTENT LAYER
+                    VStack(spacing: 0) {
+                        // Day headers
+                        HStack(spacing: 0) {
+                            ForEach(0..<7, id: \.self) { index in
+                                let dayColor: Color = {
+                                    switch index {
+                                    case 5: return JohoColors.tripBlue
+                                    case 6: return JohoColors.red
+                                    default: return colors.primary
+                                    }
+                                }()
 
-                    // Day columns with dividers between them
-                    ForEach(0..<7, id: \.self) { index in
-                        Color.clear
-                            .frame(maxWidth: .infinity)
-                        if index < 6 {
-                            Rectangle()
-                                .fill(colors.border.opacity(0.4))
-                                .frame(width: dividerWidth)
-                                .padding(.vertical, -edgeExtension)
+                                Text(weekdaySymbol(for: index).uppercased())
+                                    .font(JohoFont.tag)
+                                    .foregroundStyle(dayColor)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: headerHeight)
+                            }
+                        }
+
+                        Rectangle()
+                            .fill(colors.border)
+                            .frame(height: dividerWidth)
+
+                        // Day rows
+                        ForEach(Array(month.weeks.enumerated()), id: \.element.id) { index, week in
+                            HStack(spacing: 0) {
+                                ForEach(week.days, id: \.id) { day in
+                                    bentoCellDay(day)
+                                }
+                            }
+                            .frame(height: rowHeight)
+
+                            if index < month.weeks.count - 1 {
+                                Rectangle()
+                                    .fill(colors.border.opacity(JohoDimensions.opacityStrong))
+                                    .frame(height: dividerWidth)
+                            }
+                        }
+                    }
+
+                    // VERTICAL LINES OVERLAY — day columns only
+                    HStack(spacing: 0) {
+                        ForEach(0..<7, id: \.self) { index in
+                            Color.clear
+                                .frame(maxWidth: .infinity)
+                            if index < 6 {
+                                Rectangle()
+                                    .fill(colors.border.opacity(0.4))
+                                    .frame(width: dividerWidth)
+                                    .padding(.vertical, -edgeExtension)
+                            }
                         }
                     }
                 }
             }
+            .frame(height: totalHeight)
+            .background(colors.surface)
+            .johoBordered(cornerRadius: JohoDimensions.radiusMedium, borderWidth: JohoDimensions.borderThin)
         }
-        .frame(height: headerHeight + (rowHeight * CGFloat(month.weeks.count)) + (dividerWidth * CGFloat(month.weeks.count)))
+        .frame(height: totalHeight)
     }
 
     // MARK: - Bento Header Row
@@ -171,6 +212,7 @@ extension CalendarGridView {
                 .font(JohoFont.tag)
                 .foregroundStyle(colors.secondary)
                 .frame(width: weekColumnWidth, height: headerHeight)
+                .background(colors.primary.opacity(JohoDimensions.opacityFaint))
 
             // VERTICAL WALL (1.5pt) between week numbers and days
             Rectangle()
@@ -250,8 +292,7 @@ extension CalendarGridView {
                         .monospacedDigit()
                 }
                 .frame(height: 28)
-                .padding(.top, 6)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             }
             .frame(width: weekColumnWidth, height: rowHeight)
         }
@@ -546,7 +587,7 @@ extension CalendarGridView {
 
     // 情報デザイン: Unified sizing across all devices (iPhone golden standard)
     // Week column narrower to give more space to day columns
-    private var weekColumnWidth: CGFloat { 32 }
+    private var weekColumnWidth: CGFloat { 40 }
     private var cellSize: CGFloat { 52 }  // 情報デザイン: Slightly taller for better readability
 
     private func color(for colorName: String) -> Color {

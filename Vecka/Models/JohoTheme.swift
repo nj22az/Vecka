@@ -53,6 +53,9 @@ struct JohoThemePreset: Codable, Identifiable {
     let darkSurfaceHex: String?
     let darkCanvasHex: String?
 
+    // Mode lock: "light", "dark", or nil (user-controlled)
+    let lockedColorMode: String?
+
     init(
         id: String, name: String, description: String, previewIcon: String,
         holidayColorHex: String, observanceColorHex: String, memoColorHex: String,
@@ -62,7 +65,8 @@ struct JohoThemePreset: Codable, Identifiable {
         holidayDarkColorHex: String? = nil, observanceDarkColorHex: String? = nil, memoDarkColorHex: String? = nil,
         holidayDarkForegroundHex: String? = nil, observanceDarkForegroundHex: String? = nil, memoDarkForegroundHex: String? = nil,
         lightBorderHex: String? = nil, lightSurfaceHex: String? = nil, lightCanvasHex: String? = nil,
-        darkBorderHex: String? = nil, darkSurfaceHex: String? = nil, darkCanvasHex: String? = nil
+        darkBorderHex: String? = nil, darkSurfaceHex: String? = nil, darkCanvasHex: String? = nil,
+        lockedColorMode: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -90,6 +94,7 @@ struct JohoThemePreset: Codable, Identifiable {
         self.darkBorderHex = darkBorderHex
         self.darkSurfaceHex = darkSurfaceHex
         self.darkCanvasHex = darkCanvasHex
+        self.lockedColorMode = lockedColorMode
     }
 }
 
@@ -105,26 +110,24 @@ enum JohoThemeLoader {
     /// Fallback built-in presets if JSON fails to load
     static let builtInPresets: [JohoThemePreset] = [
         JohoThemePreset(
-            id: "default", name: "Default", description: "Original 情報デザイン palette",
-            previewIcon: "circle.hexagongrid.fill",
+            id: "light", name: "Light", description: "Clean pastels on white",
+            previewIcon: "sun.max.fill",
+            holidayColorHex: "FECDD3", observanceColorHex: "A5F3FC", memoColorHex: "FFE566",
+            holidayIcon: nil, observanceIcon: nil, memoIcon: nil,
+            systemAccent: "indigo",
+            holidayForegroundHex: "9F1239", observanceForegroundHex: "155E75", memoForegroundHex: "854D0E",
+            lockedColorMode: "light"
+        ),
+        JohoThemePreset(
+            id: "dark", name: "Dark", description: "OLED-optimized dark mode",
+            previewIcon: "moon.fill",
             holidayColorHex: "FECDD3", observanceColorHex: "A5F3FC", memoColorHex: "FFE566",
             holidayIcon: nil, observanceIcon: nil, memoIcon: nil,
             systemAccent: "indigo",
             holidayForegroundHex: "9F1239", observanceForegroundHex: "155E75", memoForegroundHex: "854D0E",
             holidayDarkColorHex: "881337", observanceDarkColorHex: "164E63", memoDarkColorHex: "854D0E",
-            holidayDarkForegroundHex: "FECDD3", observanceDarkForegroundHex: "A5F3FC", memoDarkForegroundHex: "FFE566"
-        ),
-        JohoThemePreset(
-            id: "nordic", name: "Nordic", description: "Scandinavian minimalism",
-            previewIcon: "snowflake",
-            holidayColorHex: "93C5FD", observanceColorHex: "C4B5FD", memoColorHex: "CBD5E1",
-            holidayIcon: "star.fill", observanceIcon: "diamond.fill", memoIcon: "note.text",
-            systemAccent: "navy",
-            holidayForegroundHex: "1E40AF", observanceForegroundHex: "5B21B6", memoForegroundHex: "334155",
-            holidayDarkColorHex: "1E3A5F", observanceDarkColorHex: "4C1D95", memoDarkColorHex: "334155",
-            holidayDarkForegroundHex: "93C5FD", observanceDarkForegroundHex: "C4B5FD", memoDarkForegroundHex: "CBD5E1",
-            lightBorderHex: "475569", lightSurfaceHex: "F8FAFC", lightCanvasHex: nil,
-            darkBorderHex: "64748B", darkSurfaceHex: "1E293B", darkCanvasHex: nil
+            holidayDarkForegroundHex: "FECDD3", observanceDarkForegroundHex: "A5F3FC", memoDarkForegroundHex: "FFE566",
+            lockedColorMode: "dark"
         ),
         JohoThemePreset(
             id: "earth", name: "Earth", description: "Warm, natural tones",
@@ -137,18 +140,6 @@ enum JohoThemeLoader {
             holidayDarkForegroundHex: "86EFAC", observanceDarkForegroundHex: "FDBA74", memoDarkForegroundHex: "FDE68A",
             lightBorderHex: "92400E", lightSurfaceHex: "FFFBEB", lightCanvasHex: nil,
             darkBorderHex: "A0896D", darkSurfaceHex: "1C1917", darkCanvasHex: nil
-        ),
-        JohoThemePreset(
-            id: "ink", name: "Ink", description: "AMOLED high-contrast mono",
-            previewIcon: "drop.fill",
-            holidayColorHex: "E4E4E7", observanceColorHex: "A1A1AA", memoColorHex: "71717A",
-            holidayIcon: nil, observanceIcon: nil, memoIcon: nil,
-            systemAccent: "black",
-            holidayForegroundHex: "27272A", observanceForegroundHex: "27272A", memoForegroundHex: "18181B",
-            holidayDarkColorHex: "3F3F46", observanceDarkColorHex: "52525B", memoDarkColorHex: "52525B",
-            holidayDarkForegroundHex: "E4E4E7", observanceDarkForegroundHex: "D4D4D8", memoDarkForegroundHex: "A1A1AA",
-            lightBorderHex: "52525B", lightSurfaceHex: "000000", lightCanvasHex: "000000",
-            darkBorderHex: "3F3F46", darkSurfaceHex: "000000", darkCanvasHex: "000000"
         ),
     ]
 }
@@ -217,6 +208,12 @@ enum JohoThemeCache {
     /// Get the active theme, using cache when possible
     static func activeTheme() -> JohoThemePreset? {
         guard let themeId = UserDefaults.standard.string(forKey: "activeThemeId") else {
+            cachedThemeId = nil
+            cachedTheme = nil
+            return nil
+        }
+        if ["nordic", "ink", "default"].contains(themeId) {
+            UserDefaults.standard.removeObject(forKey: "activeThemeId")
             cachedThemeId = nil
             cachedTheme = nil
             return nil
@@ -303,6 +300,11 @@ extension CategoryColorSettings {
 
         // Save active theme ID
         UserDefaults.standard.set(theme.id, forKey: "activeThemeId")
+
+        // Mode-lock: force color mode when theme specifies it
+        if let locked = theme.lockedColorMode {
+            UserDefaults.standard.set(locked, forKey: "johoColorMode")
+        }
 
         // Invalidate theme cache so colors(for:) picks up the new theme
         JohoThemeCache.invalidate()

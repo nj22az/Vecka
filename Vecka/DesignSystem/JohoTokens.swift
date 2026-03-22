@@ -168,6 +168,7 @@ enum JohoDimensions {
     static let spacingMD: CGFloat = 12
     static let spacingLG: CGFloat = 16
     static let spacingXL: CGFloat = 20
+    static let spacingPage: CGFloat = 20  // Card gap on main pages (OLED breathing room)
 
     // Opacity levels (情報デザイン: consistent transparency)
     static let opacityFaint: Double = 0.05

@@ -99,11 +99,11 @@ struct SettingsView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: JohoDimensions.spacingLG) {
+            VStack(spacing: JohoDimensions.spacingPage) {
                 // 情報デザイン: Bento-style page header (Golden Standard Pattern)
                 settingsPageHeader
-                    .padding(.horizontal, JohoDimensions.spacingLG)
-                    .padding(.top, JohoDimensions.spacingSM)
+                    .padding(.horizontal, JohoDimensions.spacingPage)
+                    .padding(.top, JohoDimensions.spacingLG)
 
                 // Theme Section (情報デザイン: Unified theming)
                 themeSection
@@ -276,51 +276,53 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
             JohoPill(text: "THEME", style: .whiteOnBlack, size: .small)
 
-            // Light/Dark mode toggle
-            HStack(spacing: 0) {
-                Button {
-                    withAnimation(.easeInOut(duration: 0.15)) {
-                        johoColorMode = "light"
+            // Light/Dark mode toggle — hidden when active theme locks the color mode
+            if JohoThemeCache.activeTheme()?.lockedColorMode == nil {
+                HStack(spacing: 0) {
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.15)) {
+                            johoColorMode = "light"
+                        }
+                        HapticManager.selection()
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: IconCatalog.sunMin)
+                                .font(.system(size: 11, weight: .bold, design: .rounded))
+                            Text("LIGHT")
+                                .font(.system(size: 12, weight: .black, design: .rounded))
+                        }
+                        .foregroundStyle(selectedColorMode == .light ? colors.primaryInverted : colors.primary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(selectedColorMode == .light ? colors.primary : colors.surface)
                     }
-                    HapticManager.selection()
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: IconCatalog.sunMin)
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
-                        Text("LIGHT")
-                            .font(.system(size: 12, weight: .black, design: .rounded))
-                    }
-                    .foregroundStyle(selectedColorMode == .light ? colors.primaryInverted : colors.primary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(selectedColorMode == .light ? colors.primary : colors.surface)
-                }
-                .buttonStyle(.plain)
+                    .buttonStyle(.plain)
 
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(width: 1.5)
+                    Rectangle()
+                        .fill(colors.border)
+                        .frame(width: 1.5)
 
-                Button {
-                    withAnimation(.easeInOut(duration: 0.15)) {
-                        johoColorMode = "dark"
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.15)) {
+                            johoColorMode = "dark"
+                        }
+                        HapticManager.selection()
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: IconCatalog.moon)
+                                .font(JohoFont.label)
+                            Text("DARK")
+                                .font(.system(size: 12, weight: .black, design: .rounded))
+                        }
+                        .foregroundStyle(selectedColorMode == .dark ? colors.primaryInverted : colors.primary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(selectedColorMode == .dark ? colors.primary : colors.surface)
                     }
-                    HapticManager.selection()
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: IconCatalog.moon)
-                            .font(JohoFont.label)
-                        Text("DARK")
-                            .font(.system(size: 12, weight: .black, design: .rounded))
-                    }
-                    .foregroundStyle(selectedColorMode == .dark ? colors.primaryInverted : colors.primary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(selectedColorMode == .dark ? colors.primary : colors.surface)
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
+                .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
             }
-            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
 
             // Theme preset cards — horizontal scroll
             ScrollView(.horizontal, showsIndicators: false) {

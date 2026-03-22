@@ -90,17 +90,17 @@ struct ContactListView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: JohoDimensions.spacingMD) {
+            VStack(spacing: JohoDimensions.spacingPage) {
                 // 情報デザイン Header (like Special Days page)
                 contactsHeader
-                    .padding(.horizontal, JohoDimensions.spacingLG)
-                    .padding(.top, JohoDimensions.spacingSM)
+                    .padding(.horizontal, JohoDimensions.spacingPage)
+                    .padding(.top, JohoDimensions.spacingLG)
 
                 // MAIN CONTENT CONTAINER (情報デザイン: All content in white container)
                 VStack(spacing: 0) {
                     // Search field row (unified component)
                     JohoSearchField(text: $searchText, placeholder: "Search contacts")
-                        .padding(.horizontal, JohoDimensions.spacingXS)
+                        .padding(.horizontal, JohoDimensions.spacingMD)
                         .padding(.vertical, JohoDimensions.spacingSM)
 
                     // Horizontal divider
@@ -119,7 +119,7 @@ struct ContactListView: View {
                 }
                 .background(colors.surface)
                 .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
-                .padding(.horizontal, JohoDimensions.spacingLG)
+                .padding(.horizontal, JohoDimensions.spacingPage)
             }
             .padding(.bottom, JohoDimensions.spacingLG)
         }

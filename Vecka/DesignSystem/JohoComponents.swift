@@ -987,13 +987,35 @@ struct JohoTileCard<Content: View>: View {
     @Environment(\.johoColorMode) private var colorMode
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
+    /// Effective banner background — boosts faint tints in dark mode so they're visible
+    private var effectiveBannerColor: Color {
+        if colorMode == .dark {
+            // If the banner is a faint opacity tint (luminance close to surface),
+            // boost it so the banner is distinguishable from the card body
+            let lum = bannerColor.relativeLuminance
+            let surfaceLum = colors.surface.relativeLuminance
+            if abs(lum - surfaceLum) < 0.08 {
+                // Too close to surface — use the icon color at medium opacity instead
+                return iconColor.opacity(JohoDimensions.opacityMedium)
+            }
+        }
+        return bannerColor
+    }
+
+    /// Banner text color — black on light banners, white on dark banners
+    private var resolvedBannerForeground: Color {
+        effectiveBannerColor.relativeLuminance > 0.35
+            ? JohoColors.black
+            : JohoColors.white
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             // Banner: label left + circle sticker right
             HStack {
                 Text(label.uppercased())
                     .font(JohoFont.bannerLabel)
-                    .foregroundStyle(colors.primary)
+                    .foregroundStyle(resolvedBannerForeground)
                     .lineLimit(1)
 
                 Spacer()
@@ -1003,7 +1025,7 @@ struct JohoTileCard<Content: View>: View {
             .padding(.horizontal, JohoDimensions.spacingSM)
             .frame(maxWidth: .infinity)
             .frame(height: 48)
-            .background(bannerColor)
+            .background(effectiveBannerColor)
 
             Rectangle()
                 .fill(colors.border)

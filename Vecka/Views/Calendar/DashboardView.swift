@@ -54,11 +54,11 @@ struct DashboardView: View {
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
-                VStack(spacing: JohoDimensions.spacingMD) {
+                VStack(spacing: JohoDimensions.spacingPage) {
                     // 情報デザイン: Bento-style page header (Golden Standard Pattern)
                     dataPageHeader
-                        .padding(.horizontal, JohoDimensions.spacingLG)
-                        .padding(.top, JohoDimensions.spacingSM)
+                        .padding(.horizontal, JohoDimensions.spacingPage)
+                        .padding(.top, JohoDimensions.spacingLG)
 
                     // Adaptive grid layout - cards flow naturally
                     adaptiveCardGrid(geometry: geometry)
@@ -171,7 +171,7 @@ struct DashboardView: View {
     @ViewBuilder
     private func adaptiveCardGrid(geometry: GeometryProxy) -> some View {
         let spacing: CGFloat = JohoDimensions.spacingMD
-        let horizontalPadding: CGFloat = JohoDimensions.spacingLG
+        let horizontalPadding: CGFloat = JohoDimensions.spacingPage
         let availableWidth = geometry.size.width - (horizontalPadding * 2)
 
         // Determine column count based on available width
