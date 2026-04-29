@@ -2,3 +2,5 @@ Extra/ralph-claude-code/
 joho-audit/
 ExcludedFromBuild/
 build/
+.superpowers/
+docs/superpowers/plans/

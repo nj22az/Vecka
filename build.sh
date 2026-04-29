@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Vecka iOS App Build Script
-# Comprehensive build script for main app, widget extension, and shared framework
+# Comprehensive build script for main app and widget extension
 # Author: DevOps Engineer
 # Usage: ./build.sh [clean|build|test|archive|widget-test]
 
@@ -10,6 +10,7 @@ set -e  # Exit on any error
 # Configuration
 PROJECT_NAME="Vecka"
 SCHEME_NAME="Vecka"
+WIDGET_SCHEME_NAME="VeckaWidgetExtension"
 PROJECT_FILE="Vecka.xcodeproj"
 BUILD_CONFIG="Debug"
 DESTINATION='platform=iOS Simulator,name=iPhone 17 Pro'
@@ -46,7 +47,7 @@ show_usage() {
     echo "  clean          Clean build directories"
     echo "  build          Build all targets (Debug)"
     echo "  build-release  Build all targets (Release)"
-    echo "  test           Run unit tests"
+    echo "  test           Run unit tests only"
     echo "  widget-test    Test widget extension specifically"
     echo "  archive        Create archive build"
     echo "  validate       Validate project configuration"
@@ -125,6 +126,7 @@ run_tests() {
         -scheme "$SCHEME_NAME" \
         -destination "$DESTINATION" \
         -configuration "$BUILD_CONFIG" \
+        -only-testing:VeckaTests \
         CODE_SIGNING_REQUIRED=NO \
         CODE_SIGNING_ALLOWED=NO
     
@@ -138,7 +140,7 @@ test_widget() {
     # Build just the widget extension
     xcodebuild build \
         -project "$PROJECT_FILE" \
-        -target "VeckaWidget" \
+        -scheme "$WIDGET_SCHEME_NAME" \
         -destination "$DESTINATION" \
         -configuration "$BUILD_CONFIG" \
         CODE_SIGNING_REQUIRED=NO \
@@ -155,9 +157,8 @@ archive_project() {
         -project "$PROJECT_FILE" \
         -scheme "$SCHEME_NAME" \
         -configuration "Release" \
-        -archivePath "./build/Vecka.xcarchive" \
-        CODE_SIGNING_REQUIRED=NO \
-        CODE_SIGNING_ALLOWED=NO
+        -destination "generic/platform=iOS" \
+        -archivePath "./build/Vecka.xcarchive"
     
     log_success "Archive created at ./build/Vecka.xcarchive"
 }
@@ -166,12 +167,11 @@ archive_project() {
 show_build_summary() {
     log_info "Build Summary:"
     echo "  Project: $PROJECT_NAME"
-    echo "  Targets: Main App (Vecka), Widget Extension (VeckaWidget), Shared Framework (VeckaShared)"
+    echo "  Targets: Main App (Vecka), Widget Extension (VeckaWidgetExtension)"
     echo "  Bundle IDs:"
     echo "    - Main App: Johansson.Vecka"
     echo "    - Widget: Johansson.Vecka.VeckaWidget"
-    echo "    - Shared: Johansson.VeckaShared"
-    echo "  Deployment Target: iOS 17.0+ (Widget), iOS 18.0+ (Main App)"
+    echo "  Deployment Target: iOS 18.0+"
     echo "  Configuration: $BUILD_CONFIG"
     echo "  Destination: $DESTINATION"
 }

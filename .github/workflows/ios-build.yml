@@ -7,8 +7,8 @@ on:
     branches: [ main ]
 
 env:
-  XCODE_VERSION: '16.4'
-  IOS_DEPLOYMENT_TARGET: '17.0'
+  XCODE_VERSION: 'latest-stable'
+  IOS_DEPLOYMENT_TARGET: '18.0'
 
 jobs:
   build-and-test:
@@ -54,7 +54,6 @@ jobs:
       
     - name: Run unit tests
       run: ./build.sh test
-      continue-on-error: true  # Allow tests to fail without failing the workflow
       
     - name: Archive build artifacts
       uses: actions/upload-artifact@v4
@@ -72,8 +71,8 @@ jobs:
       run: |
         echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
         echo "- **Project:** Vecka iOS App with Widget Extension" >> $GITHUB_STEP_SUMMARY
-        echo "- **Targets:** Main App (Vecka), Widget Extension (VeckaWidget), Shared Framework (VeckaShared)" >> $GITHUB_STEP_SUMMARY
-        echo "- **Bundle IDs:** Johansson.Vecka, Johansson.Vecka.VeckaWidget, Johansson.VeckaShared" >> $GITHUB_STEP_SUMMARY
+        echo "- **Targets:** Main App (Vecka), Widget Extension (VeckaWidgetExtension)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Bundle IDs:** Johansson.Vecka, Johansson.Vecka.VeckaWidget" >> $GITHUB_STEP_SUMMARY
         echo "- **Deployment Target:** iOS ${{ env.IOS_DEPLOYMENT_TARGET }}+" >> $GITHUB_STEP_SUMMARY
         echo "- **Xcode Version:** ${{ env.XCODE_VERSION }}" >> $GITHUB_STEP_SUMMARY
         echo "- **Build Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
@@ -129,40 +128,41 @@ jobs:
         
     - name: Validate widget Info.plist
       run: |
-        if [ -f "VeckaWidget/Info.plist" ]; then
-          plutil -lint VeckaWidget/Info.plist
-          echo "✅ Widget Info.plist is valid"
+        if [ -f "VeckaWidget/WidgetInfo.plist" ]; then
+          plutil -lint VeckaWidget/WidgetInfo.plist
+          echo "Widget Info.plist is valid"
         else
-          echo "❌ Widget Info.plist not found"
+          echo "Widget Info.plist not found"
           exit 1
         fi
         
     - name: Check widget bundle identifier
       run: |
-        BUNDLE_ID=$(plutil -extract CFBundleIdentifier raw VeckaWidget/Info.plist 2>/dev/null || echo "")
+        BUNDLE_ID=$(xcodebuild -project Vecka.xcodeproj -scheme VeckaWidgetExtension -showBuildSettings | awk -F'= ' '/PRODUCT_BUNDLE_IDENTIFIER/ { print $2; exit }')
         if [ "$BUNDLE_ID" = "Johansson.Vecka.VeckaWidget" ]; then
-          echo "✅ Widget bundle identifier is correct: $BUNDLE_ID"
+          echo "Widget bundle identifier is correct: $BUNDLE_ID"
         else
-          echo "❌ Widget bundle identifier mismatch. Expected: Johansson.Vecka.VeckaWidget, Found: $BUNDLE_ID"
+          echo "Widget bundle identifier mismatch. Expected: Johansson.Vecka.VeckaWidget, Found: $BUNDLE_ID"
           exit 1
         fi
         
     - name: Validate widget extension point
       run: |
-        EXTENSION_POINT=$(plutil -extract NSExtension.NSExtensionPointIdentifier raw VeckaWidget/Info.plist 2>/dev/null || echo "")
+        EXTENSION_POINT=$(plutil -extract NSExtension.NSExtensionPointIdentifier raw VeckaWidget/WidgetInfo.plist 2>/dev/null || echo "")
         if [ "$EXTENSION_POINT" = "com.apple.widgetkit-extension" ]; then
-          echo "✅ Widget extension point is correct"
+          echo "Widget extension point is correct"
         else
-          echo "❌ Widget extension point incorrect. Expected: com.apple.widgetkit-extension, Found: $EXTENSION_POINT"
+          echo "Widget extension point incorrect. Expected: com.apple.widgetkit-extension, Found: $EXTENSION_POINT"
           exit 1
         fi
         
-    - name: Check shared framework integration
+    - name: Validate app URL scheme for widget deep links
       run: |
-        if grep -q "import VeckaShared" VeckaWidget/VeckaWidget.swift; then
-          echo "✅ Widget properly imports VeckaShared framework"
+        APP_SCHEME=$(plutil -extract CFBundleURLTypes.0.CFBundleURLSchemes.0 raw Vecka/Info.plist 2>/dev/null || echo "")
+        if [ "$APP_SCHEME" = "vecka" ]; then
+          echo "App URL scheme is registered: $APP_SCHEME"
         else
-          echo "❌ Widget does not import VeckaShared framework"
+          echo "App URL scheme mismatch. Expected: vecka, Found: $APP_SCHEME"
           exit 1
         fi
         
@@ -170,8 +170,8 @@ jobs:
       if: always()
       run: |
         echo "## Widget Validation Summary" >> $GITHUB_STEP_SUMMARY
-        echo "- **Widget Target:** VeckaWidget" >> $GITHUB_STEP_SUMMARY
+        echo "- **Widget Target:** VeckaWidgetExtension" >> $GITHUB_STEP_SUMMARY
         echo "- **Bundle ID:** Johansson.Vecka.VeckaWidget" >> $GITHUB_STEP_SUMMARY
         echo "- **Extension Point:** com.apple.widgetkit-extension" >> $GITHUB_STEP_SUMMARY
-        echo "- **Shared Framework:** VeckaShared integration verified" >> $GITHUB_STEP_SUMMARY
+        echo "- **Deep Links:** vecka:// scheme registered by app" >> $GITHUB_STEP_SUMMARY
         echo "- **Widget Sizes:** Small, Medium, Large supported" >> $GITHUB_STEP_SUMMARY

@@ -1126,8 +1126,7 @@ struct IOSContactPickerView: UIViewControllerRepresentable {
                 CNContactImageDataKey as CNKeyDescriptor,
                 CNContactThumbnailImageDataKey as CNKeyDescriptor,
                 CNContactBirthdayKey as CNKeyDescriptor,
-                CNContactPostalAddressesKey as CNKeyDescriptor,
-                CNContactNoteKey as CNKeyDescriptor
+                CNContactPostalAddressesKey as CNKeyDescriptor
             ]
 
             let store = CNContactStore()
