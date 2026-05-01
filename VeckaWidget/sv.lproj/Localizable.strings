@@ -17,3 +17,38 @@
 
 /* Tomorrow */
 "tomorrow" = "Imorgon";
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Holiday names — must be kept in sync with Vecka/sv.lproj/Localizable.strings
+ * The widget runs in its own bundle and cannot access the host app's strings.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+/* Swedish bank holidays (röda dagar) */
+"holiday.nyarsdagen" = "Nyårsdagen";
+"holiday.trettondedag_jul" = "Trettondedag jul";
+"holiday.langfredagen" = "Långfredagen";
+"holiday.paskdagen" = "Påskdagen";
+"holiday.annandag_pask" = "Annandag påsk";
+"holiday.forsta_maj" = "Första maj";
+"holiday.kristi_himmelsfardsdag" = "Kristi himmelsfärdsdag";
+"holiday.pingstdagen" = "Pingstdagen";
+"holiday.sveriges_nationaldag" = "Sveriges nationaldag";
+"holiday.midsommardagen" = "Midsommardagen";
+"holiday.alla_helgons_dag" = "Alla helgons dag";
+"holiday.juldagen" = "Juldagen";
+"holiday.annandag_jul" = "Annandag jul";
+
+/* Swedish observances */
+"holiday.alla_hjartans_dag" = "Alla hjärtans dag";
+"holiday.internationella_kvinnodagen" = "Internationella kvinnodagen";
+"holiday.midsommarafton" = "Midsommarafton";
+"holiday.julafton" = "Julafton";
+"holiday.nyarsafton" = "Nyårsafton";
+"holiday.mors_dag" = "Mors dag";
+"holiday.fars_dag" = "Fars dag";
+
+/* Astronomical observances */
+"holiday.virdagjamning" = "Vårdagjämningen";
+"holiday.sommarsolstand" = "Sommarsolståndet";
+"holiday.hostdagjamning" = "Höstdagjämningen";
+"holiday.vintersolstand" = "Vintersolståndet";

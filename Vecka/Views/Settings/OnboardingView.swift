@@ -39,11 +39,11 @@ struct OnboardingView: View {
             description: "Track holidays from multiple countries, birthdays, and custom celebrations. Create your own special days with symbols and repeating rules."
         ),
         OnboardingPage(
-            icon: "arrow.triangle.2.circlepath",
+            icon: "lock.shield.fill",
             iconColor: JohoColors.purple,
-            title: "Sync Everywhere",
-            subtitle: "Your data, your devices",
-            description: "iCloud sync keeps your notes, expenses, and contacts updated across all your Apple devices automatically."
+            title: "Private by Default",
+            subtitle: "Your data stays on your device",
+            description: "Everything you add — notes, expenses, contacts, special days — is stored locally on this device. Nothing is sent to any server, and no account is required."
         )
     ]
 

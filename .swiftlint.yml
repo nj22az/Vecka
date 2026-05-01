@@ -1,0 +1,100 @@
+# SwiftLint configuration for Onsen Planner (Vecka)
+# Goal: catch the bug classes found in the 2026-05-01 pre-TestFlight audit
+# without drowning the codebase in style nits.
+
+included:
+  - Vecka
+  - VeckaWidget
+  - VeckaTests
+  - VeckaUITests
+
+excluded:
+  - build
+  - .build
+  - DerivedData
+  - "**/*.generated.swift"
+
+# ─────────────────────────────────────────────────────────────────────────
+# Rules that catch real shipping bugs — keep these strict.
+# ─────────────────────────────────────────────────────────────────────────
+
+# Disable noisy style rules that don't catch bugs
+disabled_rules:
+  - line_length
+  - file_length
+  - type_body_length
+  - function_body_length
+  - cyclomatic_complexity
+  - identifier_name
+  - todo
+  - trailing_comma
+  - opening_brace
+  - multiple_closures_with_trailing_closure
+
+# Opt in to additional rules that catch real footguns
+opt_in_rules:
+  - force_unwrapping
+  - implicitly_unwrapped_optional
+  - empty_count
+  - empty_string
+  - first_where
+  - last_where
+  - contains_over_first_not_nil
+  - contains_over_filter_count
+  - contains_over_filter_is_empty
+  - reduce_into
+  - sorted_first_last
+  - toggle_bool
+  - unused_import
+  - unused_declaration
+  - prohibited_super_call
+  - overridden_super_call
+  - private_action
+  - private_outlet
+  - weak_delegate
+  - convenience_type
+  - prefer_self_type_over_type_of_self
+  - explicit_init
+  - redundant_nil_coalescing
+  - vertical_whitespace_closing_braces
+  - vertical_whitespace_opening_braces
+
+# Treat the dangerous patterns as errors so CI fails loudly
+force_cast: error
+force_try: error
+force_unwrapping:
+  severity: error
+
+# Implicit unwraps usually mean a foot-gun, but @IBOutlet etc. legitimately use them
+implicitly_unwrapped_optional:
+  mode: all_except_iboutlets
+  severity: warning
+
+# Custom rules for project-specific guarantees
+custom_rules:
+  no_hardcoded_sf_symbols:
+    name: "Hardcoded SF Symbol string"
+    regex: 'Image\(systemName:\s*"[a-z]'
+    message: "Use IconCatalog.* instead of a raw SF Symbol string (CLAUDE.md rule)."
+    severity: warning
+    excluded:
+      - ".*JohoSymbols.swift"
+      - ".*IconCatalog.*"
+      - ".*Tests.swift"
+
+  no_hardcoded_color_literals:
+    name: "Raw Color() instead of JohoColors"
+    regex: 'Color\(red:\s*[0-9]'
+    message: "Use JohoColors.* instead of a raw Color literal (CLAUDE.md rule)."
+    severity: warning
+    excluded:
+      - ".*JohoColors.*"
+      - ".*Tests.swift"
+
+  modelcontext_off_main_actor:
+    name: "ModelContext insert/save off MainActor"
+    regex: 'CNContactStore.*\{[^}]*modelContext\.(insert|save|delete)'
+    message: "ModelContext is not Sendable — collect data on the background thread, then mutate ModelContext on MainActor. See ContactsManager audit (2026-05-01)."
+    severity: error
+
+reporter: "xcode"

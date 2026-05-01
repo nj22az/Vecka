@@ -17,3 +17,40 @@
 
 /* Tomorrow */
 "tomorrow" = "Tomorrow";
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Holiday names — must be kept in sync with Vecka/<locale>/Localizable.strings
+ * The widget runs in its own bundle and cannot access the host app's strings,
+ * so any holiday key referenced in WidgetHolidayEngine must exist here.
+ * Locales without their own widget Localizable.strings fall back to English.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+/* Swedish bank holidays */
+"holiday.nyarsdagen" = "New Year's Day";
+"holiday.trettondedag_jul" = "Epiphany";
+"holiday.langfredagen" = "Good Friday";
+"holiday.paskdagen" = "Easter Sunday";
+"holiday.annandag_pask" = "Easter Monday";
+"holiday.forsta_maj" = "May 1st";
+"holiday.kristi_himmelsfardsdag" = "Ascension Day";
+"holiday.pingstdagen" = "Pentecost";
+"holiday.sveriges_nationaldag" = "National Day of Sweden";
+"holiday.midsommardagen" = "Midsummer Day";
+"holiday.alla_helgons_dag" = "All Saints' Day";
+"holiday.juldagen" = "Christmas Day";
+"holiday.annandag_jul" = "Boxing Day";
+
+/* Swedish observances */
+"holiday.alla_hjartans_dag" = "Valentine's Day";
+"holiday.internationella_kvinnodagen" = "International Women's Day";
+"holiday.midsommarafton" = "Midsummer Eve";
+"holiday.julafton" = "Christmas Eve";
+"holiday.nyarsafton" = "New Year's Eve";
+"holiday.mors_dag" = "Mother's Day";
+"holiday.fars_dag" = "Father's Day";
+
+/* Astronomical observances */
+"holiday.virdagjamning" = "Spring Equinox";
+"holiday.sommarsolstand" = "Summer Solstice";
+"holiday.hostdagjamning" = "Autumn Equinox";
+"holiday.vintersolstand" = "Winter Solstice";
