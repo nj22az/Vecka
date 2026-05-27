@@ -46,8 +46,9 @@ show_usage() {
     echo "  clean          Clean build directories"
     echo "  build          Build all targets (Debug)"
     echo "  build-release  Build all targets (Release)"
-    echo "  test           Run unit tests"
+    echo "  test           Run unit tests (lint runs first)"
     echo "  widget-test    Test widget extension specifically"
+    echo "  lint           Run the Joho Design System linter"
     echo "  archive        Create archive build"
     echo "  validate       Validate project configuration"
     echo "  help           Show this help message"
@@ -56,6 +57,7 @@ show_usage() {
     echo "  $0 clean"
     echo "  $0 build"
     echo "  $0 test"
+    echo "  $0 lint"
     echo "  $0 widget-test"
 }
 
@@ -116,10 +118,25 @@ build_project() {
     log_success "Build completed successfully"
 }
 
+# Function to run the design-system linter
+run_lint() {
+    log_info "Running Joho Design System linter..."
+
+    if [ ! -x "./scripts/lint-design-system.sh" ]; then
+        log_error "Linter not found at ./scripts/lint-design-system.sh"
+        exit 1
+    fi
+
+    ./scripts/lint-design-system.sh
+    log_success "Lint completed"
+}
+
 # Function to run tests
 run_tests() {
+    run_lint
+
     log_info "Running unit tests..."
-    
+
     xcodebuild test \
         -project "$PROJECT_FILE" \
         -scheme "$SCHEME_NAME" \
@@ -127,7 +144,7 @@ run_tests() {
         -configuration "$BUILD_CONFIG" \
         CODE_SIGNING_REQUIRED=NO \
         CODE_SIGNING_ALLOWED=NO
-    
+
     log_success "Tests completed"
 }
 
@@ -200,6 +217,9 @@ main() {
         test)
             validate_project
             run_tests
+            ;;
+        lint)
+            run_lint
             ;;
         widget-test)
             validate_project

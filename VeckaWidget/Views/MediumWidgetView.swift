@@ -207,7 +207,7 @@ struct VeckaMediumWidgetView: View {
 
                         if showLunarCalendar {
                             HStack(spacing: 1 * scale) {
-                                Image(systemName: "moon.fill")
+                                Image(systemName: JohoWidget.Symbols.moonFill)
                                     .font(.system(size: 5 * scale))
                                 Text(lunarDateString)
                                     .font(.system(size: 7 * scale, weight: .bold, design: .rounded))

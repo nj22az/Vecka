@@ -1,0 +1,28 @@
+# Per-file Color(hex:) allowance — a RATCHET.
+#
+# Each line: <relative-path> <max-violations-allowed-in-file>
+# Counts can only go DOWN. Adding a new literal in any listed file fails the
+# lint until the count here is bumped (don't bump it; fix the literal instead
+# by moving the color into JohoColors or JohoScheme).
+#
+# Regenerate from the current source tree:
+#     scripts/lint-design-system.sh --regen
+
+Vecka/DeveloperSettings.swift 16
+Vecka/JohoComponents.swift 39
+Vecka/JohoViewModifiers.swift 1
+Vecka/Models/CalendarFact.swift 1
+Vecka/Models/JohoTheme.swift 4
+Vecka/Models/SpecialDayTypes.swift 14
+Vecka/Services/ConfigurationManager.swift 7
+Vecka/Services/SimplePDFRenderer.swift 9
+Vecka/SettingsView.swift 7
+Vecka/Views/AddWorldClockView.swift 7
+Vecka/Views/AnalogClockView.swift 1
+Vecka/Views/EditLandingTitleView.swift 1
+Vecka/Views/JohoEditorSheets.swift 9
+Vecka/Views/KaomojiMascot.swift 1
+Vecka/Views/LandingPageView.swift 12
+VeckaWidget/SharedWorldClock.swift 12
+VeckaWidget/Theme.swift 14
+VeckaWidget/WidgetMonthTheme.swift 12
