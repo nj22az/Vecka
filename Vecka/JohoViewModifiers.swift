@@ -11,11 +11,15 @@ import SwiftUI
 // MARK: - 情報デザイン ViewModifier Implementations
 // Pattern from Swift Playgrounds "Laying Out Views" ThemeViews.swift
 
-/// Background modifier — always true black (AMOLED optimized)
+/// Background modifier — adapts to color mode so the status bar stays legible
+/// (dark icons on white in light mode, light icons on black in dark mode).
 struct JohoBackgroundModifier: ViewModifier {
+    @Environment(\.johoColorMode) private var colorMode
+    private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
+
     func body(content: Content) -> some View {
         content
-            .background(Color(hex: "000000"))
+            .background(colors.canvas)
             .scrollContentBackground(.hidden)
     }
 }
