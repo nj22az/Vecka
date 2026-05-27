@@ -10,7 +10,6 @@
 
 Vecka/DeveloperSettings.swift 16
 Vecka/JohoComponents.swift 39
-Vecka/JohoViewModifiers.swift 1
 Vecka/Models/CalendarFact.swift 1
 Vecka/Models/JohoTheme.swift 4
 Vecka/Models/SpecialDayTypes.swift 14
