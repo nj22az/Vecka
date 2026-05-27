@@ -91,8 +91,9 @@ struct VeckaApp: App {
                         .environment(navigationManager)
                         // 情報デザイン: Apply color mode to entire app
                         .johoColorMode(colorMode)
-                        // 情報デザイン: Match system chrome to user's color mode choice
-                        .preferredColorScheme(colorMode == .dark ? .dark : .light)
+                        // 情報デザイン: Canvas is black in both modes (AMOLED),
+                        // so status bar and system chrome stay light-on-dark regardless.
+                        .preferredColorScheme(.dark)
                         .onOpenURL { url in
                             handleWidgetURL(url)
                         }

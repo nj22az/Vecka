@@ -803,8 +803,11 @@ struct ModernCalendarView: View {
     /// 情報デザイン: Month picker in upper LEFT, TODAY button in upper RIGHT
     private var calendarPageHeader: some View {
         let today = Date()
-        let dayNumber = Calendar.iso8601.component(.day, from: today)
-        let weekday = today.formatted(.dateTime.weekday(.abbreviated)).uppercased()
+        // Header shows the same date the + button will create a note for,
+        // so users see exactly which day they're about to add to.
+        let activeDate = selectedDay?.date ?? selectedDate
+        let dayNumber = Calendar.iso8601.component(.day, from: activeDate)
+        let weekday = activeDate.formatted(.dateTime.weekday(.abbreviated)).uppercased()
         let isViewingToday = Calendar.iso8601.isDate(selectedDate, inSameDayAs: today)
 
         return VStack(spacing: 0) {
@@ -860,11 +863,13 @@ struct ModernCalendarView: View {
                             Text("TODAY")
                                 .font(JohoFont.labelSmall)
                         }
-                        .foregroundStyle(colors.primary)
+                        // Yellow is always a light background — force dark text/border
+                        // for readable contrast in both light and dark color modes.
+                        .foregroundStyle(JohoColors.black)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 8)
                         .background(JohoColors.yellow)
-                        .johoBordered(cornerRadius: JohoDimensions.radiusChip, borderWidth: 1.5, borderColor: colors.primary)
+                        .johoBordered(cornerRadius: JohoDimensions.radiusChip, borderWidth: 1.5, borderColor: JohoColors.black)
                     }
                     .buttonStyle(.plain)
                     .padding(.horizontal, JohoDimensions.spacingSM)
@@ -898,8 +903,9 @@ struct ModernCalendarView: View {
                 Spacer()
 
                 // 情報デザイン: Add entry button (matches Star page month detail - far right)
+                // Uses the same activeDate shown on the left of this row.
                 Button {
-                    memoEditorDate = selectedDay?.date ?? selectedDate
+                    memoEditorDate = activeDate
                     showMemoSheet = true
                     HapticManager.impact(.light)
                 } label: {
