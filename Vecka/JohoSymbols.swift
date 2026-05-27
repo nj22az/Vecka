@@ -10,7 +10,6 @@ enum IconCatalog {
 
     // MARK: - Notes & Memos
     static let memo = "note.text"
-    static let memoOutline = "note.text"
 
     // MARK: - People
     static let person = "person.fill"
@@ -27,7 +26,6 @@ enum IconCatalog {
     static let clock = "clock.fill"
     static let clockOutline = "clock"
     static let clockHistory = "clock.arrow.circlepath"
-    static let timer = "timer"
     static let repeatIcon = "repeat"
 
     // MARK: - Navigation
@@ -80,7 +78,6 @@ enum IconCatalog {
 
     // MARK: - Documents & Lists
     static let bookClosed = "text.book.closed.fill"
-    static let booksVertical = "books.vertical.fill"
     static let listBullet = "list.bullet"
     static let checklist = "checklist"
 
@@ -101,10 +98,6 @@ enum IconCatalog {
     static let building = "building.2.fill"
     static let storefront = "storefront.fill"
     static let qrcode = "qrcode"
-
-    // MARK: - Grids & Layout
-    static let gridAll = "circle.grid.2x2.fill"
-    static let characterJa = "character.ja"
 
     // MARK: - Developer & Tools
     static let hammer = "hammer.fill"
@@ -134,7 +127,6 @@ enum IconCatalog {
     static let observance = "sparkles"
     static let trip = "airplane"
     static let tripDeparture = "airplane.departure"
-    static let countdown = "calendar.badge.clock"
 
     // MARK: - Display Category Outlines (shape = meaning)
     static let holidayOutline = "circle"

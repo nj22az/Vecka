@@ -152,19 +152,6 @@ enum JohoColors {
 
     // Type-specific indicator colors (darker versions for visibility on white)
     static let tripBlue = Color(hex: "3182CE")     // TRP indicator on calendar
-    static let eventPurple = Color(hex: "805AD5")  // EVT indicator on calendar
-
-    // App base (dark mode base, but sections are colorful)
-    static let background = Color(hex: "1A1A2E")
-    static let surface = Color(hex: "FFFFFF")   // Cards are WHITE with black borders
-
-    // Form & Input semantic colors
-    static let inputBackground = Color(hex: "F5F5F5")  // Light gray for text fields
-    static let notesBackground = Color(hex: "FFE566").opacity(JohoDimensions.opacityMedium)  // Yellow tint for notes
-
-    // Action colors (destructive/interactive)
-    static let editAction = Color(hex: "3182CE")       // Blue for edit actions
-    static let deleteAction = Color(hex: "E53E3E")     // Red for delete actions
 }
 
 // MARK: - Page Header Colors (情報デザイン: Unique colors for page headers)
