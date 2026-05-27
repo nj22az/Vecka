@@ -840,7 +840,6 @@ final class UIAccessibilityTests: XCTestCase {
         // Verify 情報デザイン color tokens exist
         XCTAssertNotNil(JohoColors.black)
         XCTAssertNotNil(JohoColors.white)
-        XCTAssertNotNil(JohoColors.background)
         XCTAssertNotNil(JohoColors.yellow)
         XCTAssertNotNil(JohoColors.cyan)
         XCTAssertNotNil(JohoColors.red)

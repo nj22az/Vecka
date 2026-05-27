@@ -84,7 +84,7 @@ struct IconStripDock: View {
         Spacer()
         Text("Content Area")
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(JohoColors.background)
+            .background(Color(hex: "1A1A2E"))
 
         IconStripDock(selection: .constant(.calendar))
     }
@@ -97,5 +97,5 @@ struct IconStripDock: View {
             IconStripDock(selection: .constant(selected))
         }
     }
-    .background(JohoColors.background)
+    .background(Color(hex: "1A1A2E"))
 }
