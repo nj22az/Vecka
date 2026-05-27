@@ -49,6 +49,7 @@ show_usage() {
     echo "  test           Run unit tests (lint runs first)"
     echo "  widget-test    Test widget extension specifically"
     echo "  lint           Run the Joho Design System linter"
+    echo "  validate-docs  Verify JDS-MAN-SFW-001 matches Swift source"
     echo "  archive        Create archive build"
     echo "  validate       Validate project configuration"
     echo "  help           Show this help message"
@@ -131,9 +132,23 @@ run_lint() {
     log_success "Lint completed"
 }
 
+# Function to validate the design-system manual against Swift source
+run_validate_docs() {
+    log_info "Validating JDS-MAN-SFW-001 against Swift source..."
+
+    if [ ! -x "./scripts/validate-docs.sh" ]; then
+        log_error "Validator not found at ./scripts/validate-docs.sh"
+        exit 1
+    fi
+
+    ./scripts/validate-docs.sh --quiet
+    log_success "Doc validation completed"
+}
+
 # Function to run tests
 run_tests() {
     run_lint
+    run_validate_docs
 
     log_info "Running unit tests..."
 
@@ -220,6 +235,9 @@ main() {
             ;;
         lint)
             run_lint
+            ;;
+        validate-docs)
+            run_validate_docs
             ;;
         widget-test)
             validate_project
