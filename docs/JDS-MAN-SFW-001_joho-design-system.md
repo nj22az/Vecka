@@ -1,7 +1,7 @@
 # JDS-MAN-SFW-001 — Joho Design System Manual
 
 **Doc No:** JDS-MAN-SFW-001
-**Rev:** A
+**Rev:** B
 **Status:** CURRENT
 **Date:** 2026-05-27
 **Author:** Nils Johansson
@@ -80,10 +80,6 @@ For bento-box backgrounds and section tints.
 | `white` | `#FFFFFF` | Surfaces |
 | `todayOrange` | `#FF9500` | Today highlight on calendar — distinct from yellow memos |
 | `tripBlue` | `#3182CE` | TRP indicator on calendar |
-| `eventPurple` | `#805AD5` | EVT indicator on calendar |
-| `inputBackground` | `#F5F5F5` | Text-field background |
-| `editAction` | `#3182CE` | Edit (action color) |
-| `deleteAction` | `#E53E3E` | Delete (action color) |
 
 ### 2.5 Adaptive scheme (`JohoScheme`)
 
@@ -260,7 +256,6 @@ When a view needs an icon, it resolves in order:
 | `.observance` | `sparkles` | Observances |
 | `.birthday` | `birthday.cake.fill` | Birthdays |
 | `.trip` | `airplane` | Trips |
-| `.countdown` | `calendar.badge.clock` | Countdowns |
 | `.settings` | `gearshape` | Settings (outline style) |
 | `.search` | `magnifyingglass` | Search |
 | `.share` | `square.and.arrow.up` | Share |

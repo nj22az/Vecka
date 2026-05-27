@@ -2,6 +2,23 @@
 
 Logs all changes to documents under `docs/`. Follows JDS conventions: one heading per revision, newest first. System-level changes (registry entries in `nj22az/JDS_Documentation`) are noted but not duplicated.
 
+## Rev B — 2026-05-27
+
+**JDS-MAN-SFW-001: sync manual with post-cleanup code.**
+
+The IconCatalog and JohoColors dead-code sweeps removed constants the
+manual still listed. This revision drops the stale rows.
+
+- §2.4 (Utility tokens): removed `eventPurple`, `inputBackground`,
+  `editAction`, `deleteAction` rows — constants deleted from
+  `Vecka/JohoFoundations.swift` because they had zero call sites.
+- §6.2 (Icon Catalog key constants): removed `.countdown` row —
+  constant deleted from `Vecka/JohoSymbols.swift`. Countdowns continue
+  to use `.event` (same SF Symbol value), already documented.
+
+No tokens added. No semantic changes. Register entry on the JDS side
+needs to be bumped from Rev A to Rev B (see jds-handoff/ in this repo).
+
 ## Rev A — 2026-05-27
 
 **Initial documentation set.**
