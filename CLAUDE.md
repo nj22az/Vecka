@@ -13,6 +13,16 @@ Built with SwiftUI, SwiftData, WidgetKit.
 
 Or open `Vecka.xcodeproj` in Xcode 16+.
 
+## Documentation
+
+The authoritative design-system and project documentation lives in [`docs/`](docs/), following [Johansson Documentation System (JDS)](https://github.com/nj22az/JDS_Documentation) conventions:
+
+- [`docs/JDS-MAN-SFW-001_joho-design-system.md`](docs/JDS-MAN-SFW-001_joho-design-system.md) — **the source of truth** for colors, typography, dimensions, IconCatalog, components, modifiers, and house rules.
+- [`docs/JDS-PRJ-SFW-002_onsen-planner.md`](docs/JDS-PRJ-SFW-002_onsen-planner.md) — project card (scope, surfaces, tech inventory).
+- [`docs/CHANGELOG.md`](docs/CHANGELOG.md) — document revision log.
+
+The tables below are a **quick reference**. When they conflict with `JDS-MAN-SFW-001`, the manual wins.
+
 ## Structure
 
 ```
