@@ -16,7 +16,11 @@ The parent JDS register at [`nj22az/JDS_Documentation`](https://github.com/nj22a
 | Doc No | Title | Status |
 |---|---|---|
 | [`JDS-PRJ-SFW-002`](JDS-PRJ-SFW-002_onsen-planner.md) | Onsen Planner — Project Card | CURRENT (Rev A) |
-| [`JDS-MAN-SFW-001`](JDS-MAN-SFW-001_joho-design-system.md) | Joho Design System Manual | CURRENT (Rev A) |
+| [`JDS-MAN-SFW-001`](JDS-MAN-SFW-001_joho-design-system.md) | Joho Design System Manual | CURRENT (Rev B) |
+
+## JDS_Documentation hand-off
+
+[`jds-handoff/`](jds-handoff/) holds copy-ready content for the parent `nj22az/JDS_Documentation` repo (project card + register additions). See [`jds-handoff/README.md`](jds-handoff/README.md) for the apply instructions.
 
 ## How to update
 
