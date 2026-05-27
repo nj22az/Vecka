@@ -327,7 +327,7 @@ struct VeckaLargeWidgetView: View {
 
     private func emptyState(scale: CGFloat) -> some View {
         VStack(spacing: 8 * scale) {
-            Image(systemName: "calendar.badge.checkmark")
+            Image(systemName: JohoWidget.Symbols.calendarBadgeCheckmark)
                 .font(.system(size: 32 * scale, weight: .medium))
                 .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
 

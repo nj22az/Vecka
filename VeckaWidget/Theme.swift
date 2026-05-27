@@ -147,6 +147,15 @@ enum JohoWidget {
         }
     }
 
+    // MARK: - SF Symbols
+    /// Widget-local symbol catalog. Parallel to the main app's `IconCatalog`
+    /// (in `Vecka/JohoSymbols.swift`). Widgets are a separate target and can't
+    /// import the main-app enum, so we mirror only the symbols widgets use.
+    enum Symbols {
+        static let calendarBadgeCheckmark = "calendar.badge.checkmark"
+        static let moonFill = "moon.fill"
+    }
+
     // MARK: - Border Weights by Widget Size
     /// Borders scale with widget size for visual consistency
     enum Borders {
