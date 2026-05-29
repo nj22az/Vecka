@@ -96,7 +96,7 @@ private struct ClockFaceView: View {
     }
 
     private var hourHand: some View {
-        RoundedRectangle(cornerRadius: size * 0.02)
+        RoundedRectangle(cornerRadius: size * 0.02, style: .continuous)
             .fill(colors.primary)
             .frame(width: size * 0.06, height: size * 0.28)
             .offset(y: -size * 0.12)
@@ -104,7 +104,7 @@ private struct ClockFaceView: View {
     }
 
     private var minuteHand: some View {
-        RoundedRectangle(cornerRadius: size * 0.015)
+        RoundedRectangle(cornerRadius: size * 0.015, style: .continuous)
             .fill(accentColor)
             .frame(width: size * 0.035, height: size * 0.38)
             .offset(y: -size * 0.17)

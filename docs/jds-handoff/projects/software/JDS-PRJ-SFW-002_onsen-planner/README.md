@@ -17,7 +17,7 @@ Onsen Planner (internal name **Vecka**) is an iOS 18+ app for working with ISO 8
 This entry is a **project card**. The authoritative project and design-system documentation lives next to the code in [`nj22az/onsen_planner`](https://github.com/nj22az/onsen_planner):
 
 - Project card (mirror of this file): [`docs/JDS-PRJ-SFW-002_onsen-planner.md`](https://github.com/nj22az/onsen_planner/blob/main/docs/JDS-PRJ-SFW-002_onsen-planner.md)
-- Design-system manual: [`docs/JDS-MAN-SFW-001_joho-design-system.md`](https://github.com/nj22az/onsen_planner/blob/main/docs/JDS-MAN-SFW-001_joho-design-system.md) (currently Rev B)
+- Design-system manual: [`docs/JDS-MAN-SFW-001_joho-design-system.md`](https://github.com/nj22az/onsen_planner/blob/main/docs/JDS-MAN-SFW-001_joho-design-system.md) (currently Rev C)
 - Document changelog: [`docs/CHANGELOG.md`](https://github.com/nj22az/onsen_planner/blob/main/docs/CHANGELOG.md)
 
 ## Surfaces
@@ -40,7 +40,7 @@ This entry is a **project card**. The authoritative project and design-system do
 
 ## Related JDS documents
 
-- `JDS-MAN-SFW-001` — Joho Design System Manual (stored in `nj22az/onsen_planner` at `docs/`). Currently at Rev B.
+- `JDS-MAN-SFW-001` — Joho Design System Manual (stored in `nj22az/onsen_planner` at `docs/`). Currently at Rev C.
 
 ## Open items
 

@@ -97,7 +97,7 @@ struct AddWorldClockView: View {
                             // No results
                             VStack(spacing: JohoDimensions.spacingMD) {
                                 Image(systemName: IconCatalog.globe)
-                                    .font(.system(size: 32, weight: .light, design: .rounded))
+                                    .font(.system(size: 32, weight: .medium, design: .rounded))
                                     .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
                                 Text("No cities found")
                                     .font(JohoFont.headline)

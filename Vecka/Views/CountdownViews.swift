@@ -37,7 +37,7 @@ struct CountdownCard: View {
             .padding(LayoutConstants.cardSpacing)
             .background(cardBackground)
             .overlay(cardBorder)
-            .clipShape(RoundedRectangle(cornerRadius: LayoutConstants.cornerRadius))
+            .clipShape(RoundedRectangle(cornerRadius: LayoutConstants.cornerRadius, style: .continuous))
             .scaleEffect(isSelected ? 1.02 : 1.0)
             .shadow(color: shadowColor, radius: isSelected ? 6 : 3, x: 0, y: isSelected ? 3 : 1)
         }
@@ -144,7 +144,7 @@ struct CountdownCard: View {
     }
 
     private var cardBorder: some View {
-        RoundedRectangle(cornerRadius: LayoutConstants.cornerRadius)
+        RoundedRectangle(cornerRadius: LayoutConstants.cornerRadius, style: .continuous)
             .stroke(borderColor, lineWidth: isSelected ? 1.5 : 0.5)
     }
 

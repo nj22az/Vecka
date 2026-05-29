@@ -208,7 +208,7 @@ struct VeckaMediumWidgetView: View {
                         if showLunarCalendar {
                             HStack(spacing: 1 * scale) {
                                 Image(systemName: JohoWidget.Symbols.moonFill)
-                                    .font(.system(size: 5 * scale))
+                                    .font(.system(size: 5 * scale, design: .rounded))
                                 Text(lunarDateString)
                                     .font(.system(size: 7 * scale, weight: .bold, design: .rounded))
                             }
@@ -264,7 +264,7 @@ struct VeckaMediumWidgetView: View {
             // Name with icon — prominent
             HStack(spacing: 6 * scale) {
                 Image(systemName: symbol)
-                    .font(.system(size: 20 * scale, weight: .bold))
+                    .font(.system(size: 20 * scale, weight: .bold, design: .rounded))
                     .foregroundStyle(textColor)
 
                 Text(name)
@@ -308,7 +308,7 @@ struct VeckaMediumWidgetView: View {
             // Name with icon — prominent
             HStack(spacing: 6 * scale) {
                 Image(systemName: symbol)
-                    .font(.system(size: 20 * scale, weight: .bold))
+                    .font(.system(size: 20 * scale, weight: .bold, design: .rounded))
                     .foregroundStyle(textColor)
 
                 Text(name)
@@ -356,7 +356,7 @@ struct VeckaMediumWidgetView: View {
 
             HStack(spacing: 6 * scale) {
                 Image(systemName: fact.symbol)
-                    .font(.system(size: 20 * scale, weight: .bold))
+                    .font(.system(size: 20 * scale, weight: .bold, design: .rounded))
                     .foregroundStyle(textColor)
 
                 Text(fact.text)

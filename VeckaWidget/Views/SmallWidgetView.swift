@@ -141,7 +141,7 @@ struct VeckaSmallWidgetView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(spacing: 5 * scale) {
                         Image(systemName: hasSpecialDay ? specialDaySymbol : fact.symbol)
-                            .font(.system(size: 13 * scale, weight: .bold))
+                            .font(.system(size: 13 * scale, weight: .bold, design: .rounded))
                             .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
 
                         Text(hasSpecialDay ? (specialDayName ?? "") : fact.text)

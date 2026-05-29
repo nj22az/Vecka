@@ -16,7 +16,7 @@ The parent JDS register at [`nj22az/JDS_Documentation`](https://github.com/nj22a
 | Doc No | Title | Status |
 |---|---|---|
 | [`JDS-PRJ-SFW-002`](JDS-PRJ-SFW-002_onsen-planner.md) | Onsen Planner — Project Card | CURRENT (Rev A) |
-| [`JDS-MAN-SFW-001`](JDS-MAN-SFW-001_joho-design-system.md) | Joho Design System Manual | CURRENT (Rev B) |
+| [`JDS-MAN-SFW-001`](JDS-MAN-SFW-001_joho-design-system.md) | Joho Design System Manual | CURRENT (Rev C) |
 
 ## JDS_Documentation hand-off
 

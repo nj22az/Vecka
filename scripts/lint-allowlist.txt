@@ -1,27 +1,55 @@
-# Per-file Color(hex:) allowance — a RATCHET.
+# Per-file violation allowance — a RATCHET.
 #
-# Each line: <relative-path> <max-violations-allowed-in-file>
-# Counts can only go DOWN. Adding a new literal in any listed file fails the
-# lint until the count here is bumped (don't bump it; fix the literal instead
-# by moving the color into JohoColors or JohoScheme).
+# Each line: <rule> <relative-path> <max-violations-allowed>
+# Counts can only go DOWN. Adding a new violation in any listed file fails the
+# lint until fixed (don't bump the count; fix the violation by moving the value
+# into JohoColors / JohoFont / Squircle etc.).
+#
+# Rules tracked here: colorhex, colorraw, corners, fonts, weights.
+# (symbols, gradient, glass are STRICT — never allowlisted.)
 #
 # Regenerate from the current source tree:
 #     scripts/lint-design-system.sh --regen
 
-Vecka/DeveloperSettings.swift 16
-Vecka/JohoComponents.swift 39
-Vecka/Models/CalendarFact.swift 1
-Vecka/Models/JohoTheme.swift 4
-Vecka/Models/SpecialDayTypes.swift 14
-Vecka/Services/ConfigurationManager.swift 7
-Vecka/Services/SimplePDFRenderer.swift 9
-Vecka/SettingsView.swift 7
-Vecka/Views/AddWorldClockView.swift 7
-Vecka/Views/AnalogClockView.swift 1
-Vecka/Views/EditLandingTitleView.swift 1
-Vecka/Views/JohoEditorSheets.swift 9
-Vecka/Views/KaomojiMascot.swift 1
-Vecka/Views/LandingPageView.swift 12
-VeckaWidget/SharedWorldClock.swift 12
-VeckaWidget/Theme.swift 14
-VeckaWidget/WidgetMonthTheme.swift 12
+colorhex Vecka/DeveloperSettings.swift 16
+colorhex Vecka/JohoComponents.swift 39
+colorhex Vecka/Models/CalendarFact.swift 1
+colorhex Vecka/Models/JohoTheme.swift 4
+colorhex Vecka/Models/SpecialDayTypes.swift 14
+colorhex Vecka/Services/ConfigurationManager.swift 7
+colorhex Vecka/Services/SimplePDFRenderer.swift 9
+colorhex Vecka/SettingsView.swift 7
+colorhex Vecka/Views/AddWorldClockView.swift 7
+colorhex Vecka/Views/AnalogClockView.swift 1
+colorhex Vecka/Views/EditLandingTitleView.swift 1
+colorhex Vecka/Views/JohoEditorSheets.swift 9
+colorhex Vecka/Views/KaomojiMascot.swift 1
+colorhex Vecka/Views/LandingPageView.swift 12
+colorhex VeckaWidget/SharedWorldClock.swift 12
+colorhex VeckaWidget/Theme.swift 14
+colorhex VeckaWidget/WidgetMonthTheme.swift 12
+colorraw Vecka/DeveloperSettings.swift 1
+colorraw Vecka/JohoComponents.swift 1
+colorraw Vecka/Services/SimplePDFRenderer.swift 32
+colorraw Vecka/SettingsView.swift 1
+colorraw Vecka/Views/AnalogClockView.swift 1
+colorraw Vecka/Views/CountdownViews.swift 2
+colorraw Vecka/Views/DayDashboardView.swift 1
+colorraw Vecka/Views/LandingPageView.swift 1
+colorraw Vecka/Views/MemoEditorView.swift 1
+colorraw Vecka/Views/ModernCalendarView.swift 1
+colorraw Vecka/Views/NotesListView.swift 1
+colorraw Vecka/Views/ShareableContact.swift 1
+colorraw Vecka/Views/ShareableDaySummary.swift 1
+colorraw Vecka/Views/SimplePDFExportView.swift 2
+colorraw Vecka/Views/SpecialDaysListView.swift 1
+colorraw Vecka/Views/UITestRootView.swift 2
+colorraw Vecka/WeekPickerSheet.swift 4
+colorraw VeckaWidget/Components/BackgroundPattern.swift 1
+colorraw VeckaWidget/Theme.swift 9
+fonts Vecka/Views/AppSidebar.swift 1
+fonts Vecka/Views/CountdownViews.swift 4
+fonts Vecka/Views/SimplePDFExportView.swift 1
+fonts Vecka/Views/UITestRootView.swift 2
+fonts Vecka/WeekPickerSheet.swift 4
+fonts VeckaWidget/Components/DayCell.swift 1
