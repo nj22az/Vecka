@@ -450,8 +450,8 @@ struct ContactDetailView: View {
     private var phoneSection: some View {
         if isEditMode {
             VStack(alignment: .leading, spacing: 6) {
-                johoEditSectionLabel("PHONE")
-                johoEditField(
+                editSectionLabel("PHONE")
+                editField(
                     icon: "phone.fill",
                     iconColor: JohoColors.red,
                     placeholder: "Phone number",
@@ -460,13 +460,13 @@ struct ContactDetailView: View {
                 )
             }
         } else {
-            johoDetailSection(title: "PHONE", icon: "phone.fill", iconColor: JohoColors.green) {
+            detailSection(title: "PHONE", icon: "phone.fill", iconColor: JohoColors.green) {
                 VStack(spacing: 0) {
                     ForEach(Array(contact.phoneNumbers.enumerated()), id: \.element.id) { index, phone in
                         if index > 0 {
                             Rectangle().fill(colors.border.opacity(JohoDimensions.opacityMedium)).frame(height: 1)
                         }
-                        johoInfoRow(
+                        infoRow(
                             label: phone.label.uppercased(),
                             value: phone.value,
                             actions: [
@@ -487,8 +487,8 @@ struct ContactDetailView: View {
     private var emailSection: some View {
         if isEditMode {
             VStack(alignment: .leading, spacing: 6) {
-                johoEditSectionLabel("EMAIL")
-                johoEditField(
+                editSectionLabel("EMAIL")
+                editField(
                     icon: "envelope.fill",
                     iconColor: JohoColors.red,
                     placeholder: "Email address",
@@ -497,13 +497,13 @@ struct ContactDetailView: View {
                 )
             }
         } else {
-            johoDetailSection(title: "EMAIL", icon: "envelope.fill", iconColor: accentColor) {
+            detailSection(title: "EMAIL", icon: "envelope.fill", iconColor: accentColor) {
                 VStack(spacing: 0) {
                     ForEach(Array(contact.emailAddresses.enumerated()), id: \.element.id) { index, email in
                         if index > 0 {
                             Rectangle().fill(colors.border.opacity(JohoDimensions.opacityMedium)).frame(height: 1)
                         }
-                        johoInfoRow(
+                        infoRow(
                             label: email.label.uppercased(),
                             value: email.value,
                             actions: [
@@ -523,9 +523,9 @@ struct ContactDetailView: View {
     private var addressSection: some View {
         if isEditMode {
             VStack(alignment: .leading, spacing: 6) {
-                johoEditSectionLabel("ADDRESS")
+                editSectionLabel("ADDRESS")
                 VStack(spacing: JohoDimensions.spacingSM) {
-                    johoEditField(
+                    editField(
                         icon: "mappin",
                         iconColor: JohoColors.red,
                         placeholder: "Street address",
@@ -533,14 +533,14 @@ struct ContactDetailView: View {
                     )
 
                     HStack(spacing: JohoDimensions.spacingSM) {
-                        johoEditField(
+                        editField(
                             icon: "building.2.fill",
                             iconColor: JohoColors.red,
                             placeholder: "City",
                             text: $editCity
                         )
 
-                        johoEditField(
+                        editField(
                             icon: "number",
                             iconColor: JohoColors.red,
                             placeholder: "Postal",
@@ -552,7 +552,7 @@ struct ContactDetailView: View {
                 }
             }
         } else {
-            johoDetailSection(title: "ADDRESS", icon: "mappin", iconColor: JohoColors.cyan) {
+            detailSection(title: "ADDRESS", icon: "mappin", iconColor: JohoColors.cyan) {
                 VStack(spacing: 0) {
                     ForEach(Array(contact.postalAddresses.enumerated()), id: \.element.id) { index, address in
                         if index > 0 {
@@ -594,7 +594,7 @@ struct ContactDetailView: View {
     private var birthdaySection: some View {
         if isEditMode {
             VStack(alignment: .leading, spacing: 6) {
-                johoEditSectionLabel("BIRTHDAY")
+                editSectionLabel("BIRTHDAY")
 
                 // 2-state toggle: YES / NO
                 HStack(spacing: 8) {
@@ -690,7 +690,7 @@ struct ContactDetailView: View {
                 }
             }
         } else {
-            johoDetailSection(title: "BIRTHDAY", icon: "gift.fill", iconColor: SpecialDayType.birthday.accentColor) {
+            detailSection(title: "BIRTHDAY", icon: "gift.fill", iconColor: SpecialDayType.birthday.accentColor) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         if let birthday = contact.birthday {
@@ -745,7 +745,7 @@ struct ContactDetailView: View {
     private var notesSection: some View {
         if isEditMode {
             VStack(alignment: .leading, spacing: 6) {
-                johoEditSectionLabel("NOTES")
+                editSectionLabel("NOTES")
                 TextField("Notes", text: $editNotes, axis: .vertical)
                     .font(JohoFont.body)
                     .foregroundStyle(JohoColors.red)
@@ -756,7 +756,7 @@ struct ContactDetailView: View {
                     .johoBordered(borderWidth: JohoDimensions.borderThin, borderColor: JohoColors.red.opacity(JohoDimensions.opacityModerate))
             }
         } else {
-            johoDetailSection(title: "NOTES", icon: IconCatalog.memo, iconColor: JohoColors.yellow) {
+            detailSection(title: "NOTES", icon: IconCatalog.memo, iconColor: JohoColors.yellow) {
                 if let note = contact.note, !note.isEmpty {
                     Text(note)
                         .font(JohoFont.body)
@@ -773,7 +773,7 @@ struct ContactDetailView: View {
     private var groupSection: some View {
         if isEditMode {
             VStack(alignment: .leading, spacing: 6) {
-                johoEditSectionLabel("GROUP")
+                editSectionLabel("GROUP")
                 // Wrapping grid for group selection
                 let groups = ContactGroup.allCases
                 LazyVGrid(columns: [
@@ -810,7 +810,7 @@ struct ContactDetailView: View {
             }
         } else {
             let groupAccentColor = editGroup.swiftUIColor
-            johoDetailSection(title: "GROUP", icon: "folder.fill", iconColor: groupAccentColor) {
+            detailSection(title: "GROUP", icon: "folder.fill", iconColor: groupAccentColor) {
                 let groupColor = contact.group.swiftUIColor
                 HStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: contact.group.icon)
@@ -857,7 +857,7 @@ struct ContactDetailView: View {
     // MARK: - Edit Field Helper (情報デザイン: Consistent edit-mode text field)
 
     @ViewBuilder
-    private func johoEditField(
+    private func editField(
         icon: String,
         iconColor: Color,
         placeholder: String,
@@ -883,7 +883,7 @@ struct ContactDetailView: View {
     // MARK: - Edit Section Label (flat, no card)
 
     @ViewBuilder
-    private func johoEditSectionLabel(_ title: String) -> some View {
+    private func editSectionLabel(_ title: String) -> some View {
         Text(title)
             .font(.system(size: 12, weight: .black, design: .rounded))
             .tracking(1)
@@ -894,7 +894,7 @@ struct ContactDetailView: View {
     // MARK: - 情報デザイン Section Container (two-compartment bento card)
 
     @ViewBuilder
-    private func johoDetailSection<Content: View>(
+    private func detailSection<Content: View>(
         title: String,
         icon: String,
         iconColor: Color = JohoColors.purple,
@@ -937,7 +937,7 @@ struct ContactDetailView: View {
     // MARK: - Info Row Helper (情報デザイン: white background with colored action icons)
 
     @ViewBuilder
-    private func johoInfoRow(label: String, value: String, actions: [(String, Color, () -> Void)]) -> some View {
+    private func infoRow(label: String, value: String, actions: [(String, Color, () -> Void)]) -> some View {
         HStack(spacing: JohoDimensions.spacingMD) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(label)
