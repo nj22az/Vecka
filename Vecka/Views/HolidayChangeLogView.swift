@@ -140,7 +140,7 @@ struct HolidayChangeLogView: View {
             Spacer()
 
             Image(systemName: IconCatalog.clockHistory)
-                .font(.system(size: 48, weight: .light, design: .rounded))
+                .font(.system(size: 48, weight: .medium, design: .rounded))
                 .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
 
             Text("No Changes Yet")

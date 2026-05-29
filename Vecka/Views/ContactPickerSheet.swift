@@ -67,7 +67,7 @@ struct ContactPickerSheet: View {
                         Spacer()
 
                         Image(systemName: searchText.isEmpty ? "person.crop.circle.badge.questionmark" : "magnifyingglass")
-                            .font(.system(size: 40, weight: .light, design: .rounded))
+                            .font(.system(size: 40, weight: .medium, design: .rounded))
                             .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityMedium))
 
                         Text(searchText.isEmpty ? "No other contacts available" : "No contacts match '\(searchText)'")

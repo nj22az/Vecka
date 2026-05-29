@@ -259,7 +259,7 @@ struct VeckaLargeWidgetView: View {
         HStack(alignment: .top, spacing: 8 * scale) {
             // Symbol
             Image(systemName: item.symbol)
-                .font(.system(size: 18 * scale, weight: .bold))
+                .font(.system(size: 18 * scale, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
                 .frame(width: 24 * scale)
 
@@ -289,7 +289,7 @@ struct VeckaLargeWidgetView: View {
         HStack(spacing: 8 * scale) {
             // Symbol
             Image(systemName: item.symbol)
-                .font(.system(size: 18 * scale, weight: .bold))
+                .font(.system(size: 18 * scale, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
                 .frame(width: 20 * scale)
 
@@ -328,7 +328,7 @@ struct VeckaLargeWidgetView: View {
     private func emptyState(scale: CGFloat) -> some View {
         VStack(spacing: 8 * scale) {
             Image(systemName: JohoWidget.Symbols.calendarBadgeCheckmark)
-                .font(.system(size: 32 * scale, weight: .medium))
+                .font(.system(size: 32 * scale, weight: .medium, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.textSecondary(for: colorScheme))
 
             Text("No upcoming specials")
@@ -353,7 +353,7 @@ struct VeckaLargeWidgetView: View {
                 .frame(width: 1, height: 14 * scale)
 
             Image(systemName: fact.symbol)
-                .font(.system(size: 12 * scale, weight: .bold))
+                .font(.system(size: 12 * scale, weight: .bold, design: .rounded))
                 .foregroundStyle(JohoWidget.Colors.text(for: colorScheme))
 
             Text(fact.text)

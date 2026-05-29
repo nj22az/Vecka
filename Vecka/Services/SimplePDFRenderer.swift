@@ -934,7 +934,7 @@ struct PDFExpenseReportPage: View {
                                 .frame(width: 40)
                                 .padding(4)
                                 .background(JohoColors.green.opacity(0.2))
-                                .clipShape(RoundedRectangle(cornerRadius: 4))
+                                .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
 
                             Text(formatAmount(item.total, currency: item.currency))
                                 .font(JohoFont.caption)
