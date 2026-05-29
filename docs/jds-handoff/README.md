@@ -34,6 +34,6 @@ git push
 
 ## Note on revisions
 
-The manual `JDS-MAN-SFW-001` is now at **Rev B** (was Rev A on initial creation; the IconCatalog and JohoColors dead-code sweeps required a sync). The register additions reflect Rev B.
+The manual `JDS-MAN-SFW-001` is now at **Rev C** (Rev A initial; Rev B synced after the IconCatalog/JohoColors dead-code sweeps; Rev C documents the expanded linter enforcement in §10.1). The register additions reflect Rev C.
 
 The project card `JDS-PRJ-SFW-002` remains at Rev A — no scope or surface changes since creation.

@@ -1,9 +1,9 @@
 # JDS-MAN-SFW-001 — Joho Design System Manual
 
 **Doc No:** JDS-MAN-SFW-001
-**Rev:** B
+**Rev:** C
 **Status:** CURRENT
-**Date:** 2026-05-27
+**Date:** 2026-05-29
 **Author:** Nils Johansson
 
 ---
@@ -441,6 +441,25 @@ These are non-negotiable. Code review and the design system itself reject deviat
 - **Never** use gradients or glass/blur materials. Color does the work.
 - **Never** drop typography weight below `.medium`.
 - **Never** hide the status bar or render opaque content behind it without using `JohoScheme.canvas` (so the system icons stay legible — see Rev A entry in the changelog).
+
+### 10.1 Automated enforcement
+
+`scripts/lint-design-system.sh` (run via `./build.sh lint`, and as part of `./build.sh test`) enforces the mechanizable rules against `Vecka/` and `VeckaWidget/`:
+
+| Rule | Linter id | Mode |
+|---|---|---|
+| SF Symbols via IconCatalog | `symbols` | strict |
+| No `Color(hex:)` outside `JohoFoundations` | `colorhex` | ratchet |
+| No raw SwiftUI colors | `colorraw` | ratchet |
+| `.continuous` corners only | `corners` | strict |
+| `.rounded`/`.monospaced` fonts only | `fonts` | ratchet |
+| No gradients | `gradient` | strict |
+| No glass/blur materials | `glass` | strict |
+| Weight ≥ `.medium` | `weights` | strict |
+
+**Strict** rules fail on any violation. **Ratchet** rules track existing debt per file in `scripts/lint-allowlist.txt`; counts may only decrease, so no new violation can be introduced in a tracked file. `#Preview` blocks and comments are stripped before scanning.
+
+The two remaining house rules are not statically checkable and rely on review: **black borders on containers** (border presence/color is context-dependent) and **status-bar legibility** (a runtime/layout property).
 
 ---
 

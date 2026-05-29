@@ -2,6 +2,24 @@
 
 Logs all changes to documents under `docs/`. Follows JDS conventions: one heading per revision, newest first. System-level changes (registry entries in `nj22az/JDS_Documentation`) are noted but not duplicated.
 
+## Rev C — 2026-05-29
+
+**JDS-MAN-SFW-001: document automated enforcement.**
+
+A JDS house-rule audit expanded `scripts/lint-design-system.sh` from 3 to
+8 enforced rules. This revision documents that coverage.
+
+- Added §10.1 (Automated enforcement): table mapping each house rule to its
+  linter id and mode (strict vs. ratchet), and noting the two rules (black
+  borders, status-bar legibility) that remain review-only.
+- No token, icon, component, or modifier tables changed — `./build.sh
+  validate-docs` still passes 52/52.
+
+Companion code changes (not docs): linter now also enforces `colorraw`,
+`corners`, `fonts`, `glass`, `weights`; small fixes converted 5 corners to
+`.continuous`, 4 sub-`.medium` weights to `.medium`, and added `design:
+.rounded` to 9 widget fonts.
+
 ## Rev B — 2026-05-27
 
 **JDS-MAN-SFW-001: sync manual with post-cleanup code.**
