@@ -2,6 +2,34 @@
 
 Logs all changes to documents under `docs/`. Follows JDS conventions: one heading per revision, newest first. System-level changes (registry entries in `nj22az/JDS_Documentation`) are noted but not duplicated.
 
+## Rev D — 2026-05-29
+
+**JDS-MAN-SFW-001: fill DS-component documentation gaps; tighten validator.**
+
+A JDS source-of-truth audit found the design-system surface in
+`Vecka/JohoCalendarWidgets.swift` undocumented, and a naming bug in §7.10
+where the SF Symbol picker was labeled `JohoSymbolPickerSheet` (which is
+actually the Japanese-symbol picker) instead of `JohoSFSymbolPickerSheet`.
+
+- §1 (Overview): added `Vecka/JohoCalendarWidgets.swift` to the file
+  inventory.
+- §7.1 (Containers): added `JohoCalendarContainer`.
+- §7.7 (Buttons): added `JohoActionButton`.
+- §7.10 (Pickers): rewrote — split `JohoSFSymbolPickerSheet` (SF Symbols,
+  in `JohoSettings.swift`) from `JohoSymbolPickerSheet` (Japanese symbols,
+  in `JohoSymbols.swift`); added `JohoCalendarPicker`,
+  `JohoCalendarPickerSheet`, `JohoYearPicker`; removed the confusing
+  `JohoIconPicker` row (the private struct of that name lives in
+  `Vecka/Views/CountdownViews.swift` and is not DS API).
+- §8 (View modifiers): broadened the leading source-location note to
+  cover all four files modifiers now live in; added `.johoCalendarPicker(...)`,
+  `.johoYearPicker(...)`, and `.johoColorMode(_:)`.
+
+Companion validator changes (not docs): `scripts/validate-docs.sh` gained
+§1 file-existence, §7.1–7.11 struct-existence, and §8 modifier-existence
+checks; also fixed a latent prefix-match bug in `extract_section_rows`
+(querying section "N.1" would also match "N.10" / "N.11" / "N.12").
+
 ## Rev C — 2026-05-29
 
 **JDS-MAN-SFW-001: document automated enforcement.**
