@@ -1,7 +1,7 @@
 # JDS-MAN-SFW-001 — Joho Design System Manual
 
 **Doc No:** JDS-MAN-SFW-001
-**Rev:** C
+**Rev:** D
 **Status:** CURRENT
 **Date:** 2026-05-29
 **Author:** Nils Johansson
@@ -26,6 +26,7 @@ Implementation lives across these files:
 | `Vecka/JohoTokens.swift` | `JohoFont`, `JohoDimensions`, `SectionZone`, `JohoCardSize`, `Squircle`, `HalfCircle` |
 | `Vecka/JohoSymbols.swift` | `IconCatalog`, `JohoSymbols` (Japanese symbol vocabulary), photo/icon picker components |
 | `Vecka/JohoComponents.swift` | Reusable UI components (containers, pills, cards, day cells, etc.) |
+| `Vecka/JohoCalendarWidgets.swift` | Calendar/year picker UI: `JohoCalendarContainer`, `JohoActionButton`, `JohoCalendarPicker`, `JohoCalendarPickerSheet`, `JohoYearPicker`, `.johoCalendarPicker` modifier |
 | `Vecka/JohoViewModifiers.swift` | `.johoBackground()`, `.johoBordered()`, `.johoBento()`, `.johoNavigation()`, etc. |
 | `Vecka/Models/JohoTheme.swift` | `JohoThemePreset` — JSON-driven theme overrides |
 | `Vecka/JohoSettings.swift` | `JohoThemeCache`, category color/icon overrides |
@@ -294,6 +295,7 @@ All components live in `Vecka/JohoComponents.swift` unless noted.
 | `JohoFormField` | Single labeled form input row |
 | `JohoDivider` | Themed divider line |
 | `FlowLayout` | Wrapping flow layout for chips/tags |
+| `JohoCalendarContainer` | White surface wrapper with thick black border used to host a calendar grid (in `Vecka/JohoCalendarWidgets.swift`) |
 
 ### 7.2 Badges, pills, indicators
 
@@ -339,6 +341,7 @@ All components live in `Vecka/JohoComponents.swift` unless noted.
 |---|---|
 | `JohoIconButton` | Icon button (icon + optional label) |
 | `JohoContactActionButton` | Quick-action button for contacts (call / message / map) |
+| `JohoActionButton` | Circular toolbar action button (icon over bordered surface) (in `Vecka/JohoCalendarWidgets.swift`) |
 
 ### 7.8 Avatars & media
 
@@ -358,8 +361,11 @@ All components live in `Vecka/JohoComponents.swift` unless noted.
 
 | Component | Purpose |
 |---|---|
-| `JohoSymbolPickerSheet` | Full SF Symbol picker with search and categories (in `Vecka/JohoSymbols.swift`) |
-| `JohoIconPicker` view modifier | Triggered via `.johoIconPicker(isPresented:selection:accentColor:)` |
+| `JohoSFSymbolPickerSheet` | Full SF Symbol picker sheet with search and categories (in `Vecka/JohoSettings.swift`); presented via `.johoIconPicker(...)` |
+| `JohoSymbolPickerSheet` | Japanese-symbol picker — picks from the `JohoSymbols` vocabulary (○, ★, ◇, …) (in `Vecka/JohoSymbols.swift`) |
+| `JohoCalendarPicker` | Inline calendar grid for date selection (in `Vecka/JohoCalendarWidgets.swift`); presented via `.johoCalendarPicker(...)` |
+| `JohoCalendarPickerSheet` | Full-sheet calendar picker variant (in `Vecka/JohoCalendarWidgets.swift`) |
+| `JohoYearPicker` | Year stepper with chevron buttons (in `Vecka/JohoCalendarWidgets.swift`); presented via `.johoYearPicker(...)` |
 
 ### 7.11 Country / locale
 
@@ -380,7 +386,7 @@ All components live in `Vecka/JohoComponents.swift` unless noted.
 
 ## 8. View modifiers (`JohoViewModifiers.swift`)
 
-All accessed via `View` extension methods. Source: `Vecka/JohoViewModifiers.swift:211` for the main set; `.johoIconPicker(…)` lives in `Vecka/JohoSettings.swift:316` (defined there because it depends on settings-layer types).
+All accessed via `View` extension methods. Most live in `Vecka/JohoViewModifiers.swift`. A few specialised ones live alongside their dependent types: `.johoIconPicker(…)` and `.johoYearPicker(…)` in `Vecka/JohoSettings.swift`; `.johoCalendarPicker(…)` in `Vecka/JohoCalendarWidgets.swift`; `.johoColorMode(_:)` in `Vecka/JohoFoundations.swift`.
 
 | Modifier | Purpose |
 |---|---|
@@ -395,7 +401,10 @@ All accessed via `View` extension methods. Source: `Vecka/JohoViewModifiers.swif
 | `.johoIconBadge(color:size:)` | Icon badge styling |
 | `.johoPillStyle(backgroundColor:foregroundColor:borderColor:)` | Pill/tag styling |
 | `.johoTouchTarget(_:)` | Minimum 44×44 pt touch target (Apple HIG) |
-| `.johoIconPicker(isPresented:selection:accentColor:)` | Presents the SF Symbol picker sheet (`JohoSettings.swift`) |
+| `.johoIconPicker(isPresented:selection:accentColor:)` | Presents `JohoSFSymbolPickerSheet` as a modal sheet (`JohoSettings.swift`) |
+| `.johoCalendarPicker(...)` | Presents an inline `JohoCalendarPicker` as an overlay (`JohoCalendarWidgets.swift`) |
+| `.johoYearPicker(...)` | Presents `JohoYearPicker` as a modal sheet (`JohoSettings.swift`) |
+| `.johoColorMode(_:)` | Sets the `JohoColorMode` environment value for the view subtree (`JohoFoundations.swift`) |
 
 ---
 
