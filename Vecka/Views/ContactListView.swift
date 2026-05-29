@@ -1196,7 +1196,7 @@ struct JohoAddContactSheet: View {
                     HapticManager.selection()
                     onSelectContact()
                 } label: {
-                    johoInputRow(
+                    inputRow(
                         icon: IconCatalog.person,
                         code: "CTT",
                         label: "CONTACT",
@@ -1219,7 +1219,7 @@ struct JohoAddContactSheet: View {
     }
 
     @ViewBuilder
-    private func johoInputRow(icon: String, code: String, label: String, meta: String, color: Color) -> some View {
+    private func inputRow(icon: String, code: String, label: String, meta: String, color: Color) -> some View {
         HStack(spacing: 12) {
             // 情報デザイン: Colored circle with BLACK border + Icon
             ZStack {
