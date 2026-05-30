@@ -1047,7 +1047,8 @@ struct ContactDetailView: View {
         } label: {
             Text("Save")
                 .font(JohoFont.bodySmallBold)
-                .foregroundStyle(colors.primaryInverted)
+                // Constant tint (green) → hardcoded dark foreground (see JDS §10).
+                .foregroundStyle(JohoColors.black)
                 .padding(.horizontal, JohoDimensions.spacingMD)
                 .padding(.vertical, JohoDimensions.spacingSM)
                 .background(JohoColors.green)

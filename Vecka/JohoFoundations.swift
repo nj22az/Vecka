@@ -257,14 +257,47 @@ enum SystemUIAccent: String, CaseIterable, Identifiable {
 
 
 // MARK: - 情報デザイン Color Scheme (夜間モード - AMOLED Dark Mode)
-// Inverted 情報デザイン for AMOLED screens: WHITE text on BLACK backgrounds
+// 情報デザイン color modes — reading comfort is the goal of both.
+// Following the Japanese app convention (LINE, Yahoo, Mercari):
+// - Light mode is real daylight: white canvas, off-black text (#111111).
+// - Dark mode is comfortable off-black (#0F0F10), with an opt-in
+//   True Black (AMOLED) override for users who want #000000.
 
-/// 情報デザイン color scheme mode
-/// - `.light`: Classic 情報デザイン - BLACK text on WHITE backgrounds
-/// - `.dark`: Inverted 夜間モード - WHITE text on BLACK backgrounds (AMOLED optimized)
+/// User-facing appearance preference. Resolves to a binary `JohoColorMode`
+/// at the app root using the system `colorScheme` as the source of truth
+/// when `.system` is selected.
+enum AppearancePreference: String, CaseIterable, Identifiable {
+    case system   // Follow iOS Settings (default — matches Japanese app norm)
+    case light    // Force 昼間モード (day mode)
+    case dark     // Force 夜間モード (night mode)
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .system: return "System"
+        case .light: return "Light"
+        case .dark: return "Dark"
+        }
+    }
+
+    /// Pass to `.preferredColorScheme(_:)`. `nil` for `.system` so iOS
+    /// chrome follows the device setting (matches Yahoo/SmartNews/Mercari).
+    var preferredColorScheme: ColorScheme? {
+        switch self {
+        case .system: return nil
+        case .light:  return .light
+        case .dark:   return .dark
+        }
+    }
+}
+
+/// The resolved color scheme used for rendering. Binary by design —
+/// only Light or Dark. `AppearancePreference.system` is resolved into
+/// one of these at the app root.
 enum JohoColorMode: String, CaseIterable, Identifiable {
-    case light = "light"   // Classic 情報デザイン
-    case dark = "dark"     // 夜間モード (Night Mode)
+    case light = "light"   // 昼間モード — classic 情報デザイン
+    case dark = "dark"     // 夜間モード — Night Mode
 
     var id: String { rawValue }
 
@@ -277,8 +310,8 @@ enum JohoColorMode: String, CaseIterable, Identifiable {
 
     var description: String {
         switch self {
-        case .light: return "Classic black on white"
-        case .dark: return "AMOLED optimized, white on black"
+        case .light: return "Off-black on white (#111111 on #FFFFFF)"
+        case .dark: return "Off-white on comfortable off-black (#0F0F10)"
         }
     }
 }
@@ -307,35 +340,58 @@ struct JohoScheme {
     static func colors(for mode: JohoColorMode) -> JohoScheme {
         let base: JohoScheme = switch mode {
         case .light:
+            // LINE convention: #111111 for primary text (easier on kanji density
+            // than pure #000000). The black bento border does the visual work,
+            // so canvas + surface can both be white without losing structure.
             JohoScheme(
-                primary: Color(hex: "000000"),       // Black text (on white bentos)
-                secondary: Color(hex: "000000").opacity(JohoDimensions.opacityStrong),
-                surface: Color(hex: "FFFFFF"),      // White containers (bentos pop against black canvas)
-                border: Color(hex: "000000"),       // Black borders
-                canvas: Color(hex: "000000"),       // True black canvas (AMOLED, matches dark mode)
-                surfaceInverted: Color(hex: "000000"),
+                primary: Color(hex: "111111"),       // Off-black text (long-form readable)
+                secondary: Color(hex: "111111").opacity(JohoDimensions.opacityStrong),
+                surface: Color(hex: "FFFFFF"),      // White bento containers
+                border: Color(hex: "000000"),       // Pure black borders (OTC-pack identity)
+                canvas: Color(hex: "FFFFFF"),       // White canvas — real daylight mode
+                surfaceInverted: Color(hex: "111111"),
                 primaryInverted: Color(hex: "FFFFFF"),
-                inputBackground: Color(hex: "F5F5F5")  // Light gray for text fields
+                inputBackground: Color(hex: "F5F5F5")
             )
         case .dark:
+            // Comfortable off-black by default (matches Pixiv's posture);
+            // the AMOLED toggle hardens this to #000000 below.
             JohoScheme(
-                primary: Color(hex: "F0F0F0"),       // Soft off-white (less eye strain)
-                secondary: Color(hex: "F0F0F0").opacity(JohoDimensions.opacityHeavy),
-                surface: Color(hex: "1C1C1E"),      // Elevated dark gray (Apple dark elevated)
-                border: Color(hex: "48484A"),       // Medium gray borders (visible, not harsh)
-                canvas: Color(hex: "000000"),       // True black (OLED canvas)
-                surfaceInverted: Color(hex: "F0F0F0"),
+                primary: Color(hex: "FFFFFF"),       // Pure white text (LINE convention)
+                secondary: Color(hex: "FFFFFF").opacity(JohoDimensions.opacityHeavy),
+                surface: Color(hex: "1C1C1E"),      // Elevated dark grey (Apple dark elevated)
+                border: Color(hex: "48484A"),       // Medium grey borders
+                canvas: Color(hex: "0F0F10"),       // Comfortable off-black (default)
+                surfaceInverted: Color(hex: "FFFFFF"),
                 primaryInverted: Color(hex: "1C1C1E"),
-                inputBackground: Color(hex: "2C2C2E")  // Dark input fields
+                inputBackground: Color(hex: "2C2C2E")
             )
+        }
+
+        // AMOLED True Black override (opt-in advanced setting).
+        // Only affects dark-mode canvas — the rest of the scheme is unchanged.
+        let withAmoled: JohoScheme
+        if mode == .dark, JohoThemeCache.amoledTrueBlack {
+            withAmoled = JohoScheme(
+                primary: base.primary,
+                secondary: base.secondary,
+                surface: base.surface,
+                border: base.border,
+                canvas: Color(hex: "000000"),       // Pure black for OLED power savings
+                surfaceInverted: base.surfaceInverted,
+                primaryInverted: base.primaryInverted,
+                inputBackground: base.inputBackground
+            )
+        } else {
+            withAmoled = base
         }
 
         // Apply theme structural overrides if active
         guard let theme = JohoThemeCache.activeTheme(),
               theme.hasStructuralOverrides
-        else { return base }
+        else { return withAmoled }
 
-        return theme.applyStructuralOverrides(to: base, mode: mode)
+        return theme.applyStructuralOverrides(to: withAmoled, mode: mode)
     }
 }
 

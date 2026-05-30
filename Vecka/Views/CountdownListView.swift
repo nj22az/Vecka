@@ -178,11 +178,11 @@ struct CountdownListView: View {
                 VStack(alignment: .leading, spacing: JohoDimensions.spacingXS) {
                     Text(event.name)
                         .font(JohoFont.headline)
-                        .foregroundStyle(colors.primary)
+                        .foregroundStyle(JohoColors.black)
 
                     Text(event.date.formatted(.dateTime.month(.wide).day().year()))
                         .font(JohoFont.bodySmall)
-                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
+                        .foregroundStyle(JohoColors.black.opacity(JohoDimensions.opacityStrong))
                 }
                 .padding(.horizontal, JohoDimensions.spacingMD)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -199,15 +199,15 @@ struct CountdownListView: View {
                     if event.days == 0 {
                         Text("TODAY")
                             .font(JohoFont.headline)
-                            .foregroundStyle(colors.primary)
+                            .foregroundStyle(JohoColors.black)
                     } else {
                         Text("\(event.days)")
                             .font(JohoFont.displayMedium)
-                            .foregroundStyle(colors.primary)
+                            .foregroundStyle(JohoColors.black)
 
                         Text(event.days == 1 ? "DAY" : "DAYS")
                             .font(JohoFont.label)
-                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
+                            .foregroundStyle(JohoColors.black.opacity(JohoDimensions.opacityStrong))
                     }
                 }
                 .frame(width: 84)

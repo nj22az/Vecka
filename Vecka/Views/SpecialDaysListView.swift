@@ -1987,7 +1987,8 @@ struct CollapsibleSpecialDayCard: View {
                                 Text("EDIT")
                             }
                             .font(JohoFont.labelBold)
-                            .foregroundStyle(colors.primary)
+                            // Constant tint (cyan) → hardcoded dark foreground (see JDS §10).
+                            .foregroundStyle(JohoColors.black)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)
                             .background(JohoColors.cyan)

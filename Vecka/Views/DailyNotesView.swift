@@ -119,7 +119,9 @@ struct DailyNotesView: View {
                             Text("Add Note")
                                 .font(JohoFont.button)
                         }
-                        .foregroundStyle(colors.primary)
+                        // Constant tint (yellow) → hardcoded dark foreground.
+                        // See JDS §10 constant-tint rule.
+                        .foregroundStyle(JohoColors.black)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, JohoDimensions.spacingMD)
                         .background(JohoColors.yellow)

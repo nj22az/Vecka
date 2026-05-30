@@ -84,18 +84,22 @@ For bento-box backgrounds and section tints.
 
 ### 2.5 Adaptive scheme (`JohoScheme`)
 
-`JohoScheme.colors(for: colorMode)` (defined at `Vecka/JohoFoundations.swift:320`) returns the canvas/surface/text colors for the active `JohoColorMode` (`.light` or `.dark`).
+`JohoScheme.colors(for: colorMode)` (defined at `Vecka/JohoFoundations.swift:340`) returns the canvas/surface/text colors for the active `JohoColorMode` (`.light` or `.dark`).
 
 | Slot | Light mode | Dark mode |
 |---|---|---|
-| `primary` | `#000000` | `#F0F0F0` |
+| `primary` | `#111111` (off-black, kanji-readable) | `#FFFFFF` |
 | `secondary` | `primary × opacityStrong` | `primary × opacityHeavy` |
-| `surface` | `#FFFFFF` | `#1C1C1E` |
+| `surface` | `#FFFFFF` | `#1C1C1E` (Apple dark elevated) |
 | `border` | `#000000` | `#48484A` |
-| `canvas` | `#FFFFFF` | `#000000` (true black, AMOLED) |
-| `surfaceInverted` | `#000000` | `#F0F0F0` |
+| `canvas` | `#FFFFFF` | `#0F0F10` (comfortable off-black; `#000000` if AMOLED toggle on) |
+| `surfaceInverted` | `#111111` | `#FFFFFF` |
 | `primaryInverted` | `#FFFFFF` | `#1C1C1E` |
 | `inputBackground` | `#F5F5F5` | `#2C2C2E` |
+
+**Why off-black, not pure black?** LINE Messenger ships primary text as `#111111` rather than `#000000`. On long-form Japanese (kanji density, small glyph counters), the slight softening reduces fatigue without losing perceived contrast. We follow that convention.
+
+**Why off-black canvas in dark mode?** Yahoo News and Pixiv both deliberately avoid pure `#000000` as their default dark canvas — reading comfort wins over OLED power savings. Users who want true black opt in via Settings → Appearance → True Black (AMOLED). When enabled, `canvas` becomes `#000000`; nothing else changes.
 
 If a `JohoThemePreset` is active and declares structural overrides, those are applied on top of the base scheme.
 
@@ -412,14 +416,28 @@ All accessed via `View` extension methods. Most live in `Vecka/JohoViewModifiers
 
 ### 9.1 Color mode
 
-`JohoColorMode` is a two-case enum (`Vecka/JohoFoundations.swift:278`):
+**Reading comfort is the goal of both modes.** Light is for daylight, dark is for low-light reading sessions. Neither is a stylistic afterthought; both must feel equally solid. This framing is borrowed directly from Yahoo News's dark-mode engineering blog (「どう作ると読みやすい？」 — "How do you make it readable?").
 
-- `.light` — classic 情報デザイン, black on white.
-- `.dark` — 夜間モード (night mode), white on true black (AMOLED).
+#### Two-layer model
 
-The active mode is stored in `@AppStorage("johoColorMode")` and propagated via `.johoColorMode(_:)` (an environment-key modifier). `JohoScheme.colors(for:)` reads it to return the right canvas/surface/text triad.
+Onsen Planner separates **what the user picked** from **what we render**:
 
-The app also forces `.preferredColorScheme` to match, so iOS chrome (status bar tint, system sheets) follows the user's choice rather than the system setting.
+- **`AppearancePreference`** — user-facing, three cases: `.system` (default), `.light`, `.dark`. Stored in `@AppStorage("appearancePreference")`.
+- **`JohoColorMode`** — the resolved binary mode actually used for rendering: `.light` or `.dark`. Propagated via `.johoColorMode(_:)` (environment-key modifier). Every component reads this, not the preference.
+
+`AppearanceResolver` at the app root (`Vecka/VeckaApp.swift`) reads `\.colorScheme` and the user's preference, then hands the resolved `JohoColorMode` to the rest of the view tree. When the preference is `.system`, iOS chrome (status bar, system sheets) follows the device setting because `.preferredColorScheme` is passed `nil`. When the preference is `.light` or `.dark`, the chrome is forced to match.
+
+This matches the Japanese app norm: Yahoo Japan, SmartNews, Mercari and others default to system, with an explicit override available in settings. We never assume the user wants what we'd pick.
+
+#### True Black (AMOLED) override
+
+An advanced setting `@AppStorage("amoledTrueBlack")` (default `false`) hardens the dark-mode canvas from the comfortable `#0F0F10` default to pure `#000000`. Read by `JohoScheme.colors(for:)` via `JohoThemeCache.amoledTrueBlack`. Only `canvas` changes; surface, text and borders stay the same. Mirrors Pixiv's posture — comfortable by default, true black on request.
+
+#### What this section does NOT do
+
+- It does not force `.preferredColorScheme` unilaterally.
+- It does not "invert" colors — dark mode is designed, not derived.
+- It does not introduce more than two modes (Light and Dark, period — Nintendo's restraint).
 
 ### 9.2 Theme presets (`JohoThemePreset`)
 
@@ -450,6 +468,7 @@ These are non-negotiable. Code review and the design system itself reject deviat
 - **Never** use gradients or glass/blur materials. Color does the work.
 - **Never** drop typography weight below `.medium`.
 - **Never** hide the status bar or render opaque content behind it without using `JohoScheme.canvas` (so the system icons stay legible — see Rev A entry in the changelog).
+- **Always** hardcode the foreground when rendering on a constant `JohoColors.*` tint. `JohoColors.yellow`, `pink`, `cyan`, `green`, `purple` (and their `Light` variants) are the **same hex in both color modes** — they are semantic, not adaptive. Pairing them with `colors.primary` / `colors.secondary` / `colors.surface` produces washed-out, low-contrast text in one of the two modes. Use `JohoColors.black` (or the matching `*Dark` foreground variant from §2.2) instead. This catches the "TODAY button class" of bug. See §9.1.
 
 ### 10.1 Automated enforcement
 
@@ -465,6 +484,7 @@ These are non-negotiable. Code review and the design system itself reject deviat
 | No gradients | `gradient` | strict |
 | No glass/blur materials | `glass` | strict |
 | Weight ≥ `.medium` | `weights` | strict |
+| Constant-tint foreground (TODAY-button bug class) | `tintforeground` | ratchet |
 
 **Strict** rules fail on any violation. **Ratchet** rules track existing debt per file in `scripts/lint-allowlist.txt`; counts may only decrease, so no new violation can be introduced in a tracked file. `#Preview` blocks and comments are stripped before scanning.
 

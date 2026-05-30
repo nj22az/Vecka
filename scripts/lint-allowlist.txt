@@ -53,3 +53,4 @@ fonts Vecka/Views/SimplePDFExportView.swift 1
 fonts Vecka/Views/UITestRootView.swift 2
 fonts Vecka/WeekPickerSheet.swift 4
 fonts VeckaWidget/Components/DayCell.swift 1
+tintforeground Vecka/Views/ContactListView.swift 1

@@ -19,6 +19,13 @@
 #   fonts     §10.4  .system(…) must set design: .rounded (or .monospaced for
 #                    mono variants); no raw text styles (.font(.headline) etc.).
 #   weights   §10.7  No font weight below .medium (.thin/.light/.ultraLight).
+#   tintforeground
+#             §10    Adaptive foreground (colors.primary/secondary/surface/
+#                    primaryInverted) within 6 lines of a full-opacity
+#                    constant-tint background (JohoColors.yellow/pink/cyan/
+#                    green/purple/red/…Light). Catches the TODAY-button bug
+#                    class: washed-out text in one of the two color modes.
+#                    Fix by hardcoding to JohoColors.black or *Dark variant.
 #
 # Preprocessing: #Preview { … } blocks, /* … */ block comments, and full-line
 # // / /// comments are stripped before scanning (scaffolding and prose, not
@@ -36,7 +43,7 @@ cd "$ROOT"
 ALLOWLIST="scripts/lint-allowlist.txt"
 SCAN_DIRS=("Vecka" "VeckaWidget")
 STRICT_RULES=(symbols gradient glass)
-RATCHET_RULES=(colorhex colorraw corners fonts weights)
+RATCHET_RULES=(colorhex colorraw corners fonts weights tintforeground)
 REGEN=0
 
 if [[ "${1:-}" == "--regen" ]]; then
@@ -125,6 +132,35 @@ violations_for_rule() {
     weights)
       printf '%s\n' "$STREAM" \
         | grep -E 'weight: *\.(thin|light|ultraLight)\b|\.fontWeight\(\.(thin|light|ultraLight)\)' || true ;;
+    tintforeground)
+      # §10 constant-tint rule: when a view sets a full-opacity background to
+      # a constant tint (JohoColors.yellow/pink/cyan/green/purple/red and their
+      # *Light variants), it must NOT use an adaptive foreground (colors.primary,
+      # secondary, surface, primaryInverted) within 6 lines — that produces the
+      # TODAY-button class of bug (washed-out text in one of the two modes).
+      # Emit the BACKGROUND line as the violation site.
+      printf '%s\n' "$STREAM" \
+        | awk -F: '
+            {
+              file = $1; ln = $2
+              rest = $0
+              # restore : separators inside content
+              sub(/^[^:]*:[^:]*:/, "", rest)
+              if (file != prev_file) { delete fgwin; prev_file = file }
+              # Track adaptive-foreground lines (sliding window of 6)
+              if (rest ~ /\.foregroundStyle\(colors\.(primary|secondary|surface|primaryInverted)\)/) {
+                fgwin[ln] = 1
+              }
+              # Constant-tint background WITHOUT .opacity(
+              if (rest ~ /\.background\(JohoColors\.(yellow|pink|cyan|green|purple|red|yellowLight|pinkLight|cyanLight|greenLight|purpleLight|redLight)\)/ && rest !~ /\.opacity\(/) {
+                hit = 0
+                for (k in fgwin) { if (ln - k <= 6 && ln - k >= 0) { hit = 1; break } }
+                if (hit) print file ":" ln ":" rest
+              }
+              # Prune sliding window
+              for (k in fgwin) if (ln - k > 6) delete fgwin[k]
+            }
+          ' || true ;;
     *) return 1 ;;
   esac
 }

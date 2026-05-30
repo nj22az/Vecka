@@ -13,13 +13,12 @@ import SwiftData
 struct VeckaApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @State private var navigationManager = NavigationManager()
-    @AppStorage("johoColorMode") private var johoColorMode = "light"
+    @AppStorage("appearancePreference") private var appearancePreferenceRaw = AppearancePreference.system.rawValue
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var showOnboarding = false
 
-    /// Computed color mode for the environment
-    private var colorMode: JohoColorMode {
-        JohoColorMode(rawValue: johoColorMode) ?? .light
+    private var appearancePreference: AppearancePreference {
+        AppearancePreference(rawValue: appearancePreferenceRaw) ?? .system
     }
 
     /// CloudKit-enabled ModelContainer for iCloud sync across devices
@@ -87,13 +86,16 @@ struct VeckaApp: App {
                 if AppEnvironment.isUITesting {
                     UITestRootView()
                 } else {
-                    ContentView()
-                        .environment(navigationManager)
-                        // 情報デザイン: Apply color mode to entire app
-                        .johoColorMode(colorMode)
-                        // 情報デザイン: Canvas is black in both modes (AMOLED),
-                        // so status bar and system chrome stay light-on-dark regardless.
-                        .preferredColorScheme(.dark)
+                    AppearanceResolver(preference: appearancePreference) { resolvedMode in
+                        ContentView()
+                            .environment(navigationManager)
+                            // 情報デザイン: Apply the resolved color mode (binary).
+                            .johoColorMode(resolvedMode)
+                            // 情報デザイン: When the user picks System, pass nil so
+                            // iOS chrome follows the device setting. Otherwise force
+                            // the chrome to match the user's explicit choice.
+                            .preferredColorScheme(appearancePreference.preferredColorScheme)
+                    }
                         .onOpenURL { url in
                             handleWidgetURL(url)
                         }
@@ -226,6 +228,34 @@ class NavigationManager {
     func navigateToStarPage() {
         targetPage = .specialDays
         shouldNavigateToPage = true
+    }
+}
+
+// MARK: - Appearance Resolver
+// Reads the system colorScheme and the user's AppearancePreference, then
+// hands the resolved binary JohoColorMode to its content. Lives at the app
+// root so child views see a single, settled mode via the environment.
+struct AppearanceResolver<Content: View>: View {
+    let preference: AppearancePreference
+    let content: (JohoColorMode) -> Content
+
+    @Environment(\.colorScheme) private var systemColorScheme
+
+    init(preference: AppearancePreference, @ViewBuilder content: @escaping (JohoColorMode) -> Content) {
+        self.preference = preference
+        self.content = content
+    }
+
+    var body: some View {
+        content(resolvedMode)
+    }
+
+    private var resolvedMode: JohoColorMode {
+        switch preference {
+        case .light:  return .light
+        case .dark:   return .dark
+        case .system: return systemColorScheme == .dark ? .dark : .light
+        }
     }
 }
 

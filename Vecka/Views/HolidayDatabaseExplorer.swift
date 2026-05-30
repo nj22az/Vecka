@@ -666,7 +666,8 @@ struct HolidayDatabaseExplorer: View {
                 Text("Apply to Calendar")
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
             }
-            .foregroundStyle(colors.surface)
+            // Constant tint (green) → hardcoded dark foreground (see JDS §10).
+            .foregroundStyle(JohoColors.black)
             .frame(maxWidth: .infinity)
             .padding(.vertical, JohoDimensions.spacingMD)
             .background(JohoColors.green)

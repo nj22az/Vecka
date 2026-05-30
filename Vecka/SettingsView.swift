@@ -19,7 +19,8 @@ struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.johoColorMode) private var colorMode
     @AppStorage("holidayRegions") private var holidayRegions = HolidayRegionSelection(regions: ["SE"])
-    @AppStorage("johoColorMode") private var johoColorMode = "light"
+    @AppStorage("appearancePreference") private var appearancePreferenceRaw = AppearancePreference.system.rawValue
+    @AppStorage("amoledTrueBlack") private var amoledTrueBlack = false
     @AppStorage("showLunarCalendar") private var showLunarCalendar = false  // For Vietnamese holidays
     @AppStorage("customLandingTitle") private var customLandingTitle = ""
     /// Dynamic colors based on color mode
@@ -219,8 +220,31 @@ struct SettingsView: View {
         .johoBordered(cornerRadius: JohoDimensions.radiusLarge, borderWidth: JohoDimensions.borderThick)
     }
 
-    private var selectedColorMode: JohoColorMode {
-        JohoColorMode(rawValue: johoColorMode) ?? .light
+    private var appearancePreference: AppearancePreference {
+        AppearancePreference(rawValue: appearancePreferenceRaw) ?? .system
+    }
+
+    /// One of three segmented buttons in the appearance picker.
+    private func appearanceButton(_ pref: AppearancePreference, icon: String, label: String) -> some View {
+        let isSelected = appearancePreference == pref
+        return Button {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                appearancePreferenceRaw = pref.rawValue
+            }
+            HapticManager.selection()
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                Text(label)
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+            }
+            .foregroundStyle(isSelected ? colors.primaryInverted : colors.primary)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(isSelected ? colors.primary : colors.surface)
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Theme Section (情報デザイン: Unified Category Theming)
@@ -229,50 +253,43 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: JohoDimensions.spacingMD) {
             JohoPill(text: "THEME", style: .whiteOnBlack, size: .small)
 
-            // Light/Dark mode toggle
+            // Appearance picker: System / Light / Dark
+            // Default is System (Japanese app convention — Yahoo, SmartNews, Mercari).
             HStack(spacing: 0) {
-                Button {
-                    withAnimation(.easeInOut(duration: 0.15)) {
-                        johoColorMode = "light"
-                    }
-                    HapticManager.selection()
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: IconCatalog.sunMin)
-                            .font(.system(size: 11, weight: .bold, design: .rounded))
-                        Text("LIGHT")
-                            .font(.system(size: 12, weight: .black, design: .rounded))
-                    }
-                    .foregroundStyle(selectedColorMode == .light ? colors.primaryInverted : colors.primary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(selectedColorMode == .light ? colors.primary : colors.surface)
-                }
-                .buttonStyle(.plain)
-
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(width: 1.5)
-
-                Button {
-                    withAnimation(.easeInOut(duration: 0.15)) {
-                        johoColorMode = "dark"
-                    }
-                    HapticManager.selection()
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: IconCatalog.moon)
-                            .font(JohoFont.label)
-                        Text("DARK")
-                            .font(.system(size: 12, weight: .black, design: .rounded))
-                    }
-                    .foregroundStyle(selectedColorMode == .dark ? colors.primaryInverted : colors.primary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(selectedColorMode == .dark ? colors.primary : colors.surface)
-                }
-                .buttonStyle(.plain)
+                appearanceButton(.system, icon: IconCatalog.settings, label: "SYSTEM")
+                Rectangle().fill(colors.border).frame(width: 1.5)
+                appearanceButton(.light, icon: IconCatalog.sunMin, label: "LIGHT")
+                Rectangle().fill(colors.border).frame(width: 1.5)
+                appearanceButton(.dark, icon: IconCatalog.moon, label: "DARK")
             }
+            .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
+
+            // AMOLED True Black — advanced opt-in. Affects dark canvas only.
+            HStack(spacing: JohoDimensions.spacingSM) {
+                Image(systemName: IconCatalog.moon)
+                    .font(JohoFont.label)
+                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("TRUE BLACK (AMOLED)")
+                        .font(.system(size: 11, weight: .black, design: .rounded))
+                        .tracking(0.5)
+                        .foregroundStyle(colors.primary)
+                    Text("Dark canvas → #000000. Saves OLED power.")
+                        .font(JohoFont.caption)
+                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
+                }
+                Spacer()
+                Toggle("", isOn: $amoledTrueBlack)
+                    .labelsHidden()
+                    .onChange(of: amoledTrueBlack) { _, _ in
+                        // Scheme reads UserDefaults directly; trigger a redraw.
+                        JohoThemeCache.invalidate()
+                        HapticManager.selection()
+                    }
+            }
+            .padding(.horizontal, JohoDimensions.spacingMD)
+            .padding(.vertical, JohoDimensions.spacingSM)
+            .background(colors.surface)
             .johoBordered(cornerRadius: JohoDimensions.radiusSmall, borderWidth: 1.5)
 
             // Theme preset cards — horizontal scroll

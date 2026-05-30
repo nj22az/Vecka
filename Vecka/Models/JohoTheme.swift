@@ -235,6 +235,13 @@ enum JohoThemeCache {
         cachedThemeId = nil
         cachedTheme = nil
     }
+
+    /// Opt-in AMOLED True Black override for dark mode.
+    /// When true, the dark-mode canvas becomes pure `#000000` instead of
+    /// the comfortable default off-black. Read by `JohoScheme.colors(for:)`.
+    static var amoledTrueBlack: Bool {
+        UserDefaults.standard.bool(forKey: "amoledTrueBlack")
+    }
 }
 
 // MARK: - Theme Application
