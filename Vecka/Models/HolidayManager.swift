@@ -91,10 +91,19 @@ class HolidayManager {
 
     private init() {}
 
-    /// Initialize: Seed DB if empty, update existing rules, load to cache
+    /// Initialize: Seed DB if empty, update existing rules, load to cache.
+    /// Convenience for callers that don't care about launch timing.
     func initialize(context: ModelContext) {
-        seedSwedishRules(context: context)
+        seedRulesIfNeeded(context: context)
         calculateAndCacheHolidays(context: context)
+    }
+
+    /// Fast-path: seed Swedish rules into the DB if missing. Cheap on warm
+    /// launch (only runs the first time). Separated from cache calculation
+    /// so `AppInitializer` can defer the expensive part off the first-frame
+    /// path. See `AppInitializer.initialize(context:)`.
+    func seedRulesIfNeeded(context: ModelContext) {
+        seedSwedishRules(context: context)
     }
 
     // MARK: - 情報デザイン: Load Defaults Feature

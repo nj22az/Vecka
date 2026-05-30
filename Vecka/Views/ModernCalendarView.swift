@@ -35,6 +35,18 @@ struct ModernCalendarView: View {
     @State private var isNavigatingMonth = false  // Prevents onChange race conditions
     @State private var isLegendExpanded = false   // 情報デザイン: Expandable legend row
 
+    /// Pre-computed per-day data check cache. Built ONCE per dependency
+    /// change (memos / contacts / currentMonth / holiday cache), then read
+    /// in O(1) by `hasDataForDay`, `presentIndicators`, the calendar grid
+    /// cells, etc. Before this cache existed, each body render did
+    /// (42 days × N memos × N contacts) work — hundreds of thousands of
+    /// iterations per render with realistic data sizes.
+    @State private var dayDataCache: [Date: DayDataCheck] = [:]
+
+    /// Pre-computed Date→hex-color map for the calendar grid's note dots.
+    /// Rebuilt by `rebuildMemoColors()` only when `memos` changes.
+    @State private var memoColorsCache: [Date: String] = [:]
+
     // Managers
     @Environment(\.modelContext) private var modelContext
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
@@ -51,14 +63,108 @@ struct ModernCalendarView: View {
     @Query private var contacts: [Contact]  // For birthday indicators
     private var holidayManager = HolidayManager.shared
 
-    private var memoColors: [Date: String] {
+    /// O(1) read of the pre-computed map. The actual O(N memos) rebuild
+    /// happens in `rebuildMemoColors()` when `memos` changes.
+    private var memoColors: [Date: String] { memoColorsCache }
+
+    /// Rebuild the memo-color map. Call from `onChange(of: memos)`.
+    private func rebuildMemoColors() {
         var dict: [Date: String] = [:]
         let calendar = Calendar.current
         for memo in memos.sorted(by: { $0.date < $1.date }) {
             let day = calendar.startOfDay(for: memo.date)
             dict[day] = memo.colorHex
         }
-        return dict
+        memoColorsCache = dict
+    }
+
+    /// Rebuild the per-day data-check cache for the days currently visible
+    /// in the calendar grid. This is the single biggest hot-path
+    /// optimisation in this file — `hasDataForDay` is called from the
+    /// calendar cells, `presentIndicators`, and `monthCategoryCounts`
+    /// many times per body render, and without this cache each call
+    /// iterated every memo + every contact.
+    private func rebuildDayDataCache() {
+        let calendar = Calendar.current
+        let monthDays = currentMonth.weeks.flatMap { $0.days }
+        guard !monthDays.isEmpty else {
+            dayDataCache = [:]
+            return
+        }
+
+        // Pre-index memos by start-of-day so each day lookup is O(1).
+        var memosByDay: [Date: [Memo]] = [:]
+        for memo in memos {
+            let day = calendar.startOfDay(for: memo.date)
+            memosByDay[day, default: []].append(memo)
+        }
+
+        // Pre-index birthdays by (month, day) so each day lookup is O(1).
+        var birthdaysByMonthDay: [Int: [String]] = [:]
+        for contact in contacts {
+            guard let birthday = contact.birthday else { continue }
+            let m = calendar.component(.month, from: birthday)
+            let d = calendar.component(.day, from: birthday)
+            let key = m * 100 + d
+            birthdaysByMonthDay[key, default: []].append(contact.displayName)
+        }
+
+        var cache: [Date: DayDataCheck] = [:]
+        cache.reserveCapacity(monthDays.count)
+
+        for day in monthDays {
+            let dayStart = calendar.startOfDay(for: day.date)
+            var check = DayDataCheck()
+
+            // Holidays / observances from the static HolidayManager cache.
+            if let cachedHolidays = HolidayManager.cache[dayStart] {
+                var observanceNames: [String] = []
+                for holiday in cachedHolidays {
+                    if holiday.isBankHoliday {
+                        check.hasHoliday = true
+                        if check.holidayName == nil {
+                            check.holidayName = holiday.displayTitle
+                            check.holidaySymbolName = holiday.symbolName
+                        }
+                    } else {
+                        check.hasObservance = true
+                        observanceNames.append(holiday.displayTitle)
+                    }
+                }
+                check.observanceNames = observanceNames
+            }
+
+            // Memos for this day, looked up in O(1) via the pre-indexed map.
+            if let dayMemos = memosByDay[dayStart] {
+                let noteMemos = dayMemos.filter { !$0.hasMoney && !$0.hasPlace }
+                if let firstNote = noteMemos.first {
+                    check.hasNote = true
+                    check.noteContent = firstNote.text
+                }
+                let expenseMemos = dayMemos.filter { $0.hasMoney }
+                if !expenseMemos.isEmpty {
+                    check.hasExpense = true
+                    check.expenseAmount = expenseMemos.reduce(0.0) { $0 + ($1.amount ?? 0) }
+                }
+                if let tripMemo = dayMemos.first(where: { $0.hasPlace }) {
+                    check.hasTrip = true
+                    check.tripDestination = tripMemo.place
+                    check.tripPosition = .single
+                }
+            }
+
+            // Birthdays — O(1) lookup by (month*100+day) key.
+            let m = calendar.component(.month, from: dayStart)
+            let d = calendar.component(.day, from: dayStart)
+            if let names = birthdaysByMonthDay[m * 100 + d] {
+                check.hasBirthday = true
+                check.birthdayNames = names
+            }
+
+            cache[dayStart] = check
+        }
+
+        dayDataCache = cache
     }
 
     // MARK: - Legend Data (情報デザイン)
@@ -413,20 +519,32 @@ struct ModernCalendarView: View {
             .onAppear {
                 AppInitializer.initialize(context: modelContext)
                 updateLunarConfig()
+                rebuildMemoColors()
                 updateMonthFromDate()
+                rebuildDayDataCache()
             }
             .onChange(of: holidayRegions) { _, _ in
                 updateLunarConfig()
                 holidayManager.calculateAndCacheHolidays(context: modelContext, focusYear: selectedYear)
+                rebuildDayDataCache()
             }
             .onChange(of: selectedDate) { _, newDate in
                 updateMonthFromDate(from: newDate)
             }
             .onChange(of: memos) { _, _ in
+                rebuildMemoColors()
                 updateMonthFromDate()
+                rebuildDayDataCache()
             }
             .onChange(of: contacts) { _, _ in
                 updateMonthFromDate()
+                rebuildDayDataCache()
+            }
+            .onChange(of: currentMonth.month) { _, _ in
+                rebuildDayDataCache()
+            }
+            .onChange(of: currentMonth.year) { _, _ in
+                rebuildDayDataCache()
             }
             .onChange(of: selectedYear) { _, newYear in
                 currentMonth = CalendarMonth(year: newYear, month: displayMonth, noteColors: memoColors)
@@ -978,77 +1096,13 @@ struct ModernCalendarView: View {
     }
 
     /// 情報デザイン: Check all special day types for calendar indicators
+    /// O(1) cache lookup. The actual work is done once per dependency
+    /// change in `rebuildDayDataCache()`. Returns an empty `DayDataCheck`
+    /// if the day isn't in the current visible window — safe default
+    /// (the calendar grid only renders cells for days that ARE in the
+    /// window, so the empty fallback is unreachable in normal flow).
     private func hasDataForDay(_ date: Date) -> DayDataCheck {
-        // 情報デザイン: Use Calendar.current for holiday cache lookup (matches HolidayManager key format)
-        let day = Calendar.current.startOfDay(for: date)
-
-        var check = DayDataCheck()
-
-        // Check holidays and observances from cache
-        // 情報デザイン: Pre-compute holiday info to avoid accessing computed properties during sheet presentation
-        // Use static HolidayManager.cache to avoid MainActor isolation issues
-        if let cachedHolidays = HolidayManager.cache[day] {
-            var observanceNames: [String] = []
-            for holiday in cachedHolidays {
-                if holiday.isBankHoliday {
-                    check.hasHoliday = true
-                    // Capture first bank holiday's info for the detail sheet
-                    if check.holidayName == nil {
-                        check.holidayName = holiday.displayTitle
-                        check.holidaySymbolName = holiday.symbolName
-                    }
-                } else {
-                    check.hasObservance = true
-                    observanceNames.append(holiday.displayTitle)
-                }
-            }
-            check.observanceNames = observanceNames
-        }
-
-        // Check memos for the day
-        let dayMemos = memos.filter { Calendar.current.startOfDay(for: $0.date) == day }
-
-        // Check for notes (memos WITHOUT money AND WITHOUT place - pure text notes)
-        let noteMemos = dayMemos.filter { !$0.hasMoney && !$0.hasPlace }
-        if let firstNote = noteMemos.first {
-            check.hasNote = true
-            check.noteContent = firstNote.text
-        }
-
-        // Check expenses - calculate total amount for the day
-        let expenseMemos = dayMemos.filter { $0.hasMoney }
-        if !expenseMemos.isEmpty {
-            check.hasExpense = true
-            check.expenseAmount = expenseMemos.reduce(0.0) { $0 + ($1.amount ?? 0) }
-        }
-
-        // Check trips (memos with place)
-        if let tripMemo = dayMemos.first(where: { $0.hasPlace }) {
-            check.hasTrip = true
-            check.tripDestination = tripMemo.place
-            check.tripPosition = .single // Single day for memo-based trips
-        }
-
-        // Check birthdays from contacts (match month/day regardless of year)
-        let calendar = Calendar.current
-        let month = calendar.component(.month, from: day)
-        let dayOfMonth = calendar.component(.day, from: day)
-
-        var birthdayNames: [String] = []
-        for contact in contacts {
-            guard let birthday = contact.birthday else { continue }
-            let bMonth = calendar.component(.month, from: birthday)
-            let bDay = calendar.component(.day, from: birthday)
-            if bMonth == month && bDay == dayOfMonth {
-                birthdayNames.append(contact.displayName)
-            }
-        }
-        if !birthdayNames.isEmpty {
-            check.hasBirthday = true
-            check.birthdayNames = birthdayNames
-        }
-
-        return check
+        dayDataCache[Calendar.current.startOfDay(for: date)] ?? DayDataCheck()
     }
 
     // MARK: - Week Detail Helpers

@@ -336,8 +336,46 @@ struct JohoScheme {
     /// Input/text field background color
     let inputBackground: Color
 
+    /// Hot-path cache: `colors(for:)` is called from ~150 view sites and runs
+    /// many times per body render. Recomputing 8 Colors + two UserDefaults
+    /// reads + potential JSON parse per call dominated CPU in Debug builds.
+    /// Cache is invalidated by `JohoThemeCache.invalidate()` (theme/AMOLED
+    /// changes) and is keyed by `(mode, amoledTrueBlack, activeThemeId)`.
+    nonisolated(unsafe) private static var schemeCache: [String: JohoScheme] = [:]
+    nonisolated(unsafe) private static let schemeCacheLock = NSLock()
+
     /// Get the color scheme for a given mode, with theme structural overrides applied
     static func colors(for mode: JohoColorMode) -> JohoScheme {
+        // Build a cache key from the only inputs that affect the result.
+        let amoled = JohoThemeCache.amoledTrueBlack
+        let themeId = UserDefaults.standard.string(forKey: "activeThemeId") ?? ""
+        let key = "\(mode.rawValue)|\(amoled ? "1" : "0")|\(themeId)"
+
+        schemeCacheLock.lock()
+        if let cached = schemeCache[key] {
+            schemeCacheLock.unlock()
+            return cached
+        }
+        schemeCacheLock.unlock()
+
+        let resolved = buildScheme(for: mode, amoledTrueBlack: amoled)
+        schemeCacheLock.lock()
+        schemeCache[key] = resolved
+        schemeCacheLock.unlock()
+        return resolved
+    }
+
+    /// Drop the scheme cache. Called when AppearancePreference, AMOLED toggle,
+    /// or active theme change. Cheap; the cache rebuilds on next access.
+    static func invalidateSchemeCache() {
+        schemeCacheLock.lock()
+        schemeCache.removeAll(keepingCapacity: true)
+        schemeCacheLock.unlock()
+    }
+
+    /// Build a fresh scheme without consulting the cache. Extracted so the
+    /// cache wrapper above stays tiny and inlinable.
+    private static func buildScheme(for mode: JohoColorMode, amoledTrueBlack: Bool) -> JohoScheme {
         let base: JohoScheme = switch mode {
         case .light:
             // LINE convention: #111111 for primary text (easier on kanji density
@@ -371,7 +409,7 @@ struct JohoScheme {
         // AMOLED True Black override (opt-in advanced setting).
         // Only affects dark-mode canvas — the rest of the scheme is unchanged.
         let withAmoled: JohoScheme
-        if mode == .dark, JohoThemeCache.amoledTrueBlack {
+        if mode == .dark, amoledTrueBlack {
             withAmoled = JohoScheme(
                 primary: base.primary,
                 secondary: base.secondary,

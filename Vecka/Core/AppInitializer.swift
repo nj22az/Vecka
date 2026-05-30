@@ -35,16 +35,26 @@ enum AppInitializer {
 
         Log.i("AppInitializer: Starting initialization...")
 
-        // Initialize managers in dependency order
+        // FAST PATH (synchronous, on main): lightweight setup needed before
+        // the first frame renders correctly — seeding rules into the DB
+        // (only runs once thanks to fetchCount guard) and CalendarManager.
         CalendarManager.shared.initialize(context: context)
-        HolidayManager.shared.initialize(context: context)
+        HolidayManager.shared.seedRulesIfNeeded(context: context)
 
-        // Initialize configuration system (database-driven architecture)
-        ConfigurationManager.shared.seedDefaultConfiguration(context: context)
-        Log.i("AppInitializer: Configuration system initialized")
+        // DEFERRED PATH (next runloop): the expensive 5-year × 259-rule
+        // holiday computation + DB-writing config seeding. Yielding lets
+        // the first frame render before these run, so cold launch feels
+        // instant. View code that reads `HolidayManager.cache` already
+        // tolerates an empty cache (returns no holidays, then redraws
+        // when the cache populates).
+        Task { @MainActor in
+            HolidayManager.shared.calculateAndCacheHolidays(context: context)
+            ConfigurationManager.shared.seedDefaultConfiguration(context: context)
+            Log.i("AppInitializer: Deferred initialization complete")
+        }
 
         isInitialized = true
-        Log.i("AppInitializer: Initialization complete")
+        Log.i("AppInitializer: Synchronous init complete; deferred work queued")
     }
 
     /// Reset initialization state (for testing purposes)

@@ -230,10 +230,12 @@ enum JohoThemeCache {
         return theme
     }
 
-    /// Invalidate the cache (call when theme changes)
+    /// Invalidate the theme preset cache AND the JohoScheme color cache.
+    /// Call when theme, appearance preference, or AMOLED toggle changes.
     static func invalidate() {
         cachedThemeId = nil
         cachedTheme = nil
+        JohoScheme.invalidateSchemeCache()
     }
 
     /// Opt-in AMOLED True Black override for dark mode.
