@@ -39,7 +39,6 @@ colorraw Vecka/Views/LandingPageView.swift 1
 colorraw Vecka/Views/MemoEditorView.swift 1
 colorraw Vecka/Views/ModernCalendarView.swift 1
 colorraw Vecka/Views/NotesListView.swift 1
-colorraw Vecka/Views/ShareableContact.swift 1
 colorraw Vecka/Views/ShareableDaySummary.swift 1
 colorraw Vecka/Views/SimplePDFExportView.swift 2
 colorraw Vecka/Views/SpecialDaysListView.swift 1

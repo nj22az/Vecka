@@ -731,9 +731,9 @@ struct SingleMemoDetailSheet: View {
             .padding(.vertical, JohoDimensions.spacingSM)
             .background(colors.surfaceInverted)
 
-            // CARD CONTENT - single VStack with background/clip/overlay on same view
+            // CARD CONTENT — 7-compartment packaging layout (JDS §12)
             VStack(spacing: 0) {
-                // Large icon zone (情報デザイン: Hero display)
+                // Icon hero — preserved as the visual identity zone
                 VStack(spacing: JohoDimensions.spacingSM) {
                     Image(systemName: displayIcon)
                         .font(.system(size: 64, weight: .bold, design: .rounded))
@@ -743,52 +743,49 @@ struct SingleMemoDetailSheet: View {
                 .frame(height: 120)
                 .background(memoColor.opacity(JohoDimensions.opacityMild))
 
-                // Thick divider
                 Rectangle()
                     .fill(colors.border)
                     .frame(height: 2)
 
-                // Title (date)
-                Text(formattedDate)
-                    .font(JohoFont.headline)
-                    .foregroundStyle(colors.primary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, JohoDimensions.spacingMD)
-                    .padding(.top, JohoDimensions.spacingMD)
+                // 情報デザイン: packaging compartments
+                VStack(spacing: JohoDimensions.spacingSM) {
 
-                // Thin divider
-                Rectangle()
-                    .fill(colors.border.opacity(JohoDimensions.opacityMild))
-                    .frame(height: 1)
-                    .padding(.horizontal, JohoDimensions.spacingMD)
-                    .padding(.vertical, JohoDimensions.spacingSM)
+                    // 1. HOOK — memo text as the loud claim
+                    PackagingHook(
+                        memo.text,
+                        subline: formattedDate
+                    )
 
-                // Memo text (情報デザイン: Full content)
-                Text(memo.text)
-                    .font(JohoFont.bodySmall)
-                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityDense))
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.horizontal, JohoDimensions.spacingMD)
+                    // 2. CLAIM PILL — category, tinted with memo color
+                    PackagingClaimPill(
+                        categoryLabel.uppercased(),
+                        subtitle: memo.priority != .normal ? "Priority \(memo.priority.symbol)" : nil,
+                        tint: memoColor
+                    )
 
-                // Footer: category + time
-                HStack {
-                    Text(categoryLabel)
-                        .font(JohoFont.labelBold)
-                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
-                        .tracking(1)
+                    // 3. INGREDIENTS — memo attributes as bulleted spec
+                    PackagingIngredientsBox(
+                        entries: memoEntries,
+                        allergens: nil
+                    )
 
-                    Spacer()
+                    // 4. NUTRITION — week/year/char stats
+                    PackagingNutritionTable(
+                        title: "Memo Stats",
+                        rows: memoNutritionRows,
+                        footnote: nil
+                    )
 
-                    Text(formattedTime)
-                        .font(JohoFont.labelBold)
-                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
+                    // 5. MANUFACTURER — date as Best Before highlight
+                    PackagingManufacturerBlock(
+                        maker: "Memo",
+                        bestBefore: fullDateStamp,
+                        storage: nil
+                    )
                 }
-                .padding(.horizontal, JohoDimensions.spacingMD)
-                .padding(.top, JohoDimensions.spacingSM)
-                .padding(.bottom, JohoDimensions.spacingMD)
+                .padding(JohoDimensions.spacingSM)
 
-                // ITEM ICON - persistent editing
+                // ITEM ICON — persistent editing (functional, preserved)
                 Rectangle()
                     .fill(colors.border)
                     .frame(height: 1)
@@ -922,6 +919,46 @@ struct SingleMemoDetailSheet: View {
         memo.symbolName = iconName == memoIcon ? nil : iconName
         try? modelContext.save()
         HapticManager.notification(.success)
+    }
+
+    // MARK: - Packaging Data Builders
+
+    /// Bulleted spec entries — only include fields with real values
+    /// (matches how candy wrappers skip nutrients with zero content).
+    private var memoEntries: [PackagingIngredientsBox.Entry] {
+        var out: [PackagingIngredientsBox.Entry] = []
+        out.append(.init(label: "DATE", value: DateFormatterCache.compactDate.string(from: date)))
+        let weekday = DateFormatterCache.weekdayShort.string(from: date).uppercased()
+        out.append(.init(label: "WKDAY", value: weekday))
+        out.append(.init(label: "TYPE", value: categoryLabel.uppercased()))
+        if let scheduled = memo.scheduledAt {
+            out.append(.init(label: "TIME", value: DateFormatterCache.time24h.string(from: scheduled)))
+        }
+        if let place = memo.place, !place.isEmpty {
+            out.append(.init(label: "PLACE", value: place))
+        }
+        if memo.hasMoney, let amount = memo.amount {
+            let cur = memo.currency ?? baseCurrency
+            out.append(.init(label: "AMT", value: String(format: "%.0f %@", amount, cur)))
+        }
+        if let endDate = memo.tripEndDate {
+            out.append(.init(label: "ENDS", value: DateFormatterCache.compactDate.string(from: endDate)))
+        }
+        return out
+    }
+
+    /// Nutrition-style numeric stats for the memo.
+    private var memoNutritionRows: [PackagingNutritionTable.Row] {
+        var rows: [PackagingNutritionTable.Row] = []
+        let week = Calendar.iso8601.component(.weekOfYear, from: date)
+        let year = Calendar.iso8601.component(.year, from: date)
+        rows.append(.init(label: "Week", value: "W\(week)"))
+        rows.append(.init(label: "Year", value: String(year)))
+        if memo.hasMoney, let amount = memo.amount {
+            rows.append(.init(label: "Value", value: String(format: "%.0f", amount)))
+        }
+        rows.append(.init(label: "Chars", value: String(memo.text.count)))
+        return rows
     }
 
     // MARK: - Item Icon Section
