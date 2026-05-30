@@ -88,157 +88,119 @@ struct ShareableDaySummaryCard: View {
     }
 
     var body: some View {
-        ZStack {
-            // Layer 1: Solid background
-            cardShape
-                .fill(colors.surface)
+        ShareableCardShell(
+            headerIcon: data.isToday ? "sun.max.fill" : IconCatalog.calendar,
+            headerIconColor: data.isToday ? JohoColors.todayOrange : JohoColors.cyan,
+            headerAccentColor: data.isToday ? JohoColors.todayOrange : JohoColors.cyan,
+            footerLeftLabel: "DAY SUMMARY",
+            footerRightLabel: "ONSEN PLANNER"
+        ) {
+            // 情報デザイン: 7-compartment packaging layout. JDS §12.
+            ShareableCardDivider()
 
-            // Layer 2: Content
-            VStack(spacing: 0) {
-                // ═══════════════════════════════════════════════════════════════
-                // HEADER: Date display
-                // ═══════════════════════════════════════════════════════════════
-                HStack(spacing: 0) {
-                    // LEFT: Day number + weekday
-                    HStack(alignment: .firstTextBaseline, spacing: 8) {
-                        Text("\(data.dayNumber)")
-                            .font(.system(size: 42, weight: .black, design: .rounded))
-                            .foregroundStyle(data.isToday ? JohoColors.todayOrange : colors.primary)
+            VStack(spacing: JohoDimensions.spacingSM) {
 
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(data.weekdayName)
-                                .font(JohoFont.bodySmallBold)
-                                .foregroundStyle(colors.primary)
+                // 1. HOOK — the day itself as the loud headline
+                PackagingHook(
+                    "\(data.weekdayName) · \(data.monthName.uppercased()) \(data.dayNumber), \(data.yearString)",
+                    subline: data.secondaryDateText
+                )
 
-                            Text("\(data.monthName.uppercased()) \(data.yearString)")
-                                .font(.system(size: 11, weight: .medium, design: .rounded))
-                                .foregroundStyle(colors.secondary)
-                        }
-                    }
-                    .padding(.horizontal, JohoDimensions.spacingMD)
+                // 2. CLAIM PILL — week number, today badge, ISO note
+                PackagingClaimPill(
+                    "WEEK \(data.weekNumber)",
+                    subtitle: data.isToday ? "Today · ISO 8601" : "ISO 8601",
+                    tint: data.isToday ? JohoColors.yellow : JohoColors.cyan
+                )
 
-                    Spacer()
-
-                    // WALL
-                    Rectangle()
-                        .fill(colors.border)
-                        .frame(width: 1.5)
-
-                    // RIGHT: Week number
-                    VStack(spacing: 2) {
-                        Text("W\(data.weekNumber)")
-                            .font(.system(size: 18, weight: .black, design: .rounded))
-                            .foregroundStyle(colors.primary)
-
-                        if data.isToday {
-                            Text("TODAY")
-                                .font(.system(size: 9, weight: .bold, design: .rounded))
-                                .foregroundStyle(JohoColors.todayOrange)
-                        }
-                    }
-                    .frame(width: 60)
-                }
-                .frame(height: 72)
-                .background(data.isToday ? JohoColors.todayOrange.opacity(JohoDimensions.opacitySubtle) : colors.inputBackground)
-
-                // Divider
-                ShareableCardDivider()
-
-                // ═══════════════════════════════════════════════════════════════
-                // CONTENT: Items list
-                // ═══════════════════════════════════════════════════════════════
+                // 3. INGREDIENTS — the day's events, with red allergen
+                //    sub-box for bank holidays ("red days")
                 if data.hasContent {
-                    VStack(spacing: 0) {
-                        // Holidays
-                        ForEach(data.holidays.prefix(isShareable ? 10 : 3)) { holiday in
-                            DaySummaryRow(
-                                icon: holiday.isBankHoliday ? IconCatalog.holiday : IconCatalog.calendar,
-                                iconColor: holiday.isBankHoliday ? CategoryColorSettings.shared.color(for: .holiday) : CategoryColorSettings.shared.color(for: .observance),
-                                title: holiday.name,
-                                badge: holiday.isBankHoliday ? "HOLIDAY" : "OBSERVANCE",
-                                badgeColor: holiday.isBankHoliday ? CategoryColorSettings.shared.color(for: .holiday) : CategoryColorSettings.shared.color(for: .observance),
-                                subtitle: holiday.regionCode?.uppercased(),
-                                lineLimit: isShareable ? nil : 1,
-                                horizontalPadding: JohoDimensions.spacingMD
-                            )
-
-                            if holiday.id != data.holidays.prefix(isShareable ? 10 : 3).last?.id ||
-                               !data.birthdays.isEmpty || !data.memos.isEmpty {
-                                Rectangle()
-                                    .fill(colors.border.opacity(JohoDimensions.opacityMedium))
-                                    .frame(height: 1)
-                                    .padding(.horizontal, JohoDimensions.spacingMD)
-                            }
-                        }
-
-                        // Birthdays
-                        ForEach(data.birthdays.prefix(isShareable ? 6 : 3)) { birthday in
-                            DaySummaryRow(
-                                icon: "gift.fill",
-                                iconColor: JohoColors.purple,
-                                title: birthday.name,
-                                badge: birthday.age != nil ? "\(birthday.age!)" : "BIRTHDAY",
-                                badgeColor: JohoColors.purple,
-                                subtitle: nil,
-                                lineLimit: isShareable ? nil : 1,
-                                horizontalPadding: JohoDimensions.spacingMD
-                            )
-
-                            if birthday.id != data.birthdays.prefix(isShareable ? 6 : 3).last?.id ||
-                               !data.memos.isEmpty {
-                                Rectangle()
-                                    .fill(colors.border.opacity(JohoDimensions.opacityMedium))
-                                    .frame(height: 1)
-                                    .padding(.horizontal, JohoDimensions.spacingMD)
-                            }
-                        }
-
-                        // Memos
-                        ForEach(data.memos.prefix(isShareable ? 8 : 4)) { memo in
-                            DayMemoRow(
-                                memo: memo,
-                                lineLimit: isShareable ? nil : 1,
-                                horizontalPadding: JohoDimensions.spacingMD
-                            )
-
-                            if memo.id != data.memos.prefix(isShareable ? 8 : 4).last?.id {
-                                Rectangle()
-                                    .fill(colors.border.opacity(JohoDimensions.opacityMedium))
-                                    .frame(height: 1)
-                                    .padding(.horizontal, JohoDimensions.spacingMD)
-                            }
-                        }
-                    }
-                    .padding(.vertical, JohoDimensions.spacingSM)
-                } else {
-                    // Empty state
-                    VStack(spacing: JohoDimensions.spacingSM) {
-                        Image(systemName: IconCatalog.checkmarkCircle)
-                            .font(JohoFont.displayMedium)
-                            .foregroundStyle(colors.secondary.opacity(JohoDimensions.opacityHeavy))
-
-                        Text("No events scheduled")
-                            .font(JohoFont.bodySmall)
-                            .foregroundStyle(colors.secondary)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, JohoDimensions.spacingLG)
+                    PackagingIngredientsBox(
+                        entries: dayEntries,
+                        allergens: redDayAllergen
+                    )
                 }
 
-                // Divider
-                ShareableCardDivider()
+                // 4. NUTRITION — the day's stats
+                PackagingNutritionTable(
+                    title: "Day Stats (per 24h)",
+                    rows: nutritionRows,
+                    footnote: data.hasContent ? "Live counts" : "Empty day"
+                )
 
-                // ═══════════════════════════════════════════════════════════════
-                // FOOTER: Branding
-                // ═══════════════════════════════════════════════════════════════
-                ShareableCardFooter(leftLabel: "DAY SUMMARY", rightLabel: "ONSEN PLANNER")
+                // 5. MANUFACTURER — source + best-before highlight
+                PackagingManufacturerBlock(
+                    maker: "Onsen Planner",
+                    bestBefore: dateStamp,
+                    storage: nil
+                )
+
+                // 6. CODE FOOTER — short id + URL stub
+                PackagingCodeFooter(
+                    identifier: "DAY-\(dateStamp)",
+                    url: "vecka://day/\(dateStamp)"
+                )
             }
-            .clipShape(cardShape)
+            .padding(JohoDimensions.spacingSM)
+            .background((data.isToday ? JohoColors.todayOrange : JohoColors.cyan).opacity(JohoDimensions.opacityLight))
 
-            // Layer 3: Border
-            cardShape
-                .strokeBorder(colors.border, lineWidth: 3)
+            ShareableCardDivider()
         }
+    }
+
+    // MARK: - Packaging Data Builders
+
+    private var dateStamp: String {
+        DateFormatterCache.compactDate.string(from: data.date)  // yyyyMMdd
+    }
+
+    /// Holidays + birthdays + memos collapsed into a single bulleted spec.
+    /// Holidays first (most weighty), then birthdays, then memos.
+    private var dayEntries: [PackagingIngredientsBox.Entry] {
+        var out: [PackagingIngredientsBox.Entry] = []
+        let holidayLimit = isShareable ? 10 : 3
+        let birthdayLimit = isShareable ? 6 : 3
+        let memoLimit = isShareable ? 8 : 4
+
+        for h in data.holidays.prefix(holidayLimit) {
+            let label = h.isBankHoliday ? "HOLIDAY" : "OBS"
+            let region = h.regionCode.map { " · \($0.uppercased())" } ?? ""
+            out.append(.init(label: label, value: "\(h.name)\(region)"))
+        }
+        for b in data.birthdays.prefix(birthdayLimit) {
+            let age = b.age.map { " · turns \($0)" } ?? ""
+            out.append(.init(label: "BDAY", value: "\(b.name)\(age)"))
+        }
+        for m in data.memos.prefix(memoLimit) {
+            out.append(.init(label: memoLabel(for: m), value: m.preview))
+        }
+        return out
+    }
+
+    /// Bank-holiday names listed in the red allergen sub-box when present.
+    /// The "Blue + Red" combination — trusted info with a safety note.
+    private var redDayAllergen: String? {
+        let redDays = data.holidays.filter { $0.isBankHoliday }
+        guard !redDays.isEmpty else { return nil }
+        return redDays.map { $0.name }.joined(separator: ", ").uppercased()
+    }
+
+    /// Per-category counts for the nutrition-style table.
+    private var nutritionRows: [PackagingNutritionTable.Row] {
+        var rows: [PackagingNutritionTable.Row] = []
+        if !data.holidays.isEmpty { rows.append(.init(label: "Holidays", value: "\(data.holidays.count)")) }
+        if !data.birthdays.isEmpty { rows.append(.init(label: "Birthdays", value: "\(data.birthdays.count)")) }
+        if !data.memos.isEmpty { rows.append(.init(label: "Memos", value: "\(data.memos.count)")) }
+        rows.append(.init(label: "Week", value: "W\(data.weekNumber)"))
+        return rows
+    }
+
+    private func memoLabel(for memo: Memo) -> String {
+        if memo.hasMoney { return "EXP" }
+        if memo.hasPlace { return "TRIP" }
+        if memo.hasSchedule { return "EVT" }
+        return "NOTE"
     }
 }
 

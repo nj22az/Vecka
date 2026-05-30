@@ -80,121 +80,87 @@ struct ShareableCountdownCard: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            // ═══════════════════════════════════════════════════════════════
-            // HEADER: App branding + icon
-            // ═══════════════════════════════════════════════════════════════
-            ShareableCardHeader(
-                icon: iconName,
-                iconColor: accentColor,
-                accentColor: accentColor
-            )
-
-            // Divider
+        ShareableCardShell(
+            headerIcon: iconName,
+            headerIconColor: accentColor,
+            headerAccentColor: accentColor,
+            footerLeftLabel: "COUNTDOWN",
+            footerRightLabel: "情報"
+        ) {
+            // 情報デザイン: 7-compartment packaging layout. JDS §12.
             ShareableCardDivider()
 
-            // ═══════════════════════════════════════════════════════════════
-            // MAIN CONTENT: Days countdown + event name
-            // ═══════════════════════════════════════════════════════════════
-            HStack(spacing: 0) {
-                // LEFT: Days counter (large)
-                VStack(spacing: 4) {
-                    if daysRemaining == 0 {
-                        Text("TODAY")
-                            .font(.system(size: 32, weight: .black, design: .rounded))
-                            .foregroundStyle(colors.primary)
-                    } else {
-                        Text("\(daysRemaining)")
-                            .font(.system(size: 56, weight: .black, design: .rounded))
-                            .foregroundStyle(colors.primary)
+            VStack(spacing: JohoDimensions.spacingSM) {
 
-                        Text(daysRemaining == 1 ? "DAY" : "DAYS")
-                            .font(JohoFont.bodySmallBold)
-                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
-                    }
+                // 1. HOOK — countdown message as the loud slogan
+                PackagingHook(
+                    countdownMessage.uppercased(),
+                    subline: name
+                )
+
+                // 2. CLAIM PILL — annual / one-off badge
+                PackagingClaimPill(
+                    isAnnual ? "ANNUAL EVENT" : "ONE-OFF EVENT",
+                    subtitle: isAnnual ? "Repeats every year" : "Single occurrence",
+                    tint: isAnnual ? JohoColors.purple : JohoColors.cyan
+                )
+
+                // 3. TASKS — only if any present; uses the ingredients pattern
+                if totalTasks > 0 {
+                    PackagingIngredientsBox(
+                        entries: taskEntries,
+                        allergens: completedTasks == totalTasks ? "ALL DONE" : nil
+                    )
                 }
-                .frame(width: 120)
-                .frame(maxHeight: .infinity)
 
-                // WALL
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(width: 1.5)
-                    .frame(maxHeight: .infinity)
+                // 4. NUTRITION — the countdown stats
+                PackagingNutritionTable(
+                    title: "Countdown Stats",
+                    rows: nutritionRows,
+                    footnote: nil
+                )
 
-                // RIGHT: Event details
-                VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                    // Event name
-                    Text(name)
-                        .font(JohoFont.title)
-                        .foregroundStyle(colors.primary)
-                        .lineLimit(2)
+                // 5. MANUFACTURER — target date as the highlighted "Best Before"
+                PackagingManufacturerBlock(
+                    maker: "Onsen Planner",
+                    bestBefore: targetDateStamp,
+                    storage: nil
+                )
 
-                    // Target date
-                    Text(targetDate.formatted(.dateTime.month(.wide).day().year()))
-                        .font(JohoFont.caption)
-                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
-
-                    // Annual indicator
-                    if isAnnual {
-                        HStack(spacing: 4) {
-                            Image(systemName: IconCatalog.repeatIcon)
-                                .font(JohoFont.labelBold)
-                            Text("ANNUAL")
-                                .font(JohoFont.labelBold)
-                        }
-                        .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityHeavy))
-                    }
-
-                    // Task progress (if has tasks)
-                    if totalTasks > 0 {
-                        HStack(spacing: 6) {
-                            Image(systemName: completedTasks == totalTasks ? IconCatalog.checkmarkCircleFill : "circle.dotted")
-                                .font(JohoFont.label)
-                                .foregroundStyle(completedTasks == totalTasks ? accentColor : colors.primary.opacity(JohoDimensions.opacityHeavy))
-
-                            Text("\(completedTasks)/\(totalTasks) TASKS")
-                                .font(.system(size: 10, weight: .bold, design: .monospaced))
-                                .foregroundStyle(completedTasks == totalTasks ? accentColor : colors.primary.opacity(JohoDimensions.opacityHeavy))
-                        }
-                        .padding(.top, 4)
-                    }
-                }
-                .padding(JohoDimensions.spacingMD)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                // 6. CODE FOOTER
+                PackagingCodeFooter(
+                    identifier: "CD-\(targetDateStamp)",
+                    url: "vecka://countdown"
+                )
             }
-            .frame(height: 140)
+            .padding(JohoDimensions.spacingSM)
             .background(lightBackground)
 
-            // Divider
             ShareableCardDivider()
-
-            // ═══════════════════════════════════════════════════════════════
-            // FOOTER: Countdown message (custom - uses different font sizing)
-            // ═══════════════════════════════════════════════════════════════
-            HStack {
-                Text(countdownMessage)
-                    .font(.system(size: 11, weight: .medium, design: .rounded))
-                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityBold))
-
-                Spacer()
-
-                // 情報デザイン: Japanese design mark
-                Text("情報")
-                    .font(JohoFont.labelBold)
-                    .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityModerate))
-            }
-            .padding(.horizontal, JohoDimensions.spacingMD)
-            .padding(.vertical, JohoDimensions.spacingSM)
-            .frame(height: 32)
-            .background(colors.surface)
         }
-        .background(colors.surface)
-        .clipShape(RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: JohoDimensions.radiusLarge, style: .continuous)
-                .stroke(colors.border, lineWidth: 3)
-        )
+    }
+
+    private var targetDateStamp: String {
+        DateFormatterCache.compactDate.string(from: targetDate)
+    }
+
+    private var taskEntries: [PackagingIngredientsBox.Entry] {
+        tasks.filter { !$0.text.isEmpty }.prefix(8).map { task in
+            .init(label: task.isCompleted ? "DONE" : "TODO", value: task.text)
+        }
+    }
+
+    private var nutritionRows: [PackagingNutritionTable.Row] {
+        var rows: [PackagingNutritionTable.Row] = []
+        rows.append(.init(
+            label: "Days Left",
+            value: daysRemaining == 0 ? "TODAY" : "\(daysRemaining)"
+        ))
+        rows.append(.init(label: "Target", value: targetDate.formatted(.dateTime.month(.abbreviated).day())))
+        if totalTasks > 0 {
+            rows.append(.init(label: "Tasks", value: "\(completedTasks)/\(totalTasks)"))
+        }
+        return rows
     }
 
     private var countdownMessage: String {
