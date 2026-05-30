@@ -89,11 +89,12 @@ struct VeckaApp: App {
                     AppearanceResolver(preference: appearancePreference) { resolvedMode in
                         ContentView()
                             .environment(navigationManager)
-                            // 情報デザイン: Apply the resolved color mode (binary).
+                            // 情報デザイン: Apply the resolved app color mode (binary).
                             .johoColorMode(resolvedMode)
-                            // 情報デザイン: When the user picks System, pass nil so
-                            // iOS chrome follows the device setting. Otherwise force
-                            // the chrome to match the user's explicit choice.
+                            // iOS chrome follows the user's preference. The nav-bar
+                            // bg is set to `colors.surface` in JohoNavigationModifier,
+                            // matching the canvas, so status-bar icons stay visible
+                            // in both modes regardless of which page is on top.
                             .preferredColorScheme(appearancePreference.preferredColorScheme)
                     }
                         .onOpenURL { url in

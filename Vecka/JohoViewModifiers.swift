@@ -31,12 +31,21 @@ struct JohoNavigationModifier: ViewModifier {
     private var colors: JohoScheme { JohoScheme.colors(for: colorMode) }
 
     func body(content: Content) -> some View {
+        // Nav bar uses `colors.surface` (matches canvas) so the iOS status bar
+        // — which renders icons in the color matching `preferredColorScheme` —
+        // always has a consistent surface to land on. Setting the nav bar to
+        // `colors.primary` (the previous behavior) made it dark in light mode,
+        // which hid dark status icons under it.
         content
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(colors.primary, for: .navigationBar)
+            .toolbarBackground(colors.surface, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarColorScheme(colorMode == .dark ? .light : .dark, for: .navigationBar)
+            // Toolbar items render contrast to the nav-bar background. Since
+            // the bg now matches canvas (light bg in light mode, dark in dark),
+            // toolbar items should be dark in light mode, light in dark mode —
+            // which is `colorMode` directly, not its inverse.
+            .toolbarColorScheme(colorMode == .dark ? .dark : .light, for: .navigationBar)
     }
 }
 

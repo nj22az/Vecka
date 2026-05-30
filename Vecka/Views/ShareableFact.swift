@@ -54,54 +54,59 @@ struct ShareableFactCard: View {
             footerLeftLabel: "RANDOM FACTS",
             footerRightLabel: fact.displaySource.uppercased()
         ) {
-            // Divider after header
+            // 情報デザイン: Japanese 7-compartment packaging layout.
+            // JDS §12 — header(existing) → hook → claim pill → details
+            // → manufacturer → code footer → footer(existing).
             ShareableCardDivider()
 
-            // ═══════════════════════════════════════════════════════════════
-            // MAIN CONTENT: Large icon + fact text
-            // ═══════════════════════════════════════════════════════════════
-            HStack(alignment: .top, spacing: 0) {
-                // LEFT: Large icon
-                VStack {
-                    Spacer()
-                    Image(systemName: fact.icon ?? "lightbulb.fill")
-                        .font(.system(size: 48, weight: .bold, design: .rounded))
-                        .foregroundStyle(fact.color)
-                    Spacer()
+            VStack(spacing: JohoDimensions.spacingSM) {
+
+                // 1. HOOK — the fact text itself, as the loud slogan
+                PackagingHook(fact.text)
+
+                // 2. CLAIM PILL — category, tinted with the fact color
+                PackagingClaimPill(
+                    "RANDOM FACT",
+                    subtitle: fact.explanation.isEmpty ? nil : "Did you know?",
+                    tint: fact.color
+                )
+
+                // 3. DETAILS — explanation, only if present.
+                //    Uses the bordered "ingredients" pattern with a single entry.
+                if !fact.explanation.isEmpty {
+                    PackagingIngredientsBox(
+                        entries: [
+                            .init(label: "About", value: fact.explanation)
+                        ]
+                    )
                 }
-                .frame(width: 100)
-                .frame(minHeight: 140)
 
-                // WALL
-                Rectangle()
-                    .fill(colors.border)
-                    .frame(width: 1.5)
+                // 4. MANUFACTURER — source attribution as the "trust" block
+                PackagingManufacturerBlock(
+                    maker: fact.displaySource,
+                    bestBefore: nil,
+                    storage: nil
+                )
 
-                // RIGHT: Fact text
-                VStack(alignment: .leading, spacing: JohoDimensions.spacingSM) {
-                    Text(fact.text)
-                        .font(JohoFont.headlineSmall)
-                        .foregroundStyle(colors.primary)
-                        .lineLimit(isShareable ? nil : 4)
-                        .multilineTextAlignment(.leading)
-
-                    if !fact.explanation.isEmpty {
-                        Text(fact.explanation)
-                            .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundStyle(colors.primary.opacity(JohoDimensions.opacityStrong))
-                            .lineLimit(isShareable ? nil : 3)
-                            .multilineTextAlignment(.leading)
-                    }
-                }
-                .padding(JohoDimensions.spacingMD)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                // 5. CODE FOOTER — short id + URL stub
+                PackagingCodeFooter(
+                    identifier: shortID,
+                    url: "vecka://fact"
+                )
             }
-            .frame(minHeight: 140)
+            .padding(JohoDimensions.spacingSM)
             .background(fact.color.opacity(JohoDimensions.opacityLight))
 
-            // Divider before footer
             ShareableCardDivider()
         }
+    }
+
+    /// First 8 chars of the fact id — short enough to fit, unique enough
+    /// to scan. Falls back to the source code if id is empty.
+    private var shortID: String {
+        let raw = fact.id.replacingOccurrences(of: "-", with: "")
+        let prefix = String(raw.prefix(8)).uppercased()
+        return prefix.isEmpty ? fact.displaySource.uppercased() : "FACT-\(prefix)"
     }
 }
 

@@ -425,9 +425,11 @@ Onsen Planner separates **what the user picked** from **what we render**:
 - **`AppearancePreference`** — user-facing, three cases: `.system` (default), `.light`, `.dark`. Stored in `@AppStorage("appearancePreference")`.
 - **`JohoColorMode`** — the resolved binary mode actually used for rendering: `.light` or `.dark`. Propagated via `.johoColorMode(_:)` (environment-key modifier). Every component reads this, not the preference.
 
-`AppearanceResolver` at the app root (`Vecka/VeckaApp.swift`) reads `\.colorScheme` and the user's preference, then hands the resolved `JohoColorMode` to the rest of the view tree. When the preference is `.system`, iOS chrome (status bar, system sheets) follows the device setting because `.preferredColorScheme` is passed `nil`. When the preference is `.light` or `.dark`, the chrome is forced to match.
+`AppearanceResolver` at the app root (`Vecka/VeckaApp.swift`) reads `\.colorScheme` and the user's preference, then hands the resolved `JohoColorMode` to the rest of the view tree.
 
-This matches the Japanese app norm: Yahoo Japan, SmartNews, Mercari and others default to system, with an explicit override available in settings. We never assume the user wants what we'd pick.
+**iOS chrome (status bar) is pinned to `.dark`.** Several pages use `JohoNavigationModifier` which paints the nav bar with `colors.primary` — and `colors.primary` is `#111111` in light mode (dark). If we let `preferredColorScheme` follow `AppearancePreference`, light-mode pages would render dark status icons that disappear into those dark nav bars. Pinning the chrome to `.dark` keeps status icons light and visible regardless of which `AppearancePreference` the user picks. The user's preference still controls the **app** color mode via `.johoColorMode(_:)` above — only the iOS chrome is pinned.
+
+This matches the Japanese app norm in spirit (Yahoo Japan, SmartNews, Mercari default to system for *content*) while keeping the system chrome consistently legible across all our pages.
 
 #### True Black (AMOLED) override
 
@@ -435,9 +437,9 @@ An advanced setting `@AppStorage("amoledTrueBlack")` (default `false`) hardens t
 
 #### What this section does NOT do
 
-- It does not force `.preferredColorScheme` unilaterally.
 - It does not "invert" colors — dark mode is designed, not derived.
 - It does not introduce more than two modes (Light and Dark, period — Nintendo's restraint).
+- It does not couple iOS chrome color to `AppearancePreference` — chrome is pinned `.dark` for visibility against our dark nav bars.
 
 ### 9.2 Theme presets (`JohoThemePreset`)
 
@@ -507,9 +509,96 @@ Any addition without a corresponding update to this manual is a documentation de
 
 ---
 
-## 12. References
+## 12. Information-rich packaging panels
 
-- Internal: `Vecka/JohoFoundations.swift`, `Vecka/JohoTokens.swift`, `Vecka/JohoSymbols.swift`, `Vecka/JohoComponents.swift`, `Vecka/JohoViewModifiers.swift`, `Vecka/JohoSettings.swift`, `Vecka/Models/JohoTheme.swift`
+Onsen Planner's shareable cards, fact panels, day-summary exports and detail sheets borrow their structure and color logic from **Japanese consumer-packaging information design** — the same tradition behind Hi-Chew wrappers, Marosh gummy backs, Aroma Foundation pouches and Bandai Gashapon cards.
+
+The full philosophy, color meanings, combination logic, and English templates live in [`JDS-REF-SFW-001_japanese-packaging-design.md`](JDS-REF-SFW-001_japanese-packaging-design.md). This section is the **engineering spec** — which Swift components implement which compartment, what they accept, and how they're composed.
+
+### 12.1 The two-layer model
+
+Japanese information design is built on two layers (REF §1):
+
+- **Layer 1 — Structure (Bento Box)**: every piece of information lives in its own clearly bordered compartment, in a fixed top-to-bottom order. Calm, high-density, scannable.
+- **Layer 2 — Color Meaning**: color is never decorative; each color and each combination carries a specific meaning. Color tells the reader instantly what *kind* of information they're looking at.
+
+Master both layers and the result feels genuinely Japanese. JDS already has Layer 2 partially (`JohoColors` semantic palette in §2.1, focused on app-task categories). The packaging system extends Layer 2 with the **packaging color meanings** (REF §3) — used *only* inside packaging-style panels, never app-wide.
+
+### 12.2 The 7-compartment bento (fixed order)
+
+Japanese product labels almost always follow this exact sequence (REF §2). Onsen Planner's packaging-style components compose in the same order:
+
+| # | Compartment            | Swift component (`Vecka/JohoPackagingPanels.swift`) | Typical color treatment      |
+|---|------------------------|-----------------------------------------------------|------------------------------|
+| 1 | Catchy Hook / Slogan   | `PackagingHook`                                     | Blue header bar + white text |
+| 2 | Feature / Technology   | `PackagingClaimPill`                                | Teal / Green / light Blue box|
+| 3 | Ingredients + Allergens| `PackagingIngredientsBox`                           | White bg + Blue text + Red allergen sub-box |
+| 4 | Nutrition Facts        | `PackagingNutritionTable`                           | Clean table, Blue headers    |
+| 5 | Manufacturer & Dates   | `PackagingManufacturerBlock`                        | White box + Blue text + Yellow date highlight |
+| 6 | Warning Box            | `PackagingWarningBox`                               | **Sharp Red bg + Red text**  |
+| 7 | Footer                 | `PackagingCodeFooter`                               | Small, clean, minimal color  |
+
+The **order is non-negotiable** when a section is present. Not every panel uses every compartment, but skipping or reordering them breaks the Japanese reading rhythm.
+
+All components consume existing `JohoColors`, `JohoFont`, `JohoDimensions` and `JohoScheme` tokens — never raw hex, never `Color.red` literals. They render correctly in both color modes by following §10's constant-tint rule for any tinted compartments (hardcoded `JohoColors.black` foregrounds on yellow / pink / cyan / green / red tints).
+
+### 12.3 Color meaning (packaging only)
+
+Inside packaging panels, the following meanings apply (REF §3 — single colors). These are **packaging-scoped**: they do not override JDS §2.1's app-wide semantic palette.
+
+| Color (`JohoColors.*`) | Packaging meaning                     | Use for                                        |
+|------------------------|---------------------------------------|------------------------------------------------|
+| Blue (`SystemUIAccent.blue`) | Trust, neutrality, calm        | Hook header bar; standard info text            |
+| `red`                  | Urgency, danger, "pay attention"      | Warning boxes; allergen sub-boxes              |
+| `yellow`               | Attention, friendly highlight         | Best-before dates; "noticed this" highlights   |
+| `green`                | Nature, freshness, real ingredients   | Healthy / natural product claims               |
+| `cyan` (teal)          | Refreshing, modern, juicy             | Default Feature/Technology claim background    |
+| `purple`               | Berry, grape, premium, cute           | Premium / kawaii product framing               |
+| `pink`                 | Sweetness, fluffiness, cuteness       | Soft / cute product framing; default claim tint|
+
+### 12.4 Color combinations (layered meaning)
+
+Combinations create new meanings (REF §4). The first color sets the compartment feeling; the second adds a layer of meaning or hierarchy. Most useful in Onsen Planner:
+
+| Combination     | New meaning                              | When to reach for it                          |
+|-----------------|------------------------------------------|-----------------------------------------------|
+| Blue + Red      | Trusted info + safety warning            | Ingredients box with allergen callout         |
+| Blue + Yellow   | Important trusted info + must-notice     | Manufacturer block with highlighted date      |
+| Teal + Pink     | Refreshing + cute                        | Modern juicy claim with cute follow-up        |
+| Green + Blue    | Healthy + reliable                       | Real-ingredient claims                        |
+| Red + Yellow    | Strong attention + positive energy       | Limited-edition warning with "new!" badge     |
+| Teal + White    | Clean + modern + juicy                   | Minimalist composition (header on white)      |
+
+### 12.5 Section order (when composing a packaging-style card)
+
+When composing a packaging-style card (shareable export, detail sheet, summary card), follow this order top → bottom — the same as a Japanese candy back:
+
+1. **Existing card header** (`ShareableCardHeader` — branding + context icon)
+2. **Hook** (`PackagingHook`)
+3. **Claim pill** (`PackagingClaimPill`)
+4. **Ingredients / detail block** (`PackagingIngredientsBox`)
+5. **Nutrition table** (`PackagingNutritionTable`)
+6. **Manufacturer block** (`PackagingManufacturerBlock`)
+7. **Warning** (`PackagingWarningBox` — only if relevant)
+8. **Footer codes** (`PackagingCodeFooter`)
+9. **Existing card footer** (`ShareableCardFooter`)
+
+Not every card uses every section. The order is invariant when a section is present.
+
+### 12.6 What this section does NOT do
+
+- It does not introduce new colors — every panel uses existing `JohoColors` / `JohoScheme` / `SystemUIAccent` tokens.
+- It does not change the typography ramp — every panel uses `JohoFont`.
+- It does not bypass the §10 constant-tint rule — warning / claim pills use hardcoded `JohoColors.black` foregrounds on tinted backgrounds.
+- It does not invent its own bordering — every box uses `.johoBordered` or hairline `Rectangle` dividers.
+- It does not override app-wide color semantics (§2.1) — packaging color meanings (§12.3) are scoped to packaging panels.
+
+---
+
+## 13. References
+
+- Internal: `Vecka/JohoFoundations.swift`, `Vecka/JohoTokens.swift`, `Vecka/JohoSymbols.swift`, `Vecka/JohoComponents.swift`, `Vecka/JohoViewModifiers.swift`, `Vecka/JohoSettings.swift`, `Vecka/JohoPackagingPanels.swift`, `Vecka/Models/JohoTheme.swift`
 - Project card: [`JDS-PRJ-SFW-002_onsen-planner.md`](JDS-PRJ-SFW-002_onsen-planner.md)
+- Packaging design reference: [`JDS-REF-SFW-001_japanese-packaging-design.md`](JDS-REF-SFW-001_japanese-packaging-design.md)
 - Parent register: [`nj22az/JDS_Documentation`](https://github.com/nj22az/JDS_Documentation)
 - Japanese symbol vocabulary reference: `Vecka/JohoSymbols.swift:196` (`enum JohoSymbols`)
