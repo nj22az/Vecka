@@ -48,7 +48,7 @@ struct WidgetMonthTheme {
     // MARK: - App Group Load
 
     private static func loadFromAppGroup() -> [SharedMonthStyle] {
-        guard let defaults = UserDefaults(suiteName: "group.Johansson.Vecka"),
+        guard let defaults = UserDefaults(suiteName: "group.com.johansson.onsenplanner"),
               let data = defaults.data(forKey: "shared_month_styles"),
               let styles = try? JSONDecoder().decode([SharedMonthStyle].self, from: data)
         else { return [] }

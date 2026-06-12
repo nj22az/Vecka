@@ -48,7 +48,7 @@ enum JohoWidget {
         }
 
         private static func loadSharedDict() -> [String: String]? {
-            guard let defaults = UserDefaults(suiteName: "group.Johansson.Vecka"),
+            guard let defaults = UserDefaults(suiteName: "group.com.johansson.onsenplanner"),
                   let data = defaults.data(forKey: "shared_category_colors"),
                   let dict = try? JSONDecoder().decode([String: String].self, from: data)
             else { return nil }

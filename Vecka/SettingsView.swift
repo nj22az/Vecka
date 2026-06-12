@@ -666,7 +666,7 @@ struct SettingsView: View {
                     showLunarCalendar.toggle()
                 }
                 // Sync to App Group for widget
-                UserDefaults(suiteName: "group.Johansson.Vecka")?.set(showLunarCalendar, forKey: "showLunarCalendar")
+                UserDefaults(suiteName: "group.com.johansson.onsenplanner")?.set(showLunarCalendar, forKey: "showLunarCalendar")
                 HapticManager.selection()
             } label: {
                 HStack(spacing: JohoDimensions.spacingMD) {

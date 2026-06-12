@@ -24,7 +24,7 @@ struct SharedMonthStyle: Codable {
 // MARK: - App Group Storage
 
 enum MonthThemeStorage {
-    static let appGroupID = "group.Johansson.Vecka"
+    static let appGroupID = "group.com.johansson.onsenplanner"
     static let monthStylesKey = "shared_month_styles"
 
     /// Safely access App Group UserDefaults (returns nil if unavailable)
@@ -73,7 +73,7 @@ enum MonthThemeStorage {
 /// Syncs category colors to App Group for widget access
 /// Follows same pattern as MonthThemeStorage
 enum CategoryColorStorage {
-    static let appGroupID = "group.Johansson.Vecka"
+    static let appGroupID = "group.com.johansson.onsenplanner"
     static let categoryColorsKey = "shared_category_colors"
 
     private static var sharedDefaults: UserDefaults? {

@@ -116,7 +116,7 @@ struct SharedWorldClock: Codable, Identifiable, Hashable {
 // MARK: - App Group Storage
 
 enum WorldClockStorage {
-    static let appGroupID = "group.Johansson.Vecka"
+    static let appGroupID = "group.com.johansson.onsenplanner"
     static let worldClocksKey = "shared_world_clocks"
 
     /// Safely access App Group UserDefaults

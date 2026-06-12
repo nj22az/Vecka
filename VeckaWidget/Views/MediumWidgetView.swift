@@ -145,7 +145,7 @@ struct VeckaMediumWidgetView: View {
     // MARK: - Show Lunar Setting (synced from main app)
 
     private var showLunarCalendar: Bool {
-        UserDefaults(suiteName: "group.Johansson.Vecka")?.bool(forKey: "showLunarCalendar") ?? false
+        UserDefaults(suiteName: "group.com.johansson.onsenplanner")?.bool(forKey: "showLunarCalendar") ?? false
     }
 
     // MARK: - Date Column (Star Card with date info in white zone)
